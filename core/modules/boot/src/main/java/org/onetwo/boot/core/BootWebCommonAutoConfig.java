@@ -18,6 +18,7 @@ import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
+import org.onetwo.boot.core.web.view.AutoWrapJackson2HttpMessageConverter;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.common.file.FileStorer;
@@ -83,6 +84,11 @@ public class BootWebCommonAutoConfig {
 		return registration;
 	}
 	
+	/***
+	 * 注册自定义filter
+	 * @author wayshall
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean(BootServletContextInitializer.class)
 	public BootServletContextInitializer bootServletContextInitializer(){
@@ -94,6 +100,11 @@ public class BootWebCommonAutoConfig {
 		return new ConfigServletContextInitializer();
 	}
 	
+	/****
+	 * 扩展requestmapping，增加监听器
+	 * @author wayshall
+	 * @return
+	 */
 	@Bean
 	public RequestMappingHandlerMappingListenable requestMappingHandlerMappingListenable(){
 		RequestMappingHandlerMappingListenable req = new RequestMappingHandlerMappingListenable();
@@ -103,6 +114,11 @@ public class BootWebCommonAutoConfig {
 	@Bean
 	public BootMvcConfigurerAdapter bootMvcConfigurerAdapter(){
 		return new BootMvcConfigurerAdapter();
+	}
+	
+	@Bean
+	public AutoWrapJackson2HttpMessageConverter autoWrapJackson2HttpMessageConverter(){
+		return new AutoWrapJackson2HttpMessageConverter();
 	}
 	
 	/*@Bean

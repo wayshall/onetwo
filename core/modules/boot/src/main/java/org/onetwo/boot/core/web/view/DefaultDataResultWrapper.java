@@ -33,7 +33,7 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 			MapResultBuilder dataResult = createMapResultBuilder((Map<String, Object>) result);
 			return dataResult.buildResult();
 		}else{
-			SimpleDataResult<Object> dataResult = SimpleDataResult.success("", result);
+			SimpleDataResult<Object> dataResult = SimpleDataResult.success("success", result);
 			return dataResult;
 		}
 	}

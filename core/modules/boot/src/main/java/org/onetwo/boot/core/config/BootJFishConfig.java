@@ -70,7 +70,8 @@ public class BootJFishConfig {
 
 		@Data
 		public class JsonConfig {
-			private Boolean prettyPrint;
+			Boolean prettyPrint;
+			boolean autoWrapResult;
 			
 			public boolean isPrettyPrint(){
 				 if(prettyPrint==null)

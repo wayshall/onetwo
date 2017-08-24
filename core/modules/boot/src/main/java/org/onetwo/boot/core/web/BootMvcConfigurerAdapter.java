@@ -8,17 +8,20 @@ import java.util.Properties;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
+import org.onetwo.boot.core.web.view.AutoWrapJackson2HttpMessageConverter;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
 import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.mvc.args.WebAttributeArgumentResolver;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -46,6 +49,9 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Autowired
 	private List<HandlerMethodArgumentResolver> argumentResolverList;
+	
+	@Autowired(required=false)
+	private AutoWrapJackson2HttpMessageConverter autoWrapJackson2HttpMessageConverter;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
@@ -122,8 +128,9 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	
 	@Override
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters){
-		/*AutoWrapJackson2HttpMessageConverter bootJson = new AutoWrapJackson2HttpMessageConverter();
-		CUtils.replaceOrAdd(converters, MappingJackson2HttpMessageConverter.class, bootJson);*/
+		if(autoWrapJackson2HttpMessageConverter!=null){
+			CUtils.replaceOrAdd(converters, MappingJackson2HttpMessageConverter.class, autoWrapJackson2HttpMessageConverter);
+		}
 	}
 
 }
