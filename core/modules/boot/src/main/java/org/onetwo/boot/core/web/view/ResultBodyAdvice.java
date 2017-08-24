@@ -1,6 +1,8 @@
 package org.onetwo.boot.core.web.view;
 
-import org.onetwo.common.data.DataResultWrapper;
+import org.onetwo.boot.core.web.utils.BootWebHelper;
+import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -13,7 +15,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @ControllerAdvice
 public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 
-	private DataResultWrapper dataResultWrapper = BootJsonView.DATA_RESULT_WRAPPER;
+	@Autowired(required=false)
+	private XResponseViewManager xresponseViewManager;
 	
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -27,6 +30,8 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 			Class<? extends HttpMessageConverter<?>> selectedConverterType,
 			ServerHttpRequest request, ServerHttpResponse response) {
 //		return dataResultWrapper.wrapResult(body);
+		BootWebHelper helper = BootWebUtils.webHelper();
+		body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body);
 		return body;
 	}
 	

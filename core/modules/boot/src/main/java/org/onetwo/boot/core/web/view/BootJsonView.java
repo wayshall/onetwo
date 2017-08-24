@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,12 +14,10 @@ import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.DataResultWrapper;
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
-import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -42,7 +39,6 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	public static final DataResultWrapper DATA_RESULT_WRAPPER = new DefaultDataResultWrapper();
 	
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
-	public static final String X_RESPONSE_VIEW = "x-response-view";
 	
 //	protected final Logger log = JFishLoggerFactory.getLogger(getClass());
 
@@ -50,12 +46,10 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	private ApplicationContext applicationContext;
 //	@Autowired
 //	private BootJFishConfig bootJFishConfig;
-
-	private boolean wrapModelAsDataResult = true;
-	private DataResultWrapper dataResultWrapper = DATA_RESULT_WRAPPER;
 	
+	@Autowired(required=false)
+	private XResponseViewManager xresponseViewManager;
 
-	private boolean enableResponseView = true;
 	
 	public BootJsonView(){
 //		this.configJson();
@@ -63,14 +57,6 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		this.setObjectMapper(jsonMapper.getObjectMapper());
 	}
 
-	public void setEnableResponseView(boolean enableResponseView) {
-		this.enableResponseView = enableResponseView;
-	}
-
-	public void setWrapModelAsDataResult(boolean wrapModelAsDataResult) {
-		this.wrapModelAsDataResult = wrapModelAsDataResult;
-	}
-	
 	public void afterPropertiesSet() throws Exception {
 		this.setContentType(CONTENT_TYPE);
 //		setExtractValueFromSingleKeyModel(true);
@@ -124,11 +110,8 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 				}
 				result = ((DataWrapper)entry.getValue()).getValue();
 //				result = processData(result, model);
-				//默认的DataWrapper需要经过response view的处理
-				Optional<Object> view = getResponseViewFromAnnotation(result);
-				if(view.isPresent()){
-					return view.get();
-				}
+				//默认的DataWrapper也需要查找是否有response view指定的包装器处理
+				result = getResponseViewFromAnnotation(result);
 				return result;
 			}
 			
@@ -144,24 +127,12 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 			result = super.filterModel(model);
 		}
 
-		return processData(result, model);
+		result = processData(result, model);
+		return result;
 	}
 	
 	protected Object processData(Object data, Map<String, Object> model){
-		/*try {
-			String json = getObjectMapper().writeValueAsString(data);
-			logger.info("json ---> {}", json);
-		} catch (JsonProcessingException e) {
-			logger.warn("log json error: " + data, e);
-		}*/
-		Optional<Object> view = getResponseViewFromAnnotation(data);
-		if(view.isPresent()){
-			return view.get();
-		}
-		if(wrapModelAsDataResult){
-			data = dataResultWrapper.wrapResult(data);
-		}
-		return data;
+		return getResponseViewFromAnnotation(data);
 	}
 	
 	/****
@@ -171,58 +142,24 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	 * @return
 	 */
 	protected Optional<Object> getResponseViewFromModel(Map<String, Object> model){
-		if(!enableResponseView){
-			return Optional.empty();
-		}
-		Optional<String> responseView = getXResponseView();
-		if(!responseView.isPresent()){
-			return Optional.empty();
-		}
-		DataWrapper dw = (DataWrapper)model.get(responseView);
-		if(dw!=null){
-			Object result = dw.getValue();
-//				result = processData(result, model);//DataWrapper 特殊类型无需另外处理
-			return Optional.ofNullable(result);
-		}
-		return Optional.empty();
+		return xresponseViewManager.getResponseViewFromModel(model);
 	}
 	
 	/***
-	 * 待优化: 可在启动时检测和缓存，类似拦截器
 	 * @author wayshall
 	 * @param data
 	 * @return
 	 */
-	protected Optional<Object> getResponseViewFromAnnotation(final Object data){
-		if(!enableResponseView){
-			return Optional.empty();
-		}
-		Optional<String> responseView = BootJsonView.getXResponseView();
-		if(!responseView.isPresent()){
-			return Optional.empty();
-		}
-		
-		if(logger.isInfoEnabled()){
-			logger.info("x-response-view: " + responseView.get());
-		}
+	protected Object getResponseViewFromAnnotation(final Object data){
 		BootWebHelper helper = BootWebUtils.webHelper();
 		if(helper==null || helper.getControllerHandler()==null){
-			return Optional.empty();
+			return data;
 		}
 		HandlerMethod hm = helper.getControllerHandler();
-		XResponseView[] xviews = hm.getMethod().getAnnotationsByType(XResponseView.class);
-		Optional<XResponseView> matchView = Stream.of(xviews)
-													.filter(v->v.value().equals(responseView.get()))
-													.findFirst();
-		if(matchView.isPresent()){
-			DataResultWrapper wrapper = ReflectUtils.newInstance(matchView.get().wrapper());
-			Object newData = wrapper.wrapResult(data);
-			return Optional.ofNullable(newData);
-		}else{
-//			throw new BaseException("no response view found for name: " + responseView);
-			logger.warn("no response view found for name: " + responseView);
+		if(xresponseViewManager!=null){
+			return xresponseViewManager.getHandlerMethodResponseView(hm, data);
 		}
-		return Optional.empty();
+		return data;
 	}
 	
 	
@@ -231,14 +168,5 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 		return super.filterModel(model);
 	}
 	
-	public static Optional<String> getXResponseView(){
-		Optional<HttpServletRequest> requestOpt = WebHolder.getRequest();
-		if(!requestOpt.isPresent()){
-			return Optional.empty();
-		}
-		String responseView = requestOpt.get().getHeader(X_RESPONSE_VIEW);
-		return Optional.ofNullable(responseView);
-	}
-
 
 }

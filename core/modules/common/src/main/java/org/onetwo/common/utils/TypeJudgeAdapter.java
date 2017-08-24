@@ -8,6 +8,11 @@ import java.util.Map;
 public class TypeJudgeAdapter implements TypeJudge {
 
 	@Override
+	public Object ifIterable(Iterable<?> obj) {
+		return obj;
+	}
+
+	@Override
 	public Object ifList(List<?> obj) {
 		return obj;
 	}

@@ -21,6 +21,7 @@ import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
 import org.onetwo.boot.core.web.view.AutoWrapJackson2HttpMessageConverter;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
+import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
@@ -116,9 +117,14 @@ public class BootWebCommonAutoConfig {
 		return new BootMvcConfigurerAdapter();
 	}
 	
-	@Bean
+	/***
+	 * 暂时屏蔽
+	 * @author wayshall
+	 * @return
+	 */
+//	@Bean
 	public AutoWrapJackson2HttpMessageConverter autoWrapJackson2HttpMessageConverter(){
-		return new AutoWrapJackson2HttpMessageConverter();
+		return new AutoWrapJackson2HttpMessageConverter(bootJfishConfig.getMvc().getAutoWrapResult());
 	}
 	
 	/*@Bean
@@ -155,6 +161,13 @@ public class BootWebCommonAutoConfig {
 	@Bean
 	public ResultBodyAdvice resultBodyAdvice(){
 		return new ResultBodyAdvice();
+	}
+	
+	@Bean
+	public XResponseViewManager xresponseViewManager(){
+		XResponseViewManager viewManager = new XResponseViewManager();
+		viewManager.setAlwaysWrapDataResult(bootJfishConfig.getMvc().getJson().isAlwaysWrapDataResult());
+		return viewManager;
 	}
 	
 	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)

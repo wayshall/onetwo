@@ -7,6 +7,7 @@ import java.util.Map;
 
 public interface TypeJudge {
 
+	public Object ifIterable(Iterable<?> obj);
 	public Object ifList(List<?> obj);
 	public Object ifCollection(Collection<?> obj);
 	public Object ifMap(Map<?, ?> obj);

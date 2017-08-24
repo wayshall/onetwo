@@ -1,9 +1,9 @@
 package org.onetwo.boot.core.config;
 
+import java.util.List;
 import java.util.Properties;
 
 import lombok.Data;
-import lombok.Setter;
 
 import org.onetwo.boot.core.jwt.JwtConfig;
 import org.onetwo.common.propconf.JFishProperties;
@@ -55,11 +55,13 @@ public class BootJFishConfig {
 		private int cacheSeconds = -1;//cache forever
 	}
 	
+	@Data
 	public class MvcConfig {
-		@Setter
 		private Properties mediaTypes;
-		@Setter
 		private JsonConfig json = new JsonConfig();
+		
+		@Deprecated
+		private AutoWrapResultConfig autoWrapResult = new AutoWrapResultConfig();
 
 		public MvcConfig() {
 			this.mediaTypes = new Properties();
@@ -71,7 +73,7 @@ public class BootJFishConfig {
 		@Data
 		public class JsonConfig {
 			Boolean prettyPrint;
-			boolean autoWrapResult;
+			boolean alwaysWrapDataResult;
 			
 			public boolean isPrettyPrint(){
 				 if(prettyPrint==null)
@@ -81,14 +83,11 @@ public class BootJFishConfig {
 			}
 		}
 
-		public Properties getMediaTypes() {
-			return mediaTypes;
-		}
-
-		public JsonConfig getJson() {
-			return json;
+		@Data
+		public class AutoWrapResultConfig {
+			boolean enable;
+			List<String> packages;
 		}
 
 	}
-
 }

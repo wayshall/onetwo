@@ -127,6 +127,15 @@ public class LangUtils {
 
 
 		@Override
+		public Object ifIterable(Iterable<?> obj) {
+			Iterator<?> it = obj.iterator();
+			if(it.hasNext()){
+				return it.next();
+			}
+			return null;
+		}
+
+		@Override
 		public Object ifList(List list) {
 			if(list.isEmpty())
 				return null;
@@ -975,7 +984,9 @@ public class LangUtils {
 	 */
 	public static Object judgeType(Object obj, Class type, TypeJudge executor){
 		Object result = executor.all(obj);
-		if(Collection.class.isAssignableFrom(type)){
+		if(Iterable.class.isAssignableFrom(type)){
+			result = executor.ifIterable((Iterable)obj);
+		}else if(Collection.class.isAssignableFrom(type)){
 			if(List.class.isAssignableFrom(type)){
 				result = executor.ifList((List)obj);
 			}else {
