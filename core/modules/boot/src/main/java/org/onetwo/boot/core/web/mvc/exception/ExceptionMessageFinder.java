@@ -25,6 +25,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
+/****
+ * TODO: 这里可以修改为非ExceptionCodeMark异常（即没有异常代码）可以根据异常获取映射的错误代码或ErrorType，
+ * 根据代码获取异常信息，或者直接用ErrorType的message显示异常信息
+ * SystemErrorCode定义的错误代码可以放弃了
+ * @author wayshall
+ *
+ */
 public interface ExceptionMessageFinder {
 
 	default ErrorMessage getErrorMessage(Exception ex, boolean product){

@@ -24,7 +24,7 @@
     left join 
        admin_application aa on ap.app_code=aa.code
     left join 
-        admin_role_permission arp on arp.PERMISSION_CODE=ap.CODE
+        admin_role_permission arp on arp.permission_code=ap.CODE
     left join 
         admin_user_role aur on aur.ROLE_ID = arp.ROLE_ID
     where aur.USER_ID =:userId and ap.hidden=0
@@ -63,7 +63,7 @@
        admin_application aa on ap.app_code=aa.code
     [#if appCode?has_content]
     where
-         ap.APP_CODE=:appCode
+         ap.app_code=:appCode
     [/#if]
     order by 
         sort asc
@@ -113,7 +113,7 @@
     from 
         admin_permission ap
     left join 
-        admin_role_permission arp on arp.PERMISSION_CODE=ap.CODE
+        admin_role_permission arp on arp.permission_code=ap.CODE
     where arp.ROLE_ID = #{roleId} and ap.hidden=0
     [#if appCode?has_content]
     and ap.APP_CODE=:appCode

@@ -21,7 +21,7 @@ import org.onetwo.ext.permission.utils.PermissionUtils;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="ADMIN_PERMISSION")
+@Table(name="admin_permission")
 @Data
 public class AdminPermission implements Serializable, DefaultIPermission<AdminPermission> {
 	

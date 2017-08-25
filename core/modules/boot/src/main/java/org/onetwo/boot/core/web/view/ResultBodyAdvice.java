@@ -31,7 +31,7 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 			ServerHttpRequest request, ServerHttpResponse response) {
 //		return dataResultWrapper.wrapResult(body);
 		BootWebHelper helper = BootWebUtils.webHelper();
-		body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body);
+		body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body, false);
 		return body;
 	}
 	

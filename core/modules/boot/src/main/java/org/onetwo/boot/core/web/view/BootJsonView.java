@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.google.common.collect.Lists;
@@ -111,12 +112,13 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 				result = ((DataWrapper)entry.getValue()).getValue();
 //				result = processData(result, model);
 				//默认的DataWrapper也需要查找是否有response view指定的包装器处理
-				result = getResponseViewFromAnnotation(result);
+				result = getResponseViewFromAnnotation(result, false);
 				return result;
 			}
 			
 			if(BindingResult.class.isInstance(entry.getValue()) ||
-					UserDetails.class.isInstance(entry.getValue())){
+					UserDetails.class.isInstance(entry.getValue()) ||
+					MultipartFile.class.isInstance(entry.getValue())){
 				model.remove(entry.getKey());
 			}
 		}
@@ -132,7 +134,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	}
 	
 	protected Object processData(Object data, Map<String, Object> model){
-		return getResponseViewFromAnnotation(data);
+		return getResponseViewFromAnnotation(data, true);
 	}
 	
 	/****
@@ -150,14 +152,14 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	 * @param data
 	 * @return
 	 */
-	protected Object getResponseViewFromAnnotation(final Object data){
+	protected Object getResponseViewFromAnnotation(final Object data, boolean defaultWrapIfNotFoud){
 		BootWebHelper helper = BootWebUtils.webHelper();
 		if(helper==null || helper.getControllerHandler()==null){
 			return data;
 		}
 		HandlerMethod hm = helper.getControllerHandler();
 		if(xresponseViewManager!=null){
-			return xresponseViewManager.getHandlerMethodResponseView(hm, data);
+			return xresponseViewManager.getHandlerMethodResponseView(hm, data, defaultWrapIfNotFoud);
 		}
 		return data;
 	}

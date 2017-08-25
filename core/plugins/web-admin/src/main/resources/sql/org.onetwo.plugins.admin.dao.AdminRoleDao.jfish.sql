@@ -5,11 +5,11 @@
  */
 select 
     tb.ID
-    , tb.NAME
-    , tb.STATUS
-    , tb.REMARK
-    , tb.CREATE_AT
-    , tb.UPDATE_AT
+    , tb.name
+    , tb.status
+    , tb.remark
+    , tb.create_at
+    , tb.update_at
     , tb.APP_CODE
 from 
     admin_role tb

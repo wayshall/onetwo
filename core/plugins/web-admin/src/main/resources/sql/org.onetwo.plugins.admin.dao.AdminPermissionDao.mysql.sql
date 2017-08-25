@@ -112,7 +112,7 @@
     from 
         admin_permission ap
     left join 
-        admin_role_permission arp on arp.PERMISSION_CODE=ap.CODE
+        admin_role_permission arp on arp.permission_code=ap.CODE
     left join
         admin_role ar on ar.ID = arp.ROLE_ID
     where 
@@ -128,7 +128,7 @@
  * @parser: template
  * 
  */
-    delete from admin_role_permission where PERMISSION_CODE = :permissionCode
+    delete from admin_role_permission where permission_code = :permissionCode
     
     
     

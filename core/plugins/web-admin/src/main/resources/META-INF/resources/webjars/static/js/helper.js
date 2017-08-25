@@ -110,6 +110,8 @@ helper.page = {
 		
 		kindeditor: function(opts){
 			var config = opts || {
+				   width: '600px',
+				   minWidth: '400px',
 				   items: ['source', '|', 'undo', 'redo', '|', 'preview','|', 
 				           'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|', 
 				           'formatblock', 'forecolor', 'bold', 'image'
@@ -119,9 +121,8 @@ helper.page = {
 		           allowFileManager : false
 			   };
 			var e = $(this).get();
-			KindEditor.ready(function(K) {
-			   window.editor = K.create(e, config);
-			});
+			var editor = KindEditor.create(e, config); 
+			return editor;
 		}
 		
 	});
@@ -202,8 +203,9 @@ helper.page = {
 	    		 onSuccess: function(data){
 	    			 if(data.success===true && !!_config.autoClear){
 	                     $(_config.dataForm).form('reset');
-	                     if(_config.dataDialog)
+	                     if(_config.dataDialog){
 	                    	 $(_config.dataDialog).dialog('close');
+	                     }
 
 	                     $(_config.datagrid || _config.treegrid).easyGrid('clearSelections');
 	                     $(_config.datagrid || _config.treegrid).easyGrid('reload');
