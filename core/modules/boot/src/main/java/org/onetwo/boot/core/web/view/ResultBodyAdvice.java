@@ -1,7 +1,5 @@
 package org.onetwo.boot.core.web.view;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -13,6 +11,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -40,8 +39,18 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 			if(logger.isInfoEnabled()){
 				logger.info("wrap body to data result");
 			}
-			BootWebHelper helper = BootWebUtils.webHelper((HttpServletRequest)request);
-			body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body, false);
+			if(request instanceof ServletServerHttpRequest){
+				ServletServerHttpRequest sshr = (ServletServerHttpRequest) request;
+				BootWebHelper helper = BootWebUtils.webHelper(sshr.getServletRequest());
+				body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body, false);
+			}else{
+				BootWebHelper helper = BootWebUtils.webHelper();
+				if(helper!=null){
+					body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body, false);
+				}else{
+					logger.info("can not wrap data result");
+				}
+			}
 		}
 		return body;
 	}
