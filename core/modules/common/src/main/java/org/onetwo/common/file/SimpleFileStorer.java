@@ -2,6 +2,7 @@ package org.onetwo.common.file;
 
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -10,7 +11,10 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	
 	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = (storeBaseDir, appContextDir, ctx)->{
 		NiceDate now = NiceDate.New();
+		
+		//写入文件名=md5(原文件名+随机字符串)
 		String newfn = FileUtils.getFileNameWithoutExt(ctx.getFileName())+"-"+now.format("HHmmssSSS")+"-"+LangUtils.getRadomString(5);
+		newfn = Hashs.MD5.hash(newfn).toLowerCase();
 		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
 
 		// /appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
