@@ -1,7 +1,11 @@
 package org.onetwo.boot.core.web.view;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -15,6 +19,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @ControllerAdvice
 public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 
+	protected transient final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
 	@Autowired(required=false)
 	private XResponseViewManager xresponseViewManager;
 	
@@ -30,8 +36,13 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 			Class<? extends HttpMessageConverter<?>> selectedConverterType,
 			ServerHttpRequest request, ServerHttpResponse response) {
 //		return dataResultWrapper.wrapResult(body);
-		BootWebHelper helper = BootWebUtils.webHelper();
-		body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body, false);
+		if(xresponseViewManager!=null){
+			if(logger.isInfoEnabled()){
+				logger.info("wrap body to data result");
+			}
+			BootWebHelper helper = BootWebUtils.webHelper((HttpServletRequest)request);
+			body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body, false);
+		}
 		return body;
 	}
 	
