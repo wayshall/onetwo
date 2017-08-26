@@ -2,6 +2,7 @@ package org.onetwo.common.spring.mvc.utils;
 
 import org.onetwo.common.data.AbstractDataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.exception.ErrorType;
 import org.springframework.web.servlet.ModelAndView;
 
 @SuppressWarnings("unchecked")
@@ -30,7 +31,7 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 
 
 	public B error(){
-		return error(null);
+		return error(AbstractDataResult.ERROR.toLowerCase());
 	}
 	public B error(String message){
 		return code(AbstractDataResult.ERROR, message);
@@ -80,6 +81,12 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	public B message(String message){
 		this.message = message;
 //		return builderClass.cast(this);
+		return (B) this;
+	}
+	
+	public B error(ErrorType errorType){
+		this.code = errorType.getErrorCode();
+		this.message = errorType.getErrorMessage();
 		return (B) this;
 	}
 
