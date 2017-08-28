@@ -221,6 +221,12 @@
       <artifactId>okhttp</artifactId>
       <version>3.8.0</version>
     </dependency>
+    
+    <dependency>
+      <groupId>org.mitre.dsmiley.httpproxy</groupId>
+      <artifactId>smiley-http-proxy-servlet</artifactId>
+      <version>1.9</version>
+    </dependency>
 	
 	<dependency>
 	  <groupId>org.springframework.retry</groupId>

@@ -64,6 +64,12 @@
       <groupId>eu.bitwalker</groupId>
       <artifactId>UserAgentUtils</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.mitre.dsmiley.httpproxy</groupId>
+      <artifactId>smiley-http-proxy-servlet</artifactId>
+      <optional>true</optional>
+    </dependency>
 	
 	<!-- <dependency>
 	  <groupId>org.apache.struts</groupId>
