@@ -44,7 +44,7 @@ public class UploadViewController {
 							.body(new InputStreamResource(fileStorer.readFileStream(accessablePath)));
 	}
 	
-	@GetMapping(value="/2/**")
+	@GetMapping(value="/img/**")
 	public void read2(HttpServletRequest request, HttpServletResponse response){
 		String accessablePath = RequestUtils.getServletPath(request);
 		if(accessablePath.length()>CONTROLLER_PATH.length()){

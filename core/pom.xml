@@ -64,7 +64,8 @@
     	<id>release</id>
     	<modules>
                 <module>modules/bom</module>
-                <module>../../dbm</module>
+                <module>modules/common</module>
+                <module>modules/spring</module>
                 <module>modules/web</module>
                 <module>modules/security</module>
                 <module>modules/boot</module>
