@@ -2,6 +2,8 @@ package org.onetwo.boot.core.web.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,10 +15,12 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.WebRequest;
 
 /**
  * @author wayshall
@@ -32,15 +36,27 @@ public class UploadViewController {
 	
 
 	@GetMapping(value="/**")
-	public ResponseEntity<InputStreamResource> read(HttpServletRequest request, HttpServletResponse response){
+	public ResponseEntity<InputStreamResource> read(WebRequest webRequest, HttpServletRequest request, HttpServletResponse response){
 		String accessablePath = RequestUtils.getServletPath(request);
 		if(accessablePath.length()>CONTROLLER_PATH.length()){
 			accessablePath = accessablePath.substring(CONTROLLER_PATH.length());
 		}else{
 			throw new BaseException("error path: " + accessablePath);
 		}
+		/*if(webRequest.checkNotModified(fileStorer.getLastModified(accessablePath))){
+			return ResponseEntity.ok()
+					.contentType(MediaType.parseMediaType("image/"+FileUtils.getExtendName(accessablePath)))
+					.cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS))
+					.lastModified(new Date().getTime())
+					.eTag(accessablePath)
+					.build();
+		}*/
 		return ResponseEntity.ok()
 							.contentType(MediaType.parseMediaType("image/"+FileUtils.getExtendName(accessablePath)))
+							//一起写才起作用
+							.cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS))
+							.lastModified(new Date().getTime())
+							.eTag(accessablePath)
 							.body(new InputStreamResource(fileStorer.readFileStream(accessablePath)));
 	}
 	

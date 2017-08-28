@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
+import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
 import org.onetwo.boot.core.web.view.AutoWrapJackson2HttpMessageConverter;
@@ -29,6 +30,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /****
@@ -43,6 +45,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Autowired
 	private BootJFishConfig jfishBootConfig;
+	@Autowired
+	private BootSiteConfig siteConfig;
 
 	@Autowired
 	private List<HandlerInterceptor> interceptorList;
@@ -131,6 +135,12 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 		if(autoWrapJackson2HttpMessageConverter!=null){
 			CUtils.replaceOrAdd(converters, MappingJackson2HttpMessageConverter.class, autoWrapJackson2HttpMessageConverter);
 		}
+	}
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		/*registry.addResourceHandler(UploadViewController.CONTROLLER_PATH+"/**")
+				.setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS));*/
 	}
 
 }

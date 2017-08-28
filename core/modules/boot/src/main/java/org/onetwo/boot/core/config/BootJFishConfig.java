@@ -88,6 +88,6 @@ public class BootJFishConfig {
 			boolean enable;
 			List<String> packages;
 		}
-
+		
 	}
 }

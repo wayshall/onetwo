@@ -20,6 +20,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
 /***
+ * 和web相关的配置，这个类的配置可在在页面通过siteConfig获取
+ * 
  * 兼容以前siteConfig的配置
  * TODO: 可再包一层读取远程配置
  * 	  name: testName
@@ -185,6 +187,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		int serverCount = 2;
 	}
 
+	//move to jfishConfig?
 	@Data
 	public class UploadConfig {
 		

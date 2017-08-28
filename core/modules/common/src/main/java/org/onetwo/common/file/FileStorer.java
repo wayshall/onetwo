@@ -10,4 +10,5 @@ public interface FileStorer<R extends FileStoredMeta> {
 
 	void readFileTo(final String accessablePath, final OutputStream output);
 	InputStream readFileStream(final String accessablePath);
+	long getLastModified(final String accessablePath);
 }

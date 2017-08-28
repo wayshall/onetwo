@@ -59,7 +59,12 @@ public class FtpFileStorer extends SimpleFileStorer  {
 			ftpClientManager.destroy();
 		}
 	}
-	
+
+	//TODO
+	@Override
+	public long getLastModified(String accessablePath) {
+		return -1;
+	}
 
 	/*@Override
 	public void destroy() throws Exception {

@@ -1,5 +1,6 @@
 package org.onetwo.common.file;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -96,6 +97,13 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		} catch (Exception e) {
 			throw new BaseException("read file error!", e);
 		}
+	}
+
+	@Override
+	public long getLastModified(String accessablePath) {
+		String fullPath = storeBaseDir + accessablePath;
+		File file = new File(fullPath);
+		return file.exists()?file.lastModified():-1;
 	}
 
 	public void setStoreBaseDir(String storeDir){
