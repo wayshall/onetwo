@@ -31,12 +31,12 @@ public class PermissionContextConfig {
 	public PermissionContextConfig(){
 	}
 	
-	@Bean
+	/*@Bean
 	@Autowired
 	public <T extends DefaultIPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(PermissionConfig<T> permissionConfig){
 		DefaultMenuInfoParser<T> parser = new DefaultMenuInfoParser<T>(permissionConfig);
 		return parser;
-	}
+	}*/
 	
 	@Bean
 	public MenuItemRepository<PermisstionTreeModel> menuItemRepository(){

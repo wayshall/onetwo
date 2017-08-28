@@ -1,6 +1,10 @@
 package org.onetwo.plugins.admin.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.onetwo.ext.permission.PermissionConfigAdapter;
+import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 
 /****
@@ -10,11 +14,15 @@ import org.onetwo.plugins.admin.entity.AdminPermission;
  */
 public class WebAdminPermissionConfig extends PermissionConfigAdapter<AdminPermission>{
 	
-	private RootMenuClassProvider rootMenuClassProvider;
+	private Class<?> rootMenuClass;
 
 	@Override
 	public Class<?> getRootMenuClass() {
-		return rootMenuClassProvider.rootMenuClass();
+		return rootMenuClass;
+	}
+
+	public void setRootMenuClass(Class<?> rootMenuClass) {
+		this.rootMenuClass = rootMenuClass;
 	}
 
 	@Override
@@ -25,9 +33,24 @@ public class WebAdminPermissionConfig extends PermissionConfigAdapter<AdminPermi
 	public static interface RootMenuClassProvider {
 		Class<?> rootMenuClass();
 	}
-
-	public void setRootMenuClassProvider(RootMenuClassProvider rootMenuClassProvider) {
-		this.rootMenuClassProvider = rootMenuClassProvider;
+	
+	/****
+	 * 增加支持list的接口
+	 * @author wayshall
+	 *
+	 */
+	public static interface RootMenuClassListProvider extends RootMenuClassProvider {
+		default Class<?> rootMenuClass() {
+			return null;
+		}
+		List<Class<?>> rootMenuClassList();
 	}
 
+	/*public void setRootMenuClassProvider(RootMenuClassProvider rootMenuClassProvider) {
+		this.rootMenuClassProvider = rootMenuClassProvider;
+	}*/
+
+	@SuppressWarnings("serial")
+	static public class AdminPermissionConfigListAdapetor extends ArrayList<PermissionConfig<AdminPermission>> {
+	}
 }

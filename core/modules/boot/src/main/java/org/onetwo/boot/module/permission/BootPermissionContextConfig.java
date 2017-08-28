@@ -30,11 +30,11 @@ public class BootPermissionContextConfig extends PermissionContextConfig {
 	public BootPermissionContextConfig(){
 	}
 	
-	@Bean
+	/*@Bean
 	@Autowired
 	public <T extends DefaultIPermission<T>> DefaultMenuInfoParser<T> menuInfoParser(PermissionConfig<T> permissionConfig){
 		return super.menuInfoParser(permissionConfig);
-	}
+	}*/
 	
 	@Bean
 //	@ConditionalOnBean(AdminController.class)

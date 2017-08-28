@@ -3,7 +3,8 @@ package org.onetwo.plugins.admin;
 import org.onetwo.ext.permission.api.PermissionType;
 
 public interface AdminModule {
-	String name = "用户角色权限管理";
+	String name = "权限管理系统";
+	String appCode = AdminModule.class.getSimpleName();
 
 
 	public static interface ApplicationMgr {

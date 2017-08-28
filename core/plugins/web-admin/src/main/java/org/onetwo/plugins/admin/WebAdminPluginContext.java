@@ -1,5 +1,6 @@
 package org.onetwo.plugins.admin;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,7 +9,6 @@ import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.Springs.SpringsInitEvent;
 import org.onetwo.dbm.spring.EnableDbmRepository;
-import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
@@ -23,6 +23,8 @@ import org.onetwo.plugins.admin.service.DictionaryImportService;
 import org.onetwo.plugins.admin.service.impl.AdminUserDetailServiceImpl;
 import org.onetwo.plugins.admin.service.impl.PermissionManagerImpl;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig;
+import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.AdminPermissionConfigListAdapetor;
+import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassListProvider;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,15 +94,28 @@ public class WebAdminPluginContext implements InitializingBean {
 	@Bean
 	@Autowired
 	@ConditionalOnBean(RootMenuClassProvider.class)
-	public WebAdminPermissionConfig webAdminPermissionConfig(RootMenuClassProvider provider){
-		WebAdminPermissionConfig config = new WebAdminPermissionConfig();
-		config.setRootMenuClassProvider(provider);
-		return config;
+	public AdminPermissionConfigListAdapetor adminPermissionConfigListAdapetor(List<RootMenuClassProvider> providers){
+		AdminPermissionConfigListAdapetor list = new AdminPermissionConfigListAdapetor();
+		providers.forEach(provider->{
+			List<Class<?>> rooMenuClassList = new ArrayList<>();
+			if(provider instanceof RootMenuClassListProvider){
+				rooMenuClassList.addAll(((RootMenuClassListProvider)provider).rootMenuClassList());
+			}else{
+				rooMenuClassList.add(provider.rootMenuClass());
+			}
+			rooMenuClassList.forEach(rootMenuClass->{
+				WebAdminPermissionConfig config = new WebAdminPermissionConfig();
+//				config.setRootMenuClassProvider(provider);
+				config.setRootMenuClass(rootMenuClass);
+				list.add(config);
+			});
+		});
+		return list;
 	}
 	
 	@Bean
 	@Autowired
-	public PermissionManagerImpl permissionManagerImpl(List<PermissionConfig<AdminPermission>> configs){
+	public PermissionManagerImpl permissionManagerImpl(AdminPermissionConfigListAdapetor configs){
 		PermissionManagerImpl manager = new PermissionManagerImpl();
 		List<MenuInfoParser<AdminPermission>> parsers = configs.stream().map(cfg->{
 			return new DefaultMenuInfoParser<AdminPermission>(cfg);

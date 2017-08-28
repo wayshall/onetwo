@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.web.userdetails.UserDetail;
-import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.PermissionManager;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
@@ -17,8 +16,8 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 	@Autowired
 	private PermissionManager<? extends DefaultIPermission<?>> permissionManager;
 
-	@Autowired
-	private PermissionConfigAdapter<? extends DefaultIPermission<?>> permissionConfig;
+	/*@Autowired
+	private PermissionConfigAdapter<? extends DefaultIPermission<?>> permissionConfig;*/
 	
 	@Override
     public List<PermisstionTreeModel> findAllMenus() {
@@ -34,7 +33,8 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 
 	@Override
 	public List<PermisstionTreeModel> findUserMenus(UserDetail loginUser) {
-		List<? extends DefaultIPermission<?>> permissions = permissionManager.findUserAppMenus(permissionConfig.getAppCode(), loginUser);
+//		List<? extends DefaultIPermission<?>> permissions = permissionManager.findUserAppMenus(permissionConfig.getAppCode(), loginUser);
+		List<? extends DefaultIPermission<?>> permissions = permissionManager.findUserAppMenus(null, loginUser);
 	    return createMenuTreeBuilder(permissions).buidTree();
 //	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
 	}
