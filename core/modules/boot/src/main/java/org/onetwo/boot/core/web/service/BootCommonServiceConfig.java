@@ -1,8 +1,12 @@
 package org.onetwo.boot.core.web.service;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig.CompressConfig;
 import org.onetwo.boot.core.web.service.impl.DbmFileStorerListener;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
+import org.onetwo.boot.utils.ImageCompressor;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
@@ -41,7 +45,22 @@ public class BootCommonServiceConfig {
 	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
 	public BootCommonService bootCommonService(){
 		SimpleBootCommonService service = new SimpleBootCommonService();
+		service.setCompressThresholdSize(bootSiteConfig.getUpload().getCompress().getThresholdSize());
 		return service;
+	}
+	
+	@Bean
+	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_COMPRESS_PREFIX, matchIfMissing=true)
+	@ConditionalOnClass(Thumbnails.class)
+	public ImageCompressor imageCompressor(){
+		ImageCompressor compressor = new ImageCompressor();
+		CompressConfig config = bootSiteConfig.getUpload().getCompress();
+		compressor.setScale(config.getScale());
+		compressor.setQuality(config.getQuality());
+		compressor.setWidth(config.getWidth());
+		compressor.setHeight(config.getHeight());
+		compressor.setFileTypes(config.getFileTypes());
+		return compressor;
 	}
 	
 	@Bean

@@ -214,13 +214,19 @@
           <optional>true</optional>
 	    </dependency>
 	    
+	    <!-- 图片处理 -->
+	    <dependency>
+	      <groupId>net.coobird</groupId>
+	      <artifactId>thumbnailator</artifactId>
+	    </dependency>
+	    
+        <!-- test -->
         <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
           <optional>true</optional>
         </dependency>
 	    
-        <!-- test -->
         <dependency>
           <groupId>com.jayway.restassured</groupId>
           <artifactId>rest-assured</artifactId>

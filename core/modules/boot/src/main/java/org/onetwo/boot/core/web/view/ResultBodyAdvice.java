@@ -36,9 +36,9 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 			ServerHttpRequest request, ServerHttpResponse response) {
 //		return dataResultWrapper.wrapResult(body);
 		if(xresponseViewManager!=null){
-			if(logger.isInfoEnabled()){
+			/*if(logger.isInfoEnabled()){
 				logger.info("wrap body to data result");
-			}
+			}*/
 			if(request instanceof ServletServerHttpRequest){
 				ServletServerHttpRequest sshr = (ServletServerHttpRequest) request;
 				BootWebHelper helper = BootWebUtils.webHelper(sshr.getServletRequest());
@@ -48,7 +48,7 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 				if(helper!=null){
 					body = xresponseViewManager.getHandlerMethodResponseView(helper.getControllerHandler(), body, false);
 				}else{
-					logger.info("can not wrap data result");
+					logger.info("BootWebHelper not found, can not wrap data result");
 				}
 			}
 		}

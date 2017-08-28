@@ -1368,6 +1368,18 @@ public class FileUtils {
 		return mainDir;
 	}
 	
+	public static int parseSize(String size) {
+		Assert.hasLength(size, "Size must not be empty");
+		size = size.toUpperCase();
+		if (size.toLowerCase().endsWith("KB")) {
+			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
+		}
+		if (size.toLowerCase().endsWith("MB")) {
+			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
+		}
+		return Integer.valueOf(size);
+	}
+	
 	public static void main(String[] args) {
 		String file = "c:\\aa/bb\\ccsfd.txt";
 		System.out.println(getFileNameWithoutExt(file));

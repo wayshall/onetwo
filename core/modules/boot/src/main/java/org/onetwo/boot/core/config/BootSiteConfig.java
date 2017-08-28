@@ -1,5 +1,7 @@
 package org.onetwo.boot.core.config;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletContext;
@@ -39,6 +41,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_IMAGE = "path.image";*/
 
 	public static final String ENABLE_UPLOAD_PREFIX = "site.upload.fileStorePath";
+	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compress.thresholdSize";
 	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.storeFileMetaToDatabase";
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -198,6 +201,20 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		String ftpUser;
 		String ftpPassword;
 //		String ftpBaseDir;
+		
+		CompressConfig compress = new CompressConfig();
+
+		@Data
+		public class CompressConfig {
+			//超过了配置值就启用自动压缩功能，比如：1MB
+			//少于0则所有大小一律压缩
+			String thresholdSize;
+			double scale = 1;
+			Double quality = 0.1D;
+			Integer width;
+			Integer height;
+			List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
+		}
 		
 		/*public int getMaxUploadSize(){
 			return maxUploadSize;

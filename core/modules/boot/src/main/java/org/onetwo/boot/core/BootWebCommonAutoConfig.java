@@ -6,6 +6,7 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
+import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
@@ -33,6 +34,7 @@ import org.onetwo.common.web.userdetails.UserDetail;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -65,6 +67,11 @@ public class BootWebCommonAutoConfig {
 		Springs.initApplicationIfNotInitialized(applicationContext);
 	}
 
+	@Bean
+	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
+	public BootServletContainerCustomizer bootServletContainerCustomizer(){
+		return new BootServletContainerCustomizer();
+	}
 	
 	/***
 	 * 异常解释

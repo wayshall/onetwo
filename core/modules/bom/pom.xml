@@ -591,6 +591,15 @@
       <version>1.19</version>
     </dependency>
     
+    <!-- 图片处理 -->
+    <!-- https://mvnrepository.com/artifact/net.coobird/thumbnailator -->
+	<dependency>
+	    <groupId>net.coobird</groupId>
+	    <artifactId>thumbnailator</artifactId>
+	    <version>0.4.8</version>
+	</dependency>
+	    
+    
      <!-- for test -->
      <dependency>
        <groupId>org.assertj</groupId>
