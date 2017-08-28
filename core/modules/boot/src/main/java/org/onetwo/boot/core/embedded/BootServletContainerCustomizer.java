@@ -7,6 +7,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
+
 /**
  * 
 设置server最大上传
@@ -17,7 +18,7 @@ server:
 serverProperties#maxHttpPostSize
 ServerProperties#Tomcat#customizeMaxHttpPostSize
 
-not work:
+只配置下面这个not work:
 spring.http.multipart -> MultipartProperties
 
  * @author wayshall
@@ -34,9 +35,8 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
             TomcatEmbeddedServletContainerFactory tomcat = (TomcatEmbeddedServletContainerFactory) container;
             tomcat.addConnectorCustomizers(
                 (connector) -> {
-                	//default is 2 mb
-                    connector.setMaxPostSize(10*1024*1024); // 10 MB
-                    connector.setMaxPostSize(FileUtils.parseSize(multipartProperties.getMaxFileSize()));
+                	//connector 本身默认是 2 mb
+                	connector.setMaxPostSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
                 }
             );
         }

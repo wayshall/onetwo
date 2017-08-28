@@ -41,7 +41,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_IMAGE = "path.image";*/
 
 	public static final String ENABLE_UPLOAD_PREFIX = "site.upload.fileStorePath";
-	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compress.thresholdSize";
+	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compressImage.enable";
 	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.storeFileMetaToDatabase";
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -191,7 +191,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		StoreType storeType = StoreType.LOCAL;
 		String fileStorePath;
 		String appContextDir;
-		int maxUploadSize = 1024*1024*50; //50m
+		//multipartProperties
+//		int maxUploadSize = BootStandardServletMultipartResolver.DEFAULT_MAX_UPLOAD_SIZE;
 		boolean storeFileMetaToDatabase;
 		
 		//ftp
@@ -202,13 +203,13 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		String ftpPassword;
 //		String ftpBaseDir;
 		
-		CompressConfig compress = new CompressConfig();
+		CompressConfig compressImage = new CompressConfig();
 
 		@Data
 		public class CompressConfig {
-			//超过了配置值就启用自动压缩功能，比如：1MB
+			//超过了配置值就启用自动压缩功能，比如：5KB
 			//少于0则所有大小一律压缩
-			String thresholdSize;
+			String thresholdSize = "5KB";
 			double scale = 0.5;
 			Double quality = 0.3D;
 			Integer width;
@@ -223,6 +224,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 
 	@Data
 	public class EditorConfig {
+		//kindeditor上传图片时返回路径的前缀
 		String imageBasePath;
 		
 		public String getImageBasePath(){

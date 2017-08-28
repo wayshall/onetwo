@@ -1,5 +1,10 @@
 package org.onetwo.common.file;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.md.Hashs;
@@ -18,23 +23,23 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
 
 		// /appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
-		String moduelPath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
-		moduelPath = moduelPath + now.formatAsDate()+"/"+newfn;
+		String accessablePath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
+		accessablePath = accessablePath + now.formatAsDate()+"/"+newfn;
 		
 		//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
-		String baseDir = storeBaseDir + moduelPath;
+		String storedServerLocalPath = storeBaseDir + accessablePath;
 		
-		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(ctx.getFileName(), baseDir);
+		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(ctx.getFileName(), storedServerLocalPath);
 		meta.setSotredFileName(newfn);
-		meta.setAccessablePath(moduelPath);
+		meta.setAccessablePath(accessablePath);
 		meta.setBizModule(ctx.getModule());
 //		meta.setFullAccessablePath(fullAccessablePath);
 		return meta;
 	};
 	
 //	private StoreFilePathStrategy strategy = SIMPLE_STORE_STRATEGY;
-	private String storeBaseDir;
-	private String appContextDir;
+	protected String storeBaseDir;
+	protected String appContextDir;
 	
 	@Override
 	public SimpleFileStoredMeta write(StoringFileContext context) {
@@ -46,6 +51,12 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		return meta;
 	}
 	
+	/***
+	 * 保存文件
+	 * @author wayshall
+	 * @param meta
+	 * @param context
+	 */
 	protected void doStoring(SimpleFileStoredMeta meta, StoringFileContext context){
 		FileUtils.writeInputStreamTo(context.getInputStream(), meta.getStoredServerLocalPath());
 	}
@@ -61,6 +72,30 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		}
 		SimpleFileStoredMeta meta = (SimpleFileStoredMeta)strategy.getStoreFilePath(storeBaseDir, appContextDir, context);
 		return meta;
+	}
+
+	
+	public void readFileTo(final String accessablePath, final OutputStream output){
+		String fullPath = storeBaseDir + accessablePath;
+		InputStream in = null;
+		try {
+			in = new FileInputStream(fullPath);
+			IOUtils.copy(in, output);
+		} catch (Exception e) {
+			throw new BaseException("read file error!", e);
+		}
+	}
+	
+
+	public InputStream readFileStream(final String accessablePath){
+		String fullPath = storeBaseDir + accessablePath;
+		InputStream in = null;
+		try {
+			in = new FileInputStream(fullPath);
+			return in;
+		} catch (Exception e) {
+			throw new BaseException("read file error!", e);
+		}
 	}
 
 	public void setStoreBaseDir(String storeDir){

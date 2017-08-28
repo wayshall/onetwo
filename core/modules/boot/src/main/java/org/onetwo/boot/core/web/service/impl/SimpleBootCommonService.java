@@ -2,6 +2,7 @@ package org.onetwo.boot.core.web.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.web.service.BootCommonService;
@@ -31,6 +32,14 @@ public class SimpleBootCommonService implements BootCommonService {
 	//少于0则所有大小一律压缩
 	private int compressThresholdSize = -1;
 	
+	/****
+	 * 目前通过设置阈值决定是否压缩，也通过图片尺寸等进行判断，待优化。。。
+	 * ImageUtils.readBufferedImage
+	 * @author wayshall
+	 * @param module
+	 * @param file
+	 * @return
+	 */
 	private StoringFileContext create(String module, MultipartFile file){
 		InputStream in = null;
 		try {
@@ -59,6 +68,10 @@ public class SimpleBootCommonService implements BootCommonService {
 			fileStorerListener.afterFileStored(meta);
 		}
 		return meta;
+	}
+	
+	public void readFileTo(String accessablePath, OutputStream output){
+		this.fileStorer.readFileTo(accessablePath, output);
 	}
 
 	public void setCompressThresholdSize(String compressThresholdSize) {

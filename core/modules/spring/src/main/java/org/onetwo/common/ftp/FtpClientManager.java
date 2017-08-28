@@ -3,6 +3,7 @@ package org.onetwo.common.ftp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.validation.constraints.NotNull;
 
@@ -61,12 +62,14 @@ public class FtpClientManager {
 		} 
 	}
 	
-	public void upload(String remotePath, @NotNull InputStream local){
-		Assert.assertTrue("not initialized", initialized);
-//		Assert.assertTrue("not connected", ftpClient.isConnected());
+	protected void checkLogin(){
 		if(!ftpClient.isAvailable()){
 			login(loginParam);
 		}
+	}
+	public void upload(String remotePath, @NotNull InputStream local){
+		Assert.assertTrue("not initialized", initialized);
+		this.checkLogin();
 		
 		if(StringUtils.isBlank(remotePath)){
 			remotePath = "/";
@@ -83,6 +86,47 @@ public class FtpClientManager {
 			throw new BaseException("upload file to ftp error: " + e.getMessage(), e);
 		} finally{
 			IOUtils.closeQuietly(local);
+		}
+	}
+	
+
+	public void retrieveFile(String storeAccessablePath, final OutputStream output){
+		Assert.assertTrue("not initialized", initialized);
+		this.checkLogin();
+		
+		if(StringUtils.isBlank(storeAccessablePath)){
+			storeAccessablePath = "/";
+		}
+		
+		try {
+			File file = new File(storeAccessablePath);
+			changeAndMakeDirs(file.getParent());
+			if(!ftpClient.retrieveFile(file.getName(), output)){
+				throw new BaseException("read remote file error!");
+			}
+		} catch (IOException e) {
+			throw new BaseException("upload file to ftp error: " + e.getMessage(), e);
+		} finally{
+			IOUtils.closeQuietly(output);
+		}
+	}
+	
+
+	public InputStream retrieveFileStream(String storeAccessablePath){
+		Assert.assertTrue("not initialized", initialized);
+		this.checkLogin();
+		
+		if(StringUtils.isBlank(storeAccessablePath)){
+			storeAccessablePath = "/";
+		}
+		
+		try {
+			File file = new File(storeAccessablePath);
+			changeAndMakeDirs(file.getParent());
+			return ftpClient.retrieveFileStream(file.getName());
+		} catch (IOException e) {
+			throw new BaseException("upload file to ftp error: " + e.getMessage(), e);
+		} finally{
 		}
 	}
 	

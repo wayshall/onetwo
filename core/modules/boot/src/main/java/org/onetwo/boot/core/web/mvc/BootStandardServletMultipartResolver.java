@@ -2,7 +2,9 @@ package org.onetwo.boot.core.web.mvc;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -14,8 +16,16 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
  *
  */
 public class BootStandardServletMultipartResolver extends StandardServletMultipartResolver {
+	//10MB
+	static private String DEFAULT_MULTIPART_MAX_REQUEST_SIZE = new MultipartProperties().getMaxRequestSize();
 	
-	private int maxUploadSize = -1;
+	public static boolean isBootDefaultValue(String maxFileSize){
+		return DEFAULT_MULTIPART_MAX_REQUEST_SIZE.equals(maxFileSize);
+	}
+	
+	public static final int DEFAULT_MAX_UPLOAD_SIZE = FileUtils.parseSize(DEFAULT_MULTIPART_MAX_REQUEST_SIZE);
+	
+	private int maxUploadSize = DEFAULT_MAX_UPLOAD_SIZE;
 
 
 	@Override

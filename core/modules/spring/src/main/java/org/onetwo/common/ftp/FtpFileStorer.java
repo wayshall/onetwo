@@ -1,5 +1,8 @@
 package org.onetwo.common.ftp;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.file.StoringFileContext;
@@ -18,6 +21,7 @@ public class FtpFileStorer extends SimpleFileStorer  {
 		this.ftpConfig = ftpConfig;
 //		this.ftpClientManager = new FtpClientManager(ftpConfig);
 	}
+	
 	@Override
 	protected void doStoring(SimpleFileStoredMeta meta, StoringFileContext context){
 		FtpClientManager ftpClientManager = new FtpClientManager(ftpConfig);
@@ -29,6 +33,33 @@ public class FtpFileStorer extends SimpleFileStorer  {
 			ftpClientManager.destroy();
 		}
 	}
+
+	@Override
+	public void readFileTo(final String accessablePath, final OutputStream output){
+		String fullPath = storeBaseDir + accessablePath;
+		FtpClientManager ftpClientManager = new FtpClientManager(ftpConfig);
+		try {
+			ftpClientManager.init();
+			ftpClientManager.login(loginParam);
+			ftpClientManager.retrieveFile(fullPath, output);
+		} finally {
+			ftpClientManager.destroy();
+		}
+	}
+
+	@Override
+	public InputStream readFileStream(final String accessablePath){
+		String fullPath = storeBaseDir + accessablePath;
+		FtpClientManager ftpClientManager = new FtpClientManager(ftpConfig);
+		try {
+			ftpClientManager.init();
+			ftpClientManager.login(loginParam);
+			return ftpClientManager.retrieveFileStream(fullPath);
+		} finally {
+			ftpClientManager.destroy();
+		}
+	}
+	
 
 	/*@Override
 	public void destroy() throws Exception {

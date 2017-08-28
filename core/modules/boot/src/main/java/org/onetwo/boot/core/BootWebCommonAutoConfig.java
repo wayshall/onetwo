@@ -24,6 +24,7 @@ import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.common.file.FileStorer;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -61,6 +63,9 @@ public class BootWebCommonAutoConfig {
 	
 	@Autowired
 	protected BootSiteConfig bootSiteConfig;
+
+	@Autowired
+	private MultipartProperties multipartProperties;
 	
 	@PostConstruct
 	public void init(){
@@ -130,6 +135,7 @@ public class BootWebCommonAutoConfig {
 	 * @return
 	 */
 //	@Bean
+	@Deprecated
 	public AutoWrapJackson2HttpMessageConverter autoWrapJackson2HttpMessageConverter(){
 		return new AutoWrapJackson2HttpMessageConverter(bootJfishConfig.getMvc().getAutoWrapResult());
 	}
@@ -181,7 +187,7 @@ public class BootWebCommonAutoConfig {
 //	@ConditionalOnMissingBean(MultipartResolver.class)
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
-		resolver.setMaxUploadSize(bootSiteConfig.getUpload().getMaxUploadSize());
+		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
 		return resolver;
 	}
 
