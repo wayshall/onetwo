@@ -79,10 +79,15 @@ public class ImageCompressor {
 	}
 	
 
+	/***
+	 * 
+	 * @author wayshall
+	 * @param builder
+	 */
 	protected void configBuilder(Builder<?> builder){
-		builder.scale(scale);
+		builder.scale(scale);//经过测试，可以大幅减少大小，比如 0.5
 		if(quality!=null){
-			builder.outputQuality(0.01);
+			builder.outputQuality(quality);//压缩质量，比如 0.3，太低会影响质量，变成色块
 		}
 		if(width!=null &&height!=null){
 			builder.size(width, height);

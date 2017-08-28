@@ -209,8 +209,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 			//超过了配置值就启用自动压缩功能，比如：1MB
 			//少于0则所有大小一律压缩
 			String thresholdSize;
-			double scale = 1;
-			Double quality = 0.1D;
+			double scale = 0.5;
+			Double quality = 0.3D;
 			Integer width;
 			Integer height;
 			List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
