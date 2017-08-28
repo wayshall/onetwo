@@ -1371,10 +1371,10 @@ public class FileUtils {
 	public static int parseSize(String size) {
 		Assert.hasLength(size, "Size must not be empty");
 		size = size.toUpperCase();
-		if (size.toLowerCase().endsWith("KB")) {
+		if (size.toLowerCase().endsWith("kb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
 		}
-		if (size.toLowerCase().endsWith("MB")) {
+		if (size.toLowerCase().endsWith("mb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
 		}
 		return Integer.valueOf(size);
