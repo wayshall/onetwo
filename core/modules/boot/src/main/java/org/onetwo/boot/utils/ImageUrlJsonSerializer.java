@@ -1,8 +1,12 @@
 package org.onetwo.boot.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.ImageServer;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.jackson.UrlJsonSerializer;
 import org.onetwo.common.spring.Springs;
 
@@ -11,8 +15,13 @@ import org.onetwo.common.spring.Springs;
  * <br/>
  */
 public class ImageUrlJsonSerializer extends UrlJsonSerializer {
+	static private final List<String> FILE_TYPES = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 
 	protected String getServerFullPath(String subPath){
+		String ext = FileUtils.getExtendName(subPath).toLowerCase();
+		if(!FILE_TYPES.contains(ext)){//非图片类型，直接返回内容 
+			return subPath;
+		}
 		BootSiteConfig config = Springs.getInstance().getBean(BootSiteConfig.class);
 		if(config==null || config.getImageServer()==null){
 			return subPath;
