@@ -24,6 +24,7 @@ import org.onetwo.dbm.exception.DbmException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 /****
  * TODO: 这里可以修改为非ExceptionCodeMark异常（即没有异常代码）可以根据异常获取映射的错误代码或ErrorType，
@@ -94,8 +95,13 @@ public interface ExceptionMessageFinder {
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
 		}*//*else if(BeanCreationException.class.isInstance(ex)){
 			
-		}*/
-		else{
+		}*/else if(ex instanceof MethodArgumentNotValidException){
+			MethodArgumentNotValidException mve = (MethodArgumentNotValidException) ex;
+			BindingResult br = mve.getBindingResult();
+			errorMsg = ValidatorUtils.asString(br);
+			findMsgByCode = false;
+			detail = false;
+		}else{
 			errorCode = SystemErrorCode.UNKNOWN;
 		}
 		

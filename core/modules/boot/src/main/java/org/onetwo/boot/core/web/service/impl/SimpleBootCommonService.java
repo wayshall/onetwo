@@ -54,7 +54,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		} catch (IOException e) {
 			throw new BaseException("create StoringFileContext error: " + file.getOriginalFilename());
 		} finally {
-			IOUtils.closeQuietly(in);
+//			IOUtils.closeQuietly(in);
 		}
 	}
 

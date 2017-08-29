@@ -116,7 +116,7 @@ helper.page = {
 				           'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|', 
 				           'formatblock', 'forecolor', 'bold', 'image'
 				          ],
-		           uploadJson : '${siteConfig.baseURL}/web-admin/kindeditor/upload',
+		           uploadJson : helper.config.baseUrl+'/web-admin/kindeditor/upload',
 		           fileManagerJson : '',
 		           allowFileManager : false
 			   };
