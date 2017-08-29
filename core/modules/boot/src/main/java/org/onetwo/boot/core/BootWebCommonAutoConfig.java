@@ -19,8 +19,8 @@ import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
-import org.onetwo.boot.core.web.view.AutoWrapJackson2HttpMessageConverter;
 import org.onetwo.boot.core.web.view.BootJsonView;
+import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.common.file.FileStorer;
@@ -130,14 +130,12 @@ public class BootWebCommonAutoConfig {
 	}
 	
 	/***
-	 * 暂时屏蔽
 	 * @author wayshall
 	 * @return
 	 */
-//	@Bean
-	@Deprecated
-	public AutoWrapJackson2HttpMessageConverter autoWrapJackson2HttpMessageConverter(){
-		return new AutoWrapJackson2HttpMessageConverter(bootJfishConfig.getMvc().getAutoWrapResult());
+	@Bean
+	public ExtJackson2HttpMessageConverter extJackson2HttpMessageConverter(){
+		return new ExtJackson2HttpMessageConverter();
 	}
 	
 	/*@Bean

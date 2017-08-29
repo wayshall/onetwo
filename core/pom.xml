@@ -63,9 +63,8 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/web</module>
-                <module>modules/security</module>
-                <module>plugins/web-admin</module>
+                <module>modules/jackson</module>
+                <module>modules/boot</module>
 	  	</modules>
         <build>
             <plugins>

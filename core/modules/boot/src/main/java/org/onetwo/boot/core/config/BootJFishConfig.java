@@ -1,6 +1,5 @@
 package org.onetwo.boot.core.config;
 
-import java.util.List;
 import java.util.Properties;
 
 import lombok.Data;
@@ -60,8 +59,8 @@ public class BootJFishConfig {
 		private Properties mediaTypes;
 		private JsonConfig json = new JsonConfig();
 		
-		@Deprecated
-		private AutoWrapResultConfig autoWrapResult = new AutoWrapResultConfig();
+		/*@Deprecated
+		private AutoWrapResultConfig autoWrapResult = new AutoWrapResultConfig();*/
 
 		public MvcConfig() {
 			this.mediaTypes = new Properties();
@@ -83,11 +82,11 @@ public class BootJFishConfig {
 			}
 		}
 
-		@Data
+		/*@Data
 		public class AutoWrapResultConfig {
 			boolean enable;
 			List<String> packages;
-		}
+		}*/
 		
 	}
 }

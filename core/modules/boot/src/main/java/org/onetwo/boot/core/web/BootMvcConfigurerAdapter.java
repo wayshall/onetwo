@@ -9,7 +9,7 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
-import org.onetwo.boot.core.web.view.AutoWrapJackson2HttpMessageConverter;
+import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
@@ -55,7 +55,7 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	private List<HandlerMethodArgumentResolver> argumentResolverList;
 	
 	@Autowired(required=false)
-	private AutoWrapJackson2HttpMessageConverter autoWrapJackson2HttpMessageConverter;
+	private ExtJackson2HttpMessageConverter jackson2HttpMessageConverter;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
@@ -132,8 +132,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	
 	@Override
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters){
-		if(autoWrapJackson2HttpMessageConverter!=null){
-			CUtils.replaceOrAdd(converters, MappingJackson2HttpMessageConverter.class, autoWrapJackson2HttpMessageConverter);
+		if(jackson2HttpMessageConverter!=null){
+			CUtils.replaceOrAdd(converters, MappingJackson2HttpMessageConverter.class, jackson2HttpMessageConverter);
 		}
 	}
 
