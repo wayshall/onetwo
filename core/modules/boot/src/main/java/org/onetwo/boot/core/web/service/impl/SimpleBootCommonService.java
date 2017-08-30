@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.FileStorerListener;
 import org.onetwo.boot.utils.ImageCompressor;

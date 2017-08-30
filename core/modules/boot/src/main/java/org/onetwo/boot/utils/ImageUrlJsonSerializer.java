@@ -18,6 +18,9 @@ public class ImageUrlJsonSerializer extends UrlJsonSerializer {
 	static private final List<String> FILE_TYPES = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 
 	protected String getServerFullPath(String subPath){
+		if(isHttpPath(subPath)){
+			return subPath;
+		}
 		String ext = FileUtils.getExtendName(subPath).toLowerCase();
 		if(!FILE_TYPES.contains(ext)){//非图片类型，直接返回内容 
 			return subPath;

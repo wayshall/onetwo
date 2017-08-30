@@ -36,7 +36,14 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 	}
 	
 	protected String getServerFullPath(String subPath){
+		if(isHttpPath(subPath)){
+			return subPath;
+		}
 		return fixPath("", subPath);
+	}
+	
+	protected final boolean isHttpPath(String subPath){
+		return subPath.startsWith("http://") || subPath.startsWith("https://");
 	}
 	protected String fixPath(String basePath, String subPath){
 		if(!basePath.endsWith("/") && !subPath.startsWith("/")){
