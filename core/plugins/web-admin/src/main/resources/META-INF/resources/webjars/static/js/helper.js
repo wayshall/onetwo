@@ -5,6 +5,8 @@ helper.config = {
 };
 helper.page = {
 };
+helper.kindeditors = {
+};
 
 (function($) {
 	$.ajaxSetup({
@@ -109,6 +111,15 @@ helper.page = {
 		},
 		
 		kindeditor: function(opts){
+			var id = $(this).attr('id') || $(this).attr('name');
+			if(!id){
+				alert('create kindeditor must be set id attribute!')
+				return ;
+			}
+			var editor = helper.kindeditors[id];
+			if(editor){
+				return editor;
+			}
 			var config = opts || {
 				   width: '600px',
 				   minWidth: '400px',
@@ -121,7 +132,8 @@ helper.page = {
 		           allowFileManager : false
 			   };
 			var e = $(this).get();
-			var editor = KindEditor.create(e, config); 
+			editor = KindEditor.create(e, config);
+			helper.kindeditors[id] = editor;
 			return editor;
 		}
 		

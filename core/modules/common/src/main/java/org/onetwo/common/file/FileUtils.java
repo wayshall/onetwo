@@ -1380,6 +1380,14 @@ public class FileUtils {
 		return Integer.valueOf(size);
 	}
 	
+    public static byte[] toByteArray(InputStream input) {
+        try {
+			return IOUtils.toByteArray(input);
+		} catch (IOException e) {
+			throw new BaseException("copy content from inputStream error: " + e.getMessage(), e);
+		}
+    }
+	
 	public static void main(String[] args) {
 		String file = "c:\\aa/bb\\ccsfd.txt";
 		System.out.println(getFileNameWithoutExt(file));
