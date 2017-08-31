@@ -5,7 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.onetwo.common.file.FileUtils;
+import org.onetwo.apache.io.IOUtils;
+import org.onetwo.common.exception.BaseException;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -13,6 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
  * <br/>
  */
 public class SimpleMultipartFile implements MultipartFile {
+	public static byte[] toByteArray(InputStream input) {
+        try {
+			return IOUtils.toByteArray(input);
+		} catch (IOException e) {
+			throw new BaseException("copy content from inputStream error: " + e.getMessage(), e);
+		}
+    }
 	
 	private String name;
 	private String originalFilename;
@@ -20,7 +28,7 @@ public class SimpleMultipartFile implements MultipartFile {
 	private byte[] content;
 	
 	public SimpleMultipartFile(String originalFilename, InputStream inputStream) {
-		this(originalFilename, FileUtils.toByteArray(inputStream));
+		this(originalFilename, toByteArray(inputStream));
 	}
 	
 	public SimpleMultipartFile(String originalFilename, byte[] content) {
