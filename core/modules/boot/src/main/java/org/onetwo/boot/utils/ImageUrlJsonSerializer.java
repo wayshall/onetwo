@@ -15,14 +15,14 @@ import org.onetwo.common.spring.Springs;
  * <br/>
  */
 public class ImageUrlJsonSerializer extends UrlJsonSerializer {
-	static private final List<String> FILE_TYPES = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
+	protected List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 
 	protected String getServerFullPath(String subPath){
 		if(isHttpPath(subPath)){
 			return subPath;
 		}
 		String ext = FileUtils.getExtendName(subPath).toLowerCase();
-		if(!FILE_TYPES.contains(ext)){//非图片类型，直接返回内容 
+		if(!fileTypes.contains(ext)){//非图片类型，直接返回内容 
 			return subPath;
 		}
 		BootSiteConfig config = Springs.getInstance().getBean(BootSiteConfig.class);
@@ -39,6 +39,10 @@ public class ImageUrlJsonSerializer extends UrlJsonSerializer {
 		}
 		path = fixPath(path, subPath);
 		return path;
+	}
+
+	public void setFileTypes(List<String> fileTypes) {
+		this.fileTypes = fileTypes;
 	}
 	
 }

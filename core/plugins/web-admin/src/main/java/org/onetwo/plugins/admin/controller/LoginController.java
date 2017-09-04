@@ -14,7 +14,7 @@ public class LoginController extends WebAdminBaseController {
 
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView login(HttpServletRequest request){
-		return responsePageOrData("login", ()->{
+		return responsePageOrData("/login", ()->{
 			return result().error("请先登录！").code(ErrorCodes.NOT_LOGIN).buildResult();
 		});
 	}

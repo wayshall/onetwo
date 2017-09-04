@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.ReturnableClosure;
@@ -1039,6 +1040,17 @@ public abstract class StringUtils {
         }
         return str.substring(0, end);
     }
+    
+    /****
+     * no space
+     * @author wayshall
+     * @param count
+     * @return
+     */
+    public static String randomAscii(final int count) {
+        return RandomStringUtils.random(count, 33, 127, false, false);
+    }
+    
     
 	public static void main(String[] args) {
 

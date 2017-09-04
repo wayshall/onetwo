@@ -23,7 +23,8 @@ import freemarker.cache.TemplateLoader;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PluginTemplateLoader implements StatefulTemplateLoader {
-	
+
+	private static final String ROOT_DIR_PREFIX = "~";
 	private static final String CHINA_POSTFIX = "*"+Locale.CHINA.toString()+".*";
 	private static final String CHINESE_POSTFIX = "*"+Locale.CHINESE.toString()+".*";
 	private PathMatcher ignorePostfixMatcher = PathMatchers.anyPaths(CHINA_POSTFIX, CHINESE_POSTFIX);
@@ -92,9 +93,14 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 		}else{
 			Optional<PluginThreadContext> context = PluginContextHolder.get();
 			if (context.isPresent()) {//for controller
-				source = findPluginTemplateSource(context.get().getPlugin().getPluginMeta(), actualName);
-				if(source!=null){
-					return source;
+				if(!actualName.startsWith(ROOT_DIR_PREFIX)){
+					source = findPluginTemplateSource(context.get().getPlugin().getPluginMeta(), actualName);
+					if(source!=null){
+						return source;
+					}
+				}else{
+					//如果以 ~ 开头的模板，则从正常的根目录查找，如: ~/login
+					actualName = actualName.substring(ROOT_DIR_PREFIX.length());
 				}
 			}
 		}

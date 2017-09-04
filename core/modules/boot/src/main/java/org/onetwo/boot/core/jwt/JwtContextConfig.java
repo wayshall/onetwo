@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * <br/>
  */
 @Configuration
-@ConditionalOnProperty(value="jfish.jwt.enable", matchIfMissing=false, havingValue="true")
+@ConditionalOnProperty(value=JwtConfig.ENABLE_KEY, matchIfMissing=false, havingValue="true")
 public class JwtContextConfig {
 	
 	@Autowired

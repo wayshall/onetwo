@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.convert.Types;
@@ -369,6 +370,12 @@ public class LangUtilsTest {
 		String label = "订单满%s元立减%s元";
 		String res = String.format(label, 100, 50, 30);
 		System.out.println("res:"+res);
+	}
+	
+	@Test
+	public void testRandomString(){
+		String key = RandomStringUtils.randomAscii(128);
+		System.out.println("key:" + key);
 	}
 }
 

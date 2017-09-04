@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.Data;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -20,6 +21,8 @@ jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重
  */
 @Data
 public class JwtConfig {
+	
+	public static final String ENABLE_KEY = "jfish.jwt.enable";
 
 	String authHeader = JwtUtils.DEFAULT_HEADER_KEY;
 	String signingKey;
@@ -27,8 +30,14 @@ public class JwtConfig {
 	String issuer = "jfish";
 	String audience = "webclient";
 	
-	public boolean isEnabled(){
-		return StringUtils.isNotBlank(signingKey);
+	public String getSigningKey(){
+		String key = this.signingKey;
+		if(StringUtils.isBlank(key)){
+			//单实例部署时可随机生成
+			key = RandomStringUtils.randomAscii(128);
+			this.signingKey = key;
+		}
+		return key;
 	}
 	
 }

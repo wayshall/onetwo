@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.onetwo.apache.io.IOUtils;
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileUtils;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -14,27 +14,30 @@ import org.springframework.web.multipart.MultipartFile;
  * <br/>
  */
 public class SimpleMultipartFile implements MultipartFile {
-	public static byte[] toByteArray(InputStream input) {
-        try {
-			return IOUtils.toByteArray(input);
-		} catch (IOException e) {
-			throw new BaseException("copy content from inputStream error: " + e.getMessage(), e);
-		}
-    }
 	
 	private String name;
-	private String originalFilename;
+	final private String originalFilename;
 	private String contentType;
-	private byte[] content;
+	final private byte[] content;
 	
 	public SimpleMultipartFile(String originalFilename, InputStream inputStream) {
-		this(originalFilename, toByteArray(inputStream));
+		this(originalFilename, FileUtils.toByteArray(inputStream));
 	}
 	
 	public SimpleMultipartFile(String originalFilename, byte[] content) {
+		this(originalFilename, originalFilename, content);
+	}
+	public SimpleMultipartFile(String fieldName, String originalFilename, byte[] content) {
 		super();
+		Assert.notNull(originalFilename);
+		Assert.notNull(content);
 		this.originalFilename = originalFilename;
 		this.content = content;
+		this.name = fieldName;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
@@ -50,6 +53,10 @@ public class SimpleMultipartFile implements MultipartFile {
 	@Override
 	public String getContentType() {
 		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 	@Override
