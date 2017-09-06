@@ -1,6 +1,5 @@
 package org.onetwo.boot.plugin.ftl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +18,8 @@ import org.onetwo.common.web.view.ftl.ProfileDirective;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
-import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
@@ -128,38 +124,6 @@ public class PluginFreeMarkerConfigurer extends FreeMarkerConfigurer {
 			pluginLoader.putPluginTemplateLoader(plugin, findPluginTemplateLoader(plugin));
 		});
 		return pluginLoader;
-	}
-	
-	@Override
-	protected TemplateLoader getTemplateLoaderForPath(String templateLoaderPath) {
-		if(logger.isInfoEnabled()){
-			logger.info("getTemplateLoaderForPathh : " + templateLoaderPath);
-		}
-		if (isPreferFileSystemAccess()) {
-			// Try to load via the file system, fall back to SpringTemplateLoader
-			// (for hot detection of template changes, if possible).
-			try {
-				Resource path = getResourceLoader().getResource(templateLoaderPath);
-				File file = path.getFile();  // will fail if not resolvable in the file system
-				if (logger.isInfoEnabled()) {
-					logger.info(
-							"Template loader path [" + path + "] resolved to file path [" + file.getAbsolutePath() + "]");
-				}
-				return new FileTemplateLoader(file);
-			}
-			catch (IOException ex) {
-				if (logger.isInfoEnabled()) {
-					logger.info("Cannot resolve template loader path [" + templateLoaderPath +
-							"] to [java.io.File]: using SpringTemplateLoader as fallback", ex);
-				}
-				return new SpringTemplateLoader(getResourceLoader(), templateLoaderPath);
-			}
-		}
-		else {
-			// Always load via SpringTemplateLoader (without hot detection of template changes).
-			logger.info("File system access not preferred: using SpringTemplateLoader");
-			return new SpringTemplateLoader(getResourceLoader(), templateLoaderPath);
-		}
 	}
 	
 

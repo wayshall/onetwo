@@ -91,6 +91,7 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 			if(pname!=null){
 				PluginMeta meta = getWebPluginMeta(pname);
 				actualName = actualName.substring(pname.length()+pluginNameParser.getLength());
+				//必须要去掉开始的斜杠，否则找不到
 				actualName = StringUtils.trimStartWith(actualName, "/");
 				source = findPluginTemplateSource(meta, actualName);
 			}
@@ -108,6 +109,8 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 				}else{
 					//如果以 ~ 开头的模板，则从正常的根目录查找，如: ~/login
 					actualName = actualName.substring(ROOT_DIR_PREFIX.length());
+					//必须要去掉开始的斜杠，否则找不到
+					actualName = StringUtils.trimStartWith(actualName, "/");
 					if(logger.isDebugEnabled()){
 						logger.debug("root view name: {}", actualName);
 					}
@@ -141,9 +144,6 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 		// for this resource.
 		for (int i = 0; i < loaders.length; ++i) {
 			TemplateLoader loader = loaders[i];
-			if(logger.isDebugEnabled()){
-				logger.debug("loader: {}", loader);
-			}
 			source = loader.findTemplateSource(actualName);
 			if (source != null) {
 				logger.info("lastLoaderForName: {}", source);
