@@ -85,14 +85,14 @@ public class BootCommonServiceConfig {
 	
 
 	@Bean
-	@ConditionalOnProperty(BootSiteConfig.ENABLE_LOGGER_DYNAMIC)
+	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_LOGGER_DYNAMIC, matchIfMissing=true)
 	public LoggerController loggerController(){
 		return new LoggerController();
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean(SimpleLoggerManager.class)
-	@ConditionalOnProperty(BootSiteConfig.ENABLE_LOGGER_DYNAMIC)
+	@ConditionalOnMissingBean({SimpleLoggerManager.class})
+	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_LOGGER_DYNAMIC, matchIfMissing=true)
 	public SimpleLoggerManager simpleLoggerManager(){
 		return new SimpleLoggerManager();
 	}

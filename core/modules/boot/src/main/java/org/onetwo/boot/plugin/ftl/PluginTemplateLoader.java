@@ -122,9 +122,6 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 		// Use soft affinity - give the loader that last found this
 		// resource a chance to find it again first.
 		TemplateLoader lastLoader = (TemplateLoader) lastLoaderForName.get(name);
-		if(logger.isDebugEnabled()){
-			logger.debug("lastLoader: {}", lastLoader);
-		}
 		if (lastLoader != null) {
 			source = lastLoader.findTemplateSource(name);
 			if (source != null) {

@@ -63,6 +63,7 @@
 	  <profile>
     	<id>release</id>
     	<modules>
+                <module>modules/security</module>
                 <module>modules/boot</module>
 	  	</modules>
         <build>
