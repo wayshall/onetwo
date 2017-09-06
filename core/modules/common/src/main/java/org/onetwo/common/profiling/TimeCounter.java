@@ -1,6 +1,7 @@
 package org.onetwo.common.profiling;
 
 import java.util.Date;
+import java.util.function.Consumer;
 
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -36,22 +37,25 @@ public class TimeCounter {
 		super();
 		this.target = target;
 		this.timeLogger = new Slf4jTimeLogger(logger);
-		this.checkTimeLogger();
 		
 	}
 	public TimeCounter(Object target, boolean printMemory) {
 		this.target = target;
 		this.printMemory = printMemory;
-		this.checkTimeLogger();
 	}
 	
-	private final void checkTimeLogger(){
-		Slf4jTimeLogger logger = new Slf4jTimeLogger();
-		if(logger.getLogger() instanceof NOPLogger){
-			this.timeLogger = new TimerOutputer();
-		}else{
+	protected TimeLogger getTimeLogger(){
+		TimeLogger logger = this.timeLogger;
+		if(logger==null){
+			Slf4jTimeLogger slf4j = new Slf4jTimeLogger();
+			if(slf4j.getLogger() instanceof NOPLogger){
+				logger = new TimerOutputer();
+			}else{
+				logger = slf4j;
+			}
 			this.timeLogger = logger;
 		}
+		return logger;
 	}
 
 	
@@ -82,7 +86,6 @@ public class TimeCounter {
 	}
 	
 	public Date restart(Object target) {
-		timeLogger.log(this.getClass(), "restart time counter...");
 		this.message = new StringBuilder();
 		this.target = target;
 		return start();
@@ -92,19 +95,22 @@ public class TimeCounter {
 		return stop(true);
 	}
 	public Date stop(boolean printMessage) {
+		return stop(printMessage?msg->getTimeLogger().log(this.getClass(), msg):null);
+	}
+	public Date stop(Consumer<String> printer) {
 		long stopMills = System.currentTimeMillis();
 		this.stop = new Date(stopMills);
 		this.costTime = this.stop.getTime() - this.start.getTime();
 		message.append(this.target)
-				.append("---> cost time[").append(this.costTime).append(" (millis), ").append(this.costTime / 1000).append(" (second)]")
+				.append("cost time[").append(this.costTime).append(" (millis), ").append(this.costTime / 1000).append(" (second)]")
 				.append(", start time[").append(DateUtils.formatDateTimeMillis(start))
 				.append("], stop time[").append(DateUtils.formatDateTimeMillis(this.stop))
 				.append("]");
 		if(printMemory){
 			message.append("\n").append(LangUtils.statisticsMemory(""));
 		}
-		if(printMessage){
-			timeLogger.log(this.getClass(), message.toString());
+		if(printer!=null){
+			printer.accept(message.toString());
 		}
 		return this.stop;
 	}

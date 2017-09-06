@@ -44,7 +44,7 @@ public class SecurityConfig {
 	private String errorPage = "/error";
 	
 	private boolean forceHttps;
-	private Integer httpsPort;
+	private Integer httpsPort = 443;
 	
 	private CasConfig cas = new CasConfig();
 	private CrsfConfig csrf = new CrsfConfig();
@@ -65,6 +65,10 @@ public class SecurityConfig {
 			url = cas.getLogoutUrl();
 		}
 		return url;
+	}
+	
+	public boolean isForceHttps(){
+		return this.forceHttps;
 	}
 	
 	public void setAfterLoginUrl(String afterLoginUrl){
