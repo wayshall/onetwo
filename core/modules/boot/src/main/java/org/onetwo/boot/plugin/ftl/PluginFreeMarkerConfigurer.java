@@ -91,8 +91,8 @@ public class PluginFreeMarkerConfigurer extends FreeMarkerConfigurer {
 	protected TemplateLoader findPluginTemplateLoader(WebPlugin plugin){
 		String templateLoaderPath = DEFAULT_PLUGIN_FTL_LOCATION + plugin.getPluginMeta().getName();
 		TemplateLoader loader = getTemplateLoaderForPath(templateLoaderPath);
-		if(logger.isDebugEnabled()){
-			logger.debug("add template loader from path : " + templateLoaderPath);
+		if(logger.isInfoEnabled()){
+			logger.info("add template loader from path : " + templateLoaderPath);
 		}
 		return loader;
 	}

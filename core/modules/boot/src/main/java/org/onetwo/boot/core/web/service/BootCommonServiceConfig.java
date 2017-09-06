@@ -4,9 +4,11 @@ import net.coobird.thumbnailator.Thumbnails;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig.CompressConfig;
+import org.onetwo.boot.core.web.controller.LoggerController;
 import org.onetwo.boot.core.web.controller.UploadViewController;
 import org.onetwo.boot.core.web.service.impl.DbmFileStorerListener;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
+import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.utils.ImageCompressor;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -79,5 +81,19 @@ public class BootCommonServiceConfig {
 	public FileStorerListener fileStorerListener(){
 		FileStorerListener listener = new DbmFileStorerListener();
 		return listener;
+	}
+	
+
+	@Bean
+	@ConditionalOnProperty(BootSiteConfig.ENABLE_LOGGER_DYNAMIC)
+	public LoggerController loggerController(){
+		return new LoggerController();
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean(SimpleLoggerManager.class)
+	@ConditionalOnProperty(BootSiteConfig.ENABLE_LOGGER_DYNAMIC)
+	public SimpleLoggerManager simpleLoggerManager(){
+		return new SimpleLoggerManager();
 	}
 }

@@ -1,5 +1,7 @@
 package org.onetwo.ext.security;
 
+import java.util.Map.Entry;
+
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
@@ -28,12 +30,18 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 				databaseSecurityMetadataSource.buildSecurityMetadataSource();
 				return fsi;
 			}
-		})
-		.anyRequest()
+		});
+		
+		for(Entry<String[], String> entry : this.securityConfig.getIntercepterUrls().entrySet()){
+			http.authorizeRequests().antMatchers(entry.getKey()).access(entry.getValue());
+		}
+
 		//其它未标记管理的功能的默认权限
-		.authenticated()//需要登录
-//		.fullyAuthenticated()//需要登录，并且不是rememberme的方式登录
-		;
+		http.authorizeRequests()
+			.anyRequest()
+			.authenticated()//需要登录
+	//		.fullyAuthenticated()//需要登录，并且不是rememberme的方式登录
+			;
 		
 		webConfigure(http);
 		defaultConfigure(http);

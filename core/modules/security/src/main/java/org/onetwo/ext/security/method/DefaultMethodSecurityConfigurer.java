@@ -48,7 +48,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 
 	@Getter
 	@Autowired
-	private SecurityConfig securityConfig;
+	protected SecurityConfig securityConfig;
 	
 	//redis
 	@Autowired(required=false)

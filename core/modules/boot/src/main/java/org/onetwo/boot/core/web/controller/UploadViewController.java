@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
@@ -29,7 +30,7 @@ import org.springframework.web.context.request.WebRequest;
 @RequestMapping(UploadViewController.CONTROLLER_PATH)
 public class UploadViewController {
 	
-	public static final String CONTROLLER_PATH = "/uploadView";
+	public static final String CONTROLLER_PATH = BootWebUtils.CONTROLLER_PREFIX+"/uploadView";
 
 	private List<String> imagePostfix = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 	

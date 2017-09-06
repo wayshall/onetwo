@@ -21,6 +21,10 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 
 	@Override
 	public void preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
+		Object data = request.getAttribute(JwtUtils.AUTH_ATTR_KEY);
+		if(data instanceof UserDetail){
+			return ;
+		}
 		String token = request.getHeader(authHeaderName);
 
 		if(logger.isDebugEnabled()){

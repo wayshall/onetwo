@@ -1,5 +1,6 @@
 package org.onetwo.ext.security.utils;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Data;
@@ -10,6 +11,8 @@ import org.onetwo.common.spring.Springs;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 
 import redis.clients.jedis.JedisPoolConfig;
+
+import com.google.common.collect.Maps;
 
 
 /***
@@ -54,6 +57,7 @@ public class SecurityConfig {
 	private CookieConfig cookie = new CookieConfig();
 	private RbacConfig rbac = new RbacConfig();
 	private JwtConfig jwt = new JwtConfig();
+	private Map<String[], String> intercepterUrls = Maps.newHashMap();
 	
 	public String getUserLogoutUrl(){
 		String url = logoutUrl;
@@ -140,4 +144,5 @@ public class SecurityConfig {
 			return StringUtils.isNotBlank(signingKey);
 		}
 	}
+	
 }

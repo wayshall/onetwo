@@ -16,13 +16,17 @@ import org.onetwo.boot.plugin.mvc.PluginThreadContext;
 import org.onetwo.boot.utils.PathMatchers;
 import org.onetwo.boot.utils.PathMatchers.PathMatcher;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
+import org.slf4j.Logger;
 
 import freemarker.cache.StatefulTemplateLoader;
 import freemarker.cache.TemplateLoader;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PluginTemplateLoader implements StatefulTemplateLoader {
+	
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	private static final String ROOT_DIR_PREFIX = "~";
 	private static final String CHINA_POSTFIX = "*"+Locale.CHINA.toString()+".*";
@@ -91,6 +95,9 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 				source = findPluginTemplateSource(meta, actualName);
 			}
 		}else{
+			if(logger.isDebugEnabled()){
+				logger.debug("actual view name: {}", actualName);
+			}
 			Optional<PluginThreadContext> context = PluginContextHolder.get();
 			if (context.isPresent()) {//for controller
 				if(!actualName.startsWith(ROOT_DIR_PREFIX)){
@@ -101,6 +108,9 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 				}else{
 					//如果以 ~ 开头的模板，则从正常的根目录查找，如: ~/login
 					actualName = actualName.substring(ROOT_DIR_PREFIX.length());
+					if(logger.isDebugEnabled()){
+						logger.debug("root view name: {}", actualName);
+					}
 				}
 			}
 		}
@@ -112,6 +122,9 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 		// Use soft affinity - give the loader that last found this
 		// resource a chance to find it again first.
 		TemplateLoader lastLoader = (TemplateLoader) lastLoaderForName.get(name);
+		if(logger.isDebugEnabled()){
+			logger.debug("lastLoader: {}", lastLoader);
+		}
 		if (lastLoader != null) {
 			source = lastLoader.findTemplateSource(name);
 			if (source != null) {
@@ -131,14 +144,21 @@ public class PluginTemplateLoader implements StatefulTemplateLoader {
 		// for this resource.
 		for (int i = 0; i < loaders.length; ++i) {
 			TemplateLoader loader = loaders[i];
+			if(logger.isDebugEnabled()){
+				logger.debug("loader: {}", loader);
+			}
 			source = loader.findTemplateSource(actualName);
 			if (source != null) {
+				logger.info("lastLoaderForName: {}", source);
 				lastLoaderForName.put(name, loader);
 				return new MultiSource(source, loader);
 			}
 		}
 
 		lastLoaderForName.remove(name);
+		if(logger.isDebugEnabled()){
+			logger.debug("return null");
+		}
 		// Resource not found
 		return null;
 	}

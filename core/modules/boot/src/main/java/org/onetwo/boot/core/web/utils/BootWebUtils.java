@@ -49,6 +49,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SuppressWarnings("unchecked")
 public final class BootWebUtils {
 
+	public static final String CONTROLLER_PREFIX = "/jfish";
+
 	private static final Logger logger = JFishLoggerFactory.getLogger(BootWebUtils.class);
 	
 	public static final String REQUEST_PARAMETER_KEY = "__JFISH_REQUEST_PARAMETER__";
