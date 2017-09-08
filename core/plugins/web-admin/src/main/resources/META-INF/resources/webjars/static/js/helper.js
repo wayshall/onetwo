@@ -120,7 +120,8 @@ helper.kindeditors = {
 			if(editor){
 				return editor;
 			}
-			var config = opts || {
+			var config = {
+				   id: 'kindeditor_'+id,
 				   width: '600px',
 				   minWidth: '400px',
 				   items: ['source', '|', 'undo', 'redo', '|', 'preview','|', 
@@ -129,9 +130,13 @@ helper.kindeditors = {
 				          ],
 		           uploadJson : helper.config.baseUrl+'/web-admin/kindeditor/upload',
 		           fileManagerJson : '',
-		           allowFileManager : false
+		           allowFileManager : false,
+		           urlType: 'domain'
 			   };
+			$.extend(config, opts);
 			var e = $(this).get();
+			console.log('config:');
+			console.dir(config)
 			editor = KindEditor.create(e, config);
 			helper.kindeditors[id] = editor;
 			return editor;

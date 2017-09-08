@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.security.config;
 
 import org.onetwo.boot.core.BootWebCommonAutoConfig;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
@@ -48,6 +49,8 @@ public class BootSecurityCommonContextConfig{
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(LoggerInterceptor.class)
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_MVC_LOGGER_INTERCEPTOR, matchIfMissing=true, havingValue="true")
 	public LoggerInterceptor loggerInterceptor(){
 		LoggerInterceptor log = new LoggerInterceptor();
 		log.setUserDetailRetriever(()->{
