@@ -63,7 +63,8 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/boot</module>
+                <module>modules/common</module>
+                <module>../../dbm</module>
 	  	</modules>
         <build>
             <plugins>

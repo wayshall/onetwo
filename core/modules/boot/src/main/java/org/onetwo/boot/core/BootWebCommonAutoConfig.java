@@ -16,6 +16,7 @@ import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
+import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
@@ -237,4 +238,11 @@ public class BootWebCommonAutoConfig {
 		throw new IllegalArgumentException("type: " + type);
 	}
 	
+
+	@Bean
+	@ConditionalOnMissingBean(LoggerInterceptor.class)
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_MVC_LOGGER_INTERCEPTOR, matchIfMissing=true, havingValue="true")
+	public LoggerInterceptor loggerInterceptor(){
+		return new LoggerInterceptor();
+	}
 }

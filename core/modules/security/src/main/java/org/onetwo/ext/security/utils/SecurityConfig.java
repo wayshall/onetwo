@@ -67,6 +67,10 @@ public class SecurityConfig {
 		return url;
 	}
 	
+	public String getLogoutSuccessUrl(){
+		return logoutSuccessUrl;
+	}
+	
 	public boolean isForceHttps(){
 		return this.forceHttps;
 	}

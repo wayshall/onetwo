@@ -102,7 +102,7 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	 */
 	@Bean
 	@ConditionalOnBean(name = CorsFilter.CORS_FILTER_NAME)
-	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue="true", matchIfMissing=false)
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_CORSFILTER, havingValue="true", matchIfMissing=false)
 	public FilterRegistrationBean corsFilterRegistration(@Qualifier(CorsFilter.CORS_FILTER_NAME) Filter filter){
 		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);

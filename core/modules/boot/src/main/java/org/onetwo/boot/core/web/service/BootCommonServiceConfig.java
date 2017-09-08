@@ -2,6 +2,7 @@ package org.onetwo.boot.core.web.service;
 
 import net.coobird.thumbnailator.Thumbnails;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig.CompressConfig;
 import org.onetwo.boot.core.web.controller.LoggerController;
@@ -85,14 +86,14 @@ public class BootCommonServiceConfig {
 	
 
 	@Bean
-	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_LOGGER_DYNAMIC, matchIfMissing=true)
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_LOGGER_DYNAMIC_LEVEL, matchIfMissing=true)
 	public LoggerController loggerController(){
 		return new LoggerController();
 	}
 	
 	@Bean
 	@ConditionalOnMissingBean({SimpleLoggerManager.class})
-	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_LOGGER_DYNAMIC, matchIfMissing=true)
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_LOGGER_DYNAMIC_LEVEL, matchIfMissing=true)
 	public SimpleLoggerManager simpleLoggerManager(){
 		return new SimpleLoggerManager();
 	}
