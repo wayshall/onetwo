@@ -2,6 +2,7 @@ package org.onetwo.boot.core.web.service.impl;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.ServiceException;
@@ -24,7 +25,11 @@ public class SimpleLoggerManager {
 	
 	private ConcurrentMap<Logger, Optional<Level>> loggerOriginLevelHoders = Maps.newConcurrentMap();
 	
-	public void changeLevel(String loggerName, String level){
+	public void changeLevels(String level, String... loggerNames){
+		Stream.of(loggerNames).forEach(loggerName->changeLevel(level, loggerName));
+	}
+	
+	public void changeLevel(String level, String loggerName){
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 		Logger targetLogger = loggerContext.getLogger(loggerName);
 		if(targetLogger==null || StringUtils.isBlank(level)){

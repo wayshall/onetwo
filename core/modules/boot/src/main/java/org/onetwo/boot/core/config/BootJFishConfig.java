@@ -20,7 +20,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class BootJFishConfig {
 	public static final String ENABLE_CORSFILTER = "jfish.corsfilter.enabled";
-	public static final String ENABLE_LOGGER_DYNAMIC_LEVEL = "jfish.logger.dynamicLevel";
+	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = "jfish.dynamic.loggerLevel";
+	public static final String ENABLE_DYNAMIC_SETTING = "jfish.dynamic.setting";
 	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = "jfish.mvc.loggerInterceptor";
 //	public static final String VALUE_AUTO_CONFIG_WEB_UI = "web-ui";
 //	public static final String VALUE_AUTO_CONFIG_WEB_MS = "web-ms";

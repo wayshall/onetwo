@@ -35,6 +35,11 @@
 	  <groupId>javax.validation</groupId>
 	  <artifactId>validation-api</artifactId>
 	</dependency>
+	
+    <dependency>
+        <groupId>io.reactivex.rxjava2</groupId>
+        <artifactId>rxjava</artifactId>
+    </dependency>
     
 	<dependency>
 	  <groupId>net.sf.dozer</groupId>

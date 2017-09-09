@@ -11,7 +11,7 @@ import org.onetwo.common.utils.Page;
 @Data
 public class PageRequest {
 	protected int page = 1;
-	protected int rows = 20;
+	protected int rows = Page.getDefaultPageSize();
 	
 	public <E> Page<E> toPageObject(){
 		return Page.create(page, rows);

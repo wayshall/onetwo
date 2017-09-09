@@ -6,8 +6,10 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig.CompressConfig;
 import org.onetwo.boot.core.web.controller.LoggerController;
+import org.onetwo.boot.core.web.controller.SettingsController;
 import org.onetwo.boot.core.web.controller.UploadViewController;
 import org.onetwo.boot.core.web.service.impl.DbmFileStorerListener;
+import org.onetwo.boot.core.web.service.impl.SettingsManager;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.utils.ImageCompressor;
@@ -84,17 +86,40 @@ public class BootCommonServiceConfig {
 		return listener;
 	}
 	
-
+	/***
+	 * 动态修改logger level
+	 * @author wayshall
+	 * @return
+	 */
 	@Bean
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_LOGGER_DYNAMIC_LEVEL, matchIfMissing=true)
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_LOGGER_LEVEL, matchIfMissing=false)
 	public LoggerController loggerController(){
 		return new LoggerController();
 	}
 	
 	@Bean
 	@ConditionalOnMissingBean({SimpleLoggerManager.class})
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_LOGGER_DYNAMIC_LEVEL, matchIfMissing=true)
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_LOGGER_LEVEL, matchIfMissing=false)
 	public SimpleLoggerManager simpleLoggerManager(){
 		return new SimpleLoggerManager();
+	}
+
+
+	/***
+	 * 动态修改默认配置
+	 * @author wayshall
+	 * @return
+	 */
+	@Bean
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_SETTING, matchIfMissing=false)
+	public SettingsController settingsController(){
+		return new SettingsController();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({SettingsManager.class})
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_SETTING, matchIfMissing=false)
+	public SettingsManager settingsManager(){
+		return new SettingsManager();
 	}
 }

@@ -1,31 +1,39 @@
 package org.onetwo.common.rxjava;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
 
 public class RxJavaTest {
 
 	@Test
 	public void test() {
 		Observable<Integer> observableString = Observable
-				.create(new Observable.OnSubscribe<Integer>() {
+				.create(new ObservableOnSubscribe<Integer>() {
 					@Override
-					public void call(Subscriber<? super Integer> observer) {
+					public void subscribe(ObservableEmitter<Integer> observer) {
 						for (int i = 0; i < 5; i++) {
 							observer.onNext(i);
 						}
-						observer.onCompleted();
+						observer.onComplete();
 					}
 				});
 
-		Subscription subscriptionPrint = observableString
+		observableString
 				.subscribe(new Observer<Integer>() {
+					
 					@Override
-					public void onCompleted() {
+					public void onSubscribe(Disposable disposable) {
+						System.out.println("Observable onSubscribe");
+					}
+
+					@Override
+					public void onComplete() {
 						System.out.println("Observable completed");
 					}
 
@@ -40,10 +48,16 @@ public class RxJavaTest {
 					}
 				});
 		
-		subscriptionPrint = observableString
+		observableString
 				.subscribe(new Observer<Integer>() {
+					
 					@Override
-					public void onCompleted() {
+					public void onSubscribe(Disposable arg0) {
+						System.out.println("Observable onSubscribe");
+					}
+
+					@Override
+					public void onComplete() {
 						System.out.println("Observable completed");
 					}
 

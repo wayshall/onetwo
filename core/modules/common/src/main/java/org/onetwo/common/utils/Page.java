@@ -50,17 +50,33 @@ public class Page<T> implements Serializable {
 		page.setPageSize(pageSize);
 		return page;
 	}
+	
+	
+	public static void setDefaultPageSize(int defaultPageSize) {
+		Page.DefaultPageSize = defaultPageSize;
+	}
+
+	public static int getDefaultPageSize() {
+		return DefaultPageSize;
+	}
+
 	public static final String PAGINATION_KEY = "pagination";
 	public static final String ASC = ":asc";
 	public static final String DESC = ":desc";
 	
-	public static final int DEFAULT_PAGE_SIZE = 20;
+	private static int DefaultPageSize = 20;
 
-	public static final int PAGE_SEP_COUNT = 5;
-	public static final int PAGE_SHOW_COUNT = 10;
+	/***
+	 * 分页显示时，显示相距当前页的数量，默认为当前页前后5页
+	 */
+	private static final int PAGE_SEP_COUNT = 5;
+	/****
+	 * 一共显示几个分页，默认为10个页码
+	 */
+	private static final int PAGE_SHOW_COUNT = 10;
 
 	protected int pageNo = 1;
-	protected int pageSize = 20;
+	protected int pageSize = DefaultPageSize;
 	protected String orderBy = null;
 	protected String order = null;
 	protected boolean autoCount = true;
@@ -115,7 +131,7 @@ public class Page<T> implements Serializable {
 			return ;
 		}
 		if(pageSize<=0)
-			this.pageSize = DEFAULT_PAGE_SIZE;
+			this.pageSize = DefaultPageSize;
 		else
 			this.pageSize = pageSize;
 	}
