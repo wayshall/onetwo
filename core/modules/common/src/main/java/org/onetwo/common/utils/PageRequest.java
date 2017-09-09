@@ -7,7 +7,7 @@ package org.onetwo.common.utils;
  */
 public class PageRequest {
 	protected int page = 1;
-	protected int pageSize = 20;
+	protected int pageSize = Page.getDefaultPageSize();
 	
 	public <E> Page<E> toPageObject(){
 		return Page.create(page, pageSize);
