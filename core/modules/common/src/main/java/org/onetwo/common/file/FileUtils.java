@@ -1369,7 +1369,16 @@ public class FileUtils {
 	}
 	
 	public static int parseSize(String size) {
-		Assert.hasLength(size, "Size must not be empty");
+		return parseSize(size, null);
+	}
+	public static int parseSize(String size, Integer def) {
+		if(StringUtils.isBlank(size)){
+			if(def!=null){
+				return def;
+			}else{
+				Assert.hasLength(size, "Size must not be empty");
+			}
+		}
 		size = size.toUpperCase();
 		if (size.toLowerCase().endsWith("kb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;

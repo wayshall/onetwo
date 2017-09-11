@@ -74,7 +74,7 @@ public class SimpleBootCommonService implements BootCommonService {
 	}
 
 	public void setCompressThresholdSize(String compressThresholdSize) {
-		this.compressThresholdSize = FileUtils.parseSize(compressThresholdSize);
+		this.compressThresholdSize = FileUtils.parseSize(compressThresholdSize, -1);
 	}
 	
 }

@@ -24,8 +24,8 @@ public class ImageCompressor {
 	//8k
 	private static final int BUF_SIZE = 8*1024;
 	
-	private double scale = 1;
-	private Double quality = 0.1D;
+	private Double scale;
+	private Double quality;
 	private Integer width;
 	private Integer height;
 	private List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
@@ -55,7 +55,7 @@ public class ImageCompressor {
 		}
 	}
 	public String compressTo(String imagePath, String targetPath){
-		if(isCompressFile(imagePath)){
+		if(!isCompressFile(imagePath)){
 			throw new BaseException("not support compress file type: " + FileUtils.getExtendName(imagePath));
 		}
 		Builder<File> builder = Thumbnails.fromFilenames(Arrays.asList(imagePath));
@@ -85,16 +85,22 @@ public class ImageCompressor {
 	 * @param builder
 	 */
 	protected void configBuilder(Builder<?> builder){
-		builder.scale(scale);//经过测试，可以大幅减少大小，比如 0.5
+		if(scale!=null){
+			builder.scale(scale);//经过测试，可以大幅减少大小，比如 0.5
+		}
+		if(width!=null && height!=null){
+			builder.size(width, height);
+		}else if(width!=null){
+			builder.width(width);
+		}else if(height!=null){
+			builder.height(height);
+		}
 		if(quality!=null){
 			builder.outputQuality(quality);//压缩质量，比如 0.3，太低会影响质量，变成色块
 		}
-		if(width!=null &&height!=null){
-			builder.size(width, height);
-		}
 	}
 
-	public void setScale(double scale) {
+	public void setScale(Double scale) {
 		this.scale = scale;
 	}
 
