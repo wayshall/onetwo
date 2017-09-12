@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.Data;
-import lombok.Getter;
 
 import org.onetwo.common.propconf.Env;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,9 +16,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix="spring")
 @SuppressWarnings("unchecked")
+@Data
 public class BootSpringConfig {
-	@Getter
 	private ProfilesConfig profiles = new ProfilesConfig();
+	private ApplicationProperties application = new ApplicationProperties();
 	
     public boolean isEnv(Env env){
 		return Optional.ofNullable(profiles.getActive())
@@ -42,6 +42,11 @@ public class BootSpringConfig {
 	@Data
 	public class ProfilesConfig {
 		private List<String> active;
+	}
+	
+	@Data
+	public class ApplicationProperties {
+		String name;
 	}
 	
 }

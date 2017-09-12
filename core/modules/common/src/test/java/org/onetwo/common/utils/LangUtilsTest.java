@@ -375,6 +375,7 @@ public class LangUtilsTest {
 	@Test
 	public void testRandomString(){
 		String key = RandomStringUtils.randomAscii(128);
+		key = key.replaceAll("[#*!\\s]", "");
 		System.out.println("key:" + key);
 	}
 }

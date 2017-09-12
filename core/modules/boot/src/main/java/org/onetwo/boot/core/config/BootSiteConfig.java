@@ -43,6 +43,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_IMAGE = "path.image";*/
 
 	public static final String ENABLE_UPLOAD_PREFIX = "site.upload.fileStorePath";
+	public static final String ENABLE_KINDEDITOR_UPLOADSERVICE = "site.kindeditor.uploadService";
 	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compressImage.enable";
 	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.storeFileMetaToDatabase";
 	

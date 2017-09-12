@@ -6,6 +6,7 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
+import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
@@ -58,6 +59,9 @@ public class BootWebCommonAutoConfig {
 	
 	@Autowired
 	protected ApplicationContext applicationContext;
+
+	@Autowired
+	protected BootSpringConfig bootSpringConfig;
 
 	@Autowired
 	protected BootJFishConfig bootJfishConfig;
