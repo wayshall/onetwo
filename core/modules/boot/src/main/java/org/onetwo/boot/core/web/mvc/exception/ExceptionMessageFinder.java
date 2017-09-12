@@ -21,6 +21,7 @@ import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.exception.DbmException;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -54,9 +55,11 @@ public interface ExceptionMessageFinder {
 		if(ex instanceof LoginException){
 //			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
+			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}else if(ex instanceof AuthenticationException){
 //			defaultViewName = ExceptionView.AUTHENTIC;
 			detail = false;
+			error.setHttpStatus(HttpStatus.UNAUTHORIZED);
 		}else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
@@ -71,26 +74,31 @@ public interface ExceptionMessageFinder {
 		}else if(BootUtils.isDmbPresent() && DbmException.class.isInstance(ex)){
 //			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = JFishErrorCode.ORM_ERROR;
+			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
 		}else if(ex instanceof BaseException){
 //			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
-		}/*else if(TypeMismatchException.class.isInstance(ex)){
-			defaultViewName = ExceptionView.UNDEFINE;
-			//errorMsg = "parameter convert error!";
-		}*/else if(ex instanceof ConstraintViolationException){
+		}else if(TypeMismatchException.class.isInstance(ex)){
+			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+			errorMsg = "parameter convert error!";
+			error.setHttpStatus(HttpStatus.BAD_REQUEST);
+		}else if(ex instanceof ConstraintViolationException){
 			ConstraintViolationException cex = (ConstraintViolationException) ex;
 			Set<ConstraintViolation<?>> constrants = cex.getConstraintViolations();
 			errorMsg = ValidatorUtils.toMessages(constrants);
 			findMsgByCode = false;
+			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}else if(ex instanceof BindException){
 			BindingResult br = ((BindException)ex).getBindingResult();
 			errorMsg = ValidatorUtils.asString(br);
 			findMsgByCode = false;
 			detail = false;
+			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}/*else if(ex instanceof ObjectOptimisticLockingFailureException){
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
 		}*//*else if(BeanCreationException.class.isInstance(ex)){
@@ -101,8 +109,10 @@ public interface ExceptionMessageFinder {
 			errorMsg = ValidatorUtils.asString(br);
 			findMsgByCode = false;
 			detail = false;
+			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}else{
 			errorCode = SystemErrorCode.UNKNOWN;
+			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		/*if(StringUtils.isBlank(errorCode)){
@@ -124,15 +134,6 @@ public interface ExceptionMessageFinder {
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}
 		
-		/*String viewName = null;
-		
-		if(StringUtils.isBlank(viewName)){
-			viewName = findInSiteConfig(ex); 
-			viewName = StringUtils.firstNotBlank(viewName, defaultViewName);
-		}*/
-//		String viewName = determineViewName(ex, request);
-		
-		//always true if not production
 		detail = product?detail:true;
 		error.setCode(errorCode);
 		error.setMesage(errorMsg);
