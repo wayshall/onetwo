@@ -189,6 +189,12 @@
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
+      <artifactId>onetwo-cloud</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo4j</groupId>
       <artifactId>onetwo-security</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
