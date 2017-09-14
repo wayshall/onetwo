@@ -43,7 +43,7 @@ public class WebHolder {
 	
 	public static Optional<HttpServletRequest> getRequest(){
 		Optional<HttpServletRequest> req = getSpringContextHolderRequest();
-		return req.isPresent()?req:Optional.of(REQUEST_HOLDER.get());
+		return req.isPresent()?req:Optional.ofNullable(REQUEST_HOLDER.get());
 	}
 	
 	/*public static HttpServletResponse getResponse(){

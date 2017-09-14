@@ -60,6 +60,8 @@ public final class BootWebUtils {
 	public static final String REDIRECT_KEY = "redirect:";
 	public static final String GRID_SEARCH_FORM_SUBMIT = "submitTag";
 	
+	public static final String HEADER_FORWARDED_PREFIX = "X-Forwarded-Prefix";
+	
 //	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 	
 	private BootWebUtils(){
@@ -71,6 +73,13 @@ public final class BootWebUtils {
 		} catch (IOException e) {
 			throw new BaseException("create StoringFileContext error: " + file.getOriginalFilename());
 		}
+	}
+	
+	public static String getBasePathPrefixFromHeader(){
+		return WebHolder.getRequest()
+						.map(req->req.getHeader(HEADER_FORWARDED_PREFIX))
+						.filter(prefix->StringUtils.isNotBlank(prefix))
+						.orElse("");
 	}
 	
 	public static Locale getLocale(){

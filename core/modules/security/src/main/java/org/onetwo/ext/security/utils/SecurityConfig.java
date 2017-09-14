@@ -4,9 +4,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 
@@ -111,8 +113,10 @@ public class SecurityConfig {
 		private String key = CasConfig.class.getName();
 	}
 
+	@SuppressWarnings("serial")
 	@Data
-	public static class RedisConfig {
+	@EqualsAndHashCode(callSuper=false)
+	public static class RedisConfig extends JFishProperties {
 		private String hostName = "localhost";
 		private int port = 6379;
 		private JedisPoolConfig pool;

@@ -1,0 +1,176 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+    
+	<parent>
+        <groupId>org.onetwo4j</groupId>
+        <artifactId>onetwo-parent</artifactId>
+        <version>4.6.1-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+    <artifactId>onetwo-cloud</artifactId>
+	<packaging>jar</packaging>
+
+	<name>onetwo-cloud</name>
+	<description>onetwo-cloud</description>
+	
+  <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        
+        <onetwo.version>4.6.1-SNAPSHOT</onetwo.version>
+        <!-- for test -->
+        <unit-tests.skip>false</unit-tests.skip>
+        <integration-tests.skip>true</integration-tests.skip>
+        <spring-cloud.version>Brixton.SR5</spring-cloud.version>
+    </properties>
+
+    <dependencies>
+	
+        <dependency>
+          <groupId>org.onetwo4j</groupId>
+          <artifactId>onetwo-boot</artifactId>
+        </dependency>
+	   
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+        </dependency>
+	    
+	    <dependency>
+	      <groupId>com.squareup.okhttp3</groupId>
+	      <artifactId>okhttp</artifactId>
+	    </dependency>
+        
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+     
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zuul</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency> -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        
+        
+        <dependency>
+          <groupId>org.springframework.data</groupId>
+          <artifactId>spring-data-commons</artifactId>
+        </dependency>
+    
+        <dependency>
+          <groupId>commons-net</groupId>
+          <artifactId>commons-net</artifactId>
+        </dependency>
+     
+     
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+        </dependency>
+        
+        <!-- for health -->
+        <dependency>
+        	<groupId>org.springframework.boot</groupId>
+ 			<artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        
+        <!-- for logback jmx -->
+        <dependency>
+           <groupId>org.jolokia</groupId>
+           <artifactId>jolokia-core</artifactId>
+        </dependency>
+        
+        <!-- for test -->
+        <dependency>
+          <groupId>org.onetwo4j</groupId>
+          <artifactId>onetwo-test</artifactId>
+          <scope>test</scope> 
+        </dependency>
+
+        
+    </dependencies>
+    
+    
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+             <groupId>org.onetwo4j</groupId>
+             <artifactId>onetwo-bom</artifactId>
+             <version>${onetwo.version}</version>
+             <type>pom</type>
+             <scope>import</scope>
+         </dependency>
+         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>${spring-cloud.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+    
+    
+    <build>
+	    <plugins>
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-source-plugin</artifactId>
+	        </plugin>
+	        
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-compiler-plugin</artifactId>
+	            <configuration>
+	                <source>${java.version}</source>
+	                <target>${java.version}</target>
+	                <compilerVersion>${java.version}</compilerVersion>
+	                <showWarnings>true</showWarnings>
+	                <encoding>utf-8</encoding>
+	                <compilerArgs>
+	                    <arg>-parameters</arg>
+	                </compilerArgs>
+	            </configuration>
+	        </plugin>
+	        
+	    </plugins>
+    </build>
+
+    
+  
+</project>

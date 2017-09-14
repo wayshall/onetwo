@@ -170,6 +170,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	}
 
 	public String getBaseURL() {
+		/*if(UrlUtils.isAbsoluteUrl(baseURL)){
+			return baseURL;
+		}
+		String prefixPath = BootWebUtils.getBasePathPrefixFromHeader();*/
 		return baseURL;
 	}
 	
