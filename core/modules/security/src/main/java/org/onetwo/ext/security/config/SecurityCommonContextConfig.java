@@ -89,8 +89,9 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	@Bean
 	public AjaxSupportedAuthenticationEntryPoint ajaxSupportedAuthenticationEntryPoint(){
 		AjaxSupportedAuthenticationEntryPoint ep = new AjaxSupportedAuthenticationEntryPoint();
-		ep.setForceHttps(securityConfig.isForceHttps());
-		ep.setHttpsPort(securityConfig.getHttpsPort());
+		ep.setForceHttps(securityConfig.getRedirectStrategy().isForceHttps());
+		ep.setHttpsPort(securityConfig.getRedirectStrategy().getHttpsPort());
+		ep.setContextRelative(securityConfig.getRedirectStrategy().isContextRelative());
 		return ep;
 	}
 }

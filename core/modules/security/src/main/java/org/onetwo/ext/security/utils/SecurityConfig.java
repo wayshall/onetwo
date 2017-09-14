@@ -43,8 +43,7 @@ public class SecurityConfig {
 	//AccessDenied errorPage
 	private String errorPage = "/error";
 	
-	private boolean forceHttps;
-	private Integer httpsPort = 443;
+	private RedirectStrategyConfig redirectStrategy = new RedirectStrategyConfig();
 	
 	private CasConfig cas = new CasConfig();
 	private CrsfConfig csrf = new CrsfConfig();
@@ -69,10 +68,6 @@ public class SecurityConfig {
 	
 	public String getLogoutSuccessUrl(){
 		return logoutSuccessUrl;
-	}
-	
-	public boolean isForceHttps(){
-		return this.forceHttps;
 	}
 	
 	public void setAfterLoginUrl(String afterLoginUrl){
@@ -150,6 +145,17 @@ public class SecurityConfig {
 		
 		public boolean isEnabled(){
 			return StringUtils.isNotBlank(signingKey);
+		}
+	}
+	
+	@Data
+	public static class RedirectStrategyConfig {
+		boolean contextRelative;
+		boolean forceHttps;
+		Integer httpsPort = 443;
+		
+		public boolean isForceHttps(){
+			return forceHttps;
 		}
 	}
 	

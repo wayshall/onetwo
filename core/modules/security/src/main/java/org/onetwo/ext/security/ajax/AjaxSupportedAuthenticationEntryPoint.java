@@ -12,6 +12,7 @@ import org.onetwo.common.spring.mvc.utils.WebResultCreator;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.ext.security.utils.SecurityConfig;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
@@ -34,6 +35,7 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 
 	private boolean forceHttps;
 	private Integer httpsPort;
+	private boolean contextRelative;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -46,6 +48,7 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 					return port==null?httpsPort:port;
 				}
 			});
+			PropertyAccessorFactory.forDirectFieldAccess(entryPoint).setPropertyValue("redirectStrategy.contextRelative", contextRelative);
 			this.defaultAuthenticationEntryPoint = entryPoint;
 		}
 	}
@@ -73,6 +76,10 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 
 	public void setHttpsPort(Integer httpsPort) {
 		this.httpsPort = httpsPort;
+	}
+
+	public void setContextRelative(boolean contextRelative) {
+		this.contextRelative = contextRelative;
 	}
 
 }
