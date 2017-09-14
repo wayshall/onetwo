@@ -63,7 +63,7 @@ public class BootCommonServiceConfig {
 	}
 	
 	@Bean
-	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_COMPRESS_PREFIX, matchIfMissing=true)
+	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_COMPRESS_PREFIX, matchIfMissing=false)
 	@ConditionalOnClass(Thumbnails.class)
 	public ImageCompressor imageCompressor(){
 		ImageCompressor compressor = new ImageCompressor();
