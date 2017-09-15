@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.date.DateUtils;
@@ -537,5 +538,11 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	
 	public Enumeration configNames() {
 		return keys();
+	}
+	
+	public void eachProperty(BiConsumer<String, String> propertyConsumer){
+		this.entrySet().forEach(entry->{
+			propertyConsumer.accept(entry.getKey()==null?null:entry.getKey().toString(), entry.getValue()==null?null:entry.getValue().toString());
+		});
 	}
 }

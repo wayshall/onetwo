@@ -215,7 +215,8 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
         	PropertyAccessorFactory.forBeanPropertyAccess(sessionCookie).setPropertyValue("httpOnly", true);
         }
         sessionCookie.setSecure(request.isSecure());
-        sessionCookie.setPath(cookiePath(request));
+        String cookiePath = cookiePath(request);
+        sessionCookie.setPath(cookiePath);
         String domain = cookieDomain(request);
         if(StringUtils.isNotBlank(domain)){
         	sessionCookie.setDomain(domain);

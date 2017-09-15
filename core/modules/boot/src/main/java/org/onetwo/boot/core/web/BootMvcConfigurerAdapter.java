@@ -4,12 +4,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
+import org.onetwo.boot.core.config.BootJFishConfig.MvcConfig.ResourceHandlerConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
+import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
@@ -20,6 +24,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -141,6 +146,18 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		/*registry.addResourceHandler(UploadViewController.CONTROLLER_PATH+"/**")
 				.setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS));*/
+		//默认把上传目录映射
+		if(siteConfig.getUpload().isFileStorePathToResourceHandler()){
+			registry.addResourceHandler(BootWebUtils.CONTROLLER_PREFIX+"/upload/**")
+					.addResourceLocations("file:"+FileUtils.convertDir(siteConfig.getUpload().getFileStorePath()))
+					.setCacheControl(CacheControl.maxAge(siteConfig.getUpload().getResourceCacheInDays(), TimeUnit.DAYS));
+		}
+		List<ResourceHandlerConfig> resourceHandlers = this.jfishBootConfig.getMvc().getResourceHandlers();
+		resourceHandlers.forEach(res->{
+			registry.addResourceHandler(res.getPathPatterns())
+					.addResourceLocations(res.getLocations())
+					.setCacheControl(CacheControl.maxAge(res.getCacheInDays(), TimeUnit.DAYS));
+		});
 	}
 
 }

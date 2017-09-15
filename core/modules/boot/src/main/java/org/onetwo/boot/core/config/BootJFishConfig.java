@@ -1,5 +1,7 @@
 package org.onetwo.boot.core.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import lombok.Data;
@@ -59,8 +61,9 @@ public class BootJFishConfig {
 	
 	@Data
 	public class MvcConfig {
-		private Properties mediaTypes;
-		private JsonConfig json = new JsonConfig();
+		Properties mediaTypes;
+		JsonConfig json = new JsonConfig();
+		List<ResourceHandlerConfig> resourceHandlers = new ArrayList<>();
 		
 		/*@Deprecated
 		private AutoWrapResultConfig autoWrapResult = new AutoWrapResultConfig();*/
@@ -83,6 +86,13 @@ public class BootJFishConfig {
 				 else
 					 return prettyPrint;
 			}
+		}
+		
+		@Data
+		public class ResourceHandlerConfig {
+			String[] pathPatterns;
+			String[] locations;
+			Integer cacheInDays = 30;
 		}
 
 		/*@Data

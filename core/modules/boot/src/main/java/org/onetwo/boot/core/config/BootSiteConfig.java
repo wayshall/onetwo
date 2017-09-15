@@ -198,6 +198,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		
 		StoreType storeType = StoreType.LOCAL;
 		String fileStorePath;
+		boolean fileStorePathToResourceHandler = true;
+		Integer resourceCacheInDays = 30;
 		String appContextDir;
 		//multipartProperties
 //		int maxUploadSize = BootStandardServletMultipartResolver.DEFAULT_MAX_UPLOAD_SIZE;
