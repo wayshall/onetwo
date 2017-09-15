@@ -57,7 +57,7 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
 	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
 	private String cookieName = "sid";
-	private String cookiePath = "/";
+	private String cookiePath;
 	private String cookieDomain;
 	
 	

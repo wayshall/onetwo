@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigurer {
@@ -37,7 +36,7 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 			http.authorizeRequests().antMatchers(entry.getKey()).access(entry.getValue());
 		}
 
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+//		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
 		//其它未标记管理的功能的默认权限
 		http.authorizeRequests()
 			.anyRequest()

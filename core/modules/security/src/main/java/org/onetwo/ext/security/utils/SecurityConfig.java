@@ -114,17 +114,28 @@ public class SecurityConfig {
 	}
 
 	@SuppressWarnings("serial")
-	@Data
 	@EqualsAndHashCode(callSuper=false)
+	@Data
 	public static class RedisConfig extends JFishProperties {
-		private String hostName = "localhost";
-		private int port = 6379;
+		public RedisConfig() {
+			super();
+			this.setProperty("hostName", "localhost");
+			this.setProperty("port", "6379");
+		}
 		private JedisPoolConfig pool;
+
+		public String getHostName() {
+			return getProperty("hostName");
+		}
+		public int getPort() {
+			return getInt("port");
+		}
+		
 	}
 
 	@Data
 	public static class CookieConfig {
-		private String path = "/";
+		private String path;
 		private String domain;
 		private String name = "sid";
 	}
