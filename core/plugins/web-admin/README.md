@@ -5,3 +5,11 @@ spring-boot技术交流群：  604158262
 
 ## 插件截图
 ![web-admin1](doc/web-admin1.jpg)
+
+## 配置
+jfish: 
+    plugin: 
+        web-admin: 
+            viewMapping: 
+                /login: ~/login
+                /admin: ~/admin

@@ -8,6 +8,7 @@ import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
@@ -27,8 +28,8 @@ import org.springframework.util.ClassUtils;
 public class BootContextConfig {
 	
 	
-	@Autowired
-	private BootJFishConfig bootJFishConfig;
+	/*@Autowired
+	private BootJFishConfig bootJFishConfig;*/
 
 	@Bean
 	@Autowired
@@ -58,15 +59,16 @@ public class BootContextConfig {
 	}
 	
 	@Bean(name=ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE)
-	public MessageSource exceptionMessageSource(){
+	public MessageSource exceptionMessageSource(@Autowired BootJFishConfig bootJFishConfig){
 		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
 		ms.setCacheSeconds(bootJFishConfig.getMessageSource().getCacheSeconds());
 		ms.setBasenames("classpath:messages/exception-messages", "classpath:messages/default-exception-messages");
 		return ms;
 	}
+	
 	@Bean
-	public ExceptionMessageAccessor exceptionMessageAccessor(){
-		ExceptionMessageAccessor exceptionMessageAccessor = new ExceptionMessageAccessor(exceptionMessageSource());
+	public ExceptionMessageAccessor exceptionMessageAccessor(@Autowired @Qualifier(ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE) MessageSource exceptionMessageSource){
+		ExceptionMessageAccessor exceptionMessageAccessor = new ExceptionMessageAccessor(exceptionMessageSource);
 		return exceptionMessageAccessor;
 	}
 	

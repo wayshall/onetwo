@@ -31,11 +31,12 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 		return this.syncPermissionData;
 	}
 	
+	@Override
 	public String getUserLogoutUrl(){
 		String url = this.getLogoutUrl();
-		if(isCasEnabled()){
+		/*if(isCasEnabled()){
 			url = this.getCas().getLogoutUrl();
-		}
+		}*/
 		return bootSiteConfig.getBaseURL() + StringUtils.appendStartWithSlash(url);
 	}
 	

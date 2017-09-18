@@ -11,9 +11,11 @@ import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.boot.plugin.core.WebPlugin;
 import org.onetwo.boot.plugin.mvc.annotation.WebPluginContext;
 import org.onetwo.common.annotation.AnnotationUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.OrderComparator;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -30,6 +32,8 @@ public class BootPluginRequestMappingHandlerMapping extends RequestMappingHandle
 
 	@Autowired
 	private PluginManager pluginManager;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
@@ -46,11 +50,11 @@ public class BootPluginRequestMappingHandlerMapping extends RequestMappingHandle
 	private String getPluginContextPath(Method method, Class<?> handlerType){
 		WebPluginContext pluginContext = AnnotationUtils.findAnnotationWithStopClass(handlerType, method, WebPluginContext.class);
 		if(pluginContext!=null){
-			return pluginContext.contextPath();
+			return resolvePluginContextPath(pluginContext.contextPath());
 		}
 		Optional<WebPlugin> plugin = pluginManager.findPluginByElementClass(handlerType);
 		if(plugin.isPresent()){
-			return plugin.get().getContextPath();
+			return resolvePluginContextPath(plugin.get().getContextPath());
 		}
 		return null;
 	}
@@ -64,6 +68,11 @@ public class BootPluginRequestMappingHandlerMapping extends RequestMappingHandle
 				null,
 				null, 
 				null);
+	}
+	
+	private String resolvePluginContextPath(final String pluginContextPath){
+		String path = SpringUtils.resolvePlaceholders(applicationContext, pluginContextPath);
+		return path;
 	}
 
 

@@ -34,6 +34,11 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 		super(DefaultMsg, cause);
 	}
 
+	public BaseException(ErrorType exceptionType) {
+		super(exceptionType.getErrorMessage());
+		this.code = exceptionType.getErrorCode();
+	}
+
 	public BaseException(ErrorType exceptionType, Throwable cause) {
 		this(exceptionType.getErrorMessage(), cause, exceptionType.getErrorCode());
 	}

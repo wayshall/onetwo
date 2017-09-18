@@ -4,12 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.plugin.mvc.annotation.WebPluginContext;
 import org.onetwo.plugins.admin.utils.Codes.ErrorCodes;
+import org.onetwo.plugins.admin.utils.WebConstant;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-@WebPluginContext(contextPath="")
-@RequestMapping("login")
+@WebPluginContext(contextPath=WebConstant.CONFIG_LOGIN_PATH)
+@RequestMapping("")
 public class LoginController extends WebAdminBaseController {
 
 	@RequestMapping(method=RequestMethod.GET)

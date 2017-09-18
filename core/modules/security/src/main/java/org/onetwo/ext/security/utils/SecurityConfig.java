@@ -10,7 +10,9 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
+import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -29,25 +31,27 @@ public class SecurityConfig {
 	public static final String LOGOUT_PATH = "/logout";
 	public static final String TARGET_PATH_AFTER_LOGIN = "/admin";
 	
+	//预留，未使用
+	private String urlPrefix = "";
 	private String logoutUrl = LOGOUT_PATH;
 	private String loginUrl = LOGIN_PATH;
 	/***
 	 * LogoutConfigurer#logoutSuccessUrl default value
 	 */
-	private String logoutSuccessUrl = "/login?logout";
+	private String logoutSuccessUrl;
 	private String loginProcessUrl = LOGIN_PROCESS_PATH;
 	private String afterLoginUrl = TARGET_PATH_AFTER_LOGIN;
 	
 	private boolean alwaysUseDefaultTargetUrl = true;
 
 	//AccessDenied redirectErrorUrl
-	private String redirectErrorUrl;
+//	private String redirectErrorUrl;
 	//AccessDenied errorPage
 	private String errorPage = "/error";
 	
 	private RedirectStrategyConfig redirectStrategy = new RedirectStrategyConfig();
 	
-	private CasConfig cas = new CasConfig();
+//	private CasConfig cas = new CasConfig();
 	private CrsfConfig csrf = new CrsfConfig();
 //	private boolean csrf = true;
 	protected Boolean syncPermissionData;
@@ -60,16 +64,62 @@ public class SecurityConfig {
 	private JwtConfig jwt = new JwtConfig();
 	private Map<String[], String> intercepterUrls = Maps.newHashMap();
 	
+	/**
+	 * for page
+	 * @author wayshall
+	 * @return
+	 */
 	public String getUserLogoutUrl(){
 		String url = logoutUrl;
-		if(isCasEnabled()){
+		/*if(isCasEnabled()){
 			url = cas.getLogoutUrl();
-		}
-		return url;
+		}*/
+		return resolveUrl(url);
+	}
+	
+	/****
+	 * @see DefaultMethodSecurityConfigurer#defaultConfigure
+	 * @author wayshall
+	 * @return
+	 */
+	public String getLoginUrl(){
+		return resolveUrl(loginUrl);
+	}
+	/***
+	 * 
+	 * @see DefaultMethodSecurityConfigurer#defaultConfigure
+	 * @author wayshall
+	 * @return
+	 */
+	public String getLogoutUrl(){
+		return resolveUrl(logoutUrl);
+	}
+	
+	public String getAfterLoginUrl(){
+		return resolveUrl(afterLoginUrl);
+	}
+	
+	public String getLoginProcessUrl(){
+		return resolveUrl(loginProcessUrl);
 	}
 	
 	public String getLogoutSuccessUrl(){
-		return logoutSuccessUrl;
+		if(StringUtils.isBlank(logoutSuccessUrl)){
+			return RequestUtils.appendParamString(getLoginUrl(), "logout");
+		}
+		return resolveUrl(logoutSuccessUrl);
+	}
+	
+	private String resolveUrl(String url){
+		return urlPrefix + url;
+	}
+	
+	/*public String getRedirectErrorUrl(){
+		return redirectErrorUrl;
+	}*/
+	
+	public String getErrorPage(){
+		return errorPage;
 	}
 	
 	public void setAfterLoginUrl(String afterLoginUrl){
