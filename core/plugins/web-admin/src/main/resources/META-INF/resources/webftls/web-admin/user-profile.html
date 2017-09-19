@@ -1,5 +1,5 @@
 
-<@extends parent="/[web-admin]/layout/easyui-js.html">
+<@extends parent="easyui-js.html">
     
     <@override name="charset">
         <meta charset="UTF-8">
@@ -14,7 +14,7 @@
     
 		<div id="addDataDialog" class="easyui-dialog" 
 		    style="width:50%;height:80%;padding:10px 20px">
-		           填写[用户表]信息<hr/>
+		           填写[用户]信息<hr/>
 		       <form id="dataForm" class="easyui-form" action="${siteConfig.baseURL}/web-admin/userProfile.json" method="post" >
 		            <input id="_method" name="_method" type="hidden" />
 		           <input name="id" type="hidden"/>
@@ -48,14 +48,6 @@
 		                    <td>电子邮件:</td>
 		                    <td>
 		                        <input class="easyui-textbox formFieldClass" type="text" name="email" 
-		                               data-options="required:false,
-		                                             validType:'length[0,50]' "/>
-		                    </td>
-		                </tr>
-		                <tr>
-		                    <td>qq:</td>
-		                    <td>
-		                        <input class="easyui-textbox formFieldClass" type="text" name="qq" 
 		                               data-options="required:false,
 		                                             validType:'length[0,50]' "/>
 		                    </td>

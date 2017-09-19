@@ -68,8 +68,9 @@ public class RequestMappingHandlerMappingListenable implements InitializingBean 
 
 	protected void handlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		if(listeners!=null){
-			for(HandlerMappingListener l : listeners)
+			for(HandlerMappingListener l : listeners){
 				l.onHandlerMethodsInitialized(handlerMethods);
+			}
 		}
 	}
 

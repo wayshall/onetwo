@@ -16,8 +16,8 @@ import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.common.data.AbstractDataResult;
-import org.onetwo.common.data.LazyValue;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.LazyValue;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -73,6 +73,7 @@ abstract public class AbstractBaseController {
 	
 	@Autowired
 	private SessionUserManager<UserDetail> sessionUserManager;
+	
 	
 	protected AbstractBaseController(){
 	}

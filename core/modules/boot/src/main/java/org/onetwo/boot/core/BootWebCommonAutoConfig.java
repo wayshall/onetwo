@@ -14,6 +14,7 @@ import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
+import org.onetwo.boot.core.web.mvc.BootWebMvcRegistrations;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
@@ -132,6 +133,16 @@ public class BootWebCommonAutoConfig {
 	@Bean
 	public BootMvcConfigurerAdapter bootMvcConfigurerAdapter(){
 		return new BootMvcConfigurerAdapter();
+	}
+
+	/***
+	 * 覆盖 spring的RequestMappingHandlerMapping 实现
+	 * @author wayshall
+	 * @return
+	 */
+	@Bean
+	public BootWebMvcRegistrations bootWebMvcRegistrations(){
+		return new BootWebMvcRegistrations();
 	}
 	
 	/***

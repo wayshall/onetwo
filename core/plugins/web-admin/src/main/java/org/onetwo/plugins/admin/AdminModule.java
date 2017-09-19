@@ -6,7 +6,10 @@ public interface AdminModule {
 	String name = "权限管理系统";
 	String appCode = AdminModule.class.getSimpleName();
 
-
+	public interface UserProfile {
+		String name = "修改资料";
+	}
+	
 	public static interface ApplicationMgr {
 		String name = "应用系统管理";
 		int sort = 3;
