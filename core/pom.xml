@@ -65,9 +65,10 @@
     	<id>release</id>
     	<modules>
                 <module>modules/common</module>
+                <module>../../dbm</module>
                 <module>modules/security</module>
                 <module>modules/boot</module>
-                <module>modules/cloud</module>
+                <module>plugins/web-admin</module>
 	  	</modules>
         <build>
             <plugins>

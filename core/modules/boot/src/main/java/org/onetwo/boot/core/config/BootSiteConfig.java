@@ -215,23 +215,23 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		
 		CompressConfig compressImage = new CompressConfig();
 
-		@Data
-		public class CompressConfig {
-			//超过了配置值就启用自动压缩功能，比如：5KB
-			//少于0则所有大小一律压缩
-			String thresholdSize;
-			Double scale;
-			Double quality;
-			Integer width;
-			Integer height;
-			List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
-		}
-		
 		/*public int getMaxUploadSize(){
 			return maxUploadSize;
 		}*/
 	}
-
+	
+	@Data
+	static public class CompressConfig {
+		//超过了配置值就启用自动压缩功能，比如：5KB
+		//少于0则所有大小一律压缩
+		String thresholdSize;
+		Double scale;
+		Double quality;
+		Integer width;
+		Integer height;
+		List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
+	}
+	
 	@Data
 	public class EditorConfig {
 		//kindeditor上传图片时返回路径的前缀

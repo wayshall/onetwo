@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.Data;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.Thumbnails.Builder;
 
@@ -21,13 +22,27 @@ import org.onetwo.common.file.FileUtils;
  */
 public class ImageCompressor {
 	
+
+	static public ImageCompressor of(ImageCompressorConfig config){
+		ImageCompressor compressor = new ImageCompressor();
+		compressor.setConfig(config);
+		return compressor;
+	}
+	
+	@Data
+	@lombok.Builder
+	static public class ImageCompressorConfig {
+		Double scale;
+		Double quality;
+		Integer width;
+		Integer height;
+		List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
+	}
+	
 	//8k
 	private static final int BUF_SIZE = 8*1024;
 	
-	private Double scale;
-	private Double quality;
-	private Integer width;
-	private Integer height;
+	private ImageCompressorConfig config;
 	private List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 	
 	public boolean isCompressFile(String fileName){
@@ -85,35 +100,27 @@ public class ImageCompressor {
 	 * @param builder
 	 */
 	protected void configBuilder(Builder<?> builder){
-		if(scale!=null){
-			builder.scale(scale);//经过测试，可以大幅减少大小，比如 0.5
+		if(config==null){
+			return ;
 		}
-		if(width!=null && height!=null){
-			builder.size(width, height);
-		}else if(width!=null){
-			builder.width(width);
-		}else if(height!=null){
-			builder.height(height);
+		if(config.getScale()!=null){
+			builder.scale(config.getScale());//经过测试，可以大幅减少大小，比如 0.5
 		}
-		if(quality!=null){
-			builder.outputQuality(quality);//压缩质量，比如 0.3，太低会影响质量，变成色块
+		if(config.getWidth()!=null && config.getHeight()!=null){
+			builder.size(config.getWidth(), config.getHeight());
+		}else if(config.getWidth()!=null){
+			builder.width(config.getWidth());
+		}else if(config.getHeight()!=null){
+			builder.height(config.getHeight());
+		}
+		if(config.getQuality()!=null){
+			builder.outputQuality(config.getQuality());//压缩质量，比如 0.3，太低会影响质量，变成色块
 		}
 	}
 
-	public void setScale(Double scale) {
-		this.scale = scale;
-	}
 
-	public void setQuality(Double quality) {
-		this.quality = quality;
-	}
-
-	public void setWidth(Integer width) {
-		this.width = width;
-	}
-
-	public void setHeight(Integer height) {
-		this.height = height;
+	public void setConfig(ImageCompressorConfig config) {
+		this.config = config;
 	}
 
 	public void setFileTypes(List<String> fileTypes) {

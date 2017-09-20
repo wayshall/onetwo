@@ -4,7 +4,7 @@ import net.coobird.thumbnailator.Thumbnails;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig.CompressConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
 import org.onetwo.boot.core.web.controller.LoggerController;
 import org.onetwo.boot.core.web.controller.SettingsController;
 import org.onetwo.boot.core.web.controller.UploadViewController;
@@ -13,8 +13,10 @@ import org.onetwo.boot.core.web.service.impl.SettingsManager;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.utils.ImageCompressor;
+import org.onetwo.boot.utils.ImageCompressor.ImageCompressorConfig;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -66,13 +68,9 @@ public class BootCommonServiceConfig {
 	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_COMPRESS_PREFIX, matchIfMissing=false)
 	@ConditionalOnClass(Thumbnails.class)
 	public ImageCompressor imageCompressor(){
-		ImageCompressor compressor = new ImageCompressor();
 		CompressConfig config = bootSiteConfig.getUpload().getCompressImage();
-		compressor.setScale(config.getScale());
-		compressor.setQuality(config.getQuality());
-		compressor.setWidth(config.getWidth());
-		compressor.setHeight(config.getHeight());
-		compressor.setFileTypes(config.getFileTypes());
+		ImageCompressorConfig compressorConfig = CopyUtils.copy(ImageCompressorConfig.class, config);
+		ImageCompressor compressor = ImageCompressor.of(compressorConfig);
 		return compressor;
 	}
 	

@@ -1,10 +1,6 @@
 package org.onetwo.common.file;
 
 import java.io.InputStream;
-import java.util.Map;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 public class StoringFileContext {
 	
@@ -18,7 +14,7 @@ public class StoringFileContext {
 	
 	private InputStream inputStream;
 	private String fileName;
-	private Map<String, Object> context;
+//	private Map<String, Object> context;
 	private String module;
 	private StoreFilePathStrategy storeFilePathStrategy = SimpleFileStorer.SIMPLE_STORE_STRATEGY;
 	
@@ -30,7 +26,7 @@ public class StoringFileContext {
 		this.module = module;
 	}
 
-	public StoringFileContext put(String name, Object value){
+	/*public StoringFileContext put(String name, Object value){
 		if(context==null){
 			context = Maps.newHashMap();
 		}
@@ -40,7 +36,7 @@ public class StoringFileContext {
 
 	public Map<String, Object> getContext() {
 		return context==null?ImmutableMap.of():ImmutableMap.copyOf(context);
-	}
+	}*/
 
 	public InputStream getInputStream() {
 		return inputStream;

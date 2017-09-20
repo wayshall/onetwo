@@ -6,12 +6,15 @@ import java.io.OutputStream;
 
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.FileStorerListener;
+import org.onetwo.boot.core.web.utils.UploadOptions;
 import org.onetwo.boot.utils.ImageCompressor;
+import org.onetwo.boot.utils.ImageCompressor.ImageCompressorConfig;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.StoringFileContext;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -68,6 +71,36 @@ public class SimpleBootCommonService implements BootCommonService {
 		}
 		return meta;
 	}
+
+
+	@Override
+	public FileStoredMeta uploadFile(UploadOptions options){
+		Assert.notNull(options.getModule());
+		Assert.notNull(options.getMultipartFile());
+		InputStream in;
+		try {
+			in = options.getMultipartFile().getInputStream();
+		} catch (IOException e) {
+			throw new BaseException("obtain file stream error: " + options.getMultipartFile().getOriginalFilename());
+		}
+		if(options.isCompressFile()){
+			ImageCompressor imageCompressor = this.imageCompressor;
+			if(imageCompressor==null){
+				ImageCompressorConfig config = CopyUtils.copy(ImageCompressorConfig.class, options.getCompressConfig());
+				imageCompressor = ImageCompressor.of(config);
+			}
+			in = imageCompressor.compressStream(in);
+		}
+		StoringFileContext context = StoringFileContext.create(options.getModule(), 
+																in, 
+																options.getMultipartFile().getOriginalFilename());
+		FileStoredMeta meta = fileStorer.write(context);
+		if(fileStorerListener!=null){
+			fileStorerListener.afterFileStored(meta);
+		}
+		return meta;
+	}
+	
 	
 	public void readFileTo(String accessablePath, OutputStream output){
 		this.fileStorer.readFileTo(accessablePath, output);
