@@ -34,9 +34,9 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	@Override
 	public String getUserLogoutUrl(){
 		String url = this.getLogoutUrl();
-		/*if(isCasEnabled()){
+		if(isCasEnabled()){
 			url = this.getCas().getLogoutUrl();
-		}*/
+		}
 		return bootSiteConfig.getBaseURL() + StringUtils.appendStartWithSlash(url);
 	}
 	

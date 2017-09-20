@@ -51,7 +51,7 @@ public class SecurityConfig {
 	
 	private RedirectStrategyConfig redirectStrategy = new RedirectStrategyConfig();
 	
-//	private CasConfig cas = new CasConfig();
+	private CasConfig cas = new CasConfig();
 	private CrsfConfig csrf = new CrsfConfig();
 //	private boolean csrf = true;
 	protected Boolean syncPermissionData;

@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
  */
 public class ExtRequestMappingHandlerMapping extends RequestMappingHandlerMapping implements InitializingBean {
 
-	@Autowired
+	@Autowired(required=false)
 	private List<RequestMappingCombiner> combiners;
 
 	@Override
@@ -36,8 +36,8 @@ public class ExtRequestMappingHandlerMapping extends RequestMappingHandlerMappin
 		}
 		if(!combiners.isEmpty()){
 			combiners.sort(OrderComparator.INSTANCE);
-			this.combiners = ImmutableList.copyOf(combiners);
 		}
+		this.combiners = ImmutableList.copyOf(combiners);
 		super.afterPropertiesSet();
 	}
 	
