@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-@WebPluginContext(contextPath=WebConstant.CONFIG_LOGIN_PATH)
-@RequestMapping("")
+@WebPluginContext(contextPath="")
+@RequestMapping(WebConstant.CONFIG_LOGIN_PATH)
 public class LoginController extends WebAdminBaseController {
 
 	@RequestMapping(method=RequestMethod.GET)

@@ -1,7 +1,8 @@
 package org.onetwo.plugins.admin.utils;
 
+
 final public class WebConstant {
-	public static final String CONFIG_LOGIN_PATH = "${jfish.security.loginUrl:login}";
+	public static final String CONFIG_LOGIN_PATH = "${jfish.plugin.web-admin.loginController.requestMapping:login}";
 	
 	public static final String UPLOAD_MODULE_KINDEDITOR = "kindeditor";
 

@@ -60,6 +60,9 @@ public class SimpleBootCommonService implements BootCommonService {
 		}
 	}
 
+	/***
+	 * 此方法安装全局配置来决定是否压缩
+	 */
 	@Override
 	public FileStoredMeta uploadFile(String module, MultipartFile file){
 		Assert.notNull(file);
@@ -86,10 +89,10 @@ public class SimpleBootCommonService implements BootCommonService {
 		if(options.isCompressFile()){
 			ImageCompressor imageCompressor = this.imageCompressor;
 			if(imageCompressor==null){
-				ImageCompressorConfig config = CopyUtils.copy(ImageCompressorConfig.class, options.getCompressConfig());
-				imageCompressor = ImageCompressor.of(config);
+				imageCompressor = new ImageCompressor();
 			}
-			in = imageCompressor.compressStream(in);
+			ImageCompressorConfig config = CopyUtils.copy(ImageCompressorConfig.class, options.getCompressConfig());
+			in = imageCompressor.compressStream(in, config);
 		}
 		StoringFileContext context = StoringFileContext.create(options.getModule(), 
 																in, 

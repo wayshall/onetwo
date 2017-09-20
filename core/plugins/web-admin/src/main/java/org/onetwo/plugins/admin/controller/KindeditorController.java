@@ -33,6 +33,14 @@ public class KindeditorController extends WebAdminBaseController {
 			throw new ServiceException("上传文件不能为空！");
 		}
 		FileStoredMeta meta = bootCommonService.uploadFile(WebConstant.UPLOAD_MODULE_KINDEDITOR, imgFile);
+		/*UploadOptions options = UploadOptions.builder()
+					.module(WebConstant.UPLOAD_MODULE_KINDEDITOR)
+					.multipartFile(imgFile)
+					.compressConfig(CompressConfig.builder()
+													.width(400)
+													.build())
+					.build();
+		FileStoredMeta meta = bootCommonService.uploadFile(options);*/
 		String url = siteConfig.getKindeditor().getImageBasePath() + meta.getAccessablePath();
 		return ImmutableMap.of("error", 0, "url", url);
 	}

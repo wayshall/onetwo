@@ -8,7 +8,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.Thumbnails.Builder;
 
@@ -31,6 +33,8 @@ public class ImageCompressor {
 	
 	@Data
 	@lombok.Builder
+	@NoArgsConstructor
+	@AllArgsConstructor
 	static public class ImageCompressorConfig {
 		Double scale;
 		Double quality;
@@ -55,9 +59,13 @@ public class ImageCompressor {
 	}
 
 	public InputStream compressStream(InputStream imageInputStream){
+		return this.compressStream(imageInputStream, config);
+	}
+	
+	public InputStream compressStream(InputStream imageInputStream, ImageCompressorConfig config){
 		try {
 			Builder<InputStream> builder = Thumbnails.fromInputStreams(Arrays.asList(imageInputStream));
-			configBuilder(builder);
+			configBuilder(builder, config);
 			ByteArrayOutputStream os = new ByteArrayOutputStream(BUF_SIZE);
 			builder.toOutputStream(os);
 			InputStream in = new ByteArrayInputStream(os.toByteArray());
@@ -69,12 +77,13 @@ public class ImageCompressor {
 //			FileUtils.close(imageInputStream);
 		}
 	}
+	
 	public String compressTo(String imagePath, String targetPath){
 		if(!isCompressFile(imagePath)){
 			throw new BaseException("not support compress file type: " + FileUtils.getExtendName(imagePath));
 		}
 		Builder<File> builder = Thumbnails.fromFilenames(Arrays.asList(imagePath));
-		configBuilder(builder);
+		configBuilder(builder, config);
 		
 		File targetFile = null;
 		if(StringUtils.isBlank(targetPath)){
@@ -99,7 +108,7 @@ public class ImageCompressor {
 	 * @author wayshall
 	 * @param builder
 	 */
-	protected void configBuilder(Builder<?> builder){
+	protected void configBuilder(Builder<?> builder, ImageCompressorConfig config){
 		if(config==null){
 			return ;
 		}

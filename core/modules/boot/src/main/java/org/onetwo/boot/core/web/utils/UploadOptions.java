@@ -1,5 +1,8 @@
 package org.onetwo.boot.core.web.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -9,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
  * @author wayshall
  * <br/>
  */
+@Builder
+@AllArgsConstructor
 public class UploadOptions {
 	final private String module;
 	final private MultipartFile multipartFile;

@@ -80,7 +80,7 @@ public class WebAdminPluginContext implements InitializingBean {
 	}
 	
 	@Bean
-	@ConditionalOnProperty(value={"site.kindeditor.imageBasePath", BootSiteConfig.ENABLE_KINDEDITOR_UPLOADSERVICE}, matchIfMissing=false)
+	@ConditionalOnProperty(value={"site.kindeditor.imageBasePath"}, matchIfMissing=false)
 	public KindeditorController kindeditorController(){
 		return new KindeditorController();
 	}
