@@ -18,7 +18,8 @@ public class WechatOAuth2MvcInterceptor extends MvcInterceptorAdapter {
 	private WechatOAuth2Hanlder wechatOAuth2Hanlder;
 
 	@Override
-	public void preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
 		wechatOAuth2Hanlder.preHandle(request, response, handler);
+		return true;
 	}
 }

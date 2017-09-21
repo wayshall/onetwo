@@ -24,10 +24,12 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,7 +40,7 @@ import com.google.common.cache.LoadingCache;
  * @author wayshall
  * <br/>
  */
-abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> implements FactoryBean<Object>, InitializingBean {
+abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> implements FactoryBean<Object>, InitializingBean, ApplicationContextAware {
 
 
 	private static final String ACCEPT = "Accept";
@@ -64,11 +66,15 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	@Autowired(required=false)
 	protected ValidatorWrapper validatorWrapper;
 	protected ApiClientResponseHandler<M> responseHandler = new DefaultApiClientResponseHandler<M>();
-	@Autowired
-	private ApplicationContext applicationContext;
+	protected ApplicationContext applicationContext;
 	
 	final public void setResponseHandler(ApiClientResponseHandler<M> responseHandler) {
 		this.responseHandler = responseHandler;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
 	@Override

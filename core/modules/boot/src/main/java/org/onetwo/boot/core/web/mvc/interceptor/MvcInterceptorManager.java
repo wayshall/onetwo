@@ -33,41 +33,70 @@ import com.google.common.collect.ImmutableList;
  * <br/>
  */
 public class MvcInterceptorManager extends WebInterceptorAdapter implements HandlerMappingListener, ApplicationContextAware, HandlerInterceptor {
+	private static final String INTERCEPTORS_KEY = MvcInterceptorManager.class.getName() + ".interceptors";
 	
 	private Cache<Method, HandlerMethodInterceptorMeta> interceptorMetaCaces = CacheBuilder.newBuilder().build();
 	private ApplicationContext applicationContext;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		boolean executed = executeInterceptors(handler, (hmethod, inter)->{
+		/*boolean executed = executeInterceptors(handler, (hmethod, inter)->{
 			inter.preHandle(request, response, hmethod);
-		});
-		return executed;
+		});*/
+		
+		HandlerMethod hmethod = getHandlerMethod(handler);
+		if(hmethod==null){
+			//非HandlerMethod，直接返回true继续mvc的preHandle拦截器，但不执行jfish的preHandle拦截器
+			return true;
+		}
+		Optional<HandlerMethodInterceptorMeta> meta = getInterceptorMeta(hmethod.getMethod());
+		if(!meta.isPresent()){
+			return true;
+		}
+		
+		List<? extends MvcInterceptor> interceptors = meta.get().getInterceptors();
+		request.setAttribute(INTERCEPTORS_KEY, interceptors);
+		for(MvcInterceptor inter : interceptors){
+			boolean nextPreHandle = inter.preHandle(request, response, hmethod);
+			if(!nextPreHandle){
+				return nextPreHandle;
+			}
+		}
+		
+		return true;
 	}
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		executeInterceptors(handler, (hmethod, inter)->{
+		executeInterceptors(request, handler, (hmethod, inter)->{
 			inter.postHandle(request, response, hmethod, modelAndView);
 		});
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		executeInterceptors(handler, (hmethod, inter)->{
+		executeInterceptors(request, handler, (hmethod, inter)->{
 			inter.afterCompletion(request, response, hmethod, ex);
 		});
 	}
 	
-	private boolean executeInterceptors(Object handler, BiConsumer<HandlerMethod, MvcInterceptor> consumer){
-		HandlerMethod hmethod = getHandlerMethod(handler);
+	@SuppressWarnings("unchecked")
+	private void executeInterceptors(HttpServletRequest request, Object handler, BiConsumer<HandlerMethod, MvcInterceptor> consumer){
+		/*HandlerMethod hmethod = getHandlerMethod(handler);
 		if(hmethod==null){
-			return false;
+			return ;
 		}
 		getInterceptorMeta(hmethod.getMethod()).ifPresent(meta->{
 			meta.getInterceptors().forEach(inter->consumer.accept(hmethod, inter));
-		});
-		return true;
+		});*/
+		
+		List<? extends MvcInterceptor> interceptors = (List<? extends MvcInterceptor>)request.getAttribute(INTERCEPTORS_KEY);
+		if(interceptors==null){
+			return ;
+		}
+		HandlerMethod hmethod = getHandlerMethod(handler);
+		interceptors.forEach(inter->consumer.accept(hmethod, inter));
+		return ;
 	}
 	
 	private Optional<HandlerMethodInterceptorMeta> getInterceptorMeta(Method method){

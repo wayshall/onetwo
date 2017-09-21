@@ -13,7 +13,15 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public interface MvcInterceptor {
 	
-	void preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) ;
+	/****
+	 * 
+	 * @author wayshall
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return 
+	 */
+	boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) ;
 
 	void postHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, ModelAndView modelAndView) ;
 	

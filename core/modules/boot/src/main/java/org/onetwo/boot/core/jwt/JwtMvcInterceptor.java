@@ -20,10 +20,10 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 	private JwtTokenService jwtTokenService;
 
 	@Override
-	public void preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
 		Object data = request.getAttribute(JwtUtils.AUTH_ATTR_KEY);
 		if(data instanceof UserDetail){
-			return ;
+			return true;
 		}
 		String token = request.getHeader(authHeaderName);
 
@@ -37,6 +37,7 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 		
 		UserDetail userDetail = jwtTokenService.createUserDetail(token);
 		request.setAttribute(JwtUtils.AUTH_ATTR_KEY, userDetail);
+		return true;
 	}
 
 }

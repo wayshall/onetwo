@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -273,6 +275,21 @@ public final class RequestUtils {
 				"json".equalsIgnoreCase(getRequestExtension(request)) || 
 				RequestType.Flash.equals(RequestTypeUtils.getRequestType(request)) || 
 				"true".equalsIgnoreCase(request.getParameter("ajaxRequest"));
+	}
+	
+	public static boolean isAjaxHandlerMethod(Object handlerMethod){
+		HandlerMethod hm = getHandlerMethod(handlerMethod);
+		if(hm==null){
+			return false;
+		}
+		return hm.hasMethodAnnotation(ResponseBody.class);
+	}
+	
+	public static HandlerMethod getHandlerMethod(Object handler){
+		if(handler instanceof HandlerMethod){
+			return (HandlerMethod)handler;
+		}
+		return null;
 	}
 
 	public static String getRequestExtension(HttpServletRequest request) {

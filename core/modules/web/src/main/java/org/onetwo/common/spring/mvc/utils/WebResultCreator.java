@@ -6,8 +6,10 @@ import java.util.stream.Stream;
 
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.data.LazyValue;
+import org.onetwo.common.exception.ErrorType;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.validation.BindingResult;
 
 import com.google.common.collect.Lists;
@@ -25,8 +27,11 @@ final public class WebResultCreator {
 	}
 
 	public SimpleResultBuilder error(String message){
-		SimpleResultBuilder builder = new SimpleResultBuilder().error(message);
-		return builder;
+		return SimpleResultBuilder.builder().error(message);
+	}
+
+	public SimpleResultBuilder error(ErrorType errorType){
+		return SimpleResultBuilder.builder().error(errorType);
 	}
 
 	public SimpleResultBuilder error(BindingResult bindingResult){
@@ -35,8 +40,7 @@ final public class WebResultCreator {
 	}
 
 	public SimpleResultBuilder success(String message){
-		SimpleResultBuilder builder = new SimpleResultBuilder().success(message);
-		return builder;
+		return SimpleResultBuilder.builder().success(message);
 	}
 	/***
 	 * SimpleResultBuilder
@@ -51,9 +55,7 @@ final public class WebResultCreator {
 		return data(data);
 	}
 	public SimpleResultBuilder data(Object data){
-		SimpleResultBuilder builder = new SimpleResultBuilder().success();
-		builder.data(data);
-		return builder;
+		return SimpleResultBuilder.builder().success().data(data);
 	}
 	
 	/***
@@ -109,12 +111,28 @@ final public class WebResultCreator {
 
 
 	public static class SimpleResultBuilder extends AbstractResultBuilder<Object, SimpleResultBuilder> {
+		public static SimpleResultBuilder builder(){
+			return new SimpleResultBuilder();
+		}
 	}
+	
+	public static class BaseResultBuilder<T> extends AbstractResultBuilder<T, BaseResultBuilder<T>> {
+		public static <T> BaseResultBuilder<T> builder(){
+			return new BaseResultBuilder<T>();
+		}
+	}
+	
 	public static class LazyResultBuilder extends AbstractResultBuilder<LazyValue, LazyResultBuilder> {
+		public static LazyResultBuilder builder(){
+			return new LazyResultBuilder();
+		}
 	}
 	
 
 	public static class ListResultBuilder extends AbstractResultBuilder<List<Object>, ListResultBuilder> {
+		public static ListResultBuilder builder(){
+			return new ListResultBuilder();
+		}
 		
 		public ListResultBuilder() {
 //			super(ListResultBuilder.class);
@@ -148,6 +166,13 @@ final public class WebResultCreator {
 			if(objs.length==0)
 				return this;
 			data.putAll(CUtils.asMap(objs));
+			return this;
+		}
+		
+		public MapResultBuilder putAll(Map<?, ?> datas){
+			if(LangUtils.isEmpty(datas))
+				return this;
+			data.putAll(datas);
 			return this;
 		}
 	}

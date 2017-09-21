@@ -17,8 +17,8 @@ public class MvcInterceptorAdapter implements MvcInterceptor {
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass()); 
 
 	@Override
-	public void preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
-		
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
+		return true;
 	}
 
 	@Override
@@ -33,8 +33,5 @@ public class MvcInterceptorAdapter implements MvcInterceptor {
 			HttpServletResponse response, HandlerMethod handler, Exception ex) {
 		
 	}
-
-	
-	
 
 }
