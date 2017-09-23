@@ -50,6 +50,7 @@
                 <module>modules/security</module>
                 <module>modules/boot</module>
                 <module>modules/test</module>
+                <module>../../onetwo-wechat</module>
                 <module>modules/cloud</module>
                 
                 <module>plugins/parent</module>
@@ -64,9 +65,7 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/spring</module>
-                <module>modules/web</module>
-                <module>modules/boot</module>
+                <module>../../onetwo-wechat</module>
 	  	</modules>
         <build>
             <plugins>
