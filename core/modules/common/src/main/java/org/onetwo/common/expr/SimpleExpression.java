@@ -13,6 +13,12 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 
+/****
+ * like StrSubstitutor
+ * 
+ * @author wayshall
+ *
+ */
 @SuppressWarnings("rawtypes")
 public class SimpleExpression implements Expression {
  

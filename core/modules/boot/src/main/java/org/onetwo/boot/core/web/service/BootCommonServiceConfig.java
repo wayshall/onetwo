@@ -15,6 +15,7 @@ import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.utils.ImageCompressor;
 import org.onetwo.boot.utils.ImageCompressor.ImageCompressorConfig;
 import org.onetwo.common.db.spi.BaseEntityManager;
+import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.slf4j.Logger;
@@ -77,7 +78,7 @@ public class BootCommonServiceConfig {
 	@Bean
 	@ConditionalOnClass(BaseEntityManager.class)
 	@ConditionalOnMissingBean({FileStorerListener.class})
-	@ConditionalOnBean({BootCommonService.class, FileStorerListener.class, BaseEntityManager.class})
+	@ConditionalOnBean({BootCommonService.class, FileStorer.class, BaseEntityManager.class})
 	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_UPLOAD_STOREFILEMETATODATABASE, matchIfMissing=false)
 	public FileStorerListener fileStorerListener(){
 		FileStorerListener listener = new DbmFileStorerListener();

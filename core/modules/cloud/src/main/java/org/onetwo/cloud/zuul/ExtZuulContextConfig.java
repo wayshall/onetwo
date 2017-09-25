@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartResolver;
@@ -39,6 +40,7 @@ public class ExtZuulContextConfig {
     @Bean
     @ConditionalOnClass(name="com.netflix.zuul.ZuulFilter")
     @ConditionalOnProperty(BootJfishCloudConfig.ZUUL_FIXHEADERS_ENABLED)
+    @RefreshScope
     public FixHeaderZuulFilter fixHeaderZuulFilter(){
     	FixHeaderZuulFilter filter = new FixHeaderZuulFilter();
     	filter.setFixHeaders(cloudConfig.getZuul().getFixHeaders());	

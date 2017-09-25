@@ -75,10 +75,14 @@ public final class BootWebUtils {
 	}
 	
 	public static String getBasePathPrefixFromHeader(){
+		return getHeader(HEADER_FORWARDED_PREFIX, "");
+	}
+	
+	public static String getHeader(String header, String def){
 		return WebHolder.getRequest()
-						.map(req->req.getHeader(HEADER_FORWARDED_PREFIX))
+						.map(req->req.getHeader(header))
 						.filter(prefix->StringUtils.isNotBlank(prefix))
-						.orElse("");
+						.orElse(def);
 	}
 	
 	public static Locale getLocale(){

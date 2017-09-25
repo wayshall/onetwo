@@ -26,6 +26,7 @@ import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
+import org.onetwo.boot.dsrouter.DsRouterConfiguration;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStorer;
@@ -43,6 +44,7 @@ import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
@@ -53,6 +55,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * @author wayshall
  *
  */
+@Import(DsRouterConfiguration.class)
 public class BootWebCommonAutoConfig {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
 	

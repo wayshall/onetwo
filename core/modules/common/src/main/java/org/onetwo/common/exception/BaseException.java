@@ -1,6 +1,10 @@
 package org.onetwo.common.exception;
 
+import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 
 @SuppressWarnings("serial")
@@ -15,10 +19,14 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 		return new BaseException(formatMsg, cause);
 	}
 
+	private static final String SEP_LIE = "--------------------";
+	
 	protected static final String DefaultMsg = "occur error";
 	public static final String Prefix = "[ERROR]:";
 
 	protected String code;
+	
+	private Map<String, Object> errorContext;
 
 //	protected List<Throwable> list = null;
 
@@ -52,5 +60,29 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 		this(msg, cause);
 		this.code = code;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends BaseException> T put(String key, Object value){
+		Map<String, Object> errorContext = this.errorContext;
+		if(errorContext==null){
+			errorContext = Maps.newHashMap();
+			this.errorContext = errorContext;
+		}
+		errorContext.put(key, value);
+		return (T)this;
+	}
+
+    public void printStackTrace(PrintStream s) {
+    	if(this.errorContext!=null){
+    		StringBuilder contextMsg = new StringBuilder(300);
+    		contextMsg.append(SEP_LIE).append("\n");
+    		this.errorContext.forEach((key, value)->{
+    			contextMsg.append(key).append("\t:\t").append(value);
+    		});
+    		contextMsg.append("\n").append(SEP_LIE);
+    		s.println(contextMsg);
+    	}
+    	super.printStackTrace(s);
+    }
 
 }

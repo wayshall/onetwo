@@ -392,7 +392,9 @@ public class JFishProperties extends Properties implements VariableSupporter {
 	}
 
     public String getProperty(String key) {
-    	return StringUtils.trimToEmpty(super.getProperty(key));
+//    	String val = super.getProperty(key);
+    	Object val = super.get(key);
+    	return StringUtils.trimToEmpty(val);
     }
 	/*public String getProperty(String key, boolean checkCache) {
 		return this.getVariable(key, checkCache);
