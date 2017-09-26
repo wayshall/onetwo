@@ -43,7 +43,7 @@ public class ExtZuulContextConfig {
     @RefreshScope
     public FixHeaderZuulFilter fixHeaderZuulFilter(){
     	FixHeaderZuulFilter filter = new FixHeaderZuulFilter();
-    	filter.setFixHeaders(cloudConfig.getZuul().getFixHeaders());	
+//    	filter.setFixHeaders(cloudConfig.getZuul().getFixHeaders());	
     	return filter;
     }
     

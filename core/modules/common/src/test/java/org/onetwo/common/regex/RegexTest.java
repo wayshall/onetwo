@@ -13,8 +13,8 @@ public class RegexTest {
 	
 	@Test
 	public void test(){
-		Pattern navPathPattern = Pattern.compile("^/([\\w]+)/nav/.+");
-		Matcher matcher = navPathPattern.matcher("/fudan/nav/swagger-ui.html");
+		Pattern navPathPattern = Pattern.compile("^/(19|dongbei)/cms/v2/api-docs$");
+		Matcher matcher = navPathPattern.matcher("/dongbei/cms/v2/api-docs");
 		if(matcher.matches()){
 			int count = matcher.groupCount();
 			for (int i = 0; i <= count; i++) {

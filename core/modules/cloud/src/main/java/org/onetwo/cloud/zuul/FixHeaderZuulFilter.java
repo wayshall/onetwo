@@ -2,6 +2,7 @@ package org.onetwo.cloud.zuul;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,12 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.cloud.core.BootJfishCloudConfig;
 import org.onetwo.cloud.core.BootJfishCloudConfig.FixHeadersConfig;
 import org.onetwo.cloud.core.BootJfishCloudConfig.PathMatcher;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.util.AntPathMatcher;
 
@@ -30,14 +34,24 @@ import com.netflix.zuul.context.RequestContext;
  * <br/>
  */
 @Slf4j
-public class FixHeaderZuulFilter extends ZuulFilter {
+public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean {
 	
 	private static final Set<String> DEFAULT_EXCLUDE_POSTFIX = Sets.newHashSet("png", "jpg", "jpeg", "bpm", "gif", "js", "css", "mp3", "mp4", "html", "htm");
 	
-	private List<FixHeadersConfig> fixHeaders;
+
+	@Autowired
+    private BootJfishCloudConfig cloudConfig;
+	
+//	private List<FixHeadersConfig> fixHeaders;
 	private AntPathMatcher pathMatcher = new AntPathMatcher();
 	private Expression expression = ExpressionFacotry.newExpression("(", ")");
 	private Set<String> excludePostfix = DEFAULT_EXCLUDE_POSTFIX;
+	
+	
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+	}
 
 	@Override
 	public boolean shouldFilter() {
@@ -57,6 +71,7 @@ public class FixHeaderZuulFilter extends ZuulFilter {
 
 	@Override
 	public Object run() {
+		List<FixHeadersConfig> fixHeaders = this.cloudConfig.getZuul().getFixHeaders();
 		if(fixHeaders==null){
 			return null;
 		}
@@ -85,9 +100,11 @@ public class FixHeaderZuulFilter extends ZuulFilter {
 	}
 	
 	private void doRegexMatcher(FixHeadersConfig fix, String path){
-		for(Pattern pathPattern : fix.getPatterns()){
-			Matcher matcher = pathPattern.matcher(path);
-			if(matcher.matches()){
+		for(Entry<String, Pattern> entry : fix.getPatterns().entrySet()){
+			Matcher matcher = entry.getValue().matcher(path);
+			boolean isMatch = matcher.matches();
+			log.info("match pattern: {} for path: {}", entry.getKey(), path);
+			if(isMatch){
 				int count = matcher.groupCount();
 				List<String> groups = new ArrayList<>(count);
 				for (int i = 0; i <= count; i++) {
@@ -110,10 +127,5 @@ public class FixHeaderZuulFilter extends ZuulFilter {
 	public int filterOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
 	}
-
-	public void setFixHeaders(List<FixHeadersConfig> fixHeaders) {
-		this.fixHeaders = fixHeaders;
-	}
-	
 
 }

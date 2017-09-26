@@ -2,6 +2,7 @@ package org.onetwo.cloud.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -33,12 +34,12 @@ public class BootJfishCloudConfig {
 		String header;
 		String value;
 		PathMatcher matcher = PathMatcher.ANT;
-		List<Pattern> patterns = null;
+		Map<String, Pattern> patterns = null;
 		
-		public List<Pattern> getPatterns(){
-			List<Pattern> patterns = this.patterns;
-			if(patterns==null){
-				patterns = pathPatterns.stream().map(regex->Pattern.compile(regex)).collect(Collectors.toList());
+		public Map<String, Pattern> getPatterns(){
+			Map<String, Pattern> patterns = this.patterns;
+			if(patterns==null || patterns.isEmpty()){
+				patterns = pathPatterns.stream().collect(Collectors.toMap(path->path, path->Pattern.compile(path)));
 			}
 			return patterns;
 		}
