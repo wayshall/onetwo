@@ -103,7 +103,6 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 		for(Entry<String, Pattern> entry : fix.getPatterns().entrySet()){
 			Matcher matcher = entry.getValue().matcher(path);
 			boolean isMatch = matcher.matches();
-			log.info("match pattern: {} for path: {}", entry.getKey(), path);
 			if(isMatch){
 				int count = matcher.groupCount();
 				List<String> groups = new ArrayList<>(count);
