@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.FileStorerListener;
 import org.onetwo.boot.core.web.utils.UploadOptions;
@@ -14,7 +16,9 @@ import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.StoringFileContext;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.copier.CopyUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -22,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 public class SimpleBootCommonService implements BootCommonService {
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private FileStorer<?> fileStorer;
 	
@@ -35,7 +41,8 @@ public class SimpleBootCommonService implements BootCommonService {
 	private int compressThresholdSize = -1;
 	
 	/****
-	 * 目前通过设置阈值决定是否压缩，也通过图片尺寸等进行判断，待优化。。。
+	 * 目前通过设置阈值决定是否压缩
+	 * 若需要控制压缩推荐使用uploadFile(UploadOptions options)方法
 	 * ImageUtils.readBufferedImage
 	 * @author wayshall
 	 * @param module

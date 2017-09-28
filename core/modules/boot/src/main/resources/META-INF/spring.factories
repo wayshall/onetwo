@@ -1,1 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.onetwo.boot.module.atuator.ActuatorContextConfig
