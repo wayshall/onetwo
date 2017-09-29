@@ -2,6 +2,7 @@ package org.onetwo.ext.security;
 
 import java.util.Map.Entry;
 
+import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
@@ -11,8 +12,8 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 
 public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigurer {
 
-	@Autowired
-	private DatabaseSecurityMetadataSource databaseSecurityMetadataSource;
+	@Autowired(required=false)
+	private SecurityMetadataSourceBuilder securityMetadataSourceBuilder;
 	
 	private AccessDecisionManager accessDecisionManager;
 	
@@ -26,8 +27,10 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 		http.authorizeRequests().withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
 			@Override
 			public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
-				databaseSecurityMetadataSource.setFilterSecurityInterceptor(fsi);
-				databaseSecurityMetadataSource.buildSecurityMetadataSource();
+				if(securityMetadataSourceBuilder!=null){
+					securityMetadataSourceBuilder.setFilterSecurityInterceptor(fsi);
+					securityMetadataSourceBuilder.buildSecurityMetadataSource();
+				}
 				return fsi;
 			}
 		});
@@ -37,12 +40,7 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 		}
 
 //		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
-		//其它未标记管理的功能的默认权限
-		http.authorizeRequests()
-			.anyRequest()
-			.authenticated()//需要登录
-	//		.fullyAuthenticated()//需要登录，并且不是rememberme的方式登录
-			;
+		configureAnyRequest(http);
 		
 		webConfigure(http);
 		defaultConfigure(http);

@@ -26,15 +26,20 @@ import com.google.common.collect.Maps;
 @Data
 @ToString
 public class SecurityConfig {
+	public static final String ANY_REQUEST_NONE = "none";
+	
 	public static final String LOGIN_PATH = "/login";
+	
 	public static final String LOGIN_PROCESS_PATH = "/dologin";
 	public static final String LOGOUT_PATH = "/logout";
 	public static final String TARGET_PATH_AFTER_LOGIN = "/admin";
 	
 	//预留，未使用
 	private String urlPrefix = "";
+	String defaultLoginPage;
 	private String logoutUrl = LOGOUT_PATH;
 	private String loginUrl = LOGIN_PATH;
+	private String failureUrl;
 	/***
 	 * LogoutConfigurer#logoutSuccessUrl default value
 	 */
@@ -62,7 +67,13 @@ public class SecurityConfig {
 	private CookieConfig cookie = new CookieConfig();
 	private RbacConfig rbac = new RbacConfig();
 	private JwtConfig jwt = new JwtConfig();
+	
 	private Map<String[], String> intercepterUrls = Maps.newHashMap();
+	private String anyRequest;
+	private boolean ignoringDefautStaticPaths = true;
+	private String[] ignoringUrls;
+	
+	private Map<String, MemoryUser> memoryUsers = Maps.newHashMap();
 	
 	/**
 	 * for page
@@ -84,6 +95,16 @@ public class SecurityConfig {
 	 */
 	public String getLoginUrl(){
 		return resolveUrl(loginUrl);
+	}
+	
+	public String getFailureUrl(){
+		String failureUrl = this.failureUrl;
+		if(StringUtils.isBlank(failureUrl)){
+			failureUrl = getLoginUrl() + "?error=true";
+			return failureUrl;
+		}else{
+			return resolveUrl(failureUrl);
+		}
 	}
 	/***
 	 * 
@@ -222,6 +243,13 @@ public class SecurityConfig {
 		public boolean isForceHttps(){
 			return forceHttps;
 		}
+	}
+	
+	@Data
+	public static class MemoryUser {
+		String password = "$2a$10$1Qrdb4WZcn7gDKrTfgJEAOZMOQRiUNWjuPcOmU520nLbrz2wHQlpa";//default is jfish
+		String[] roles;
+		String[] authorities;
 	}
 	
 }

@@ -3,25 +3,38 @@ package org.onetwo.ext.security.method;
 import lombok.Getter;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer.UserDetailsBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.DefaultLoginPageConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+
 
 public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -60,24 +73,33 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
     @Override
     public void configure(WebSecurity web) throws Exception {
 //        web.ignoring().antMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
-        web.ignoring().antMatchers("/webjars/**", "/images/**", "/static/**");
+    	if(securityConfig.isIgnoringDefautStaticPaths()){
+    		web.ignoring().antMatchers("/webjars/**", "/images/**", "/static/**");
+    	}
+    	if(!LangUtils.isEmpty(securityConfig.getIgnoringUrls())){
+    		web.ignoring().antMatchers(securityConfig.getIgnoringUrls());
+    	}
     }
     
+	@SuppressWarnings("rawtypes")
 	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		if(userDetailsService==null){
-			logger.warn("no userDetailsService found!");
+		if(userDetailsService!=null){
+			auth.userDetailsService(userDetailsService)
+				.passwordEncoder(passwordEncoder);
+		}else{
+			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemory = auth.inMemoryAuthentication();
+			securityConfig.getMemoryUsers().forEach((user, config)->{
+				UserDetailsBuilder udb = inMemory.withUser(user).password(config.getPassword());
+				if(!LangUtils.isEmpty(config.getRoles())){
+					udb.roles(config.getRoles());
+				}
+				if(!LangUtils.isEmpty(config.getAuthorities())){
+					udb.authorities(config.getAuthorities());
+				}
+			});
+			inMemory.passwordEncoder(passwordEncoder);
 		}
-		/*auth
-			.inMemoryAuthentication()
-				.withUser("test")
-				.password("$2a$10$OqXCwkP74VpdrnmAyv.sLeJqQZExSI7H/yLJb4c5zxl79qNxW6hlK")
-				.roles("ADMIN")
-				.and()
-			.passwordEncoder(passwordEncoder);*/
-		auth
-			.userDetailsService(userDetailsService)
-			.passwordEncoder(passwordEncoder);
 		
 		/*DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
 		daoProvider.setUserDetailsService(userDetailsService);
@@ -89,10 +111,27 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		//if basic method interceptor, ignore all url interceptor
-		http.authorizeRequests()
-			.anyRequest()
-			.permitAll();
-		this.defaultConfigure(http);
+		configureAnyRequest(http);
+		defaultConfigure(http);
+	}
+	
+
+	protected void configureAnyRequest(HttpSecurity http) throws Exception {
+		//其它未标记管理的功能的默认权限
+		String anyRequest = securityConfig.getAnyRequest();
+		if(StringUtils.isBlank(anyRequest)){
+			http.authorizeRequests()
+				.anyRequest()
+				.authenticated()//需要登录
+				//		.fullyAuthenticated()//需要登录，并且不是rememberme的方式登录
+				;
+		}else if(SecurityConfig.ANY_REQUEST_NONE.equals(anyRequest)){
+			//not config anyRequest
+		}else{
+			http.authorizeRequests()
+				.anyRequest()
+				.access(anyRequest);
+		}
 	}
 	
 	protected void configureCsrf(HttpSecurity http) throws Exception{
@@ -111,6 +150,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void defaultConfigure(HttpSecurity http) throws Exception {
 		if(securityContextRepository!=null){
 			http.securityContext().securityContextRepository(securityContextRepository);
@@ -118,16 +158,57 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		if(logoutSuccessHandler!=null){
 			http.logout().logoutSuccessHandler(logoutSuccessHandler);
 		}
+		
+		/*http
+		.formLogin()
+		.loginPage(securityConfig.getLoginUrl()).permitAll()
+		.loginProcessingUrl(securityConfig.getLoginProcessUrl()).permitAll()
+		.usernameParameter("username")
+		.passwordParameter("password")
+		.failureUrl(securityConfig.getLoginUrl()+"?error=true")
+		.failureHandler(ajaxAuthenticationHandler)
+		.successHandler(ajaxAuthenticationHandler);
+		*/
+		
+		FormLoginConfigurer<HttpSecurity> formConfig = http.formLogin();
+		if(StringUtils.isNotBlank(securityConfig.getDefaultLoginPage())){
+			//if set default page, cannot set authenticationEntryPoint, see DefaultLoginPageConfigurer#configure
+//			securityConfig.setLoginUrl(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL);
+			http.getConfigurer(DefaultLoginPageConfigurer.class).withObjectPostProcessor(new ObjectPostProcessor<DefaultLoginPageGeneratingFilter>(){
+				@Override
+				public <O extends DefaultLoginPageGeneratingFilter> O postProcess(O filter) {
+					filter.setLoginPageUrl(securityConfig.getDefaultLoginPage());
+					filter.setLogoutSuccessUrl(securityConfig.getLogoutSuccessUrl());
+					filter.setFailureUrl(securityConfig.getFailureUrl());
+					return filter;
+				}
+			});
+			http.getConfigurer(ExceptionHandlingConfigurer.class).withObjectPostProcessor(new ObjectPostProcessor<ExceptionTranslationFilter>(){
+				@Override
+				public <O extends ExceptionTranslationFilter> O postProcess(O filter) {
+					PropertyAccessorFactory.forDirectFieldAccess(filter).setPropertyValue("authenticationEntryPoint", authenticationEntryPoint);
+					return filter;
+				}
+			});
+			
+			/*formConfig.loginPage(securityConfig.getLoginUrl())
+						.permitAll();
+			PropertyAccessorFactory.forDirectFieldAccess(formConfig)
+									.setPropertyValue("customLoginPage", false);*/
+		}else{
+			formConfig.loginPage(securityConfig.getLoginUrl())
+						.permitAll();
+			http.exceptionHandling()
+				.authenticationEntryPoint(authenticationEntryPoint);
+		}
+		formConfig.loginProcessingUrl(securityConfig.getLoginProcessUrl()).permitAll()
+					.usernameParameter("username")
+					.passwordParameter("password")
+					.failureUrl(securityConfig.getFailureUrl())
+					.failureHandler(ajaxAuthenticationHandler)
+					.successHandler(ajaxAuthenticationHandler);
+		
 		http
-			.formLogin()
-			.loginPage(securityConfig.getLoginUrl()).permitAll()
-			.loginProcessingUrl(securityConfig.getLoginProcessUrl()).permitAll()
-			.usernameParameter("username")
-			.passwordParameter("password")
-			.failureUrl(securityConfig.getLoginUrl()+"?error=true")
-			.failureHandler(ajaxAuthenticationHandler)
-			.successHandler(ajaxAuthenticationHandler)
-		.and()
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
 			.logoutSuccessUrl(securityConfig.getLogoutSuccessUrl()).permitAll()
@@ -142,9 +223,9 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 			.and()
 		.and()
 			.exceptionHandling()
-			.accessDeniedPage("/access?error=true")
+//			.accessDeniedPage("/access?error=true")
 			.accessDeniedHandler(ajaxSupportedAccessDeniedHandler)
-			.authenticationEntryPoint(authenticationEntryPoint)
+//			.authenticationEntryPoint(authenticationEntryPoint)
 		;
 		
 		if(securityConfig.getRememberMe().isEnabled()){

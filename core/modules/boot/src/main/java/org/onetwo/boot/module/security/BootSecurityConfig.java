@@ -17,16 +17,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author way
  *
  */
-@ConfigurationProperties(prefix="jfish.security")
+@ConfigurationProperties(prefix=BootSecurityConfig.SECURITY_PREFIX)
 @ToString
 public class BootSecurityConfig extends SecurityConfig implements WebContextConfigProvider {
+	public static final String SECURITY_PREFIX = "jfish.security";
 	
-	@Autowired
+	public static final String METADATA_SOURCE_KEY = "metadataSource";
+	public static final String METADATA_SOURCE_DATABASE = "database";
+	public static final String METADATA_SOURCE_NONE = "none";
+	
+	@Autowired(required=false)
 	private BootSiteConfig bootSiteConfig;
+	private String baseURL;
 	
 	public Boolean getSyncPermissionData(){
 		if(this.syncPermissionData==null){
-			return !bootSiteConfig.isProduct();
+			return bootSiteConfig!=null && !bootSiteConfig.isProduct();
 		}
 		return this.syncPermissionData;
 	}
@@ -37,15 +43,25 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 		if(isCasEnabled()){
 			url = this.getCas().getLogoutUrl();
 		}
-		return bootSiteConfig.getBaseURL() + StringUtils.appendStartWithSlash(url);
+		return getBaseURL() + StringUtils.appendStartWithSlash(url);
 	}
 	
 	public String getAfterLoginUrl(){
 		String url = super.getAfterLoginUrl();
-		if(!url.startsWith(bootSiteConfig.getBaseURL())){
-			url = bootSiteConfig.getBaseURL() + url;
+		String baseUrl = getBaseURL();
+		if(StringUtils.isNotBlank(baseUrl) && !url.startsWith(baseUrl)){
+			url = baseUrl + url;
 		}
 		return url;
+	}
+
+	public String getBaseURL() {
+		if(baseURL!=null){
+			return baseURL;
+		}else if(bootSiteConfig!=null){
+			return bootSiteConfig.getBaseURL();
+		}
+		return null;
 	}
 	
 	public boolean isCasEnabled(){

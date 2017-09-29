@@ -7,9 +7,10 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.onetwo.ext.permission.api.PermissionConfig;
-import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
+import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource;
+import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +31,7 @@ import org.springframework.security.web.access.expression.WebExpressionVoter;
 @Import(SecurityCommonContextConfig.class)
 public class UrlBasedSecurityConfig {
 	@Autowired
-	private SecurityConfig securityConfig;
+	protected SecurityConfig securityConfig;
 	
 	@Bean
 	public MultiWebExpressionVoter multiWebExpressionVoter(){
@@ -45,7 +46,7 @@ public class UrlBasedSecurityConfig {
 	
 	@Bean
 	@Autowired
-	public DatabaseSecurityMetadataSource securityMetadataSource(DataSource dataSource, List<PermissionConfig<?>> configs){
+	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource, List<PermissionConfig<?>> configs){
 		DatabaseSecurityMetadataSource ms = new DatabaseSecurityMetadataSource();
 		ms.setDataSource(dataSource);
 		ms.setResourceQuery(securityConfig.getRbac().getResourceQuery());

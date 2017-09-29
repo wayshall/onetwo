@@ -12,7 +12,7 @@ public class PasswordEncoderTest {
 	
 	@Test
 	public void testBcrypt(){
-		String pwd = "13333333333";
+		String pwd = "jfish";
 		StandardPasswordEncoder def = new StandardPasswordEncoder();
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		
@@ -27,7 +27,7 @@ public class PasswordEncoderTest {
 		time.restart("bcrypt");
 		LangOps.ntimesRun(times, ()->{
 			String str = encoder.encode(pwd);
-			System.out.println(str.length()+":"+str);
+			System.out.println("BCrypt "+str.length()+":"+str);
 		});
 		time.stop();
 	}

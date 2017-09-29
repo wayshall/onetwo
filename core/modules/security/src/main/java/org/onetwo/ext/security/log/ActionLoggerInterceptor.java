@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.ext.security.DatabaseSecurityMetadataSource.CodeSecurityConfig;
+import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource.CodeSecurityConfig;
 import org.onetwo.ext.security.utils.LoginUserDetails;
 import org.onetwo.ext.security.utils.SecurityUtils;
 import org.slf4j.Logger;

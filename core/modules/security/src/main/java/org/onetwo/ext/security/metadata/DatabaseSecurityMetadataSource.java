@@ -1,4 +1,4 @@
-package org.onetwo.ext.security;
+package org.onetwo.ext.security.metadata;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -45,7 +45,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
-public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements FactoryBean<FilterInvocationSecurityMetadataSource>*/ {
+public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements JdbcSecurityMetadataSourceBuilder {
 	/*****
 	 * 获取权限标识和url的sql语句，返回下列字段：
 	 * authority：权限标识代码
@@ -171,16 +171,13 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport /*implements 
 		return new CodeSecurityConfig(auth, authorizeExpression);
 	}
 	
-	/*protected boolean isKeyword(String authority){
-		return keywords.stream().filter(key->authority.startsWith(key))
-						.findAny().isPresent();
-	}*/
 	
 	/****
 	 * 基于url匹配拦截时，转换为ExpressionBasedFilterInvocationSecurityMetadataSource
 	 * @param source
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public void buildSecurityMetadataSource(){
 		Assert.notNull(filterSecurityInterceptor);

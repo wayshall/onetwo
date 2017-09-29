@@ -1,6 +1,6 @@
 package org.onetwo.ext.security.cas;
 
-import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
+import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
@@ -19,7 +19,7 @@ public class CasSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter  
 	/*@Autowired
 	private FilterInvocationSecurityMetadataSource securityMetadataSource;*/
 	@Autowired(required=false)
-	private DatabaseSecurityMetadataSource databaseSecurityMetadataSource;
+	private SecurityMetadataSourceBuilder securityMetadataSourceBuilder;
 
 	
 //	@Autowired
@@ -70,9 +70,9 @@ public class CasSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter  
 
 					@Override
                     public <O extends FilterSecurityInterceptor> O postProcess(O object) {
-						if(databaseSecurityMetadataSource!=null){
-							databaseSecurityMetadataSource.setFilterSecurityInterceptor(object);
-							databaseSecurityMetadataSource.buildSecurityMetadataSource();
+						if(securityMetadataSourceBuilder!=null){
+							securityMetadataSourceBuilder.setFilterSecurityInterceptor(object);
+							securityMetadataSourceBuilder.buildSecurityMetadataSource();
 						}
 	                    return object;
                     }

@@ -1,7 +1,7 @@
 package org.onetwo.ext.security.utils;
 
-import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
+import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -25,7 +25,7 @@ public class RbacBaseSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
 	/*@Autowired
 	private FilterInvocationSecurityMetadataSource securityMetadataSource;*/
 	@Autowired(required=false)
-	private DatabaseSecurityMetadataSource databaseSecurityMetadataSource;
+	private SecurityMetadataSourceBuilder securityMetadataSourceBuilder;
 
 	
 	@Autowired
@@ -64,10 +64,10 @@ public class RbacBaseSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
 						/*if(securityMetadataSource!=null){
 							object.setSecurityMetadataSource(securityMetadataSource);
 						}*/
-						if(databaseSecurityMetadataSource!=null){
+						if(securityMetadataSourceBuilder!=null){
 //							object.setSecurityMetadataSource(databaseSecurityMetadataSource.convertTo(object.getSecurityMetadataSource()));
-							databaseSecurityMetadataSource.setFilterSecurityInterceptor(object);
-							databaseSecurityMetadataSource.buildSecurityMetadataSource();
+							securityMetadataSourceBuilder.setFilterSecurityInterceptor(object);
+							securityMetadataSourceBuilder.buildSecurityMetadataSource();
 						}
 	                    return object;
                     }

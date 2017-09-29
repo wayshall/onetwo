@@ -10,10 +10,9 @@ import javax.annotation.PostConstruct;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
-import org.onetwo.ext.security.DatabaseSecurityMetadataSource;
+import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -30,7 +29,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	/*@Resource
 	protected MenuInfoParser<P> menuInfoParser;*/
 	private List<MenuInfoParser<P>> parsers;
-	private DatabaseSecurityMetadataSource databaseSecurityMetadataSource;
+	private JdbcSecurityMetadataSourceBuilder databaseSecurityMetadataSource;
 	
 	@Autowired
 	private ApplicationContext applicationContext;

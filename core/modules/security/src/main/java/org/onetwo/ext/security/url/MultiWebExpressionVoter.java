@@ -2,7 +2,7 @@ package org.onetwo.ext.security.url;
 
 import java.util.Collection;
 
-import org.onetwo.ext.security.DatabaseSecurityMetadataSource.CodeSecurityConfig;
+import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource.CodeSecurityConfig;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;

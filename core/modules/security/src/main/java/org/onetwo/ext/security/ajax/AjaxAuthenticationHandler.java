@@ -117,11 +117,6 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-		SavedRequest saveRequest = this.requestCache.getRequest(request, response);
-		if(saveRequest!=null){
-			this.requestCache.removeRequest(request, response);
-		}
-		
 		if(useJwtToken){
 			JwtSecurityTokenInfo token = this.jwtTokenService.generateToken(authentication);
 //			response.addHeader(jwtAuthHeader, token.getToken());
@@ -140,6 +135,11 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 							.getParameter(targetUrlParameter)))) {
 				redirectUrl = determineTargetUrl(request, response);
 			}else{
+				SavedRequest saveRequest = this.requestCache.getRequest(request, response);
+				if(saveRequest!=null){
+					this.requestCache.removeRequest(request, response);
+				}
+				
 				redirectUrl = saveRequest.getRedirectUrl();
 				clearAuthenticationAttributes(request);
 			}
