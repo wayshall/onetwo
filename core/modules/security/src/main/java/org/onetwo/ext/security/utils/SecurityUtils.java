@@ -69,13 +69,13 @@ final public class SecurityUtils {
 	
 	public static Runnable runInThread(Runnable runnable){
 		SecurityContext ctx = SecurityContextHolder.getContext();
-		try {
-			return ()->{
-				SecurityContextHolder.setContext(ctx);
+		return ()->{
+			SecurityContextHolder.setContext(ctx);
+			try {
 				runnable.run();
-			};
-		}finally{
-			SecurityContextHolder.clearContext();
-		}
+			} finally {
+				SecurityContextHolder.clearContext();
+			}
+		};
 	}
 }
