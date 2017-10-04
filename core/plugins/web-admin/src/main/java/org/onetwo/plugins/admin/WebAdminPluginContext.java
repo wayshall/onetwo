@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
+import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.Springs.SpringsInitEvent;
 import org.onetwo.dbm.spring.EnableDbmRepository;
@@ -41,11 +42,12 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-@Configuration
-@ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
+//@Configuration
+//@ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
 //@DbmPackages("org.onetwo.plugins.admin.dao")
 @EnableDbmRepository("org.onetwo.plugins.admin.dao")
 @Order(value=Ordered.LOWEST_PRECEDENCE)
+@JFishWebPlugin(WebAdminPlugin.class)
 public class WebAdminPluginContext implements InitializingBean {
 	
 //	final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -69,10 +71,10 @@ public class WebAdminPluginContext implements InitializingBean {
 	}
 	
 	
-	@Bean
+	/*@Bean
 	public WebAdminPlugin webAdminPlugin(){
 		return new WebAdminPlugin();
-	}
+	}*/
 	
 	@Bean
 	static public ApplicationListener<SpringsInitEvent> webAdminApplicationListener(){

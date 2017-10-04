@@ -62,7 +62,7 @@ import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.support.DefaultFormattingConversionService;
@@ -324,7 +324,7 @@ final public class SpringUtils {
 	public static BeanDefinition createBeanDefinition(Class<?> beanClass, Object[] constructorArgs, Map<String, Object> properties){
 		BeanDefinitionBuilder bdb = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
 		if(constructorArgs!=null){
-			for(Object arg :constructorArgs){
+			for(Object arg : constructorArgs){
 				bdb.addConstructorArgValue(arg);
 			}
 		}
@@ -579,7 +579,7 @@ final public class SpringUtils {
 		return ArrayUtils.isNotEmpty(beanNames);
 	}
 	
-	public static AnnotationAttributes getAnnotationAttributes(AnnotationMetadata metadata, Class<?> annoType){
+	public static AnnotationAttributes getAnnotationAttributes(AnnotatedTypeMetadata metadata, Class<?> annoType){
 		//support @AliasFor
 		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(annoType.getName(), false));
 		return attributes;
