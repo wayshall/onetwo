@@ -94,7 +94,9 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 			return pathMatcher.match(pattern, path);
 		});
 		if(match){
-			log.info("add header[{}] for path {}", fix.getHeader(), path);
+			if(log.isDebugEnabled()){
+				log.debug("add header[{}] for path {}", fix.getHeader(), path);
+			}
 			RequestContext.getCurrentContext().addZuulRequestHeader(fix.getHeader(), fix.getValue());
 		}
 	}
@@ -111,7 +113,9 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 					groups.add(val);
 				}
 				String value = expression.parse(fix.getValue(), groups);
-				log.info("add header[{}] for path {}", fix.getHeader(), path);
+				if(log.isDebugEnabled()){
+					log.debug("add header[{}] for path {}", fix.getHeader(), path);
+				}
 				RequestContext.getCurrentContext().addZuulRequestHeader(fix.getHeader(), value);
 			}
 		}
