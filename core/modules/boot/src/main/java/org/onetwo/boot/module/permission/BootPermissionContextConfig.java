@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 /***
  * 菜单权限管理
@@ -24,7 +23,7 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
  */
 @Configuration
 //@ConditionalOnBean({PermissionConfig.class})
-@ConditionalOnClass(JdbcDaoSupport.class)
+@ConditionalOnClass(name="org.springframework.jdbc.core.support.JdbcDaoSupport")
 public class BootPermissionContextConfig extends PermissionContextConfig {
 	
 	

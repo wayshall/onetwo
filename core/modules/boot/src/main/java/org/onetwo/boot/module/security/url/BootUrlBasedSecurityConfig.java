@@ -8,12 +8,10 @@ import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
-import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.url.UrlBasedSecurityConfig;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -46,7 +44,6 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 
 	@ConditionalOnClass(name="org.springframework.jdbc.core.support.JdbcDaoSupport")//这里要字符串的形式，否则会抛错。且如果不抽取JdbcSecurityMetadataSourceBuilder接口隔离DatabaseSecurityMetadataSource, @ConditionalOnClass not work
 	@ConditionalOnProperty(name=BootSecurityConfig.METADATA_SOURCE_KEY, prefix=BootSecurityConfig.SECURITY_PREFIX, havingValue=BootSecurityConfig.METADATA_SOURCE_DATABASE, matchIfMissing=true)
-	@ConditionalOnBean(DataSource.class)
 	@Bean
 	@Autowired
 	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource, List<PermissionConfig<?>> configs){

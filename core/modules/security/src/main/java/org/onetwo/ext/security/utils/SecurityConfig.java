@@ -75,6 +75,9 @@ public class SecurityConfig {
 	
 	private Map<String, MemoryUser> memoryUsers = Maps.newHashMap();
 	
+	public String[] getIgnoringUrls(){
+		return ignoringUrls;
+	}
 	/**
 	 * for page
 	 * @author wayshall
