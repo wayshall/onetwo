@@ -1,6 +1,7 @@
 package org.onetwo.boot.core.web.mvc.exception;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -12,7 +13,6 @@ import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
-import org.onetwo.common.exception.LoginException;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
@@ -52,23 +52,19 @@ public interface ExceptionMessageFinder {
 			errorCode = MAX_UPLOAD_SIZE_ERROR;//MvcError.MAX_UPLOAD_SIZE_ERROR;
 //			errorArgs = new Object[]{this.mvcSetting.getMaxUploadSize()};
 		}else */
-		if(ex instanceof LoginException){
-//			defaultViewName = ExceptionView.AUTHENTIC;
-			detail = false;
-			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-		}else if(ex instanceof AuthenticationException){
-//			defaultViewName = ExceptionView.AUTHENTIC;
-			detail = false;
-			error.setHttpStatus(HttpStatus.UNAUTHORIZED);
-		}else if(ex instanceof ExceptionCodeMark){//serviceException && businessException
+		if(ex instanceof ExceptionCodeMark){//serviceException && businessException
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
 			errorArgs = codeMark.getArgs();
-			codeMark.getStatusCode().ifPresent(sc->{
-				error.setHttpStatus(HttpStatus.valueOf(sc));
-			});
-//			errorMsg = ex.getMessage();
-			
+			Optional<Integer> statusCode = codeMark.getStatusCode();
+			if(statusCode.isPresent()){
+				error.setHttpStatus(HttpStatus.valueOf(statusCode.get()));
+			}else if(ex instanceof AuthenticationException){
+				detail = false;
+				error.setHttpStatus(HttpStatus.UNAUTHORIZED);
+			}else{
+				error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
 			detail = !product;
 		}else if(BootUtils.isDmbPresent() && DbmException.class.isInstance(ex)){
@@ -121,7 +117,7 @@ public interface ExceptionMessageFinder {
 
 		if(findMsgByCode){
 //			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
-			if(SystemErrorCode.UNKNOWN.equals(errorCode)){
+			if(StringUtils.isBlank(errorCode) || SystemErrorCode.UNKNOWN.equals(errorCode)){
 				errorMsg = findMessageByThrowable(ex, errorArgs);
 			}else{
 				errorMsg = findMessageByErrorCode(errorCode, errorArgs);

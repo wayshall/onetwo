@@ -15,7 +15,7 @@ public class SimpleJwtTokenServiceTest {
 	public void test(){
 		SimpleJwtTokenService tokenService = new SimpleJwtTokenService();
 		JwtConfig jwtConfig = new JwtConfig();
-		jwtConfig.setSigningKey("59}SF^,.7ImHaTJAgzpG.[J+\"Bg_Ie$KK3C+rth,.v{8$UXGG|gBMy%>K$M5V3&JKS?nO%QzZk75%Zj1)JFqB8J^l_w{[v5*'iD~Ye7hXx\"Wo|,A[AR+K~uHEQ)7;");
+		jwtConfig.setSigningKey("test");
 		tokenService.setJwtConfig(jwtConfig);
 		
 		SimpleUserDetail userDetail = new SimpleUserDetail();

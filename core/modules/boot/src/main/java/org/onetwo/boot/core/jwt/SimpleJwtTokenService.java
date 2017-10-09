@@ -141,7 +141,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 										.getBody();
 			return claims;
 		} catch (Exception e) {
-			throw new ServiceException(JwtErrors.CM_ERROR_TOKEN);
+			throw new ServiceException(JwtErrors.CM_ERROR_TOKEN, e);
 		}
 	}
 
