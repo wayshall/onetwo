@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -476,6 +477,12 @@ final public class SpringUtils {
 	
 	public static BeanWrapper newBeanWrapper(Object obj){
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+		bw.setAutoGrowNestedPaths(true);
+		return bw;
+	}
+	
+	public static ConfigurablePropertyAccessor newPropertyAccessor(Object obj, boolean directFieldAccess){
+		ConfigurablePropertyAccessor bw = directFieldAccess?PropertyAccessorFactory.forDirectFieldAccess(obj):PropertyAccessorFactory.forBeanPropertyAccess(obj);
 		bw.setAutoGrowNestedPaths(true);
 		return bw;
 	}

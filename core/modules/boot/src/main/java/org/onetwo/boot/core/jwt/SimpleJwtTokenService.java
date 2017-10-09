@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 import org.onetwo.common.date.Dates;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.reflect.BeanToMapConvertor;
+import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -23,7 +26,10 @@ import org.springframework.beans.factory.InitializingBean;
  * <br/>
  */
 public class SimpleJwtTokenService implements JwtTokenService, InitializingBean {
-	
+
+	private final BeanToMapConvertor beanToMap = BeanToMapBuilder.newBuilder()
+																			.enableFieldNameAnnotation()
+																			.build();
 	private String propertyKey = JwtUtils.PROPERTY_KEY;
 	private JwtConfig jwtConfig;
 	/*private BeanToMapConvertor beanToMap = BeanToMapBuilder.newBuilder()
@@ -40,6 +46,17 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		if(StringUtils.isBlank(jwtConfig.getSigningKey())){
 			throw new BaseException("jwt signingKey not found!");
 		}
+	}
+	
+
+	@Override
+	public JwtTokenInfo generateToken(UserDetail userDetail){
+		Map<String, Object> props = beanToMap.toFlatMap(userDetail);
+		Long userId = (Long)props.remove(JwtUtils.CLAIM_USER_ID);
+		String userName = (String)props.remove(JwtUtils.CLAIM_USER_NAME);
+		JwtUserDetail jwtDetail = new JwtUserDetail(userId, userName);
+		jwtDetail.setProperties(props);
+		return generateToken(jwtDetail);
 	}
 
 
@@ -85,6 +102,13 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 	/*protected String getAuthorities(UserDetail userDetail){
 		return null;
 	}*/
+	
+	@Override
+	public <T extends UserDetail> T createUserDetail(String token, Class<T> parameterType) {
+		JwtUserDetail jwtUserDetail = this.createUserDetail(token);
+		T userDetail = JwtUtils.createUserDetail(jwtUserDetail, parameterType);
+		return userDetail;
+	}
 	
 	@Override
 	public JwtUserDetail createUserDetail(String token) {

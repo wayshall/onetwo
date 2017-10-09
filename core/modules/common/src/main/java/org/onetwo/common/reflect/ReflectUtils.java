@@ -1900,6 +1900,9 @@ public class ReflectUtils {
 			return fn;
 		}
 		Field field = findField(clazz, name);
+		if(field==null){
+			return null;
+		}
 		fn = field.getAnnotation(FieldName.class);
 		return fn;
 	}
