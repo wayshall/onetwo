@@ -1,6 +1,7 @@
 package org.onetwo.common.utils.map;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -39,11 +40,20 @@ public class CollectionMap<K, V> implements Map<K, Collection<V>>{
 
 	private Map<K, Collection<V>> map;
 	private Supplier<Collection<V>> collectionCreator = ()->new LinkedHashSet<V>();
+	private volatile boolean freezed;
 	
 	protected CollectionMap(){
 		this(new LinkedHashMap<K, Collection<V>>());
 	}
+
 	
+	public void freezed(){
+		if(freezed){
+			return ;
+		}
+		Map<K, Collection<V>> map = Collections.unmodifiableMap(this.map);
+		this.freezed = true;
+	}
 	
 	protected CollectionMap(Map<K, Collection<V>> map) {
 		super();

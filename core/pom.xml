@@ -66,8 +66,7 @@
     	<id>release</id>
     	<modules>
                 <module>modules/common</module>
-                <module>modules/spring</module>
-                <module>modules/boot</module>
+                <module>../../dbm</module>
 	  	</modules>
         <build>
             <plugins>
