@@ -22,6 +22,8 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 public class WebPluginImportSelector extends SpringBootCondition
 									implements ImportBeanDefinitionRegistrar, EnvironmentAware, BeanClassLoaderAware {
+
+	private static final String PLUGIN_KEY = "jfish.plugin.";
 	
 	private Environment environment;
 	private ClassLoader beanClassLoader;
@@ -32,7 +34,7 @@ public class WebPluginImportSelector extends SpringBootCondition
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		PluginMeta meta = parsePlugin(getAnnotationAttributes(metadata)).getPluginMeta();
 		if(!isPluginEnabled(context.getEnvironment(), meta)){
-			return ConditionOutcome.noMatch("plugin property is not enabled");
+			return ConditionOutcome.noMatch("plugin ["+meta.getName()+"] is not enabled");
 		}
 		return ConditionOutcome.match();
 	}
@@ -47,7 +49,7 @@ public class WebPluginImportSelector extends SpringBootCondition
 	}
 
 	protected boolean isPluginEnabled(Environment environment, PluginMeta meta){
-		String key = "jfish.plugin."+meta.getName()+".enabled";
+		String key = PLUGIN_KEY+meta.getName()+".enabled";
 		return new RelaxedPropertyResolver(environment).getProperty(key, Boolean.class, Boolean.TRUE);
 	}
 	
