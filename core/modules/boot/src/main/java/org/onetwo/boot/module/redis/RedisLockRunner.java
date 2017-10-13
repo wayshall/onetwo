@@ -27,7 +27,7 @@ public class RedisLockRunner {
 
 	@Builder
 	public RedisLockRunner(RedisLockRegistry redisLockRegistry, String lockKey,
-			long time, TimeUnit unit, Consumer<Exception> errorHandler) {
+			Long time, TimeUnit unit, Consumer<Exception> errorHandler) {
 		super();
 		this.redisLockRegistry = redisLockRegistry;
 		this.lockKey = lockKey;
@@ -38,9 +38,7 @@ public class RedisLockRunner {
 	
 	public <T> T tryLock(Supplier<T> action){
 		Function<Lock, Boolean> lockTryer = null;
-		if(time==null){
-			lockTryer = lock->lock.tryLock();
-		}else{
+		if(time==null && unit!=null){
 			lockTryer = lock->{
 				try {
 					return lock.tryLock(time, unit);
@@ -48,6 +46,8 @@ public class RedisLockRunner {
 					throw new BaseException("try lock error", e);
 				}
 			};
+		}else{
+			lockTryer = lock->lock.tryLock();
 		}
 		return tryLock(lockTryer, action);
 	}

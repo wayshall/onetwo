@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
@@ -1719,5 +1720,15 @@ public class LangUtils {
 			return int.class==clazz || long.class==clazz || short.class==clazz;
 		}
 		return Integer.class==clazz || Long.class==clazz || Short.class==clazz;
+	}
+	
+	public static Optional<String> getPid() {
+		try {
+			String jvmName = ManagementFactory.getRuntimeMXBean().getName();
+			return Optional.ofNullable(jvmName.split("@")[0]);
+		}
+		catch (Throwable ex) {
+			return Optional.empty();
+		}
 	}
 }
