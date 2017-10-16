@@ -6,7 +6,6 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
@@ -16,22 +15,20 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author wayshall
  * <br/>
  */
-abstract public class EnabledKeyCondition extends SpringBootCondition
-									implements EnvironmentAware, BeanClassLoaderAware {
+abstract public class EnabledKeyCondition extends SpringBootCondition implements BeanClassLoaderAware {
 
 	
-	private Environment environment;
 	private ClassLoader beanClassLoader;
 
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes attrubutes = getAnnotationAttributes(metadata);
-		String key = getEnabledKey(environment, attrubutes);
-		if(!isEnabled(environment, key)){
+		String key = getEnabledKey(context.getEnvironment(), attrubutes);
+		if(!isEnabled(context.getEnvironment(), key)){
 			return ConditionOutcome.noMatch("property ["+key+"] is not enabled");
 		}
-		return ConditionOutcome.match();
+		return ConditionOutcome.match("property ["+key+"] is enabled");
 	}
 
 	abstract protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes);
@@ -46,15 +43,6 @@ abstract public class EnabledKeyCondition extends SpringBootCondition
 		return attributes;
 	}
 	
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
-	public Environment getEnvironment() {
-		return environment;
-	}
-
 	public ClassLoader getBeanClassLoader() {
 		return beanClassLoader;
 	}

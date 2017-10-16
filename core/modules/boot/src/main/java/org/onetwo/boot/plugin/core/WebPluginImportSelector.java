@@ -4,7 +4,6 @@ import org.onetwo.boot.core.condition.EnabledKeyCondition;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -17,11 +16,12 @@ import org.springframework.core.type.AnnotationMetadata;
  * <br/>
  */
 public class WebPluginImportSelector extends EnabledKeyCondition
-									implements ImportBeanDefinitionRegistrar, EnvironmentAware, BeanClassLoaderAware {
+									implements EnvironmentAware, ImportBeanDefinitionRegistrar{
 
 	private static final String PLUGIN_KEY = "jfish.plugin.";
 	
 	private WebPlugin webPlugin;
+	private Environment environment;
 
 	@Override
 	protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes) {
@@ -51,6 +51,14 @@ public class WebPluginImportSelector extends EnabledKeyCondition
 			this.webPlugin = webPlugin;
 		}
 		return webPlugin;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 }
