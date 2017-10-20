@@ -83,31 +83,27 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		HttpHeaders headers = null;
 		HttpEntity<?> requestEntity = null;
 		
-		switch (method) {
-			case GET:
+		if(method==HttpMethod.GET) {
 //				rc = super.acceptHeaderRequestCallback(context.getResponseType());
 //				responseExtractor = responseEntityExtractor(context.getResponseType());
-				//根据consumers 设置header，以指定messageConvertor
-				headers = new HttpHeaders();
-				context.getHeaderCallback().accept(headers);
-				requestEntity = new HttpEntity<>(headers);
-				
-				rc = super.httpEntityCallback(requestEntity, context.getResponseType());
-				responseExtractor = responseEntityExtractor(context.getResponseType());
-				break;
-			case POST:
-			case PATCH:
-				//根据consumers 设置header，以指定messageConvertor
-				Object requestBody = context.getRequestBodySupplier().get();
-				headers = new HttpHeaders();
-				context.getHeaderCallback().accept(headers);
-				requestEntity = new HttpEntity<>(requestBody, headers);
-				
-				rc = super.httpEntityCallback(requestEntity, context.getResponseType());
-				responseExtractor = responseEntityExtractor(context.getResponseType());
-				break;
-			default:
-				throw new RestClientException("unsupported method: " + method);
+			//根据consumers 设置header，以指定messageConvertor
+			headers = new HttpHeaders();
+			context.getHeaderCallback().accept(headers);
+			requestEntity = new HttpEntity<>(headers);
+			
+			rc = super.httpEntityCallback(requestEntity, context.getResponseType());
+			responseExtractor = responseEntityExtractor(context.getResponseType());
+		}else if(RestUtils.isRequestSupportedMethod(method)){
+			//根据consumers 设置header，以指定messageConvertor
+			Object requestBody = context.getRequestBodySupplier().get();
+			headers = new HttpHeaders();
+			context.getHeaderCallback().accept(headers);
+			requestEntity = new HttpEntity<>(requestBody, headers);
+			
+			rc = super.httpEntityCallback(requestEntity, context.getResponseType());
+			responseExtractor = responseEntityExtractor(context.getResponseType());
+		}else{
+			throw new RestClientException("unsupported method: " + method);
 		}
 		if(context.getHeaderCallback()!=null){
 			rc = wrapRequestCallback(rc, context.getHeaderCallback());
@@ -169,6 +165,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 
 		@Override
 		public void doWithRequest(ClientHttpRequest request) throws IOException {
+			//再次回调header callback，此时为请求header
 			this.callback.accept(request.getHeaders());
 			/*if(ReflectUtils.getFieldsAsMap(acceptHeaderRequestCallback.getClass()).containsKey("requestEntity")){
 				HttpEntity<?> requestEntity = (HttpEntity<?>) ReflectUtils.getFieldValue(acceptHeaderRequestCallback, "requestEntity");

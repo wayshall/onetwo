@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.rest;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -11,14 +12,17 @@ import org.onetwo.common.utils.CharsetUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.google.common.collect.Sets;
 
 public final class RestUtils {
-	
-	private RestUtils(){}
+	private static Collection<RequestMethod> BODY_SUPPORT_METHODS = Sets.newHashSet(RequestMethod.POST, RequestMethod.PATCH, RequestMethod.PUT);
 
 	public static final String CLASS_OK_HTTP_CLIENT = "okhttp3.OkHttpClient";
 	
@@ -55,6 +59,13 @@ public final class RestUtils {
 		TEXT_HEADER.set(ACCEPT_CHARSET, CharsetUtils.UTF_8);
 		TEXT_HEADER.setAccept(Arrays.asList(MediaType.TEXT_PLAIN));
 		
+	}
+	
+	public static boolean isRequestSupportedMethod(HttpMethod method){
+		return isRequestSupportedMethod(RequestMethod.valueOf(method.name()));
+	}
+	public static boolean isRequestSupportedMethod(RequestMethod method){
+		return BODY_SUPPORT_METHODS.contains(method);
 	}
 	
 	public static boolean isOkHttp3Present(){
@@ -127,4 +138,5 @@ public final class RestUtils {
 		return entity;
 	}
 
+	private RestUtils(){}
 }

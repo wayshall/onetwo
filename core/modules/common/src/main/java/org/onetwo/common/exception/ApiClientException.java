@@ -12,7 +12,7 @@ import org.onetwo.common.utils.StringUtils;
  */
 @SuppressWarnings("serial")
 public class ApiClientException extends BaseException implements ExceptionCodeMark{
-	public static final String BASE_CODE = "[ApiClient]";//前缀
+	public static final String BASE_CODE = "ApiClient_";//前缀
 
 	protected String code;
 	private Object[] args;
@@ -22,16 +22,18 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 		this(exceptionType, (Throwable)null);
 	}
 
-	public ApiClientException(ErrorType exceptionType, Method method) {
-		super(String.format(exceptionType.getErrorMessage(), method.toGenericString()));
+	public ApiClientException(ErrorType exceptionType, Method method, Throwable cause) {
+		super(String.format(exceptionType.getErrorMessage()), cause);
 		initErrorCode(exceptionType.getErrorCode());
 		this.statusCode = exceptionType.getStatusCode();
+		put("api method", method);
 	}
 
 	public ApiClientException(ErrorType exceptionType, Class<?> interfaceClass, Throwable cause) {
-		super(String.format(exceptionType.getErrorMessage(), interfaceClass.getName()), cause);
+		super(String.format(exceptionType.getErrorMessage(), interfaceClass.getSimpleName()), cause);
 		initErrorCode(exceptionType.getErrorCode());
 		this.statusCode = exceptionType.getStatusCode();
+		put("api interface", interfaceClass);
 	}
 
 	public ApiClientException(ErrorType exceptionType, Throwable cause) {

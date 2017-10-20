@@ -62,7 +62,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T extends BaseException> T put(String key, Object value){
+	final public <T extends BaseException> T put(String key, Object value){
 		Map<String, Object> errorContext = this.errorContext;
 		if(errorContext==null){
 			errorContext = Maps.newHashMap();

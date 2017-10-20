@@ -623,7 +623,7 @@ final public class CUtils {
 		int size = list.size();
 		for (int i = 0; i < size; i++) {
 			Object element = list.get(i);
-			if(element!=null && targetClass.isAssignableFrom(element.getClass())){
+			if(element!=null && targetClass.isAssignableFrom(ReflectUtils.getObjectClass(element))){
 				Pair res = Pair.of(i, (T)element);
 				return Optional.of(res);
 			}
@@ -632,9 +632,9 @@ final public class CUtils {
 	}
 	
 	public static void replaceOrAdd(List list, Class targetClass, Object element){
-		Optional<Pair<Integer, Object>> jsonConvertor = CUtils.findByClass(list, targetClass);
-		if(jsonConvertor.isPresent()){
-			list.set(jsonConvertor.get().getKey(), element);
+		Optional<Pair<Integer, Object>> targetElement = CUtils.findByClass(list, targetClass);
+		if(targetElement.isPresent()){
+			list.set(targetElement.get().getKey(), element);
 		}else{
 			list.add(element);
 		}

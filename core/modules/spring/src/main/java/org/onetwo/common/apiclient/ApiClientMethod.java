@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
+import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
-import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientError;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
@@ -21,19 +21,32 @@ import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.converter.ValueEnum;
+import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
-
-import com.google.common.collect.Maps;
+import org.springframework.web.client.RestClientException;
 
 /**
+ * 支持  @PathVariable @RequestBody @RequestParam 注解
+ * @PathVariable：解释路径参数
+ * @RequestBody：body，一般会转为json，一次请求 只允许一个requestbody
+ * @RequestParam：转化为queryString参数
+ * 没有注解的方法参数：如果为get请求，则所有参数都转为queryString参数，效果和使用了@RequestParam一样；
+ * 					 如果为post请求，则自动包装为类型为Map的requestBody
+ * 
+ * 
+ * get请求忽略requestBody
+ * post请求会把非url参数转化为requestBody
+ * 
  * @author wayshall
  * <br/>
  */
@@ -58,16 +71,17 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	public void initialize(){
 		if(!ApiClientUtils.isRequestMappingPresent()){
-			throw new ApiClientException(ApiClientError.REQUEST_MAPPING_NOT_FOUND);
+			throw new ApiClientException(ApiClientErrors.REQUEST_MAPPING_NOT_FOUND);
 		}
 		Optional<AnnotationAttributes> requestMapping = SpringUtils.getAnnotationAttributes(method, RequestMapping.class);
 		if(!requestMapping.isPresent()){
-			throw new ApiClientException(ApiClientError.REQUEST_MAPPING_NOT_FOUND, method);
+			throw new ApiClientException(ApiClientErrors.REQUEST_MAPPING_NOT_FOUND, method, null);
 		}
 		
 		AnnotationAttributes reqestMappingAttrs = requestMapping.get();
 		String[] paths = reqestMappingAttrs.getStringArray("value");
 		path = LangUtils.isEmpty(paths)?"":paths[0];
+		//SpringMvcContract#parseAndValidateMetadata
 		this.acceptHeader = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("produces"));
 		this.contentType = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("consumes"));
 		this.headers = reqestMappingAttrs.getStringArray("headers");
@@ -89,82 +103,115 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return contentType;
 	}
 
-	public Map<String, Object> getUrlParameters(Object[] args){
+	public Map<String, ?> getQueryStringParameters(Object[] args){
 		if(LangUtils.isEmpty(args)){
 			return Collections.emptyMap();
 		}
-		Map<String, Object> values = Maps.newHashMapWithExpectedSize(parameters.size());
 		
 		List<ApiClientMethodParameter> urlVariableParameters = parameters.stream()
-												.filter(p->{
-													return !p.hasParameterAnnotation(RequestBody.class);
-												})
+												.filter(p->isQueryStringParameters(p))
 												.collect(Collectors.toList());
-		Object pvalue = null;
-		for(ApiClientMethodParameter parameter : urlVariableParameters){
-			pvalue = args[parameter.getParameterIndex()];
-			handleArg(values, parameter, pvalue);
-		}
+		
+		Map<String, ?> values = toMap(urlVariableParameters, args).toSingleValueMap();
 		
 		return values;
 	}
+	
+	protected boolean isQueryStringParameters(ApiClientMethodParameter p){
+		if(requestMethod==RequestMethod.POST || requestMethod==RequestMethod.PATCH){
+			//post方法，使用了RequestParam才转化为queryString
+			return p.hasParameterAnnotation(RequestParam.class);
+		}
+		return true;
+	}
 
-	public Map<String, Object> getPathVariables(Object[] args){
+	public Map<String, ?> getPathVariables(Object[] args){
 		if(LangUtils.isEmpty(args)){
 			return Collections.emptyMap();
 		}
-		Map<String, Object> values = Maps.newHashMapWithExpectedSize(parameters.size());
 		
 		List<ApiClientMethodParameter> pathVariables = parameters.stream()
 												.filter(p->{
 													return p.hasParameterAnnotation(PathVariable.class);
 												})
 												.collect(Collectors.toList());
-		Object pvalue = null;
+		/*Object pvalue = null;
 		for(ApiClientMethodParameter parameter : pathVariables){
 			pvalue = args[parameter.getParameterIndex()];
 			handleArg(values, parameter, pvalue);
-		}
+		}*/
+		Map<String, ?> values = toMap(pathVariables, args).toSingleValueMap();
 		
 		return values;
 	}
 	
 	public Object getRequestBody(Object[] args){
-		Optional<ApiClientMethodParameter> requestBodyParameter = parameters.stream()
+		if(!RestUtils.isRequestSupportedMethod(requestMethod)){
+			throw new RestClientException("unsupported request body method: " + method);
+		}
+		List<ApiClientMethodParameter> requestBodyParameters = parameters.stream()
 												.filter(p->{
 													return p.hasParameterAnnotation(RequestBody.class);
 												})
-												.findFirst();
-		if(requestBodyParameter.isPresent()){
+												.collect(Collectors.toList());
+		if(requestBodyParameters.isEmpty()){
+			//如果没有使用RequestBody注解的参数
+			Object values = toMap(parameters, args, false);
+			return values;
+		}else if(requestBodyParameters.size()==1){
+			return args[requestBodyParameters.get(0).getParameterIndex()];
+		}else{
+			throw new ApiClientException(ApiClientErrors.REQUEST_BODY_ONLY_ONCE, method, null);
+		}
+		/*if(requestBodyParameter.isPresent()){
 			return args[requestBodyParameter.get().getParameterIndex()];
 		}
-		return null;
+		return null;*/
 	}
 	
 
-	protected void handleArg(Map<String, Object> values, ApiClientMethodParameter mp, final Object pvalue){
+	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args){
+		return toMap(methodParameters, args, true);
+	}
+	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args, boolean flatable){
+		MultiValueMap<String, Object> values = new LinkedMultiValueMap<>(methodParameters.size());
+		for(ApiClientMethodParameter parameter : methodParameters){
+			Object pvalue = args[parameter.getParameterIndex()];
+			handleArg(values, parameter, pvalue, flatable);
+		}
+		return values;
+	}
+	
+	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean flatable){
 		Object paramValue = pvalue;
 		if(mp.hasParameterAnnotation(RequestParam.class)){
 			RequestParam params = mp.getParameterAnnotation(RequestParam.class);
 			if(pvalue==null && params.required() && (paramValue=params.defaultValue())==ValueConstants.DEFAULT_NONE){
-				throw new BaseException("parameter must be required : " + mp.getParameterName());
+				throw new BaseException("parameter["+params.name()+"] must be required : " + mp.getParameterName());
 			}
 		}
-		beanToMapConvertor.flatObject(mp.getParameterName(), paramValue, (k, v, ctx)->{
-			if(v instanceof Enum){
-				Enum<?> e = (Enum<?>)v;
-				if(e instanceof ValueEnum){
-					v = ((ValueEnum<?>)e).getValue();
-				}else{//默认使用name
-					v = e.name();
+		
+		if(flatable){
+			beanToMapConvertor.flatObject(mp.getParameterName(), paramValue, (k, v, ctx)->{
+				if(v instanceof Enum){
+					Enum<?> e = (Enum<?>)v;
+					if(e instanceof ValueEnum){
+						v = ((ValueEnum<?>)e).getValue();
+					}else{//默认使用name
+						v = e.name();
+					}
 				}
-			}
-			if(ctx!=null){
-				values.put(ctx.getName(), v);
-			}else{
-				values.put(k, v);
-			}
-		});
+				if(ctx!=null){
+//					System.out.println("ctx.getName():"+ctx.getName());
+					values.add(ctx.getName(), v);
+				}else{
+					values.add(k, v);
+				}
+	//			values.put(k, v);
+			});
+		}else{
+			values.add(mp.getParameterName(), pvalue);
+		}
 	}
 
 	public String getPath() {

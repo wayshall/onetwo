@@ -5,10 +5,12 @@ import java.util.Map;
 
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyInfoImpl;
+import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -21,7 +23,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <br/>
  */
 public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implements ApiClientResponseHandler<M> {
-
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
 	@Override
 	public Class<?> getActualResponseType(M invokeMethod) {
 		return invokeMethod.getMethodReturnType();

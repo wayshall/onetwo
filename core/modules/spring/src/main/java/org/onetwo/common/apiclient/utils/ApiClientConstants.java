@@ -8,14 +8,15 @@ import org.onetwo.common.exception.ErrorType;
  */
 public abstract class ApiClientConstants {
 	
-	public static enum ApiClientError implements ErrorType {
+	public static enum ApiClientErrors implements ErrorType {
 		REQUEST_MAPPING_NOT_PRESENT("@RequestMapping not present"),
 		REQUEST_MAPPING_NOT_FOUND("@RequestMapping not found on method: %s"),
+		REQUEST_BODY_ONLY_ONCE("There can be only one @RequstBody on method: %s"),
 		EXECUTE_REST_ERROR("execute rest error for interface: %s");
 		
 		private String errorMessage;
 
-		private ApiClientError(String errorMessage) {
+		private ApiClientErrors(String errorMessage) {
 			this.errorMessage = errorMessage;
 		}
 

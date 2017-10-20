@@ -20,14 +20,14 @@ public class RequestContextData {
 	private String requestUrl;
 	final private Class<?> responseType;
 //	private Object requestBody;
-	final private Map<String, Object> uriVariables;
+	final private Map<String, ?> uriVariables;
 	@Getter
-	final private Map<String, Object> pathVariables;
+	final private Map<String, ?> pathVariables;
 	private Consumer<HttpHeaders> headerCallback;
 	private Supplier<Object> requestBodySupplier;
 	
 	@Builder
-	public RequestContextData(RequestMethod requestMethod, Map<String, Object> pathVariables, Map<String, Object> uriVariables, Class<?> responseType) {
+	public RequestContextData(RequestMethod requestMethod, Map<String, ?> pathVariables, Map<String, ?> uriVariables, Class<?> responseType) {
 		super();
 		this.httpMethod = HttpMethod.resolve(requestMethod.name());
 		this.uriVariables = uriVariables;
@@ -49,7 +49,7 @@ public class RequestContextData {
 		return requestUrl;
 	}
 	
-	public Map<String, Object> getUriVariables() {
+	public Map<String, ?> getUriVariables() {
 		return uriVariables;
 	}
 	
