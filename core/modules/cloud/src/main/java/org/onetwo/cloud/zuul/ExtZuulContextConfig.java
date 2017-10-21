@@ -1,9 +1,7 @@
 package org.onetwo.cloud.zuul;
 
-import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
-import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
+import org.onetwo.boot.core.BootFixedConfiguration;
 import org.onetwo.cloud.core.BootJfishCloudConfig;
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.filter.SpringMultipartFilterProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -16,8 +14,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.zuul.filters.pre.FormBodyWrapperFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.support.MultipartFilter;
+import org.springframework.context.annotation.Import;
 
 /**
  * @author wayshall
@@ -26,17 +23,18 @@ import org.springframework.web.multipart.support.MultipartFilter;
 @EnableDiscoveryClient
 @EnableConfigurationProperties({BootJfishCloudConfig.class})
 @Configuration
+@Import(BootFixedConfiguration.class)
 public class ExtZuulContextConfig {
 	@Autowired
     private BootJfishCloudConfig cloudConfig;
 	@Autowired
 	private MultipartProperties multipartProperties;
 
-	@Bean
+	/*@Bean
 	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
-	}
+	}*/
 	
     @Bean
     @ConditionalOnClass(name="com.netflix.zuul.ZuulFilter")
@@ -54,13 +52,13 @@ public class ExtZuulContextConfig {
     	return new SpringMultipartFilterProxy();
     }
     
-	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
+	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 	@ConditionalOnMissingBean(name={MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME})
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
 		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
 		return resolver;
-	}
+	}*/
 	
 	@Bean
 	public FormBodyWrapperFilter formBodyWrapperFilter(){

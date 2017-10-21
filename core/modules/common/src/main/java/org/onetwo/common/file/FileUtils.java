@@ -52,6 +52,7 @@ public class FileUtils {
 
 	private static final Logger logger = JFishLoggerFactory.getLogger(FileUtils.class);
 
+	public static final String JAVA_IO_TEMDIR = "java.io.tmpdir";
 	public static final String UTF8_BOM = "\uFEFF";
 	public static final String UNICODE_ZERO_WIDTH_SPACE = "\u200b";
 	public static final char UNICODE_ZERO_WIDTH_SPACE_CHAR = UNICODE_ZERO_WIDTH_SPACE.charAt(0);
