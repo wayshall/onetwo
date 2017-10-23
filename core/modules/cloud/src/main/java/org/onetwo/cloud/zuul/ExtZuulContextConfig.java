@@ -71,7 +71,7 @@ public class ExtZuulContextConfig {
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		OrderedHiddenHttpMethodFilter filter = new OrderedHiddenHttpMethodFilter();
-		filter.setMethodParam("_disable_spring_mvc_hidden_method");
+		filter.setMethodParam("_disable_spring_mvc_hidden_method_for_fucking_zuul");
 		return filter;
 	}
 }
