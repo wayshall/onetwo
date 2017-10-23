@@ -36,6 +36,7 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 			setObjectMapper(jsonMapper.getObjectMapper());
 		}
 	}
+	
 
 	public void setMapperBuilder(Jackson2ObjectMapperBuilder mapperBuilder) {
 		this.mapperBuilder = mapperBuilder;

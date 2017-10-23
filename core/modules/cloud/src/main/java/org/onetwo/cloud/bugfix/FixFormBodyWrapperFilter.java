@@ -1,4 +1,4 @@
-package org.onetwo.cloud.zuul;
+package org.onetwo.cloud.bugfix;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,9 +8,11 @@ import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.http.HttpServletRequestWrapper;
 
 /**
+ * instead of OrderedHiddenHttpMethodFilter
  * @author wayshall
  * <br/>
  */
+@Deprecated
 public class FixFormBodyWrapperFilter extends FormBodyWrapperFilter {
 	
 	private static final String HIDDEN_METHOD_REQUEST_CLASS_NAME = "org.springframework.web.filter.HiddenHttpMethodFilter$HttpMethodRequestWrapper";
@@ -25,6 +27,7 @@ public class FixFormBodyWrapperFilter extends FormBodyWrapperFilter {
 			request = wrapper.getRequest();
 		}
 		if(isHiddenMethodRequest(request)){
+			//com.netflix.zuul.http.HttpServletRequestWrapper zuul重新包装的request，只有request.getMethod为post时才会转发
 			javax.servlet.http.HttpServletRequestWrapper wrapper = (javax.servlet.http.HttpServletRequestWrapper) request;
 			ctx.setRequest((HttpServletRequest)wrapper.getRequest());
 		}

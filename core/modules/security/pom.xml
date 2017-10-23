@@ -165,11 +165,13 @@
                     <artifactId>spring-jdbc</artifactId>
                 </exclusion>
             </exclusions>
+            <optional>true</optional>
 	    </dependency>
 	    
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
+            <optional>true</optional>
         </dependency>
 	    
 	    

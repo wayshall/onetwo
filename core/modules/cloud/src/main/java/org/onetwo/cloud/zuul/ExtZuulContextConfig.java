@@ -11,11 +11,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.cloud.netflix.zuul.filters.pre.FormBodyWrapperFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 
@@ -62,8 +63,15 @@ public class ExtZuulContextConfig {
 		return resolver;
 	}
 	
-	@Bean
+	/*@Bean
 	public FormBodyWrapperFilter formBodyWrapperFilter(){
 		return new FixFormBodyWrapperFilter();
+	}*/
+	@Bean
+	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
+	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+		OrderedHiddenHttpMethodFilter filter = new OrderedHiddenHttpMethodFilter();
+		filter.setMethodParam("_disable_spring_mvc_hidden_method");
+		return filter;
 	}
 }
