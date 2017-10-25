@@ -82,12 +82,18 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(restExecutor);
 		
-		MethodInterceptor apiClient = createApiMethodInterceptor();
 //		this.apiObject = Proxys.interceptInterfaces(Arrays.asList(interfaceClass), apiClient);
 		
-		Springs.initApplicationIfNotInitialized(applicationContext);
+		//在getObject里初始化可避免启动时发生下面的错误
+		//Bean creation exception on non-lazy FactoryBean type check: org.springframework.beans.factory.BeanCreationException: Error creating bean with name
+//		Springs.initApplicationIfNotInitialized(applicationContext);
+		
+		/*if(interfaceClass.getSimpleName().startsWith("WechatOauth2")){
+			System.out.println("test");
+		}*/
+		/*MethodInterceptor apiClient = createApiMethodInterceptor();
 		MixinableInterfaceCreator mixinableCreator = SpringMixinableInterfaceCreator.classNamePostfixMixin(interfaceClass);
-		this.apiObject = mixinableCreator.createMixinObject(apiClient);
+		this.apiObject = mixinableCreator.createMixinObject(apiClient);*/
 	}
 	
 
@@ -95,7 +101,15 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 
 	@Override
 	public Object getObject() throws Exception {
-		return this.apiObject;
+		Object apiObject = this.apiObject;
+		if(apiObject==null){
+			Springs.initApplicationIfNotInitialized(applicationContext);
+			MethodInterceptor apiClient = createApiMethodInterceptor();
+			MixinableInterfaceCreator mixinableCreator = SpringMixinableInterfaceCreator.classNamePostfixMixin(interfaceClass);
+			apiObject = mixinableCreator.createMixinObject(apiClient);
+			this.apiObject = apiObject;
+		}
+		return apiObject;
 	}
 
 	@Override

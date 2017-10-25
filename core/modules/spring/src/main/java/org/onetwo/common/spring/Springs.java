@@ -66,8 +66,9 @@ public class Springs {
 		instance.appContext = webappContext;
 		instance.initialized = true;
 		instance.printBeanNames();
-		if(ConfigurableApplicationContext.class.isInstance(webappContext))
+		if(ConfigurableApplicationContext.class.isInstance(webappContext)){
 			((ConfigurableApplicationContext)webappContext).registerShutdownHook();
+		}
 		webappContext.publishEvent(new SpringsInitEvent(webappContext));
 	}
 	
