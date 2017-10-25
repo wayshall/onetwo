@@ -16,12 +16,40 @@ import org.springframework.core.type.AnnotationMetadata;
  * <br/>
  */
 public class WebPluginImportSelector extends EnabledKeyCondition
-									implements EnvironmentAware, ImportBeanDefinitionRegistrar{
+									implements EnvironmentAware, ImportBeanDefinitionRegistrar/*, DeferredImportSelector*/ {
 
 	private static final String PLUGIN_KEY = "jfish.plugin.";
 	
 	private WebPlugin webPlugin;
 	private Environment environment;
+	
+	/*private Class<JFishWebPlugin> annotationClass = JFishWebPlugin.class;
+
+	public Class<?> getAnnotationClass() {
+		return annotationClass;
+	}
+
+
+	@Override
+	public String[] selectImports(AnnotationMetadata metadata) {
+		AnnotationAttributes attrubutes = getAnnotationAttributes(metadata);
+		String key = getEnabledKey(environment, attrubutes);
+		if(!isEnabled(environment, key)){
+			return new String[0];
+		}
+
+		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
+				metadata.getAnnotationAttributes(this.getAnnotationClass().getName(), true));
+
+		Assert.notNull(attributes, "No " + getAnnotationClass().getSimpleName() + " attributes found. Is "
+				+ metadata.getClassName() + " annotated with @" + getAnnotationClass().getSimpleName() + "?");
+		
+		List<String> factories = new ArrayList<>(new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(this.getAnnotationClass(), this.getBeanClassLoader())));
+		if(log.isInfoEnabled()){
+			log.info("found {} jfish plugin configuration: {}", factories.size(), factories);
+		}
+		return factories.toArray(new String[factories.size()]);
+	}*/
 
 	@Override
 	protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes) {

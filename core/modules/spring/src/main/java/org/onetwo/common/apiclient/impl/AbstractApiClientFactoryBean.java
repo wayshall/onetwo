@@ -16,6 +16,7 @@ import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.aop.MixinableInterfaceCreator;
 import org.onetwo.common.spring.aop.SpringMixinableInterfaceCreator;
 import org.onetwo.common.spring.rest.RestUtils;
@@ -84,6 +85,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		MethodInterceptor apiClient = createApiMethodInterceptor();
 //		this.apiObject = Proxys.interceptInterfaces(Arrays.asList(interfaceClass), apiClient);
 		
+		Springs.initApplicationIfNotInitialized(applicationContext);
 		MixinableInterfaceCreator mixinableCreator = SpringMixinableInterfaceCreator.classNamePostfixMixin(interfaceClass);
 		this.apiObject = mixinableCreator.createMixinObject(apiClient);
 	}
