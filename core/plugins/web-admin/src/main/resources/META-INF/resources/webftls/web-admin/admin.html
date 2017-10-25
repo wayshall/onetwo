@@ -24,7 +24,7 @@
         <!-- <div data-options="region:'east',split:true" title="East" style="width:180px;">
             <ul class="easyui-tree" data-options="url:'tree_data1.json',method:'get',animate:true,dnd:true"></ul>
         </div> -->
-        <div data-options="region:'west',split:true" title="小程序管理系统" style="width:20%;">
+        <div data-options="region:'west',split:true" title="${site.name}" style="width:20%;">
         <div style="height:120px;">
                 <div style="padding: 10px;position: relative; float: left;">欢迎你，${loginUserInfo.userName}!</div>
                 <div style="float:right; margin-right: 20px;padding: 10px;">
@@ -46,7 +46,7 @@
         <div data-options="region:'center',title:'',iconCls:'icon-ok'">
             <div id="mainContent" class="easyui-tabs" data-options="fit:true,border:false,plain:true">
                 <!-- <div title="首页" data-options="href:'${siteConfig.baseURL}/'" style="padding:10px"></div> -->
-                <div title="首页" style="padding:10px">欢迎使用后台管理系统</div>
+                <div title="首页" style="padding:10px">欢迎使用${site.name}</div>
             </div>
         </div>
     </div>
