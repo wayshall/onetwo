@@ -17,7 +17,6 @@ import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.common.data.AbstractDataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.data.LazyValue;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -312,8 +311,16 @@ abstract public class AbstractBaseController {
 	 * @param value
 	 * @return
 	 */
-	protected ModelAndView responseData(LazyValue value){
-		return mv("", DataWrapper.lazy(value));
+	protected ModelAndView responseData(JsonResponseValue value){
+		return mv("", getJsonResponseValue(value));
+	}
+	
+	protected Object getJsonResponseValue(JsonResponseValue value){
+		Object actualValue = null;//DataWrapper.lazy(value);
+		if(isResponseJson() || isResponseXml()){
+			actualValue = DataWrapper.wrap(value.get());
+		}
+		return actualValue;
 	}
 	
 	protected AbstractDataResult<?> asSucceedResult(Object value){
@@ -359,15 +366,15 @@ abstract public class AbstractBaseController {
 	 * @param value
 	 * @return
 	 */
-	protected ModelAndView responsePageOrData(String viewName, LazyValue value){
-		return BootWebUtils.createModelAndView(getViewName(viewName), DataWrapper.lazy(value));
+	protected ModelAndView responsePageOrData(String viewName, JsonResponseValue value){
+		return BootWebUtils.createModelAndView(getViewName(viewName), getJsonResponseValue(value));
 	}
 	protected String getViewName(String viewName){
 		return viewName;
 	}
-	protected ModelAndView responsePageOrData(ModelAndView mv, LazyValue value){
+	protected ModelAndView responsePageOrData(ModelAndView mv, JsonResponseValue value){
 		Assert.notNull(mv);
-		mv.addObject(DataWrapper.lazy(value));
+		mv.addObject(getJsonResponseValue(value));
 		return mv;
 	}
 	/***
@@ -398,5 +405,8 @@ abstract public class AbstractBaseController {
 		return getResponseType()==ResponseType;
 	}
 	
+	static public interface JsonResponseValue {
+		Object get();
+	}
 	
 }

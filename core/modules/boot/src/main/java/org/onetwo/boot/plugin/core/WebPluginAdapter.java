@@ -19,7 +19,7 @@ abstract public class WebPluginAdapter implements WebPlugin {
 			if(contextPath.endsWith(PLUGIN_POSTFIX)){
 				contextPath = contextPath.substring(0, contextPath.length()-PLUGIN_POSTFIX.length());
 			}
-			this.contextPath = contextPath;
+			this.contextPath = StringUtils.appendStartWith(contextPath, "/");;
 		}
 		return contextPath;
 	}

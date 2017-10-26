@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.mvc.utils;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
@@ -28,7 +29,12 @@ public class MvcUtils {
 				ModelAttr attr = (ModelAttr) models[0];
 				mv.addObject(attr.getName(), attr.getValue());
 				
-			}else{
+			}else if(Optional.class.isInstance(models[0])){
+				Optional<?> attr = (Optional<?>) models[0];
+				if(attr.isPresent()){
+					mv.addObject(attr.get());
+				}
+			}else if(models[0]!=null){
 				mv.addObject(models[0]);
 //				mv.addObject(JsonWrapper.wrap(models[0]));
 //				mv.addObject(SINGLE_MODEL_FLAG_KEY, true);
