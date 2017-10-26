@@ -13,6 +13,7 @@ import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.filter.CorsFilter;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.plugin.PluginContextConfig;
+import org.onetwo.boot.plugin.ftl.WebFtlsContextConfig;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.init.CommonWebFilterInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
 @EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class})
-@Import({BootContextConfig.class, PluginContextConfig.class})
+@Import({BootContextConfig.class, PluginContextConfig.class, WebFtlsContextConfig.class})
 //@ConditionalOnProperty(name=BootJFishConfig.ENABLE_JFISH_AUTO_CONFIG, havingValue=BootJFishConfig.VALUE_AUTO_CONFIG_WEB_UI, matchIfMissing=true)
 @ConditionalOnClass(CommonWebFilterInitializer.class)
 public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {

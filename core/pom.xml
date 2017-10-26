@@ -68,6 +68,7 @@
                 <module>modules/common</module>
                 <module>modules/spring</module>
                 <module>modules/boot</module>
+                <module>../../dbm</module>
                 <module>../../onetwo-wechat</module>
 	  	</modules>
         <build>

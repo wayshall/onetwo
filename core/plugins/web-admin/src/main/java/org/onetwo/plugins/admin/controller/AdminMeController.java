@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MeController extends WebAdminBaseController {
+public class AdminMeController extends WebAdminBaseController {
 	
 	@GetMapping("me")
 	public Object me(){
