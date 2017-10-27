@@ -12,11 +12,20 @@ import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 
 public class BeanPropertiesMapper {
+	
+	public static BeanPropertiesMapper props(Properties config, String prefix, boolean ignoreFoundProperty){
+		return new BeanPropertiesMapper(config, prefix, ignoreFoundProperty);
+	}
+	
+	public static BeanPropertiesMapper ignoreNotFoundProperty(Properties config){
+		return new BeanPropertiesMapper(config, null, true);
+	}
+	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	final private Properties config;
 	final private String prefix;
-	private boolean ignoreFoundProperty = false;
+	private boolean ignoreNotFoundProperty = false;
 	
 	public BeanPropertiesMapper(Properties config, String prefix) {
 		this(config, prefix, false);
@@ -25,7 +34,7 @@ public class BeanPropertiesMapper {
 		super();
 		this.config = config;
 		this.prefix = prefix;
-		this.ignoreFoundProperty = ignoreFoundProperty;
+		this.ignoreNotFoundProperty = ignoreFoundProperty;
 	}
 	
 	public void mapToObject(Object obj) {
@@ -48,9 +57,10 @@ public class BeanPropertiesMapper {
 		}
 	}
 	
+	
 	protected void setPropertyValue(BeanWrapper bw, String propertyName, Object value){
 		if(!bw.isWritableProperty(propertyName)){
-			if(!ignoreFoundProperty){
+			if(!ignoreNotFoundProperty){
 				throw new NoSuchElementException("no setter found for property: " + propertyName);
 			}
 			logger.debug("ignore property: {}={} ", propertyName, value);
@@ -60,9 +70,6 @@ public class BeanPropertiesMapper {
 		if(logger.isDebugEnabled()){
 			logger.debug("set property: {}={} ", propertyName, value);
 		}
-	}
-	public void setIgnoreFoundProperty(boolean ignoreFoundProperty) {
-		this.ignoreFoundProperty = ignoreFoundProperty;
 	}
 	
 }
