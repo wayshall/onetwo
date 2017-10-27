@@ -22,7 +22,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	private static final String SEP_LIE = "--------------------";
 	
 	protected static final String DefaultMsg = "occur error";
-	public static final String Prefix = "[ERROR]:";
+	public static final String Prefix = "[ERROR]";
 
 	protected String code;
 	

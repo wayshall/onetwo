@@ -1,6 +1,5 @@
 package org.onetwo.common.spring.rest;
 
-import org.springframework.http.ResponseEntity;
 
 /**
  * @author wayshall

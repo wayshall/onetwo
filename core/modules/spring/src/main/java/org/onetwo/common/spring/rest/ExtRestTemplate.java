@@ -3,6 +3,7 @@ package org.onetwo.common.spring.rest;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -25,6 +26,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -69,6 +71,16 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 //			this.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 		}
 		this.setErrorHandler(new OnExtRestErrorHandler());
+	}
+	
+	public final ExtRestTemplate addMessageConverters(HttpMessageConverter<?>... elements){
+		getMessageConverters().addAll(Arrays.asList(elements));
+		return this;
+	}
+	
+	public final ExtRestTemplate replaceOrAddMessageConverter(Class<? extends HttpMessageConverter<?>> targetClass, HttpMessageConverter<?> element){
+		CUtils.replaceOrAdd(getMessageConverters(), targetClass, element);
+		return this;
 	}
 
 	public void setBeanToMapConvertor(BeanToMapConvertor beanToMapConvertor) {
