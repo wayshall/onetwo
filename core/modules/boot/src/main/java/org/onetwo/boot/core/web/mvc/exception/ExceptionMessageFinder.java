@@ -16,7 +16,6 @@ import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
-import org.onetwo.common.exception.SystemErrorCode.JFishErrorCode;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -69,18 +68,18 @@ public interface ExceptionMessageFinder {
 			detail = !product;
 		}else if(BootUtils.isDmbPresent() && DbmException.class.isInstance(ex)){
 //			defaultViewName = ExceptionView.UNDEFINE;
-			errorCode = JFishErrorCode.ORM_ERROR;
+//			errorCode = JFishErrorCode.ORM_ERROR;//find message from resouce
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
 		}else if(ex instanceof BaseException){
 //			defaultViewName = ExceptionView.UNDEFINE;
-			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+//			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;//find message from resouce
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 			
 //			Throwable t = LangUtils.getFirstNotJFishThrowable(ex);
 		}else if(TypeMismatchException.class.isInstance(ex)){
-			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
+//			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 			errorMsg = "parameter convert error!";
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}else if(ex instanceof ConstraintViolationException){

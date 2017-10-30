@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import org.onetwo.boot.core.web.view.DefaultDataResultWrapper;
-import org.onetwo.common.data.DataResult;
+import org.onetwo.common.data.AbstractDataResult;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,13 +18,19 @@ public class OAuth2DataResultWrapper extends DefaultDataResultWrapper {
 
 	@Override
 	public Object wrapResult(final Object data) {
-		DataResult<?> dr = (DataResult<?>)super.wrapResult(data);
-		OAuth2Result or = OAuth2Result.builder()
-									  .error(dr.getCode())
-									  .errorDescription(dr.getMessage())
-									  .data(dr.getData())
-									  .build();
-		return or;
+		Object result = super.wrapResult(data);
+		if(result instanceof AbstractDataResult){
+			AbstractDataResult<?> dr = (AbstractDataResult<?>)super.wrapResult(data);
+			if(dr.isError()){
+				OAuth2Result or = OAuth2Result.builder()
+						  .error(dr.getCode())
+						  .errorDescription(dr.getMessage())
+						  .build();
+				return or;
+			}
+			result = dr.getData();
+		}
+		return result;
 	}
 	
 	@Data
