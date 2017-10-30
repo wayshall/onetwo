@@ -21,6 +21,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix="jfish")
 @Data
 public class BootJFishConfig {
+	public static final String ENABLE_SWAGGER = "jfish.swagger.enabled";
+	
 	public static final String ENABLE_CORSFILTER = "jfish.corsfilter.enabled";
 	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = "jfish.dynamic.loggerLevel";
 	public static final String ENABLE_DYNAMIC_SETTING = "jfish.dynamic.setting";
