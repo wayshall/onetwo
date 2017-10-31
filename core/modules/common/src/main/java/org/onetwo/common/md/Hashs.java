@@ -77,6 +77,14 @@ abstract public class Hashs {
 		MessageDigestHasher md = getMDEncrypt(label);
 		return md.checkHash(source, encrypt);
 	}
+	
+	public static MessageDigestHasher sha1(boolean withLabel, CodeType codeType){
+		return MessageDigestHasherBuilder.newBuilder("SHA")
+										.size(20)
+										.withLabel(withLabel)
+										.codeType(codeType)
+										.build();
+	}
 
 	
 	public static class MessageDigestHasherBuilder {

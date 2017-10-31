@@ -144,6 +144,7 @@ public class BootWebCommonAutoConfig {
 	 * @return
 	 */
 	@Bean
+	@ConditionalOnMissingBean(BootWebMvcRegistrations.class)
 	public BootWebMvcRegistrations bootWebMvcRegistrations(){
 		return new BootWebMvcRegistrations();
 	}

@@ -89,6 +89,7 @@ public interface ExceptionMessageFinder {
 			findMsgByCode = false;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}else if(ex instanceof BindException){
+			//处理 ModelAttributeMethodProcessor#resolveArgument的BindException异常, 避免在没有定义Errors（BindingResult）参数的情况下直接显示BindException异常
 			BindingResult br = ((BindException)ex).getBindingResult();
 			errorMsg = ValidatorUtils.asString(br);
 			findMsgByCode = false;
