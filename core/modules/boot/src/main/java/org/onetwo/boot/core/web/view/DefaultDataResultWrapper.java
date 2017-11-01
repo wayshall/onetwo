@@ -7,8 +7,8 @@ import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.DataResultWrapper;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator.MapResultBuilder;
+import org.onetwo.common.spring.mvc.utils.DataResults;
+import org.onetwo.common.spring.mvc.utils.DataResults.MapResultBuilder;
 import org.springframework.validation.BindingResult;
 
 /**
@@ -31,7 +31,7 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 		if(Map.class.isInstance(result)){
 			@SuppressWarnings("unchecked")
 			MapResultBuilder dataResult = createMapResultBuilder((Map<String, Object>) result);
-			return dataResult.buildResult();
+			return dataResult.build();
 		}else{
 			SimpleDataResult<Object> dataResult = SimpleDataResult.success("success", result);
 			return dataResult;
@@ -39,7 +39,7 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 	}
 	
 	private MapResultBuilder createMapResultBuilder(Map<String, Object> map){
-		MapResultBuilder dataResult = WebResultCreator.creator().map().success();
+		MapResultBuilder dataResult = DataResults.map().success();
 		for(Entry<String, Object> entry : map.entrySet()){
 			if(BindingResult.class.isInstance(entry.getValue())){
 				BindingResult br = (BindingResult) entry.getValue();

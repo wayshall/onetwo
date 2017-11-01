@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator.SimpleResultBuilder;
+import org.onetwo.common.spring.mvc.utils.DataResults;
+import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
@@ -56,12 +56,11 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			ServletException {
 		String url = request.getMethod() + "|" + request.getRequestURI();
 		if(RequestUtils.isAjaxRequest(request)){
-			SimpleResultBuilder builder = WebResultCreator.creator()
-															.error("操作失败："+accessDeniedException.getMessage()+
+			SimpleResultBuilder<?> builder = DataResults.error("操作失败："+accessDeniedException.getMessage()+
 																	", at "+request.getRequestURI())
 															.data(url);
 			
-			SimpleDataResult<?> rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).buildResult();
+			DataResult<?> rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).build();
 			String text = mapper.toJson(rs);
 			logger.info("[] AccessDenied, render json: {}", url, text);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);

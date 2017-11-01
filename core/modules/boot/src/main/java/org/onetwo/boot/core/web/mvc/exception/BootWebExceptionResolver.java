@@ -9,10 +9,10 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
+import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -103,9 +103,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 //		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
 		
 		if(BootWebUtils.isAjaxRequest(request) || BootWebUtils.isAjaxHandlerMethod(handlerMethod)){
-			SimpleDataResult<?> result = WebResultCreator.creator()
-							.error(errorMessage.getMesage())
-							.buildResult();
+			DataResult<?> result = DataResults.error(errorMessage.getMesage()).build();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
 			ModelAndView mv = new ModelAndView("error", model);
 			beforeReturnModelAndView(request, handlerMethod, mv, errorMessage);

@@ -7,9 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
-import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
+import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
@@ -52,10 +52,9 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 //		return super.handleException(ex, request);
 		ErrorMessage errorMessage = handleException(ex);
 		
-		SimpleDataResult<?> result = WebResultCreator.creator()
-													.error(errorMessage.getMesage())
+		DataResult<?> result = DataResults.error(errorMessage.getMesage())
 													.code(errorMessage.getCode())
-													.buildResult();
+													.build();
 
 //		this.doLog(WebHolder.getRequest().orElse(null), null, ex, errorMessage.isDetail());
 		HttpHeaders headers = new HttpHeaders();
@@ -66,10 +65,9 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
 		ErrorMessage errorMessage = handleException(ex);
-		SimpleDataResult<?> result = WebResultCreator.creator()
-				.error(errorMessage.getMesage())
+		DataResult<?> result = DataResults.error(errorMessage.getMesage())
 				.code(errorMessage.getCode())
-				.buildResult();
+				.build();
 		return super.handleExceptionInternal(ex, result, headers, status, request);
 	}
 	

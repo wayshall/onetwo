@@ -8,5 +8,13 @@ package org.onetwo.common.data;
 public interface DataResultWrapper {
 	
 	Object wrapResult(Object responseData);
+	
+	
+	public class NoWrapper implements DataResultWrapper {
+		@Override
+		public Object wrapResult(Object responseData) {
+			return null;
+		}
+	}
 
 }

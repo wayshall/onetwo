@@ -17,6 +17,7 @@ import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.common.data.AbstractDataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -25,8 +26,8 @@ import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.StringUtils;
@@ -323,9 +324,9 @@ abstract public class AbstractBaseController {
 		return actualValue;
 	}
 	
-	protected AbstractDataResult<?> asSucceedResult(Object value){
+	protected DataResult<?> asSucceedResult(Object value){
 //		return SimpleDataResult.createSucceed(null, value);
-		return result().simple(value).buildResult();
+		return DataResults.simple(value).build();
 	}
 	
 	protected AbstractDataResult<Object> asFailedResult(String msg){
@@ -341,9 +342,6 @@ abstract public class AbstractBaseController {
 	/*protected SimpleResultBuilder result(){
 		return WebResultCreator.creator().simple(null);
 	}*/
-	protected WebResultCreator result(){
-		return WebResultCreator.creator();
-	}
 	
 	protected ResponseType getResponseType(){
 		return RequestUtils.getResponseType(WebHolder.getRequest().get());

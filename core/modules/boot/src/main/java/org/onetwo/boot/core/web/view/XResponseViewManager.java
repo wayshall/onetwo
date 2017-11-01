@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.common.data.DataResultWrapper;
+import org.onetwo.common.data.DataResultWrapper.NoWrapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
@@ -97,7 +98,9 @@ public class XResponseViewManager implements HandlerMappingListener {
 		Object wrapData = data;
 		Optional<XResponseViewData> viewData = getCurrentHandlerMatchResponseView(responseView, hm);
 		if(viewData.isPresent()){
-			wrapData = viewData.get().getWrapper().wrapResult(data);
+			if(viewData.get().getWrapper().isPresent()){
+				wrapData = viewData.get().getWrapper().get().wrapResult(wrapData);
+			}
 		}else if(this.alwaysWrapDataResult){
 			wrapData = this.dataResultWrapper.wrapResult(data);
 		}else if(defaultWrapIfNotFoud){
@@ -173,10 +176,10 @@ public class XResponseViewManager implements HandlerMappingListener {
 				Class<? extends DataResultWrapper> wrapperClass) {
 			super();
 			this.viewName = viewName;
-			this.wrapper = ReflectUtils.newInstance(wrapperClass);
+			this.wrapper = wrapperClass==NoWrapper.class?null:ReflectUtils.newInstance(wrapperClass);
 		}
-		public DataResultWrapper getWrapper() {
-			return wrapper;
+		public Optional<DataResultWrapper> getWrapper() {
+			return Optional.ofNullable(wrapper);
 		}
 		public String getViewName() {
 			return viewName;

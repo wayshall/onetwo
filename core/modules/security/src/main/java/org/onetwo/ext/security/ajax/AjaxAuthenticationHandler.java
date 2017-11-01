@@ -7,12 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator.SimpleResultBuilder;
+import org.onetwo.common.spring.mvc.utils.DataResults;
+import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
@@ -120,10 +120,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 		if(useJwtToken){
 			JwtSecurityTokenInfo token = this.jwtTokenService.generateToken(authentication);
 //			response.addHeader(jwtAuthHeader, token.getToken());
-			SimpleDataResult<?> rs = WebResultCreator.creator()
-													.success("登录成功！")
-													.data(token)
-													.buildResult();
+			DataResult<?> rs = DataResults.success("登录成功！")
+											.data(token)
+											.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);
 			
@@ -144,10 +143,10 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 				clearAuthenticationAttributes(request);
 			}
 			
-			SimpleDataResult<?> rs = WebResultCreator.creator().success("登录成功！")
+			DataResult<?> rs = DataResults.success("登录成功！")
 //											.data(authentication.getPrincipal())
 											.data(redirectUrl)
-											.buildResult();
+											.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);
 		}else{
@@ -165,9 +164,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			if(BadCredentialsException.class.isInstance(exception)){
 				msg = "用户密码不匹配！";
 			}
-			SimpleResultBuilder builder = WebResultCreator.creator().error("验证失败："+msg);
+			SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
 			
-			SimpleDataResult<?> rs = buildErrorCode(builder, request, exception).buildResult();
+			DataResult<?> rs = buildErrorCode(builder, request, exception).build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else{
@@ -175,7 +174,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 		}
     }
 	
-	private SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, AuthenticationException exception){
+	private SimpleResultBuilder<?> buildErrorCode(SimpleResultBuilder<?> builder, HttpServletRequest request, AuthenticationException exception){
 		/*if(ExceptionCodeMark.class.isInstance(exception)){
 			String code = ((ExceptionCodeMark)exception).getCode();
 			builder.code(code);

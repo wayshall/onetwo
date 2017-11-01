@@ -15,32 +15,32 @@ import org.springframework.validation.BindingResult;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-final public class WebResultCreator {
+final public class DataResults {
 	
-	private final static WebResultCreator CREATOR = new WebResultCreator();
+//	private final static DataResults CREATOR = new DataResults();
 
-	private WebResultCreator() {
+	private DataResults() {
 	}
 
-	public static WebResultCreator creator(){
+	/*public static DataResults builder(){
 		return CREATOR;
+	}*/
+
+	public static <T> SimpleResultBuilder<T> error(String message){
+		return SimpleResultBuilder.<T>builder().error(message);
 	}
 
-	public SimpleResultBuilder error(String message){
-		return SimpleResultBuilder.builder().error(message);
+	public static <T> SimpleResultBuilder<T> error(ErrorType errorType){
+		return SimpleResultBuilder.<T>builder().error(errorType);
 	}
 
-	public SimpleResultBuilder error(ErrorType errorType){
-		return SimpleResultBuilder.builder().error(errorType);
-	}
-
-	public SimpleResultBuilder error(BindingResult bindingResult){
+	public static <T> SimpleResultBuilder<T> error(BindingResult bindingResult){
 		String message = ValidatorUtils.asString(bindingResult);
 		return error(message);
 	}
 
-	public SimpleResultBuilder success(String message){
-		return SimpleResultBuilder.builder().success(message);
+	public static <T> SimpleResultBuilder<T> success(String message){
+		return SimpleResultBuilder.<T>builder().success(message);
 	}
 	/***
 	 * SimpleResultBuilder
@@ -48,14 +48,14 @@ final public class WebResultCreator {
 	 * 
 	 * @return
 	 */
-	public SimpleResultBuilder simple(){
+	public static <T> SimpleResultBuilder<T> simple(){
 		return simple(null);
 	}
-	public SimpleResultBuilder simple(Object data){
+	public static <T> SimpleResultBuilder<T> simple(T data){
 		return data(data);
 	}
-	public SimpleResultBuilder data(Object data){
-		return SimpleResultBuilder.builder().success().data(data);
+	public static <T> SimpleResultBuilder<T> data(T data){
+		return SimpleResultBuilder.<T>builder().success().data(data);
 	}
 	
 	/***
@@ -63,7 +63,7 @@ final public class WebResultCreator {
 	 * @param data
 	 * @return
 	 */
-	public SimpleResultBuilder extractableData(Object data){
+	public static <T> SimpleResultBuilder<T> extractableData(T data){
 		return simple(data).extractableData(true);
 	}
 	/****
@@ -73,17 +73,17 @@ final public class WebResultCreator {
 	 * 
 	 * @return
 	 */
-	public ListResultBuilder list(Object...elements){
+	public static ListResultBuilder list(Object...elements){
 		ListResultBuilder builder = new ListResultBuilder().success();
 		builder.addElements(elements);
 		return builder;
 	}
-	public ListResultBuilder list(List<?> list){
+	public static ListResultBuilder list(List<?> list){
 		ListResultBuilder builder = new ListResultBuilder().success();
 		builder.addList(list);
 		return builder;
 	}
-	public ListResultBuilder extractedList(List<Object> list){
+	public static ListResultBuilder extractedList(List<Object> list){
 		return list(list).extractableData(true);
 	}
 	/***
@@ -93,16 +93,16 @@ final public class WebResultCreator {
 	 * 
 	 * @return
 	 */
-	public MapResultBuilder map(Object...objects){
+	public static MapResultBuilder map(Object...objects){
 		MapResultBuilder builder = new MapResultBuilder().success();
 		builder.puts(objects);
 		return builder;
 	}
-	public MapResultBuilder extractedMap(Object...objects){
+	public static MapResultBuilder extractedMap(Object...objects){
 		return map(objects).extractableData(true);
 	}
 	
-	public LazyResultBuilder lazy(LazyValue data){
+	public static LazyResultBuilder lazy(LazyValue data){
 		LazyResultBuilder builder = new LazyResultBuilder().success();
 		builder.data(data);
 		return builder;
@@ -110,9 +110,9 @@ final public class WebResultCreator {
 
 
 
-	public static class SimpleResultBuilder extends AbstractResultBuilder<Object, SimpleResultBuilder> {
-		public static SimpleResultBuilder builder(){
-			return new SimpleResultBuilder();
+	public static class SimpleResultBuilder<T> extends AbstractResultBuilder<T, SimpleResultBuilder<T>> {
+		public static <E> SimpleResultBuilder<E> builder(){
+			return new SimpleResultBuilder<E>();
 		}
 	}
 	

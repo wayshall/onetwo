@@ -21,7 +21,7 @@
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
-        <spring-cloud.version>Brixton.SR5</spring-cloud.version>
+        <spring-cloud.version>Camden.SR7</spring-cloud.version>
     </properties>
 
     <dependencies>
@@ -69,6 +69,23 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
+        </dependency>
+        
+        <!-- feign hystrix -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-hystrix</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-ribbon</artifactId>
+          <optional>true</optional>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-feign</artifactId>
+          <optional>true</optional>
         </dependency>
         
         <!-- <dependency>
