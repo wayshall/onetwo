@@ -236,6 +236,8 @@ public class BeanToMapConvertor {
 					if(valueConvertor!=null){
 						Object newVal = valueConvertor.apply(prop, val);
 						val = (newVal!=null?newVal:val);
+					}else if(val instanceof Enum){
+						val = ((Enum<?>)val).name();
 					}
 					PropertyContext propContext = new PropertyContext(obj, prop, prop.getName());
 					if(StringUtils.isBlank(prefixName)){
