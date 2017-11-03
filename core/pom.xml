@@ -61,11 +61,11 @@
                 <module>modules/tomcat</module>
         </modules>
       </profile>
-      
+     
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/common</module>
+                <module>modules/boot</module>
 	  	</modules>
         <build>
             <plugins>
