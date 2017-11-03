@@ -18,11 +18,20 @@ public class UploadOptions {
 	final private String module;
 	final private MultipartFile multipartFile;
 	private CompressConfig compressConfig;
+	/**
+	 * 如果指定了key，会覆盖
+	 */
+	final private String key;
 	
-	public UploadOptions(String module, MultipartFile file) {
+	public UploadOptions(String module, MultipartFile multipartFile) {
+		this(null, module, multipartFile);
+	}
+	
+	public UploadOptions(String key, String module, MultipartFile file) {
 		super();
 		this.module = module;
 		this.multipartFile = file;
+		this.key = key;
 	}
 	
 	public boolean isCompressFile(){
@@ -51,6 +60,10 @@ public class UploadOptions {
 
 	public CompressConfig getCompressConfig() {
 		return compressConfig;
+	}
+
+	public String getKey() {
+		return key;
 	}
 	
 }

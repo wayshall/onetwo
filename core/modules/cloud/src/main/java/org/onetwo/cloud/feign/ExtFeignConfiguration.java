@@ -6,19 +6,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cloud.netflix.feign.AnnotatedParameterProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.convert.ConversionService;
-
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import feign.Contract;
 import feign.Feign;
-import feign.hystrix.HystrixFeign;
 
 /**
  * @author wayshall
@@ -38,7 +33,8 @@ public class ExtFeignConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Contract feignContract(ConversionService feignConversionService) {
-		return new EnhanceSpringMvcContract(this.parameterProcessors, feignConversionService);
+		EnhanceSpringMvcContract contract = new EnhanceSpringMvcContract(this.parameterProcessors, feignConversionService);
+		return contract;
 	}
 
 	@Bean

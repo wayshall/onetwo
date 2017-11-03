@@ -2,7 +2,10 @@ package org.onetwo.cloud.feign;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
+import java.lang.reflect.Method;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -20,6 +23,7 @@ import feign.MethodMetadata;
  * @author wayshall
  * <br/>
  */
+@Slf4j
 public class EnhanceSpringMvcContract extends SpringMvcContract implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
@@ -50,6 +54,15 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 				data.template().insert(0, pathValue);
 			}
 		}
+	}
+
+	@Override
+	public MethodMetadata parseAndValidateMetadata(Class<?> targetType, Method method) {
+		MethodMetadata data = super.parseAndValidateMetadata(targetType, method);
+		if(log.isInfoEnabled()){
+			log.info("feign client[{}] path: {}", targetType, data.template().url());
+		}
+		return data;
 	}
 
 	@Override

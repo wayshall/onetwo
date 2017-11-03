@@ -85,6 +85,14 @@ abstract public class Hashs {
 										.codeType(codeType)
 										.build();
 	}
+	
+	public static MessageDigestHasher md5(boolean withLabel, CodeType codeType){
+		return MessageDigestHasherBuilder.newBuilder("MD5")
+										.size(20)
+										.withLabel(withLabel)
+										.codeType(codeType)
+										.build();
+	}
 
 	
 	public static class MessageDigestHasherBuilder {

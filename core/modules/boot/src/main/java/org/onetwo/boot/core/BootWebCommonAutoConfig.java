@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
@@ -230,31 +229,30 @@ public class BootWebCommonAutoConfig {
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnMissingBean(FileStorer.class)
-//	@ConditionalOnBean(AbstractBaseController.class)
-	public FileStorer<?> fileStorer(){
+	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="local")
+	public FileStorer<?> localStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
-		StoreType type = config.getStoreType();//site.upload.storeType
+		SimpleFileStorer fs = new SimpleFileStorer();
+		fs.setStoreBaseDir(config.getFileStorePath());//site.upload.fileStorePath
+		fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
+		return fs;
+	}
+	
+	@Bean
+	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="ftp")
+	public FileStorer<?> ftpStorer(){
+		UploadConfig config = bootSiteConfig.getUpload();
+		FtpConfig ftpConfig = new FtpConfig();
+		ftpConfig.setEncoding(config.getFtpEncoding());
+		ftpConfig.setServer(config.getFtpServer());
+		ftpConfig.setPort(config.getFtpPort());
 		
-		if(type==StoreType.LOCAL){
-			SimpleFileStorer fs = new SimpleFileStorer();
-			fs.setStoreBaseDir(config.getFileStorePath());//site.upload.fileStorePath
-			fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
-			return fs;
-		}else if(type==StoreType.FTP){
-			FtpConfig ftpConfig = new FtpConfig();
-			ftpConfig.setEncoding(config.getFtpEncoding());
-			ftpConfig.setServer(config.getFtpServer());
-			ftpConfig.setPort(config.getFtpPort());
-			
-			FtpFileStorer fs = new FtpFileStorer(ftpConfig);
-			fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
-//			fs.setStoreBaseDir(config.getFtpBaseDir());
-			fs.setStoreBaseDir(config.getFileStorePath());
-			fs.setAppContextDir(config.getAppContextDir());
-			return fs;
-		}
-		throw new IllegalArgumentException("type: " + type);
+		FtpFileStorer fs = new FtpFileStorer(ftpConfig);
+		fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
+//		fs.setStoreBaseDir(config.getFtpBaseDir());
+		fs.setStoreBaseDir(config.getFileStorePath());
+		fs.setAppContextDir(config.getAppContextDir());
+		return fs;
 	}
 	
 

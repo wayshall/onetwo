@@ -4,28 +4,29 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.UUID;
 
 import org.onetwo.apache.io.IOUtils;
-import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.md.Hashs;
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
+import org.slf4j.Logger;
 
 
 public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	
 	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = (storeBaseDir, appContextDir, ctx)->{
-		NiceDate now = NiceDate.New();
+//		NiceDate now = NiceDate.New();
 		
-		//写入文件名=md5(原文件名+随机字符串)
-		String newfn = FileUtils.getFileNameWithoutExt(ctx.getFileName())+"-"+now.format("HHmmssSSS")+"-"+LangUtils.getRadomString(5);
-		newfn = Hashs.MD5.hash(newfn).toLowerCase();
-		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
-
-		// /appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
+		String newfn = ctx.getKey();
 		String accessablePath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
-		accessablePath = accessablePath + now.formatAsDate()+"/"+newfn;
+		if(StringUtils.isBlank(newfn)){
+			newfn = StringUtils.emptyIfNull(ctx.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(ctx.getFileName(), true);
+		}
+		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
+		// /appContextDir/moduleDir/yyyy-MM-dd//uuid.ext
+		accessablePath = accessablePath + newfn;
+
 		
 		//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
 		String storedServerLocalPath = storeBaseDir + accessablePath;
@@ -37,6 +38,8 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 //		meta.setFullAccessablePath(fullAccessablePath);
 		return meta;
 	};
+	
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 //	private StoreFilePathStrategy strategy = SIMPLE_STORE_STRATEGY;
 	protected String storeBaseDir;

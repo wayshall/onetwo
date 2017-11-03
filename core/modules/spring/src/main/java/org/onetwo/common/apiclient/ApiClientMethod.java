@@ -156,7 +156,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 												.collect(Collectors.toList());
 		if(requestBodyParameters.isEmpty()){
 			//如果没有使用RequestBody注解的参数
-			Object values = toMap(parameters, args, false);
+			Object values = toMap(parameters, args);
 			return values;
 		}else if(requestBodyParameters.size()==1){
 			return args[requestBodyParameters.get(0).getParameterIndex()];
@@ -203,9 +203,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				}
 				if(ctx!=null){
 //					System.out.println("ctx.getName():"+ctx.getName());
-					values.add(ctx.getName(), v);
+					values.add(ctx.getName(), v.toString());
 				}else{
-					values.add(k, v);
+					values.add(k, v.toString());
 				}
 	//			values.put(k, v);
 			});
