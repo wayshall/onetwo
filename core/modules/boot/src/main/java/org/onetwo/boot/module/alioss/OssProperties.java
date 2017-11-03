@@ -2,6 +2,7 @@ package org.onetwo.boot.module.alioss;
 
 import lombok.Data;
 
+import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.aliyun.oss.ClientConfiguration;
@@ -20,4 +21,9 @@ public class OssProperties {
     boolean createBucket;
 
 	ClientConfiguration client = new ClientConfiguration();
+	
+	public String getUrl(String key){
+		String url = RequestUtils.HTTP_KEY + bucketName + "." + endpoint + "/" + key;
+		return url;
+	}
 }

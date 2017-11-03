@@ -268,12 +268,12 @@ public class FileUtils {
 		String realPath = null;
 		URL path = cld.getResource(fileName);
 		
-		logger.info("Default ClassLoader path1: "+ path);
+//		logger.info("Default ClassLoader path1: "+ path);
 		if(path==null){
 			realPath = cld.getResource("").getPath()+fileName;
-			logger.info("Default ClassLoader path2: "+ realPath);
+//			logger.info("Default ClassLoader path2: "+ realPath);
 			if(StringUtils.isBlank(realPath)){
-				logger.info("FileUtils ClassLoader path3: "+ realPath);
+//				logger.info("FileUtils ClassLoader path3: "+ realPath);
 				realPath = getResourcePath(FileUtils.class.getClassLoader(), fileName);
 				if(StringUtils.isBlank(realPath))
 					throw new BaseException("get resource path error: " + fileName);

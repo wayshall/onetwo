@@ -24,7 +24,7 @@ public interface FileStoredMeta {
 	 * @author wayshall
 	 * @return
 	 */
-	String getStoredServerLocalPath();
+//	String getStoredServerLocalPath();
 	
 	/***
 	 * 保存后的文件名
