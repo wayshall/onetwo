@@ -4,6 +4,8 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.onetwo.common.reflect.ReflectUtils;
+
 import com.google.common.collect.Maps;
 
 
@@ -63,13 +65,25 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	
 	@SuppressWarnings("unchecked")
 	final public <T extends BaseException> T put(String key, Object value){
+		errorContext().put(key, value);
+		return (T)this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	final public <T extends BaseException> T puts(Object context){
+		Map<String, Object> map = ReflectUtils.toMap(context);
+		this.errorContext().putAll(map);
+		return (T)this;
+	}
+	
+
+	private Map<String, Object> errorContext() {
 		Map<String, Object> errorContext = this.errorContext;
 		if(errorContext==null){
 			errorContext = Maps.newHashMap();
 			this.errorContext = errorContext;
 		}
-		errorContext.put(key, value);
-		return (T)this;
+		return errorContext;
 	}
 
     public void printStackTrace(PrintStream s) {

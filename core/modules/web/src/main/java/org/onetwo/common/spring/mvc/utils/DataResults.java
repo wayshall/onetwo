@@ -48,8 +48,8 @@ final public class DataResults {
 	 * 
 	 * @return
 	 */
-	public static <T> SimpleResultBuilder<T> simple(){
-		return simple(null);
+	public static <T> SimpleResultBuilder<T> success(){
+		return data((T)null).success();
 	}
 	public static <T> SimpleResultBuilder<T> simple(T data){
 		return data(data);
