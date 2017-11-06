@@ -2,9 +2,6 @@ package org.onetwo.common.exception;
 
 import java.util.Optional;
 
-import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.StringUtils;
-
 /***********
  * 
  * 重新定义的业务异常
@@ -25,7 +22,7 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 
 	public static final String DEFAULT_MESSAGE = "[business error 业务错误]:";
 
-	protected String code = ServiceErrorCode.BASE_CODE;
+	protected String code;
 	private Object[] args;
 
 	public BusinessException(String msg, String code) {
@@ -72,26 +69,7 @@ public class BusinessException extends Exception implements SystemErrorCode, Exc
 		if(code!=null)
 			this.code = code;
 	}
-	
-	protected String getBaseCode(){
-		return ServiceErrorCode.BASE_CODE;
-	}
 
-	public boolean isDefaultErrorCode(){
-		return ServiceErrorCode.BASE_CODE.equals(getCode());
-	}
-
-	public String appendBaseCode(String code){
-		String baseCode = getBaseCode();
-		Assert.hasText(baseCode, "base code can not be empty");
-		if(StringUtils.isBlank(code))
-			return baseCode;
-		if(!code.startsWith(baseCode)){
-			return baseCode + code;
-		}else{
-			return code;
-		}
-	}
 
 	public String getCode() {
 		return code;

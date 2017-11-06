@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.SystemErrorCode;
@@ -89,7 +90,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	protected void beforeReturnModelAndView(HttpServletRequest request, Object handlerMethod, ModelAndView mv, ErrorMessage errorMessage){
 		RequestContextHolder.getRequestAttributes().setAttribute(ERROR_MESSAGE_OBJECT_KEY, errorMessage, RequestAttributes.SCOPE_REQUEST);
 		if(mv!=null){
-			this.doLog(request, handlerMethod, errorMessage.getException(), errorMessage.isDetail());
+			this.doLog(request, errorMessage);
 		}
 	}
 	@Override
@@ -176,11 +177,14 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		}
 		return statusCode;
 	}
-	
-	protected void doLog(HttpServletRequest request, Object handlerMethod, Exception ex, boolean detail){
+
+	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
+		BootWebHelper helper = BootWebUtils.webHelper(request);
 		String msg = RequestUtils.getServletPath(request);
-		if(detail){
-			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
+		Exception ex = errorMessage.getException();
+		errorMessage.logErrorContext(logger);
+		if(errorMessage.isDetail()){
+			msg += " ["+helper.getControllerHandler()+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
 			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
 		}else{

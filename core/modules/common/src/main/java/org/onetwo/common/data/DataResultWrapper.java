@@ -11,9 +11,10 @@ public interface DataResultWrapper {
 	
 	
 	public class NoWrapper implements DataResultWrapper {
+		public static final DataResultWrapper INSTANCE = new NoWrapper();
 		@Override
 		public Object wrapResult(Object responseData) {
-			return null;
+			return responseData;
 		}
 	}
 

@@ -23,7 +23,7 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		if(StringUtils.isBlank(newfn)){
 			newfn = StringUtils.emptyIfNull(ctx.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(ctx.getFileName(), true);
 		}
-		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
+//		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
 		// /appContextDir/moduleDir/yyyy-MM-dd//uuid.ext
 		accessablePath = accessablePath + newfn;
 

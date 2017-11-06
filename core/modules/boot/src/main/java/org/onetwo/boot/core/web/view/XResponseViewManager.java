@@ -176,7 +176,7 @@ public class XResponseViewManager implements HandlerMappingListener {
 				Class<? extends DataResultWrapper> wrapperClass) {
 			super();
 			this.viewName = viewName;
-			this.wrapper = wrapperClass==NoWrapper.class?null:ReflectUtils.newInstance(wrapperClass);
+			this.wrapper = wrapperClass==NoWrapper.class?NoWrapper.INSTANCE:ReflectUtils.newInstance(wrapperClass);
 		}
 		public Optional<DataResultWrapper> getWrapper() {
 			return Optional.ofNullable(wrapper);

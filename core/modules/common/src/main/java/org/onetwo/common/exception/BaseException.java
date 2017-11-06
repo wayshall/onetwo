@@ -84,5 +84,10 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
     	}
     	super.printStackTrace(s);
     }
+    
+	public Map<String, Object> getErrorContext() {
+		return errorContext;
+	}
+    
 
 }

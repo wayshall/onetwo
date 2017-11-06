@@ -1,6 +1,8 @@
 package org.onetwo.boot.core.web.mvc.exception;
 
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,6 +22,7 @@ import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.exception.DbmException;
+import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -204,6 +207,23 @@ public interface ExceptionMessageFinder {
 		public ErrorMessage(Exception throwable) {
 			super();
 			this.exception = throwable;
+		}
+		
+		public void logErrorContext(Logger logger){
+			Map<String, Object> ctx = getErrorContext();
+			if(!ctx.isEmpty()){
+				logger.error("error context: {}", ctx);
+			}
+		}
+		
+		public Map<String, Object> getErrorContext(){
+			Map<String, Object> ctx = null;
+			if(exception instanceof SystemErrorCode){
+				ctx = ((SystemErrorCode)exception).getErrorContext();
+			}else{
+				ctx = Collections.emptyMap();
+			}
+			return ctx;
 		}
 		/*public ErrorMessage(String code, String mesage, boolean detail) {
 			super();

@@ -88,18 +88,9 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	}
 	@Override
 	public String getCode() {
-		if(StringUtils.isBlank(code))
-			return getDefaultCode();
 		return code;
 	}
 	
-	protected String getDefaultCode(){
-		return ServiceErrorCode.BASE_CODE;
-	}
-
-	public boolean isDefaultErrorCode(){
-		return ServiceErrorCode.BASE_CODE.equals(getCode());
-	}
 	public Object[] getArgs() {
 		return args;
 	}
@@ -116,9 +107,6 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	}
 	public void setStatusCode(Integer statusCode) {
 		this.statusCode = statusCode;
-	}
-	protected void setErrorCode(){
-		this.code = ServiceErrorCode.BASE_CODE;
 	}
 
 }

@@ -4,7 +4,6 @@ package org.onetwo.common.exception;
 @SuppressWarnings("serial")
 public class AuthenticationException extends ServiceException {
 	public static final String DEFAULT_MESSAGE = "authentication error ";
-	protected static final String DEFAULT_CODE = AuthenticErrorCode.BASE_CODE;
 
 	public AuthenticationException() {
 		super(DEFAULT_MESSAGE);
@@ -24,9 +23,5 @@ public class AuthenticationException extends ServiceException {
 
 	public AuthenticationException(String message, Throwable cause) {
 		super(message, cause);
-	}
-
-	protected String getDefaultCode(){
-		return DEFAULT_CODE;
 	}
 }

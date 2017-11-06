@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.core.web.utils.BootWebHelper;
+import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.DataResults;
@@ -90,13 +92,13 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		return errorMessage;
 	}
 
-	protected void doLog(HttpServletRequest request, Object handlerMethod, Exception ex, boolean detail){
-		String msg = "";
-		if(request!=null){
-			msg = RequestUtils.getServletPath(request);
-		}
-		if(detail){
-			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
+	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
+		BootWebHelper helper = BootWebUtils.webHelper(request);
+		String msg = RequestUtils.getServletPath(request);
+		Exception ex = errorMessage.getException();
+		errorMessage.logErrorContext(logger);
+		if(errorMessage.isDetail()){
+			msg += " ["+helper.getControllerHandler()+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
 			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
 		}else{

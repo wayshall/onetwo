@@ -31,8 +31,4 @@ public class ErrorRoleException extends AuthenticationException {
 		super(DEFAULT_MESSAGE+message, code);
 	}
 
-	@Override
-	protected String getDefaultCode() {
-		return AuthenticErrorCode.ERROR_ROLE;
-	}
 }
