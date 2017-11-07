@@ -78,13 +78,8 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		if(errorMessage==null){
 			errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
 		}
-		if(errorMessage.isDetail()){
-			Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
-			String path = reqOpt.isPresent()?RequestUtils.getServletPath(reqOpt.get()):"";
-			logger.error("request ["+path+"] error:", ex);
-		}else{
-			logger.error("exception type: {}, message: {}", ex.getClass().getName(), ex.getMessage());
-		}
+		Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
+		doLog(reqOpt.orElse(null), errorMessage);
 		if(errorMessage.getHttpStatus()==null){
 			errorMessage.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -93,12 +88,17 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 
 	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
-		BootWebHelper helper = BootWebUtils.webHelper(request);
-		String msg = RequestUtils.getServletPath(request);
+		String msg = "";
+		Object handlerMethod = null;
+		if(request!=null){
+			BootWebHelper helper = BootWebUtils.webHelper(request);
+			msg = RequestUtils.getServletPath(request);
+			handlerMethod = helper.getControllerHandler();
+		}
 		Exception ex = errorMessage.getException();
 		errorMessage.logErrorContext(logger);
 		if(errorMessage.isDetail()){
-			msg += " ["+helper.getControllerHandler()+"] error: " + ex.getMessage();
+			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
 			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
 		}else{

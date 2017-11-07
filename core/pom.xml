@@ -66,6 +66,7 @@
     	<id>release</id>
     	<modules>
                 <module>modules/common</module>
+                <module>modules/web</module>
                 <module>../../dbm</module>
                 <module>modules/boot</module>
 	  	</modules>
