@@ -2,6 +2,7 @@ package org.onetwo.common.exception;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.reflect.ReflectUtils;
@@ -100,7 +101,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
     }
     
 	public Map<String, Object> getErrorContext() {
-		return errorContext;
+		return errorContext==null?Collections.emptyMap():errorContext;
 	}
     
 
