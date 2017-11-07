@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
@@ -19,6 +21,7 @@ import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.CreateBucketRequest;
 import com.aliyun.oss.model.ListBucketsRequest;
 import com.aliyun.oss.model.OSSObject;
+import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
 
@@ -100,10 +103,30 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		return new ObjectOperation(bucketName, key, this);
 	}
 	
+	public String storeWithFileName(String bucketName, File file, ObjectMetadata meta){
+		String key = FileUtils.getFileName(file.getPath());
+		objectOperation(bucketName, key).store(file, meta);
+		return getUrl(true, bucketName, key);
+	}
+	
+	public String store(String bucketName, File file, ObjectMetadata meta){
+		String key = UUID.randomUUID().toString();
+		objectOperation(bucketName, key).store(file, meta);
+		return getUrl(true, bucketName, key);
+	}
+	
+	public String getUrl(boolean https, String bucketName, String key){
+		return OssProperties.buildUrl(https, endpoint, bucketName, key);
+	}
+	
 	public PutObjectResult putObject(PutObjectRequest request){
 		return ossClient.putObject(request);
 	}
 	
+	public OSSClient getOssClient() {
+		return ossClient;
+	}
+
 	static public class ObjectOperation {
 		private String bucketName;
 		private String key;
@@ -117,6 +140,10 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			this.key = key;
 			this.wrapper = wrapper;
 			this.ossClient = wrapper.ossClient;
+		}
+
+		public String getUrl(boolean https){
+			return OssProperties.buildUrl(https, wrapper.endpoint, bucketName, key);
 		}
 		
 		public Optional<OSSObject> getOSSObject(){
@@ -132,14 +159,22 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		}
 		
 		public ObjectOperation store(File file){
+			return store(file, null);
+		}
+		
+		public ObjectOperation store(File file, ObjectMetadata meta){
 			if(!file.exists()){
 				throw new BaseException("file is not exists!");
 			}
-			putObject(new PutObjectRequest(bucketName, key, file));
+			putObject(new PutObjectRequest(bucketName, key, file, meta));
 			return this;
 		}
 		
 		public ObjectOperation store(InputStream in){
+			return store(in, null);
+		}
+		
+		public ObjectOperation store(InputStream in, ObjectMetadata meta){
 			Assert.notNull(in);
 			putObject(new PutObjectRequest(bucketName, key, in));
 			return this;
