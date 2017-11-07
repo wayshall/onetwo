@@ -41,7 +41,7 @@ public class ResultErrorDecoder implements ErrorDecoder {
     public Exception decode(String methodKey, Response response) {
 		if(response.status()>=200){
 			try {
-				HttpMessageConverterExtractor<SimpleDataResult<Object>> extractor = new HttpMessageConverterExtractor(SimpleDataResult.class, this.httpMessageConverters.getConverters());
+				HttpMessageConverterExtractor<SimpleDataResult<Object>> extractor = new HttpMessageConverterExtractor<SimpleDataResult<Object>>(SimpleDataResult.class, this.httpMessageConverters.getConverters());
 				SimpleDataResult<Object> result = extractor.extractData(new FeignResponseAdapter(response));
 				log.error("error code: {}, result: {}", response.status(), result);
 				//防止普通异常也被熔断,if not convert as HystrixBadRequestException and fallback also throws error, it will be enabled short-circuited get "Hystrix circuit short-circuited and is OPEN" when client frequently invoke

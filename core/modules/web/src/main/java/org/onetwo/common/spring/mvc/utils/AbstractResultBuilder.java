@@ -101,7 +101,7 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 		return rs;
 	}
 
-	public DataResult<T> build(){
+	public SimpleDataResult<T> build(){
 		SimpleDataResult<T> rs = creeateResult();
 		rs.setExtractableData(extractableData);
 		return rs;
