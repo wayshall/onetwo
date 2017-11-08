@@ -1,18 +1,22 @@
 package org.onetwo.ext.ons.producer;
 
 import java.io.Serializable;
+import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.rocketmq.producer.MessageSerializer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import com.aliyun.openservices.ons.api.Message;
+import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.bean.ProducerBean;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
@@ -27,8 +31,39 @@ public class ONSProducerService extends ProducerBean implements InitializingBean
 	
 	private Consumer<Throwable> errorHandler = null;
 	private MessageSerializer messageSerializer = msg->SerializationUtils.serialize((Serializable)msg);
-	
 
+	private ONSProperties onsProperties;
+	private String producerId;
+	
+	@Autowired
+	public void setOnsProperties(ONSProperties onsProperties) {
+		this.onsProperties = onsProperties;
+	}
+
+	public void setProducerId(String producerId) {
+		this.producerId = producerId;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.hasText(producerId);
+		
+		Properties producerProperties = onsProperties.baseProperties();
+		Properties customProps = onsProperties.getProducers().get(producerId);
+		if(customProps!=null){
+			producerProperties.putAll(customProps);
+		}
+		producerProperties.setProperty(PropertyKeyConst.ProducerId, producerId);
+		
+		this.setProperties(producerProperties);
+		this.start();
+	}
+	
+	@Override
+	public void destroy() throws Exception {
+		this.shutdown();
+	}
+	
 	public void setErrorHandler(Consumer<Throwable> errorHandler) {
 		this.errorHandler = errorHandler;
 	}
@@ -79,17 +114,6 @@ public class ONSProducerService extends ProducerBean implements InitializingBean
 		}else{
 			throw new ServiceException("发送消息失败", e);
 		}
-	}
-
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.start();
-	}
-	
-	@Override
-	public void destroy() throws Exception {
-		this.shutdown();
 	}
 	
 }

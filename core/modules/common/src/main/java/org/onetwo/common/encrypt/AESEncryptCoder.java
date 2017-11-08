@@ -7,14 +7,14 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.onetwo.common.encrypt.Crypts.AESAlgs;
 import org.onetwo.common.exception.BaseException;
 
 public class AESEncryptCoder implements EncryptCoder<SecretKey> {
 
-	private static final String AES_KEY = "AES";
 	public static final int AES_DEFAULT_LENGTH = 128;
-	private static final String AES_ECB_ALGORITHM = "AES/ECB/PKCS5Padding";
-	public static final String AES_CBC_ALGORITHM = "AES/CBC/NoPadding";
+	private static final String AES_ECB_ALGORITHM = AESAlgs.ECB_PKCS5Padding;
+	public static final String AES_CBC_ALGORITHM = AESAlgs.CBC_NoPadding;
 	
 //	private final int size = AES_DEFAULT_LENGTH;
 	private byte[] key;
@@ -44,7 +44,7 @@ public class AESEncryptCoder implements EncryptCoder<SecretKey> {
 	public SecretKey generatedKey(int size){
 		KeyGenerator keyGenerator = null;
 		try {
-			keyGenerator = KeyGenerator.getInstance(AES_KEY);
+			keyGenerator = KeyGenerator.getInstance(Crypts.AES_KEY);
 		} catch (NoSuchAlgorithmException e) {
 			throw new BaseException("KeyGenerator error: " + e.getMessage() , e);
 		}
@@ -84,7 +84,7 @@ public class AESEncryptCoder implements EncryptCoder<SecretKey> {
 
 	protected void init(Cipher cipher, byte[] key, int opmode) throws Exception{
 		//构造密匙
-		SecretKeySpec skeySpec = new SecretKeySpec(key, AES_KEY);
+		SecretKeySpec skeySpec = new SecretKeySpec(key, Crypts.AES_KEY);
 		cipher.init(opmode, skeySpec);
 		/*if(AES_CBC_ALGORITHM.equalsIgnoreCase(getAlgorithmCipher())){
 			IvParameterSpec iv = new IvParameterSpec(key, 0, 16);

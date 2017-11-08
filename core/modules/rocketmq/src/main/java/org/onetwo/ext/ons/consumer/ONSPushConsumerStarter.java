@@ -3,11 +3,11 @@ package org.onetwo.ext.ons.consumer;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.ons.ONSProperties;
+import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.consumer.ConsumerMeta.ListenerType;
 import org.slf4j.Logger;
@@ -44,12 +44,15 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	private ApplicationContext applicationContext;
 	private List<Consumer> consumers = Lists.newArrayList();
 	
-	@Autowired
 	private ONSProperties onsProperties;
 	
 
 	public ONSPushConsumerStarter() {
 		super();
+	}
+
+	public void setOnsProperties(ONSProperties onsProperties) {
+		this.onsProperties = onsProperties;
 	}
 
 	@Override
@@ -78,6 +81,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		Properties comsumerProperties = onsProperties.baseProperties();
 		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
 		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
+		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
+		if(customProps!=null){
+			comsumerProperties.putAll(customProps);
+		}
 //		rawConsumer.setMessageModel(meta.getMessageModel());
 		
 		Consumer consumer = ONSFactory.createConsumer(comsumerProperties);
@@ -87,62 +94,64 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 //		consumer.subscribe(meta.getTopic(), meta.getSubExpression(), listener);
 		ListenerType listenerType = meta.getListenerType(); 
 		if(listenerType==ListenerType.CUSTOM){
+			rawConsumer.subscribe(meta.getTopic(), meta.getSubExpression());
 			registerONSConsumerListener(rawConsumer, meta);
+			rawConsumer.start();
 		}else if(listenerType==ListenerType.RMQ){
+			rawConsumer.subscribe(meta.getTopic(), meta.getSubExpression());
 			rawConsumer.registerMessageListener((MessageListenerConcurrently)meta.getListener());
+			rawConsumer.start();
 		}else{
 			consumer.subscribe(meta.getTopic(), meta.getSubExpression(), (MessageListener)meta.getListener());
+			consumer.start();
 		}
-	}
-	
-	private long getMessageDiff(MessageExt msg){
-		try {
-			long offset = msg.getQueueOffset();//消息自身的offset
-			String maxOffset = msg.getProperty(MessageConst.PROPERTY_MAX_OFFSET);//当前最大的消息offset
-			long diff = Long.parseLong(maxOffset)-offset;//消费当前消息时积压了多少消息未消费
-			return diff;
-		} catch (Exception e) {
-			return 0;
-		}
+		logger.info("ONSConsumer[{}] started!", meta.getConsumerId());
 	}
 	
 	@SuppressWarnings("rawtypes")
 	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
-		final CustomConsumer consumer = (CustomConsumer) meta.getListener();
+		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
 		rawConsumer.registerMessageListener(new MessageListenerConcurrently() {
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
 
-				MessageExt msg = msgs.get(0);
-				logger.info("receive id: {}, topic: {}, tag: {}", msg.getMsgId(),  msg.getTopic(), msg.getTags());
-				  
+				MessageExt currentMessage = null;
 				try {
 					if(meta.getIgnoreOffSetThreshold()>0){
-						long diff = getMessageDiff(msg);
+						long diff = ONSUtils.getMessageDiff(msgs.get(0));
 						if(diff>meta.getIgnoreOffSetThreshold()){
-							logger.info("message offset diff[{}] is greater than ignoreOffSetThreshold, ignore!", diff);
+							logger.info("message offset diff[{}] is greater than ignoreOffSetThreshold[{}], ignore!", diff, meta.getIgnoreOffSetThreshold());
 							return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 						}
 					}
+					for(MessageExt message : msgs){
+						String msgId = message.getProperty(MessageConst.PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX);
+						currentMessage = message;
+						logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
+						consumer.doConsume(message, consumer.deserialize(message));
+						logger.info("consumed message. id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
+					}
 					
-					List<?> messages = msgs.stream().map(m->consumer.deserialize(m)).collect(Collectors.toList());
-					logger.info("consume id: {}, body: {}", msg.getMsgId(), messages);
-					consumer.doConsume(messages);
+//					List<?> messages = msgs.stream().map(m->consumer.deserialize(m)).collect(Collectors.toList());
+//					Map<MessageExt, ?> messages = msgs.stream().collect(Collectors.toMap(m->m, m->consumer.deserialize(m)));
+//					consumer.consumMessages(messages, context);
 				} catch (Exception e) {
-					String errorMsg = "consume message error. id: "+msg.getMsgId()+", topic: "+msg.getTopic()+", tag: "+msg.getTags();
+					String errorMsg = "consume message error.";
+					if(currentMessage!=null){
+						errorMsg += "currentMessage id: "+ONSUtils.getMessageDiff(currentMessage)+", topic: "+currentMessage.getTopic()+", tag: "+currentMessage.getTags();
+					}
 					logger.error(errorMsg, e);
 					return ConsumeConcurrentlyStatus.RECONSUME_LATER;
 				}
-				logger.info("consume finish. id: {}, topic: {}, tag: {}", msg.getMsgId(),  msg.getTopic(), msg.getTags());
+//				logger.info("consumed firstMessage. id: {}, topic: {}, tag: {}", firstMessage.getMsgId(),  firstMessage.getTopic(), firstMessage.getTags());
 
 				return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 			}
 		});
 
-		rawConsumer.start();
-		logger.info("ONSConsumer[{}] started!");
+//		rawConsumer.start();
 	}
 
 	@Override

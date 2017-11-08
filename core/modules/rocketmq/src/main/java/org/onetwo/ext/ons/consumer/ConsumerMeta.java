@@ -31,7 +31,7 @@ public class ConsumerMeta {
 	public static enum ListenerType {
 		ONS(MessageListener.class),
 		RMQ(MessageListenerConcurrently.class),
-		CUSTOM(CustomConsumer.class);
+		CUSTOM(CustomONSConsumer.class);
 		
 		@Getter
 		final private Class<?> listenerClass;
