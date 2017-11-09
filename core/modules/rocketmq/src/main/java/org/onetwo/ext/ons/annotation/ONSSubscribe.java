@@ -26,7 +26,4 @@ public @interface ONSSubscribe {
 	ConsumeFromWhere consumeFromWhere() default ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET ;
 	long ignoreOffSetThreshold() default -1;
 	int maxReconsumeTimes() default 16;
-	
-	//TODO 可增加回调类完全定制配置
-	//configClass() default Object.class;
 }

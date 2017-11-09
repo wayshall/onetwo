@@ -17,5 +17,6 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Import({ONSConfiguration.class, ProducerRegistar.class})
 public @interface EnableONSClient {
-	String[] producerIds() default {};
+//	String[] producerIds() default {};
+	ONSProducer[] producers() default {};
 }

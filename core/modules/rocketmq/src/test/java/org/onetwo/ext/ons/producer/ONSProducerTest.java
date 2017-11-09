@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
+import org.onetwo.ext.ons.annotation.ONSProducer;
 import org.onetwo.ext.ons.producer.ONSProducerTest.ProducerTestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,7 @@ public class ONSProducerTest {
 //		LangUtils.CONSOLE.exitIf("test");
 	}
 	
-	@EnableONSClient(producerIds="PID_ONETWO_TEST")
+	@EnableONSClient(producers=@ONSProducer(producerId="PID_ONETWO_TEST"))
 	@Configuration
 	@PropertySource("classpath:ons.properties")
 	public static class ProducerTestContext {
