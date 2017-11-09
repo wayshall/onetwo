@@ -24,7 +24,7 @@ public class ONSConsumerTest {
 		LangUtils.CONSOLE.exitIf("exit");
 	}
 	
-	@EnableONSClient(producerIds="PID_LEGO_ORDER")
+	@EnableONSClient
 	@Configuration
 	@PropertySource("classpath:ons.properties")
 	public static class ConsumerTestContext {

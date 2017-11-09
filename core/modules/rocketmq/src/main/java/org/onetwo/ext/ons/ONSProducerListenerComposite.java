@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import com.aliyun.openservices.ons.api.Message;
+import com.aliyun.openservices.ons.api.SendResult;
 
 /**
  * @author wayshall
@@ -33,15 +34,21 @@ public class ONSProducerListenerComposite implements InitializingBean, ProducerL
 	
 	@Override
 	public void beforeSendMessage(Message message) {
-		log.info("beforeSendMessage: {}", message);
 		for(ProducerListener<Message> listener : listeners){
 			listener.beforeSendMessage(message);
 		}
 	}
 	
 	@Override
+	public void afterSendMessage(Message message, SendResult sendResult) {
+		log.info("send message success. sendResult: {}", sendResult);
+		for(ProducerListener<Message> listener : listeners){
+			listener.afterSendMessage(message, sendResult);
+		}
+	}
+
+	@Override
 	public void onSendMessageError(Message message, Throwable throable) {
-		log.info("onSendMessageError: {}", message);
 		for(ProducerListener<Message> listener : listeners){
 			listener.onSendMessageError(message, throable);
 		}

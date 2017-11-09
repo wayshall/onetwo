@@ -34,7 +34,7 @@ public class ProducerRegistar implements ImportBeanDefinitionRegistrar {
 			return ;
 		}
 		for(String producerId : producerIds){
-			BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(ONSProducerService.class);
+			BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(ONSProducerServiceImpl.class);
 			definition.addPropertyValue("producerId", producerId);
 			definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 			String beanName = "ONSProduers:"+producerId;

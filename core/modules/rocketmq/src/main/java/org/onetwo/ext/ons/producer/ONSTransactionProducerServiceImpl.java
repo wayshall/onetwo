@@ -22,14 +22,15 @@ import org.springframework.util.Assert;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.aliyun.openservices.ons.api.SendResult;
-import com.aliyun.openservices.ons.api.bean.ProducerBean;
+import com.aliyun.openservices.ons.api.bean.TransactionProducerBean;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
+import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
 
 /**
  * @author wayshall
  * <br/>
  */
-public class ONSProducerService extends ProducerBean implements InitializingBean, DisposableBean {
+public class ONSTransactionProducerServiceImpl extends TransactionProducerBean implements InitializingBean, DisposableBean, TransactionProducerService {
 
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -38,20 +39,17 @@ public class ONSProducerService extends ProducerBean implements InitializingBean
 
 	private ONSProperties onsProperties;
 	private String producerId;
-	
 	private ONSProducerListenerComposite producerListenerComposite;
-	
-	@Autowired
-	public void setOnsProperties(ONSProperties onsProperties) {
-		this.onsProperties = onsProperties;
-	}
 	
 	@Autowired
 	public void setProducerListenerComposite(ONSProducerListenerComposite producerListenerComposite) {
 		this.producerListenerComposite = producerListenerComposite;
 	}
-
-
+	
+	@Autowired
+	public void setOnsProperties(ONSProperties onsProperties) {
+		this.onsProperties = onsProperties;
+	}
 
 	public void setProducerId(String producerId) {
 		this.producerId = producerId;
@@ -87,50 +85,35 @@ public class ONSProducerService extends ProducerBean implements InitializingBean
 		this.errorHandler = errorHandler;
 	}
 
-	public void sendMessage(String topic, String tags, Object body){
-		Assert.notNull(messageSerializer);
-		sendBytesMessage(topic, tags, messageSerializer.serialize(body));
+	@Override
+	public SendResult sendMessage(SimpleMessage onsMessage, LocalTransactionExecuter executer, Object arg){
+		return sendMessage(onsMessage, executer, arg);
 	}
 	
-	public SendResult sendBytesMessage(String topic, String tags, byte[] body){
-		SendResult result =  sendBytesMessage(topic, tags, body, errorHandler);
-		return result;
-	}
-	
-	public SendResult sendMessage(SimpleMessage onsMessage){
-		return sendMessage(onsMessage, errorHandler);
-	}
-	
-	public SendResult sendMessage(SimpleMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler){
-		Message message = new Message();
-		message.setKey(onsMessage.getKey());
-		message.setTopic(onsMessage.getTopic());
-		message.setTag(onsMessage.getTags());
-		message.setBody(this.messageSerializer.serialize(onsMessage.getBody()));
-		if(onsMessage.getDelayTimeInMillis()!=null){
-			message.setStartDeliverTime(System.currentTimeMillis()+onsMessage.getDelayTimeInMillis());
+	@Override
+	public SendResult sendMessage(SimpleMessage onsMessage, LocalTransactionExecuter executer, Object arg, SendMessageErrorHandler<SendResult> errorHandler){
+		Message message = onsMessage.toMessage();
+		Object body = onsMessage.getBody();
+		if(needSerialize(body)){
+			message.setBody(this.messageSerializer.serialize(onsMessage.getBody()));
+		}else{
+			message.setBody((byte[])body);
 		}
-		return sendRawMessage(message, errorHandler);
+		return sendRawMessage(message, executer, arg, errorHandler);
 	}
 
-	public SendResult sendBytesMessage(String topic, String tags, byte[] body, SendMessageErrorHandler<SendResult> errorHandler){
-		Message message = new Message();
-		message.setTopic(topic);
-		message.setTag(tags);
-		message.setBody(body);
-		return sendRawMessage(message, errorHandler);
+	protected boolean needSerialize(Object body){
+		if(body==null){
+			return false;
+		}
+		return !byte[].class.isInstance(body);
 	}
-	
-	public SendResult sendRawMessage(Message message){
-		SendResult result = sendRawMessage(message, errorHandler);
-		return result;
-	}
-	
-	public SendResult sendRawMessage(Message message, SendMessageErrorHandler<SendResult> errorHandler){
+
+	protected SendResult sendRawMessage(Message message, LocalTransactionExecuter executer, Object arg, SendMessageErrorHandler<SendResult> errorHandler){
 		try {
 			producerListenerComposite.beforeSendMessage(message);
-			SendResult sendResult = this.send(message);
-			logger.info("send message success. sendResult: {}", sendResult);
+			SendResult sendResult = this.send(message, executer, arg);
+			producerListenerComposite.afterSendMessage(message, sendResult);
 			return sendResult;
 		} catch (ONSClientException e) {
 			producerListenerComposite.onSendMessageError(message, e);
