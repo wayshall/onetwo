@@ -71,9 +71,19 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	}
 	
 	@SuppressWarnings("unchecked")
-	final public <T extends BaseException> T puts(Object context){
-		Map<String, Object> map = ReflectUtils.toMap(context);
-		this.errorContext().putAll(map);
+	final public <T extends BaseException> T put(Object context){
+		this.errorContext().put(context.getClass().getSimpleName(), context);
+		return (T)this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	final public <T extends BaseException> T putAsMap(Object context){
+		try {
+			Map<String, Object> map = ReflectUtils.toMap(context);
+			this.errorContext().putAll(map);
+		} catch (Exception e) {
+			put(context);
+		}
 		return (T)this;
 	}
 	

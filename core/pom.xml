@@ -65,7 +65,8 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/boot</module>
+                <module>modules/common</module>
+                <module>../../onetwo-wechat</module>
 	  	</modules>
         <build>
             <plugins>

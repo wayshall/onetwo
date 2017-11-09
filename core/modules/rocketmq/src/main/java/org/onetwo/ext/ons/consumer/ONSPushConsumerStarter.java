@@ -6,6 +6,8 @@ import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.ext.alimq.ConsumContext;
+import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
@@ -29,7 +31,6 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listen
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.exception.MQClientException;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageConst;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -46,6 +47,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	
 	private ONSProperties onsProperties;
 	
+	private ONSConsumerListenerComposite consumerListenerComposite;
+	
 
 	public ONSPushConsumerStarter() {
 		super();
@@ -54,11 +57,15 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	public void setOnsProperties(ONSProperties onsProperties) {
 		this.onsProperties = onsProperties;
 	}
+	
+	public void setConsumerListenerComposite(ONSConsumerListenerComposite consumerListenerComposite) {
+		this.consumerListenerComposite = consumerListenerComposite;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		logger.info("ons consumer init. namesrvAddr: {}", namesrvAddr);
-//		Assert.hasText(namesrvAddr, "namesrvAddr can not be empty!");
+		Assert.notNull(consumerListenerComposite);
 
 		ConsumerScanner scanner = new ConsumerScanner(applicationContext);
 		Map<String, ConsumerMeta> consumers = scanner.findConsumers();
@@ -81,6 +88,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		Properties comsumerProperties = onsProperties.baseProperties();
 		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
 		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
+//		comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, "16");
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
 		if(customProps!=null){
 			comsumerProperties.putAll(customProps);
@@ -113,11 +121,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
 		rawConsumer.registerMessageListener(new MessageListenerConcurrently() {
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
 
-				MessageExt currentMessage = null;
+				ConsumContext currentConetxt = null;
 				try {
 					if(meta.getIgnoreOffSetThreshold()>0){
 						long diff = ONSUtils.getMessageDiff(msgs.get(0));
@@ -127,23 +134,30 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 						}
 					}
 					for(MessageExt message : msgs){
-						String msgId = message.getProperty(MessageConst.PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX);
-						currentMessage = message;
+						String msgId = ONSUtils.getMessageId(message);
 						logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
-						consumer.doConsume(message, consumer.deserialize(message));
+						
+						Object body = consumer.deserialize(message);
+						currentConetxt = ConsumContext.builder()
+														.messageId(msgId)
+														.message(message)
+														.deserializedBody(body)
+														.build();
+						
+						consumerListenerComposite.beforeConsumeMessage(currentConetxt);
+						consumer.doConsume(currentConetxt);
+						consumerListenerComposite.afterConsumeMessage(currentConetxt);
 						logger.info("consumed message. id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
 					}
-					
-//					List<?> messages = msgs.stream().map(m->consumer.deserialize(m)).collect(Collectors.toList());
-//					Map<MessageExt, ?> messages = msgs.stream().collect(Collectors.toMap(m->m, m->consumer.deserialize(m)));
-//					consumer.consumMessages(messages, context);
 				} catch (Exception e) {
 					String errorMsg = "consume message error.";
-					if(currentMessage!=null){
-						errorMsg += "currentMessage id: "+ONSUtils.getMessageDiff(currentMessage)+", topic: "+currentMessage.getTopic()+", tag: "+currentMessage.getTags();
+					if(currentConetxt!=null){
+						consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+						errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+", tag: "+currentConetxt.getMessage().getTags();
 					}
 					logger.error(errorMsg, e);
 					return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+//					throw new BaseException(e);
 				}
 //				logger.info("consumed firstMessage. id: {}, topic: {}, tag: {}", firstMessage.getMsgId(),  firstMessage.getTopic(), firstMessage.getTags());
 

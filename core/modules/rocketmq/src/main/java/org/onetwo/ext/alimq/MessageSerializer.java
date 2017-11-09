@@ -1,4 +1,4 @@
-package org.onetwo.ext.rocketmq.producer;
+package org.onetwo.ext.alimq;
 
 public interface MessageSerializer {
 	

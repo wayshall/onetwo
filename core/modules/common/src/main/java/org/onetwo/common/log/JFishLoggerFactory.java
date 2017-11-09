@@ -17,7 +17,6 @@ import ch.qos.logback.classic.LoggerContext;
 public class JFishLoggerFactory {
 	
 	private static final String MAIL_LOGGER = "mailLogger";
-//	private static final Logger logger = LoggerFactory.getLogger(JFishLoggerFactory.class);
 	
 	public static Logger logger(Class<?> clazz){
 		return instance.getLoggerInst(clazz);

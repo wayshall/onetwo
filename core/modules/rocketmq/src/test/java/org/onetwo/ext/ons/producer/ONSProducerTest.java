@@ -3,6 +3,7 @@ package org.onetwo.ext.ons.producer;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
 import org.onetwo.ext.ons.producer.ONSProducerService;
 import org.onetwo.ext.ons.producer.ONSProducerTest.ProducerTestContext;
@@ -31,6 +32,7 @@ public class ONSProducerTest {
 		Message message = new Message("lego-order", "order-pay", "1", SerializationUtils.serialize("订单支付"));
 		SendResult res = onsProducerService.send(message);
 		System.out.println("res: " + res);
+//		LangUtils.CONSOLE.exitIf("test");
 	}
 	
 	@EnableONSClient(producerIds="PID_LEGO_ORDER")

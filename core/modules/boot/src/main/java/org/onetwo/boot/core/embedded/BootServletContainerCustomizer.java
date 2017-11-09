@@ -40,6 +40,12 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 }
             );
         }
+		/*if(container instanceof TomcatEmbeddedServletContainerFactory){
+			TomcatEmbeddedServletContainerFactory tomcat = (TomcatEmbeddedServletContainerFactory) container;
+			tomcat.addContextCustomizers(context->{
+				context.setReloadable(true);
+			});
+		}*/
 	}
 
 	

@@ -1,12 +1,12 @@
 package org.onetwo.ext.ons.consumer;
 
+import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 
 import com.aliyun.openservices.ons.api.Action;
 import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 
 
 /**
@@ -17,8 +17,8 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message
 public class TestConsumer implements CustomONSConsumer<String> /*MessageListener*/ {
 
 //	@Override
-	public void doConsume(MessageExt message, String body) {
-		System.out.println("收到消息：" + body);
+	public void doConsume(ConsumContext consumContext) {
+		System.out.println("收到消息：" + consumContext.getDeserializedBody());
 	}
 
 //	@Override
