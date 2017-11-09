@@ -88,7 +88,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		Properties comsumerProperties = onsProperties.baseProperties();
 		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
 		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
-//		comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, "16");
+		comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
 		if(customProps!=null){
 			comsumerProperties.putAll(customProps);
@@ -207,6 +207,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 												.subExpression(subscribe.subExpression())
 												.messageModel(subscribe.messageModel())
 												.consumeFromWhere(subscribe.consumeFromWhere())
+												.maxReconsumeTimes(subscribe.maxReconsumeTimes())
 												.ignoreOffSetThreshold(subscribe.ignoreOffSetThreshold())//ONS 不支持
 												.listenerType(listenerType)
 												.listener(bean)

@@ -26,6 +26,7 @@ public class ConsumerMeta {
 	final private ListenerType listenerType;
 	final private Object listener;
 	final private String listenerBeanName;
+	final private int maxReconsumeTimes;
 
 	@AllArgsConstructor
 	public static enum ListenerType {
