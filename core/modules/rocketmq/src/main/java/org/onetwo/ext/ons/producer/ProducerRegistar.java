@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
-import org.onetwo.ext.ons.annotation.ONSProducer;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -30,13 +29,13 @@ public class ProducerRegistar implements ImportBeanDefinitionRegistrar {
 		if (attributes == null) {
 			throw new IllegalArgumentException(String.format("@%s is not present on importing class '%s' as expected", EnableONSClient.class.getSimpleName(), importingClassMetadata.getClassName()));
 		}
-		ONSProducer[] producers = attributes.getAnnotationArray("producers", ONSProducer.class);
+		AnnotationAttributes[] producers = attributes.getAnnotationArray("producers");
 		if(LangUtils.isEmpty(producers)){
 			return ;
 		}
-		for(ONSProducer producer : producers){
-			String producerId = producer.producerId();
-			Class<?> producerClass = producer.transactional()?ONSTransactionProducerServiceImpl.class:ONSProducerServiceImpl.class;
+		for(AnnotationAttributes producer : producers){
+			String producerId = producer.getString("producerId");
+			Class<?> producerClass = producer.getBoolean("transactional")?ONSTransactionProducerServiceImpl.class:ONSProducerServiceImpl.class;
 			
 			BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(producerClass);
 			definition.addPropertyValue("producerId", producerId);
@@ -45,7 +44,7 @@ public class ProducerRegistar implements ImportBeanDefinitionRegistrar {
 			BeanDefinitionHolder holder = new BeanDefinitionHolder(definition.getBeanDefinition(), beanName);
 			BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
 			if(log.isInfoEnabled()){
-				log.info("register {}: {}", producerClass, beanName);
+				log.info("register producer {}: {}", producerClass.getSimpleName(), beanName);
 			}
 		}
 	}
