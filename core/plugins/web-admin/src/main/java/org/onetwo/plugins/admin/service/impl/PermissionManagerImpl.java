@@ -11,10 +11,12 @@ import javax.annotation.Resource;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.db.sqlext.ExtQuery.K;
 import org.onetwo.common.db.sqlext.ExtQuery.K.IfNull;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.permission.AbstractPermissionManager;
 import org.onetwo.ext.permission.api.DataFrom;
+import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.onetwo.plugins.admin.dao.AdminPermissionDao;
 import org.onetwo.plugins.admin.entity.AdminApplication;
@@ -92,6 +94,11 @@ public class PermissionManagerImpl extends AbstractPermissionManager<AdminPermis
 		});
 	}
 
+	@Override
+	protected void removeRootMenu(MenuInfoParser<AdminPermission> menuInfoParser){
+		String appCode = menuInfoParser.getRootMenuParser().getAppCode();
+		baseEntityManager.removeById(AdminApplication.class, appCode);
+	}
 
 	@Override
 	@Transactional(readOnly=true)
@@ -108,7 +115,7 @@ public class PermissionManagerImpl extends AbstractPermissionManager<AdminPermis
 	public List<AdminPermission> findAppPermissions(String appCode){
 		List<AdminPermission> permList = baseEntityManager.findList(AdminPermission.class, "appCode", appCode, K.IF_NULL, IfNull.Ignore, K.ASC, "sort");
 		if(permList.isEmpty())
-			throw new RuntimeException("没有任何权限……");
+			throw new BaseException("没有任何权限……");
 		return permList;
 	}
 
