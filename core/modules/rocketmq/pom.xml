@@ -44,7 +44,6 @@
     <dependency>
 	   <groupId>com.aliyun.openservices</groupId>
 	   <artifactId>ons-client</artifactId>
-	   <version>1.7.0.Final</version>
 	</dependency>
     
     <dependency>
