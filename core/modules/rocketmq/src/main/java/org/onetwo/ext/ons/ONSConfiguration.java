@@ -1,5 +1,6 @@
 package org.onetwo.ext.ons;
 
+import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,11 +19,17 @@ public class ONSConfiguration {
 	private ONSProperties onsProperties;
 	
 	@Bean
-	public ONSPushConsumerStarter onsPushConsumerStarter(ONSConsumerListenerComposite composite){
-		ONSPushConsumerStarter starter = new ONSPushConsumerStarter();
+	public ONSPushConsumerStarter onsPushConsumerStarter(ONSConsumerListenerComposite composite, MessageDeserializer messageDeserializer){
+		ONSPushConsumerStarter starter = new ONSPushConsumerStarter(messageDeserializer);
 		starter.setOnsProperties(onsProperties);
 		starter.setConsumerListenerComposite(composite);
 		return starter;
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean(MessageDeserializer.class)
+	public MessageDeserializer onsMessageDeserializer(){
+		return MessageDeserializer.DEFAULT;
 	}
 	
 	@Bean

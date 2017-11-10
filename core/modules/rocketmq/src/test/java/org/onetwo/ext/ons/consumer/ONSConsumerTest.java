@@ -6,6 +6,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
 import org.onetwo.ext.ons.consumer.ONSConsumerTest.ConsumerTestContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,6 +28,7 @@ public class ONSConsumerTest {
 	@EnableONSClient
 	@Configuration
 	@PropertySource("classpath:ons.properties")
+	@ComponentScan
 	public static class ConsumerTestContext {
 		@Bean
 		public TestConsumer testConsumer(){

@@ -15,7 +15,7 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartb
  * 把注解放在有且只有一个MessageExt类型参数的方法上
  *
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ONSSubscribe {
 

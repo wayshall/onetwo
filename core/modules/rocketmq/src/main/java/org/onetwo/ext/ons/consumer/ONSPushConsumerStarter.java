@@ -1,5 +1,7 @@
 package org.onetwo.ext.ons.consumer;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -7,9 +9,11 @@ import java.util.Properties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.alimq.ConsumContext;
+import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.consumer.ConsumerMeta.ListenerType;
 import org.slf4j.Logger;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 import com.aliyun.openservices.ons.api.Consumer;
 import com.aliyun.openservices.ons.api.MessageListener;
@@ -35,6 +40,7 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+
 public class ONSPushConsumerStarter implements InitializingBean, DisposableBean {
 
 	private final Logger logger = LoggerFactory.getLogger(ONSPushConsumerStarter.class);
@@ -43,6 +49,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	
 	@Autowired
 	private ApplicationContext applicationContext;
+	private MessageDeserializer messageDeserializer;
+	
 	private List<Consumer> consumers = Lists.newArrayList();
 	
 	private ONSProperties onsProperties;
@@ -50,8 +58,9 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	private ONSConsumerListenerComposite consumerListenerComposite;
 	
 
-	public ONSPushConsumerStarter() {
+	public ONSPushConsumerStarter(MessageDeserializer messageDeserializer) {
 		super();
+		this.messageDeserializer = messageDeserializer;
 	}
 
 	public void setOnsProperties(ONSProperties onsProperties) {
@@ -65,6 +74,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		logger.info("ons consumer init. namesrvAddr: {}", namesrvAddr);
+		Assert.notNull(messageDeserializer);
 		Assert.notNull(consumerListenerComposite);
 
 		ConsumerScanner scanner = new ConsumerScanner(applicationContext);
@@ -137,7 +147,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 						String msgId = ONSUtils.getMessageId(message);
 						logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
 						
-						Object body = consumer.deserialize(message);
+//						Object body = consumer.deserialize(message);
+						Object body = messageDeserializer.deserialize(message.getBody());
 						currentConetxt = ConsumContext.builder()
 														.messageId(msgId)
 														.message(message)
@@ -193,7 +204,42 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			for(ListenerType type : ListenerType.values()){
 				buildConsumerMeta(consumers, type);
 			}
+			buildAnnotationConsumers(consumers);
 			return consumers;
+		}
+		
+		public void buildAnnotationConsumers(Map<String, ConsumerMeta> consumers) {
+			Map<String, ?> onsListeners = applicationContext.getBeansWithAnnotation(ONSConsumer.class);
+			onsListeners.forEach((name, bean)->{
+				//one bean multip methods
+				findConsumerMethods(bean).forEach(method->{
+					ONSSubscribe subscribe = AnnotationUtils.findAnnotation(method, ONSSubscribe.class);
+					DelegateCustomONSConsumer delegate = new DelegateCustomONSConsumer(bean, method);
+					ConsumerMeta meta = buildConsumerMeta(subscribe, ListenerType.CUSTOM, delegate, name);
+					if(consumers.containsKey(meta.getConsumerId())){
+						throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
+																		.put("add listener", name)
+																		.put("exists listener", consumers.get(meta.getConsumerId()).getListenerName());
+					}
+					consumers.put(meta.getConsumerId(), meta);
+				});
+			});
+		}
+		
+		private List<Method> findConsumerMethods(Object bean){
+			Class<?> targetClass = AopUtils.getTargetClass(bean);
+			List<Method> consumerMethods = Lists.newArrayList();
+			ReflectionUtils.doWithMethods(targetClass, m->consumerMethods.add(m), m->{
+				if(AnnotationUtils.findAnnotation(m, ONSSubscribe.class)!=null){
+					Parameter[] parameters = m.getParameters();
+					if(parameters.length!=1 || parameters[0].getType()!=ConsumContext.class){
+						throw new BaseException("the parameter type of the consumer method must have onely one parameter: "+ConsumContext.class);
+					}
+					return true;
+				}
+				return false;
+			});
+			return consumerMethods;
 		}
 		
 		private void buildConsumerMeta(Map<String, ConsumerMeta> consumers, ListenerType listenerType){
@@ -201,27 +247,32 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			onsListeners.forEach((name, bean)->{
 				Class<?> targetClass = AopUtils.getTargetClass(bean);
 				ONSSubscribe subscribe = AnnotationUtils.findAnnotation(targetClass, ONSSubscribe.class);
-				ConsumerMeta meta = ConsumerMeta.builder()
-												.consumerId(subscribe.consumerId())
-												.topic(subscribe.topic())
-												.subExpression(subscribe.subExpression())
-												.messageModel(subscribe.messageModel())
-												.consumeFromWhere(subscribe.consumeFromWhere())
-												.maxReconsumeTimes(subscribe.maxReconsumeTimes())
-												.ignoreOffSetThreshold(subscribe.ignoreOffSetThreshold())//ONS 不支持
-												.listenerType(listenerType)
-												.listener(bean)
-												.listenerBeanName(name)
-												.build();
+				ConsumerMeta meta = buildConsumerMeta(subscribe, listenerType, bean, name);
+				
 				if(consumers.containsKey(meta.getConsumerId())){
 					throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
 																	.put("add listener", name)
-																	.put("exists listener", consumers.get(meta.getConsumerId()).getListenerBeanName());
+																	.put("exists listener", consumers.get(meta.getConsumerId()).getListenerName());
 				}
 				consumers.put(meta.getConsumerId(), meta);
 			});
 		}
 
+		private ConsumerMeta buildConsumerMeta(ONSSubscribe subscribe, ListenerType listenerType, Object listener, String listernName){
+			ConsumerMeta meta = ConsumerMeta.builder()
+					.consumerId(subscribe.consumerId())
+					.topic(subscribe.topic())
+					.subExpression(subscribe.subExpression())
+					.messageModel(subscribe.messageModel())
+					.consumeFromWhere(subscribe.consumeFromWhere())
+					.maxReconsumeTimes(subscribe.maxReconsumeTimes())
+					.ignoreOffSetThreshold(subscribe.ignoreOffSetThreshold())//ONS 不支持
+					.listenerType(listenerType)
+					.listener(listener)
+					.listenerName(listernName)
+					.build();
+			return meta;
+		}
 		
 	}
 }

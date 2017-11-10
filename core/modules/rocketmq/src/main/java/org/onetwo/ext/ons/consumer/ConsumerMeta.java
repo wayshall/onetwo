@@ -25,7 +25,7 @@ public class ConsumerMeta {
 	final private long ignoreOffSetThreshold;
 	final private ListenerType listenerType;
 	final private Object listener;
-	final private String listenerBeanName;
+	final private String listenerName;
 	final private int maxReconsumeTimes;
 
 	@AllArgsConstructor
