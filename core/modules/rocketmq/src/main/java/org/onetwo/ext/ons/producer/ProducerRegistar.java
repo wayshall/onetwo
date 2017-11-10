@@ -6,7 +6,6 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -39,7 +38,7 @@ public class ProducerRegistar implements ImportBeanDefinitionRegistrar {
 			
 			BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(producerClass);
 			definition.addPropertyValue("producerId", producerId);
-			definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+//			definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 			String beanName = "ONSProduers:"+producerId;
 			BeanDefinitionHolder holder = new BeanDefinitionHolder(definition.getBeanDefinition(), beanName);
 			BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);

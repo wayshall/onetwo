@@ -1,12 +1,10 @@
 package org.onetwo.ext.ons.consumer;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.Value;
 
-import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import com.aliyun.openservices.ons.api.MessageListener;
+import org.onetwo.ext.ons.ListenerType;
+
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
 
@@ -27,16 +25,5 @@ public class ConsumerMeta {
 	final private Object listener;
 	final private String listenerName;
 	final private int maxReconsumeTimes;
-
-	@AllArgsConstructor
-	public static enum ListenerType {
-		ONS(MessageListener.class),
-		RMQ(MessageListenerConcurrently.class),
-		CUSTOM(CustomONSConsumer.class);
-		
-		@Getter
-		final private Class<?> listenerClass;
-		
-	}
 
 }

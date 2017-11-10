@@ -3,8 +3,6 @@ package org.onetwo.ext.ons;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.ConsumerListener;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,7 +13,6 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * @author wayshall
  * <br/>
  */
-@Slf4j
 public class ONSConsumerListenerComposite implements InitializingBean, ConsumerListener {
 	
 	@Autowired(required=false)
