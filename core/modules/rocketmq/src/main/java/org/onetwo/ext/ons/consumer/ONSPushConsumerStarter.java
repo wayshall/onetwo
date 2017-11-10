@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
@@ -232,8 +234,11 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			ReflectionUtils.doWithMethods(targetClass, m->consumerMethods.add(m), m->{
 				if(AnnotationUtils.findAnnotation(m, ONSSubscribe.class)!=null){
 					Parameter[] parameters = m.getParameters();
-					if(parameters.length!=1 || parameters[0].getType()!=ConsumContext.class){
-						throw new BaseException("the parameter type of the consumer method must have onely one parameter: "+ConsumContext.class);
+					if(parameters.length==0 || parameters.length>2){
+						throw new BaseException("the maximum parameter of consumer method is two.");
+					}
+					if(parameters[0].getType()!=ConsumContext.class){
+						throw new BaseException("the first parameter type of the consumer method must be: "+ConsumContext.class);
 					}
 					return true;
 				}
@@ -259,10 +264,18 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		}
 
 		private ConsumerMeta buildConsumerMeta(ONSSubscribe subscribe, ListenerType listenerType, Object listener, String listernName){
+			String subExpression = null;
+			if(StringUtils.isBlank(subscribe.subExpression())){
+				if(!LangUtils.isEmpty(subscribe.tags())){
+					subExpression = StringUtils.join(subscribe.tags(), " || ");
+				}
+			}else{
+				subExpression = subscribe.subExpression();
+			}
 			ConsumerMeta meta = ConsumerMeta.builder()
 					.consumerId(subscribe.consumerId())
 					.topic(subscribe.topic())
-					.subExpression(subscribe.subExpression())
+					.subExpression(subExpression)
 					.messageModel(subscribe.messageModel())
 					.consumeFromWhere(subscribe.consumeFromWhere())
 					.maxReconsumeTimes(subscribe.maxReconsumeTimes())

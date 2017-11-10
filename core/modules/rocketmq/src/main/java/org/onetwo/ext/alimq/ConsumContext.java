@@ -15,4 +15,9 @@ public class ConsumContext {
 	String messageId;
 	MessageExt message;
 	Object deserializedBody;
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getDeserializedBody(){
+		return (T) deserializedBody;
+	}
 }

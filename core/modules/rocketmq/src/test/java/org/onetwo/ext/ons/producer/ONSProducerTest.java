@@ -36,6 +36,14 @@ public class ONSProducerTest {
 																	  .body(SerializationUtils.serialize("订单支付"))
 																	  .build());
 		System.out.println("res: " + res);
+		
+		res = onsProducerService.sendMessage(SimpleMessage.builder()
+				  .topic(TOPIC)
+				  .tags("order-cancel")
+				  .key("1")
+				  .body(SerializationUtils.serialize("订单取消"))
+				  .build());
+		System.out.println("res: " + res);
 //		LangUtils.CONSOLE.exitIf("test");
 	}
 	

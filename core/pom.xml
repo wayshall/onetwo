@@ -65,6 +65,8 @@
 	  <profile>
     	<id>release</id>
     	<modules>
+                <module>modules/bom</module>
+                <module>modules/rocketmq</module>
 	  	</modules>
         <build>
             <plugins>

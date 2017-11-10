@@ -12,7 +12,7 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartb
 /****
  * @author wayshall
  * 
- * 把注解放在有且只有一个MessageExt类型参数的方法上
+ * 消费方法最多两个参数，第一个参数为ConsumContext，第二个参数为反序列化后的body
  *
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -21,7 +21,8 @@ public @interface ONSSubscribe {
 
 	String consumerId();
 	String topic();
-	String subExpression() default "*";
+	String subExpression() default "";
+	String[] tags() default {};
 	MessageModel messageModel() default MessageModel.CLUSTERING;
 	ConsumeFromWhere consumeFromWhere() default ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET ;
 	long ignoreOffSetThreshold() default -1;

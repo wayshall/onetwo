@@ -15,9 +15,9 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.Consum
 @ONSConsumer
 public class AnnotaionConsumer  {
 
-	@ONSSubscribe(consumerId="CID_ONETWO_TEST2", topic=ONSProducerTest.TOPIC, subExpression="order-pay", consumeFromWhere=ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET)
-	public void doConsume(ConsumContext consumContext) {
-		System.out.println("注解消费者，收到消息：" + consumContext.getDeserializedBody());
+	@ONSSubscribe(consumerId="CID_ONETWO_TEST2", topic=ONSProducerTest.TOPIC, tags="order-pay", consumeFromWhere=ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET)
+	public void doConsume(ConsumContext consumContext, String body) {
+		System.out.println("注解消费者，收到消息：" + body);
 	}
 
 }
