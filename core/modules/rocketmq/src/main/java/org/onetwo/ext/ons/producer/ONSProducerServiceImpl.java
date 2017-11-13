@@ -114,8 +114,12 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	@Override
 	public SendResult sendMessage(SimpleMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler){
 		Message message = onsMessage.toMessage();
+		
 		String topic = SpringUtils.resolvePlaceholders(applicationContext, message.getTopic());
 		message.setTopic(topic);
+		String tag = SpringUtils.resolvePlaceholders(applicationContext, message.getTag());
+		message.setTag(tag);
+		
 		Object body = onsMessage.getBody();
 		if(needSerialize(body)){
 			message.setBody(this.messageSerializer.serialize(onsMessage.getBody()));

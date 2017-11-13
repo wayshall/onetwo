@@ -2,9 +2,12 @@ package org.onetwo.ext.ons.consumer;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -272,7 +275,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			String subExpression = null;
 			if(StringUtils.isBlank(subscribe.subExpression())){
 				if(!LangUtils.isEmpty(subscribe.tags())){
-					subExpression = StringUtils.join(subscribe.tags(), " || ");
+					Collection<String> tags = Stream.of(subscribe.tags()).map(tag->resloveValue(tag)).collect(Collectors.toSet());
+					subExpression = StringUtils.join(tags, " || ");
 				}
 			}else{
 				subExpression = subscribe.subExpression();

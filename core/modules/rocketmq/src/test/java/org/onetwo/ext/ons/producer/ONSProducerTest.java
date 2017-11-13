@@ -24,6 +24,8 @@ import com.aliyun.openservices.ons.api.SendResult;
 public class ONSProducerTest {
 	public static final String TOPIC = "${topic}";
 	public static final String PRODUER_ID = "${producerId}";
+	public static final String ORDER_PAY = "${tags.orderPay}";
+	public static final String ORDER_CANCEL = "${tags.orderCancel}";
 
 	@Autowired
 	ProducerService onsProducerService;
@@ -32,7 +34,7 @@ public class ONSProducerTest {
 	public void testSendMessage(){
 		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
 																	  .topic(TOPIC)
-																	  .tags("order-pay")
+																	  .tags(ORDER_PAY)
 																	  .key("1")
 																	  .body(SerializationUtils.serialize("订单支付"))
 																	  .build());
@@ -40,7 +42,7 @@ public class ONSProducerTest {
 		
 		res = onsProducerService.sendMessage(SimpleMessage.builder()
 				  .topic(TOPIC)
-				  .tags("order-cancel")
+				  .tags(ORDER_CANCEL)
 				  .key("1")
 				  .body(SerializationUtils.serialize("订单取消"))
 				  .build());

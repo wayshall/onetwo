@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.PropUtils;
@@ -91,6 +93,7 @@ final public class SpringUtils {
 	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder()
 																			.enableFieldNameAnnotation()
 																			.build();
+	public static final Expression DOLOR = ExpressionFacotry.newExpression("${", "}");
 	
 	private SpringUtils(){
 	}
@@ -618,20 +621,14 @@ final public class SpringUtils {
 	 * @return
 	 */
 	public static String resolvePlaceholders(Object applicationContext, String value){
-		if (StringUtils.hasText(value)){
+		if (StringUtils.hasText(value) && DOLOR.isExpresstion(value)){
 			if(applicationContext instanceof ConfigurableApplicationContext){
-				return resolvePlaceholders((ConfigurableApplicationContext)applicationContext, value);
+				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
+				return appcontext.getEnvironment().resolvePlaceholders(value);
 			}else if(applicationContext instanceof PropertyResolver){
 				PropertyResolver env = (PropertyResolver)applicationContext;
 				return env.resolvePlaceholders(value);
 			}
-		}
-		return value;
-	}
-	
-	public static String resolvePlaceholders(ConfigurableApplicationContext applicationContext, String value){
-		if (StringUtils.hasText(value)) {
-			return applicationContext.getEnvironment().resolvePlaceholders(value);
 		}
 		return value;
 	}
