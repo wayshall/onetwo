@@ -8,6 +8,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.SendMessageErrorHandler;
 import org.onetwo.ext.alimq.SimpleMessage;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 import com.aliyun.openservices.ons.api.Message;
@@ -40,6 +42,8 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	private ONSProperties onsProperties;
 	private String producerId;
 	private ONSProducerListenerComposite producerListenerComposite;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	@Autowired
 	public void setProducerListenerComposite(ONSProducerListenerComposite producerListenerComposite) {
@@ -93,6 +97,8 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	@Override
 	public SendResult sendMessage(SimpleMessage onsMessage, LocalTransactionExecuter executer, Object arg, SendMessageErrorHandler<SendResult> errorHandler){
 		Message message = onsMessage.toMessage();
+		String topic = SpringUtils.resolvePlaceholders(applicationContext, message.getTopic());
+		message.setTopic(topic);
 		Object body = onsMessage.getBody();
 		if(needSerialize(body)){
 			message.setBody(this.messageSerializer.serialize(onsMessage.getBody()));

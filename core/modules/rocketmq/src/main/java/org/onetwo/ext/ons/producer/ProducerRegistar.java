@@ -24,7 +24,7 @@ public class ProducerRegistar extends BaseImportRegistrar<EnableONSClient> {
 			return ;
 		}
 		for(AnnotationAttributes producer : producers){
-			String producerId = resolveAttribute(attributes, "producerId", null);
+			String producerId = resolveAttribute(producer, "producerId", null);
 			Class<?> producerClass = producer.getBoolean("transactional")?ONSTransactionProducerServiceImpl.class:ONSProducerServiceImpl.class;
 			
 			BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(producerClass);

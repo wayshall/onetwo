@@ -14,7 +14,7 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.Consum
  * @author wayshall
  * <br/>
  */
-@ONSSubscribe(consumerId="CID_ONETWO_TEST", topic=ONSProducerTest.TOPIC, subExpression="*", consumeFromWhere=ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET)
+@ONSSubscribe(consumerId="${consumerIds.test1}", topic=ONSProducerTest.TOPIC, subExpression="*", consumeFromWhere=ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET)
 public class TestConsumer implements CustomONSConsumer<String> /*MessageListener*/ {
 
 //	@Override

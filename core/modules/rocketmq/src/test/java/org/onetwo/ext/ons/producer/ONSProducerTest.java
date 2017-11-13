@@ -22,7 +22,8 @@ import com.aliyun.openservices.ons.api.SendResult;
 @ContextConfiguration(classes=ProducerTestContext.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ONSProducerTest {
-	public static final String TOPIC = "ONETWO_TEST";
+	public static final String TOPIC = "${topic}";
+	public static final String PRODUER_ID = "${producerId}";
 
 	@Autowired
 	ProducerService onsProducerService;
@@ -47,7 +48,7 @@ public class ONSProducerTest {
 //		LangUtils.CONSOLE.exitIf("test");
 	}
 	
-	@EnableONSClient(producers=@ONSProducer(producerId="PID_ONETWO_TEST"))
+	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
 	@Configuration
 	@PropertySource("classpath:ons.properties")
 	public static class ProducerTestContext {

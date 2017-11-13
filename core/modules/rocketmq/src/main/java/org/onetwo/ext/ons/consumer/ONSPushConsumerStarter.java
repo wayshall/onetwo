@@ -103,7 +103,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		logger.info("create mq consumerId: {}", meta.getConsumerId());
 
 		Properties comsumerProperties = onsProperties.baseProperties();
-		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, resloveValue(meta.getConsumerId()));
+		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
 		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
 		comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
@@ -130,7 +130,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			consumer.subscribe(meta.getTopic(), meta.getSubExpression(), (MessageListener)meta.getListener());
 			consumer.start();
 		}
-		logger.info("ONSConsumer[{}] started!", meta.getConsumerId());
+		logger.info("ONSConsumer[{}] started! meta: {}", meta.getConsumerId(), meta);
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -198,7 +198,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		this.namesrvAddr = namesrvAddr;
 	}
 
-	public static class ConsumerScanner {
+	public class ConsumerScanner {
 		private ApplicationContext applicationContext;
 		
 		public ConsumerScanner(ApplicationContext applicationContext) {
@@ -277,14 +277,16 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			}else{
 				subExpression = subscribe.subExpression();
 			}
+			String topic = resloveValue(subscribe.topic());
+			String consumerId = resloveValue(subscribe.consumerId());
 			ConsumerMeta meta = ConsumerMeta.builder()
-					.consumerId(subscribe.consumerId())
-					.topic(subscribe.topic())
+					.consumerId(consumerId)
+					.topic(topic)
 					.subExpression(subExpression)
 					.messageModel(subscribe.messageModel())
 					.consumeFromWhere(subscribe.consumeFromWhere())
 					.maxReconsumeTimes(subscribe.maxReconsumeTimes())
-					.ignoreOffSetThreshold(subscribe.ignoreOffSetThreshold())//ONS 不支持
+					.ignoreOffSetThreshold(subscribe.ignoreOffSetThreshold())//ONS类型的listener不支持
 					.listenerType(listenerType)
 					.listener(listener)
 					.listenerName(listernName)
