@@ -61,6 +61,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -617,9 +618,13 @@ final public class SpringUtils {
 	 * @return
 	 */
 	public static String resolvePlaceholders(Object applicationContext, String value){
-		if (StringUtils.hasText(value)
-				&& applicationContext instanceof ConfigurableApplicationContext) {
-			return resolvePlaceholders((ConfigurableApplicationContext)applicationContext, value);
+		if (StringUtils.hasText(value)){
+			if(applicationContext instanceof ConfigurableApplicationContext){
+				return resolvePlaceholders((ConfigurableApplicationContext)applicationContext, value);
+			}else if(applicationContext instanceof PropertyResolver){
+				PropertyResolver env = (PropertyResolver)applicationContext;
+				return env.resolvePlaceholders(value);
+			}
 		}
 		return value;
 	}
