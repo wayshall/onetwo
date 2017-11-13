@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
@@ -91,6 +92,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		});
 		
 	}
+	
+	private String resloveValue(String value	){
+		return SpringUtils.resolvePlaceholders(applicationContext, value);
+	}
 
 	private void initializeConsumers(ConsumerMeta meta) throws InterruptedException, MQClientException {
 		Assert.hasText(meta.getConsumerId(), "consumerId can not be empty!");
@@ -98,7 +103,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		logger.info("create mq consumerId: {}", meta.getConsumerId());
 
 		Properties comsumerProperties = onsProperties.baseProperties();
-		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
+		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, resloveValue(meta.getConsumerId()));
 		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
 		comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
