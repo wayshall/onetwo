@@ -1,8 +1,11 @@
 package org.onetwo.common.exception;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.onetwo.common.utils.StringUtils;
+
+import com.google.common.collect.Maps;
 
 /*********
  * 
@@ -10,7 +13,7 @@ import org.onetwo.common.utils.StringUtils;
  *
  */
 //@Deprecated
-public class ServiceException extends BaseException implements ExceptionCodeMark{
+public class ServiceException extends BaseException implements ExceptionCodeMark, HeaderableException {
 
 	public static ServiceException formatMessage(String msg, Object...args){
 		String formatMsg = String.format(msg, args);
@@ -43,6 +46,8 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	private Object[] args;
 	private Integer statusCode;
 	private ErrorType exceptionType;
+	
+	private Map<String, String> headers;
 
 	public ServiceException() {
 		super();
@@ -107,6 +112,25 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	}
 	public void setStatusCode(Integer statusCode) {
 		this.statusCode = statusCode;
+	}
+	
+	final protected Map<String, String> headers() {
+		Map<String, String> headers = this.headers;
+		if(headers==null){
+			headers = Maps.newHashMap();
+			this.headers = headers;
+		}
+		return headers;
+	}
+	
+	public Optional<Map<String, String>> getHeaders() {
+		return Optional.ofNullable(headers);
+	}
+	
+	@SuppressWarnings("unchecked")
+	final public <T extends BaseException> T header(String key, String value){
+		headers().put(key, value);
+		return (T)this;
 	}
 
 }

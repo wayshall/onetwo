@@ -93,6 +93,7 @@ public class BaseInitFilter extends IgnoreFiler {
 	public void doFilterInternal(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
+//		WebHolder.initHolder(request, response);
 		
 		this.printRequestTime(true, request);
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));
@@ -113,6 +114,7 @@ public class BaseInitFilter extends IgnoreFiler {
 //			handleException(request, response, e);
 		} finally{
 			this.printRequestTime(false, request);
+//			WebHolder.reset();
 		}
 		
 	}

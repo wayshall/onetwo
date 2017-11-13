@@ -28,7 +28,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	public static final String Prefix = "[ERROR]";
 
 	protected String code;
-	
+
 	private Map<String, Object> errorContext;
 
 //	protected List<Throwable> list = null;
@@ -96,6 +96,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 		}
 		return errorContext;
 	}
+	
 
     public void printStackTrace(PrintStream s) {
     	if(this.errorContext!=null){

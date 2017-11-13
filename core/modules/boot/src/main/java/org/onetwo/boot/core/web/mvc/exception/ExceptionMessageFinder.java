@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -15,12 +16,14 @@ import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
+import org.onetwo.common.exception.HeaderableException;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.dbm.exception.DbmException;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
@@ -131,6 +134,16 @@ public interface ExceptionMessageFinder {
 		
 		if(StringUtils.isBlank(errorMsg)){
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
+		}
+
+		if(ex instanceof HeaderableException){
+			Optional<HttpServletResponse> reponse = WebHolder.getResponse();
+			HeaderableException he = (HeaderableException)ex;
+			if(reponse.isPresent() && he.getHeaders().isPresent()){
+				he.getHeaders().get().forEach((name, value)->{
+					reponse.get().setHeader(name, value.toString());
+				});
+			}
 		}
 		
 		detail = product?detail:true;
