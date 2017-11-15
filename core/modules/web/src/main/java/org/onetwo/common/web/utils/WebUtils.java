@@ -43,7 +43,7 @@ final public class WebUtils {
 		return path;
 	}
 	
-	public static SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, Exception exception){
+	public static <T> SimpleResultBuilder<T> buildErrorCode(SimpleResultBuilder<T> builder, HttpServletRequest request, Exception exception){
 		if(ExceptionCodeMark.class.isInstance(exception)){
 			String code = ((ExceptionCodeMark)exception).getCode();
 			builder.code(code);
