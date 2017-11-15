@@ -1,6 +1,7 @@
 package org.onetwo.plugins.admin;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
 
 //@Configuration
 //@ConditionalOnProperty(name="jfish.plugins.web-admin.enable", havingValue="true", matchIfMissing=true)
@@ -99,7 +101,7 @@ public class WebAdminPluginContext implements InitializingBean {
 	public AdminPermissionConfigListAdapetor adminPermissionConfigListAdapetor(List<RootMenuClassProvider> providers){
 		AdminPermissionConfigListAdapetor list = new AdminPermissionConfigListAdapetor();
 		providers.forEach(provider->{
-			List<Class<?>> rooMenuClassList = new ArrayList<>();
+			Collection<Class<?>> rooMenuClassList = new HashSet<>();
 			if(provider instanceof RootMenuClassListProvider){
 				rooMenuClassList.addAll(((RootMenuClassListProvider)provider).rootMenuClassList());
 			}else{

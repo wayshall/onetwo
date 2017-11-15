@@ -42,7 +42,7 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	 */
 	private static final long serialVersionUID = 7280411050853219784L;
 	
-	protected String code;
+//	protected String code;
 	private Object[] args;
 	private Integer statusCode;
 	private ErrorType exceptionType;

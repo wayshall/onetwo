@@ -27,7 +27,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	protected static final String DefaultMsg = "occur error";
 	public static final String Prefix = "[ERROR]";
 
-	protected String code;
+	protected String code = getClass().getSimpleName();
 
 	private Map<String, Object> errorContext;
 

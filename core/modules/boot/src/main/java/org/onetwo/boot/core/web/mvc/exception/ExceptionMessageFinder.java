@@ -117,13 +117,13 @@ public interface ExceptionMessageFinder {
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		/*if(StringUtils.isBlank(errorCode)){
-			errorCode = ex.getClass().getName();
-		}*/
+		if(StringUtils.isBlank(errorCode)){
+			errorCode = SystemErrorCode.UNKNOWN;//ex.getClass().getName();
+		}
 
 		if(findMsgByCode){
 //			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
-			if(StringUtils.isBlank(errorCode) || SystemErrorCode.UNKNOWN.equals(errorCode)){
+			if(SystemErrorCode.UNKNOWN.equals(errorCode)){
 				errorMsg = findMessageByThrowable(ex, errorArgs);
 			}else{
 				errorMsg = findMessageByErrorCode(errorCode, errorArgs);

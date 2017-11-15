@@ -20,4 +20,12 @@ public class ConsumContext {
 	public <T> T getDeserializedBody(){
 		return (T) deserializedBody;
 	}
+	
+	public String getTopic(){
+		return message.getTopic();
+	}
+	
+	public String getTags(){
+		return message.getTags();
+	}
 }

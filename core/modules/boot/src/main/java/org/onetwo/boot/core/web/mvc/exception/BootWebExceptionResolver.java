@@ -11,7 +11,6 @@ import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResult;
-import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
@@ -143,9 +142,9 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		return mv;
 	}
 
-	protected String getUnknowError(){
+	/*protected String getUnknowError(){
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
-	}
+	}*/
 	
 	
 	protected String getPreurl(HttpServletRequest request){
