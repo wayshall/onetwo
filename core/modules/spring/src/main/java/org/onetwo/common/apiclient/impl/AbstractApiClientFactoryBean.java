@@ -226,7 +226,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 					}
 				}
 			})
-			.requestBodySupplier(()->{
+			.requestBodySupplier(ctx->{
 				return invokeMethod.getRequestBody(args);
 			});
 			

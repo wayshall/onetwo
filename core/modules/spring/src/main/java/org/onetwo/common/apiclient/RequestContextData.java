@@ -2,7 +2,6 @@ package org.onetwo.common.apiclient;
 
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +23,7 @@ public class RequestContextData {
 	@Getter
 	final private Map<String, ?> pathVariables;
 	private Consumer<HttpHeaders> headerCallback;
-	private Supplier<Object> requestBodySupplier;
+	private RequestBodySupplier requestBodySupplier;
 	
 	@Builder
 	public RequestContextData(RequestMethod requestMethod, Map<String, ?> pathVariables, Map<String, ?> uriVariables, Class<?> responseType) {
@@ -53,11 +52,11 @@ public class RequestContextData {
 		return uriVariables;
 	}
 	
-	public Supplier<Object> getRequestBodySupplier() {
+	public RequestBodySupplier getRequestBodySupplier() {
 		return requestBodySupplier;
 	}
 
-	public RequestContextData requestBodySupplier(Supplier<Object> requestBodySupplier) {
+	public RequestContextData requestBodySupplier(RequestBodySupplier requestBodySupplier) {
 		this.requestBodySupplier = requestBodySupplier;
 		return this;
 	}
@@ -82,6 +81,10 @@ public class RequestContextData {
 				+ ", requestUrl=" + requestUrl + ", responseType="
 				+ responseType + ", uriVariables=" + uriVariables + ", requestCallback="
 				+ headerCallback + "]";
+	}
+	
+	public static interface RequestBodySupplier {
+		Object getRequestBody(RequestContextData context);
 	}
 
 }

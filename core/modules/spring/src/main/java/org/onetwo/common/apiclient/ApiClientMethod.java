@@ -25,6 +25,7 @@ import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -157,13 +158,26 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		if(requestBodyParameters.isEmpty()){
 			//如果没有使用RequestBody注解的参数
 //			Object values = toMap(parameters, args);
+			Object values = null;
 			if(LangUtils.isEmpty(args)){
 				return null;
-			}else if(args.length==1){
-				return args[0];
-			}else{
-				return toMap(parameters, args);
 			}
+			
+			//没有requestBody注解时，根据contentType做简单的转换策略
+			if(getContentType().isPresent()){
+				String contentType = getContentType().get();
+				MediaType consumerMediaType = MediaType.parseMediaType(contentType);
+				if(consumerMediaType==MediaType.APPLICATION_FORM_URLENCODED){
+					//form的话，需要转成multipleMap
+					values = toMap(parameters, args);
+				}else{
+					values = args.length==1?args[0]:toMap(parameters, args).toSingleValueMap();
+				}
+			}else{
+				//默认为form
+				values = toMap(parameters, args);
+			}
+			return values;
 		}else if(requestBodyParameters.size()==1){
 			return args[requestBodyParameters.get(0).getParameterIndex()];
 		}else{
