@@ -11,6 +11,7 @@ import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
+import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.BootWebMvcRegistrations;
@@ -146,6 +147,11 @@ public class BootWebCommonAutoConfig {
 	@ConditionalOnMissingBean(BootWebMvcRegistrations.class)
 	public BootWebMvcRegistrations bootWebMvcRegistrations(){
 		return new BootWebMvcRegistrations();
+	}
+	
+	@Bean
+	public WebApiRequestMappingCombiner webApiRequestMappingCombiner(){
+		return new WebApiRequestMappingCombiner();
 	}
 	
 	/***

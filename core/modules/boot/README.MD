@@ -18,3 +18,5 @@
 - 增加@OnMissingBean注解，类似boot的@ConditionalOnMissingBean
 
 - 增加@OnExistingBean 注解，类似boot的@ConditionalOnBean
+
+- 增加@WebApi 注解，在controller前加前缀
