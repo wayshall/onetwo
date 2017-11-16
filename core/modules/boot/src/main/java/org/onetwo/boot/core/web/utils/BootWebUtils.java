@@ -376,7 +376,7 @@ public final class BootWebUtils {
 	}
 	
 	public static ObjectMapper createObjectMapper(ApplicationContext applicationContext){
-		ObjectMapper mapper = JsonMapper.IGNORE_NULL.getObjectMapper();
+		ObjectMapper mapper = JsonMapper.ignoreNull().getObjectMapper();
 //		h4m.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
 		String clsName = "com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module";
 		if(ClassUtils.isPresent(clsName, ClassUtils.getDefaultClassLoader())){

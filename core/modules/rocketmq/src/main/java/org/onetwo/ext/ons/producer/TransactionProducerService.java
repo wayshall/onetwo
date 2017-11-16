@@ -18,5 +18,12 @@ public interface TransactionProducerService {
 	SendResult sendMessage(SimpleMessage onsMessage,
 			LocalTransactionExecuter executer, Object arg,
 			SendMessageErrorHandler<SendResult> errorHandler);
+	
+	/***
+	 * 伪装一个非事务producer，简化调用
+	 * @author wayshall
+	 * @return
+	 */
+	ProducerService fakeProducerService();
 
 }

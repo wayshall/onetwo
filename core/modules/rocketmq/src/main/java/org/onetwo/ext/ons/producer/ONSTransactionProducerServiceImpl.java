@@ -27,13 +27,19 @@ import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.bean.TransactionProducerBean;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
+import com.aliyun.openservices.ons.api.transaction.TransactionStatus;
 
 /**
+ * ons普通producer和事务produer不能混用
  * @author wayshall
  * <br/>
  */
 public class ONSTransactionProducerServiceImpl extends TransactionProducerBean implements InitializingBean, DisposableBean, TransactionProducerService {
-
+	
+	public static final LocalTransactionExecuter COMMIT_EXECUTER = (msg, arg)->{
+		return TransactionStatus.CommitTransaction;
+	};
+	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private SendMessageErrorHandler<SendResult> errorHandler = null;
@@ -44,6 +50,9 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	private ONSProducerListenerComposite producerListenerComposite;
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+//	private ConfigurableListableBeanFactory configurableListableBeanFactory;
+	private FakeProducerService fakeProducerService = new FakeProducerService();
 	
 	@Autowired
 	public void setProducerListenerComposite(ONSProducerListenerComposite producerListenerComposite) {
@@ -78,6 +87,8 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		
 		this.setProperties(producerProperties);
 		this.start();
+		
+//		this.configurableListableBeanFactory.registerResolvableDependency(ProducerService.class, new ProducerServiceFactory());
 	}
 	
 	@Override
@@ -91,7 +102,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 
 	@Override
 	public SendResult sendMessage(SimpleMessage onsMessage, LocalTransactionExecuter executer, Object arg){
-		return sendMessage(onsMessage, executer, arg);
+		return sendMessage(onsMessage, executer, arg, errorHandler);
 	}
 	
 	@Override
@@ -145,6 +156,51 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 			throw new ServiceException("发送消息失败", e);
 		}
 	}
+
+	/***
+	 * 伪装一个非事务producer，简化调用
+	 * 因为ons每个topic只能有一个producer，且事务和非事务producer不能混用
+	 * @author wayshall
+	 * @return
+	 */
+	public ProducerService fakeProducerService(){
+		return fakeProducerService;
+	}
 	
+	public static class FakeProducerService implements ProducerService {
+		@Autowired
+		private TransactionProducerService transactionProducerService;
+
+		@Override
+		public void sendMessage(String topic, String tags, Object body) {
+			SimpleMessage message = SimpleMessage.builder()
+												 .topic(topic)
+												 .tags(tags)
+												 .body(body)
+												 .build();
+			this.sendMessage(message);
+		}
+
+		@Override
+		public SendResult sendMessage(SimpleMessage onsMessage) {
+			SendResult result = transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null);
+			return result;
+		}
+
+		@Override
+		public SendResult sendMessage(SimpleMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler) {
+			SendResult result = transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null, errorHandler);
+			return result;
+		}
+		
+	}
 	
+	/*protected class ProducerServiceFactory implements ObjectFactory<ProducerService> {
+
+		@Override
+		public ProducerService getObject() throws BeansException {
+			return fakeProducerService();
+		}
+
+	}*/
 }

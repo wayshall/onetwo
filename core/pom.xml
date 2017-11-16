@@ -65,12 +65,7 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/common</module>
-                <module>modules/web</module>
-                <module>modules/boot</module>
-                <module>modules/cloud</module>
-                <module>modules/rocketmq</module>
-                <module>plugins/web-admin</module>
+                <module>../../dbm</module>
 	  	</modules>
         <build>
             <plugins>
