@@ -65,7 +65,7 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>../../dbm</module>
+                <module>modules/rocketmq</module>
 	  	</modules>
         <build>
             <plugins>

@@ -61,10 +61,10 @@ public final class RestUtils {
 		
 	}
 	
-	public static boolean isRequestSupportedMethod(HttpMethod method){
-		return isRequestSupportedMethod(RequestMethod.valueOf(method.name()));
+	public static boolean isRequestBodySupportedMethod(HttpMethod method){
+		return isRequestBodySupportedMethod(RequestMethod.valueOf(method.name()));
 	}
-	public static boolean isRequestSupportedMethod(RequestMethod method){
+	public static boolean isRequestBodySupportedMethod(RequestMethod method){
 		return BODY_SUPPORT_METHODS.contains(method);
 	}
 	

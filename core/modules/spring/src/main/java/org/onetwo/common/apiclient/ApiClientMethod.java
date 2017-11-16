@@ -146,7 +146,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	}
 	
 	public Object getRequestBody(Object[] args){
-		if(!RestUtils.isRequestSupportedMethod(requestMethod)){
+		if(!RestUtils.isRequestBodySupportedMethod(requestMethod)){
 			throw new RestClientException("unsupported request body method: " + method);
 		}
 		List<ApiClientMethodParameter> requestBodyParameters = parameters.stream()
@@ -156,8 +156,14 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 												.collect(Collectors.toList());
 		if(requestBodyParameters.isEmpty()){
 			//如果没有使用RequestBody注解的参数
-			Object values = toMap(parameters, args);
-			return values;
+//			Object values = toMap(parameters, args);
+			if(LangUtils.isEmpty(args)){
+				return null;
+			}else if(args.length==1){
+				return args[0];
+			}else{
+				return toMap(parameters, args);
+			}
 		}else if(requestBodyParameters.size()==1){
 			return args[requestBodyParameters.get(0).getParameterIndex()];
 		}else{

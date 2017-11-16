@@ -105,7 +105,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			
 			rc = super.httpEntityCallback(requestEntity, context.getResponseType());
 			responseExtractor = responseEntityExtractor(context.getResponseType());
-		}else if(RestUtils.isRequestSupportedMethod(method)){
+		}else if(RestUtils.isRequestBodySupportedMethod(method)){
 			//根据consumers 设置header，以指定messageConvertor
 			Object requestBody = context.getRequestBodySupplier().get();
 			headers = new HttpHeaders();
