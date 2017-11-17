@@ -34,6 +34,7 @@ public class ONSProducerListenerComposite implements InitializingBean, ProducerL
 	
 	@Override
 	public void beforeSendMessage(Message message) {
+		log.info("send message topic: {}, tags: {}, messageId: {}", message.getTopic(), message.getTag(), message.getMsgID());
 		for(ProducerListener<Message> listener : listeners){
 			listener.beforeSendMessage(message);
 		}
