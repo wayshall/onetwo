@@ -48,7 +48,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 //	private Map<String, WhenExceptionMap> whenExceptionCaches = new WeakHashMap<String, WhenExceptionMap>();
-	protected final Logger mailLogger = JFishLoggerFactory.findLogger("mailLogger");
+	protected final Logger mailLogger = JFishLoggerFactory.findMailLogger();
 	
 //	resouce: exception-messages
 	/*@Qualifier(BootContextConfig.BEAN_EXCEPTION_MESSAGE)
@@ -79,6 +79,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		initResolver();
+		this.notifyThrowables = bootSiteConfig.getNotifyThrowables();
 	}
 	
 	protected void initResolver(){

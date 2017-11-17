@@ -16,6 +16,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *
  */
 @ControllerAdvice
-public class BootWebExceptionHandler extends ResponseEntityExceptionHandler implements ExceptionMessageFinder {
+public class BootWebExceptionHandler extends ResponseEntityExceptionHandler implements ExceptionMessageFinder, InitializingBean {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -46,6 +47,11 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	private List<String> notifyThrowables;
 	
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.notifyThrowables = this.bootSiteConfig.getNotifyThrowables();
+	}
+
 	@ExceptionHandler({
 		Throwable.class
 	})

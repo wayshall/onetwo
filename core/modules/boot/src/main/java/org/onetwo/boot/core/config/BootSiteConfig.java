@@ -66,6 +66,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	private String cssPath;
 	private String imagePath;
 	
+	List<String> notifyThrowables;
 	
 	private ImageServer imageServer = new ImageServer();
 	
@@ -187,6 +188,14 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 
 	public void setImageServer(ImageServer imageServer) {
 		this.imageServer = imageServer;
+	}
+
+	public List<String> getNotifyThrowables() {
+		return notifyThrowables;
+	}
+
+	public void setNotifyThrowables(List<String> notifyThrowables) {
+		this.notifyThrowables = notifyThrowables;
 	}
 
 	@Data
