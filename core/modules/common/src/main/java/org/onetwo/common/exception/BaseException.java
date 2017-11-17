@@ -24,8 +24,8 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 
 	private static final String SEP_LIE = "--------------------";
 	
-	protected static final String DefaultMsg = "occur error";
-	public static final String Prefix = "[ERROR]";
+	protected static final String DefaultMsg = "[ERROR]";
+//	public static final String Prefix = "[ERROR]";
 
 	protected String code = getClass().getSimpleName();
 
@@ -38,7 +38,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	}
 
 	public BaseException(String msg) {
-		super(Prefix + msg);
+		super(msg);
 	}
 
 	public BaseException(Throwable cause) {
