@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.ext.security.jwt.JwtAuthStores;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 
@@ -229,12 +230,15 @@ public class SecurityConfig {
 	@Data
 	public static class JwtConfig {
 		String authHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
+		String authKey;
+		JwtAuthStores authStore = JwtAuthStores.HEADER;
 		String signingKey;
 		Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);
 		
 		public boolean isEnabled(){
 			return StringUtils.isNotBlank(signingKey);
 		}
+		
 	}
 	
 	@Data

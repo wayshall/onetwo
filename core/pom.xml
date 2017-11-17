@@ -65,6 +65,8 @@
 	  <profile>
     	<id>release</id>
     	<modules>
+                <module>modules/security</module>
+                <module>modules/cloud</module>
                 <module>modules/rocketmq</module>
 	  	</modules>
         <build>

@@ -1,6 +1,7 @@
 package org.onetwo.ext.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClaims;
@@ -16,10 +17,12 @@ import org.onetwo.ext.security.utils.LoginUserDetails;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -40,7 +43,14 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 		if(authentication==null){
 			return null;
 		}
-		LoginUserDetails userDetails = (LoginUserDetails)authentication.getPrincipal();
+		
+		LoginUserDetails userDetails = null;
+		if(authentication.getPrincipal() instanceof LoginUserDetails){
+			userDetails = (LoginUserDetails)authentication.getPrincipal();
+		}else{
+			User user = (User)authentication.getPrincipal();
+			userDetails = new LoginUserDetails(0L, user.getUsername(), "N/A", user.getAuthorities());
+		}
 		Collection<String> authorities = userDetails.getAuthorities()
 										.stream()
 										.map(auth->auth.getAuthority())
@@ -93,8 +103,10 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 										.parse(token)
 										.getBody();
 			return claims;
-		} catch (Exception e) {
-			throw new BadCredentialsException("error token");
+		} catch(ExpiredJwtException e){
+			throw new CredentialsExpiredException("session expired", e);
+		}catch (Exception e) {
+			throw new BadCredentialsException("error token", e);
 		}
 	}
 

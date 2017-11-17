@@ -1,11 +1,19 @@
 package org.onetwo.ext.security.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.impl.DefaultClaims;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.ext.security.jwt.JwtAuthStores.StoreContext;
+import org.onetwo.ext.security.utils.CookieStorer;
 import org.slf4j.Logger;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,10 +31,13 @@ public class JwtSecurityContextRepository implements SecurityContextRepository {
 	private JwtSecurityTokenService jwtTokenService;
 	private boolean updateTokenOnResponse;
 	private String authHeaderName = JwtSecurityUtils.DEFAULT_HEADER_KEY;
+	private JwtAuthStores authStore;
+	
+	private CookieStorer cookieStorer;
 
 	@Override
 	public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
-		String token = requestResponseHolder.getRequest().getHeader(authHeaderName);
+		String token = authStore.getToken(requestResponseHolder.getRequest(), authHeaderName);
 
 		if(logger.isDebugEnabled()){
 			logger.debug("load context user token : {}", token);
@@ -37,15 +48,19 @@ public class JwtSecurityContextRepository implements SecurityContextRepository {
 		}
 		
 		SecurityContext context = SecurityContextHolder.getContext();
-		Authentication authentication = jwtTokenService.createAuthentication(token);
+		Authentication authentication = null;
+		try {
+			authentication = jwtTokenService.createAuthentication(token);
+		} catch(CredentialsExpiredException e){
+			cookieStorer.clear(requestResponseHolder.getRequest(), requestResponseHolder.getResponse(), authHeaderName);
+		}
 		if(authentication!=null){
 			context.setAuthentication(authentication);
 		}
 		
 		return context;
 	}
-
-
+	
 	@Override
 	public void saveContext(SecurityContext context, HttpServletRequest request, HttpServletResponse response) {
 		if(!updateTokenOnResponse){
@@ -54,13 +69,23 @@ public class JwtSecurityContextRepository implements SecurityContextRepository {
 		
 		if(response.getHeaders(authHeaderName)==null){
 			JwtSecurityTokenInfo token = jwtTokenService.generateToken(context.getAuthentication());
-			response.addHeader(authHeaderName, token.getToken());
+//			response.addHeader(authHeaderName, token.getToken());
+			StoreContext ctx = StoreContext.builder()
+											.request(request)
+											.response(response)
+											.authKey(authHeaderName)
+											.cookieStorer(cookieStorer)
+											.build();
+			authStore.saveToken(ctx);
 
 			if(logger.isDebugEnabled()){
 				logger.debug("saveContext user token : {}", token);
 			}
 		}
 	}
+	
+
+	
 
 	@Override
 	public boolean containsContext(HttpServletRequest request) {
@@ -74,6 +99,14 @@ public class JwtSecurityContextRepository implements SecurityContextRepository {
 	}
 	public void setAuthHeaderName(String authHeaderName) {
 		this.authHeaderName = authHeaderName;
+	}
+
+	public void setAuthStore(JwtAuthStores authStore) {
+		this.authStore = authStore;
+	}
+
+	public void setCookieStorer(CookieStorer cookieStorer) {
+		this.cookieStorer = cookieStorer;
 	}
 
 }

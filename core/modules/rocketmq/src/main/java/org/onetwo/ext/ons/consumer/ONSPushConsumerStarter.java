@@ -51,8 +51,6 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 
 	private final Logger logger = LoggerFactory.getLogger(ONSPushConsumerStarter.class);
 
-	private String namesrvAddr;
-	
 	@Autowired
 	private ApplicationContext applicationContext;
 	private MessageDeserializer messageDeserializer;
@@ -79,7 +77,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		logger.info("ons consumer init. namesrvAddr: {}", namesrvAddr);
+		logger.info("ons consumer init. namesrvAddr: {}", onsProperties.getOnsAddr());
 		Assert.notNull(messageDeserializer);
 		Assert.notNull(consumerListenerComposite);
 
@@ -195,10 +193,6 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			c.shutdown();
 		});
 		logger.info("DefaultMQPushConsumer shutdown.");
-	}
-
-	public void setNamesrvAddr(String namesrvAddr) {
-		this.namesrvAddr = namesrvAddr;
 	}
 
 	public class ConsumerScanner {

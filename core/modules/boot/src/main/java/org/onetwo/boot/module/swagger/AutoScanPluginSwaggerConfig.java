@@ -48,7 +48,7 @@ public class AutoScanPluginSwaggerConfig {
     	if(StringUtils.isNotBlank(scanPackageName)){
     		packages.add(RequestHandlerSelectors.basePackage(scanPackageName));
     	}
-        return new Docket(DocumentationType.SWAGGER_2)
+    	Docket docket = new Docket(DocumentationType.SWAGGER_2)
 		    		.ignoredParameterTypes(ApiIgnore.class)
 //		    		.pathProvider(pathProvider)
 		            .select()
@@ -56,6 +56,11 @@ public class AutoScanPluginSwaggerConfig {
 			            .paths(PathSelectors.any())
 		            .build()
 		            .apiInfo(apiInfo());
+    	return docket;
+    }
+    
+    protected Docket configDocket(Docket docket){
+    	return docket;
     }
     
     protected String getScanPackageName(){

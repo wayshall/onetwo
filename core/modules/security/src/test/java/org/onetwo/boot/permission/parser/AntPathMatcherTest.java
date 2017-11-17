@@ -62,6 +62,19 @@ public class AntPathMatcherTest {
 		Assert.assertTrue(res);
 		res = req.match("/user/**", "/user/aaa/1.json");
 		Assert.assertTrue(res);
+
+		res = req.match("/service/swagger**", "/service/swagger-resources");
+		Assert.assertTrue(res);
+
+		res = req.match("/service/swagger**/**", "/service/swagger-resources/configuration");
+		Assert.assertTrue(res);
+		res = req.match("/service/swagger**/**", "/service/swagger-resources");
+		Assert.assertTrue(res);
+		res = req.match("/service/swagger**", "/service/swagger-resources/configuration/ui");
+		Assert.assertFalse(res);
+		
+		res = req.match("/service/webjars/**/**", "/service/webjars/springfox-swagger-ui/css/typography.css");
+		Assert.assertTrue(res);
 	}
 	
 	@Test
