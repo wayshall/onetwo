@@ -154,6 +154,10 @@ public class SecurityConfig {
 		return Springs.getInstance().containsClassBean("org.springframework.security.cas.web.CasAuthenticationFilter");
 	}
 	
+	public Map<String, MemoryUser> getMemoryUsers(){
+		return this.memoryUsers;
+	}
+	
 	@Data
 	public class RememberMeConfig {
 		private String key;

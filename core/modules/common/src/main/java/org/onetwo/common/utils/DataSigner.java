@@ -106,6 +106,12 @@ public interface DataSigner {
 		}
 		
 		public void checkSign(SigningConfig config, SignableRequest signRequest, Object actualRequest, String... excludeProperties){
+			if(signRequest.getTimestamp()==null){
+				throw new ServiceException(SignErrors.TIMESTAMP_ERR);
+			}
+			if(StringUtils.isBlank(signRequest.getSignkey())){
+				throw new ServiceException(SignErrors.SIGNKEY_ERR);
+			}
 			DateTime requestTime = new DateTime(signRequest.getTimestamp());
 			//如果请求时间+延迟时间后少于当前时间，则可能是攻击
 			if(requestTime.plusSeconds(config.getMaxDelayTimeInSeconds()).isBefore(DateTime.now())){
@@ -129,6 +135,8 @@ public interface DataSigner {
 
 	public enum SignErrors implements ErrorType {
 
+		TIMESTAMP_ERR("时间戳不能为空"),
+		SIGNKEY_ERR("签名不能为空"),
 		INVALID_INVOKE("非法调用"),
 		INVALID_SIGNKEY("非法签名");
 
