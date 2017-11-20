@@ -167,7 +167,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			if(getContentType().isPresent()){
 				String contentType = getContentType().get();
 				MediaType consumerMediaType = MediaType.parseMediaType(contentType);
-				if(consumerMediaType==MediaType.APPLICATION_FORM_URLENCODED){
+				if(MediaType.APPLICATION_FORM_URLENCODED.equals(consumerMediaType)){
 					//form的话，需要转成multipleMap
 					values = toMap(parameters, args);
 				}else{
