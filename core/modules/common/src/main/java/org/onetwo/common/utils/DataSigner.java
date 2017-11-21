@@ -79,6 +79,7 @@ public interface DataSigner {
 			excludes.addAll(Arrays.asList(excludeProperties));
 			BeanToMapConvertor convertor = BeanToMapBuilder.newBuilder()
 															.excludeProperties(excludes.toArray(new String[0]))
+															.enableFieldNameAnnotation()
 															.build();
 			return convertor;
 		}

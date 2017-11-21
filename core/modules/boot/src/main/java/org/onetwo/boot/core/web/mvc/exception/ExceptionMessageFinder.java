@@ -117,13 +117,43 @@ public interface ExceptionMessageFinder {
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
+		detail = product?detail:true;
+		error.setCode(errorCode);
+//		error.setMesage(errorMsg);
+		error.setDetail(detail);
+		
 		if(StringUtils.isBlank(errorCode)){
 			errorCode = SystemErrorCode.UNKNOWN;//ex.getClass().getName();
 		}
 
+		errorMsg = findMessage(findMsgByCode, error, errorArgs);
+
+		if(ex instanceof HeaderableException){
+			Optional<HttpServletResponse> reponse = WebHolder.getResponse();
+			HeaderableException he = (HeaderableException)ex;
+			if(reponse.isPresent() && he.getHeaders().isPresent()){
+				he.getHeaders().get().forEach((name, value)->{
+					reponse.get().setHeader(name, value.toString());
+				});
+			}
+		}
+		
+//		detail = product?detail:true;
+//		error.setCode(errorCode);
+		error.setMesage(errorMsg);
+//		error.setDetail(detail);
+//		error.setViewName(viewName);
+//		error.setAuthentic(authentic);
+		return error;
+	}
+	
+	default String findMessage(boolean findMsgByCode, ErrorMessage error, Object[] errorArgs){
+		String errorMsg = null;
+		String errorCode = error.getCode();
+		Exception ex = error.getException();
 		if(findMsgByCode){
 //			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
-			if("com.netflix.hystrix.exception.HystrixRuntimeException".equals(ex.getClass().getName())){
+			if(isInternalError(ex)){
 				//内部调用失败
 				errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
 			}else if(SystemErrorCode.UNKNOWN.equals(errorCode)){
@@ -138,24 +168,11 @@ public interface ExceptionMessageFinder {
 		if(StringUtils.isBlank(errorMsg)){
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}
-
-		if(ex instanceof HeaderableException){
-			Optional<HttpServletResponse> reponse = WebHolder.getResponse();
-			HeaderableException he = (HeaderableException)ex;
-			if(reponse.isPresent() && he.getHeaders().isPresent()){
-				he.getHeaders().get().forEach((name, value)->{
-					reponse.get().setHeader(name, value.toString());
-				});
-			}
-		}
-		
-		detail = product?detail:true;
-		error.setCode(errorCode);
-		error.setMesage(errorMsg);
-		error.setDetail(detail);
-//		error.setViewName(viewName);
-//		error.setAuthentic(authentic);
-		return error;
+		return errorMsg;
+	}
+	
+	default boolean isInternalError(Exception ex){
+		return "com.netflix.hystrix.exception.HystrixRuntimeException".equals(ex.getClass().getName());
 	}
 	
 	default Locale getLocale(){
