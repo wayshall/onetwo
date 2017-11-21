@@ -112,6 +112,9 @@ public interface DataSigner {
 			if(StringUtils.isBlank(signRequest.getSignkey())){
 				throw new ServiceException(SignErrors.SIGNKEY_ERR);
 			}
+			if(config==null){
+				throw new ServiceException(SignErrors.CONFIG_ERR);
+			}
 			DateTime requestTime = new DateTime(signRequest.getTimestamp());
 			//如果请求时间+延迟时间后少于当前时间，则可能是攻击
 			if(requestTime.plusSeconds(config.getMaxDelayTimeInSeconds()).isBefore(DateTime.now())){
@@ -137,6 +140,7 @@ public interface DataSigner {
 
 		TIMESTAMP_ERR("时间戳不能为空"),
 		SIGNKEY_ERR("签名不能为空"),
+		CONFIG_ERR("配置错误"),
 		INVALID_INVOKE("非法调用"),
 		INVALID_SIGNKEY("非法签名");
 
