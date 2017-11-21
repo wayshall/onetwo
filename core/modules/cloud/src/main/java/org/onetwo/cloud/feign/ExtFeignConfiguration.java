@@ -3,17 +3,20 @@ package org.onetwo.cloud.feign;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cloud.netflix.feign.AnnotatedParameterProcessor;
+import org.springframework.cloud.netflix.feign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 
 import feign.Contract;
 import feign.Feign;
+import feign.codec.Decoder;
 
 /**
  * @author wayshall
@@ -28,7 +31,15 @@ public class ExtFeignConfiguration {
 	private List<AnnotatedParameterProcessor> parameterProcessors = new ArrayList<>();
 	@Autowired
 	private HttpMessageConverters httpMessageConverters;
+	@Autowired
+	private ObjectFactory<HttpMessageConverters> messageConverters;
 
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Decoder feignDecoder() {
+		return new ExtResponseEntityDecoder(messageConverters);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

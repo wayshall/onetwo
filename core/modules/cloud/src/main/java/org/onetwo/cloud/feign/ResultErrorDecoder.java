@@ -1,5 +1,7 @@
 package org.onetwo.cloud.feign;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.io.IOUtils;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.BaseException;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
@@ -55,11 +58,12 @@ public class ResultErrorDecoder implements ErrorDecoder {
     	return exception;
     }
 	
-	private class FeignResponseAdapter implements ClientHttpResponse {
+	public static class FeignResponseAdapter implements ClientHttpResponse {
 
 		private final Response response;
+		private InputStream inputStream;
 
-		private FeignResponseAdapter(Response response) {
+		public FeignResponseAdapter(Response response) {
 			this.response = response;
 		}
 
@@ -90,7 +94,19 @@ public class ResultErrorDecoder implements ErrorDecoder {
 
 		@Override
 		public InputStream getBody() throws IOException {
-			return this.response.body().asInputStream();
+			InputStream in = this.inputStream;
+			if(in==null){
+				in = this.response.body().asInputStream();
+				ByteArrayOutputStream output = new ByteArrayOutputStream();
+				try {
+					IOUtils.copy(in, output);
+				} finally{
+					IOUtils.closeQuietly(in);
+				}
+				in = new ByteArrayInputStream(output.toByteArray());
+				this.inputStream = in;
+			}
+			return in;
 		}
 
 		@Override

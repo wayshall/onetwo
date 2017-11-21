@@ -123,7 +123,10 @@ public interface ExceptionMessageFinder {
 
 		if(findMsgByCode){
 //			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
-			if(SystemErrorCode.UNKNOWN.equals(errorCode)){
+			if("com.netflix.hystrix.exception.HystrixRuntimeException".equals(ex.getClass().getName())){
+				//内部调用失败
+				errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
+			}else if(SystemErrorCode.UNKNOWN.equals(errorCode)){
 				errorMsg = findMessageByThrowable(ex, errorArgs);
 			}else{
 				errorMsg = findMessageByErrorCode(errorCode, errorArgs);
