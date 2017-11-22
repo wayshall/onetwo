@@ -92,6 +92,10 @@ public class SecurityConfig {
 		return resolveUrl(url);
 	}
 	
+	public String getDefaultLoginPage(){
+		return defaultLoginPage;
+	}
+	
 	/****
 	 * @see DefaultMethodSecurityConfigurer#defaultConfigure
 	 * @author wayshall

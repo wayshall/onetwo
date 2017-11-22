@@ -88,9 +88,9 @@ public interface DataSigner {
 			Map<String, Object> requestMap = getBeanToMapConvertor(excludeProperties).toFlatMap(request);
 			final String paramString = ParamUtils.comparableKeyMapToParamString(requestMap);
 			String sourceString = signKey+paramString+timestamp;
-			if(logger.isInfoEnabled()){
-				logger.info("param string: {}", paramString);
-				logger.info("source string: {}", sourceString);
+			if(logger.isDebugEnabled()){
+				logger.debug("param string: {}", paramString);
+				logger.debug("source string: {}", sourceString);
 			}
 			return sourceString;
 		}
@@ -99,9 +99,9 @@ public interface DataSigner {
 			String sourceString = convertToSourceString(signKey, timestamp, request, excludeProperties);
 			MessageDigestHasher hasher = Hashs.sha1(false, CodeType.HEX);
 			String hashString = hasher.hash(sourceString);
-			if(logger.isInfoEnabled()){
-				logger.info("source string: {}", sourceString);
-				logger.info("hash string: {}", hashString);
+			if(logger.isDebugEnabled()){
+				logger.debug("source string: {}", sourceString);
+				logger.debug("hash string: {}", hashString);
 			}
 			return hashString;
 		}
@@ -126,8 +126,8 @@ public interface DataSigner {
 			String sourceString = convertToSourceString(config.getSigningKey(), signRequest.getTimestamp(), request, excludeProperties);
 			MessageDigestHasher hasher = Hashs.sha1(false, CodeType.HEX);
 			String hashString = hasher.hash(sourceString);
-			if(logger.isInfoEnabled()){
-				logger.info("hash string: {}", hashString);
+			if(logger.isDebugEnabled()){
+				logger.debug("hash string: {}", hashString);
 			}
 			
 			if(!hasher.checkHash(sourceString, signRequest.getSignkey())){

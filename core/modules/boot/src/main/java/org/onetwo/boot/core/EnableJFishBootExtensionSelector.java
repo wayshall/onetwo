@@ -10,6 +10,7 @@ import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
+import org.onetwo.boot.module.cache.RedisCacheConfiguration;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
@@ -61,6 +62,10 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 				throw new BaseException("extension class["+extClassName+"] must be annotated by "+JFishWebPlugin.class.getName());
 			}
 			classNames.add(extClassName);
+		}
+		
+		if(attributes.getBoolean("enableCacheExtension")){
+			classNames.add(RedisCacheConfiguration.class.getName());
 		}
 		
 		return classNames;
