@@ -3,6 +3,7 @@ package org.onetwo.boot.module.redis;
 import org.onetwo.boot.module.redis.JFishRedisProperties.LockRegistryProperties;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -32,7 +33,7 @@ public class RedisConfiguration {
 	@Bean
     @ConditionalOnMissingBean(name=BEAN_REDISCONNECTIONFACTORY)
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
-    public JedisConnectionFactory redisConnectionFactory() throws Exception {
+    public JedisConnectionFactory jfishRedisConnectionFactory() throws Exception {
 		JedisConnectionFactory jf = new JedisConnectionFactory();
 		CopyUtils.copy(jf, redisProperties);
 		if(redisProperties.getPool()!=null){
@@ -43,11 +44,11 @@ public class RedisConfiguration {
 	
 	@Bean
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
-	public RedisTemplate<String, Object> redisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
+	public RedisTemplate<String, Object> jfishRedisTemplate(@Autowired @Qualifier(BEAN_REDISCONNECTIONFACTORY) JedisConnectionFactory jfishRedisConnectionFactory) throws Exception  {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
-		template.setConnectionFactory(jedisConnectionFactory);
+		template.setConnectionFactory(jfishRedisConnectionFactory);
 		return template;
 	}
 	

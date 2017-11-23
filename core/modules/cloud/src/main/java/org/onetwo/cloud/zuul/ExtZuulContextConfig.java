@@ -1,6 +1,7 @@
 package org.onetwo.cloud.zuul;
 
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
+import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.cloud.core.BootJfishCloudConfig;
 import org.onetwo.common.file.FileUtils;
@@ -25,7 +26,7 @@ import org.springframework.web.multipart.support.MultipartFilter;
  * <br/>
  */
 @EnableDiscoveryClient
-@EnableConfigurationProperties({BootJfishCloudConfig.class})
+@EnableConfigurationProperties({BootJfishCloudConfig.class, TomcatProperties.class})
 @Configuration
 public class ExtZuulContextConfig {
 	@Autowired
@@ -34,7 +35,7 @@ public class ExtZuulContextConfig {
 	private MultipartProperties multipartProperties;
 
 	@Bean
-	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
+	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
 	}

@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.embedded;
 
+import org.apache.coyote.http11.Http11NioProtocol;
 import org.onetwo.common.file.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.MultipartProperties;
@@ -28,6 +29,8 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
 	
 	@Autowired
 	private MultipartProperties multipartProperties;
+	@Autowired
+	private TomcatProperties romcatProperties;
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
@@ -37,6 +40,16 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 (connector) -> {
                 	//connector 本身默认是 2 mb
                 	connector.setMaxPostSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
+                	Http11NioProtocol handler = (Http11NioProtocol)connector.getProtocolHandler();
+                	if(romcatProperties.getBacklog()!=-1){
+                		handler.setBacklog(romcatProperties.getBacklog());
+                	}
+                	if(romcatProperties.getMaxConnections()!=-1){
+                		handler.setMaxConnections(romcatProperties.getMaxConnections());
+                	}
+                	if(romcatProperties.getConnectionTimeout()!=-1){
+                		handler.setConnectionTimeout(romcatProperties.getConnectionTimeout());
+                	}
                 }
             );
         }

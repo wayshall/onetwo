@@ -7,6 +7,7 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
+import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
@@ -82,7 +83,7 @@ public class BootWebCommonAutoConfig {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
+	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
 	}
