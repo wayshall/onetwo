@@ -30,7 +30,7 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
 	@Autowired
 	private MultipartProperties multipartProperties;
 	@Autowired
-	private TomcatProperties romcatProperties;
+	private TomcatProperties tomcatProperties;
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
@@ -41,15 +41,16 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 	//connector 本身默认是 2 mb
                 	connector.setMaxPostSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
                 	Http11NioProtocol handler = (Http11NioProtocol)connector.getProtocolHandler();
-                	if(romcatProperties.getBacklog()!=-1){
-                		handler.setBacklog(romcatProperties.getBacklog());
+                	if(tomcatProperties.getBacklog()!=-1){
+                		handler.setBacklog(tomcatProperties.getBacklog());
                 	}
-                	if(romcatProperties.getMaxConnections()!=-1){
-                		handler.setMaxConnections(romcatProperties.getMaxConnections());
+                	if(tomcatProperties.getMaxConnections()!=-1){
+                		handler.setMaxConnections(tomcatProperties.getMaxConnections());
                 	}
-                	if(romcatProperties.getConnectionTimeout()!=-1){
-                		handler.setConnectionTimeout(romcatProperties.getConnectionTimeout());
+                	if(tomcatProperties.getConnectionTimeout()!=-1){
+                		handler.setConnectionTimeout(tomcatProperties.getConnectionTimeout());
                 	}
+                	connector.setAsyncTimeout(tomcatProperties.getAsyncTimeout());
                 }
             );
         }
