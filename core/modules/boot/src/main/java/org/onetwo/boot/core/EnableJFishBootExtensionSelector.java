@@ -9,6 +9,7 @@ import org.onetwo.boot.core.EnableJFishBootExtension.AppcationType;
 import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
+import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
 import org.onetwo.boot.module.cache.RedisCacheConfiguration;
 import org.onetwo.boot.module.redis.RedisConfiguration;
@@ -49,6 +50,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		
 		classNames.add(OAuth2SsoClientAutoContextConfig.class.getName());
 		classNames.add(RedisConfiguration.class.getName());
+		classNames.add(AsyncMvcConfiguration.class.getName());
 		
 		Collection<String> exts = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(this.annotationClass, this.beanClassLoader));
 		for(String extClassName : exts){

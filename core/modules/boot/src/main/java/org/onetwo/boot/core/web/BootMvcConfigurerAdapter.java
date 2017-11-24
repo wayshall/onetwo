@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootJFishConfig.MvcConfig.ResourceHandlerConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -23,6 +24,8 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -32,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -62,10 +66,22 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	@Autowired(required=false)
 	private ExtJackson2HttpMessageConverter jackson2HttpMessageConverter;
 	
+	@Autowired(required=false)
+	@Qualifier(AsyncMvcConfiguration.TASK_BEAN_NAME)
+	private AsyncTaskExecutor asyncTaskExecutor;
+	
 	@Override
     public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(bootWebExceptionResolver);
     }
+	
+
+	@Override
+	public void configureAsyncSupport(AsyncSupportConfigurer configurer){
+		if(asyncTaskExecutor!=null){
+			configurer.setTaskExecutor(asyncTaskExecutor);
+		}
+	}
 	
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {

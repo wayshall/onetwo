@@ -66,6 +66,7 @@ public class BootJFishConfig {
 		Properties mediaTypes;
 		JsonConfig json = new JsonConfig();
 		List<ResourceHandlerConfig> resourceHandlers = new ArrayList<>();
+//		MvcAsyncProperties async = new MvcAsyncProperties();
 		
 		/*@Deprecated
 		private AutoWrapResultConfig autoWrapResult = new AutoWrapResultConfig();*/

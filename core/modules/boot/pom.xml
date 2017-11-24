@@ -205,6 +205,12 @@
             <optional>true</optional>
         </dependency>
         
+        <dependency>
+		   <groupId>org.redisson</groupId>
+		   <artifactId>redisson</artifactId>
+           <optional>true</optional>
+		</dependency> 
+        
         <!-- <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>

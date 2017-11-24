@@ -65,9 +65,8 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/common</module>
-                <module>modules/spring</module>
                 <module>modules/boot</module>
+                <module>modules/cloud</module>
 	  	</modules>
         <build>
             <plugins>
