@@ -10,6 +10,7 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootJFishConfig.MvcConfig.ResourceHandlerConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
+import org.onetwo.boot.core.web.async.MvcAsyncProperties;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -69,6 +70,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	@Autowired(required=false)
 	@Qualifier(AsyncMvcConfiguration.TASK_BEAN_NAME)
 	private AsyncTaskExecutor asyncTaskExecutor;
+	@Autowired(required=false)
+	private MvcAsyncProperties mvcAsyncProperties;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
@@ -80,6 +83,9 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	public void configureAsyncSupport(AsyncSupportConfigurer configurer){
 		if(asyncTaskExecutor!=null){
 			configurer.setTaskExecutor(asyncTaskExecutor);
+		}
+		if(mvcAsyncProperties!=null){
+			configurer.setDefaultTimeout(mvcAsyncProperties.getTimeout());
 		}
 	}
 	

@@ -14,6 +14,7 @@ public class MvcAsyncProperties {
 	public static final String PREFIX = "jfish.mvc.async";
 	public static final String ENABLE_KEY = PREFIX+".enabled";
 
+	private int timeout = 60000;
 	private int corePoolSize = 5;
 	private int maxPoolSize = 50;
 	private int keepAliveSeconds = 60;
