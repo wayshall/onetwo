@@ -17,6 +17,7 @@ import com.aliyun.openservices.ons.api.SendResult;
  * <br/>
  */
 public class ONSProducerListenerComposite implements InitializingBean, ProducerListener<Message> {
+	private final Logger logger = ONSUtils.getONSLogger();
 
 	@Autowired(required=false)
 	private List<ProducerListener<Message>> listeners;
@@ -32,8 +33,9 @@ public class ONSProducerListenerComposite implements InitializingBean, ProducerL
 	
 	@Override
 	public void beforeSendMessage(Message message) {
-		final Logger logger = ONSUtils.getONSLogger();
-		logger.info("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
+		if(logger.isInfoEnabled()){
+			logger.info("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
+		}
 		for(ProducerListener<Message> listener : listeners){
 			listener.beforeSendMessage(message);
 		}
@@ -41,8 +43,9 @@ public class ONSProducerListenerComposite implements InitializingBean, ProducerL
 	
 	@Override
 	public void afterSendMessage(Message message, SendResult sendResult) {
-		final Logger logger = ONSUtils.getONSLogger();
-		logger.info("send message success. topic: {}, tags: {}, sendResult: {}", message.getTopic(), message.getTag(), sendResult);
+		if(logger.isInfoEnabled()){
+			logger.info("send message success. topic: {}, tags: {}, sendResult: {}", message.getTopic(), message.getTag(), sendResult);
+		}
 		for(ProducerListener<Message> listener : listeners){
 			listener.afterSendMessage(message, sendResult);
 		}
@@ -50,6 +53,9 @@ public class ONSProducerListenerComposite implements InitializingBean, ProducerL
 
 	@Override
 	public void onSendMessageError(Message message, Throwable throable) {
+		if(logger.isErrorEnabled()){
+			logger.error("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
+		}
 		for(ProducerListener<Message> listener : listeners){
 			listener.onSendMessageError(message, throable);
 		}

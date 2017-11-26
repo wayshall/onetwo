@@ -68,7 +68,7 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	private ExtJackson2HttpMessageConverter jackson2HttpMessageConverter;
 	
 	@Autowired(required=false)
-	@Qualifier(AsyncMvcConfiguration.TASK_BEAN_NAME)
+	@Qualifier(AsyncMvcConfiguration.MVC_ASYNC_TASK_BEAN_NAME)
 	private AsyncTaskExecutor asyncTaskExecutor;
 	@Autowired(required=false)
 	private MvcAsyncProperties mvcAsyncProperties;
