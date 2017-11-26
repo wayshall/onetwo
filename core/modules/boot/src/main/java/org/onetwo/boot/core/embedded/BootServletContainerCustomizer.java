@@ -42,9 +42,11 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 	connector.setMaxPostSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
                 	Http11NioProtocol handler = (Http11NioProtocol)connector.getProtocolHandler();
                 	if(tomcatProperties.getBacklog()!=-1){
+                		//socket 连接队列大小
                 		handler.setBacklog(tomcatProperties.getBacklog());
                 	}
                 	if(tomcatProperties.getMaxConnections()!=-1){
+                		//最大连接数，默认10000
                 		handler.setMaxConnections(tomcatProperties.getMaxConnections());
                 	}
                 	if(tomcatProperties.getConnectionTimeout()!=-1){

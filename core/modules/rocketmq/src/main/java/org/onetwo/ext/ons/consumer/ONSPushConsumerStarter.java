@@ -137,6 +137,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	@SuppressWarnings("rawtypes")
 	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
 		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
+		final Logger logger = ONSUtils.getONSLogger();
 		rawConsumer.registerMessageListener(new MessageListenerConcurrently() {
 
 			@Override

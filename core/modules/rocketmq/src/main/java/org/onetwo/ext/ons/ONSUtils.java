@@ -1,5 +1,8 @@
 package org.onetwo.ext.ons;
 
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.slf4j.Logger;
+
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageConst;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 
@@ -8,6 +11,11 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message
  * <br/>
  */
 public class ONSUtils {
+	public static final String LOGGER_NAME = "org.onetwo.ext.ons.ONSMessageLog";
+	
+	public static Logger getONSLogger(){
+		return JFishLoggerFactory.getLogger(LOGGER_NAME);
+	}
 	
 	public static String getMessageId(MessageExt message){
 		return message.getProperty(MessageConst.PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX);

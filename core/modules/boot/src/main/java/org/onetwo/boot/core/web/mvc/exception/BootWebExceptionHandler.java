@@ -103,12 +103,13 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		}
 		Exception ex = errorMessage.getException();
 		errorMessage.logErrorContext(logger);
-		if(errorMessage.isDetail()){
+		boolean printDetail = errorMessage.isDetail();
+		if(printDetail){
 			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
 			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
 		}else{
-			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
+			logger.error(msg + "[{}] error: code[{}], message[{}]", handlerMethod, LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
 	}
 

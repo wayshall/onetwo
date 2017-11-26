@@ -3,9 +3,8 @@ package org.onetwo.ext.ons;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.onetwo.ext.alimq.ProducerListener;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -17,7 +16,6 @@ import com.aliyun.openservices.ons.api.SendResult;
  * @author wayshall
  * <br/>
  */
-@Slf4j
 public class ONSProducerListenerComposite implements InitializingBean, ProducerListener<Message> {
 
 	@Autowired(required=false)
@@ -34,7 +32,8 @@ public class ONSProducerListenerComposite implements InitializingBean, ProducerL
 	
 	@Override
 	public void beforeSendMessage(Message message) {
-		log.info("send message topic: {}, tags: {}, messageId: {}", message.getTopic(), message.getTag(), message.getMsgID());
+		final Logger logger = ONSUtils.getONSLogger();
+		logger.info("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
 		for(ProducerListener<Message> listener : listeners){
 			listener.beforeSendMessage(message);
 		}
@@ -42,7 +41,8 @@ public class ONSProducerListenerComposite implements InitializingBean, ProducerL
 	
 	@Override
 	public void afterSendMessage(Message message, SendResult sendResult) {
-		log.info("send message success. sendResult: {}", sendResult);
+		final Logger logger = ONSUtils.getONSLogger();
+		logger.info("send message success. topic: {}, tags: {}, sendResult: {}", message.getTopic(), message.getTag(), sendResult);
 		for(ProducerListener<Message> listener : listeners){
 			listener.afterSendMessage(message, sendResult);
 		}

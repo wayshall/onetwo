@@ -90,7 +90,9 @@ public class DefaultAccessLogger implements AccessLogger {
 			.append("{deletes:[").append(deletes).append("]}").append(seprator)
 			.append("]}");
 		
-		accessLogger.info(buf.toString());
+		if(accessLogger.isInfoEnabled()){
+			accessLogger.info(buf.toString());
+		}
 	}
 	
 	private String buildParametersString(Map<String, String[]> parameters){

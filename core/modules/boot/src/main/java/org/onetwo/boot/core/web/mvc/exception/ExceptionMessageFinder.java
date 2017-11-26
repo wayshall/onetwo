@@ -19,6 +19,7 @@ import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.exception.HeaderableException;
 import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -72,6 +73,9 @@ public interface ExceptionMessageFinder {
 			}
 			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
 			detail = !product;
+			if(ex instanceof ServiceException){
+				detail = ((ServiceException)ex).getCause()!=null;
+			}
 		}else if(BootUtils.isDmbPresent() && DbmException.class.isInstance(ex)){
 //			defaultViewName = ExceptionView.UNDEFINE;
 //			errorCode = JFishErrorCode.ORM_ERROR;//find message from resouce
