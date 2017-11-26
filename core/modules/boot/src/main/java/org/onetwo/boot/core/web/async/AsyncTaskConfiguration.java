@@ -14,21 +14,21 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * <br/>
  */
 @Configuration
-@ConditionalOnProperty(MvcAsyncProperties.ENABLE_KEY)
-@EnableConfigurationProperties(MvcAsyncProperties.class)
-public class AsyncMvcConfiguration {
-	public static final String MVC_ASYNC_TASK_BEAN_NAME = "mvcAsyncTaskExecutor";
+@ConditionalOnProperty(AsyncTaskProperties.ENABLE_KEY)
+@EnableConfigurationProperties(AsyncTaskProperties.class)
+public class AsyncTaskConfiguration {
+	public static final String ASYNC_TASK_BEAN_NAME = "asyncTaskExecutor";
 
 	@Autowired
-	private MvcAsyncProperties mvcAsyncProperties;
+	private AsyncTaskProperties asyncTaskProperties;
 	
-	@Bean(MVC_ASYNC_TASK_BEAN_NAME)
-	@ConditionalOnMissingBean(name=AsyncMvcConfiguration.MVC_ASYNC_TASK_BEAN_NAME)
+	@Bean(ASYNC_TASK_BEAN_NAME)
+	@ConditionalOnMissingBean(name=AsyncTaskConfiguration.ASYNC_TASK_BEAN_NAME)
     public AsyncTaskExecutor mvcAsyncTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(mvcAsyncProperties.getCorePoolSize());
-        executor.setMaxPoolSize(mvcAsyncProperties.getMaxPoolSize());
-        executor.setQueueCapacity(mvcAsyncProperties.getQueueCapacity());
+        executor.setCorePoolSize(asyncTaskProperties.getCorePoolSize());
+        executor.setMaxPoolSize(asyncTaskProperties.getMaxPoolSize());
+        executor.setQueueCapacity(asyncTaskProperties.getQueueCapacity());
         return executor;
     }
 	

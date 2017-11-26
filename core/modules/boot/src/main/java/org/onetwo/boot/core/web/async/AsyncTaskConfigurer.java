@@ -22,7 +22,7 @@ public class AsyncTaskConfigurer implements AsyncConfigurer {
 	@Autowired(required=false)
 	private AsyncUncaughtExceptionHandler asyncUncaughtExceptionHandler;
 	@Autowired(required=false)
-	@Qualifier(AsyncMvcConfiguration.ASYNC_TASK_BEAN_NAME)
+	@Qualifier(AsyncTaskConfiguration.ASYNC_TASK_BEAN_NAME)
 	private Executor executor;
 
 	@Override

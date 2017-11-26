@@ -65,7 +65,8 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/spring</module>
+                <module>modules/boot</module>
+                <module>modules/rocketmq</module>
 	  	</modules>
         <build>
             <plugins>
