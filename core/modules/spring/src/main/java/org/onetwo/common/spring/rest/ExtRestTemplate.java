@@ -126,8 +126,8 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	@Override
 	protected <T> T doExecute(URI url, HttpMethod method, RequestCallback requestCallback, ResponseExtractor<T> responseExtractor) throws RestClientException {
-		if(logger.isInfoEnabled()){
-			logger.info("actual rest request: {} - {}", method, url);
+		if(logger.isDebugEnabled()){
+			logger.debug("actual rest request: {} - {}", method, url);
 		}
 		return super.doExecute(url, method, requestCallback, responseExtractor);
 	}
