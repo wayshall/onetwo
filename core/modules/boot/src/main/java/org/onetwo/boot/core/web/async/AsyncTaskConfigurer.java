@@ -6,15 +6,12 @@ import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 
 /**
  * @author wayshall
  * <br/>
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
 public class AsyncTaskConfigurer implements AsyncConfigurer {
 	
 	private SimpleAsyncUncaughtExceptionHandler defaultUncaughtExceptionHandler = new SimpleAsyncUncaughtExceptionHandler();
