@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.web.mvc.log;
 
+import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,6 +30,7 @@ public class AccessLogConfiguration {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean(BootMvcConfigurerAdapter.class)//BootMvcConfigurerAdapter已有类似的注册机制，避免重复注册
 	public AccessLogInterceptorConfigurerAdapter accessLogInterceptorConfigurerAdapter(){
 		AccessLogInterceptorConfigurerAdapter adapter = new AccessLogInterceptorConfigurerAdapter();
 		return adapter;
