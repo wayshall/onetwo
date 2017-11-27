@@ -21,7 +21,6 @@ import org.onetwo.boot.core.web.mvc.BootWebMvcRegistrations;
 import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
-import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
@@ -265,13 +264,6 @@ public class BootWebCommonAutoConfig {
 		return fs;
 	}
 	
-
-	@Bean
-	@ConditionalOnMissingBean(LoggerInterceptor.class)
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_MVC_LOGGER_INTERCEPTOR, matchIfMissing=true, havingValue="true")
-	public LoggerInterceptor loggerInterceptor(){
-		return new LoggerInterceptor();
-	}
 	
 	@Configuration
 	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_GRACEKILL, matchIfMissing=true, havingValue="true")

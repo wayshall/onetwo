@@ -28,7 +28,7 @@ public class BootJFishConfig {
 	public static final String ENABLE_CORSFILTER = "jfish.corsfilter.enabled";
 	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = "jfish.dynamic.loggerLevel";
 	public static final String ENABLE_DYNAMIC_SETTING = "jfish.dynamic.setting";
-	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = "jfish.mvc.loggerInterceptor";
+//	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = "jfish.mvc.loggerInterceptor";
 //	public static final String VALUE_AUTO_CONFIG_WEB_UI = "web-ui";
 //	public static final String VALUE_AUTO_CONFIG_WEB_MS = "web-ms";
 //	public static final String VALUE_AUTO_CONFIG_DISABLED = "disabled";
@@ -57,7 +57,7 @@ public class BootJFishConfig {
 	 * option: web, ms
 	 */
 //	private String autoConfig;
-	private GraceKill graceKill = new GraceKill();
+	private GraceKillConfig graceKill = new GraceKillConfig();
 	
 	@Data
 	public class MessageSourceConfig {
@@ -110,7 +110,7 @@ public class BootJFishConfig {
 	}
 	
 	@Data
-	public class GraceKill {
+	public class GraceKillConfig {
 		Collection<String> signals;
 	}
 }

@@ -59,9 +59,6 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	private BootSiteConfig siteConfig;
 
 	@Autowired
-	private List<HandlerInterceptor> interceptorList;
-
-	@Autowired
 	private List<HandlerMethodArgumentResolver> argumentResolverList;
 	
 	@Autowired(required=false)
@@ -72,13 +69,36 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	private AsyncTaskExecutor asyncTaskExecutor;
 	@Autowired(required=false)
 	private MvcAsyncProperties mvcAsyncProperties;
+
+	@Autowired
+	private List<HandlerInterceptor> interceptorList;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(bootWebExceptionResolver);
     }
-	
 
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		/*Optional.ofNullable(interceptorList).ifPresent(list->{
+			list.stream().forEach(inter->registry.addInterceptor(inter));
+		});*/
+		if(LangUtils.isEmpty(interceptorList)){
+			return ;
+		}
+		for(HandlerInterceptor inter : interceptorList){
+			InterceptorRegistration reg = registry.addInterceptor(inter);
+			if(inter instanceof WebInterceptorAdapter){
+				WebInterceptorAdapter webinter = (WebInterceptorAdapter) inter;
+				if(LangUtils.isEmpty(webinter.getPathPatterns())){
+					continue;
+				}
+				reg.addPathPatterns(webinter.getPathPatterns());
+			}
+		}
+//		registry.addInterceptor(new BootFirstInterceptor());
+	}
+	
 	@Override
 	public void configureAsyncSupport(AsyncSupportConfigurer configurer){
 		if(asyncTaskExecutor!=null){
@@ -113,26 +133,6 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 		}
 	}
 	
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		/*Optional.ofNullable(interceptorList).ifPresent(list->{
-			list.stream().forEach(inter->registry.addInterceptor(inter));
-		});*/
-		if(LangUtils.isEmpty(interceptorList)){
-			return ;
-		}
-		for(HandlerInterceptor inter : interceptorList){
-			InterceptorRegistration reg = registry.addInterceptor(inter);
-			if(inter instanceof WebInterceptorAdapter){
-				WebInterceptorAdapter webinter = (WebInterceptorAdapter) inter;
-				if(LangUtils.isEmpty(webinter.getPathPatterns())){
-					continue;
-				}
-				reg.addPathPatterns(webinter.getPathPatterns());
-			}
-		}
-//		registry.addInterceptor(new BootFirstInterceptor());
-	}
 
 	@Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {

@@ -29,6 +29,7 @@ public final class RequestUtils {
 	
 	final static private Logger logger = LoggerFactory.getLogger(RequestUtils.class);
 	
+	public static final String UNKNOWN = "unknown";
 	public static final String HTTP_KEY = "http://";
 	public static final String HTTPS_KEY = "https://";
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
@@ -125,19 +126,23 @@ public final class RequestUtils {
 
 		String ip = request.getHeader("X-Real-IP");
 		
-		if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("x-forwarded-for");
+		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
+			ip = request.getHeader("X-Forwarded-For");
+		}
+		
+		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
+			ip = request.getHeader("X-Forwarded-Host");//
 		}
 
-		if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
+		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
 
-		if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
+		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("WL-Proxy-Client-IP");
 		}
 
-		if (StringUtils.isBlank(ip)|| "unknown".equalsIgnoreCase(ip)) {
+		if (StringUtils.isBlank(ip)|| UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
 

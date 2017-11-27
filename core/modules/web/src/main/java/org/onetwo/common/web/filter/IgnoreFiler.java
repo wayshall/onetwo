@@ -16,7 +16,6 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.PostfixMatcher;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
 
 
@@ -124,7 +123,7 @@ public abstract class IgnoreFiler implements Filter{
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 		HttpServletRequest request = wrapRequest(servletRequest);
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
-		WebContextUtils.initRequestInfo(request);
+//		WebContextUtils.initRequestInfo(request);
 
 		/*if(!filterSuffix){
 			filterChain.doFilter(request, response);

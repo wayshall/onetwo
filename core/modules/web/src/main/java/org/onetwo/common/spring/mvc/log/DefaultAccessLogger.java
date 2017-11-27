@@ -16,8 +16,10 @@ public class DefaultAccessLogger implements AccessLogger {
 	public static final String LOGGER_KEY = "accessLogger";
 	private Logger accessLogger;
 	private String loggerName;
-	private String seprator;
-	private boolean debug;
+	private String seprator = " ";
+	private boolean logChangedDatas;
+	private boolean logControllerDatas;
+//	private boolean debug;
 	
 
 	public DefaultAccessLogger() {
@@ -28,14 +30,14 @@ public class DefaultAccessLogger implements AccessLogger {
 		this.loggerName = loggerName;
 	}
 
-	public void setDebug(boolean debug) {
-		this.debug = debug;
+	public void setLogControllerDatas(boolean logControllerDatas) {
+		this.logControllerDatas = logControllerDatas;
+	}
+	public void setLogChangedDatas(boolean logChangedDatas) {
+		this.logChangedDatas = logChangedDatas;
 	}
 	@Override
 	public void initLogger() {
-		if(this.seprator==null){
-			this.seprator = debug?"\n":" ";
-		}
 		accessLogger = createAccessLoggerLogger();// JFishLoggerFactory.getLogger(LOGGER_KEY);
 		Assert.notNull(accessLogger, "accessLogger not null");
 	}
@@ -49,46 +51,53 @@ public class DefaultAccessLogger implements AccessLogger {
 	
 	@Override
 	public void logOperation(OperatorLogInfo data){
-		StringBuilder inserts = new StringBuilder();
-		StringBuilder deletes = new StringBuilder();
-		StringBuilder updates = new StringBuilder();
+//		ToStringBuilder buf = new ToStringBuilder(data, ToStringStyle.MULTI_LINE_STYLE);
+		StringBuilder buf = new StringBuilder(300);
+		buf.append("{").append(seprator)
+			.append("url:").append(data.getUrl()).append(",").append(seprator)
+			.append("executedTimeInMillis:").append(data.getExecutedTimeInMillis()).append(",").append(seprator)
+			.append("operatorId:").append(data.getOperatorId()).append(",").append(seprator)
+			.append("operatorName:").append(data.getOperatorName()).append(",").append(seprator)
+			.append("success:").append(data.isSuccess()).append(",").append(seprator)
+			.append("message:").append(data.getMessage()).append(",").append(seprator)
+			.append("remoteAddr:").append(data.getRemoteAddr()).append(",").append(seprator);
 		
-		if(data.getDatas()!=null && data.getDatas().getChangedList()!=null){
-			for(EntityState state : data.getDatas().getChangedList()){
-				String str = buildString(state);
-				switch (state.getOperationType()) {
-				case INSERT:
-					inserts.append(str).append(", ");
-					break;
-				case UPDATE:
-					updates.append(str).append(", ");
-					break;
-				case DELETE:
-					deletes.append(str).append(", ");
-					break;
-				default:
-					break;
+		if(logControllerDatas){
+			buf.append("params:").append(buildParametersString(data.getParameters())).append(",").append(seprator)
+				.append("webHandler:").append(data.getWebHandler()).append(",").append(seprator);
+		}
+			
+		if(logChangedDatas){
+			StringBuilder changedBuf = new StringBuilder(100);
+			StringBuilder inserts = new StringBuilder();//最少14
+			StringBuilder deletes = new StringBuilder();
+			StringBuilder updates = new StringBuilder();
+			
+			if(data.getDatas()!=null && data.getDatas().getChangedList()!=null){
+				for(EntityState state : data.getDatas().getChangedList()){
+					String str = buildString(state);
+					switch (state.getOperationType()) {
+					case INSERT:
+						inserts.append(str).append(", ");
+						break;
+					case UPDATE:
+						updates.append(str).append(", ");
+						break;
+					case DELETE:
+						deletes.append(str).append(", ");
+						break;
+					default:
+						break;
+					}
 				}
 			}
+			changedBuf.append("changedDatas:[").append(seprator)
+				.append("{inserts:[").append(inserts).append("]},").append(seprator)
+				.append("{updates:[").append(updates).append("]},").append(seprator)
+				.append("{deletes:[").append(deletes).append("]}").append(seprator)
+				.append("]}");
+			buf.append(changedBuf);
 		}
-		
-//		ToStringBuilder buf = new ToStringBuilder(data, ToStringStyle.MULTI_LINE_STYLE);
-		StringBuilder buf = new StringBuilder();
-		buf.append("{").append(seprator)
-			.append("webHandler:").append(data.getWebHandler()).append(", ").append(seprator)
-			.append("executedTimeInMillis:").append(data.getExecutedTimeInMillis()).append(", ").append(seprator)
-			.append("operatorId:").append(data.getOperatorId()).append(", ").append(seprator)
-			.append("operatorName:").append(data.getOperatorName()).append(", ").append(seprator)
-			.append("success:").append(data.isSuccess()).append(", ").append(seprator)
-			.append("message:").append(data.getMessage()).append(", ").append(seprator)
-			.append("url:").append(data.getUrl()).append(", ").append(seprator)
-			.append("remoteAddr:").append(data.getRemoteAddr()).append(", ").append(seprator)
-			.append("params:").append(buildParametersString(data.getParameters())).append(", ").append(seprator)
-			.append("changedDatas:[").append(seprator)
-			.append("{inserts:[").append(inserts).append("]},").append(seprator)
-			.append("{updates:[").append(updates).append("]},").append(seprator)
-			.append("{deletes:[").append(deletes).append("]}").append(seprator)
-			.append("]}");
 		
 		if(accessLogger.isInfoEnabled()){
 			accessLogger.info(buf.toString());
@@ -140,6 +149,9 @@ public class DefaultAccessLogger implements AccessLogger {
 	}
 	public void setLoggerName(String loggerName) {
 		this.loggerName = loggerName;
+	}
+	public void setSeprator(String seprator) {
+		this.seprator = seprator;
 	}
 	
 }

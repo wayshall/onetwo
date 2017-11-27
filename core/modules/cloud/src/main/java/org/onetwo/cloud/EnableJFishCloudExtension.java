@@ -5,7 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.onetwo.cloud.core.BootCloudConfigration;
 import org.onetwo.cloud.feign.ExtFeignConfiguration;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
@@ -16,7 +15,7 @@ import org.springframework.context.annotation.Import;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import({BootCloudConfigration.class})
+@Import({EnableJFishCloudExtensionSelector.class})
 @EnableFeignClients(defaultConfiguration=ExtFeignConfiguration.class)
 public @interface EnableJFishCloudExtension {
 }

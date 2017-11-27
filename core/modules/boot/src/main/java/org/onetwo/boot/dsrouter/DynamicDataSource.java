@@ -75,7 +75,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource implements Init
 			BeanPropertiesMapper mapper = new BeanPropertiesMapper(props, null);
 			mapper.mapToObject(ds);
 			targetDataSources.put(key, ds);
-			if(props.getBoolean("default", false)){
+			if(props.getBoolean("default", false)){//是否作为默认数据源
 				dsHouder.setValue(ds);
 			}
 		});
