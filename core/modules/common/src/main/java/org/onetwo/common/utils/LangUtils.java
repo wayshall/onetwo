@@ -1731,4 +1731,8 @@ public class LangUtils {
 			return Optional.empty();
 		}
 	}
+	
+	public static String getOsName(){
+		return System.getProperties().getProperty("os.name", "");
+	}
 }

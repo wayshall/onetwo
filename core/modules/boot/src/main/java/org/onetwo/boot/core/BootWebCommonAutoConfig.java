@@ -11,6 +11,8 @@ import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
+import org.onetwo.boot.core.shutdown.BootGraceKillProcessor;
+import org.onetwo.boot.core.shutdown.GraceKillSignalHandler;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
@@ -45,6 +47,7 @@ import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.web.multipart.MultipartResolver;
@@ -268,5 +271,20 @@ public class BootWebCommonAutoConfig {
 	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_MVC_LOGGER_INTERCEPTOR, matchIfMissing=true, havingValue="true")
 	public LoggerInterceptor loggerInterceptor(){
 		return new LoggerInterceptor();
+	}
+	
+	@Configuration
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_GRACEKILL, matchIfMissing=true, havingValue="true")
+	protected static class GraceKillConfiguration {
+		@Bean
+		public GraceKillSignalHandler graceKillSignalHandler(){
+			return new GraceKillSignalHandler();
+		}
+		
+		@Bean
+		@ConditionalOnMissingBean(BootGraceKillProcessor.class)
+		public BootGraceKillProcessor bootGraceKillProcessor(){
+			return new BootGraceKillProcessor();
+		}
 	}
 }

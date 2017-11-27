@@ -18,6 +18,12 @@ public class JFishLoggerFactory {
 	
 	private static final String MAIL_LOGGER = "mailLogger";
 	
+	public static final String COMMON_LOGGER_NAME = "org.onetwo.common.log.CommonLog";
+	
+	public static Logger getCommonLogger(){
+		return getLogger(COMMON_LOGGER_NAME);
+	}
+	
 	public static Logger logger(Class<?> clazz){
 		return instance.getLoggerInst(clazz);
 	}

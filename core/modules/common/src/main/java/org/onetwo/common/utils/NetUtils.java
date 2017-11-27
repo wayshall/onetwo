@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 
+import org.onetwo.common.log.JFishLoggerFactory;
+
 public class NetUtils {
 	public static final String LOCAL_IP = "127.0.0.1";
 
@@ -12,6 +14,14 @@ public class NetUtils {
 	}
 	public static String getHostName(){
 		return getInetAddress().map(i->i.getHostName()).orElse(LOCAL_IP);
+	}
+	public static InetAddress getInetAddress(String address, InetAddress def){
+		try {
+			return InetAddress.getByName(address);
+		} catch (UnknownHostException e) {
+			JFishLoggerFactory.getCommonLogger().error(NetUtils.class.getSimpleName()+".getInetAddress UnknownHost: "+address);
+			return def;
+		}
 	}
 
 	public static Optional<InetAddress> getInetAddress(){

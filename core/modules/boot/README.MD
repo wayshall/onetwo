@@ -4,6 +4,11 @@
 交流群：  604158262
 
 
+### 优雅退出支持
+jfish: 
+	graceKill: 
+		enabled: true
+kill -12 pid
 
 ### 其它一些简化使用的扩展
 

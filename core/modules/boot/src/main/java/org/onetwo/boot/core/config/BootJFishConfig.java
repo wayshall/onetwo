@@ -1,6 +1,7 @@
 package org.onetwo.boot.core.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -21,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix="jfish")
 @Data
 public class BootJFishConfig {
+	public static final String ENABLE_GRACEKILL = "jfish.graceKill.enabled";
 	public static final String ENABLE_SWAGGER = "jfish.swagger.enabled";
 	
 	public static final String ENABLE_CORSFILTER = "jfish.corsfilter.enabled";
@@ -55,6 +57,7 @@ public class BootJFishConfig {
 	 * option: web, ms
 	 */
 //	private String autoConfig;
+	private GraceKill graceKill = new GraceKill();
 	
 	@Data
 	public class MessageSourceConfig {
@@ -104,5 +107,10 @@ public class BootJFishConfig {
 			List<String> packages;
 		}*/
 		
+	}
+	
+	@Data
+	public class GraceKill {
+		Collection<String> signals;
 	}
 }
