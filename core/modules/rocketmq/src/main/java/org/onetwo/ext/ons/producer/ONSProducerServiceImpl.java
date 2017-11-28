@@ -1,15 +1,14 @@
 package org.onetwo.ext.ons.producer;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
+import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.SendMessageErrorHandler;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProducerListenerComposite;
@@ -36,7 +35,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private SendMessageErrorHandler<SendResult> errorHandler = null;
-	private MessageSerializer messageSerializer = msg->SerializationUtils.serialize((Serializable)msg);
+	private MessageSerializer messageSerializer;
 
 	private ONSProperties onsProperties;
 	private String producerId;
@@ -61,7 +60,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		this.producerId = producerId;
 	}
 
-	@Autowired(required=false)
+	@Autowired
 	public void setMessageSerializer(MessageSerializer messageSerializer) {
 		this.messageSerializer = messageSerializer;
 	}
@@ -70,6 +69,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	public void afterPropertiesSet() throws Exception {
 		Assert.hasText(producerId);
 		Assert.notNull(onsProperties);
+		Assert.notNull(messageSerializer);
 		
 		Properties producerProperties = onsProperties.baseProperties();
 		Properties customProps = onsProperties.getProducers().get(producerId);
@@ -111,6 +111,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		return sendMessage(onsMessage, errorHandler);
 	}
 	
+	
 	@Override
 	public SendResult sendMessage(SimpleMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler){
 		Message message = onsMessage.toMessage();
@@ -122,7 +123,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		
 		Object body = onsMessage.getBody();
 		if(needSerialize(body)){
-			message.setBody(this.messageSerializer.serialize(onsMessage.getBody()));
+			message.setBody(this.messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
 		}else{
 			message.setBody((byte[])body);
 		}

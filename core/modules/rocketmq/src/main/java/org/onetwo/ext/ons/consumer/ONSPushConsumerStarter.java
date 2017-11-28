@@ -157,7 +157,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 						logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
 						
 //						Object body = consumer.deserialize(message);
-						Object body = messageDeserializer.deserialize(message.getBody());
+						Object body = messageDeserializer.deserialize(message.getBody(), message);
 						currentConetxt = ConsumContext.builder()
 														.messageId(msgId)
 														.message(message)
@@ -167,13 +167,14 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 						consumerListenerComposite.beforeConsumeMessage(currentConetxt);
 						consumer.doConsume(currentConetxt);
 						consumerListenerComposite.afterConsumeMessage(currentConetxt);
-						logger.info("consumed message. id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
+						logger.info("consumed message. id: {}, topic: {}, tag: {}, body: {}", msgId,  message.getTopic(), message.getTags(), body);
 					}
 				} catch (Exception e) {
 					String errorMsg = "consume message error.";
 					if(currentConetxt!=null){
 						consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
-						errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+", tag: "+currentConetxt.getMessage().getTags();
+						errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+
+										", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
 					}
 					logger.error(errorMsg, e);
 					return ConsumeConcurrentlyStatus.RECONSUME_LATER;

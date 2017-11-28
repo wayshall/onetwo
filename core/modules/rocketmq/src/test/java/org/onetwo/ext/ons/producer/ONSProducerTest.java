@@ -1,6 +1,10 @@
 package org.onetwo.ext.ons.producer;
 
-import org.apache.commons.lang3.SerializationUtils;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onetwo.ext.alimq.SimpleMessage;
@@ -36,7 +40,10 @@ public class ONSProducerTest {
 																	  .topic(TOPIC)
 																	  .tags(ORDER_PAY)
 																	  .key("1")
-																	  .body(SerializationUtils.serialize("订单支付"))
+																	  .body(OrderTestMessage.builder()
+																			  				.orderId(1L)
+																			  				.title("支付")
+																			  				.build())
 																	  .build());
 		System.out.println("res: " + res);
 		
@@ -44,7 +51,10 @@ public class ONSProducerTest {
 				  .topic(TOPIC)
 				  .tags(ORDER_CANCEL)
 				  .key("1")
-				  .body(SerializationUtils.serialize("订单取消"))
+				  .body(OrderTestMessage.builder()
+			  				.orderId(1L)
+			  				.title("取消")
+			  				.build())
 				  .build());
 		System.out.println("res: " + res);
 //		LangUtils.CONSOLE.exitIf("test");
@@ -52,7 +62,16 @@ public class ONSProducerTest {
 	
 	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
 	@Configuration
-	@PropertySource("classpath:ons.properties")
+	@PropertySource("classpath:ons-test.properties")
 	public static class ProducerTestContext {
+	}
+	
+	@Data
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class OrderTestMessage {
+		Long orderId;
+		String title;
 	}
 }

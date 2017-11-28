@@ -65,7 +65,7 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/boot</module>
+                <module>modules/cloud</module>
 	  	</modules>
         <build>
             <plugins>

@@ -27,7 +27,7 @@ public class ONSConsumerTest {
 	
 	@EnableONSClient
 	@Configuration
-	@PropertySource("classpath:ons.properties")
+	@PropertySource("classpath:ons-test.properties")
 	@ComponentScan
 	public static class ConsumerTestContext {
 		@Bean
