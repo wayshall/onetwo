@@ -3,6 +3,7 @@
 基于spring boot的快速开发框架   
 交流群：  604158262
 
+## 配置
 
 ### webapi配置
 使用了@WebApi注解的controller，会被自动加上"/api"前缀

@@ -42,8 +42,11 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 		this.statusCode = exceptionType.getStatusCode();
 	}
 
+	public ApiClientException(String message, String code) {
+		super(message);
+		this.code = code;
+	}
 
-	
 	final protected void initErrorCode(String code){
 		if(StringUtils.isNotBlank(code))
 			this.code = code;//appendBaseCode(code);

@@ -16,6 +16,9 @@ import org.springframework.util.ClassUtils;
 final public class BootUtils {
 	private static final Logger logger = JFishLoggerFactory.getLogger(BootUtils.class);
 	
+
+	private static final boolean isHystrixErrorPresent = ClassUtils.isPresent("com.netflix.hystrix.exception.HystrixRuntimeException", null);
+	
 	public static final int WEBAPP_INITIALIZER_ORDER = -1000;
 //	private static final Locale DEFAULT_LOCAL = Locale.CHINA;
 	
@@ -23,6 +26,10 @@ final public class BootUtils {
 	private BootUtils(){
 	}
 	
+	public static boolean isHystrixErrorPresent() {
+		return isHystrixErrorPresent;
+	}
+
 	public static boolean isDmbPresent(){
 		return ClassUtils.isPresent("org.onetwo.dbm.spring.DbmSpringConfiguration", ClassUtils.getDefaultClassLoader());
 	}

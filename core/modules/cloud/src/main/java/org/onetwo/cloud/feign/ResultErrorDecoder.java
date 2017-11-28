@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,7 @@ public class ResultErrorDecoder implements ErrorDecoder {
 				SimpleDataResult<Object> result = extractor.extractData(new FeignResponseAdapter(response));
 				log.error("error code: {}, result: {}", response.status(), result);
 				//防止普通异常也被熔断,if not convert as HystrixBadRequestException and fallback also throws error, it will be enabled short-circuited get "Hystrix circuit short-circuited and is OPEN" when client frequently invoke
-				return new HystrixBadRequestException(result.getMessage());
+				return new HystrixBadRequestException(result.getMessage(), new ServiceException(result.getMessage(), result.getCode()));
 			} catch (IOException e) {
 				throw new BaseException("error feign response : " + e.getMessage(), e);
 			}

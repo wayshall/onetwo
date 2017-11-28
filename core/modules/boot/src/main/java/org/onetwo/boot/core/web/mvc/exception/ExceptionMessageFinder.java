@@ -42,7 +42,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
  */
 public interface ExceptionMessageFinder {
 
-	default ErrorMessage getErrorMessage(Exception ex, boolean product){
+	default ErrorMessage getErrorMessage(Exception throwable, boolean product){
 		String errorCode = "";
 		String errorMsg = "";
 		Object[] errorArgs = null;
@@ -50,9 +50,16 @@ public interface ExceptionMessageFinder {
 //		String defaultViewName = ExceptionView.UNDEFINE;
 		boolean detail = true;
 //		boolean authentic = false;
-		ErrorMessage error = new ErrorMessage(ex);
+		ErrorMessage error = new ErrorMessage(throwable);
 		
 		boolean findMsgByCode = true;
+
+		Exception ex = throwable;
+		//内部调用失败
+		if(isInternalError(ex)){
+			ex = LangUtils.getCauseException(ex, ServiceException.class);
+		}
+		
 		/*if(ex instanceof MaxUploadSizeExceededException){
 			defaultViewName = ExceptionView.UNDEFINE;
 			errorCode = MAX_UPLOAD_SIZE_ERROR;//MvcError.MAX_UPLOAD_SIZE_ERROR;
@@ -176,7 +183,11 @@ public interface ExceptionMessageFinder {
 	}
 	
 	default boolean isInternalError(Exception ex){
-		return "com.netflix.hystrix.exception.HystrixRuntimeException".equals(ex.getClass().getName());
+		if(BootUtils.isHystrixErrorPresent()){
+			String name = ex.getClass().getName();
+			return name.endsWith("HystrixRuntimeException") || name.endsWith("HystrixBadRequestException");
+		}
+		return false;
 	}
 	
 	default Locale getLocale(){
