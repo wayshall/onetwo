@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.exception.ServiceException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.http.HttpEntity;
@@ -46,7 +47,7 @@ public class ExtResponseEntityDecoder implements Decoder {
 			SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 			if(dr.isError()){
 //				throw new ServiceException(dr.getMessage(), dr.getCode());
-				throw new HystrixBadRequestException(dr.getMessage());
+				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 			}
 			res = dr.getData();
 		}
