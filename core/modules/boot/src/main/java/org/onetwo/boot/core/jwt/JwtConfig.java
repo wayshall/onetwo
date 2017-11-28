@@ -40,4 +40,8 @@ public class JwtConfig {
 		return key;
 	}
 	
+	public String getAuthHeader(){
+		return authHeader;
+	}
+	
 }

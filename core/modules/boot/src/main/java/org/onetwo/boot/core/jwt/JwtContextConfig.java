@@ -23,7 +23,9 @@ public class JwtContextConfig {
 	@Bean
 	@ConditionalOnMissingBean(JwtMvcInterceptor.class)
 	public JwtMvcInterceptor jwtMvcInterceptor(){
-		return new JwtMvcInterceptor();
+		JwtMvcInterceptor interceptor = new JwtMvcInterceptor();
+		interceptor.setAuthHeaderName(jfishConfig.getJwt().getAuthHeader());
+		return interceptor;
 	}
 	
 	@Bean
@@ -36,13 +38,13 @@ public class JwtContextConfig {
 	
 	@Bean
 	public JwtUserDetailArgumentResolver jwtUserDetailArgumentResolver(){
-		return new JwtUserDetailArgumentResolver();
+		return new JwtUserDetailArgumentResolver(jfishConfig.getJwt().getAuthHeader());
 	}
 
 
 	@Bean
 	@ConditionalOnMissingBean(JwtSessionUserManager.class)
 	public SessionUserManager<UserDetail> sessionUserManager(){
-		return new JwtSessionUserManager();
+		return new JwtSessionUserManager(jfishConfig.getJwt().getAuthHeader());
 	}
 }
