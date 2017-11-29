@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class RestExecutorConfig {
-	int connectTimeout = 60_000;
-	int readTimeout = 60_000;
-	int writeTimeout = 60_000;
+	int connectTimeout = 50_000;
+	int readTimeout = 50_000;
+	int writeTimeout = 50_000;
 }

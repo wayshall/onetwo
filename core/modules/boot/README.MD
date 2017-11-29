@@ -122,6 +122,15 @@ jfish:
                 username: 
                 password: 
 ```
+### apiclient配置
+当使用@EnableRestApiClient 激活apiclient模块时，可以配置如下选项：
+```yaml
+jfish: 
+	apiclient: 
+		connectTimeout:
+		readTimeout: 
+		writeTimeout: 
+```
 
 ### 优雅退出支持
 ```yaml
