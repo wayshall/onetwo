@@ -16,7 +16,7 @@ public class FixFeignClientsHandlerMapping extends ExtRequestMappingHandlerMappi
 
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
-		//避免springmvc 把client扫描到controller注册
+		//避免springmvc 把抽象出来的带有RequestMapping注解的client接口扫描到controller注册
 		if(BootCloudUtils.isNetflixFeignClientPresent() && AnnotatedElementUtils.hasAnnotation(beanType, FeignClient.class)){
 			if(log.isInfoEnabled()){
 				log.info("ignore FeignClient: {}", beanType);

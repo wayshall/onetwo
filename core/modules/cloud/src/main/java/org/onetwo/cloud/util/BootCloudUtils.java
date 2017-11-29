@@ -7,9 +7,11 @@ import org.springframework.util.ClassUtils;
  * <br/>
  */
 public class BootCloudUtils {
+	
+	private static final boolean netflixFeignClientPresent = ClassUtils.isPresent("org.springframework.cloud.netflix.feign.FeignClient", ClassUtils.getDefaultClassLoader());
 
 	public static boolean isNetflixFeignClientPresent(){
-		return ClassUtils.isPresent("org.springframework.cloud.netflix.feign.FeignClient", ClassUtils.getDefaultClassLoader());
+		return netflixFeignClientPresent;
 	}
 	
 	private BootCloudUtils(){

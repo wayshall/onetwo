@@ -65,7 +65,8 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/cloud</module>
+                <module>modules/common</module>
+                <module>modules/rocketmq</module>
 	  	</modules>
         <build>
             <plugins>

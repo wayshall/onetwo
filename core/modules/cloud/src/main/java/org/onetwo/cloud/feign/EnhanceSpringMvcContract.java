@@ -4,12 +4,16 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.cloud.netflix.feign.AnnotatedParameterProcessor;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.cloud.netflix.feign.support.SpringMvcContract;
@@ -24,9 +28,12 @@ import feign.MethodMetadata;
  * <br/>
  */
 @Slf4j
-public class EnhanceSpringMvcContract extends SpringMvcContract implements ApplicationContextAware {
+public class EnhanceSpringMvcContract extends SpringMvcContract implements ApplicationContextAware, InitializingBean {
+	private static final String FEIGN_BASE_PATH_TAG = ":";
+	private static final String FEIGN_BASE_PATH_KEY = "jfish.cloud.feign.basePath.";
 
 	private ApplicationContext applicationContext;
+	private RelaxedPropertyResolver relaxedPropertyResolver;
 	
 	public EnhanceSpringMvcContract(List<AnnotatedParameterProcessor> annotatedParameterProcessors) {
 		super(annotatedParameterProcessors);
@@ -38,22 +45,42 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		super(annotatedParameterProcessors, conversionService);
 	}
 
-
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		relaxedPropertyResolver = new RelaxedPropertyResolver(applicationContext.getEnvironment());
+	}
 
 	@Override
 	protected void processAnnotationOnClass(MethodMetadata data, Class<?> clz) {
 		super.processAnnotationOnClass(data, clz);
 		if (clz.isAnnotationPresent(FeignClient.class)) {
 			EnhanceFeignClient classAnnotation = findMergedAnnotation(clz, EnhanceFeignClient.class);
-			if (classAnnotation != null && StringUtils.isNotBlank(classAnnotation.basePath())) {
-				String pathValue = classAnnotation.basePath();
-				pathValue = SpringUtils.resolvePlaceholders(applicationContext, pathValue);
-				if (!pathValue.startsWith("/")) {
-					pathValue = "/" + pathValue;
-				}
-				data.template().insert(0, pathValue);
+			Optional<String> basePathOpt = getFeignBasePath(classAnnotation);
+			if(basePathOpt.isPresent()){
+				data.template().insert(0, basePathOpt.get());
 			}
 		}
+	}
+	
+	private Optional<String> getFeignBasePath(EnhanceFeignClient classAnnotation){
+		if (classAnnotation == null || StringUtils.isBlank(classAnnotation.basePath())){
+			return Optional.empty();
+		}
+		String pathValue = classAnnotation.basePath();
+		if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
+			pathValue = FEIGN_BASE_PATH_KEY + pathValue.substring(1);
+			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
+		}else if(ExpressionFacotry.DOLOR.isExpresstion(pathValue)){
+			pathValue = SpringUtils.resolvePlaceholders(applicationContext, pathValue);
+		}
+		if(StringUtils.isBlank(pathValue)){
+			return Optional.empty();
+		}
+		if (!pathValue.startsWith("/")) {
+			pathValue = "/" + pathValue;
+		}
+//			data.template().insert(0, pathValue);
+		return Optional.ofNullable(pathValue);
 	}
 
 	@Override
