@@ -2,6 +2,7 @@ package org.onetwo.boot.core;
 
 import javax.annotation.PostConstruct;
 
+import org.onetwo.boot.apiclient.ApiClientConfiguration;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
@@ -58,7 +59,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * @author wayshall
  *
  */
-@Import(DsRouterConfiguration.class)
+@Import({DsRouterConfiguration.class, ApiClientConfiguration.class})
 public class BootWebCommonAutoConfig {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
 	
@@ -263,7 +264,6 @@ public class BootWebCommonAutoConfig {
 		fs.setAppContextDir(config.getAppContextDir());
 		return fs;
 	}
-	
 	
 	@Configuration
 	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_GRACEKILL, matchIfMissing=true, havingValue="true")
