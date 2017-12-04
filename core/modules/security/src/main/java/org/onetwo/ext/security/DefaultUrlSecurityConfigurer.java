@@ -4,6 +4,7 @@ import java.util.Map.Entry;
 
 import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
+import org.onetwo.ext.security.utils.SecurityConfig.InterceptersConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -37,6 +38,10 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 		
 		for(Entry<String[], String> entry : this.securityConfig.getIntercepterUrls().entrySet()){
 			http.authorizeRequests().antMatchers(entry.getKey()).access(entry.getValue());
+		}
+		
+		for(InterceptersConfig interConfig : this.securityConfig.getIntercepters()){
+			http.authorizeRequests().antMatchers(interConfig.getPathPatterns()).access(interConfig.getAccess());
 		}
 
 //		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);

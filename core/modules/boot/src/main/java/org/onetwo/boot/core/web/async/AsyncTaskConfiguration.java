@@ -21,6 +21,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @ConditionalOnProperty(AsyncTaskProperties.ENABLE_KEY)
 @EnableConfigurationProperties(AsyncTaskProperties.class)
 @ConditionalOnClass(EnableAsync.class)
+@EnableAsync
 public class AsyncTaskConfiguration {
 	public static final String ASYNC_TASK_BEAN_NAME = "asyncTaskExecutor";
 

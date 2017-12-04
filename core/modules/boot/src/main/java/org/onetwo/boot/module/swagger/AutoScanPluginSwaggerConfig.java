@@ -44,7 +44,7 @@ public class AutoScanPluginSwaggerConfig {
     public Docket api(){
     	Set<Predicate<RequestHandler>> packages = Sets.newHashSet();
     	packages.addAll(getPluginBasePackages());
-    	String scanPackageName = getScanPackageName();//ClassUtils.getPackageName(LegoServiceApplication.class);
+    	String scanPackageName = getScanPackageName();//ClassUtils.getPackageName(ServiceApplication.class);
     	if(StringUtils.isNotBlank(scanPackageName)){
     		packages.add(RequestHandlerSelectors.basePackage(scanPackageName));
     	}

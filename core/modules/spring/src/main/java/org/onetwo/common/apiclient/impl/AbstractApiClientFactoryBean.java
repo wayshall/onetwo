@@ -172,8 +172,9 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			invokeMethod.validateArgements(validatorWrapper, args);
 
 			RequestContextData context = createRequestContextData(args, invokeMethod);
-			if(logger.isInfoEnabled()){
-				logger.info("rest url : {} - {}, urlVariables: {}", context.getHttpMethod(), context.getRequestUrl(), context.getUriVariables());
+			//WechatApiClientFactoryBean logger
+			if(logger.isDebugEnabled()){
+				logger.debug("rest url : {} - {}, urlVariables: {}", context.getHttpMethod(), context.getRequestUrl(), context.getUriVariables());
 			}
 			
 			try {

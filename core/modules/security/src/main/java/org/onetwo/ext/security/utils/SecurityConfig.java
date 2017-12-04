@@ -1,5 +1,6 @@
 package org.onetwo.ext.security.utils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +18,7 @@ import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 
 import redis.clients.jedis.JedisPoolConfig;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
@@ -70,6 +72,8 @@ public class SecurityConfig {
 	private JwtConfig jwt = new JwtConfig();
 	
 	private Map<String[], String> intercepterUrls = Maps.newHashMap();
+	private List<InterceptersConfig> intercepters = Lists.newArrayList();
+	
 	private String anyRequest;
 	private boolean ignoringDefautStaticPaths = true;
 	private String[] ignoringUrls;
@@ -265,6 +269,11 @@ public class SecurityConfig {
 		String password = "$2a$10$1Qrdb4WZcn7gDKrTfgJEAOZMOQRiUNWjuPcOmU520nLbrz2wHQlpa";//default is jfish
 		String[] roles;
 		String[] authorities;
+	}
+	@Data
+	public static class InterceptersConfig {
+		String[] pathPatterns;
+		String access;
 	}
 	
 }
