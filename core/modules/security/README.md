@@ -62,6 +62,35 @@ jfish 会自动集成动态rbac的相关配置。
 ## 基于Java代码的权限管理 
 
 
+## 配置
+
+### 完整示例配置
+```yaml
+jfish: 
+    security: 
+        # redirectStrategy: 
+        #    forceHttps: true
+        #    httpsPort: 443
+        csrf: 
+            disable: true
+        loginUrl: ${jfish.security.defaultLoginPage}
+        metadataSource: none #jfish默认会使用database，基于数据库的权限管理，否则设置为none
+        defaultLoginPage: /login #设置security默认登录页路径
+        memoryUsers: #配置基于内存的用户角色
+            admin: #userName
+                roles: ADMIN
+        anyRequest: none
+        alwaysUseDefaultTargetUrl: true
+        afterLoginUrl: http://localhost/user/center #登录成功后跳转
+        intercepters: 
+            -
+                pathPatterns: /authorize/** 
+                access: hasRole('ROLE_ADMIN')
+        jwt: 
+            signingKey: # 随机字符串
+            authStore: COOKIES
+```
+
 **待续。。。**
 
 

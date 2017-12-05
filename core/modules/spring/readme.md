@@ -4,7 +4,9 @@
 
 ## 目录
 - [本地接口风格的 rest client](https://github.com/wayshall/onetwo/tree/master/core/modules/spring#本地接口风格的-rest-client)
-- [工具类](#工具类)
+- [工具类](#工具类)    
+	[复制Bean](#复制Bean)    
+	[bean转成map](#bean转成map)
 
 
 ## 要求
@@ -12,6 +14,19 @@ JDK 1.8+
 spring 4.0+
 
 ## maven
+添加仓储：
+```xml
+<repositories>
+	<repository>
+	     <id>oss</id>
+	     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+	    <snapshots>
+	        <enabled>true</enabled>
+	    </snapshots>
+	</repository> 
+</repositories>
+```
+添加依赖：
 ```xml
 
 <dependency>
@@ -110,7 +125,7 @@ public class WeatherClientTest  {
 ```
 
 ## 工具类
-### BeanCopierBuilder 复制JavaBean
+### 复制Bean
 志在提供一个可定制更灵活的bean复制工具。若
 ```java   
 BeanA src = new BeanA();
@@ -126,7 +141,7 @@ BeanCopierBuilder.fromObject(srcBean)
 		.propertyNameConvertor(CopyUtils.UNDERLINE_CONVERTOR)
 		.to(target);  
 ```
-### BeanToMapBuilder bean转成map
+### bean转成map
 把一个pojo转换为map，其中pojo的属性名作为key，属性值作为对象
 ```java
 Map<String, Object> map = BeanToMapBuilder.newBuilder().build().toMap(obj)   

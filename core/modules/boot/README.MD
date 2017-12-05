@@ -3,6 +3,34 @@
 基于spring boot的快速开发框架   
 交流群：  604158262
 
+## 要求
+JDK 1.8+
+spring 4.0+
+
+## maven
+添加仓储：
+```xml
+<repositories>
+	<repository>
+	     <id>oss</id>
+	     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+	    <snapshots>
+	        <enabled>true</enabled>
+	    </snapshots>
+	</repository> 
+</repositories>
+```
+添加依赖：
+```xml
+
+<dependency>
+    <groupId>org.onetwo4j</groupId>
+    <artifactId>onetwo-spring</artifactId>
+    <version>4.6.1-SNAPSHOT</version>
+</dependency>
+
+```
+
 ## 配置
 
 ### webapi配置

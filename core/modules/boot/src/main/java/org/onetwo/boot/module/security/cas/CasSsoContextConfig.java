@@ -3,6 +3,7 @@ package org.onetwo.boot.module.security.cas;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 @Configuration
 //@Import(RbacSecurityXmlContextConfigSupport.class)
+@ConditionalOnClass(CasAuthenticationFilter.class)
 public class CasSsoContextConfig {
 	
 	@Autowired
