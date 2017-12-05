@@ -24,7 +24,7 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 		return newData;
 	}
 	
-	private DataResult<?> wrapAsDataResultIfNeed(Object result){
+	protected DataResult<?> wrapAsDataResultIfNeed(Object result){
 		if(DataResult.class.isInstance(result)){
 			return (DataResult<?>)result;
 		}

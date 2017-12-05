@@ -98,6 +98,7 @@ public interface ExceptionMessageFinder {
 		}else if(TypeMismatchException.class.isInstance(ex)){
 //			errorCode = SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 			errorMsg = "parameter convert error!";
+			errorCode = SystemErrorCode.ERR_PARAMETER_CONVERT;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}else if(ex instanceof ConstraintViolationException){
 			ConstraintViolationException cex = (ConstraintViolationException) ex;
@@ -111,6 +112,7 @@ public interface ExceptionMessageFinder {
 			errorMsg = ValidatorUtils.asString(br);
 			findMsgByCode = false;
 			detail = false;
+			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}/*else if(ex instanceof ObjectOptimisticLockingFailureException){
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
@@ -122,6 +124,7 @@ public interface ExceptionMessageFinder {
 			errorMsg = ValidatorUtils.asString(br);
 			findMsgByCode = false;
 			detail = false;
+			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}else{
 			errorCode = SystemErrorCode.UNKNOWN;
@@ -129,7 +132,6 @@ public interface ExceptionMessageFinder {
 		}
 		
 		detail = product?detail:true;
-		error.setCode(errorCode);
 //		error.setMesage(errorMsg);
 		error.setDetail(detail);
 		
@@ -137,8 +139,13 @@ public interface ExceptionMessageFinder {
 			errorCode = SystemErrorCode.UNKNOWN;//ex.getClass().getName();
 		}
 
-		errorMsg = findMessage(findMsgByCode, error, errorArgs);
-
+		if(findMsgByCode){
+			errorMsg = findMessage(findMsgByCode, error, errorArgs);
+		}
+		if(StringUtils.isBlank(errorMsg)){
+			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
+		}
+		
 		if(ex instanceof HeaderableException){
 			Optional<HttpServletResponse> reponse = WebHolder.getResponse();
 			HeaderableException he = (HeaderableException)ex;
@@ -150,7 +157,7 @@ public interface ExceptionMessageFinder {
 		}
 		
 //		detail = product?detail:true;
-//		error.setCode(errorCode);
+		error.setCode(errorCode);
 		error.setMesage(errorMsg);
 //		error.setDetail(detail);
 //		error.setViewName(viewName);
@@ -162,23 +169,17 @@ public interface ExceptionMessageFinder {
 		String errorMsg = null;
 		String errorCode = error.getCode();
 		Exception ex = error.getException();
-		if(findMsgByCode){
 //			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
-			if(isInternalError(ex)){
-				//内部调用失败
-				errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
-			}else if(SystemErrorCode.UNKNOWN.equals(errorCode)){
-				errorMsg = findMessageByThrowable(ex, errorArgs);
-			}else{
-				errorMsg = findMessageByErrorCode(errorCode, errorArgs);
-			}
+		if(isInternalError(ex)){
+			//内部调用失败
+			errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
+		}else if(SystemErrorCode.UNKNOWN.equals(errorCode)){
+			errorMsg = findMessageByThrowable(ex, errorArgs);
+		}else{
+			errorMsg = findMessageByErrorCode(errorCode, errorArgs);
+		}
 //			defaultViewName = ExceptionView.CODE_EXCEPTON;
 //			defaultViewName = ExceptionView.UNDEFINE;
-		}
-		
-		if(StringUtils.isBlank(errorMsg)){
-			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
-		}
 		return errorMsg;
 	}
 	

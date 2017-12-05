@@ -68,7 +68,7 @@ abstract public class AbstractBaseController {
 	@Resource
 	private BootSiteConfig bootSiteConfig;
 	
-	@Autowired
+	@Autowired(required=false)
 	private FileStorer<?> fileStorer;
 	
 	@Autowired

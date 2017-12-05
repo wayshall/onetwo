@@ -3,7 +3,6 @@ package org.onetwo.boot.dsrouter;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 /**
  * @author wayshall
@@ -17,7 +16,9 @@ public class HeaderLookupKeyStrategy implements LookupKeyStrategy, InitializingB
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.hasLength(headerName);
+		if(StringUtils.isBlank(headerName)){
+			this.headerName = DEFAULT_HEADER_KEY;
+		}
 	}
 
 	@Override

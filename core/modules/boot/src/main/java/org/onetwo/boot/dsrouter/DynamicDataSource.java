@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
+import org.springframework.util.Assert;
 
 import com.google.common.collect.Maps;
 
@@ -47,6 +48,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource implements Init
 		if(StringUtils.isBlank(lookupStrategy)){
 			this.lookupStrategy = datasourceRouterProperties.getLookupStrategy();
 		}
+		Assert.hasText(lookupStrategy);
 		this.scanDatasources();
 		List<LookupKeyStrategy> strategys = SpringUtils.getBeans(applicationContext, LookupKeyStrategy.class);
 		strategys.forEach(strategy->{

@@ -12,6 +12,8 @@ public interface SystemErrorCode {
 //	public String APP_ERROR_MESSAGE = "appErrorMessage";
 	public String DEFAULT_SYSTEM_ERROR_CODE = "SYSTEM_ERROR";
 	public String UNKNOWN = "UNKNOWN";
+	public String ERR_PARAMETER_VALIDATE = "PARAMETER_VALIDATE_ERROR";
+	public String ERR_PARAMETER_CONVERT = "PARAMETER_CONVERT_ERROR";
 	
 	
 	interface UplaodErrorCode {
