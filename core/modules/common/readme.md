@@ -66,7 +66,8 @@ UserEntity user = ReflectUtils.fromMap(map, UserEntity.class);
 Map<String, Object> map = ReflectUtils.toMap(user);
 
 //更多定制转换规则
-BeanToMapBuilder.newBuilder()																				.propertyAcceptor((p, v)->v!=null) //只有属性值不为null的才转为map
+BeanToMapBuilder.newBuilder()
+				.propertyAcceptor((p, v)->v!=null) //只有属性值不为null的才转为map
 				.enableUnderLineStyle() //把属性的驼峰命名风格转为下划线风格
 				.build()
 				.toMap(user)
