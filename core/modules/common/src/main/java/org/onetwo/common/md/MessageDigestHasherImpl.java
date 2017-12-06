@@ -14,12 +14,12 @@ import com.google.common.base.Charsets;
 public class MessageDigestHasherImpl implements MessageDigestHasher {
 //	public static final String BASE64_POSTFIX = "-B64";
 	
-	private String algorithm;
-	private MessageDigest md;
+	final private String algorithm;
+	final private MessageDigest md;
 	
-	private String charset;
+	final private String charset;
 //	private boolean base64;
-	private int size;
+	final private int size;
 	private CodeType codeType = CodeType.HEX;
 //	private boolean isDev = false;
 	
@@ -43,11 +43,6 @@ public class MessageDigestHasherImpl implements MessageDigestHasher {
 	
 	public int getSize() {
 		return size;
-	}
-
-	
-	public void setCharset(String charset) {
-		this.charset = charset;
 	}
 
 	public void setCodeType(CodeType codeType) {

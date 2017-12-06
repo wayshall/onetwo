@@ -13,6 +13,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.copier.CopyUtils;
@@ -34,6 +35,9 @@ public class SimpleBootCommonService implements BootCommonService {
 	
 	@Autowired(required=false)
 	private ImageCompressor imageCompressor;
+	
+	@Autowired(required=false)
+	private StoreFilePathStrategy storeFilePathStrategy;
 	
 	//少于等于0则一律不压缩
 	private int compressThresholdSize = -1;
@@ -102,6 +106,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		StoringFileContext context = StoringFileContext.create(options.getModule(), 
 																in, 
 																options.getMultipartFile().getOriginalFilename());
+		context.setStoreFilePathStrategy(storeFilePathStrategy);
 		context.setKey(options.getKey());
 		FileStoredMeta meta = fileStorer.write(context);
 		if(fileStorerListener!=null){

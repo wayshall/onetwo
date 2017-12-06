@@ -228,9 +228,14 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		
 		CompressConfig compressImage = new CompressConfig();
 
+		public Integer getResourceCacheInDays() {
+			return resourceCacheInDays;
+		}
+
 		/*public int getMaxUploadSize(){
 			return maxUploadSize;
 		}*/
+		
 	}
 	
 	@Data

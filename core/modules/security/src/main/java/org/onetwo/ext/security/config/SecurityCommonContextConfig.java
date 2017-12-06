@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.util.Assert;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -70,6 +71,7 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	}
 	
 	@Bean
+	@OnMissingBean(AccessDeniedHandler.class)
 	public AccessDeniedHandler ajaxSupportedAccessDeniedHandler(){
 		AjaxSupportedAccessDeniedHandler adh = new AjaxSupportedAccessDeniedHandler();
 		adh.setErrorPage(securityConfig.getErrorPage());
@@ -77,6 +79,7 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	}
 
 	@Bean
+	@OnMissingBean(AjaxAuthenticationHandler.class)
 	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
 		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().getLoginUrl(), 
 																			getSecurityConfig().getAfterLoginUrl(),
@@ -101,6 +104,7 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	}
 	
 	@Bean
+	@OnMissingBean(AuthenticationEntryPoint.class)
 	public AjaxSupportedAuthenticationEntryPoint ajaxSupportedAuthenticationEntryPoint(){
 		AjaxSupportedAuthenticationEntryPoint ep = new AjaxSupportedAuthenticationEntryPoint();
 		ep.setForceHttps(securityConfig.getRedirectStrategy().isForceHttps());
