@@ -14,7 +14,7 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message
 public class JsonMessageDeserializer implements MessageDeserializer {
 	public static final JsonMessageDeserializer INSTANCE = new JsonMessageDeserializer();
 	
-	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
+	private JsonMapper jsonMapper = JsonMapper.ignoreNull();
 
 	@Override
 	public Object deserialize(byte[] body, MessageExt message) {

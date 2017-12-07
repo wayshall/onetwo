@@ -22,6 +22,7 @@ public @interface EnableJFishBootExtension {
 	
 	enum AppcationType {
 		WEB_SERVICE,
-		WEB_UI;
+		WEB_UI,
+		NONE;
 	}
 }

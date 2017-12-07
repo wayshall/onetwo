@@ -2,16 +2,20 @@ package org.onetwo.boot.module.alioss;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.io.input.ReaderInputStream;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
 import com.aliyun.oss.ClientConfiguration;
@@ -126,6 +130,10 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 	public OSSClient getOssClient() {
 		return ossClient;
 	}
+	
+	public void deleteObject(String bucketName, String key){
+		ossClient.deleteObject(bucketName, key);
+	}
 
 	static public class ObjectOperation {
 		private String bucketName;
@@ -174,9 +182,17 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			return store(in, null);
 		}
 		
+		public ObjectOperation storeAsJson(Object object){
+			String json = JsonMapper.DEFAULT_MAPPER.toJson(object);
+			StringReader sr = new StringReader(json);
+			ObjectMetadata meta = new ObjectMetadata();
+			meta.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+			return store(new ReaderInputStream(sr), meta);
+		}
+		
 		public ObjectOperation store(InputStream in, ObjectMetadata meta){
 			Assert.notNull(in);
-			putObject(new PutObjectRequest(bucketName, key, in));
+			putObject(new PutObjectRequest(bucketName, key, in, meta));
 			return this;
 		}
 		
@@ -188,6 +204,11 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			return store(file);
 		}
 		
+		public ObjectOperation delete(){
+			wrapper.deleteObject(bucketName, key);
+			return this;
+		}
+		
 		public ObjectOperation putObject(PutObjectRequest request){
 			storeResult = wrapper.putObject(request);
 			return this;
@@ -195,6 +216,11 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		
 		public ObjectOperation accessPrivate(){
 			access(CannedAccessControlList.Private);
+			return this;
+		}
+		
+		public ObjectOperation accessPublicRead(){
+			access(CannedAccessControlList.PublicRead);
 			return this;
 		}
 		
