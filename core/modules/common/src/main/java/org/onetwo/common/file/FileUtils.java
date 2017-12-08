@@ -42,6 +42,7 @@ import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.propconf.ResourceAdapterImpl;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ClassUtils;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -1372,21 +1373,7 @@ public class FileUtils {
 		return parseSize(size, null);
 	}
 	public static int parseSize(String size, Integer def) {
-		if(StringUtils.isBlank(size)){
-			if(def!=null){
-				return def;
-			}else{
-				Assert.hasLength(size, "Size must not be empty");
-			}
-		}
-		size = size.toUpperCase();
-		if (size.toLowerCase().endsWith("kb")) {
-			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
-		}
-		if (size.toLowerCase().endsWith("mb")) {
-			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
-		}
-		return Integer.valueOf(size);
+		return LangOps.parseSize(size, def);
 	}
 	
     public static byte[] toByteArray(InputStream input) {

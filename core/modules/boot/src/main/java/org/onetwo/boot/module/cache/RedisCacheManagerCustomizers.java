@@ -42,7 +42,7 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 		
 		Map<String, Long> expires = Maps.newHashMap();
 //		expires.putAll(getCacheExpiresFromProviders());
-		expires.putAll(properties.getExpires());
+		expires.putAll(properties.expiresInSeconds());
 		cacheManager.setExpires(expires);
 		//GenericJackson2JsonRedisSerializer
 	}

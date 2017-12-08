@@ -95,12 +95,12 @@ public class RedissonConfiguration {
 				cacheManager = new RedissonSpringCacheManager(redissonClient, springCache.getConfig());
 			}else if(!redisCacheProperties.getExpires().isEmpty()){
 				Map<String, CacheConfig> cacheConfig = Maps.newHashMap();
-				redisCacheProperties.getExpires()
+				redisCacheProperties.expiresInSeconds()
 									.entrySet()
 									.stream()
 									.forEach(entry->{
 										CacheConfig cc = new CacheConfig();
-										cc.setTTL(entry.getValue());
+										cc.setTTL(entry.getValue()*1000);
 										cacheConfig.put(entry.getKey(), cc);
 									});
 				cacheManager = new RedissonSpringCacheManager(redissonClient, cacheConfig);
