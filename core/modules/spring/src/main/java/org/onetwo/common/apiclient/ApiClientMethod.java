@@ -262,21 +262,22 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		}
 
 		@Override
-		public String getParameterName() {
-			String pname = super.getParameterName();
+		public String obtainParameterName() {
+			/*String pname = super.getParameterName();
 			if(StringUtils.isNotBlank(pname)){
 				return pname;
-			}
-			pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElse(null);
+			}*/
+			String pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElse(null);
 			if(StringUtils.isBlank(pname)){
 				pname = getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+
+				if(StringUtils.isBlank(pname) && parameter!=null && parameter.isNamePresent()){
+					pname = parameter.getName();
+				}else{
+					pname = String.valueOf(getParameterIndex());
+				}
 			}
-			if(StringUtils.isBlank(pname) && parameter!=null && parameter.isNamePresent()){
-				pname = parameter.getName();
-			}else{
-				pname = String.valueOf(getParameterIndex());
-			}
-			this.setParameterName(pname);
+//			this.setParameterName(pname);
 			return pname;
 		}
 

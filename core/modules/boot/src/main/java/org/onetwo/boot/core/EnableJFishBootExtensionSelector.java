@@ -13,8 +13,9 @@ import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
 import org.onetwo.boot.core.web.async.AsyncTaskConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
-import org.onetwo.boot.module.cache.RedisCacheConfiguration;
+import org.onetwo.boot.module.cache.SpringCacheConfiguration;
 import org.onetwo.boot.module.redis.RedisConfiguration;
+import org.onetwo.boot.module.redission.RedissonConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.exception.BaseException;
@@ -55,6 +56,10 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		classNames.add(AsyncMvcConfiguration.class.getName());
 		classNames.add(AsyncTaskConfiguration.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
+
+		//cache
+		classNames.add(SpringCacheConfiguration.class.getName());
+		classNames.add(RedissonConfiguration.class.getName());
 		
 		Collection<String> exts = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(this.annotationClass, this.beanClassLoader));
 		for(String extClassName : exts){
@@ -70,9 +75,6 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 			classNames.add(extClassName);
 		}
 		
-		if(attributes.getBoolean("enableCacheExtension")){
-			classNames.add(RedisCacheConfiguration.class.getName());
-		}
 		
 		return classNames;
 	}
