@@ -104,6 +104,7 @@ public class MessageDigestHasherImpl implements MessageDigestHasher {
 	 */
 	public String hash(byte[] source, byte[] salt){
 		byte[] dg = hashAsBytesOnly(source, salt);
+		System.out.println("hash with no salt:"+codeType.encode(dg, charset));
 		boolean hasSalt = (salt!=null && salt.length>0);
 		if(hasSalt){
 			dg = mergeSalt(dg, salt);
@@ -159,10 +160,14 @@ public class MessageDigestHasherImpl implements MessageDigestHasher {
 		hash = decodeBytes[0];
 		byte[] salt = decodeBytes[1];
 		
+		System.out.println("splited hash:"+codeType.encode(hash, charset));
+		
 		if(hash==null)
 			return false;
 		
 		byte[] sourceEncoded = hashAsBytesOnly(getBytes(source), salt);
+		System.out.println("source hash:"+codeType.encode(sourceEncoded, charset));
+		
 		valid = MessageDigest.isEqual(hash, sourceEncoded);
 //		LangUtils.println(isDev, "checkEncrypt end=============================>>>");
 		

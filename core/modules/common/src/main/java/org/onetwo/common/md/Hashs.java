@@ -78,7 +78,7 @@ abstract public class Hashs {
 	
 	public static MessageDigestHasher sha256(boolean withLabel, CodeType codeType){
 		return MessageDigestHasherBuilder.newBuilder("SHA-256")
-				.size(32)
+				.size(32)//32 byte, 256bit
 				.withLabel(withLabel)
 				.codeType(codeType)
 				.build();
@@ -101,7 +101,7 @@ abstract public class Hashs {
 	}
 	public static MessageDigestHasher md5(boolean withLabel, CodeType codeType){
 		return MessageDigestHasherBuilder.newBuilder("MD5")
-										.size(20)
+										.size(16)
 										.withLabel(withLabel)
 										.codeType(codeType)
 										.build();
