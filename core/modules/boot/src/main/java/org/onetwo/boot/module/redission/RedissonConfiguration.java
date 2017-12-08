@@ -7,11 +7,14 @@ import org.onetwo.boot.module.cache.RedisCacheProperties;
 import org.onetwo.boot.module.cache.SpringCacheConfiguration;
 import org.onetwo.boot.module.redission.RedissonProperties.SpringCache;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.propconf.JFishProperties;
+import org.onetwo.common.spring.utils.BeanPropertiesMapper;
 import org.onetwo.common.utils.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.RedisClient;
 import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
 import org.redisson.spring.cache.CacheConfig;
 import org.redisson.spring.cache.RedissonSpringCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +56,18 @@ public class RedissonConfiguration {
 				config = Config.fromJSON(new ClassPathResource(configPath).getInputStream());
 			}else{
 				config = new Config();
-				config.useSingleServer()
-						.setAddress(redissonProperties.getAddress())
-						.setPassword(redissonProperties.getPassword());
+				SingleServerConfig singleConfig = config.useSingleServer()
+														.setAddress(redissonProperties.getAddress())
+														.setPassword(redissonProperties.getPassword());
+				JFishProperties singleServerProperties = redissonProperties.getSingleServer();
+				if(!singleServerProperties.isEmpty()){
+					BeanPropertiesMapper.ignoreNotFoundProperty(singleServerProperties)
+										.ignoreBlankString()
+										.mapToObject(singleConfig);
+				}
 			}
 		} catch (Exception e) {
-			throw new BaseException("read config file error: " + configPath, e);
+			throw new BaseException("read redisson config error: " + configPath, e);
 		}
 		RedissonClient client = Redisson.create(config);
 		return client;

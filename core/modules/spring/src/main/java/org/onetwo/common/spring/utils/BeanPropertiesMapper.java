@@ -5,13 +5,34 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.ConfigurablePropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 
 public class BeanPropertiesMapper {
+	
+	public static enum BeanAccessors {
+		PROPERTY {
+			@Override
+			public ConfigurablePropertyAccessor createAccessor(Object obj) {
+				ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+				accessor.setAutoGrowNestedPaths(true);
+				return accessor;
+			}
+		},
+		FIELD{
+			@Override
+			public ConfigurablePropertyAccessor createAccessor(Object obj) {
+				ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forDirectFieldAccess(obj);
+				accessor.setAutoGrowNestedPaths(true);
+				return accessor;
+			}
+		};
+		
+		abstract public ConfigurablePropertyAccessor createAccessor(Object obj);
+	}
 	
 	public static BeanPropertiesMapper props(Properties config, String prefix, boolean ignoreFoundProperty){
 		return new BeanPropertiesMapper(config, prefix, ignoreFoundProperty);
@@ -26,6 +47,8 @@ public class BeanPropertiesMapper {
 	final private Properties config;
 	final private String prefix;
 	private boolean ignoreNotFoundProperty = false;
+	private BeanAccessors beanAccessors = BeanAccessors.FIELD;
+	private boolean ignoreBlankString;
 	
 	public BeanPropertiesMapper(Properties config, String prefix) {
 		this(config, prefix, false);
@@ -37,15 +60,30 @@ public class BeanPropertiesMapper {
 		this.ignoreNotFoundProperty = ignoreFoundProperty;
 	}
 	
+	public BeanPropertiesMapper ignoreBlankString() {
+		this.ignoreBlankString = true;
+		return this;
+	}
+	
+	public void setIgnoreBlankString(boolean ignoreBlankString) {
+		this.ignoreBlankString = ignoreBlankString;
+	}
+
 	public void mapToObject(Object obj) {
 		Assert.notEmpty(config);
 		boolean hasPrefix = StringUtils.isNotBlank(prefix);
 		
-		BeanWrapper bw = SpringUtils.newBeanWrapper(obj);
+		ConfigurablePropertyAccessor bw = beanAccessors.createAccessor(obj);
 		Enumeration<?> names = config.propertyNames();
 		while(names.hasMoreElements()){
 			String propertyName = names.nextElement().toString();
 			String value = config.getProperty(propertyName);
+			if(value==null){
+				continue;
+			}
+			if(StringUtils.isBlank(value) && ignoreBlankString){
+				continue;
+			}
 			if(hasPrefix){
 				if(propertyName.startsWith(prefix)){
 					propertyName = propertyName.substring(prefix.length());
@@ -58,7 +96,7 @@ public class BeanPropertiesMapper {
 	}
 	
 	
-	protected void setPropertyValue(BeanWrapper bw, String propertyName, Object value){
+	protected void setPropertyValue(ConfigurablePropertyAccessor bw, String propertyName, Object value){
 		if(!bw.isWritableProperty(propertyName)){
 			if(!ignoreNotFoundProperty){
 				throw new NoSuchElementException("no setter found for property: " + propertyName);

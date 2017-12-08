@@ -4,6 +4,7 @@ import java.util.Map;
 
 import lombok.Data;
 
+import org.onetwo.common.propconf.JFishProperties;
 import org.redisson.spring.cache.CacheConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -23,6 +24,7 @@ public class RedissonProperties {
 	String jsonConfig;
 	
 //	SingleServerConfig singleServerConfig = new SingleServerConfig();
+	JFishProperties singleServer = new JFishProperties();
 	
 	//非文件配置的方式，只提供两个配置，方便测试开发
 	String address = "redis://127.0.0.1:6379";
