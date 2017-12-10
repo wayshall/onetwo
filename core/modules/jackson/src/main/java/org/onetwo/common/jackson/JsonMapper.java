@@ -101,6 +101,16 @@ public class JsonMapper {
 		this.typeFactory = this.objectMapper.getTypeFactory();
 	}
 	
+	public JsonMapper disable(SerializationFeature features){
+//		this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		this.objectMapper.disable(features);
+		return this;
+	}
+	public JsonMapper disable(DeserializationFeature features){
+		this.objectMapper.disable(features);
+		return this;
+	}
+	
 	/*public JsonMapper addMixInAnnotations(Class<?> target, Class<?> mixinSource){
 		this.objectMapper.getSerializationConfig().addMixInAnnotations(target, mixinSource);
 		this.objectMapper.getDeserializationConfig().addMixInAnnotations(target, mixinSource);

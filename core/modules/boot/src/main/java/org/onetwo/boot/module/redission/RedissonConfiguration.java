@@ -8,6 +8,7 @@ import org.onetwo.boot.module.cache.SpringCacheConfiguration;
 import org.onetwo.boot.module.redission.RedissonProperties.SpringCache;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.propconf.JFishProperties;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.utils.BeanPropertiesMapper;
 import org.onetwo.common.utils.StringUtils;
 import org.redisson.Redisson;
@@ -68,6 +69,11 @@ public class RedissonConfiguration {
 			}
 		} catch (Exception e) {
 			throw new BaseException("read redisson config error: " + configPath, e);
+		}
+		if(redissonProperties.getCodec()!=null){
+			config.setCodec(ReflectUtils.newInstance(redissonProperties.getCodec()));
+		}else{
+			config.setCodec(new FixJsonJacksonCodec());
 		}
 		RedissonClient client = Redisson.create(config);
 		return client;

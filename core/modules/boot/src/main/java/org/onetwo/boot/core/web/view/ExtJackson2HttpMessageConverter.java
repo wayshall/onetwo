@@ -2,6 +2,7 @@ package org.onetwo.boot.core.web.view;
 
 import java.util.Arrays;
 
+import org.onetwo.boot.core.json.ObjectMapperProvider;
 import org.onetwo.common.jackson.JsonMapper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 	
 	private Jackson2ObjectMapperBuilder mapperBuilder;
 	@Autowired(required=false)
-	private JsonMapper jsonMapper;
+	private ObjectMapperProvider objectMapperProvider;
 
 	public ExtJackson2HttpMessageConverter() {
 		super(JsonMapper.ignoreNull().getObjectMapper());
@@ -32,8 +33,8 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 		if(mapperBuilder!=null){
 			setObjectMapper(mapperBuilder.build());
 		}
-		if(jsonMapper!=null){
-			setObjectMapper(jsonMapper.getObjectMapper());
+		if(objectMapperProvider!=null){
+			setObjectMapper(objectMapperProvider.createObjectMapper());
 		}
 	}
 	
@@ -42,8 +43,8 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 		this.mapperBuilder = mapperBuilder;
 	}
 
-	public void setJsonMapper(JsonMapper jsonMapper) {
-		this.jsonMapper = jsonMapper;
+	public void setObjectMapperProvider(ObjectMapperProvider objectMapperProvider) {
+		this.objectMapperProvider = objectMapperProvider;
 	}
 	
 }

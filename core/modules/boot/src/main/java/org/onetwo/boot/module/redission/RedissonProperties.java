@@ -5,6 +5,7 @@ import java.util.Map;
 import lombok.Data;
 
 import org.onetwo.common.propconf.JFishProperties;
+import org.redisson.client.codec.Codec;
 import org.redisson.spring.cache.CacheConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -22,6 +23,7 @@ public class RedissonProperties {
 	
 	String yamlConfig;
 	String jsonConfig;
+	Class<Codec> codec;
 	
 //	SingleServerConfig singleServerConfig = new SingleServerConfig();
 	JFishProperties singleServer = new JFishProperties();
