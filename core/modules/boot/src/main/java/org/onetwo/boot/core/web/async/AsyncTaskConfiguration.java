@@ -45,5 +45,9 @@ public class AsyncTaskConfiguration {
 		return new AsyncTaskConfigurer();
 	}
 	
+	@Bean
+	public AsyncTaskDelegateService asyncTaskDelegateService(){
+		return new AsyncTaskDelegateService();
+	}
 	
 }

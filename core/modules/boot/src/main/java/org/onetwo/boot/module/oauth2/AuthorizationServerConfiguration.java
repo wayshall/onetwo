@@ -37,10 +37,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 			security.realm(authProps.getRealm());
 		}
 		if(StringUtils.isNotBlank(authProps.getCheckTokenAccess())){
-			security.realm(authProps.getCheckTokenAccess());
+			security.checkTokenAccess(authProps.getCheckTokenAccess());
 		}
 		if(StringUtils.isNotBlank(authProps.getTokenKeyAccess())){
-			security.realm(authProps.getTokenKeyAccess());
+			security.tokenKeyAccess(authProps.getTokenKeyAccess());
 		}
 	}
 
