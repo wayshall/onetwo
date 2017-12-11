@@ -116,9 +116,9 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	public SendResult sendMessage(SimpleMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler){
 		Message message = onsMessage.toMessage();
 		
-		String topic = SpringUtils.resolvePlaceholders(applicationContext, message.getTopic());
+		String topic = resolvePlaceholders(message.getTopic());
 		message.setTopic(topic);
-		String tag = SpringUtils.resolvePlaceholders(applicationContext, message.getTag());
+		String tag = resolvePlaceholders(message.getTag());
 		message.setTag(tag);
 		
 		Object body = onsMessage.getBody();
@@ -129,6 +129,11 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		}
 		
 		return sendRawMessage(message, errorHandler);
+	}
+	
+
+	protected String resolvePlaceholders(String value){
+		return SpringUtils.resolvePlaceholders(applicationContext, value);
 	}
 	
 	protected boolean needSerialize(Object body){

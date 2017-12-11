@@ -94,7 +94,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		
 	}
 	
-	private String resloveValue(String value	){
+	private String resloveValue(String value){
 		return SpringUtils.resolvePlaceholders(applicationContext, value);
 	}
 

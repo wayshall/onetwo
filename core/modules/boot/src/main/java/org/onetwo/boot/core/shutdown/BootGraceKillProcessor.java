@@ -39,6 +39,7 @@ public class BootGraceKillProcessor implements GraceKillProcessor {
 		Logger logger = JFishLoggerFactory.getCommonLogger();
 		context.close();
 		logger.warn("boot will exit!");
+//		LangUtils.await(1);
 		System.exit(0);
 	}
 

@@ -621,16 +621,23 @@ final public class SpringUtils {
 	 * @return
 	 */
 	public static String resolvePlaceholders(Object applicationContext, String value){
+		return resolvePlaceholders(applicationContext, value, true);
+	}
+	public static String resolvePlaceholders(Object applicationContext, String value, boolean throwIfNotResolved){
+		String newValue = value;
 		if (StringUtils.hasText(value) && DOLOR.isExpresstion(value)){
 			if(applicationContext instanceof ConfigurableApplicationContext){
 				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
-				return appcontext.getEnvironment().resolvePlaceholders(value);
+				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
 			}else if(applicationContext instanceof PropertyResolver){
 				PropertyResolver env = (PropertyResolver)applicationContext;
-				return env.resolvePlaceholders(value);
+				newValue = env.resolvePlaceholders(value);
+			}
+			if(DOLOR.isExpresstion(newValue) && throwIfNotResolved){
+				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + newValue);
 			}
 		}
-		return value;
+		return newValue;
 	}
 	
 	public static <T> T toBean(Map<String, ?> propValues, Class<T> beanClass){

@@ -66,6 +66,7 @@ public class RedissonConfiguration {
 										.ignoreBlankString()
 										.mapToObject(singleConfig);
 				}
+//				singleConfig.setConnectionPoolSize(connectionPoolSize);
 			}
 		} catch (Exception e) {
 			throw new BaseException("read redisson config error: " + configPath, e);
