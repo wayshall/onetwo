@@ -1,18 +1,22 @@
 package org.onetwo.boot.module.oauth2;
 
-import java.util.Map.Entry;
+import static org.onetwo.ext.security.DefaultUrlSecurityConfigurer.configIntercepterUrls;
+import static org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer.defaultAnyRequest;
 
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.ResourceServerProps;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 
 @EnableResourceServer
 @EnableConfigurationProperties(JFishOauth2Properties.class)
+@Configuration
+@ConditionalOnProperty(name=ResourceServerProps.ENABLED_KEY, matchIfMissing=true)
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 	
 	@Autowired
@@ -25,10 +29,11 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 			http.requestMatchers()
 				.antMatchers(resourceServerProps.getRequestMatchers());
 		}
-		for(Entry<String[], String> entry : resourceServerProps.getIntercepterUrls().entrySet()){
+		/*for(Entry<String[], String> entry : resourceServerProps.getIntercepterUrls().entrySet()){
 			http.authorizeRequests().antMatchers(entry.getKey()).access(entry.getValue());
-		}
-		DefaultMethodSecurityConfigurer.defaultAnyRequest(http, resourceServerProps.getAnyRequest());
+		}*/
+		configIntercepterUrls(http, resourceServerProps.getIntercepterUrls(), null);
+		defaultAnyRequest(http, resourceServerProps.getAnyRequest());
 	}
 	
 }

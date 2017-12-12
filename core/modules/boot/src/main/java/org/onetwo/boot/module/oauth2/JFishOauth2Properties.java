@@ -25,7 +25,7 @@ public class JFishOauth2Properties {
 	ResourceServerProps resourceServer = new ResourceServerProps();
 	
 	@Data
-	public class AuthorizationServerProps {
+	public static class AuthorizationServerProps {
 		boolean allowFormAuthenticationForClients;
 		boolean sslOnly;
 		String realm;
@@ -35,7 +35,9 @@ public class JFishOauth2Properties {
 	}
 	
 	@Data
-	public class ResourceServerProps {
+	public static class ResourceServerProps {
+		public static final String ENABLED_KEY = CONFIG_PREFIX + ".resourceServer.enabled";
+		
 		/***
 		 * resource server
 		 */

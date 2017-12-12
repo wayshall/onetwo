@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 @Import({EnableJFishOauth2Selector.class})
 public @interface EnableJFishOauth2 {
 	
-	boolean enableResourceServer() default true;
+	boolean authorizationServer() default true;
+	boolean resourceServer() default true;
 	
 }

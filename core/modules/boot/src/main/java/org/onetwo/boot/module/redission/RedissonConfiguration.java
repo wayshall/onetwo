@@ -63,6 +63,7 @@ public class RedissonConfiguration {
 				JFishProperties singleServerProperties = redissonProperties.getSingleServer();
 				if(!singleServerProperties.isEmpty()){
 					BeanPropertiesMapper.ignoreNotFoundProperty(singleServerProperties)
+										.fieldAccessors()
 										.ignoreBlankString()
 										.mapToObject(singleConfig);
 				}

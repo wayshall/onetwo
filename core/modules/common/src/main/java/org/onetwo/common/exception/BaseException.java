@@ -114,6 +114,12 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	public Map<String, Object> getErrorContext() {
 		return errorContext==null?Collections.emptyMap():errorContext;
 	}
-    
+
+	/****
+	 * http://www.infoq.com/cn/articles/things-of-java-log-performance
+	 */
+    /*public Throwable fillInStackTrace() {
+    	return this;
+    }*/
 
 }

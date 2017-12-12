@@ -40,7 +40,9 @@ public class OssFileStore implements FileStorer<SimpleFileStoredMeta>, Initializ
 	public SimpleFileStoredMeta write(StoringFileContext context) {
 		String key = context.getKey();
 		if(StringUtils.isBlank(key)){
-			key = StringUtils.emptyIfNull(context.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
+			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule())).replace("/", "-");
+			key = prefix+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
+//			key = StringUtils.emptyIfNull(context.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
 		}
 		wrapper.objectOperation(bucketName, key)
 				.store(context.getInputStream());

@@ -18,6 +18,12 @@ public class AntPathMatcherTest {
 		Assert.assertTrue(res);
 		
 
+		res = req.match("/**/api/**", "/service/api/user");
+		res = req.match("/**/api/**", "/api/user");
+		res = req.match("/**/api/**", "/api/user/1");
+		res = req.match("/**/api/**", "/api/user/1?aa=bb&cc=dd");
+		Assert.assertTrue(res);
+
 		res = req.match("*zh.*", "user_zh.html");
 		Assert.assertTrue(res);
 		res = req.match("*zh.*", "/user_zh.html");

@@ -113,7 +113,8 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 			String newfn = ctx.getKey();
 			String accessablePath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
 			if(StringUtils.isBlank(newfn)){
-				newfn = StringUtils.emptyIfNull(ctx.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(ctx.getFileName(), true);
+				String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(ctx.getModule())).replace("/", "-");
+				newfn = prefix+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(ctx.getFileName(), true);
 			}
 //			newfn += FileUtils.getExtendName(ctx.getFileName(), true);
 			// /appContextDir/moduleDir/yyyy-MM-dd//uuid.ext

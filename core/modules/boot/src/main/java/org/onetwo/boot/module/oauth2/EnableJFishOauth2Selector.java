@@ -17,9 +17,12 @@ public class EnableJFishOauth2Selector extends AbstractImportSelector<EnableJFis
 	protected List<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		List<String> classNames = new ArrayList<String>();
 		
-		classNames.add(AuthorizationServerConfiguration.class.getName());
+		if(attributes.getBoolean("authorizationServer")){
+			classNames.add(AuthorizationServerConfiguration.class.getName());
+		}
 		
-		if(attributes.getBoolean("enableResourceServer")){
+		if(attributes.getBoolean("resourceServer")){
+			//可通过ResourceServerProps.ENABLED_KEY关掉
 			classNames.add(ResourceServerConfiguration.class.getName());
 		}
 		

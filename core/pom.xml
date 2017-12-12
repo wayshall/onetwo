@@ -65,7 +65,9 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/bom</module>
+                <module>modules/common</module>
+                <module>modules/security</module>
+                <module>modules/boot</module>
 	  	</modules>
         <build>
             <plugins>

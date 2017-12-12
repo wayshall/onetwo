@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
+ * 如果检测到有缓存配置：spring.cache.type: xxx
+ * 则启用自定义的默认key生成策略
  * @author wayshall
  * <br/>
  */
@@ -21,6 +23,7 @@ import org.springframework.context.annotation.Import;
 @EnableCaching
 @Import(RedisCacheConfiguration.class)
 @AutoConfigureAfter(CacheAutoConfiguration.class)
+//@AutoConfigureBefore(CacheAutoConfiguration.class)
 public class SpringCacheConfiguration {
 	public static final String SPRING_CACHE_ENABLED_KEY = "spring.cache.type";
 	

@@ -18,8 +18,8 @@ public @interface EnableJFishBootExtension {
 	
 	AppcationType appcationType() default AppcationType.WEB_SERVICE;
 	boolean enableCommonService() default true;
-	@Deprecated
-	boolean enableCacheExtension() default false;
+//	@Deprecated
+//	boolean enableCacheExtension() default false;
 	
 	enum AppcationType {
 		WEB_SERVICE,

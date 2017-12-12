@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 
 /**
+ * 当检测到spring.cache.type为redis时，根据jfish.cache.redis的属性配置定制RedisCacheManager
  * @author wayshall
  * <br/>
  */
