@@ -47,7 +47,7 @@ public class BeanPropertiesMapper {
 	final private Properties config;
 	final private String prefix;
 	private boolean ignoreNotFoundProperty = false;
-	private BeanAccessors beanAccessors = BeanAccessors.FIELD;
+	private BeanAccessors beanAccessors = BeanAccessors.PROPERTY;
 	private boolean ignoreBlankString;
 	
 	public BeanPropertiesMapper(Properties config, String prefix) {
@@ -67,6 +67,15 @@ public class BeanPropertiesMapper {
 	
 	public void setIgnoreBlankString(boolean ignoreBlankString) {
 		this.ignoreBlankString = ignoreBlankString;
+	}
+
+	public void setBeanAccessors(BeanAccessors beanAccessors) {
+		this.beanAccessors = beanAccessors;
+	}
+
+	public BeanPropertiesMapper fieldAccessors() {
+		this.beanAccessors = BeanAccessors.FIELD;
+		return this;
 	}
 
 	public void mapToObject(Object obj) {
