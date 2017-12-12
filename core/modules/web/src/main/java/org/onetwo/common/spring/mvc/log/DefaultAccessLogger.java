@@ -51,6 +51,12 @@ public class DefaultAccessLogger implements AccessLogger {
 	
 	@Override
 	public void logOperation(OperatorLogInfo data){
+		if(accessLogger.isInfoEnabled()){
+			doLogOperation(data);
+		}
+	}
+	
+	protected void doLogOperation(OperatorLogInfo data){
 //		ToStringBuilder buf = new ToStringBuilder(data, ToStringStyle.MULTI_LINE_STYLE);
 		StringBuilder buf = new StringBuilder(300);
 		buf.append("{").append(seprator)

@@ -87,19 +87,19 @@ public class BeanPropertiesMapper {
 			if(hasPrefix){
 				if(propertyName.startsWith(prefix)){
 					propertyName = propertyName.substring(prefix.length());
-					setPropertyValue(bw, propertyName, value);
+					setPropertyValue(obj, bw, propertyName, value);
 				}
 			}else{
-				setPropertyValue(bw, propertyName, value);
+				setPropertyValue(obj, bw, propertyName, value);
 			}
 		}
 	}
 	
 	
-	protected void setPropertyValue(ConfigurablePropertyAccessor bw, String propertyName, Object value){
+	protected void setPropertyValue(Object obj, ConfigurablePropertyAccessor bw, String propertyName, Object value){
 		if(!bw.isWritableProperty(propertyName)){
 			if(!ignoreNotFoundProperty){
-				throw new NoSuchElementException("no setter found for property: " + propertyName);
+				throw new NoSuchElementException("no setter found for property: " + propertyName+", target: " + obj);
 			}
 			logger.debug("ignore property: {}={} ", propertyName, value);
 			return ;
