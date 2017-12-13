@@ -2,17 +2,22 @@ package org.onetwo.boot.module.oauth2;
 
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.AuthorizationServerProps;
+import org.onetwo.boot.module.oauth2.JFishOauth2Properties.ClientDetailStore;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.MemoryUser;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.builders.ClientDetailsServiceBuilder.ClientBuilder;
 import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.util.Assert;
 
 /**
  * @author wayshall
@@ -23,6 +28,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Autowired
 	private JFishOauth2Properties oauth2Properties;
+	@Autowired(required=false)
+	private DataSource dataSource;
+	@Autowired(required=false)
+	private PasswordEncoder passwordEncoder;
 	
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -44,9 +53,25 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+		ClientDetailStore store = oauth2Properties.getAuthorizationServer().getClientDetailStore();
+		if(store==ClientDetailStore.JDBC){
+			configJdbc(clients);
+		}else if(store==ClientDetailStore.IN_MEMORY){
+			configInMemory(clients);
+		}
+	}
+
+	protected void configJdbc(ClientDetailsServiceConfigurer clients) throws Exception{
+		Assert.notNull(dataSource, "dataSource is required!");
+		clients.jdbc(dataSource)
+				.passwordEncoder(passwordEncoder)
+				.build();
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected void configInMemory(ClientDetailsServiceConfigurer clients) throws Exception{
 		Map<String, MemoryUser> clientUsers = oauth2Properties.getAuthorizationServer().getClientDetails();
 		InMemoryClientDetailsServiceBuilder inMemory = clients.inMemory();
 		clientUsers.forEach((user, config)->{

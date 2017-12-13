@@ -31,7 +31,15 @@ public class JFishOauth2Properties {
 		String realm;
 		String tokenKeyAccess;
 		String checkTokenAccess;
+		
+		ClientDetailStore clientDetailStore = ClientDetailStore.IN_MEMORY;
+		
 		Map<String, MemoryUser> clientDetails = Maps.newHashMap();
+	}
+	
+	public static enum ClientDetailStore {
+		JDBC,
+		IN_MEMORY
 	}
 	
 	@Data

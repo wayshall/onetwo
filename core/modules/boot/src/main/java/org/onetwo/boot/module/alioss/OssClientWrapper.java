@@ -183,10 +183,26 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		}
 		
 		public ObjectOperation storeAsJson(Object object){
-			String json = JsonMapper.DEFAULT_MAPPER.toJson(object);
+			/*String json = JsonMapper.DEFAULT_MAPPER.toJson(object);
 			StringReader sr = new StringReader(json);
 			ObjectMetadata meta = new ObjectMetadata();
 			meta.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+			return store(new ReaderInputStream(sr), meta);*/
+			return storeAsJson(object, MediaType.APPLICATION_JSON_UTF8_VALUE);
+		}
+		
+		/****
+		 * 
+		 * @author wayshall
+		 * @param object
+		 * @param contentType example: MediaType.APPLICATION_OCTET_STREAM_VALUE
+		 * @return
+		 */
+		public ObjectOperation storeAsJson(Object object, String contentType){
+			String json = JsonMapper.DEFAULT_MAPPER.toJson(object);
+			StringReader sr = new StringReader(json);
+			ObjectMetadata meta = new ObjectMetadata();
+			meta.setContentType(contentType);
 			return store(new ReaderInputStream(sr), meta);
 		}
 		
