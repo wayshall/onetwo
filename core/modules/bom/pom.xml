@@ -665,6 +665,7 @@
 
 
     <profiles>
+       
        <profile>
            <id>release</id>
            <build>

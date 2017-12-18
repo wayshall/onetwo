@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 
 @EnableResourceServer
 @EnableConfigurationProperties(JFishOauth2Properties.class)
@@ -21,6 +23,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 	
 	@Autowired
 	private JFishOauth2Properties oauth2Properties;
+	@Autowired(required=false)
+	private TokenStore tokenStore;
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
@@ -34,6 +38,17 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 		}*/
 		configIntercepterUrls(http, resourceServerProps.getIntercepterUrls(), null);
 		defaultAnyRequest(http, resourceServerProps.getAnyRequest());
+	}
+
+	@Override
+	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+		if(tokenStore!=null){
+			resources.tokenStore(tokenStore);
+		}
+		String resourceId = oauth2Properties.getResourceServer().getResourceId();
+		if(resourceId!=null){
+			resources.resourceId(resourceId);//see OAuth2AuthenticationProcessingFilter#doFilter -> OAuth2AuthenticationManager#authenticate
+		}
 	}
 	
 }

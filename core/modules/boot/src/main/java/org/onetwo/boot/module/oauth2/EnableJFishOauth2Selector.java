@@ -1,8 +1,10 @@
 package org.onetwo.boot.module.oauth2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.onetwo.boot.module.oauth2.EnableJFishOauth2.OAuth2Role;
 import org.onetwo.common.spring.context.AbstractImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -17,12 +19,18 @@ public class EnableJFishOauth2Selector extends AbstractImportSelector<EnableJFis
 	protected List<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		List<String> classNames = new ArrayList<String>();
 		
-		if(attributes.getBoolean("authorizationServer")){
+		List<OAuth2Role> roles = Arrays.asList((OAuth2Role[])attributes.get("value"));
+		
+		if(roles.contains(OAuth2Role.AUTHORIZATION_SERVER)){
 			classNames.add(AuthorizationServerConfiguration.class.getName());
+			classNames.add(Oauth2TokenStoreConfiguration.class.getName());
 		}
 		
-		if(attributes.getBoolean("resourceServer")){
-			//可通过ResourceServerProps.ENABLED_KEY关掉
+		if(roles.contains(OAuth2Role.RESOURCE_SERVER)){
+			if(!classNames.contains(Oauth2TokenStoreConfiguration.class.getName())){
+				classNames.add(Oauth2TokenStoreConfiguration.class.getName());
+			}
+			//仍然可通过ResourceServerProps.ENABLED_KEY关掉
 			classNames.add(ResourceServerConfiguration.class.getName());
 		}
 		

@@ -10,13 +10,17 @@ import org.onetwo.boot.module.oauth2.JFishOauth2Properties.MemoryUser;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.builders.ClientDetailsServiceBuilder.ClientBuilder;
 import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.util.Assert;
 
 /**
@@ -24,6 +28,8 @@ import org.springframework.util.Assert;
  * <br/>
  */
 @EnableAuthorizationServer
+@Configuration
+@EnableConfigurationProperties(JFishOauth2Properties.class)
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
 	@Autowired
@@ -32,6 +38,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private DataSource dataSource;
 	@Autowired(required=false)
 	private PasswordEncoder passwordEncoder;
+	@Autowired(required=false)
+	private TokenStore tokenStore;
 	
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -104,5 +112,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 			}
 		});
 		inMemory.build();
+	}
+
+	@Override
+	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+		if(tokenStore!=null){
+			endpoints.tokenStore(tokenStore);
+		}
 	}
 }

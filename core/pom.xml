@@ -36,6 +36,32 @@
     
 	<profiles>
       
+       <profile>
+           <id>microcloud</id>
+			<modules>
+                <module>modules/bom</module>
+                
+                <module>modules/parent</module>
+                <module>modules/common</module>
+                <module>modules/jackson</module>
+                <module>modules/spring</module>
+                <module>../../dbm</module>
+                <module>modules/web</module>
+                <module>modules/security</module>
+                <module>modules/boot</module>
+                <module>modules/test</module>
+                <module>../../onetwo-wechat</module>
+                <module>modules/cloud</module>
+                
+                <module>plugins/parent</module>
+                <module>plugins/web-admin</module>
+                
+                <module>modules/poi</module>
+                <module>modules/rocketmq</module>
+                <module>modules/tomcat</module>
+			</modules>
+       </profile>
+	   
       <profile>
         <id>all</id>
         <modules>
@@ -65,7 +91,7 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/boot</module>
+                <module>modules/bom</module>
 	  	</modules>
         <build>
             <plugins>

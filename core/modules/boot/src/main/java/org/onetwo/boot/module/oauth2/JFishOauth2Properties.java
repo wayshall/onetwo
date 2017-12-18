@@ -15,7 +15,13 @@ import com.google.common.collect.Maps;
 @Data
 @ConfigurationProperties(prefix=JFishOauth2Properties.CONFIG_PREFIX)
 public class JFishOauth2Properties {
-	public static final String CONFIG_PREFIX = "jfish.oauth2"; 
+	public static final String CONFIG_PREFIX = "jfish.oauth2";
+	public static final String TOKEN_STORE_ENABLED_KEY = CONFIG_PREFIX + ".tokenStore";
+	
+	public static final String KEYS_REDIS = "redis";
+	public static final String KEYS_JDBC = "jdbc";
+	public static final String KEYS_JWT = "jwt";
+	public static final String KEYS_IN_MEMORY = "in_memory";
 	
 	
 	/****
@@ -37,15 +43,11 @@ public class JFishOauth2Properties {
 		Map<String, MemoryUser> clientDetails = Maps.newHashMap();
 	}
 	
-	public static enum ClientDetailStore {
-		JDBC,
-		IN_MEMORY
-	}
-	
 	@Data
 	public static class ResourceServerProps {
 		public static final String ENABLED_KEY = CONFIG_PREFIX + ".resourceServer.enabled";
 		
+		String resourceId;
 		/***
 		 * resource server
 		 */
@@ -69,5 +71,17 @@ public class JFishOauth2Properties {
 		String[] registeredRedirectUris;
 		String[] resourceIds;
 		String[] authorizedGrantTypes;
+	}
+	
+	public static enum ClientDetailStore {
+		JDBC,
+		IN_MEMORY
+	}
+	
+	public static enum TokenStores {
+		REDIS,
+		JDBC,
+		JWT,
+		IN_MEMORY
 	}
 }

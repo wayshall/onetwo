@@ -16,7 +16,12 @@ import org.springframework.context.annotation.Import;
 @Import({EnableJFishOauth2Selector.class})
 public @interface EnableJFishOauth2 {
 	
-	boolean authorizationServer() default true;
-	boolean resourceServer() default true;
+	OAuth2Role[] value() default {OAuth2Role.AUTHORIZATION_SERVER, OAuth2Role.RESOURCE_SERVER};
+	/*boolean authorizationServer() default true;
+	boolean resourceServer() default true;*/
 	
+	enum OAuth2Role {
+		AUTHORIZATION_SERVER,
+		RESOURCE_SERVER;
+	}
 }
