@@ -39,27 +39,25 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/bom</module>
-                
-                <module>modules/parent</module>
-                <module>modules/common</module>
-                <module>modules/jackson</module>
-                <module>modules/spring</module>
-                <module>../../dbm</module>
-                <module>modules/web</module>
-                <module>modules/security</module>
-                <module>modules/boot</module>
-                <module>modules/test</module>
-                <module>../../onetwo-wechat</module>
-                <module>modules/cloud</module>
-                
-                <module>plugins/parent</module>
-                <module>plugins/web-admin</module>
-                
-                <module>modules/poi</module>
-                <module>modules/rocketmq</module>
-                <module>modules/tomcat</module>
+					<module>modules/bom</module>
 			</modules>
+           <build>
+              <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+              </plugins>
+           </build>
        </profile>
 	   
       <profile>
