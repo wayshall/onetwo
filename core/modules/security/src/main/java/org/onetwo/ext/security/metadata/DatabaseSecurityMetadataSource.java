@@ -146,11 +146,15 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		List<SortableAntPathRequestMatcher> keys = resouceMap.keySet()
 													.stream()
 													.sorted((o1, o2)->{
-														int rs = o1.getSort().compareTo(o2.getSort());
+														//这里先使用了sort字段决定优先是不对的，sort字段只作为界面的菜单显示顺序用
+														//如果遇到菜单A（/prefix*）显示在菜单B（/prefixBMenuPath*）上面，
+														//但访问/prefixBMenuPath时根据url模式应该是先匹配B的，结果却匹配到了A，导致denied access
+														//如果需要手动指定匹配优先模式，应该新增另外的字段match_sort
+														/*int rs = o1.getSort().compareTo(o2.getSort());
 														if(rs!=0)
-															return rs;
+															return rs;*/
 														//长的优先
-														rs = o2.getPathMatcher().getPattern().length() - o1.getPathMatcher().getPattern().length();
+														int rs = o2.getPathMatcher().getPattern().length() - o1.getPathMatcher().getPattern().length();
 														if(rs!=0)
 															return rs;
 														return -o1.getPathMatcher().getPattern().compareTo(o2.getPathMatcher().getPattern());
