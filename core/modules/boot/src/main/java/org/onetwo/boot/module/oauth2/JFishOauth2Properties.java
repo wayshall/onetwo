@@ -29,6 +29,12 @@ public class JFishOauth2Properties {
 	 */
 	AuthorizationServerProps authorizationServer = new AuthorizationServerProps();
 	ResourceServerProps resourceServer = new ResourceServerProps();
+	JwtProps jwt = new JwtProps();
+	
+	@Data
+	public static class JwtProps {
+		String signingKey;
+	}
 	
 	@Data
 	public static class AuthorizationServerProps {

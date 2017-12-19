@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 /**
@@ -20,6 +22,7 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
 @ConditionalOnClass(TokenStore.class)
 @ConditionalOnProperty(name=JFishOauth2Properties.TOKEN_STORE_ENABLED_KEY)
 public class Oauth2TokenStoreConfiguration {
+//	static private final Logger logger = JFishLoggerFactory.getLogger(Oauth2TokenStoreConfiguration.class);
 
 	@Configuration
 	@ConditionalOnProperty(name=JFishOauth2Properties.TOKEN_STORE_ENABLED_KEY, havingValue=JFishOauth2Properties.KEYS_REDIS)
@@ -46,13 +49,28 @@ public class Oauth2TokenStoreConfiguration {
 	 * @author wayshall
 	 *
 	 */
-	/*@Configuration
+	@Configuration
 	@ConditionalOnProperty(name=JFishOauth2Properties.TOKEN_STORE_ENABLED_KEY, havingValue=JFishOauth2Properties.KEYS_JWT)
 	protected static class  JwtTokenStoreConfiguration {
+		@Autowired
+		private JFishOauth2Properties jfishOauth2Properties;
+		
 		@Bean
-		public JwtTokenStore redisTokenStore(@Autowired JwtAccessTokenConverter jwtTokenEnhancer){
-			JwtTokenStore store = new JwtTokenStore(jwtTokenEnhancer);
+		public JwtTokenStore jwtTokenStore(){
+			JwtTokenStore store = new JwtTokenStore(jwtAccessTokenConverter());
 			return store;
 		}
-	}*/
+		
+
+		@Bean
+		public JwtAccessTokenConverter jwtAccessTokenConverter() {
+			JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+			converter.setSigningKey(jfishOauth2Properties.getJwt().getSigningKey());
+			/*if (keyValue != null) {
+				converter.setVerifierKey(keyValue);
+			}*/
+			return converter;
+		}
+
+	}
 }

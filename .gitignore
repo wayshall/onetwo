@@ -45,3 +45,4 @@ application-product.yaml
 /core/modules/common/src/test/java/org/onetwo/common/drawtest
 /core/deploy-all.bat
 /core/modules/rocketmq/src/test/resources/ons-test.properties
+/core/deploy-microcloud.bat
