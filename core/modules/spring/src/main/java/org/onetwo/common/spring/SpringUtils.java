@@ -644,7 +644,10 @@ final public class SpringUtils {
 		return MAP_TO_BEAN.toBean(propValues, beanClass);
 	}
 
-
+	public static MapToBeanConvertor getMapToBean() {
+		return MAP_TO_BEAN;
+	}
+	
 	/*public static boolean isSimpleTypeObject(Object obj) {
 		return obj != null && LangUtils.isSimpleType(obj.getClass());
 	}

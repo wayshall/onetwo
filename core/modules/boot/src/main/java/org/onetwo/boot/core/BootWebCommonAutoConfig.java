@@ -12,15 +12,10 @@ import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
-import org.onetwo.boot.core.shutdown.BootGraceKillProcessor;
-import org.onetwo.boot.core.shutdown.GraceKillSignalHandler;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
-import org.onetwo.boot.core.web.mvc.BootWebMvcRegistrations;
-import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
-import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
@@ -47,12 +42,10 @@ import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /***
  * web环境的通用配置
@@ -96,11 +89,11 @@ public class BootWebCommonAutoConfig {
 	 * @return
 	 */
 //	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
-	@Bean
+	/*@Bean
 	public ResponseEntityExceptionHandler responseEntityExceptionHandler(){
 		BootWebExceptionHandler handler = new BootWebExceptionHandler();
 		return handler;
-	}
+	}*/
 	
 	@Bean
 	public FilterRegistrationBean requestContextFilter(){
@@ -131,11 +124,11 @@ public class BootWebCommonAutoConfig {
 	 * @author wayshall
 	 * @return
 	 */
-	@Bean
+	/*@Bean
 	public RequestMappingHandlerMappingListenable requestMappingHandlerMappingListenable(){
 		RequestMappingHandlerMappingListenable req = new RequestMappingHandlerMappingListenable();
 		return req;	
-	}
+	}*/
 	
 	@Bean
 	public BootMvcConfigurerAdapter bootMvcConfigurerAdapter(){
@@ -147,11 +140,11 @@ public class BootWebCommonAutoConfig {
 	 * @author wayshall
 	 * @return
 	 */
-	@Bean
+	/*@Bean
 	@ConditionalOnMissingBean(BootWebMvcRegistrations.class)
 	public BootWebMvcRegistrations bootWebMvcRegistrations(){
 		return new BootWebMvcRegistrations();
-	}
+	}*/
 	
 	@Bean
 	public WebApiRequestMappingCombiner webApiRequestMappingCombiner(){
@@ -265,18 +258,4 @@ public class BootWebCommonAutoConfig {
 		return fs;
 	}
 	
-	@Configuration
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_GRACEKILL, matchIfMissing=true, havingValue="true")
-	protected static class GraceKillConfiguration {
-		@Bean
-		public GraceKillSignalHandler graceKillSignalHandler(){
-			return new GraceKillSignalHandler();
-		}
-		
-		@Bean
-		@ConditionalOnMissingBean(BootGraceKillProcessor.class)
-		public BootGraceKillProcessor bootGraceKillProcessor(){
-			return new BootGraceKillProcessor();
-		}
-	}
 }

@@ -47,8 +47,12 @@ public class JFishOauth2Properties {
 		ClientDetailStore clientDetailStore = ClientDetailStore.IN_MEMORY;
 		
 		Map<String, MemoryUser> clientDetails = Maps.newHashMap();
+
+		String[] requestMatchers;
+		Map<String[], String> intercepterUrls = Maps.newHashMap();
+		String anyRequest;
 	}
-	
+
 	@Data
 	public static class ResourceServerProps {
 		public static final String ENABLED_KEY = CONFIG_PREFIX + ".resourceServer.enabled";
@@ -60,6 +64,10 @@ public class JFishOauth2Properties {
 		String[] requestMatchers;
 		Map<String[], String> intercepterUrls = Maps.newHashMap();
 		String anyRequest;
+		public String[] getRequestMatchers() {
+			return requestMatchers;
+		}
+		
 	}
 
 

@@ -3,6 +3,8 @@ package org.onetwo.cloud;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.onetwo.boot.core.shutdown.GraceKillConfiguration;
+import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.cloud.core.BootCloudConfigration;
 import org.onetwo.common.spring.context.AbstractImportSelector;
@@ -21,7 +23,9 @@ public class EnableJFishCloudExtensionSelector extends AbstractImportSelector<En
 		List<String> classNames = new ArrayList<String>();
 		
 		classNames.add(BootCloudConfigration.class.getName());
+		classNames.add(ErrorHandleConfiguration.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
+		classNames.add(GraceKillConfiguration.class.getName());
 		
 		return classNames;
 	}

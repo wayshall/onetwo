@@ -68,9 +68,11 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		}
 		String pathValue = classAnnotation.basePath();
 		if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
+			//:serviceName -> jfish.cloud.feign.basePath.serviceName
 			pathValue = FEIGN_BASE_PATH_KEY + pathValue.substring(1);
 			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
 		}else if(ExpressionFacotry.DOLOR.isExpresstion(pathValue)){
+			//${basePath}
 			pathValue = SpringUtils.resolvePlaceholders(applicationContext, pathValue);
 		}
 		if(StringUtils.isBlank(pathValue)){

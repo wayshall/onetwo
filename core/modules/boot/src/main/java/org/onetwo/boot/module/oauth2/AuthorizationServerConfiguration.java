@@ -1,5 +1,8 @@
 package org.onetwo.boot.module.oauth2;
 
+import static org.onetwo.ext.security.DefaultUrlSecurityConfigurer.configIntercepterUrls;
+import static org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer.defaultAnyRequest;
+
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -7,11 +10,15 @@ import javax.sql.DataSource;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.AuthorizationServerProps;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.ClientDetailStore;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.MemoryUser;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.builders.ClientDetailsServiceBuilder.ClientBuilder;
 import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
@@ -20,6 +27,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
+import org.springframework.security.oauth2.provider.error.OAuth2ExceptionRenderer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.util.Assert;
@@ -41,14 +52,28 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private PasswordEncoder passwordEncoder;
 	@Autowired(required=false)
 	private TokenStore tokenStore;
+	//for jwt
 	@Autowired(required=false)
 	private TokenEnhancer tokenEnhancer;
 	
+
+	//for error
+
+	@Autowired(required=false)
+	private OAuth2ExceptionRenderer oauth2ExceptionRenderer;
+	@Autowired(required=false)
+	private OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint;
+	@Autowired(required=false)
+	private OAuth2AccessDeniedHandler oauth2AccessDeniedHandler;
+	
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+//		security.and().requestMatchers()
 		AuthorizationServerProps authProps = oauth2Properties.getAuthorizationServer();
 		if(authProps.isAllowFormAuthenticationForClients()){
 			security.allowFormAuthenticationForClients();
+			//FIX: AuthorizationServerSecurityConfigurer创建form验证filter的时，没有使用配置的oauth2AuthenticationEntryPoint
+			security.addObjectPostProcessor(new ClientCredentialsTokenEndpointFilterPostProcessor());
 		}
 		if(authProps.isSslOnly()){
 			security.sslOnly();
@@ -61,6 +86,24 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		}
 		if(StringUtils.isNotBlank(authProps.getTokenKeyAccess())){
 			security.tokenKeyAccess(authProps.getTokenKeyAccess());
+		}
+		
+		if(oauth2AuthenticationEntryPoint!=null){
+			security.authenticationEntryPoint(oauth2AuthenticationEntryPoint);
+		}
+		if(oauth2AccessDeniedHandler!=null){
+			security.accessDeniedHandler(oauth2AccessDeniedHandler);
+		}
+		
+	}
+	
+	protected class ClientCredentialsTokenEndpointFilterPostProcessor implements ObjectPostProcessor<ClientCredentialsTokenEndpointFilter> {
+		@Override
+		public <O extends ClientCredentialsTokenEndpointFilter> O postProcess(O filter) {
+			if(oauth2ExceptionRenderer!=null){
+				SpringUtils.newPropertyAccessor(filter, true).setPropertyValue("authenticationEntryPoint.exceptionRenderer", oauth2ExceptionRenderer);
+			}
+			return filter;
 		}
 	}
 
@@ -125,5 +168,21 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		if(tokenEnhancer!=null){
 			endpoints.tokenEnhancer(tokenEnhancer);
 		}
+	}
+	
+	@Configuration
+	protected class AuthorizationWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			AuthorizationServerProps authorizationServer = oauth2Properties.getAuthorizationServer();
+			if(!LangUtils.isEmpty(authorizationServer.getRequestMatchers())){
+				http.requestMatchers()
+					.antMatchers(authorizationServer.getRequestMatchers());
+			}
+			configIntercepterUrls(http, authorizationServer.getIntercepterUrls(), null);
+			defaultAnyRequest(http, authorizationServer.getAnyRequest());
+		}
+		
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +40,7 @@ public class XResponseViewManager implements HandlerMappingListener {
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private Cache<Method, Map<String, XResponseViewData>> viewDataCaces = CacheBuilder.newBuilder()
-																		.maximumSize(1000)
+																		.maximumSize(100)
 																		.build();
 	private boolean alwaysWrapDataResult = false;
 	private DataResultWrapper dataResultWrapper = DATA_RESULT_WRAPPER;
@@ -53,6 +54,25 @@ public class XResponseViewManager implements HandlerMappingListener {
 				viewDataCaces.put(hm.getMethod(), viewDatas);
 			}
 		}
+	}
+
+
+	public XResponseViewManager registerMatchPredicate(Predicate<?> Predicate, DataResultWrapper dataResultWrapper){
+	}
+
+	/***
+	 * 匹配到则返回包装后的data，否则返回empty
+	 * @author wayshall
+	 * @param data
+	 * @param defaultWrapIfNotFoud
+	 * @return
+	 */
+	public Optional<Object> getResponseViewByPredicate(final Object data, boolean defaultWrapIfNotFoud){
+		Object wrapData = data;
+		if(defaultWrapIfNotFoud){
+			wrapData = this.dataResultWrapper.wrapResult(data);
+		}
+		return wrapData;
 	}
 	
 	/****

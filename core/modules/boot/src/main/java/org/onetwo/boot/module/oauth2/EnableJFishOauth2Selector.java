@@ -34,6 +34,8 @@ public class EnableJFishOauth2Selector extends AbstractImportSelector<EnableJFis
 			classNames.add(ResourceServerConfiguration.class.getName());
 		}
 		
+		classNames.add(OAuth2ErrorConfiguration.class.getName());
+		
 		return classNames;
 	}
 

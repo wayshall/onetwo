@@ -8,9 +8,12 @@ import java.util.List;
 import org.onetwo.boot.core.EnableJFishBootExtension.AppcationType;
 import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
+import org.onetwo.boot.core.shutdown.GraceKillConfiguration;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
 import org.onetwo.boot.core.web.async.AsyncTaskConfiguration;
+import org.onetwo.boot.core.web.mvc.EnhanceRequestMappingConfiguration;
+import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
 import org.onetwo.boot.module.cache.SpringCacheConfiguration;
@@ -48,6 +51,8 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		}else if(appcationType==AppcationType.WEB_UI){
 			classNames.add(BootWebUIContextAutoConfig.class.getName());
 		}
+		classNames.add(ErrorHandleConfiguration.class.getName());
+		classNames.add(EnhanceRequestMappingConfiguration.class.getName());
 
 		classNames.add(JwtContextConfig.class.getName());
 		
@@ -56,6 +61,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		classNames.add(AsyncMvcConfiguration.class.getName());
 		classNames.add(AsyncTaskConfiguration.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
+		classNames.add(GraceKillConfiguration.class.getName());
 
 		//cache
 		classNames.add(SpringCacheConfiguration.class.getName());

@@ -160,6 +160,87 @@ jfish:
 		writeTimeout: 
 ```
 
+### security
+注意先屏蔽boot自动配置是security：
+```xml
+security: 
+    ignored: /**
+    basic: 
+        enabled: false
+```
+
+内存用户配置：
+```xml
+jfish: 
+    security: 
+        jwt: #使用jwt
+            signingKey: testkey
+            authStore: COOKIES
+        csrf: 
+            disable: true
+        loginUrl: ${jfish.security.defaultLoginPage}
+        metadataSource: none
+        defaultLoginPage: /login #配置spring security的自带登录页路径
+        memoryUsers: 
+            admin: 
+                roles: ADMIN
+        anyRequest: none #不配置anyRequest，默认为：authenticated
+		# requestMatchers: /**
+        alwaysUseDefaultTargetUrl: false
+        intercepterUrls: 
+            /**/management/** : hasRole('ROLE_ADMIN')
+            /login/** : permitAll
+```
+
+oauth2配置：
+认证服务器：
+Java配置
+```Java
+@EnableJFishOauth2(OAuth2Role.AUTHORIZATION_SERVER)
+```
+```xml
+jfish: 
+    oauth2: 
+        jwt: 
+            signingKey: testkey
+        tokenStore: jwt #redis #token存储方式
+        authorizationServer:
+            anyRequest: permitAll
+            allowFormAuthenticationForClients: true #允许form认证
+            clientDetailStore: jdbc #client存储方式
+            checkTokenAccess: permitAll #check_token端点权限
+
+```
+通过：http://localhost:8080/oauth/token 获取access_token
+参数：
+grant_type = client_credentials
+client_id = test
+client_secret = test
+
+
+资源服务器：
+Java配置
+```Java
+@EnableJFishOauth2(OAuth2Role.RESOURCE_SERVER)
+```
+yaml配置
+```xml
+
+jfish: 
+    oauth2: 
+        jwt: 
+            signingKey: testkey
+        tokenStore: jwt #redis
+        resourceServer: 
+            # anyRequest: none
+            requestMatchers: /api/**
+            intercepterUrls: 
+                /oauth/token : permitAll
+                /api/** : authenticated
+```
+访问资源时带上access_token
+http://localhost:8081/api/article?access_token=xxxxxxxxxxxxx
+
 ### 优雅退出支持
 ```yaml
 jfish: 

@@ -36,7 +36,7 @@ public class Oauth2TokenStoreConfiguration {
 
 	@Configuration
 	@ConditionalOnProperty(name=JFishOauth2Properties.TOKEN_STORE_ENABLED_KEY, havingValue=JFishOauth2Properties.KEYS_JDBC)
-	protected static class  JdbcTokenStoreConfiguration {
+	protected static class JdbcTokenStoreConfiguration {
 		@Bean
 		public JdbcTokenStore jdbcTokenStore(@Autowired DataSource dataSource){
 			JdbcTokenStore store = new JdbcTokenStore(dataSource);
@@ -45,7 +45,6 @@ public class Oauth2TokenStoreConfiguration {
 	}
 
 	/***
-	 * security.oauth2.resource.jwt.
 	 * @author wayshall
 	 *
 	 */

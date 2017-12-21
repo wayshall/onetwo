@@ -83,6 +83,9 @@ public class SecurityConfig {
 	public String[] getIgnoringUrls(){
 		return ignoringUrls;
 	}
+	public String getAnyRequest(){
+		return anyRequest;
+	}
 	/**
 	 * for page
 	 * @author wayshall

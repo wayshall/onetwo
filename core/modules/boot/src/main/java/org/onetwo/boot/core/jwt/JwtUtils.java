@@ -6,7 +6,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
 

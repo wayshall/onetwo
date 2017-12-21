@@ -6,6 +6,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
+import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
+import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
@@ -24,8 +26,6 @@ import org.springframework.security.config.annotation.web.configurers.ExceptionH
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
@@ -43,10 +43,10 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 
 	@Getter
 	@Autowired
-	private AccessDeniedHandler ajaxSupportedAccessDeniedHandler;
+	private AjaxSupportedAccessDeniedHandler ajaxSupportedAccessDeniedHandler;
 	
 	@Autowired(required=false)
-	private AuthenticationEntryPoint authenticationEntryPoint;
+	private AjaxSupportedAuthenticationEntryPoint authenticationEntryPoint;
 	
 
 	@Getter
@@ -71,6 +71,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
     @Override
     public void configure(WebSecurity web) throws Exception {
 //        web.ignoring().antMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
+    	//= new DefaultSecurityFilterChain(ignoredRequest) see: WebSecurity#performBuild
     	if(securityConfig.isIgnoringDefautStaticPaths()){
     		web.ignoring().antMatchers("/webjars/**", "/images/**", "/static/**");
     	}

@@ -3,6 +3,7 @@ package org.onetwo.cloud.zuul;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.common.spring.context.AbstractImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -20,6 +21,7 @@ public class EnableJFishZuulExtensionSelector extends AbstractImportSelector<Ena
 		List<String> classNames = new ArrayList<String>();
 		
 		classNames.add(ExtZuulContextConfig.class.getName());
+		classNames.add(ErrorHandleConfiguration.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
 		
 		return classNames;

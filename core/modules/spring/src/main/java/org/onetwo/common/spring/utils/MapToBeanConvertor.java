@@ -41,6 +41,11 @@ public class MapToBeanConvertor {
 		Assert.notNull(beanClass);
 		Assert.notNull(propValues);
 		T bean = ReflectUtils.newInstance(beanClass);
+		return injectBeanProperties(propValues, bean);
+	}
+	
+	public <T> T injectBeanProperties(Map<String, ?> propValues, T bean){
+		Class<?> beanClass = bean.getClass();
 		BeanWrapper bw = SpringUtils.newBeanWrapper(bean);
 		for(PropertyDescriptor pd : bw.getPropertyDescriptors()){
 			PropertyContext pc = new PropertyContext(beanClass, pd);
@@ -85,8 +90,8 @@ public class MapToBeanConvertor {
 		
 		public String getName(){
 			Method method = propertyDescriptor.getReadMethod();
-			FieldName fn = method.getAnnotation(FieldName.class);
-			if(fn==null){
+			FieldName fn = null;
+			if(method==null || (fn = method.getAnnotation(FieldName.class))==null){
 				Field field = ReflectUtils.getIntro(getBeanClass()).getField(propertyDescriptor.getName());
 				if(field!=null){
 					fn = field.getAnnotation(FieldName.class);

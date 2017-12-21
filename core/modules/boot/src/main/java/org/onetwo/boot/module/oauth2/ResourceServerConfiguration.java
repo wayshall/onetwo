@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
+import org.springframework.security.oauth2.provider.error.OAuth2ExceptionRenderer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 @EnableResourceServer
@@ -25,6 +28,15 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 	private JFishOauth2Properties oauth2Properties;
 	@Autowired(required=false)
 	private TokenStore tokenStore;
+	@Autowired(required=false)
+	
+	//for error
+	
+	private OAuth2ExceptionRenderer oauth2ExceptionRenderer;
+	@Autowired(required=false)
+	private OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint;
+	@Autowired(required=false)
+	private OAuth2AccessDeniedHandler oauth2AccessDeniedHandler;
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
@@ -48,6 +60,12 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 		String resourceId = oauth2Properties.getResourceServer().getResourceId();
 		if(resourceId!=null){
 			resources.resourceId(resourceId);//see OAuth2AuthenticationProcessingFilter#doFilter -> OAuth2AuthenticationManager#authenticate
+		}
+		if(oauth2AuthenticationEntryPoint!=null){
+			resources.authenticationEntryPoint(oauth2AuthenticationEntryPoint);
+		}
+		if(oauth2AccessDeniedHandler!=null){
+			resources.accessDeniedHandler(oauth2AccessDeniedHandler);
 		}
 	}
 	
