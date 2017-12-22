@@ -3,6 +3,7 @@ package org.onetwo.boot.core.web.view;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
 
 
 /**
@@ -45,6 +47,7 @@ public class XResponseViewManager implements HandlerMappingListener {
 	private boolean alwaysWrapDataResult = false;
 	private DataResultWrapper dataResultWrapper = DATA_RESULT_WRAPPER;
 	private boolean enableResponseView = true;
+	private Map<Predicate<Object>, DataResultWrapper> matchers = Maps.newHashMap();
 	
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
@@ -57,7 +60,12 @@ public class XResponseViewManager implements HandlerMappingListener {
 	}
 
 
-	public XResponseViewManager registerMatchPredicate(Predicate<?> Predicate, DataResultWrapper dataResultWrapper){
+	public XResponseViewManager registerMatchPredicate(Predicate<Object> predicate){
+		return registerMatchPredicate(predicate, dataResultWrapper);
+	}
+	public XResponseViewManager registerMatchPredicate(Predicate<Object> predicate, DataResultWrapper dataResultWrapper){
+		this.matchers.putIfAbsent(predicate, dataResultWrapper);
+		return this;
 	}
 
 	/***
@@ -67,12 +75,17 @@ public class XResponseViewManager implements HandlerMappingListener {
 	 * @param defaultWrapIfNotFoud
 	 * @return
 	 */
-	public Optional<Object> getResponseViewByPredicate(final Object data, boolean defaultWrapIfNotFoud){
-		Object wrapData = data;
-		if(defaultWrapIfNotFoud){
-			wrapData = this.dataResultWrapper.wrapResult(data);
+	public Optional<Object> getResponseViewByPredicate(final Object data){
+		Optional<Object> wrapDataOpt = Optional.empty();
+		for(Entry<Predicate<Object>, DataResultWrapper> entry : matchers.entrySet()){
+			if(entry.getKey().test(data)){
+				return Optional.ofNullable(entry.getValue().wrapResult(data));
+			}
 		}
-		return wrapData;
+		/*if(defaultWrapIfNotFoud){
+			wrapDataOpt = Optional.ofNullable(dataResultWrapper.wrapResult(data));
+		}*/
+		return wrapDataOpt;
 	}
 	
 	/****

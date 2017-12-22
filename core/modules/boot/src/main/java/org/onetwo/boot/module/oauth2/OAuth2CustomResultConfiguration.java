@@ -1,10 +1,16 @@
 package org.onetwo.boot.module.oauth2;
 
 import org.onetwo.boot.core.json.ObjectMapperProvider;
+import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.boot.module.oauth2.OAuth2ExceptionDataResultJsonSerializer.OAuth2ExceptionMixin;
+import org.onetwo.common.web.utils.RequestUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -14,8 +20,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * <br/>
  */
 @Configuration
-public class OAuth2ErrorConfiguration {
+public class OAuth2CustomResultConfiguration implements InitializingBean{
+
+	@Autowired(required=false)
+	private XResponseViewManager xresponseViewManager;
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if(xresponseViewManager!=null){
+			xresponseViewManager.registerMatchPredicate(body->{
+				return RequestUtils.getCurrentServletPath().map(path->path.contains("/oauth/")).orElse(false);
+			});
+		}
+	}
 	@Bean
 	public ObjectMapperProvider objectMapperProvider(){
 		return ()->{
@@ -29,7 +46,7 @@ public class OAuth2ErrorConfiguration {
 		return new DataResultOAuth2ExceptionRenderer(objectMapperProvider());
 	}
 	
-	/*@Bean
+	@Bean
 	public OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint(){
 		OAuth2AuthenticationEntryPoint ep = new OAuth2AuthenticationEntryPoint();
 		ep.setExceptionRenderer(oauth2ExceptionRenderer());
@@ -43,9 +60,4 @@ public class OAuth2ErrorConfiguration {
 		return dh;
 	}
 	
-	@Bean
-	public DataResultOAuth2ExceptionRenderer oauth2ExceptionRenderer(){
-		return new DataResultOAuth2ExceptionRenderer();
-	}*/
-
 }

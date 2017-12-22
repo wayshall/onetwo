@@ -28,10 +28,10 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 	private JFishOauth2Properties oauth2Properties;
 	@Autowired(required=false)
 	private TokenStore tokenStore;
-	@Autowired(required=false)
 	
 	//for error
-	
+
+	@Autowired(required=false)
 	private OAuth2ExceptionRenderer oauth2ExceptionRenderer;
 	@Autowired(required=false)
 	private OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint;

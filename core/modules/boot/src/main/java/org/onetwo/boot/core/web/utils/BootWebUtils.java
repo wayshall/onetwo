@@ -266,8 +266,18 @@ public final class BootWebUtils {
 	}
 	
 	public static BootWebHelper webHelper(){
-		BootWebHelper help = req(REQUEST_HELPER_KEY);
-		return help;
+//		BootWebHelper help = req(REQUEST_HELPER_KEY);
+		BootWebHelper helper = null;
+		Optional<HttpServletRequest> req = WebHolder.getRequest();
+		if(!req.isPresent()){
+			return null;
+		}
+		helper = req(REQUEST_HELPER_KEY);
+		if(helper==null){
+			helper = BootWebHelper.newHelper(req.get());
+			webHelper(helper);
+		}
+		return helper;
 	}
 	
 	public static BootWebHelper webHelper(HttpServletRequest request){

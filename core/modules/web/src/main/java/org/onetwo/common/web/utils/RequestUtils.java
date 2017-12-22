@@ -158,6 +158,9 @@ public final class RequestUtils {
 		return path;
 	}
 	
+	public static Optional<String> getCurrentServletPath() {
+		return WebHolder.getRequest().map(req->getServletPath(req));
+	}
 	public static String getServletPath(HttpServletRequest request) {
         String servletPath = (String)request.getAttribute(REQUEST_URI);
         if(StringUtils.isNotBlank(servletPath))

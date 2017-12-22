@@ -41,7 +41,7 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 			/*if(logger.isInfoEnabled()){
 				logger.info("wrap body to data result");
 			}*/
-			Optional<Object> bodyOpt = this.xresponseViewManager.getResponseViewByPredicate(body, false);
+			Optional<Object> bodyOpt = this.xresponseViewManager.getResponseViewByPredicate(body);
 			if(bodyOpt.isPresent()){
 				return bodyOpt.get();
 			}
