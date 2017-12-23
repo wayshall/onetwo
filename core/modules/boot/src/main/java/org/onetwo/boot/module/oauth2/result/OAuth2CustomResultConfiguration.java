@@ -1,8 +1,8 @@
-package org.onetwo.boot.module.oauth2;
+package org.onetwo.boot.module.oauth2.result;
 
 import org.onetwo.boot.core.json.ObjectMapperProvider;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
-import org.onetwo.boot.module.oauth2.OAuth2ExceptionDataResultJsonSerializer.OAuth2ExceptionMixin;
+import org.onetwo.boot.module.oauth2.result.OAuth2ExceptionDataResultJsonSerializer.OAuth2ExceptionMixin;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

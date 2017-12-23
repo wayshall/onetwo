@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.oauth2;
+package org.onetwo.boot.module.oauth2.result;
 
 import java.io.IOException;
 import java.util.Map.Entry;

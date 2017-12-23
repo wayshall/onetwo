@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.oauth2;
+package org.onetwo.boot.module.oauth2.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

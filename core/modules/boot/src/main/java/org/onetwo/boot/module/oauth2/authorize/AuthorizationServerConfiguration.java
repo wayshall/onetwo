@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.oauth2;
+package org.onetwo.boot.module.oauth2.authorize;
 
 import static org.onetwo.ext.security.DefaultUrlSecurityConfigurer.configIntercepterUrls;
 import static org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer.defaultAnyRequest;
@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.AuthorizationServerProps;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.ClientDetailStore;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.MemoryUser;

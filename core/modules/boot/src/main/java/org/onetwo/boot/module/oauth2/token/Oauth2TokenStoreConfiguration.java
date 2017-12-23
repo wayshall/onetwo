@@ -1,7 +1,8 @@
-package org.onetwo.boot.module.oauth2;
+package org.onetwo.boot.module.oauth2.token;
 
 import javax.sql.DataSource;
 
+import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

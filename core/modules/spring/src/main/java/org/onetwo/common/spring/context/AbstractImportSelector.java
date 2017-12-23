@@ -1,7 +1,7 @@
 package org.onetwo.common.spring.context;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
+import java.util.Collection;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.context.annotation.ImportSelector;
@@ -31,11 +31,11 @@ abstract public class AbstractImportSelector<A extends Annotation> implements Im
 		if (attributes == null) {
 			throw new IllegalArgumentException(String.format("@%s is not present on importing class '%s' as expected", annotationClass.getSimpleName(), metadata.getClassName()));
 		}
-		List<String> imports = doSelect(metadata, attributes);
+		Collection<String> imports = doSelect(metadata, attributes);
 		return imports.toArray(new String[0]);
 	}
 	
-	abstract protected List<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes);
+	abstract protected Collection<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes);
 	
 
 	protected AnnotationAttributes getAnnotationAttributes(AnnotationMetadata metadata){
