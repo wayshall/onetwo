@@ -2,21 +2,24 @@ package org.onetwo.boot.core.web.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.mvc.utils.DataWrapper;
 import org.onetwo.common.web.utils.ResponseType;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.ModelAndView;
 
 
-public class ResponseFlow<T> {
+public class ResponseFlow {
 
-	public interface ResponseAction<T> {
-		T execute();
+	public interface ResponseAction {
+		ModelAndView execute();
 	}
 
 	private List<ResponseType> responseTypes;
-	private ResponseAction<T> action;
+	private ResponseAction action;
 	
 	public ResponseFlow(ResponseType... responseTypes) {
 		super();
@@ -28,8 +31,8 @@ public class ResponseFlow<T> {
 		return BootWebUtils.mv("", DataWrapper.wrap(value));
 	}*/
 
-	public ResponseFlow<T> responsePage(ResponseAction<T> action){
-		return response(action, ResponseType.PAGE);
+	public ResponseFlow onPage(ResponseAction action){
+		return on(action, ResponseType.PAGE);
 	}
 
 	/***
@@ -37,17 +40,23 @@ public class ResponseFlow<T> {
 	 * @param action
 	 * @return
 	 */
-	public ResponseFlow<T> responseJson(ResponseAction<T> action){
-		return response(action, ResponseType.JSON);
+	public ResponseFlow onJson(Supplier<Object> action){
+		return on(()->{
+			Object result = action.get();
+			if(ModelAndView.class.isInstance(result)){
+				return (ModelAndView)result;
+			}
+			return BootWebUtils.createModelAndView("", DataWrapper.wrap(result));
+		}, ResponseType.JSON);
 	}
 
-	public ResponseFlow<T> response(ResponseAction<T> action, ResponseType...anyOfTypes){
+	public ResponseFlow on(ResponseAction action, ResponseType...anyOfTypes){
 		Stream.of(anyOfTypes).filter(type->responseTypes.contains(type))
 							.findAny().ifPresent(type->ResponseFlow.this.action = action);
 		return this;
 	}
 	
-	public T execute(){
+	public ModelAndView execute(){
 		if(action==null){
 			throw new BaseException("no response action!");
 		}

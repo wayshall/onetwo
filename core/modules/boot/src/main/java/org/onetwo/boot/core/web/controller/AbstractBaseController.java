@@ -353,8 +353,8 @@ abstract public class AbstractBaseController {
 							  .execute();
 	 * @return
 	 */
-	protected ResponseFlow<ModelAndView> responseFlow(){
-		return new ResponseFlow<>(getResponseType());
+	protected ResponseFlow responseFlow(){
+		return new ResponseFlow(getResponseType());
 	}
 
 	/***
