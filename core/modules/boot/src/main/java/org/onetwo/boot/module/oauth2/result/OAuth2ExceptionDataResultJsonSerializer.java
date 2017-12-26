@@ -25,6 +25,8 @@ public class OAuth2ExceptionDataResultJsonSerializer extends OAuth2ExceptionJack
         jgen.writeStartObject();
 		jgen.writeStringField("code", value.getOAuth2ErrorCode());
 		jgen.writeStringField("message", value.getMessage());
+		jgen.writeBooleanField("success", false);
+		jgen.writeBooleanField("error", true);
 		if (value.getAdditionalInformation()!=null) {
 			for (Entry<String, String> entry : value.getAdditionalInformation().entrySet()) {
 				String key = entry.getKey();

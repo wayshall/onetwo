@@ -29,8 +29,11 @@ public class OAuth2CustomResultConfiguration implements InitializingBean{
 	public void afterPropertiesSet() throws Exception {
 		if(xresponseViewManager!=null){
 			xresponseViewManager.registerMatchPredicate(body->{
+				if(OAuth2Exception.class.isInstance(body)){
+					return false;
+				}
 				return RequestUtils.getCurrentServletPath().map(path->path.contains("/oauth/")).orElse(false);
-			});
+			}, new OAuth2DataResultWrapper());
 		}
 	}
 	@Bean

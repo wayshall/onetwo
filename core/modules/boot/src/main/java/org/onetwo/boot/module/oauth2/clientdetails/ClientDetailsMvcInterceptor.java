@@ -20,7 +20,7 @@ import org.springframework.web.method.HandlerMethod;
  * @author wayshall
  * <br/>
  */
-public class ClientMvcInterceptor extends MvcInterceptorAdapter {
+public class ClientDetailsMvcInterceptor extends MvcInterceptorAdapter {
 	public static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 	
 	@Autowired
@@ -29,11 +29,13 @@ public class ClientMvcInterceptor extends MvcInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
-		Optional<String> at = getAccessTokenValue(request);
+		//TODO
+		Optional<String> at = null;// getAccessTokenValue(request);
 		if(!at.isPresent()){
 			throw new ServiceException(OAuth2Errors.CLIENT_ACCESS_TOKEN_NOT_FOUND);
 		}
-		tokenStore.readAccessToken(tokenValue);
+//		tokenStore.readAccessToken(tokenValue);
+		return true;
 	}
 	
 	/*public Optional<String> getAccessTokenValue(HttpServletRequest request){
