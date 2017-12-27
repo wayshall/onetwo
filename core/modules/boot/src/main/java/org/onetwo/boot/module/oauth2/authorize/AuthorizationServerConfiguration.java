@@ -3,6 +3,7 @@ package org.onetwo.boot.module.oauth2.authorize;
 import static org.onetwo.ext.security.DefaultUrlSecurityConfigurer.configIntercepterUrls;
 import static org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer.defaultAnyRequest;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -33,6 +34,7 @@ import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHand
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.error.OAuth2ExceptionRenderer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.util.Assert;
 
@@ -54,8 +56,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Autowired(required=false)
 	private TokenStore tokenStore;
 	//for jwt
+	/*@Autowired(required=false)
+	private TokenEnhancerChain tokenEnhancer;*/
 	@Autowired(required=false)
-	private TokenEnhancer tokenEnhancer;
+	List<TokenEnhancer> tokenEnhancers;
 	
 
 	//for error
@@ -166,9 +170,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		if(tokenStore!=null){
 			endpoints.tokenStore(tokenStore);
 		}
-		if(tokenEnhancer!=null){
-			endpoints.tokenEnhancer(tokenEnhancer);
-		}
+		endpoints.tokenEnhancer(tokenEnhancerChain());
 	}
 	
 	@Configuration
@@ -185,5 +187,13 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 			defaultAnyRequest(http, authorizationServer.getAnyRequest());
 		}
 		
+	}
+	
+	protected TokenEnhancerChain tokenEnhancerChain(){
+		TokenEnhancerChain chain = new TokenEnhancerChain();
+		if(tokenEnhancers!=null){
+			chain.setTokenEnhancers(tokenEnhancers);
+		}
+		return chain;
 	}
 }

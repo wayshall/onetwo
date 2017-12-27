@@ -7,10 +7,10 @@ import java.util.Set;
 
 import org.onetwo.boot.module.oauth2.EnableJFishOauth2.OAuth2Role;
 import org.onetwo.boot.module.oauth2.authorize.AuthorizationServerConfiguration;
+import org.onetwo.boot.module.oauth2.clientdetails.ClientDetailsResolverConfiguration;
 import org.onetwo.boot.module.oauth2.resouce.ResourceServerConfiguration;
 import org.onetwo.boot.module.oauth2.result.OAuth2CustomResultConfiguration;
 import org.onetwo.boot.module.oauth2.token.Oauth2TokenStoreConfiguration;
-import org.onetwo.boot.module.oauth2.token.TokenServiceConfiguration;
 import org.onetwo.common.spring.context.AbstractImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -42,9 +42,9 @@ public class EnableJFishOauth2Selector extends AbstractImportSelector<EnableJFis
 			classNames.add(OAuth2CustomResultConfiguration.class.getName());
 		}
 
-		if(roles.contains(OAuth2Role.TOKEN_SERVICE)){
+		if(roles.contains(OAuth2Role.CLIENT_DETAILS_RESOLVER)){
 			classNames.add(Oauth2TokenStoreConfiguration.class.getName());
-			classNames.add(TokenServiceConfiguration.class.getName());
+			classNames.add(ClientDetailsResolverConfiguration.class.getName());
 		}
 		
 		return classNames;

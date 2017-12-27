@@ -21,7 +21,6 @@ import org.springframework.web.method.HandlerMethod;
  * <br/>
  */
 public class ClientDetailsMvcInterceptor extends MvcInterceptorAdapter {
-	public static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 	
 	@Autowired
 	private TokenStore tokenStore;
@@ -47,20 +46,5 @@ public class ClientDetailsMvcInterceptor extends MvcInterceptorAdapter {
 		return Optional.ofNullable(accessToken);
 	}*/
 
-	public static Optional<ClientDetails> getOrSetClientDetails(HttpServletRequest request, String authHeaderName) {
-		Object data = request.getAttribute(CLIENT_DETAILS_ATTR_KEY);
-		if(data instanceof ClientDetails){
-			return Optional.of((ClientDetails)data);
-		}
-		String token = request.getHeader(authHeaderName);
-
-		if(StringUtils.isBlank(token)){
-			return Optional.empty();
-		}
-		
-		ClientDetails details = JsonMapper.IGNORE_EMPTY.fromJson(token, ClientDetails.class);
-		request.setAttribute(CLIENT_DETAILS_ATTR_KEY, details);
-		return Optional.ofNullable(details);
-	}
 
 }

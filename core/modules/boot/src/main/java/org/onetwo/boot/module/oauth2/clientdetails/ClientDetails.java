@@ -11,14 +11,12 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class ClientDetails implements Serializable {
 	private String clientId;
-	private String clientName;
 	
 	private Map<String, Object> properties;
 	
-	public ClientDetails(String clientId, String clientName) {
+	public ClientDetails(String clientId) {
 		super();
 		this.clientId = clientId;
-		this.clientName = clientName;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -47,14 +45,6 @@ public class ClientDetails implements Serializable {
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
-	}
-
-	public String getClientName() {
-		return clientName;
-	}
-
-	public void setClientName(String clientName) {
-		this.clientName = clientName;
 	}
 
 }

@@ -23,6 +23,6 @@ public @interface EnableJFishOauth2 {
 	enum OAuth2Role {
 		AUTHORIZATION_SERVER,
 		RESOURCE_SERVER,
-		TOKEN_SERVICE;
+		CLIENT_DETAILS_RESOLVER;
 	}
 }
