@@ -22,9 +22,9 @@ public class ClientDetailsResolverConfiguration {
 	}*/
 	@Bean
 	@ConditionalOnMissingBean(ClientDetailsArgumentResolver.class)
-	public ClientDetailsArgumentResolver clientDetailsArgumentResolver() {
+	public ClientDetailsArgumentResolver clientDetailsArgumentResolver(ClientDetailConverter converter) {
 		ClientDetailsArgumentResolver resolver = new ClientDetailsArgumentResolver();
-		resolver.setClientDetailConverter(clientDetailConverter());
+		resolver.setClientDetailConverter(converter);
 		return resolver;
 	}
 	

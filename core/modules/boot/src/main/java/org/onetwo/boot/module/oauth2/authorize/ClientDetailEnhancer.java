@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.oauth2.token;
+package org.onetwo.boot.module.oauth2.authorize;
 
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;

@@ -12,6 +12,7 @@ import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -57,10 +58,10 @@ public class ClientDetailsArgumentResolver implements HandlerMethodArgumentResol
 	}
 
 	protected Object resolveClientDetails(String accessTokenValue) {
-//		OAuth2AccessToken accessToken = tokenStore.readAccessToken(accessTokenValue);
+		OAuth2AccessToken accessToken = tokenStore.readAccessToken(accessTokenValue);
 		OAuth2Authentication authentication = tokenStore.readAuthentication(accessTokenValue);
 		if(clientDetailConverter!=null){
-			return clientDetailConverter.convert(authentication);
+			return clientDetailConverter.convert(accessToken, authentication);
 		}
 		return authentication;
 	}
