@@ -25,9 +25,9 @@ public class ClientDetailsResolverConfiguration {
 	}*/
 	@Bean
 	@ConditionalOnMissingBean(ClientDetailsArgumentResolver.class)
-	public ClientDetailsArgumentResolver clientDetailsArgumentResolver(ClientDetailConverter converter) {
+	public ClientDetailsArgumentResolver clientDetailsArgumentResolver(ClientDetailsObtainService clientDetailsObtainService) {
 		ClientDetailsArgumentResolver resolver = new ClientDetailsArgumentResolver();
-		resolver.setClientDetailConverter(converter);
+		resolver.setClientDetailsObtainService(clientDetailsObtainService);
 		return resolver;
 	}
 	
@@ -36,6 +36,20 @@ public class ClientDetailsResolverConfiguration {
 	public DefaultClientDetailConverter clientDetailConverter() {
 		DefaultClientDetailConverter converter = new DefaultClientDetailConverter();
 		return converter;
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean(ClientDetailsObtainService.class)
+	public ClientDetailsObtainService clientDetailsObtainService(ClientDetailConverter clientDetailConverter){
+		ClientDetailsObtainService obtainService = new ClientDetailsObtainService();
+		obtainService.setClientDetailConverter(clientDetailConverter);
+		return obtainService;
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean(ClientDetailsMvcInterceptor.class)
+	public ClientDetailsMvcInterceptor clientDetailsMvcInterceptor(){
+		return new ClientDetailsMvcInterceptor();
 	}
 
 }
