@@ -6,6 +6,7 @@ import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -22,6 +23,7 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
 @Configuration
 @ConditionalOnClass(TokenStore.class)
 @ConditionalOnProperty(name=JFishOauth2Properties.TOKEN_STORE_ENABLED_KEY)
+@EnableConfigurationProperties(JFishOauth2Properties.class)
 public class Oauth2TokenStoreConfiguration {
 //	static private final Logger logger = JFishLoggerFactory.getLogger(Oauth2TokenStoreConfiguration.class);
 

@@ -12,11 +12,19 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class OAuth2Utils {
 	public static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 
+	public static <T> Optional<T> getClientDetails(HttpServletRequest request) {
+		return getOrSetClientDetails(request, null);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <T> Optional<T> getOrSetClientDetails(HttpServletRequest request, Supplier<T> supplier) {
 		Object data = request.getAttribute(CLIENT_DETAILS_ATTR_KEY);
 		if(data!=null){
 			return Optional.of((T)data);
+		}
+		
+		if(supplier==null){
+			return Optional.empty();
 		}
 		
 		T details = supplier.get();
