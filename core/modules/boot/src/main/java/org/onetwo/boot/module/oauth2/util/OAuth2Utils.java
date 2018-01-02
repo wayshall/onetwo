@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.boot.core.web.utils.BootWebUtils;
+
 /**
  * @author wayshall
  * <br/>
@@ -12,6 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class OAuth2Utils {
 	public static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 
+	public static <T> Optional<T> getCurrentClientDetails() {
+		HttpServletRequest req = BootWebUtils.request();
+		if(req==null){
+			return Optional.empty();
+		}
+		return getClientDetails(req);
+	}
 	public static <T> Optional<T> getClientDetails(HttpServletRequest request) {
 		return getOrSetClientDetails(request, null);
 	}
