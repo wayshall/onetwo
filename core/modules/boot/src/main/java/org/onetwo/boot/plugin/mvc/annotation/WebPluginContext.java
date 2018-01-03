@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 @Target({TYPE, METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+//@Inherited
 public @interface WebPluginContext {
 	
 	String contextPath();

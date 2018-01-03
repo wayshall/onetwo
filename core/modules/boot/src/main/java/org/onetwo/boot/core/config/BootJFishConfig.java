@@ -3,14 +3,16 @@ package org.onetwo.boot.core.config;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import lombok.Data;
 
 import org.onetwo.boot.core.jwt.JwtConfig;
-import org.onetwo.common.propconf.JFishProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import com.google.common.collect.Maps;
 
 
 /***
@@ -44,7 +46,8 @@ public class BootJFishConfig {
 //	private DefaultDataBaseConfig dbm = new DefaultDataBaseConfig();
 	
 	private MvcConfig mvc = new MvcConfig();
-	private JFishProperties plugin = new JFishProperties();
+//	private JFishProperties plugin = new JFishProperties();
+	private Map<String, PluginProperties> plugin = Maps.newHashMap();
 	private JwtConfig jwt = new JwtConfig();
 	/*private JsonConfig json = new JsonConfig();
 	private Properties mediaTypes;*/
