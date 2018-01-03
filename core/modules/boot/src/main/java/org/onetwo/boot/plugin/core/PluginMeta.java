@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 
 
 public interface PluginMeta {
+	String PLUGIN_POSTFIX = "Plugin";
+	
 	String getName();
 	String getVersion();
 	
@@ -13,6 +15,11 @@ public interface PluginMeta {
 	}
 	
 	static PluginMeta by(Class<? extends WebPlugin> webPluginClass, String version){
-		return new SimplePluginMeta(StringUtils.uncapitalize(webPluginClass.getSimpleName()), version);
+		String clsName = webPluginClass.getSimpleName();
+		if(clsName.endsWith(PLUGIN_POSTFIX)){
+			clsName = StringUtils.substringBefore(clsName, PLUGIN_POSTFIX);
+		}
+		clsName = StringUtils.uncapitalize(clsName);
+		return new SimplePluginMeta(clsName, version);
 	}
 }
