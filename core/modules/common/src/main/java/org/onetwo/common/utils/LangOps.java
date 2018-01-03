@@ -165,16 +165,15 @@ final public class LangOps {
 		return Integer.valueOf(size);
 	}
 
-	public static long timeToMills(String time, Integer def) {
+	public static long timeToSeconds(String time, long def) {
+		return parseTime(time, def, (duration, timeUnit)->timeUnit.toSeconds(duration));
+	}
+	public static long timeToMills(String time, long def) {
 		return parseTime(time, def, (duration, timeUnit)->timeUnit.toMillis(duration));
 	}
-	public static long parseTime(String time, Integer def, BiFunction<Integer, TimeUnit, Long> convert) {
+	public static long parseTime(String time, long def, BiFunction<Integer, TimeUnit, Long> convert) {
 		if(StringUtils.isBlank(time)){
-			if(def!=null){
-				return def;
-			}else{
-				Assert.hasLength(time, "Time must not be empty");
-			}
+			return def;
 		}
 		time = time.toUpperCase();
 		TimeUnit timeUnit = null;
