@@ -54,7 +54,7 @@ public class BootPluginRequestMappingCombiner implements RequestMappingCombiner 
 		if(plugin.isPresent()){
 			String pluginName = plugin.get().getPluginMeta().getName();
 			PluginProperties pluginProps = bootJFishConfig.getPlugin().get(pluginName);
-			if(pluginProps!=null && !pluginProps.isAppendPluginContextPath()){
+			if(!bootJFishConfig.isAppendPluginContextPath() || (pluginProps!=null && !pluginProps.isAppendPluginContextPath())){
 				return null;
 			}
 			return resolvePluginContextPath(plugin.get().getContextPath());

@@ -20,6 +20,11 @@ public @interface EnhanceFeignClient {
 	@AliasFor("value")
 	String basePath() default "";
 
+	/***
+	 * 给feign加上basePath，默认根据FeignClient的name查找配置
+	 * @author wayshall
+	 * @return
+	 */
 	@AliasFor("basePath")
 	String value() default "";
 }

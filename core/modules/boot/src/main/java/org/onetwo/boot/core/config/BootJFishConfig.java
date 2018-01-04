@@ -48,6 +48,7 @@ public class BootJFishConfig {
 	private MvcConfig mvc = new MvcConfig();
 //	private JFishProperties plugin = new JFishProperties();
 	private Map<String, PluginProperties> plugin = Maps.newHashMap();
+	boolean appendPluginContextPath = true;
 	private JwtConfig jwt = new JwtConfig();
 	/*private JsonConfig json = new JsonConfig();
 	private Properties mediaTypes;*/

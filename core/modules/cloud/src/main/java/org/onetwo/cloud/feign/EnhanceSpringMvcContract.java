@@ -55,19 +55,27 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		super.processAnnotationOnClass(data, clz);
 		if (clz.isAnnotationPresent(FeignClient.class)) {
 			EnhanceFeignClient classAnnotation = findMergedAnnotation(clz, EnhanceFeignClient.class);
-			Optional<String> basePathOpt = getFeignBasePath(classAnnotation);
+			Optional<String> basePathOpt = getFeignBasePath(clz, classAnnotation);
 			if(basePathOpt.isPresent()){
 				data.template().insert(0, basePathOpt.get());
 			}
 		}
 	}
 	
-	private Optional<String> getFeignBasePath(EnhanceFeignClient classAnnotation){
-		if (classAnnotation == null || StringUtils.isBlank(classAnnotation.basePath())){
+	@SuppressWarnings("deprecation")
+	private Optional<String> getFeignBasePath(Class<?> clz, EnhanceFeignClient classAnnotation){
+		if (classAnnotation == null){
 			return Optional.empty();
 		}
 		String pathValue = classAnnotation.basePath();
-		if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
+		if(StringUtils.isBlank(pathValue)){
+			FeignClient feignClient = findMergedAnnotation(clz, FeignClient.class);
+			String serviceName = StringUtils.isNotBlank(feignClient.name())?feignClient.name():feignClient.serviceId();
+			serviceName = SpringUtils.resolvePlaceholders(applicationContext, serviceName);
+			//不填，默认查找对应的配置 -> jfish.cloud.feign.basePath.serviceName
+			pathValue = FEIGN_BASE_PATH_KEY + serviceName;
+			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
+		}else if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
 			//:serviceName -> jfish.cloud.feign.basePath.serviceName
 			pathValue = FEIGN_BASE_PATH_KEY + pathValue.substring(1);
 			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
