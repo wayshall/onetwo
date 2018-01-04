@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import org.onetwo.common.apiclient.RequestContextData;
@@ -17,6 +18,7 @@ import org.onetwo.common.reflect.TypeResolver;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.slf4j.Logger;
+import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,13 +39,17 @@ import org.springframework.web.client.RestTemplate;
 
 public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
-	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	static private final Logger logger = JFishLoggerFactory.getLogger(ExtRestTemplate.class);
 	
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().enableUnderLineStyle().build();
+	
+	private NamedThreadLocal<RequestContextData> contextThreadLocal = new NamedThreadLocal<>("RestExecutor Context");
 
 	@SuppressWarnings("rawtypes")
 	private ExtRestErrorHandler extErrorHandler;
 	private Type extErrorResultType;
+	
+	private AtomicLong requestIdGenerator = new AtomicLong(0);
 
 	public ExtRestTemplate(){
 		this(RestUtils.isOkHttp3Present()?new OkHttp3ClientHttpRequestFactory():null);
@@ -73,6 +79,11 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		this.setErrorHandler(new OnExtRestErrorHandler());
 	}
 	
+	@Override
+	public String requestId() {
+		return String.valueOf(requestIdGenerator.getAndIncrement());
+	}
+
 	public final ExtRestTemplate addMessageConverters(HttpMessageConverter<?>... elements){
 		getMessageConverters().addAll(Arrays.asList(elements));
 		return this;
@@ -89,6 +100,15 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	@Override
 	public <T> ResponseEntity<T> execute(RequestContextData context) {
+		try {
+			contextThreadLocal.set(context);
+			return doExecute(context);
+		} finally {
+			contextThreadLocal.remove();
+		}
+	}
+	
+	protected <T> ResponseEntity<T> doExecute(RequestContextData context) {
 		RequestCallback rc = null;
 		HttpMethod method = context.getHttpMethod();
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = null;
@@ -119,21 +139,22 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			throw new RestClientException("unsupported method: " + method);
 		}
 		if(context.getHeaderCallback()!=null){
-			rc = wrapRequestCallback(rc, context.getHeaderCallback());
+			rc = wrapRequestCallback(context, rc);
 		}
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
 	}
 	
 	@Override
 	protected <T> T doExecute(URI url, HttpMethod method, RequestCallback requestCallback, ResponseExtractor<T> responseExtractor) throws RestClientException {
+		RequestContextData ctx = contextThreadLocal.get();
 		if(logger.isDebugEnabled()){
-			logger.debug("actual rest request: {} - {}", method, url);
+			logger.debug("rest requestId[{}] : {} - {}", ctx.getRequestId(), method, url);
 		}
 		return super.doExecute(url, method, requestCallback, responseExtractor);
 	}
 	
-	public <T> RequestCallback wrapRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<HttpHeaders> callback) {
-		return new ProcessHeaderRequestCallback(acceptHeaderRequestCallback, callback);
+	public <T> RequestCallback wrapRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
+		return new ProcessHeaderRequestCallback(context, acceptHeaderRequestCallback);
 	}
 	
 
@@ -169,16 +190,18 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	protected static class ProcessHeaderRequestCallback implements RequestCallback {
 		private final RequestCallback acceptHeaderRequestCallback;
 		private final Consumer<HttpHeaders> callback;
+		private RequestContextData context;
 
-		public ProcessHeaderRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<HttpHeaders> callback) {
+		public ProcessHeaderRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
 			super();
 			this.acceptHeaderRequestCallback = acceptHeaderRequestCallback;
-			this.callback = callback;
+			this.context = context;
+			this.callback = context.getHeaderCallback();
 		}
 
 		@Override
 		public void doWithRequest(ClientHttpRequest request) throws IOException {
-			//再次回调header callback，此时为请求header
+			//再次回调header callback，此时为实际请求的header，前一次调用为匹配messageConverter
 			this.callback.accept(request.getHeaders());
 			/*if(ReflectUtils.getFieldsAsMap(acceptHeaderRequestCallback.getClass()).containsKey("requestEntity")){
 				HttpEntity<?> requestEntity = (HttpEntity<?>) ReflectUtils.getFieldValue(acceptHeaderRequestCallback, "requestEntity");
@@ -186,6 +209,9 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 					this.callback.accept(requestEntity.getHeaders());
 				}
 			}*/
+			if(logger.isDebugEnabled()){
+				logger.debug("requestId[{}] header: {}", context.getRequestId(), request.getHeaders());
+			}
 			this.acceptHeaderRequestCallback.doWithRequest(request);
 		}
 	}

@@ -204,6 +204,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			
 			RequestContextData context = RequestContextData.builder()
+															.requestId(restExecutor.requestId())
 															.requestMethod(requestMethod)
 															.uriVariables(uriVariables)
 															.responseType(responseType)
@@ -226,6 +227,9 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 						headers.set(header.substring(0, index), header.substring(index + 1).trim());
 					}
 				}
+				//回调
+				invokeMethod.getApiHeaderCallback(args)
+							.ifPresent(c->c.onHeader(headers));
 			})
 			.requestBodySupplier(ctx->{
 				return invokeMethod.getRequestBody(args);

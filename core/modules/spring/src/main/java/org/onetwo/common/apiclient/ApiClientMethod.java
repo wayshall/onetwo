@@ -64,6 +64,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private Optional<String> acceptHeader;
 	private Optional<String> contentType;
 	private String[] headers;
+	private int apiHeaderCallbackIndex = -1;
 	
 	public ApiClientMethod(Method method) {
 		super(method);
@@ -90,6 +91,20 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		RequestMethod[] methods = (RequestMethod[])reqestMappingAttrs.get("method");
 		requestMethod = LangUtils.isEmpty(methods)?RequestMethod.GET:methods[0];
 
+		this.parameters.stream().filter(p->{
+			return ApiHeaderCallback.class.isAssignableFrom(p.getParameterType());
+		})
+		.findFirst()
+		.ifPresent(p->{
+			this.apiHeaderCallbackIndex = p.getParameterIndex();
+		});;
+	}
+	
+	public Optional<ApiHeaderCallback> getApiHeaderCallback(Object[] args){
+		if(this.apiHeaderCallbackIndex<0){
+			return Optional.empty();
+		}
+		return Optional.ofNullable((ApiHeaderCallback)args[apiHeaderCallbackIndex]);
 	}
 
 	public String[] getHeaders() {

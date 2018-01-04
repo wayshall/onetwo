@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * <br/>
  */
 public class RequestContextData {
+	final private String requestId;
 	final private HttpMethod httpMethod;
 	private String requestUrl;
 	final private Class<?> responseType;
@@ -26,12 +27,13 @@ public class RequestContextData {
 	private RequestBodySupplier requestBodySupplier;
 	
 	@Builder
-	public RequestContextData(RequestMethod requestMethod, Map<String, ?> pathVariables, Map<String, ?> uriVariables, Class<?> responseType) {
+	public RequestContextData(String requestId, RequestMethod requestMethod, Map<String, ?> pathVariables, Map<String, ?> uriVariables, Class<?> responseType) {
 		super();
 		this.httpMethod = HttpMethod.resolve(requestMethod.name());
 		this.uriVariables = uriVariables;
 		this.pathVariables = pathVariables;
 		this.responseType = responseType;
+		this.requestId = requestId;
 	}
 	
 	public Class<?> getResponseType() {
@@ -85,6 +87,10 @@ public class RequestContextData {
 	
 	public static interface RequestBodySupplier {
 		Object getRequestBody(RequestContextData context);
+	}
+
+	public String getRequestId() {
+		return requestId;
 	}
 
 }
