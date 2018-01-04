@@ -227,6 +227,10 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 						headers.set(header.substring(0, index), header.substring(index + 1).trim());
 					}
 				}
+				invokeMethod.getHttpHeaders(args)
+							.ifPresent(h->{
+								headers.putAll(h);
+							});
 				//回调
 				invokeMethod.getApiHeaderCallback(args)
 							.ifPresent(c->c.onHeader(headers));

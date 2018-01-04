@@ -25,6 +25,7 @@ import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -65,6 +66,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private Optional<String> contentType;
 	private String[] headers;
 	private int apiHeaderCallbackIndex = -1;
+	private int headerParameterIndex = -1;
 	
 	public ApiClientMethod(Method method) {
 		super(method);
@@ -91,20 +93,20 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		RequestMethod[] methods = (RequestMethod[])reqestMappingAttrs.get("method");
 		requestMethod = LangUtils.isEmpty(methods)?RequestMethod.GET:methods[0];
 
-		this.parameters.stream().filter(p->{
-			return ApiHeaderCallback.class.isAssignableFrom(p.getParameterType());
-		})
-		.findFirst()
-		.ifPresent(p->{
+		findParameterByType(ApiHeaderCallback.class).ifPresent(p->{
 			this.apiHeaderCallbackIndex = p.getParameterIndex();
-		});;
+		});
+		findParameterByType(HttpHeaders.class).ifPresent(p->{
+			this.headerParameterIndex = p.getParameterIndex();
+		});
 	}
 	
 	public Optional<ApiHeaderCallback> getApiHeaderCallback(Object[] args){
-		if(this.apiHeaderCallbackIndex<0){
-			return Optional.empty();
-		}
-		return Optional.ofNullable((ApiHeaderCallback)args[apiHeaderCallbackIndex]);
+		return apiHeaderCallbackIndex<0?Optional.empty():Optional.ofNullable((ApiHeaderCallback)args[apiHeaderCallbackIndex]);
+	}
+	
+	public Optional<HttpHeaders> getHttpHeaders(Object[] args){
+		return headerParameterIndex<0?Optional.empty():Optional.ofNullable((HttpHeaders)args[headerParameterIndex]);
 	}
 
 	public String[] getHeaders() {

@@ -106,6 +106,18 @@ public class WeatherResponse {
 
 至此，一个rest客户端接口就编写完成了。
 
+### 自定义header
+可直接在client接口里定义参数类型org.springframework.http.HttpHeaders的参数，所有传进去的参数都会直接put到请求头里，或者定义参数类型为org.onetwo.common.apiclient.ApiHeaderCallback的参数，在回调里自行控制。
+```Java
+@RestApiClient(url="http://www.weather.com.cn/data")
+public interface WeatherClient {
+	
+	@GetMapping(value="/sk/{cityid}.html")
+	WeatherResponse getWeather(@PathVariable("cityid") String cityid, HttpHeaders header, ApiHeaderCallback callback);
+
+}
+```
+
 ### 使用接口
 使用的时候，只需要直接把接口用spring的方式直接注入示例即可使用，如：
 ```Java

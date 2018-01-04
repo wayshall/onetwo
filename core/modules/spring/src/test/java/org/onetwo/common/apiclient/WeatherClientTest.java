@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.onetwo.common.apiclient.api.WeatherClient;
 import org.onetwo.common.apiclient.response.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 
 /**
  * @author wayshall
@@ -18,9 +19,11 @@ public class WeatherClientTest extends ApicientBaseTests {
 	
 	@Test
 	public void test(){
-		WeatherResponse res = this.weatherClient.getWeather("101010100", headers->{
-			headers.set("auth", "testvalue");
-			System.out.println("headers: " + headers);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("header1", "header value");
+		WeatherResponse res = this.weatherClient.getWeather("101010100", headers, h->{
+			h.set("auth", "testvalue");
+			System.out.println("headers: " + h);
 		});
 		assertThat(res.getWeatherinfo().getCity()).isEqualTo("北京");
 	}
