@@ -39,9 +39,9 @@ public class ClientDetailsResolverConfiguration {
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean(ClientDetailsObtainService.class)
+	@ConditionalOnMissingBean(AccessTokkenClientDetailsObtainService.class)
 	public ClientDetailsObtainService clientDetailsObtainService(ClientDetailConverter clientDetailConverter){
-		ClientDetailsObtainService obtainService = new ClientDetailsObtainService();
+		AccessTokkenClientDetailsObtainService obtainService = new AccessTokkenClientDetailsObtainService();
 		obtainService.setClientDetailConverter(clientDetailConverter);
 		return obtainService;
 	}

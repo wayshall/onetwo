@@ -33,7 +33,7 @@ public class ClientDetailsArgumentResolver implements HandlerMethodArgumentResol
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest(HttpServletRequest.class);
 		
-		Optional<String> at = clientDetailsObtainService.getAccessTokenValue(request);
+		Optional<String> at = clientDetailsObtainService.getTokenValue(request);
 		if(!at.isPresent()){
 			OAuth2ClientDetails acd = parameter.getParameterAnnotation(OAuth2ClientDetails.class);
 			if(acd.tokenNotFound()==TokenNotFoundActions.THROWS){

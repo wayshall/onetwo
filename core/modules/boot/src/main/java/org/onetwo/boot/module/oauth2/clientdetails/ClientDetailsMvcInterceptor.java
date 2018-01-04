@@ -23,7 +23,7 @@ public class ClientDetailsMvcInterceptor extends MvcInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
-		Optional<String> at = clientDetailsObtainService.getAccessTokenValue(request);
+		Optional<String> at = clientDetailsObtainService.getTokenValue(request);
 		if(!at.isPresent()){
 			throw new ServiceException(OAuth2Errors.CLIENT_ACCESS_TOKEN_NOT_FOUND);
 		}
