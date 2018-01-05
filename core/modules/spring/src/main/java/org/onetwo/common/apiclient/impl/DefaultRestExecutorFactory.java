@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.RestExecutorFactory;
+import org.onetwo.common.apiclient.annotation.RestExecutorInterceptor;
 import org.onetwo.common.spring.rest.ExtRestTemplate;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,9 @@ public class DefaultRestExecutorFactory extends RestExecutorFactory {
 
 	@Autowired(required=false)
 	private RestExecutorConfig restExecutorConfig;
+	//TODO: 未实现，先占坑
 	@Autowired(required=false)
-	private List<ClientHttpRequestInterceptor> restExecutorRequestInterceptors;
+	private List<RestExecutorInterceptor> restExecutorInterceptors;
 	
 	public DefaultRestExecutorFactory() {
 	}
@@ -43,13 +45,13 @@ public class DefaultRestExecutorFactory extends RestExecutorFactory {
 		}else{
 			restTemplate = new ExtRestTemplate();
 		}
-		if(restExecutorRequestInterceptors!=null){
+		if(restExecutorInterceptors!=null){
 			List<ClientHttpRequestInterceptor> interList = restTemplate.getInterceptors();
 			if(interList==null){
 				interList = Lists.newArrayList();
 				restTemplate.setInterceptors(interList);
 			}
-			interList.addAll(restExecutorRequestInterceptors);
+//			interList.addAll(restExecutorRequestInterceptors);
 		}
 		return restTemplate;
 	}
