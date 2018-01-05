@@ -1,5 +1,7 @@
 package org.onetwo.boot.module.oauth2.clientdetails;
 
+import java.io.Serializable;
+
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
@@ -9,6 +11,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
  */
 public interface ClientDetailConverter {
 	
-	Object convert(OAuth2AccessToken accessToken, OAuth2Authentication oauth2Authentication);
+	Serializable convert(OAuth2AccessToken accessToken, OAuth2Authentication oauth2Authentication);
 
 }

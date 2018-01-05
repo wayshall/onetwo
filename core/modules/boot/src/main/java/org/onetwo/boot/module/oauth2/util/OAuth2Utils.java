@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.oauth2.util;
 
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -7,31 +8,30 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
+import org.springframework.util.Assert;
 
 /**
  * @author wayshall
  * <br/>
  */
 public abstract class OAuth2Utils {
-	public static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
-	private TokenExtractor tokenExtractor = new BearerTokenExtractor();
+	private static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 
-	public static <T> Optional<T> getCurrentClientDetails() {
+	public static <T extends Serializable> Optional<T> getCurrentClientDetails() {
 		HttpServletRequest req = BootWebUtils.request();
 		if(req==null){
 			return Optional.empty();
 		}
 		return getClientDetails(req);
 	}
-	public static <T> Optional<T> getClientDetails(HttpServletRequest request) {
+	public static <T extends Serializable> Optional<T> getClientDetails(HttpServletRequest request) {
 		return getOrSetClientDetails(request, null);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> Optional<T> getOrSetClientDetails(HttpServletRequest request, Supplier<T> supplier) {
+	public static <T extends Serializable> Optional<T> getOrSetClientDetails(HttpServletRequest request, Supplier<T> supplier) {
 		Object data = request.getAttribute(CLIENT_DETAILS_ATTR_KEY);
 		if(data!=null){
 			return Optional.of((T)data);
@@ -42,8 +42,13 @@ public abstract class OAuth2Utils {
 		}
 		
 		T details = supplier.get();
-		request.setAttribute(CLIENT_DETAILS_ATTR_KEY, details);
+		setCurrentClientDetails(request, details);
 		return Optional.ofNullable(details);
+	}
+	
+	public static void setCurrentClientDetails(HttpServletRequest request, Object clientDetail) {
+		Assert.notNull(clientDetail);
+		request.setAttribute(CLIENT_DETAILS_ATTR_KEY, clientDetail);
 	}
 	
 	

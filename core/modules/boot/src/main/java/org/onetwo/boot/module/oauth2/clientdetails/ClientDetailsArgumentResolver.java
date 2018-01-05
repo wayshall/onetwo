@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.oauth2.clientdetails;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +42,7 @@ public class ClientDetailsArgumentResolver implements HandlerMethodArgumentResol
 			}
 			return null;
 		}
-		Optional<Object> result = clientDetailsObtainService.resolveAndStoreClientDetails(request);
+		Optional<? extends Serializable> result = clientDetailsObtainService.resolveAndStoreClientDetails(request);
 		return result.orElse(null);
 	}
 

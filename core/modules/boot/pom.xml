@@ -270,6 +270,13 @@
           <artifactId>aliyun-sdk-oss</artifactId>
           <optional>true</optional>
         </dependency>
+        
+        <!-- cos -->
+	    <dependency>
+	      <groupId>com.qcloud</groupId>
+	      <artifactId>cos_api</artifactId>
+          <optional>true</optional>
+	    </dependency>
 	    
         <!-- test -->
         <dependency>
