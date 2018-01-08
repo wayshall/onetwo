@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.alioss;
+package org.onetwo.boot.module.cos;
 
 import java.io.File;
 import java.io.InputStream;
@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.io.input.ReaderInputStream;
+import org.onetwo.boot.module.alioss.OssProperties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.jackson.JsonMapper;
@@ -18,67 +19,59 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
-import com.aliyun.oss.ClientConfiguration;
-import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.model.Bucket;
-import com.aliyun.oss.model.BucketList;
-import com.aliyun.oss.model.CannedAccessControlList;
-import com.aliyun.oss.model.CreateBucketRequest;
-import com.aliyun.oss.model.ListBucketsRequest;
-import com.aliyun.oss.model.OSSObject;
-import com.aliyun.oss.model.ObjectMetadata;
-import com.aliyun.oss.model.PutObjectRequest;
-import com.aliyun.oss.model.PutObjectResult;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.ClientConfig;
+import com.qcloud.cos.auth.BasicCOSCredentials;
+import com.qcloud.cos.auth.COSCredentials;
+import com.qcloud.cos.model.Bucket;
+import com.qcloud.cos.model.COSObject;
+import com.qcloud.cos.model.CannedAccessControlList;
+import com.qcloud.cos.model.CreateBucketRequest;
+import com.qcloud.cos.model.ListBucketsRequest;
+import com.qcloud.cos.model.ObjectMetadata;
+import com.qcloud.cos.model.PutObjectRequest;
+import com.qcloud.cos.model.PutObjectResult;
 
 /**
  * @author wayshall
  * <br/>
  */
-public class OssClientWrapper implements InitializingBean, DisposableBean {
+public class CosClientWrapper implements InitializingBean, DisposableBean {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
-	private String endpoint;
-	private String accessKeyId;
-	private String accessKeySecret;
-	private OSSClient ossClient;
-	private ClientConfiguration clinetConfig;
+	private CosProperties cosProperties;
+	private COSClient cosClient;
+	private ClientConfig clientConfig;
 	
-	public OssClientWrapper(String endpoint, String accessKeyId, String accessKeySecret) {
+	public CosClientWrapper(CosProperties cosProperties) {
 		super();
-		this.endpoint = endpoint;
-		this.accessKeyId = accessKeyId;
-		this.accessKeySecret = accessKeySecret;
-	}
-	
-	@Override
-	public void destroy() throws Exception {
-		this.ossClient.shutdown();
+		this.cosProperties = cosProperties;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(clinetConfig==null){
-			clinetConfig = new ClientConfiguration();
+		Assert.hasText(cosProperties.getAccessKey());
+		Assert.hasText(cosProperties.getSecretKey());
+		Assert.hasText(cosProperties.getRegionName());
+		COSCredentials credentials = new BasicCOSCredentials(cosProperties.getAccessKey(), cosProperties.getSecretKey());
+		if(clientConfig==null){
+			clientConfig = cosProperties.getClient();
 		}
-		configClient(clinetConfig);
-		this.ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret, clinetConfig);
+		configClient(clientConfig);
+		cosClient = new COSClient(credentials, clientConfig);
 	}
 	
-	protected void configClient(ClientConfiguration clinetConfig){
+	protected void configClient(ClientConfig clientConfig){
 	}
-
-
+	
 	public Bucket createBucketIfNotExists(String bucketName) {
 		return getBucket(bucketName, true).get();
 	}
-	
-	public void setClinetConfig(ClientConfiguration clinetConfig) {
-		this.clinetConfig = clinetConfig;
-	}
+
 
 	public Optional<Bucket> getBucket(String bucketName, boolean createIfNotExist) {
 		Bucket bucket = null;
-		if (!ossClient.doesBucketExist(bucketName)) {
+		if (!cosClient.doesBucketExist(bucketName)) {
 			if(!createIfNotExist){
 				return Optional.empty();
 			}
@@ -88,21 +81,26 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			if(logger.isInfoEnabled()){
 				logger.info("Creating bucket {}", bucketName);
 			}
-//            ossClient.createBucket(bucketName);
-            CreateBucketRequest createBucketRequest= new CreateBucketRequest(bucketName);
-            createBucketRequest.setCannedACL(CannedAccessControlList.PublicRead);
-            bucket = ossClient.createBucket(createBucketRequest);
+			CreateBucketRequest createBucketRequest= new CreateBucketRequest(bucketName);
+            createBucketRequest.setCannedAcl(CannedAccessControlList.PublicRead);
+            bucket = cosClient.createBucket(createBucketRequest);
         }else{
-        	bucket = ossClient.getBucketInfo(bucketName).getBucket();
+        	bucket = new Bucket(bucketName);
         }
 		return Optional.ofNullable(bucket);
+	}
+	
+	@Override
+	public void destroy() throws Exception {
+		if(cosClient!=null){
+			this.cosClient.shutdown();
+		}
 	}
 
 	public List<Bucket> listBuckets(){
         ListBucketsRequest listBucketsRequest = new ListBucketsRequest();
-        listBucketsRequest.setMaxKeys(500);
-        BucketList buckList = ossClient.listBuckets(listBucketsRequest);
-        return buckList.getBucketList();
+//        listBucketsRequest.setMaxKeys(500);
+        return cosClient.listBuckets(listBucketsRequest);
 	}
 	
 	public ObjectOperation objectOperation(String bucketName, String key){
@@ -112,60 +110,64 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 	public String storeWithFileName(String bucketName, File file, ObjectMetadata meta){
 		String key = FileUtils.getFileName(file.getPath());
 		objectOperation(bucketName, key).store(file, meta);
-		return getUrl(true, bucketName, key);
+		return getUploadUrl(true, bucketName, key);
 	}
 	
 	public String store(String bucketName, File file, ObjectMetadata meta){
 		String key = UUID.randomUUID().toString();
 		objectOperation(bucketName, key).store(file, meta);
-		return getUrl(true, bucketName, key);
+		return getUploadUrl(true, bucketName, key);
 	}
 	
-	public String getUrl(boolean https, String bucketName, String key){
-		return OssProperties.buildUrl(https, endpoint, bucketName, key);
+	public String getDownloadUrl(boolean https, String bucketName, String key){
+		return OssProperties.buildUrl(https, cosProperties.getDownloadEndPoint(), bucketName, key);
+	}
+	
+	public String getUploadUrl(boolean https, String bucketName, String key){
+		return OssProperties.buildUrl(https, cosProperties.getUploadEndPoint(), bucketName, key);
 	}
 	
 	public PutObjectResult putObject(PutObjectRequest request){
-		return ossClient.putObject(request);
+		return cosClient.putObject(request);
 	}
 	
-	public OSSClient getOssClient() {
-		return ossClient;
+	public COSClient getCosClient() {
+		return cosClient;
 	}
 	
 	public void deleteObject(String bucketName, String key){
-		ossClient.deleteObject(bucketName, key);
+		cosClient.deleteObject(bucketName, key);
 	}
 
 	static public class ObjectOperation {
 		private String bucketName;
 		private String key;
-		private OssClientWrapper wrapper;
-		private Optional<OSSObject> ossObject;
-		private OSSClient ossClient;
+		private CosClientWrapper wrapper;
+		private Optional<COSObject> cosObject;
+		private COSClient cosClient;
 		private PutObjectResult storeResult;
-		public ObjectOperation(String bucketName, String key, OssClientWrapper wrapper) {
+		public ObjectOperation(String bucketName, String key, CosClientWrapper wrapper) {
 			super();
 			this.bucketName = bucketName;
 			this.key = key;
 			this.wrapper = wrapper;
-			this.ossClient = wrapper.ossClient;
+			this.cosClient = wrapper.cosClient;
 		}
 
-		public String getUrl(boolean https){
+		/*public String getUrl(boolean https){
 			return OssProperties.buildUrl(https, wrapper.endpoint, bucketName, key);
-		}
+		}*/
 		
-		public Optional<OSSObject> getOSSObject(){
-			if(ossObject!=null){
-				return ossObject;
+		public Optional<COSObject> getCosObject(){
+			if(cosObject!=null){
+				return cosObject;
 			}
-			if(!ossClient.doesObjectExist(bucketName, key)){
-				ossObject = Optional.empty();
+			if(!cosClient.doesObjectExist(bucketName, key)){
+				cosObject = Optional.empty();
 			}else{
-				ossObject = Optional.ofNullable(ossClient.getObject(bucketName, key));
+				cosObject = Optional.ofNullable(cosClient.getObject(bucketName, key));
 			}
-			return ossObject;
+			return cosObject;
 		}
 		
 		public ObjectOperation store(File file){
@@ -176,7 +178,11 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			if(!file.exists()){
 				throw new BaseException("file is not exists!");
 			}
-			putObject(new PutObjectRequest(bucketName, key, file, meta));
+			PutObjectRequest putReq = new PutObjectRequest(bucketName, key, file);
+			if(meta!=null){
+				putReq.withMetadata(meta);
+			}
+			putObject(putReq);
 			return this;
 		}
 		
@@ -215,7 +221,7 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		}
 		
 		public ObjectOperation override(File file){
-			Optional<OSSObject> opt = getOSSObject();
+			Optional<COSObject> opt = getCosObject();
 			if(!opt.isPresent()){
 				throw new BaseException("key["+key+"] is not exists in bucket["+bucketName+"]");
 			}
@@ -243,7 +249,7 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		}
 		
 		public ObjectOperation access(CannedAccessControlList access){
-			wrapper.ossClient.setObjectAcl(bucketName, key, access);
+			wrapper.cosClient.setObjectAcl(bucketName, key, access);
 			return this;
 		}
 

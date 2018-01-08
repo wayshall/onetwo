@@ -39,8 +39,6 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/bom</module>
-                <module>modules/spring</module>
                 <module>modules/boot</module>
 			</modules>
            <build>
