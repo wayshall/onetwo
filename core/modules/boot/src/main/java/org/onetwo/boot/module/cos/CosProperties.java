@@ -4,6 +4,7 @@ import lombok.Data;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.region.Region;
@@ -56,6 +57,7 @@ public class CosProperties {
 		return getBucketName(bucketName);
 	}
 	public String getBucketName(String bucketName){
+		Assert.hasText(appid);
 		String postfix = "-"+appid;
 		if(bucketName.endsWith(postfix)){
 			return bucketName;

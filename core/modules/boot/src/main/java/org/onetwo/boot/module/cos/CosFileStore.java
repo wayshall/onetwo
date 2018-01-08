@@ -6,8 +6,6 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 import org.onetwo.apache.io.IOUtils;
-import org.onetwo.boot.module.alioss.OssClientWrapper;
-import org.onetwo.boot.module.alioss.OssProperties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
