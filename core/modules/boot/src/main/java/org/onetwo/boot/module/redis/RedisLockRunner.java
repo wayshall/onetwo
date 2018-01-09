@@ -54,16 +54,15 @@ public class RedisLockRunner {
 	
 	public <T> T tryLock(Function<Lock, Boolean> lockTryer, Supplier<T> action){
 		Lock lock = redisLockRegistry.obtain(lockKey);
-		if(!lockTryer.apply(lock)){
-			log.info("can not obtain task lock, ignore task. lock key: {}", lockKey);
-			return null;
-		}
-
-		if(log.isDebugEnabled()){
-			log.debug("lock with key : {}", lockKey);
-		}
 		T result = null;
 		try {
+			if(!lockTryer.apply(lock)){
+				log.info("can not obtain task lock, ignore task. lock key: {}", lockKey);
+				return null;
+			}
+			if(log.isDebugEnabled()){
+				log.debug("lock with key : {}", lockKey);
+			}
 			result = action.get();
 		} catch (Exception e) {
 			handleException(e);
