@@ -52,11 +52,15 @@ public class CosProperties {
 		}
 		return client;
 	}
-	
-	public String getBucketName(){
-		return getBucketName(bucketName);
+
+	private String getBucketName(){
+		return bucketName;
 	}
-	public String getBucketName(String bucketName){
+	
+	public String getAppBucketName(){
+		return getAppBucketName(bucketName);
+	}
+	public String getAppBucketName(String bucketName){
 		Assert.hasText(appid);
 		String postfix = "-"+appid;
 		if(bucketName.endsWith(postfix)){
@@ -66,7 +70,7 @@ public class CosProperties {
 	}
 	
 	public String getDownloadUrl(String key){
-		String url = buildUrl(true, getDownloadEndPoint(), getBucketName(), key);
+		String url = buildUrl(true, getDownloadEndPoint(), getAppBucketName(), key);
 		return url;
 	}
 	

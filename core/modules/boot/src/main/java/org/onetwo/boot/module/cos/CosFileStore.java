@@ -28,12 +28,12 @@ public class CosFileStore implements FileStorer<SimpleFileStoredMeta>, Initializ
 		super();
 		this.wrapper = wrapper;
 		this.cosProperties = ossProperties;
-		this.bucketName = ossProperties.getBucketName();
+		this.bucketName = ossProperties.getAppBucketName();
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.wrapper.createBucketIfNotExists(cosProperties.getBucketName());
+		this.wrapper.createBucketIfNotExists(cosProperties.getAppBucketName());
 	}
 
 	@Override
