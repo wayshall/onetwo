@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.aopalliance.intercept.MethodInterceptor;
 
+import com.google.common.collect.Lists;
+
 /**
  * @author wayshall
  * <br/>
@@ -44,7 +46,8 @@ public class SpringMixinableInterfaceCreator implements MixinableInterfaceCreato
 	}
 	
 	private void analyseProxyInterfaces(){
-		for(Class<?> inter : this.proxyInterfaces){
+		List<Class<?>> proxyInterfaces = Lists.newArrayList(this.proxyInterfaces);
+		for(Class<?> inter : proxyInterfaces){
 			analyseInterface(inter);
 		}
 	}

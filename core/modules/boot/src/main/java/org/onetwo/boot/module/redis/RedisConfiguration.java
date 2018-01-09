@@ -33,7 +33,7 @@ public class RedisConfiguration {
 	@Bean
     @ConditionalOnMissingBean(name=BEAN_REDISCONNECTIONFACTORY)
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
-    public JedisConnectionFactory jfishRedisConnectionFactory() throws Exception {
+    public JedisConnectionFactory redisConnectionFactory() throws Exception {
 		JedisConnectionFactory jf = new JedisConnectionFactory();
 		CopyUtils.copy(jf, redisProperties);
 		if(redisProperties.getPool()!=null){
@@ -44,11 +44,11 @@ public class RedisConfiguration {
 	
 	@Bean
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
-	public RedisTemplate<String, Object> jfishRedisTemplate(@Autowired @Qualifier(BEAN_REDISCONNECTIONFACTORY) JedisConnectionFactory jfishRedisConnectionFactory) throws Exception  {
+	public RedisTemplate<String, Object> jfishRedisTemplate(@Autowired @Qualifier(BEAN_REDISCONNECTIONFACTORY) JedisConnectionFactory jedisConnectionFactory) throws Exception  {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
-		template.setConnectionFactory(jfishRedisConnectionFactory);
+		template.setConnectionFactory(jedisConnectionFactory);
 		return template;
 	}
 	
