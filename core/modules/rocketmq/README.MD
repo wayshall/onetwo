@@ -72,7 +72,7 @@ jfish:
 ```
 
 ## 消费组使用
-使用@RMQConsumer注解标注作为consumer的bean，然后使用@RMQSubscribe标注消费者的方法，注意，该方法有且只有一个MessageExt类型参数。
+使用@ONSConsumer 注解标注作为consumer的bean，然后使用@ONSSubscribe 标注消费者的方法，注意，该方法有且只有一个MessageExt类型参数。
 ```java
 @ONSConsumer
 public class ProductTestAppMQConsumer{
