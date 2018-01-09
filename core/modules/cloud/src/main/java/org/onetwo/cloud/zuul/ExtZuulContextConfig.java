@@ -1,13 +1,10 @@
 package org.onetwo.cloud.zuul;
 
-<<<<<<< HEAD
-import org.onetwo.boot.core.BootFixedConfiguration;
-=======
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
 import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
->>>>>>> wechat
 import org.onetwo.cloud.core.BootJfishCloudConfig;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.filter.SpringMultipartFilterProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -20,13 +17,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-<<<<<<< HEAD
-import org.springframework.context.annotation.Import;
-=======
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
->>>>>>> wechat
 
 /**
  * @author wayshall
@@ -35,22 +28,17 @@ import org.springframework.web.multipart.support.MultipartFilter;
 @EnableDiscoveryClient
 @EnableConfigurationProperties({BootJfishCloudConfig.class, TomcatProperties.class})
 @Configuration
-@Import(BootFixedConfiguration.class)
 public class ExtZuulContextConfig {
 	@Autowired
     private BootJfishCloudConfig cloudConfig;
 	@Autowired
 	private MultipartProperties multipartProperties;
 
-	/*@Bean
-	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
-=======
 	@Bean
 	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
->>>>>>> wechat
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
-	}*/
+	}
 	
     @Bean
     @ConditionalOnClass(name="com.netflix.zuul.ZuulFilter")
@@ -68,13 +56,13 @@ public class ExtZuulContextConfig {
     	return new SpringMultipartFilterProxy();
     }
     
-	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
+	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 	@ConditionalOnMissingBean(name={MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME})
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
 		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
 		return resolver;
-	}*/
+	}
 	
 	/*@Bean
 	public FormBodyWrapperFilter formBodyWrapperFilter(){
