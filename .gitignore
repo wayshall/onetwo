@@ -46,3 +46,4 @@ application-product.yaml
 /core/deploy-all.bat
 /core/modules/rocketmq/src/test/resources/ons-test.properties
 /core/deploy-microcloud.bat
+/core/modules/rocketmq/src/test/resources/rmqwithonsclient-test.properties
