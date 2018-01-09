@@ -17,7 +17,7 @@ public class AnnotaionConsumer  {
 
 	@ONSSubscribe(consumerId="${consumerIds.test2}", topic=ONSProducerTest.TOPIC, tags=ONSProducerTest.ORDER_PAY, consumeFromWhere=ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET)
 	public void doConsume(ConsumContext consumContext, String body) {
-		System.out.println("注解消费者，收到消息：" + body);
+		System.out.println("注解消费者，收到消息：" + consumContext.getDeserializedBody());
 	}
 
 }

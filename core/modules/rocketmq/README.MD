@@ -71,18 +71,21 @@ jfish:
         onsAddr: broker地址
 ```
 
-## 消费组使用
-使用@ONSConsumer 注解标注作为consumer的bean，然后使用@ONSSubscribe 标注消费者的方法，注意，该方法有且只有一个MessageExt类型参数。
+## 消费者使用
+使用@ONSConsumer 注解标注作为consumer的bean，然后使用@ONSSubscribe 标注消费者的方法，消费方法只有一个ConsumContext类型的参数
 ```java
 @ONSConsumer
 public class ProductTestAppMQConsumer{
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@ONSSubscribe(consumerId="search-consumer-product-test", topic="product")
-	public void doConsume(ConsumContext consumContext, String body) {
-		System.out.println("注解消费者，收到消息：" + body);
+	public void doConsume(ConsumContext consumContext) {
+		System.out.println("注解消费者，收到消息：" + consumContext.getDeserializedBody());
 	}
 
 }
 ```
+如果不使用@ONSSubscribe 注解方法，则可以实现CustomONSConsumer接口。   
+
+
 启动spring容器后将会自动启动消费组。
