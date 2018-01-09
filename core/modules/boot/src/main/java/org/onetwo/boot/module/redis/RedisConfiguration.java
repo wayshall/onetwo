@@ -43,12 +43,14 @@ public class RedisConfiguration {
     }
 	
 	@Bean
+	@ConditionalOnMissingBean(name="stringKeyRedisTemplate")
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
-	public RedisTemplate<String, Object> jfishRedisTemplate(@Autowired @Qualifier(BEAN_REDISCONNECTIONFACTORY) JedisConnectionFactory jedisConnectionFactory) throws Exception  {
+	public RedisTemplate<String, Object> stringKeyRedisTemplate(@Autowired @Qualifier(BEAN_REDISCONNECTIONFACTORY) JedisConnectionFactory jedisConnectionFactory) throws Exception  {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
 		template.setConnectionFactory(jedisConnectionFactory);
+		
 		return template;
 	}
 	
