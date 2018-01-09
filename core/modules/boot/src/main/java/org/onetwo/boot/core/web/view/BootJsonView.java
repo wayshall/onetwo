@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.boot.core.json.ObjectMapperProvider;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -50,25 +51,20 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	
 	@Autowired(required=false)
 	private XResponseViewManager xresponseViewManager;
+	@Autowired(required=false)
+	private ObjectMapperProvider objectMapperProvider;
 
 	
 	public BootJsonView(){
-//		this.configJson();
 		JsonMapper jsonMapper = JsonMapper.ignoreNull();
 		this.setObjectMapper(jsonMapper.getObjectMapper());
 	}
 
 	public void afterPropertiesSet() throws Exception {
 		this.setContentType(CONTENT_TYPE);
-//		setExtractValueFromSingleKeyModel(true);
-		/*ObjectMapper mapper = SpringUtils.getBean(applicationContext, ObjectMapper.class);
-		if(mapper!=null){
-			this.setObjectMapper(mapper);
-		}else{
-			mapper = BootWebUtils.createObjectMapper(applicationContext);
-			this.setObjectMapper(mapper);
-		}*/
-		this.setObjectMapper(JsonMapper.ignoreNull().getObjectMapper());
+		if(objectMapperProvider!=null){
+			setObjectMapper(objectMapperProvider.createObjectMapper());
+		}
 	}
 	
 	@Override
@@ -168,6 +164,10 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	
 	protected Object delegateSpringFilterModel(Map<String, Object> model) {
 		return super.filterModel(model);
+	}
+
+	public void setObjectMapperProvider(ObjectMapperProvider objectMapperProvider) {
+		this.objectMapperProvider = objectMapperProvider;
 	}
 	
 
