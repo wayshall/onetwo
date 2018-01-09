@@ -42,7 +42,6 @@ public class ExtZuulContextConfig {
 	@Autowired
 	private MultipartProperties multipartProperties;
 
-<<<<<<< HEAD
 	/*@Bean
 	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
 =======
