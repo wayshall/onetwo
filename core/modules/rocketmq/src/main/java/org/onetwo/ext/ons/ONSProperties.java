@@ -28,6 +28,7 @@ public class ONSProperties {
 	String accessKey;
 	String secretKey;
 	String onsAddr;
+	String namesrvAddr;
 	MessageSerializerType serializer =  MessageSerializerType.JSON;
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
@@ -49,8 +50,10 @@ public class ONSProperties {
 			//自动填写默认值，避免ons客户端抛错
 			this.accessKey = "<rocketmq don't need accessKey>";
 			this.secretKey = "<rocketmq don't need secretKey>";
+			Assert.hasText(namesrvAddr, "namesrvAddr must have text");
+			baseConfig.setProperty(PropertyKeyConst.NAMESRV_ADDR, namesrvAddr);
 		}
-		Assert.hasText(onsAddr);
+		Assert.hasText(onsAddr, "onsAddr must have text");
 		baseConfig.setProperty(PropertyKeyConst.AccessKey, accessKey);
 		baseConfig.setProperty(PropertyKeyConst.SecretKey, secretKey);
 		baseConfig.setProperty(PropertyKeyConst.ONSAddr, onsAddr);

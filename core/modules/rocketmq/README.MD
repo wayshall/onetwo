@@ -53,18 +53,22 @@ producerId为你在阿里云mq服务申请的producerId。
 ## ons配置
 客户端默认服务器为阿里云ons，一般情况下，你需要提供下面三个配置：
 ```yaml
-jfish.ons.accessKey=你的阿里云服务的accessKey
-jfish.ons.secretKey=你的阿里云服务的secretKey
-jfish.ons.onsAddr=http://onsaddr-internet.aliyun.com/rocketmq/nsaddr4client-internet
+jfish: 
+    ons: 
+        accessKey: 你的阿里云服务的accessKey
+        secretKey: 你的阿里云服务的secretKey
+        onsAddr: http://onsaddr-internet.aliyun.com/rocketmq/nsaddr4client-internet
 ```
 
 ## rocketmq配置
 如果mq服务器为开源版的rocketmq，你需要填写一下配置：
 
 ```yaml
-jfish.ons.serverType=rocketmq #配置mq服务器为rocketmq
-jfish.ons.onsAddr=broker地址
-jfish.ons.commons.NAMESRV_ADDR=nameserver的地址
+jfish: 
+    ons: 
+        serverType: rocketmq #配置mq服务器为rocketmq
+        namesrvAddr: nameserver的地址
+        onsAddr: broker地址
 ```
 
 ## 消费组使用
