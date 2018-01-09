@@ -42,11 +42,21 @@ public class BaseMethodParameter extends MethodParameter {
 	@Override
 	public String getParameterName() {
 		String name = super.getParameterName();
-		if(StringUtils.isBlank(name) && this.parameter.isNamePresent()){
-			name = this.parameter.getName();
+		if(StringUtils.isBlank(name)){
+			name = obtainParameterName();
 			this.setParameterName(name);
 		}
 		return name;
+	}
+	
+	protected String obtainParameterName(){
+		String pname = null;
+		if(this.parameter.isNamePresent()){
+			return this.parameter.getName();
+		}else{
+			pname = String.valueOf(getParameterIndex());
+		}
+		return pname;
 	}
 	
 

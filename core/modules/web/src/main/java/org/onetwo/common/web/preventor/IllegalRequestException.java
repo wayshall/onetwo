@@ -13,8 +13,4 @@ public class IllegalRequestException extends ServiceException{
 	public IllegalRequestException(String msg) {
 		super(msg);
 	}
-
-	public String getCode() {
-		return super.getDefaultCode() + ERROR_CODE;
-	}
 }

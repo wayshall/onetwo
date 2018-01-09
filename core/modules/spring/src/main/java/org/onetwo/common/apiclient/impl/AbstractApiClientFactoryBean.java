@@ -10,12 +10,13 @@ import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
-import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientError;
+import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.aop.MixinableInterfaceCreator;
 import org.onetwo.common.spring.aop.SpringMixinableInterfaceCreator;
 import org.onetwo.common.spring.rest.RestUtils;
@@ -81,11 +82,18 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(restExecutor);
 		
-		MethodInterceptor apiClient = createApiMethodInterceptor();
 //		this.apiObject = Proxys.interceptInterfaces(Arrays.asList(interfaceClass), apiClient);
 		
+		//在getObject里初始化可避免启动时发生下面的错误
+		//Bean creation exception on non-lazy FactoryBean type check: org.springframework.beans.factory.BeanCreationException: Error creating bean with name
+//		Springs.initApplicationIfNotInitialized(applicationContext);
+		
+		/*if(interfaceClass.getSimpleName().startsWith("WechatOauth2")){
+			System.out.println("test");
+		}*/
+		/*MethodInterceptor apiClient = createApiMethodInterceptor();
 		MixinableInterfaceCreator mixinableCreator = SpringMixinableInterfaceCreator.classNamePostfixMixin(interfaceClass);
-		this.apiObject = mixinableCreator.createMixinObject(apiClient);
+		this.apiObject = mixinableCreator.createMixinObject(apiClient);*/
 	}
 	
 
@@ -93,7 +101,15 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 
 	@Override
 	public Object getObject() throws Exception {
-		return this.apiObject;
+		Object apiObject = this.apiObject;
+		if(apiObject==null){
+			Springs.initApplicationIfNotInitialized(applicationContext);
+			MethodInterceptor apiClient = createApiMethodInterceptor();
+			MixinableInterfaceCreator mixinableCreator = SpringMixinableInterfaceCreator.classNamePostfixMixin(interfaceClass);
+			apiObject = mixinableCreator.createMixinObject(apiClient);
+			this.apiObject = apiObject;
+		}
+		return apiObject;
 	}
 
 	@Override
@@ -156,16 +172,19 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			invokeMethod.validateArgements(validatorWrapper, args);
 
 			RequestContextData context = createRequestContextData(args, invokeMethod);
-			if(logger.isInfoEnabled()){
-				logger.info("rest url : {} - {}, urlVariables: {}", context.getHttpMethod(), context.getRequestUrl(), context.getUriVariables());
+			//WechatApiClientFactoryBean logger
+			if(logger.isDebugEnabled()){
+				logger.debug("rest url : {} - {}, urlVariables: {}", context.getHttpMethod(), context.getRequestUrl(), context.getUriVariables());
 			}
 			
 			try {
 				ResponseEntity<Object> responseEntity = restExecutor.execute(context);
 				Object response = responseHandler.handleResponse(invokeMethod, responseEntity, context.getResponseType());
 				return response;
-			} catch (Exception e) {
-				throw new ApiClientException(ApiClientError.EXECUTE_REST_ERROR, invokeMethod.getDeclaringClass(), e);
+			} catch (ApiClientException e) {
+				throw e;
+			}catch (Exception e) {
+				throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
 			}
 		}
 		
@@ -180,11 +199,12 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		}
 		
 		protected RequestContextData createRequestContextData(Object[] args, M invokeMethod){
-			Map<String, Object> uriVariables = invokeMethod.getUrlParameters(args);
+			Map<String, ?> uriVariables = invokeMethod.getQueryStringParameters(args);
 			RequestMethod requestMethod = invokeMethod.getRequestMethod();
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			
 			RequestContextData context = RequestContextData.builder()
+															.requestId(restExecutor.requestId())
 															.requestMethod(requestMethod)
 															.uriVariables(uriVariables)
 															.responseType(responseType)
@@ -207,20 +227,35 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 						headers.set(header.substring(0, index), header.substring(index + 1).trim());
 					}
 				}
+				invokeMethod.getHttpHeaders(args)
+							.ifPresent(h->{
+								headers.putAll(h);
+							});
+				//回调
+				invokeMethod.getApiHeaderCallback(args)
+							.ifPresent(c->c.onHeader(headers));
 			})
-			.requestBodySupplier(()->{
+			.requestBodySupplier(ctx->{
 				return invokeMethod.getRequestBody(args);
 			});
 			
 			return context;
 		}
 		
+		/****
+		 * 解释pathvariable参数，并且把所有UriVariables转化为queryString参数
+		 * @author wayshall
+		 * @param url
+		 * @param invokeMethod
+		 * @param context
+		 * @return
+		 */
 		protected String processUrlBeforeRequest(final String url, M invokeMethod, RequestContextData context){
 			String actualUrl = url;
 			if(LangUtils.isNotEmpty(context.getPathVariables())){
 				actualUrl = ExpressionFacotry.newStrSubstitutor("{", "}", context.getPathVariables()).replace(actualUrl);
 			}
-			Map<String, Object> uriVariables = context.getUriVariables();
+			Map<String, ?> uriVariables = context.getUriVariables();
 			if(!uriVariables.isEmpty()){
 				String paramString = RestUtils.keysToParamString(uriVariables);
 				actualUrl = ParamUtils.appendParamString(actualUrl, paramString);

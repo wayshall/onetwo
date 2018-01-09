@@ -17,6 +17,7 @@ public class StoringFileContext {
 //	private Map<String, Object> context;
 	private String module;
 	private StoreFilePathStrategy storeFilePathStrategy = SimpleFileStorer.SIMPLE_STORE_STRATEGY;
+	private String key;
 	
 	
 	public StoringFileContext(String module, InputStream inputStream, String fileName) {
@@ -40,6 +41,14 @@ public class StoringFileContext {
 
 	public InputStream getInputStream() {
 		return inputStream;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 	public String getFileName() {

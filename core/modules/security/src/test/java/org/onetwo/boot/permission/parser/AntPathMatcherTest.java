@@ -18,6 +18,12 @@ public class AntPathMatcherTest {
 		Assert.assertTrue(res);
 		
 
+		res = req.match("/**/api/**", "/service/api/user");
+		res = req.match("/**/api/**", "/api/user");
+		res = req.match("/**/api/**", "/api/user/1");
+		res = req.match("/**/api/**", "/api/user/1?aa=bb&cc=dd");
+		Assert.assertTrue(res);
+
 		res = req.match("*zh.*", "user_zh.html");
 		Assert.assertTrue(res);
 		res = req.match("*zh.*", "/user_zh.html");
@@ -61,6 +67,19 @@ public class AntPathMatcherTest {
 		res = req.match("/user/**", "/user/1.json");
 		Assert.assertTrue(res);
 		res = req.match("/user/**", "/user/aaa/1.json");
+		Assert.assertTrue(res);
+
+		res = req.match("/service/swagger**", "/service/swagger-resources");
+		Assert.assertTrue(res);
+
+		res = req.match("/service/swagger**/**", "/service/swagger-resources/configuration");
+		Assert.assertTrue(res);
+		res = req.match("/service/swagger**/**", "/service/swagger-resources");
+		Assert.assertTrue(res);
+		res = req.match("/service/swagger**", "/service/swagger-resources/configuration/ui");
+		Assert.assertFalse(res);
+		
+		res = req.match("/service/webjars/**/**", "/service/webjars/springfox-swagger-ui/css/typography.css");
 		Assert.assertTrue(res);
 	}
 	

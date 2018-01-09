@@ -1,6 +1,12 @@
 package org.onetwo.cloud.zuul;
 
+<<<<<<< HEAD
 import org.onetwo.boot.core.BootFixedConfiguration;
+=======
+import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
+import org.onetwo.boot.core.embedded.TomcatProperties;
+import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
+>>>>>>> wechat
 import org.onetwo.cloud.core.BootJfishCloudConfig;
 import org.onetwo.common.spring.filter.SpringMultipartFilterProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,19 +15,25 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.cloud.netflix.zuul.filters.pre.FormBodyWrapperFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+<<<<<<< HEAD
 import org.springframework.context.annotation.Import;
+=======
+import org.springframework.web.filter.HiddenHttpMethodFilter;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.MultipartFilter;
+>>>>>>> wechat
 
 /**
  * @author wayshall
  * <br/>
  */
 @EnableDiscoveryClient
-@EnableConfigurationProperties({BootJfishCloudConfig.class})
+@EnableConfigurationProperties({BootJfishCloudConfig.class, TomcatProperties.class})
 @Configuration
 @Import(BootFixedConfiguration.class)
 public class ExtZuulContextConfig {
@@ -30,8 +42,13 @@ public class ExtZuulContextConfig {
 	@Autowired
 	private MultipartProperties multipartProperties;
 
+<<<<<<< HEAD
 	/*@Bean
 	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
+=======
+	@Bean
+	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
+>>>>>>> wechat
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
 	}*/
@@ -60,8 +77,15 @@ public class ExtZuulContextConfig {
 		return resolver;
 	}*/
 	
-	@Bean
+	/*@Bean
 	public FormBodyWrapperFilter formBodyWrapperFilter(){
 		return new FixFormBodyWrapperFilter();
+	}*/
+	@Bean
+	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
+	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+		OrderedHiddenHttpMethodFilter filter = new OrderedHiddenHttpMethodFilter();
+		filter.setMethodParam("_disable_spring_mvc_hidden_method_for_fucking_zuul");
+		return filter;
 	}
 }

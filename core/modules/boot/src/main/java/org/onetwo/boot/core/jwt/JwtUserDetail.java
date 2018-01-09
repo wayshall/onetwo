@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.jwt;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.web.userdetails.UserDetail;
@@ -20,7 +21,19 @@ public class JwtUserDetail implements UserDetail {
 		this.userName = userName;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <T> T getProperty(String key, T def){
+		T val = (T)getProperties().get(key);
+		if(val==null){
+			return def;
+		}
+		return val;
+	}
+	
 	public Map<String, Object> getProperties() {
+		if(properties==null){
+			return Collections.emptyMap();
+		}
 		return properties;
 	}
 

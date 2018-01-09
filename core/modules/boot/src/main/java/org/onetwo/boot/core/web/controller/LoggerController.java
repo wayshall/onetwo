@@ -2,6 +2,7 @@ package org.onetwo.boot.core.web.controller;
 
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,14 +23,14 @@ public class LoggerController extends AbstractBaseController {
 	@ResponseBody
 	public Object changeLevel(@RequestParam("loggers") String[] loggers, @RequestParam("level") String level){
 		loggerManager.changeLevels(level, loggers);
-		return result().success("change logger level success!").buildResult();
+		return DataResults.success("change logger level success!").build();
 	}
 	
 	@PutMapping("/resetLevels")
 	@ResponseBody
 	public Object resetLevels(){
 		loggerManager.resetLevels();
-		return result().success("reset logger level success!").buildResult();
+		return DataResults.success("reset logger level success!").build();
 	}
 
 

@@ -8,6 +8,7 @@ import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.profiling.TimeProfileStack;
+import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,6 +40,7 @@ public class BootFirstInterceptor extends WebInterceptorAdapter {
 		return bootJFishConfig!=null && bootJFishConfig.isProfile();
 	}
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		WebHolder.initHolder(request, response);
 		HandlerMethod handlerMethod = getHandlerMethod(handler);
 		if(handlerMethod==null)
 			return true;

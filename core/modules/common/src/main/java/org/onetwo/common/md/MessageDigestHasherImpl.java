@@ -14,12 +14,12 @@ import com.google.common.base.Charsets;
 public class MessageDigestHasherImpl implements MessageDigestHasher {
 //	public static final String BASE64_POSTFIX = "-B64";
 	
-	private String algorithm;
-	private MessageDigest md;
+	final private String algorithm;
+	final private MessageDigest md;
 	
-	private String charset;
+	final private String charset;
 //	private boolean base64;
-	private int size;
+	final private int size;
 	private CodeType codeType = CodeType.HEX;
 //	private boolean isDev = false;
 	
@@ -43,11 +43,6 @@ public class MessageDigestHasherImpl implements MessageDigestHasher {
 	
 	public int getSize() {
 		return size;
-	}
-
-	
-	public void setCharset(String charset) {
-		this.charset = charset;
 	}
 
 	public void setCodeType(CodeType codeType) {
@@ -109,6 +104,7 @@ public class MessageDigestHasherImpl implements MessageDigestHasher {
 	 */
 	public String hash(byte[] source, byte[] salt){
 		byte[] dg = hashAsBytesOnly(source, salt);
+//		System.out.println("hash with no salt:"+codeType.encode(dg, charset));
 		boolean hasSalt = (salt!=null && salt.length>0);
 		if(hasSalt){
 			dg = mergeSalt(dg, salt);
@@ -164,10 +160,13 @@ public class MessageDigestHasherImpl implements MessageDigestHasher {
 		hash = decodeBytes[0];
 		byte[] salt = decodeBytes[1];
 		
+//		System.out.println("splited hash:"+codeType.encode(hash, charset));
+		
 		if(hash==null)
 			return false;
 		
 		byte[] sourceEncoded = hashAsBytesOnly(getBytes(source), salt);
+		
 		valid = MessageDigest.isEqual(hash, sourceEncoded);
 //		LangUtils.println(isDev, "checkEncrypt end=============================>>>");
 		

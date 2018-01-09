@@ -58,8 +58,4 @@ public class ObjectNotFoundException extends BusinessException implements System
 		this.initErrorCode(null);
 	}
 	
-	protected String getBaseCode(){
-		return ServiceErrorCode.OBJECT_NOT_FOUND;
-	}
-
 }

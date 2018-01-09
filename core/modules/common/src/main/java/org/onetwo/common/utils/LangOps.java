@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -137,6 +139,59 @@ final public class LangOps {
 											)
 										);
 		return groups;
+	}
+	
+	public static int parseSize(String size) {
+		return parseSize(size, null);
+	}
+	public static int parseSize(String size, Integer def) {
+		if(StringUtils.isBlank(size)){
+			if(def!=null){
+				return def;
+			}else{
+				Assert.hasLength(size, "Size must not be empty");
+			}
+		}
+		size = size.toUpperCase();
+		if (size.toLowerCase().endsWith("kb")) {
+			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
+		}
+		if (size.toLowerCase().endsWith("mb")) {
+			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
+		}
+		if (size.toLowerCase().endsWith("gb")) {
+			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024* 1024;
+		}
+		return Integer.valueOf(size);
+	}
+
+	public static long timeToSeconds(String time, long def) {
+		return parseTime(time, def, (duration, timeUnit)->timeUnit.toSeconds(duration));
+	}
+	public static long timeToMills(String time, long def) {
+		return parseTime(time, def, (duration, timeUnit)->timeUnit.toMillis(duration));
+	}
+	public static long parseTime(String time, long def, BiFunction<Integer, TimeUnit, Long> convert) {
+		if(StringUtils.isBlank(time)){
+			return def;
+		}
+		time = time.toUpperCase();
+		TimeUnit timeUnit = null;
+		if (time.toLowerCase().endsWith("s")) {
+			timeUnit = TimeUnit.SECONDS;
+		}else if (time.toLowerCase().endsWith("m")) {
+			timeUnit = TimeUnit.MINUTES;
+		}else if (time.toLowerCase().endsWith("h")) {
+			timeUnit = TimeUnit.HOURS;
+		}else if (time.toLowerCase().endsWith("d")) {
+			timeUnit = TimeUnit.DAYS;
+		}
+		if(timeUnit!=null){
+			int duration = Integer.valueOf(time.substring(0, time.length() - 1));
+//			return timeUnit.toMillis(numb);
+			return convert.apply(duration, timeUnit);
+		}
+		return Integer.valueOf(time);
 	}
 	
 	private LangOps(){}

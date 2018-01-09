@@ -6,11 +6,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
+import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
+import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -26,8 +26,6 @@ import org.springframework.security.config.annotation.web.configurers.ExceptionH
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
@@ -37,7 +35,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapter {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+//	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Getter
 	@Autowired
@@ -45,10 +43,10 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 
 	@Getter
 	@Autowired
-	private AccessDeniedHandler ajaxSupportedAccessDeniedHandler;
+	private AjaxSupportedAccessDeniedHandler ajaxSupportedAccessDeniedHandler;
 	
 	@Autowired(required=false)
-	private AuthenticationEntryPoint authenticationEntryPoint;
+	private AjaxSupportedAuthenticationEntryPoint authenticationEntryPoint;
 	
 
 	@Getter
@@ -73,6 +71,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
     @Override
     public void configure(WebSecurity web) throws Exception {
 //        web.ignoring().antMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
+    	//= new DefaultSecurityFilterChain(ignoredRequest) see: WebSecurity#performBuild
     	if(securityConfig.isIgnoringDefautStaticPaths()){
     		web.ignoring().antMatchers("/webjars/**", "/images/**", "/static/**");
     	}
@@ -117,8 +116,11 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	
 
 	protected void configureAnyRequest(HttpSecurity http) throws Exception {
+		defaultAnyRequest(http, securityConfig.getAnyRequest());
+	}
+	
+	public static void defaultAnyRequest(HttpSecurity http, String anyRequest) throws Exception {
 		//其它未标记管理的功能的默认权限
-		String anyRequest = securityConfig.getAnyRequest();
 		if(StringUtils.isBlank(anyRequest)){
 			http.authorizeRequests()
 				.anyRequest()

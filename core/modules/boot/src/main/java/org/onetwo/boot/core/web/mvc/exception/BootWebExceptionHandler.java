@@ -7,13 +7,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
-import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.boot.core.web.utils.BootWebHelper;
+import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
+import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,7 +37,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *
  */
 @ControllerAdvice
-public class BootWebExceptionHandler extends ResponseEntityExceptionHandler implements ExceptionMessageFinder {
+public class BootWebExceptionHandler extends ResponseEntityExceptionHandler implements ExceptionMessageFinder, InitializingBean {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -44,6 +47,11 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	private List<String> notifyThrowables;
 	
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.notifyThrowables = this.bootSiteConfig.getNotifyThrowables();
+	}
+
 	@ExceptionHandler({
 		Throwable.class
 	})
@@ -52,10 +60,9 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 //		return super.handleException(ex, request);
 		ErrorMessage errorMessage = handleException(ex);
 		
-		SimpleDataResult<?> result = WebResultCreator.creator()
-													.error(errorMessage.getMesage())
+		DataResult<?> result = DataResults.error(errorMessage.getMesage())
 													.code(errorMessage.getCode())
-													.buildResult();
+													.build();
 
 //		this.doLog(WebHolder.getRequest().orElse(null), null, ex, errorMessage.isDetail());
 		HttpHeaders headers = new HttpHeaders();
@@ -66,10 +73,9 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
 		ErrorMessage errorMessage = handleException(ex);
-		SimpleDataResult<?> result = WebResultCreator.creator()
-				.error(errorMessage.getMesage())
+		DataResult<?> result = DataResults.error(errorMessage.getMesage())
 				.code(errorMessage.getCode())
-				.buildResult();
+				.build();
 		return super.handleExceptionInternal(ex, result, headers, status, request);
 	}
 	
@@ -78,13 +84,8 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		if(errorMessage==null){
 			errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
 		}
-		if(errorMessage.isDetail()){
-			Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
-			String path = reqOpt.isPresent()?RequestUtils.getServletPath(reqOpt.get()):"";
-			logger.error("request ["+path+"] error:", ex);
-		}else{
-			logger.error("exception type: {}, message: {}", ex.getClass().getName(), ex.getMessage());
-		}
+		Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
+		doLog(reqOpt.orElse(null), errorMessage);
 		if(errorMessage.getHttpStatus()==null){
 			errorMessage.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -92,17 +93,23 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		return errorMessage;
 	}
 
-	protected void doLog(HttpServletRequest request, Object handlerMethod, Exception ex, boolean detail){
+	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
 		String msg = "";
+		Object handlerMethod = null;
 		if(request!=null){
+			BootWebHelper helper = BootWebUtils.webHelper(request);
 			msg = RequestUtils.getServletPath(request);
+			handlerMethod = helper.getControllerHandler();
 		}
-		if(detail){
+		Exception ex = errorMessage.getException();
+		errorMessage.logErrorContext(logger);
+		boolean printDetail = errorMessage.isDetail();
+		if(printDetail){
 			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
 			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
 		}else{
-			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
+			logger.error(msg + "[{}] error: code[{}], message[{}]", handlerMethod, LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
 	}
 

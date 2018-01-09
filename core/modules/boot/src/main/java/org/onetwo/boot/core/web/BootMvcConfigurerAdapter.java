@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootJFishConfig.MvcConfig.ResourceHandlerConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
+import org.onetwo.boot.core.web.async.MvcAsyncProperties;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -23,6 +25,8 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -32,6 +36,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -54,18 +59,55 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	private BootSiteConfig siteConfig;
 
 	@Autowired
-	private List<HandlerInterceptor> interceptorList;
-
-	@Autowired
 	private List<HandlerMethodArgumentResolver> argumentResolverList;
 	
 	@Autowired(required=false)
 	private ExtJackson2HttpMessageConverter jackson2HttpMessageConverter;
 	
+	@Autowired(required=false)
+	@Qualifier(AsyncMvcConfiguration.MVC_ASYNC_TASK_BEAN_NAME)
+	private AsyncTaskExecutor asyncTaskExecutor;
+	@Autowired(required=false)
+	private MvcAsyncProperties mvcAsyncProperties;
+
+	@Autowired
+	private List<HandlerInterceptor> interceptorList;
+	
 	@Override
     public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(bootWebExceptionResolver);
     }
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		/*Optional.ofNullable(interceptorList).ifPresent(list->{
+			list.stream().forEach(inter->registry.addInterceptor(inter));
+		});*/
+		if(LangUtils.isEmpty(interceptorList)){
+			return ;
+		}
+		for(HandlerInterceptor inter : interceptorList){
+			InterceptorRegistration reg = registry.addInterceptor(inter);
+			if(inter instanceof WebInterceptorAdapter){
+				WebInterceptorAdapter webinter = (WebInterceptorAdapter) inter;
+				if(LangUtils.isEmpty(webinter.getPathPatterns())){
+					continue;
+				}
+				reg.addPathPatterns(webinter.getPathPatterns());
+			}
+		}
+//		registry.addInterceptor(new BootFirstInterceptor());
+	}
+	
+	@Override
+	public void configureAsyncSupport(AsyncSupportConfigurer configurer){
+		if(asyncTaskExecutor!=null){
+			configurer.setTaskExecutor(asyncTaskExecutor);
+		}
+		if(mvcAsyncProperties!=null){
+			configurer.setDefaultTimeout(mvcAsyncProperties.getTimeout());
+		}
+	}
 	
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -91,26 +133,6 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 		}
 	}
 	
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		/*Optional.ofNullable(interceptorList).ifPresent(list->{
-			list.stream().forEach(inter->registry.addInterceptor(inter));
-		});*/
-		if(LangUtils.isEmpty(interceptorList)){
-			return ;
-		}
-		for(HandlerInterceptor inter : interceptorList){
-			InterceptorRegistration reg = registry.addInterceptor(inter);
-			if(inter instanceof WebInterceptorAdapter){
-				WebInterceptorAdapter webinter = (WebInterceptorAdapter) inter;
-				if(LangUtils.isEmpty(webinter.getPathPatterns())){
-					continue;
-				}
-				reg.addPathPatterns(webinter.getPathPatterns());
-			}
-		}
-//		registry.addInterceptor(new BootFirstInterceptor());
-	}
 
 	@Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {

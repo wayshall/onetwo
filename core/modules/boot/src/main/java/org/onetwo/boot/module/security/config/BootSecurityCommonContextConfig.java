@@ -1,18 +1,19 @@
 package org.onetwo.boot.module.security.config;
 
 import org.onetwo.boot.core.BootWebCommonAutoConfig;
-import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
+import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.jwt.JwtContxtConfig;
 import org.onetwo.ext.security.redis.RedisContextConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,10 +32,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * @author way
  *
  */
-@EnableConfigurationProperties({BootSecurityConfig.class})
+@EnableConfigurationProperties({BootSecurityConfig.class, AccessLogProperties.class})
 @Configuration
 @AutoConfigureAfter({BootMSContextAutoConfig.class, BootWebUIContextAutoConfig.class})
 public class BootSecurityCommonContextConfig{
+	@Autowired
+	private AccessLogProperties accessLogProperties;
 
 	/*@Autowired
 	private BootSecurityConfig bootSecurityConfig;
@@ -52,7 +55,7 @@ public class BootSecurityCommonContextConfig{
 	@Bean
 	@ConditionalOnMissingBean({LoggerInterceptor.class})
 	@ConditionalOnBean(BootSiteConfig.class)
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_MVC_LOGGER_INTERCEPTOR, matchIfMissing=true, havingValue="true")
+	@ConditionalOnProperty(value=AccessLogProperties.ENABLE_MVC_LOGGER_INTERCEPTOR, matchIfMissing=true, havingValue="true")
 	public LoggerInterceptor loggerInterceptor(){
 		LoggerInterceptor log = new LoggerInterceptor();
 		log.setUserDetailRetriever(()->{
@@ -69,6 +72,7 @@ public class BootSecurityCommonContextConfig{
 			}
 			return null;
 		});
+		log.setPathPatterns(accessLogProperties.getPathPatterns());
 		return log;
 	}
 

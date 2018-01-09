@@ -17,7 +17,7 @@ import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.common.data.AbstractDataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.data.LazyValue;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -26,8 +26,8 @@ import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.StringUtils;
@@ -68,7 +68,7 @@ abstract public class AbstractBaseController {
 	@Resource
 	private BootSiteConfig bootSiteConfig;
 	
-	@Autowired
+	@Autowired(required=false)
 	private FileStorer<?> fileStorer;
 	
 	@Autowired
@@ -312,13 +312,21 @@ abstract public class AbstractBaseController {
 	 * @param value
 	 * @return
 	 */
-	protected ModelAndView responseData(LazyValue value){
-		return mv("", DataWrapper.lazy(value));
+	protected ModelAndView responseData(JsonResponseValue value){
+		return mv("", getJsonResponseValue(value));
 	}
 	
-	protected AbstractDataResult<?> asSucceedResult(Object value){
+	protected Object getJsonResponseValue(JsonResponseValue value){
+		Object actualValue = null;//DataWrapper.lazy(value);
+		if(isResponseJson() || isResponseXml()){
+			actualValue = DataWrapper.wrap(value.get());
+		}
+		return actualValue;
+	}
+	
+	protected DataResult<?> asSucceedResult(Object value){
 //		return SimpleDataResult.createSucceed(null, value);
-		return result().simple(value).buildResult();
+		return DataResults.simple(value).build();
 	}
 	
 	protected AbstractDataResult<Object> asFailedResult(String msg){
@@ -334,9 +342,6 @@ abstract public class AbstractBaseController {
 	/*protected SimpleResultBuilder result(){
 		return WebResultCreator.creator().simple(null);
 	}*/
-	protected WebResultCreator result(){
-		return WebResultCreator.creator();
-	}
 	
 	protected ResponseType getResponseType(){
 		return RequestUtils.getResponseType(WebHolder.getRequest().get());
@@ -348,8 +353,8 @@ abstract public class AbstractBaseController {
 							  .execute();
 	 * @return
 	 */
-	protected ResponseFlow<ModelAndView> responseFlow(){
-		return new ResponseFlow<>(getResponseType());
+	protected ResponseFlow responseFlow(){
+		return new ResponseFlow(getResponseType());
 	}
 
 	/***
@@ -359,15 +364,15 @@ abstract public class AbstractBaseController {
 	 * @param value
 	 * @return
 	 */
-	protected ModelAndView responsePageOrData(String viewName, LazyValue value){
-		return BootWebUtils.createModelAndView(getViewName(viewName), DataWrapper.lazy(value));
+	protected ModelAndView responsePageOrData(String viewName, JsonResponseValue value){
+		return BootWebUtils.createModelAndView(getViewName(viewName), getJsonResponseValue(value));
 	}
 	protected String getViewName(String viewName){
 		return viewName;
 	}
-	protected ModelAndView responsePageOrData(ModelAndView mv, LazyValue value){
+	protected ModelAndView responsePageOrData(ModelAndView mv, JsonResponseValue value){
 		Assert.notNull(mv);
-		mv.addObject(DataWrapper.lazy(value));
+		mv.addObject(getJsonResponseValue(value));
 		return mv;
 	}
 	/***
@@ -398,5 +403,8 @@ abstract public class AbstractBaseController {
 		return getResponseType()==ResponseType;
 	}
 	
+	static public interface JsonResponseValue {
+		Object get();
+	}
 	
 }

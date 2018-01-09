@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.FileStorerListener;
 import org.onetwo.boot.core.web.utils.UploadOptions;
@@ -15,6 +13,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.copier.CopyUtils;
@@ -26,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 public class SimpleBootCommonService implements BootCommonService {
-	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private FileStorer<?> fileStorer;
@@ -37,7 +36,10 @@ public class SimpleBootCommonService implements BootCommonService {
 	@Autowired(required=false)
 	private ImageCompressor imageCompressor;
 	
-	//少于0则所有大小一律压缩
+	@Autowired(required=false)
+	private StoreFilePathStrategy storeFilePathStrategy;
+	
+	//少于等于0则一律不压缩
 	private int compressThresholdSize = -1;
 	
 	/****
@@ -53,7 +55,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		InputStream in = null;
 		try {
 			if(imageCompressor!=null && 
-					(compressThresholdSize<0 || file.getSize() > compressThresholdSize) && 
+					(compressThresholdSize>0 && file.getSize() > compressThresholdSize) && 
 					imageCompressor.isCompressFile(file.getOriginalFilename())){
 				in = imageCompressor.compressStream(file.getInputStream());
 			}else{
@@ -104,6 +106,8 @@ public class SimpleBootCommonService implements BootCommonService {
 		StoringFileContext context = StoringFileContext.create(options.getModule(), 
 																in, 
 																options.getMultipartFile().getOriginalFilename());
+		context.setStoreFilePathStrategy(storeFilePathStrategy);
+		context.setKey(options.getKey());
 		FileStoredMeta meta = fileStorer.write(context);
 		if(fileStorerListener!=null){
 			fileStorerListener.afterFileStored(meta);

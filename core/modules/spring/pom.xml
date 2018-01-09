@@ -19,6 +19,18 @@
   </properties>
 
   <dependencies>
+        
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <optional>true</optional>
+    </dependency>
 	
 	<dependency>
 	  <groupId>org.onetwo4j</groupId>
@@ -106,6 +118,12 @@
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-expression</artifactId>
       <optional>true</optional>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-aspects</artifactId>
+        <optional>true</optional>
 	</dependency>
 	
 	<dependency>

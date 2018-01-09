@@ -2,7 +2,6 @@ package org.onetwo.common.apiclient;
 
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -16,23 +15,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * <br/>
  */
 public class RequestContextData {
+	final private String requestId;
 	final private HttpMethod httpMethod;
 	private String requestUrl;
 	final private Class<?> responseType;
 //	private Object requestBody;
-	final private Map<String, Object> uriVariables;
+	final private Map<String, ?> uriVariables;
 	@Getter
-	final private Map<String, Object> pathVariables;
+	final private Map<String, ?> pathVariables;
 	private Consumer<HttpHeaders> headerCallback;
-	private Supplier<Object> requestBodySupplier;
+	private RequestBodySupplier requestBodySupplier;
 	
 	@Builder
-	public RequestContextData(RequestMethod requestMethod, Map<String, Object> pathVariables, Map<String, Object> uriVariables, Class<?> responseType) {
+	public RequestContextData(String requestId, RequestMethod requestMethod, Map<String, ?> pathVariables, Map<String, ?> uriVariables, Class<?> responseType) {
 		super();
 		this.httpMethod = HttpMethod.resolve(requestMethod.name());
 		this.uriVariables = uriVariables;
 		this.pathVariables = pathVariables;
 		this.responseType = responseType;
+		this.requestId = requestId;
 	}
 	
 	public Class<?> getResponseType() {
@@ -49,15 +50,15 @@ public class RequestContextData {
 		return requestUrl;
 	}
 	
-	public Map<String, Object> getUriVariables() {
+	public Map<String, ?> getUriVariables() {
 		return uriVariables;
 	}
 	
-	public Supplier<Object> getRequestBodySupplier() {
+	public RequestBodySupplier getRequestBodySupplier() {
 		return requestBodySupplier;
 	}
 
-	public RequestContextData requestBodySupplier(Supplier<Object> requestBodySupplier) {
+	public RequestContextData requestBodySupplier(RequestBodySupplier requestBodySupplier) {
 		this.requestBodySupplier = requestBodySupplier;
 		return this;
 	}
@@ -82,6 +83,14 @@ public class RequestContextData {
 				+ ", requestUrl=" + requestUrl + ", responseType="
 				+ responseType + ", uriVariables=" + uriVariables + ", requestCallback="
 				+ headerCallback + "]";
+	}
+	
+	public static interface RequestBodySupplier {
+		Object getRequestBody(RequestContextData context);
+	}
+
+	public String getRequestId() {
+		return requestId;
 	}
 
 }

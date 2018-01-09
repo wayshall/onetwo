@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -40,6 +41,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 	private final Map<Class<?>, PermClassParser> permClassParserMap;
 	
 	private P rootMenu;
+	private PermClassParser rootMenuParser;
 	private Integer firstNodeSort;
 	private final ResourcesScanner scaner = new JFishResourcesScanner();
 
@@ -89,11 +91,11 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 	 * @see org.onetwo.plugins.permission.MenuInfoParser#parseTree()
 	 */
 	@Override
-	public synchronized P parseTree(){
+	public synchronized Optional<P> parseTree(){
 		Assert.notNull(permissionConfig);
 		
 		if(parsed){
-			return rootMenu;
+			return Optional.ofNullable(rootMenu);
 		}
 		
 		this.clear();
@@ -104,14 +106,17 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 
 		String appCode = null;
 		P perm = null;
-		PermClassParser parser = getPermClassParser(menuInfoClass);
+		rootMenuParser = getPermClassParser(menuInfoClass);
 		try {
 //			appCode = getFieldValue(menuInfoClass, MenuMetaFields.APP_CODE, String.class, menuInfoClass.getSimpleName());
-			appCode = parser.getAppCode();
+			appCode = rootMenuParser.getAppCode();
 			/*if(StringUtils.isBlank(sysname)){
 				throw new BaseException("RootMenuClass must has a sysname field and it's value can not be blank.");
 			}*/
-			perm = parseMenuClass(parser, appCode);
+			perm = parseMenuClass(rootMenuParser, appCode);
+			if(perm==null){
+				return Optional.ofNullable(rootMenu);
+			}
 			perm.setSort(1);
 		} catch (Exception e) {
 			throw new BaseException("parse tree error: " + e.getMessage(), e);
@@ -123,7 +128,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		String[] childMenuPackages = permissionConfig.getChildMenuPackages();
 		if(LangUtils.isEmpty(childMenuPackages)){
 			this.afterParseTree();
-			return rootMenu;
+			return Optional.ofNullable(rootMenu);
 		}
 		
 		Collection<PermClassParser> childMenuPackageMenus = scaner.scan(new ScanResourcesCallback<PermClassParser>(){
@@ -148,7 +153,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		childMenuParser.addAll(childMenuPackageMenus);
 		if(LangUtils.isEmpty(childMenuParser)){
 			this.afterParseTree();
-			return rootMenu;
+			return Optional.ofNullable(rootMenu);
 		}
 		
 		for(PermClassParser childMc : childMenuParser){
@@ -162,7 +167,7 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		}
 
 		this.afterParseTree();
-		return rootMenu;
+		return Optional.ofNullable(rootMenu);
 	}
 	
 	private void afterParseTree(){
@@ -331,8 +336,8 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		return permissionMap.get(code);
 	}
 
-	public P getRootMenu() {
-		return rootMenu;
+	public Optional<P> getRootMenu() {
+		return Optional.ofNullable(rootMenu);
 	}
 
 	public void setRootMenu(P rootMenu) {
@@ -341,6 +346,16 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 
 	public PermissionConfig<P> getMenuInfoable() {
 		return permissionConfig;
+	}
+
+
+	public PermissionConfig<P> getPermissionConfig() {
+		return permissionConfig;
+	}
+
+
+	public PermClassParser getRootMenuParser() {
+		return rootMenuParser;
 	}
 	
 	

@@ -2,21 +2,21 @@ package org.onetwo.boot.core;
 
 import javax.annotation.PostConstruct;
 
+import org.onetwo.boot.apiclient.ApiClientConfiguration;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
+import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
+import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
+import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
-import org.onetwo.boot.core.web.mvc.BootWebMvcRegistrations;
-import org.onetwo.boot.core.web.mvc.RequestMappingHandlerMappingListenable;
-import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
+import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
-import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
@@ -26,6 +26,7 @@ import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.boot.dsrouter.DsRouterConfiguration;
 import org.onetwo.common.file.FileStorer;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
@@ -43,14 +44,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.MultipartFilter;
 
 /***
  * web环境的通用配置
  * @author wayshall
  *
  */
-@Import({DsRouterConfiguration.class, BootFixedConfiguration.class})
+@Import({DsRouterConfiguration.class, ApiClientConfiguration.class})
 public class BootWebCommonAutoConfig {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
 	
@@ -76,22 +78,22 @@ public class BootWebCommonAutoConfig {
 		Springs.initApplicationIfNotInitialized(applicationContext);
 	}
 
-	/*@Bean
-	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
+	@Bean
+	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
-	}*/
+	}
 	
 	/***
 	 * 异常解释
 	 * @return
 	 */
 //	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
-	@Bean
+	/*@Bean
 	public ResponseEntityExceptionHandler responseEntityExceptionHandler(){
 		BootWebExceptionHandler handler = new BootWebExceptionHandler();
 		return handler;
-	}
+	}*/
 	
 	@Bean
 	public FilterRegistrationBean requestContextFilter(){
@@ -122,11 +124,11 @@ public class BootWebCommonAutoConfig {
 	 * @author wayshall
 	 * @return
 	 */
-	@Bean
+	/*@Bean
 	public RequestMappingHandlerMappingListenable requestMappingHandlerMappingListenable(){
 		RequestMappingHandlerMappingListenable req = new RequestMappingHandlerMappingListenable();
 		return req;	
-	}
+	}*/
 	
 	@Bean
 	public BootMvcConfigurerAdapter bootMvcConfigurerAdapter(){
@@ -138,9 +140,15 @@ public class BootWebCommonAutoConfig {
 	 * @author wayshall
 	 * @return
 	 */
-	@Bean
+	/*@Bean
+	@ConditionalOnMissingBean(BootWebMvcRegistrations.class)
 	public BootWebMvcRegistrations bootWebMvcRegistrations(){
 		return new BootWebMvcRegistrations();
+	}*/
+	
+	@Bean
+	public WebApiRequestMappingCombiner webApiRequestMappingCombiner(){
+		return new WebApiRequestMappingCombiner();
 	}
 	
 	/***
@@ -195,13 +203,13 @@ public class BootWebCommonAutoConfig {
 		return viewManager;
 	}
 	
-	/*@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
+	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 //	@ConditionalOnMissingBean(MultipartResolver.class)
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
 		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
 		return resolver;
-	}*/
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(SessionUserManager.class)
@@ -224,38 +232,30 @@ public class BootWebCommonAutoConfig {
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnMissingBean(FileStorer.class)
-//	@ConditionalOnBean(AbstractBaseController.class)
-	public FileStorer<?> fileStorer(){
+	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="local")
+	public FileStorer<?> localStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
-		StoreType type = config.getStoreType();//site.upload.storeType
-		
-		if(type==StoreType.LOCAL){
-			SimpleFileStorer fs = new SimpleFileStorer();
-			fs.setStoreBaseDir(config.getFileStorePath());//site.upload.fileStorePath
-			fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
-			return fs;
-		}else if(type==StoreType.FTP){
-			FtpConfig ftpConfig = new FtpConfig();
-			ftpConfig.setEncoding(config.getFtpEncoding());
-			ftpConfig.setServer(config.getFtpServer());
-			ftpConfig.setPort(config.getFtpPort());
-			
-			FtpFileStorer fs = new FtpFileStorer(ftpConfig);
-			fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
-//			fs.setStoreBaseDir(config.getFtpBaseDir());
-			fs.setStoreBaseDir(config.getFileStorePath());
-			fs.setAppContextDir(config.getAppContextDir());
-			return fs;
-		}
-		throw new IllegalArgumentException("type: " + type);
+		SimpleFileStorer fs = new SimpleFileStorer();
+		fs.setStoreBaseDir(config.getFileStorePath());//site.upload.fileStorePath
+		fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
+		return fs;
 	}
 	
-
 	@Bean
-	@ConditionalOnMissingBean(LoggerInterceptor.class)
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_MVC_LOGGER_INTERCEPTOR, matchIfMissing=true, havingValue="true")
-	public LoggerInterceptor loggerInterceptor(){
-		return new LoggerInterceptor();
+	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="ftp")
+	public FileStorer<?> ftpStorer(){
+		UploadConfig config = bootSiteConfig.getUpload();
+		FtpConfig ftpConfig = new FtpConfig();
+		ftpConfig.setEncoding(config.getFtpEncoding());
+		ftpConfig.setServer(config.getFtpServer());
+		ftpConfig.setPort(config.getFtpPort());
+		
+		FtpFileStorer fs = new FtpFileStorer(ftpConfig);
+		fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
+//		fs.setStoreBaseDir(config.getFtpBaseDir());
+		fs.setStoreBaseDir(config.getFileStorePath());
+		fs.setAppContextDir(config.getAppContextDir());
+		return fs;
 	}
+	
 }

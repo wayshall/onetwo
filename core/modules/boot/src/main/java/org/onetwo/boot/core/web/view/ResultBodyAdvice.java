@@ -1,5 +1,7 @@
 package org.onetwo.boot.core.web.view;
 
+import java.util.Optional;
+
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -39,6 +41,10 @@ public class ResultBodyAdvice implements ResponseBodyAdvice<Object>{
 			/*if(logger.isInfoEnabled()){
 				logger.info("wrap body to data result");
 			}*/
+			Optional<Object> bodyOpt = this.xresponseViewManager.getResponseViewByPredicate(body);
+			if(bodyOpt.isPresent()){
+				return bodyOpt.get();
+			}
 			if(request instanceof ServletServerHttpRequest){
 				ServletServerHttpRequest sshr = (ServletServerHttpRequest) request;
 				BootWebHelper helper = BootWebUtils.webHelper(sshr.getServletRequest());

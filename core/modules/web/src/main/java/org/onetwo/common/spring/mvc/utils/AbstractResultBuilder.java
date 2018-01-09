@@ -1,6 +1,7 @@
 package org.onetwo.common.spring.mvc.utils;
 
 import org.onetwo.common.data.AbstractDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.ErrorType;
 import org.springframework.web.servlet.ModelAndView;
@@ -100,14 +101,14 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 		return rs;
 	}
 
-	public SimpleDataResult<T> buildResult(){
+	public SimpleDataResult<T> build(){
 		SimpleDataResult<T> rs = creeateResult();
 		rs.setExtractableData(extractableData);
 		return rs;
 	}
 
 	public ModelAndView buildModelAndView(){
-		SimpleDataResult<T> rs = buildResult();
+		DataResult<T> rs = build();
 		return MvcUtils.createModelAndView(view, rs);
 	}
 	

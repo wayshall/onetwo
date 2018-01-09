@@ -42,6 +42,7 @@ import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.propconf.ResourceAdapterImpl;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ClassUtils;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
@@ -269,12 +270,12 @@ public class FileUtils {
 		String realPath = null;
 		URL path = cld.getResource(fileName);
 		
-		logger.info("Default ClassLoader path1: "+ path);
+//		logger.info("Default ClassLoader path1: "+ path);
 		if(path==null){
 			realPath = cld.getResource("").getPath()+fileName;
-			logger.info("Default ClassLoader path2: "+ realPath);
+//			logger.info("Default ClassLoader path2: "+ realPath);
 			if(StringUtils.isBlank(realPath)){
-				logger.info("FileUtils ClassLoader path3: "+ realPath);
+//				logger.info("FileUtils ClassLoader path3: "+ realPath);
 				realPath = getResourcePath(FileUtils.class.getClassLoader(), fileName);
 				if(StringUtils.isBlank(realPath))
 					throw new BaseException("get resource path error: " + fileName);
@@ -1373,21 +1374,7 @@ public class FileUtils {
 		return parseSize(size, null);
 	}
 	public static int parseSize(String size, Integer def) {
-		if(StringUtils.isBlank(size)){
-			if(def!=null){
-				return def;
-			}else{
-				Assert.hasLength(size, "Size must not be empty");
-			}
-		}
-		size = size.toUpperCase();
-		if (size.toLowerCase().endsWith("kb")) {
-			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
-		}
-		if (size.toLowerCase().endsWith("mb")) {
-			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
-		}
-		return Integer.valueOf(size);
+		return LangOps.parseSize(size, def);
 	}
 	
     public static byte[] toByteArray(InputStream input) {

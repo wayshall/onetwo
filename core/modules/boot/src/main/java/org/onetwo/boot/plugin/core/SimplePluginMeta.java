@@ -1,6 +1,8 @@
 package org.onetwo.boot.plugin.core;
 
+
 public class SimplePluginMeta implements PluginMeta {
+	
 	private final String name;
 	private final String version;
 	

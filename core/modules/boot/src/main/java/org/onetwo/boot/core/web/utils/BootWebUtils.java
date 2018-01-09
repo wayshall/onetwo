@@ -21,14 +21,12 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.mvc.utils.MvcUtils;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator.SimpleResultBuilder;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.ParamMap;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
-import org.onetwo.common.web.utils.WebUtils;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
@@ -268,8 +266,18 @@ public final class BootWebUtils {
 	}
 	
 	public static BootWebHelper webHelper(){
-		BootWebHelper help = req(REQUEST_HELPER_KEY);
-		return help;
+//		BootWebHelper help = req(REQUEST_HELPER_KEY);
+		BootWebHelper helper = null;
+		Optional<HttpServletRequest> req = WebHolder.getRequest();
+		if(!req.isPresent()){
+			return null;
+		}
+		helper = req(REQUEST_HELPER_KEY);
+		if(helper==null){
+			helper = BootWebHelper.newHelper(req.get());
+			webHelper(helper);
+		}
+		return helper;
 	}
 	
 	public static BootWebHelper webHelper(HttpServletRequest request){
@@ -378,7 +386,7 @@ public final class BootWebUtils {
 	}
 	
 	public static ObjectMapper createObjectMapper(ApplicationContext applicationContext){
-		ObjectMapper mapper = JsonMapper.IGNORE_NULL.getObjectMapper();
+		ObjectMapper mapper = JsonMapper.ignoreNull().getObjectMapper();
 //		h4m.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
 		String clsName = "com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module";
 		if(ClassUtils.isPresent(clsName, ClassUtils.getDefaultClassLoader())){
@@ -398,7 +406,4 @@ public final class BootWebUtils {
 		return mapper;
 	}
 	
-	public static SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, Exception exception){
-		return WebUtils.buildErrorCode(builder, request, exception);
-	}
 }

@@ -24,7 +24,4 @@ public class NoAuthorizationException extends AuthenticationException {
 	public NoAuthorizationException(String message, Throwable cause) {
 		super(DEFAULT_MESSAGE+message, cause);
 	}
-	protected String getDefaultCode(){
-		return AuthenticErrorCode.PERMISSION_DENY;
-	}
 }

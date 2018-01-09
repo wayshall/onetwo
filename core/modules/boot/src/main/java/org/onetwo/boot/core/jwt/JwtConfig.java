@@ -6,6 +6,7 @@ import lombok.Data;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.utils.LangOps;
 
 /**
  * iss: jwt签发者
@@ -27,6 +28,7 @@ public class JwtConfig {
 	String authHeader = JwtUtils.DEFAULT_HEADER_KEY;
 	String signingKey;
 	Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);
+	String expiration;
 	String issuer = "jfish";
 	String audience = "webclient";
 	
@@ -38,6 +40,18 @@ public class JwtConfig {
 			this.signingKey = key;
 		}
 		return key;
+	}
+	
+	public String getAuthHeader(){
+		return authHeader;
+	}
+
+	public Long getExpirationInSeconds() {
+		if(StringUtils.isNotBlank(expiration)){
+			long inSeconds = LangOps.timeToSeconds(expiration, TimeUnit.HOURS.toSeconds(1));
+			return inSeconds;
+		}
+		return expirationInSeconds;
 	}
 	
 }

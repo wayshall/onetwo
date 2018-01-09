@@ -51,7 +51,7 @@ public class BootCommonServiceConfig {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(BootCommonService.class)
-	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
+	@ConditionalOnProperty(BootSiteConfig.ENABLE_STORETYPE_PROPERTY)
 	public BootCommonService bootCommonService(){
 		SimpleBootCommonService service = new SimpleBootCommonService();
 		service.setCompressThresholdSize(bootSiteConfig.getUpload().getCompressImage().getThresholdSize());

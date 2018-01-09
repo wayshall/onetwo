@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.PropUtils;
@@ -61,6 +63,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -90,6 +93,7 @@ final public class SpringUtils {
 	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder()
 																			.enableFieldNameAnnotation()
 																			.build();
+	public static final Expression DOLOR = ExpressionFacotry.newExpression("${", "}");
 	
 	private SpringUtils(){
 	}
@@ -617,25 +621,33 @@ final public class SpringUtils {
 	 * @return
 	 */
 	public static String resolvePlaceholders(Object applicationContext, String value){
-		if (StringUtils.hasText(value)
-				&& applicationContext instanceof ConfigurableApplicationContext) {
-			return resolvePlaceholders((ConfigurableApplicationContext)applicationContext, value);
-		}
-		return value;
+		return resolvePlaceholders(applicationContext, value, true);
 	}
-	
-	public static String resolvePlaceholders(ConfigurableApplicationContext applicationContext, String value){
-		if (StringUtils.hasText(value)) {
-			return applicationContext.getEnvironment().resolvePlaceholders(value);
+	public static String resolvePlaceholders(Object applicationContext, String value, boolean throwIfNotResolved){
+		String newValue = value;
+		if (StringUtils.hasText(value) && DOLOR.isExpresstion(value)){
+			if(applicationContext instanceof ConfigurableApplicationContext){
+				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
+				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
+			}else if(applicationContext instanceof PropertyResolver){
+				PropertyResolver env = (PropertyResolver)applicationContext;
+				newValue = env.resolvePlaceholders(value);
+			}
+			if(DOLOR.isExpresstion(newValue) && throwIfNotResolved){
+				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + newValue);
+			}
 		}
-		return value;
+		return newValue;
 	}
 	
 	public static <T> T toBean(Map<String, ?> propValues, Class<T> beanClass){
 		return MAP_TO_BEAN.toBean(propValues, beanClass);
 	}
 
-
+	public static MapToBeanConvertor getMapToBean() {
+		return MAP_TO_BEAN;
+	}
+	
 	/*public static boolean isSimpleTypeObject(Object obj) {
 		return obj != null && LangUtils.isSimpleType(obj.getClass());
 	}

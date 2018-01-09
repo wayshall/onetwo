@@ -3,7 +3,9 @@ package org.onetwo.common.spring.rest;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import org.onetwo.common.apiclient.RequestContextData;
@@ -16,6 +18,7 @@ import org.onetwo.common.reflect.TypeResolver;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.slf4j.Logger;
+import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,6 +28,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -35,13 +39,17 @@ import org.springframework.web.client.RestTemplate;
 
 public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
-	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	static private final Logger logger = JFishLoggerFactory.getLogger(ExtRestTemplate.class);
 	
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().enableUnderLineStyle().build();
+	
+	private NamedThreadLocal<RequestContextData> contextThreadLocal = new NamedThreadLocal<>("RestExecutor Context");
 
 	@SuppressWarnings("rawtypes")
 	private ExtRestErrorHandler extErrorHandler;
 	private Type extErrorResultType;
+	
+	private AtomicLong requestIdGenerator = new AtomicLong(0);
 
 	public ExtRestTemplate(){
 		this(RestUtils.isOkHttp3Present()?new OkHttp3ClientHttpRequestFactory():null);
@@ -70,6 +78,21 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		}
 		this.setErrorHandler(new OnExtRestErrorHandler());
 	}
+	
+	@Override
+	public String requestId() {
+		return String.valueOf(requestIdGenerator.getAndIncrement());
+	}
+
+	public final ExtRestTemplate addMessageConverters(HttpMessageConverter<?>... elements){
+		getMessageConverters().addAll(Arrays.asList(elements));
+		return this;
+	}
+	
+	public final ExtRestTemplate replaceOrAddMessageConverter(Class<? extends HttpMessageConverter<?>> targetClass, HttpMessageConverter<?> element){
+		CUtils.replaceOrAdd(getMessageConverters(), targetClass, element);
+		return this;
+	}
 
 	public void setBeanToMapConvertor(BeanToMapConvertor beanToMapConvertor) {
 		this.beanToMapConvertor = beanToMapConvertor;
@@ -77,54 +100,61 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	@Override
 	public <T> ResponseEntity<T> execute(RequestContextData context) {
+		try {
+			contextThreadLocal.set(context);
+			return doExecute(context);
+		} finally {
+			contextThreadLocal.remove();
+		}
+	}
+	
+	protected <T> ResponseEntity<T> doExecute(RequestContextData context) {
 		RequestCallback rc = null;
 		HttpMethod method = context.getHttpMethod();
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = null;
 		HttpHeaders headers = null;
 		HttpEntity<?> requestEntity = null;
 		
-		switch (method) {
-			case GET:
+		if(method==HttpMethod.GET) {
 //				rc = super.acceptHeaderRequestCallback(context.getResponseType());
 //				responseExtractor = responseEntityExtractor(context.getResponseType());
-				//根据consumers 设置header，以指定messageConvertor
-				headers = new HttpHeaders();
-				context.getHeaderCallback().accept(headers);
-				requestEntity = new HttpEntity<>(headers);
-				
-				rc = super.httpEntityCallback(requestEntity, context.getResponseType());
-				responseExtractor = responseEntityExtractor(context.getResponseType());
-				break;
-			case POST:
-			case PATCH:
-				//根据consumers 设置header，以指定messageConvertor
-				Object requestBody = context.getRequestBodySupplier().get();
-				headers = new HttpHeaders();
-				context.getHeaderCallback().accept(headers);
-				requestEntity = new HttpEntity<>(requestBody, headers);
-				
-				rc = super.httpEntityCallback(requestEntity, context.getResponseType());
-				responseExtractor = responseEntityExtractor(context.getResponseType());
-				break;
-			default:
-				throw new RestClientException("unsupported method: " + method);
+			//根据consumers 设置header，以指定messageConvertor
+			headers = new HttpHeaders();
+			context.getHeaderCallback().accept(headers);
+			requestEntity = new HttpEntity<>(headers);
+			
+			rc = super.httpEntityCallback(requestEntity, context.getResponseType());
+			responseExtractor = responseEntityExtractor(context.getResponseType());
+		}else if(RestUtils.isRequestBodySupportedMethod(method)){
+			headers = new HttpHeaders();
+			context.getHeaderCallback().accept(headers);
+			//根据consumers 设置header，以指定messageConvertor
+//			Object requestBody = context.getRequestBodySupplier().get();
+			Object requestBody = context.getRequestBodySupplier().getRequestBody(context);
+			requestEntity = new HttpEntity<>(requestBody, headers);
+			
+			rc = super.httpEntityCallback(requestEntity, context.getResponseType());
+			responseExtractor = responseEntityExtractor(context.getResponseType());
+		}else{
+			throw new RestClientException("unsupported method: " + method);
 		}
 		if(context.getHeaderCallback()!=null){
-			rc = wrapRequestCallback(rc, context.getHeaderCallback());
+			rc = wrapRequestCallback(context, rc);
 		}
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
 	}
 	
 	@Override
 	protected <T> T doExecute(URI url, HttpMethod method, RequestCallback requestCallback, ResponseExtractor<T> responseExtractor) throws RestClientException {
-		if(logger.isInfoEnabled()){
-			logger.info("actual rest request: {} - {}", method, url);
+		RequestContextData ctx = contextThreadLocal.get();
+		if(logger.isDebugEnabled()){
+			logger.debug("rest requestId[{}] : {} - {}", ctx.getRequestId(), method, url);
 		}
 		return super.doExecute(url, method, requestCallback, responseExtractor);
 	}
 	
-	public <T> RequestCallback wrapRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<HttpHeaders> callback) {
-		return new ProcessHeaderRequestCallback(acceptHeaderRequestCallback, callback);
+	public <T> RequestCallback wrapRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
+		return new ProcessHeaderRequestCallback(context, acceptHeaderRequestCallback);
 	}
 	
 
@@ -160,15 +190,18 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	protected static class ProcessHeaderRequestCallback implements RequestCallback {
 		private final RequestCallback acceptHeaderRequestCallback;
 		private final Consumer<HttpHeaders> callback;
+		private RequestContextData context;
 
-		public ProcessHeaderRequestCallback(RequestCallback acceptHeaderRequestCallback, Consumer<HttpHeaders> callback) {
+		public ProcessHeaderRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
 			super();
 			this.acceptHeaderRequestCallback = acceptHeaderRequestCallback;
-			this.callback = callback;
+			this.context = context;
+			this.callback = context.getHeaderCallback();
 		}
 
 		@Override
 		public void doWithRequest(ClientHttpRequest request) throws IOException {
+			//再次回调header callback，此时为实际请求的header，前一次调用为匹配messageConverter
 			this.callback.accept(request.getHeaders());
 			/*if(ReflectUtils.getFieldsAsMap(acceptHeaderRequestCallback.getClass()).containsKey("requestEntity")){
 				HttpEntity<?> requestEntity = (HttpEntity<?>) ReflectUtils.getFieldValue(acceptHeaderRequestCallback, "requestEntity");
@@ -176,6 +209,9 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 					this.callback.accept(requestEntity.getHeaders());
 				}
 			}*/
+			if(logger.isDebugEnabled()){
+				logger.debug("requestId[{}] header: {}", context.getRequestId(), request.getHeaders());
+			}
 			this.acceptHeaderRequestCallback.doWithRequest(request);
 		}
 	}

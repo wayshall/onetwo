@@ -36,7 +36,7 @@ public class FtpFileStorer extends SimpleFileStorer  {
 
 	@Override
 	public void readFileTo(final String accessablePath, final OutputStream output){
-		String fullPath = storeBaseDir + accessablePath;
+		String fullPath = getStoreBaseDir() + accessablePath;
 		FtpClientManager ftpClientManager = new FtpClientManager(ftpConfig);
 		try {
 			ftpClientManager.init();
@@ -49,7 +49,7 @@ public class FtpFileStorer extends SimpleFileStorer  {
 
 	@Override
 	public InputStream readFileStream(final String accessablePath){
-		String fullPath = storeBaseDir + accessablePath;
+		String fullPath = getStoreBaseDir() + accessablePath;
 		FtpClientManager ftpClientManager = new FtpClientManager(ftpConfig);
 		try {
 			ftpClientManager.init();

@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
 import org.onetwo.common.ds.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.log.AccessLogger;
@@ -40,8 +40,10 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	private JFishMathcer matcher ;
 	private String[] excludes;
 	private UserDetailRetriever userDetailRetriever;
+//	@Autowired
+//	private BootSiteConfig bootSiteConfig;
 	@Autowired
-	private BootSiteConfig bootSiteConfig;
+	private AccessLogProperties accessLogProperties;
 	
 	public LoggerInterceptor(){
 	}
@@ -54,7 +56,10 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		if(isLogOperation() && accessLogger==null){
 			DefaultAccessLogger defaultLogger = new DefaultAccessLogger();
 //			if(bootSiteConfig!=null)
-			defaultLogger.setDebug(!bootSiteConfig.isProduct());
+			defaultLogger.setLoggerName(accessLogProperties.getLoggerName());
+			defaultLogger.setSeprator(accessLogProperties.getSeprator());
+			defaultLogger.setLogChangedDatas(accessLogProperties.isLogChangedDatas());
+			defaultLogger.setLogControllerDatas(accessLogProperties.isLogControllerDatas());
 			defaultLogger.initLogger();
 			this.accessLogger = defaultLogger;
 		}
@@ -62,6 +67,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 //		request.setAttribute(START_TIME_KEY, System.currentTimeMillis());;
+		WebContextUtils.initRequestInfo(request);
 		return true;
 	}
 	

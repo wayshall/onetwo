@@ -52,10 +52,17 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 		return declaringClass;
 	}
 	
-	public Optional<T> findParameterByType(Class<?> targetParamType){
+	final public Optional<T> findParameterByType(Class<?> targetParamType){
 		return parameters.stream()
 					.filter(p->targetParamType.isAssignableFrom(p.getParameterType()))
 					.findFirst();
+	}
+	
+	@SuppressWarnings("unchecked")
+	final protected <E> Optional<E> findParameterValueByType(Object[] args, Class<E> targetParamType){
+		return (Optional<E>)findParameterByType(targetParamType).map(p->{
+			return args[p.getParameterIndex()];
+		});
 	}
 
 	public void validateArgements(ValidatorWrapper validatorWrapper, Object[] args){

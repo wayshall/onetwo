@@ -13,14 +13,8 @@ abstract public class Hashs {
 	private static final Map<String, MessageDigestHasher> encrypts;
 //	public static final String BASE64_POSTFIX = MDEncryptImpl.BASE64_POSTFIX;
 
-	public static final MessageDigestHasher MD5 = MessageDigestHasherBuilder.newBuilder("MD5")
-																			.size(16)
-																			.withLabel(false)
-																			.build();
-	public static final MessageDigestHasher SHA = MessageDigestHasherBuilder.newBuilder("SHA")
-																			.size(20)
-																			.withLabel(false)
-																			.build();
+	public static final MessageDigestHasher MD5 = md5();
+	public static final MessageDigestHasher SHA = sha1();
 	
 	static {
 		Map<String, MessageDigestHasher> map = new HashMap<String, MessageDigestHasher>();
@@ -77,6 +71,41 @@ abstract public class Hashs {
 		MessageDigestHasher md = getMDEncrypt(label);
 		return md.checkHash(source, encrypt);
 	}
+	
+	public static MessageDigestHasher sha256(){
+		return sha256(false, CodeType.HEX);
+	}
+	
+	public static MessageDigestHasher sha256(boolean withLabel, CodeType codeType){
+		return MessageDigestHasherBuilder.newBuilder("SHA-256")
+				.size(32)//32 byte, 256bit
+				.withLabel(withLabel)
+				.codeType(codeType)
+				.build();
+	}
+
+	public static MessageDigestHasher sha1(){
+		return sha1(false, CodeType.HEX);
+	}
+	
+	public static MessageDigestHasher sha1(boolean withLabel, CodeType codeType){
+		return MessageDigestHasherBuilder.newBuilder("SHA")
+				.size(20)
+				.withLabel(withLabel)
+				.codeType(codeType)
+				.build();
+	}
+	
+	public static MessageDigestHasher md5(){
+		return md5(false, CodeType.HEX);
+	}
+	public static MessageDigestHasher md5(boolean withLabel, CodeType codeType){
+		return MessageDigestHasherBuilder.newBuilder("MD5")
+										.size(16)
+										.withLabel(withLabel)
+										.codeType(codeType)
+										.build();
+	}
 
 	
 	public static class MessageDigestHasherBuilder {
@@ -117,9 +146,8 @@ abstract public class Hashs {
 		}
 
 		public MessageDigestHasher build(){
-			MessageDigestHasherImpl hasher = new MessageDigestHasherImpl(algorithm, size);
+			MessageDigestHasherImpl hasher = new MessageDigestHasherImpl(algorithm, size, charset);
 			hasher.setWithLabel(withLabel);
-			hasher.setCharset(charset);
 			hasher.setCodeType(codeType);
 			return hasher;
 		}

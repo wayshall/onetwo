@@ -8,11 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
+import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -48,7 +48,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 //	private Map<String, WhenExceptionMap> whenExceptionCaches = new WeakHashMap<String, WhenExceptionMap>();
-	protected final Logger mailLogger = JFishLoggerFactory.findLogger("mailLogger");
+	protected final Logger mailLogger = JFishLoggerFactory.findMailLogger();
 	
 //	resouce: exception-messages
 	/*@Qualifier(BootContextConfig.BEAN_EXCEPTION_MESSAGE)
@@ -79,6 +79,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		initResolver();
+		this.notifyThrowables = bootSiteConfig.getNotifyThrowables();
 	}
 	
 	protected void initResolver(){
@@ -89,7 +90,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	protected void beforeReturnModelAndView(HttpServletRequest request, Object handlerMethod, ModelAndView mv, ErrorMessage errorMessage){
 		RequestContextHolder.getRequestAttributes().setAttribute(ERROR_MESSAGE_OBJECT_KEY, errorMessage, RequestAttributes.SCOPE_REQUEST);
 		if(mv!=null){
-			this.doLog(request, handlerMethod, errorMessage.getException(), errorMessage.isDetail());
+			this.doLog(request, errorMessage);
 		}
 	}
 	@Override
@@ -103,9 +104,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 //		Object req = RequestContextHolder.getRequestAttributes().getAttribute(WebHelper.WEB_HELPER_KEY, RequestAttributes.SCOPE_REQUEST);
 		
 		if(BootWebUtils.isAjaxRequest(request) || BootWebUtils.isAjaxHandlerMethod(handlerMethod)){
-			SimpleDataResult<?> result = WebResultCreator.creator()
-							.error(errorMessage.getMesage())
-							.buildResult();
+			DataResult<?> result = DataResults.error(errorMessage.getMesage()).build();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
 			ModelAndView mv = new ModelAndView("error", model);
 			beforeReturnModelAndView(request, handlerMethod, mv, errorMessage);
@@ -144,9 +143,9 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		return mv;
 	}
 
-	protected String getUnknowError(){
+	/*protected String getUnknowError(){
 		return SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
-	}
+	}*/
 	
 	
 	protected String getPreurl(HttpServletRequest request){
@@ -178,11 +177,14 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		}
 		return statusCode;
 	}
-	
-	protected void doLog(HttpServletRequest request, Object handlerMethod, Exception ex, boolean detail){
+
+	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
+		BootWebHelper helper = BootWebUtils.webHelper(request);
 		String msg = RequestUtils.getServletPath(request);
-		if(detail){
-			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
+		Exception ex = errorMessage.getException();
+		errorMessage.logErrorContext(logger);
+		if(errorMessage.isDetail()){
+			msg += " ["+helper.getControllerHandler()+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
 			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
 		}else{

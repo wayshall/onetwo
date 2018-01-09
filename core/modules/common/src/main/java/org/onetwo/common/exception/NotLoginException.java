@@ -29,8 +29,4 @@ public class NotLoginException extends AuthenticationException {
 		super(DEFAULT_MESSAGE+message, cause);
 	}
 
-	@Override
-	protected String getDefaultCode() {
-		return AuthenticErrorCode.NOT_LOGIN_YET;
-	}
 }

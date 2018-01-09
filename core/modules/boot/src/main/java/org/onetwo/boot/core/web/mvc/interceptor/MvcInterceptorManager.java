@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.boot.core.web.mvc.annotation.Interceptor;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -118,7 +120,13 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 				AnnotationAttributes attrs = attrsOpt.get();
 				Class<? extends MvcInterceptor>[] interClasses = (Class<? extends MvcInterceptor>[])attrs.get("value");
 				List<? extends MvcInterceptor> interceptors = Stream.of(interClasses)
-																	.flatMap(cls->SpringUtils.getBeans(applicationContext, cls).stream())
+																	.flatMap(cls->{
+																		List<? extends MvcInterceptor> inters = SpringUtils.getBeans(applicationContext, cls);
+																		if(LangUtils.isEmpty(inters)){
+																			throw new BaseException("MvcInterceptor not found for : " + cls);
+																		}
+																		return inters.stream();
+																	})
 																	.collect(Collectors.toList());
 				if(!interceptors.isEmpty()){
 					HandlerMethodInterceptorMeta meta = new HandlerMethodInterceptorMeta(hm, interceptors);

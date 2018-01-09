@@ -11,12 +11,17 @@ public class RetryTestService {
 	
 	/***
 	 * multiplier 倍数递增
+	 * 0: 0
+	 * 1: 2
+	 * 2: 2*3
+	 * 3: 2*3*3
+	 * 4: 2*3*3*3
 	 * @return
 	 */
-	@Retryable(maxAttempts=4, backoff=@Backoff(delay=1000, multiplier=2))
+	@Retryable(maxAttempts=5, backoff=@Backoff(delay=2000, multiplier=3))
 	public int saySomething(){
 		String dateStr = DateUtils.nowString();
-		if(count<successCount){
+		if(true){
 			System.out.println(dateStr+": error count: " +count);
 			count++;
 			throw new RuntimeException("error");

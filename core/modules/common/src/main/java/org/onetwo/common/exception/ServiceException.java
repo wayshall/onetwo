@@ -1,8 +1,11 @@
 package org.onetwo.common.exception;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.onetwo.common.utils.StringUtils;
+
+import com.google.common.collect.Maps;
 
 /*********
  * 
@@ -10,7 +13,7 @@ import org.onetwo.common.utils.StringUtils;
  *
  */
 //@Deprecated
-public class ServiceException extends BaseException implements ExceptionCodeMark{
+public class ServiceException extends BaseException implements ExceptionCodeMark, HeaderableException {
 
 	public static ServiceException formatMessage(String msg, Object...args){
 		String formatMsg = String.format(msg, args);
@@ -39,10 +42,12 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	 */
 	private static final long serialVersionUID = 7280411050853219784L;
 	
-	protected String code;
+//	protected String code;
 	private Object[] args;
 	private Integer statusCode;
 	private ErrorType exceptionType;
+	
+	private Map<String, String> headers;
 
 	public ServiceException() {
 		super();
@@ -88,18 +93,9 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	}
 	@Override
 	public String getCode() {
-		if(StringUtils.isBlank(code))
-			return getDefaultCode();
 		return code;
 	}
 	
-	protected String getDefaultCode(){
-		return ServiceErrorCode.BASE_CODE;
-	}
-
-	public boolean isDefaultErrorCode(){
-		return ServiceErrorCode.BASE_CODE.equals(getCode());
-	}
 	public Object[] getArgs() {
 		return args;
 	}
@@ -117,8 +113,24 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	public void setStatusCode(Integer statusCode) {
 		this.statusCode = statusCode;
 	}
-	protected void setErrorCode(){
-		this.code = ServiceErrorCode.BASE_CODE;
+	
+	final protected Map<String, String> headers() {
+		Map<String, String> headers = this.headers;
+		if(headers==null){
+			headers = Maps.newHashMap();
+			this.headers = headers;
+		}
+		return headers;
+	}
+	
+	public Optional<Map<String, String>> getHeaders() {
+		return Optional.ofNullable(headers);
+	}
+	
+	@SuppressWarnings("unchecked")
+	final public <T extends BaseException> T header(String key, String value){
+		headers().put(key, value);
+		return (T)this;
 	}
 
 }

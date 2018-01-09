@@ -1,56 +1,73 @@
 package org.onetwo.boot.plugin.core;
 
+import org.onetwo.boot.core.condition.EnabledKeyCondition;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
  * @author wayshall
  * <br/>
  */
-public class WebPluginImportSelector extends SpringBootCondition
-									implements ImportBeanDefinitionRegistrar, EnvironmentAware, BeanClassLoaderAware {
+public class WebPluginImportSelector extends EnabledKeyCondition
+									implements EnvironmentAware, ImportBeanDefinitionRegistrar/*, DeferredImportSelector*/ {
+
+	private static final String PLUGIN_KEY = "jfish.plugin.";
 	
-	private Environment environment;
-	private ClassLoader beanClassLoader;
 	private WebPlugin webPlugin;
+	private Environment environment;
+	
+	/*private Class<JFishWebPlugin> annotationClass = JFishWebPlugin.class;
+
+	public Class<?> getAnnotationClass() {
+		return annotationClass;
+	}
 
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		PluginMeta meta = parsePlugin(getAnnotationAttributes(metadata)).getPluginMeta();
-		if(!isPluginEnabled(context.getEnvironment(), meta)){
-			return ConditionOutcome.noMatch("plugin property is not enabled");
+	public String[] selectImports(AnnotationMetadata metadata) {
+		AnnotationAttributes attrubutes = getAnnotationAttributes(metadata);
+		String key = getEnabledKey(environment, attrubutes);
+		if(!isEnabled(environment, key)){
+			return new String[0];
 		}
-		return ConditionOutcome.match();
+
+		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
+				metadata.getAnnotationAttributes(this.getAnnotationClass().getName(), true));
+
+		Assert.notNull(attributes, "No " + getAnnotationClass().getSimpleName() + " attributes found. Is "
+				+ metadata.getClassName() + " annotated with @" + getAnnotationClass().getSimpleName() + "?");
+		
+		List<String> factories = new ArrayList<>(new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(this.getAnnotationClass(), this.getBeanClassLoader())));
+		if(log.isInfoEnabled()){
+			log.info("found {} jfish plugin configuration: {}", factories.size(), factories);
+		}
+		return factories.toArray(new String[factories.size()]);
+	}*/
+
+	@Override
+	protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes) {
+		PluginMeta meta = parsePlugin(attrubutes).getPluginMeta();
+		String key = PLUGIN_KEY+meta.getName()+".enabled";
+		return key;
 	}
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-		PluginMeta meta = parsePlugin(getAnnotationAttributes(metadata)).getPluginMeta();
-		if(!isPluginEnabled(getEnvironment(), meta)){
+		AnnotationAttributes attrubutes = getAnnotationAttributes(metadata);
+		String key = getEnabledKey(getEnvironment(), attrubutes);
+		if(!isEnabled(getEnvironment(), key)){
 			return ;
 		}
 		SpringUtils.registerBeanDefinition(registry, this.webPlugin.getClass().getName(), this.webPlugin.getClass());
 	}
 
-	protected boolean isPluginEnabled(Environment environment, PluginMeta meta){
-		String key = "jfish.plugin."+meta.getName()+".enabled";
-		return new RelaxedPropertyResolver(environment).getProperty(key, Boolean.class, Boolean.TRUE);
-	}
-	
 	private WebPlugin parsePlugin(AnnotationAttributes attributes){
 		WebPlugin webPlugin = this.webPlugin;
 		if(webPlugin==null){
@@ -64,28 +81,12 @@ public class WebPluginImportSelector extends SpringBootCondition
 		return webPlugin;
 	}
 
-	protected AnnotationAttributes getAnnotationAttributes(AnnotatedTypeMetadata metadata){
-		//support @AliasFor
-		AnnotationAttributes attributes = SpringUtils.getAnnotationAttributes(metadata, JFishWebPlugin.class);
-		return attributes;
-	}
-	
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
 	public Environment getEnvironment() {
 		return environment;
 	}
 
-	public ClassLoader getBeanClassLoader() {
-		return beanClassLoader;
-	}
-
-	@Override
-	public void setBeanClassLoader(ClassLoader beanClassLoader) {
-		this.beanClassLoader = beanClassLoader;
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 }

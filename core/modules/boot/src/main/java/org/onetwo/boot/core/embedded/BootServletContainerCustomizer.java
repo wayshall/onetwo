@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.embedded;
 
+import org.apache.coyote.http11.Http11NioProtocol;
 import org.onetwo.common.file.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.MultipartProperties;
@@ -28,6 +29,8 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
 	
 	@Autowired
 	private MultipartProperties multipartProperties;
+	@Autowired
+	private TomcatProperties tomcatProperties;
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
@@ -37,9 +40,28 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 (connector) -> {
                 	//connector 本身默认是 2 mb
                 	connector.setMaxPostSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
+                	Http11NioProtocol handler = (Http11NioProtocol)connector.getProtocolHandler();
+                	if(tomcatProperties.getBacklog()!=-1){
+                		//socket 连接队列大小
+                		handler.setBacklog(tomcatProperties.getBacklog());
+                	}
+                	if(tomcatProperties.getMaxConnections()!=-1){
+                		//最大连接数，默认10000
+                		handler.setMaxConnections(tomcatProperties.getMaxConnections());
+                	}
+                	if(tomcatProperties.getConnectionTimeout()!=-1){
+                		handler.setConnectionTimeout(tomcatProperties.getConnectionTimeout());
+                	}
+                	connector.setAsyncTimeout(tomcatProperties.getAsyncTimeout());
                 }
             );
         }
+		/*if(container instanceof TomcatEmbeddedServletContainerFactory){
+			TomcatEmbeddedServletContainerFactory tomcat = (TomcatEmbeddedServletContainerFactory) container;
+			tomcat.addContextCustomizers(context->{
+				context.setReloadable(true);
+			});
+		}*/
 	}
 
 	

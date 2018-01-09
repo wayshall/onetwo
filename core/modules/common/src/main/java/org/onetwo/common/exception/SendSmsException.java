@@ -53,9 +53,5 @@ public class SendSmsException extends BusinessException implements SystemErrorCo
 		this.initErrorCode(null);
 	}
 	
-	protected String getBaseCode(){
-		return ServiceErrorCode.SEND_SMS_ERROR;
-	}
-
 
 }

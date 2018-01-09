@@ -15,9 +15,11 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
@@ -27,14 +29,15 @@ import org.springframework.util.StringUtils;
  * @author wayshall
  * <br/>
  */
-abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
+abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware, EnvironmentAware {
 
 	public static final String ATTRS_NAME = "name";
 	
 	protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private ResourceLoader resourceLoader;
-	private ClassLoader classLoader;
+	protected ResourceLoader resourceLoader;
+	protected ClassLoader classLoader;
+	protected Environment environment;
 	protected AnnotationMetadataHelper annotationMetadataHelper;
 
 	private Class<? extends Annotation> importingAnnotationClass;
@@ -149,5 +152,10 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 
 	final protected String resolve(String value) {
 		return SpringUtils.resolvePlaceholders(resourceLoader, value);
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 }

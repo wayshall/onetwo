@@ -7,18 +7,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator;
-import org.onetwo.common.spring.mvc.utils.WebResultCreator.SimpleResultBuilder;
+import org.onetwo.common.spring.mvc.utils.DataResults;
+import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
+import org.onetwo.ext.security.jwt.JwtAuthStores;
+import org.onetwo.ext.security.jwt.JwtAuthStores.StoreContext;
 import org.onetwo.ext.security.jwt.JwtSecurityTokenInfo;
 import org.onetwo.ext.security.jwt.JwtSecurityTokenService;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
+import org.onetwo.ext.security.utils.CookieStorer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,9 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.util.Assert;
+
+import com.google.common.collect.ImmutableMap;
 
 /****
  * 验证成功或失败后的处理器
@@ -60,6 +66,8 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	@Autowired(required=false)
 	private JwtSecurityTokenService jwtTokenService;
 	private String jwtAuthHeader;
+	private JwtAuthStores jwtAuthStores;
+	private CookieStorer cookieStorer;
 
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
@@ -91,6 +99,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			if(StringUtils.isBlank(jwtAuthHeader)){
 				jwtAuthHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 			}
+			Assert.notNull(jwtAuthStores);
 		}
 		if(authenticationFailureUrl!=null){
 	    	this.failureHandler = new SimpleUrlAuthenticationFailureHandler(authenticationFailureUrl);
@@ -117,17 +126,27 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+		JwtSecurityTokenInfo token = null;
 		if(useJwtToken){
-			JwtSecurityTokenInfo token = this.jwtTokenService.generateToken(authentication);
+			token = this.jwtTokenService.generateToken(authentication);
 //			response.addHeader(jwtAuthHeader, token.getToken());
-			SimpleDataResult<?> rs = WebResultCreator.creator()
-													.success("登录成功！")
-													.data(token)
-													.buildResult();
+			/*DataResult<?> rs = DataResults.success("登录成功！")
+											.data(token)
+											.build();
 			String text = mapper.toJson(rs);
-			ResponseUtils.renderJsonByAgent(request, response, text);
-			
-		}else if(RequestUtils.isAjaxRequest(request)){
+			ResponseUtils.renderJsonByAgent(request, response, text);*/
+
+			StoreContext ctx = StoreContext.builder()
+											.authKey(jwtAuthHeader)
+											.request(request)
+											.response(response)
+											.cookieStorer(cookieStorer)
+											.token(token)
+											.build();
+			jwtAuthStores.saveToken(ctx);
+		}
+		
+		if(RequestUtils.isAjaxRequest(request)){
 			String redirectUrl = this.getDefaultTargetUrl();
 			String targetUrlParameter = getTargetUrlParameter();
 			if (isAlwaysUseDefaultTargetUrl()
@@ -144,10 +163,14 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 				clearAuthenticationAttributes(request);
 			}
 			
-			SimpleDataResult<?> rs = WebResultCreator.creator().success("登录成功！")
+			Object data = redirectUrl;
+			if(token!=null){
+				data = ImmutableMap.of("redirectUrl", redirectUrl, "token", token);
+			}
+			DataResult<?> rs = DataResults.success("登录成功！")
 //											.data(authentication.getPrincipal())
-											.data(redirectUrl)
-											.buildResult();
+											.data(data)
+											.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);
 		}else{
@@ -165,9 +188,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			if(BadCredentialsException.class.isInstance(exception)){
 				msg = "用户密码不匹配！";
 			}
-			SimpleResultBuilder builder = WebResultCreator.creator().error("验证失败："+msg);
+			SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
 			
-			SimpleDataResult<?> rs = buildErrorCode(builder, request, exception).buildResult();
+			DataResult<?> rs = buildErrorCode(builder, request, exception).build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else{
@@ -175,7 +198,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 		}
     }
 	
-	private SimpleResultBuilder buildErrorCode(SimpleResultBuilder builder, HttpServletRequest request, AuthenticationException exception){
+	private SimpleResultBuilder<?> buildErrorCode(SimpleResultBuilder<?> builder, HttpServletRequest request, AuthenticationException exception){
 		/*if(ExceptionCodeMark.class.isInstance(exception)){
 			String code = ((ExceptionCodeMark)exception).getCode();
 			builder.code(code);
@@ -199,5 +222,11 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	}
 	public void setJwtAuthHeader(String jwtAuthHeader) {
 		this.jwtAuthHeader = jwtAuthHeader;
+	}
+	public void setJwtAuthStores(JwtAuthStores jwtAuthStores) {
+		this.jwtAuthStores = jwtAuthStores;
+	}
+	public void setCookieStorer(CookieStorer cookieStorer) {
+		this.cookieStorer = cookieStorer;
 	}
 }

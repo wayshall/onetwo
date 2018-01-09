@@ -4,43 +4,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.UUID;
 
 import org.onetwo.apache.io.IOUtils;
-import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.md.Hashs;
-import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
+import org.slf4j.Logger;
 
 
 public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 	
-	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = (storeBaseDir, appContextDir, ctx)->{
-		NiceDate now = NiceDate.New();
-		
-		//写入文件名=md5(原文件名+随机字符串)
-		String newfn = FileUtils.getFileNameWithoutExt(ctx.getFileName())+"-"+now.format("HHmmssSSS")+"-"+LangUtils.getRadomString(5);
-		newfn = Hashs.MD5.hash(newfn).toLowerCase();
-		newfn += FileUtils.getExtendName(ctx.getFileName(), true);
-
-		// /appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
-		String accessablePath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
-		accessablePath = accessablePath + now.formatAsDate()+"/"+newfn;
-		
-		//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
-		String storedServerLocalPath = storeBaseDir + accessablePath;
-		
-		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(ctx.getFileName(), storedServerLocalPath);
-		meta.setSotredFileName(newfn);
-		meta.setAccessablePath(accessablePath);
-		meta.setBizModule(ctx.getModule());
-//		meta.setFullAccessablePath(fullAccessablePath);
-		return meta;
-	};
+	
+	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = new SimpleStoreFilePathStrategy();
+	
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 //	private StoreFilePathStrategy strategy = SIMPLE_STORE_STRATEGY;
-	protected String storeBaseDir;
-	protected String appContextDir;
+	private String storeBaseDir;
+	private String appContextDir;
 	
 	@Override
 	public SimpleFileStoredMeta write(StoringFileContext context) {
@@ -71,6 +53,8 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		if(strategy==null){
 			strategy = SIMPLE_STORE_STRATEGY;
 		}
+		String storeBaseDir = getStoreBaseDir();
+		String appContextDir = getAppContextDir();
 		SimpleFileStoredMeta meta = (SimpleFileStoredMeta)strategy.getStoreFilePath(storeBaseDir, appContextDir, context);
 		return meta;
 	}
@@ -118,4 +102,34 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 		this.appContextDir = appContextDir;
 	}
 
+	public String getStoreBaseDir() {
+		return storeBaseDir;
+	}
+
+
+	public static class SimpleStoreFilePathStrategy implements StoreFilePathStrategy {
+		@Override
+		public FileStoredMeta getStoreFilePath(String storeBaseDir, String appContextDir, StoringFileContext ctx) {
+			String newfn = ctx.getKey();
+			String accessablePath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
+			if(StringUtils.isBlank(newfn)){
+				String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(ctx.getModule())).replace("/", "-");
+				newfn = prefix+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(ctx.getFileName(), true);
+			}
+//			newfn += FileUtils.getExtendName(ctx.getFileName(), true);
+			// /appContextDir/moduleDir/yyyy-MM-dd//uuid.ext
+			accessablePath = accessablePath + newfn;
+
+			
+			//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
+			String storedServerLocalPath = storeBaseDir + accessablePath;
+			
+			SimpleFileStoredMeta meta = new SimpleFileStoredMeta(ctx.getFileName(), storedServerLocalPath);
+			meta.setSotredFileName(newfn);
+			meta.setAccessablePath(accessablePath);
+			meta.setBizModule(ctx.getModule());
+//			meta.setFullAccessablePath(fullAccessablePath);
+			return meta;
+		}
+	}
 }

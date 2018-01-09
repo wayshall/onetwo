@@ -3,14 +3,17 @@ package org.onetwo.boot.core.web.view;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.common.data.DataResultWrapper;
+import org.onetwo.common.data.DataResultWrapper.NoWrapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
@@ -23,6 +26,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
 
 
 /**
@@ -38,11 +42,12 @@ public class XResponseViewManager implements HandlerMappingListener {
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private Cache<Method, Map<String, XResponseViewData>> viewDataCaces = CacheBuilder.newBuilder()
-																		.maximumSize(1000)
+																		.maximumSize(100)
 																		.build();
 	private boolean alwaysWrapDataResult = false;
 	private DataResultWrapper dataResultWrapper = DATA_RESULT_WRAPPER;
 	private boolean enableResponseView = true;
+	private Map<Predicate<Object>, DataResultWrapper> matchers = Maps.newHashMap();
 	
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
@@ -52,6 +57,35 @@ public class XResponseViewManager implements HandlerMappingListener {
 				viewDataCaces.put(hm.getMethod(), viewDatas);
 			}
 		}
+	}
+
+
+	public XResponseViewManager registerMatchPredicate(Predicate<Object> predicate){
+		return registerMatchPredicate(predicate, dataResultWrapper);
+	}
+	public XResponseViewManager registerMatchPredicate(Predicate<Object> predicate, DataResultWrapper dataResultWrapper){
+		this.matchers.putIfAbsent(predicate, dataResultWrapper);
+		return this;
+	}
+
+	/***
+	 * 匹配到则返回包装后的data，否则返回empty
+	 * @author wayshall
+	 * @param data
+	 * @param defaultWrapIfNotFoud
+	 * @return
+	 */
+	public Optional<Object> getResponseViewByPredicate(final Object data){
+		Optional<Object> wrapDataOpt = Optional.empty();
+		for(Entry<Predicate<Object>, DataResultWrapper> entry : matchers.entrySet()){
+			if(entry.getKey().test(data)){
+				return Optional.ofNullable(entry.getValue().wrapResult(data));
+			}
+		}
+		/*if(defaultWrapIfNotFoud){
+			wrapDataOpt = Optional.ofNullable(dataResultWrapper.wrapResult(data));
+		}*/
+		return wrapDataOpt;
 	}
 	
 	/****
@@ -97,7 +131,9 @@ public class XResponseViewManager implements HandlerMappingListener {
 		Object wrapData = data;
 		Optional<XResponseViewData> viewData = getCurrentHandlerMatchResponseView(responseView, hm);
 		if(viewData.isPresent()){
-			wrapData = viewData.get().getWrapper().wrapResult(data);
+			if(viewData.get().getWrapper().isPresent()){
+				wrapData = viewData.get().getWrapper().get().wrapResult(wrapData);
+			}
 		}else if(this.alwaysWrapDataResult){
 			wrapData = this.dataResultWrapper.wrapResult(data);
 		}else if(defaultWrapIfNotFoud){
@@ -173,10 +209,10 @@ public class XResponseViewManager implements HandlerMappingListener {
 				Class<? extends DataResultWrapper> wrapperClass) {
 			super();
 			this.viewName = viewName;
-			this.wrapper = ReflectUtils.newInstance(wrapperClass);
+			this.wrapper = wrapperClass==NoWrapper.class?NoWrapper.INSTANCE:ReflectUtils.newInstance(wrapperClass);
 		}
-		public DataResultWrapper getWrapper() {
-			return wrapper;
+		public Optional<DataResultWrapper> getWrapper() {
+			return Optional.ofNullable(wrapper);
 		}
 		public String getViewName() {
 			return viewName;

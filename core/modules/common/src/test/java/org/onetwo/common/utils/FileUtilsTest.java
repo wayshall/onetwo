@@ -51,6 +51,25 @@ public class FileUtilsTest {
 		}
 	}
 	
+
+	@Test
+	public void testOverride(){
+		String path = FileUtils.getResourcePath("") + "/override.txt";
+		File override = new File(path);
+		if(override.exists()){
+			override.delete();
+		}
+		List<String> datas = Arrays.asList("aa", "bb");
+		FileUtils.writeListTo(override, "gbk", datas, "\r\n");
+		List<String> res = FileUtils.readAsList(override);
+		assertThat(res).isEqualTo(datas);
+		
+		datas = Arrays.asList("cc", "dd");
+		FileUtils.writeListTo(override, "gbk", datas, "\r\n");
+		res = FileUtils.readAsList(override);
+		assertThat(res).isEqualTo(datas);
+	}
+	
 	@Test
 	public void testParentPath(){
 		String path = "/webapp/aa/bb/cc.jsp";

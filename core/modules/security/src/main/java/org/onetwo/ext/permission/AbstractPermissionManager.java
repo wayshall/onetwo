@@ -3,6 +3,7 @@ package org.onetwo.ext.permission;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,10 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	public List<P> getMemoryRootMenu() {
 		Assert.notNull(parsers);
 //	    return this.menuInfoParser.getRootMenu();
-	    return parsers.stream().map(parser->parser.getRootMenu()).collect(Collectors.toList());
+	    return parsers.stream()
+	    				.filter(p->p.getRootMenu().isPresent())
+	    				.map(parser->parser.getRootMenu().get())
+	    				.collect(Collectors.toList());
     }
 
 	/****
@@ -65,8 +69,8 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 		Assert.notNull(parsers);
 //		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		parsers.stream().forEach(parser->{
-			P rootMenu = parser.parseTree();
-			afterParseTree(rootMenu);
+			Optional<P> rootMenu = parser.parseTree();
+			afterParseTree(rootMenu.orElse(null));
 		});
 	}
 	
@@ -101,6 +105,16 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	 */
 	abstract protected void updatePermissions(P rootPermission, Map<String, P> dbPermissionMap, Set<P> adds, Set<P> deletes, Set<P> updates);
 	
+
+	/****
+	 * 当模块菜单的rootmenu被标记为过时时，对应的rootmenu为null
+	 * @author wayshall
+	 * @param menuInfoParser
+	 */
+	protected void removeRootMenu(MenuInfoParser<P> menuInfoParser){
+		
+	}
+	
 	/****
 	 * 同步菜单
 	 */
@@ -114,7 +128,12 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	public void syncMenuToDatabase(MenuInfoParser<P> menuInfoParser){
 //		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
-		P rootPermission = menuInfoParser.getRootMenu();
+		Optional<P> rootPermissionOpt = menuInfoParser.getRootMenu();
+		if(!rootPermissionOpt.isPresent()){
+			this.removeRootMenu(menuInfoParser);
+			return ;
+		}
+		P rootPermission = rootPermissionOpt.get();
 //		List<? extends IPermission> permList = (List<? extends IPermission>)this.baseEntityManager.findByProperties(permClass, "code:like", rootCode+"%");
 //		Set<P> dbPermissions = findExistsPermission(rootPermission.getCode());
 		Map<String, P> dbPermissionMap = findExistsPermission(rootPermission.getCode());

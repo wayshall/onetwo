@@ -3,6 +3,7 @@ package org.onetwo.common.data;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 
@@ -42,6 +43,13 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	
 	public AbstractDataResult(){
 		this.code = SUCCESS;
+	}
+	
+	public T dataOrThrows(){
+		if(isSuccess()){
+			return getData();
+		}
+		throw new ServiceException(message, code);
 	}
 
 	public String getCode() {
@@ -111,6 +119,12 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	 */
 	public Boolean isMessageOnly() {
 		return StringUtils.isNotBlank(message) && getData()==null;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Result [code=" + code + ", message=" + message+ "]";
 	}
 
 

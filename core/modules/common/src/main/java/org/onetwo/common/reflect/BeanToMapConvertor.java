@@ -6,12 +6,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -57,6 +55,10 @@ public class BeanToMapConvertor {
 		}
 		
 	}
+	
+	private static final Function<Object, Boolean> DEFAULT_FLATABLE = obj->{
+		return !LangUtils.getSimpleClass().contains(obj.getClass());
+	};
 
 	private String listOpener = "[";
 	private String listCloser = "]";
@@ -64,8 +66,9 @@ public class BeanToMapConvertor {
 	private String prefix = "";
 	private BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor;
 	private BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
-	private Function<Object, Boolean> flatableObject;
-	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
+	
+	private Function<Object, Boolean> flatableObject = DEFAULT_FLATABLE;
+//	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
 //	private boolean freezed;
 	private boolean enableFieldNameAnnotation = false;
 	private boolean enableUnderLineStyle = false;
@@ -154,17 +157,18 @@ public class BeanToMapConvertor {
 		return params;
 	}
 	
-	public BeanToMapConvertor addValueType(Class<?> clazz){
+	/*public BeanToMapConvertor addValueType(Class<?> clazz){
 //		this.checkFreezed();
 		this.valueTypes.add(clazz);
 		return this;
-	}
+	}*/
 	
 
 	public boolean isMappableValue(Object value){
 		if(value==null)
 			return true;
-		return valueTypes.contains(value.getClass()) || (flatableObject!=null && !flatableObject.apply(value));
+//		return valueTypes.contains(value.getClass()) || (flatableObject!=null && !flatableObject.apply(value));
+		return (flatableObject!=null && !flatableObject.apply(value));
 //		return valueTypes.contains(value.getClass());
 	}
 
@@ -227,10 +231,13 @@ public class BeanToMapConvertor {
 			}*/
 			ReflectUtils.listProperties(obj.getClass(), prop-> {
 				Object val = ReflectUtils.getProperty(obj, prop);
+//				System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
 				if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
 					if(valueConvertor!=null){
 						Object newVal = valueConvertor.apply(prop, val);
 						val = (newVal!=null?newVal:val);
+					}else if(val instanceof Enum){
+						val = ((Enum<?>)val).name();
 					}
 					PropertyContext propContext = new PropertyContext(obj, prop, prop.getName());
 					if(StringUtils.isBlank(prefixName)){
@@ -339,7 +346,7 @@ public class BeanToMapConvertor {
 			beanToFlatMap.setPrefix(prefix);
 			beanToFlatMap.setPropertyAcceptor(propertyAcceptor);
 			beanToFlatMap.setValueConvertor(valueConvertor);
-			beanToFlatMap.setFlatableObject(flatableObject);
+			beanToFlatMap.setFlatableObject(flatableObject==null?DEFAULT_FLATABLE:flatableObject);
 			beanToFlatMap.enableFieldNameAnnotation = enableFieldNameAnnotation;
 			beanToFlatMap.enableUnderLineStyle = enableUnderLineStyle;
 			return beanToFlatMap;

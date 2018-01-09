@@ -25,5 +25,12 @@ public @interface OnMissingBean {
 	 * @return
 	 */
 	Class<?>[] value() default {};
+	ClassNotPresentAction onClassNotPresent() default ClassNotPresentAction.NOT_MATCH;
+	
+	enum ClassNotPresentAction {
+		THROW,
+		MATCH,
+		NOT_MATCH
+	}
 	
 }

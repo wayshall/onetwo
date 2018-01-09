@@ -20,6 +20,8 @@ public class DatasourceRouterProperties {
 	String lookupStrategy;
 	DsProperties common = new DsProperties();
 	Map<String, DsProperties> targets = Maps.newLinkedHashMap();
+
+	HeaderLookupStrategy headerStrategy = new HeaderLookupStrategy();
 	
 	@SuppressWarnings("serial")
 	public static class DsProperties extends JFishProperties {
@@ -36,6 +38,11 @@ public class DatasourceRouterProperties {
 		public String getPassword(){
 			return getProperty("password");
 		}
+	}
+	
+	@Data
+	public static class HeaderLookupStrategy {
+		String headerName;
 	}
 
 }

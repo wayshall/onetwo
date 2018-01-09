@@ -18,13 +18,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @SuppressWarnings("unchecked")
 @Data
 public class BootSpringConfig {
+	/**
+	 * -Dapp.env=product
+	 */
+	public static final String SYSTEM_APP_ENV_KEY = "app.env";
 	private ProfilesConfig profiles = new ProfilesConfig();
 	private ApplicationProperties application = new ApplicationProperties();
 	
     public boolean isEnv(Env env){
-		return Optional.ofNullable(profiles.getActive())
+    	String envString = env.name().toLowerCase();
+		boolean res = Optional.ofNullable(profiles.getActive())
 						.orElse(Collections.EMPTY_LIST)
-						.contains(env.name().toLowerCase());
+						.contains(envString);
+		return res?true:System.getProperty(SYSTEM_APP_ENV_KEY, "").contains(envString);
 	}
 	
 	public boolean isProduct(){

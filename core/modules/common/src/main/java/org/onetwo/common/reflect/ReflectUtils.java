@@ -32,7 +32,6 @@ import org.onetwo.common.convert.Types;
 import org.onetwo.common.delegate.DelegateFactory;
 import org.onetwo.common.delegate.DelegateMethod;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.expr.ValueProvider;
@@ -284,7 +283,7 @@ public class ReflectUtils {
 		}
 
 		if (exp)
-			throw new ServiceException("can not set the property[" + propName
+			throw new BaseException("can not set the property[" + propName
 					+ "]'s value");
 	}
 
@@ -639,7 +638,7 @@ public class ReflectUtils {
 				if (m.getAnnotation(annoClasses) == null)
 					continue;
 				if (method != null && throwIfMore)
-					throw new ServiceException("the class[" + objClass
+					throw new BaseException("the class[" + objClass
 							+ "] has more than one method has the annotaiton["
 							+ annoClasses + "]");
 				method = m;
@@ -700,7 +699,7 @@ public class ReflectUtils {
 		try {
 			instance = clazz.newInstance();
 		} catch (Exception e) {
-			throw new ServiceException("instantce class error : " + clazz, e);
+			throw new BaseException("instantce class error : " + clazz, e);
 		}
 		return instance;
 	}
@@ -717,7 +716,7 @@ public class ReflectUtils {
 			clz = Class.forName(className, true, ClassUtils.getDefaultClassLoader());
 		} catch (Exception e) {
 			if(throwIfError)
-				throw new ServiceException("class not found : " + className, e);
+				throw new BaseException("class not found : " + className, e);
 			else
 				logger.warn("class not found : " + className);
 		}
@@ -729,7 +728,7 @@ public class ReflectUtils {
 		try {
 			clz = cl.loadClass(className);
 		} catch (ClassNotFoundException e) {
-			throw new ServiceException("class not found : " + className, e);
+			throw new BaseException("class not found : " + className, e);
 		}
 		return clz;
 	}
@@ -774,10 +773,10 @@ public class ReflectUtils {
 					for (Object o : objects)
 						sb.append(o.getClass().getName()).append(" ");
 				}
-				throw new ServiceException(sb.toString());
+				throw new BaseException(sb.toString());
 			}
 		} catch (Exception e) {
-			throw new ServiceException("instantce class error : " + clazz, e);
+			throw new BaseException("instantce class error : " + clazz, e);
 		}
 		return instance;
 	}
@@ -844,7 +843,7 @@ public class ReflectUtils {
 		try {
 			beanInfo = Introspector.getBeanInfo(clazz, Object.class);
 		} catch (Exception e) {
-			throw new ServiceException(e);
+			throw new BaseException(e);
 		}
 		for (PropertyDescriptor prop : beanInfo.getPropertyDescriptors()) {
 			if (propName.equals(prop.getName()))
@@ -1226,7 +1225,7 @@ public class ReflectUtils {
 			}
 		}
 		if (fields.isEmpty() && throwIfNotfound)
-			throw new ServiceException("can not find class[" + clazz
+			throw new BaseException("can not find class[" + clazz
 					+ "]'s fieldType [" + fieldType + "]");
 		return fields;
 	}
@@ -1438,7 +1437,7 @@ public class ReflectUtils {
 			throw ex;
 		} catch (Exception ex) {
 			if (throwIfError)
-				throw new ServiceException("get value of field[" + f
+				throw new BaseException("get value of field[" + f
 						+ "] error: " + ex.getMessage(), ex);
 			else
 				return null;
@@ -1461,7 +1460,7 @@ public class ReflectUtils {
 			throw ex;
 		} catch (Exception ex) {
 			if (throwIfError)
-				throw new ServiceException("set value of field[" + f
+				throw new BaseException("set value of field[" + f
 						+ "] error: " + ex.getMessage(), ex);
 		}
 	}

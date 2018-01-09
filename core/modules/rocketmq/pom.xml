@@ -31,6 +31,23 @@
     </dependency>
     
     <dependency>
+      <groupId>org.onetwo4j</groupId>
+      <artifactId>onetwo-boot</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+	   <groupId>com.aliyun.openservices</groupId>
+	   <artifactId>ons-client</artifactId>
+       <optional>true</optional>
+	</dependency>
+    
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
       <optional>true</optional>
@@ -55,6 +72,14 @@
     <dependency>
         <groupId>com.alibaba.rocketmq</groupId>
         <artifactId>rocketmq-client</artifactId>
+        <optional>true</optional>
+        <exclusions>
+            <exclusion>
+                <!-- 原来是1.2.12版本和eureka使用时有问题，1.2.32修复 -->
+	            <groupId>com.alibaba</groupId>
+	            <artifactId>fastjson</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
     
     <!-- for test -->

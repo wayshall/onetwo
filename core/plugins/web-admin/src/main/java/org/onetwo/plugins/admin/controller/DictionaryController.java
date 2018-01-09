@@ -49,6 +49,7 @@ public class DictionaryController extends WebAdminBaseController implements Date
 	public ModelAndView children(String parentCode){
 		List<DataDictionary> datalist = dictionaryServiceImpl.findChildren(parentCode);
 		List<MappableMap> districtMaps = EasyModel.newTreeBuilder(DataDictionary.class)
+//												.specifyMappedFields()
 												.mapId("code")
 												.mapText("name")
 												.mapIsStateOpen((src)->StringUtils.isBlank(src.getParentCode()))

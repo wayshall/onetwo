@@ -10,7 +10,9 @@ import org.onetwo.ext.security.utils.LoginUserDetails;
 import org.onetwo.plugins.admin.dao.AdminPermissionDao;
 import org.onetwo.plugins.admin.entity.AdminPermission;
 import org.onetwo.plugins.admin.entity.AdminUser;
+import org.onetwo.plugins.admin.utils.Enums.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,6 +44,9 @@ public class AdminUserDetailServiceImpl<T extends AdminUser> implements UserDeta
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		T user = fetUserByUserName(username);
+		if(!UserStatus.NORMAL.name().equals(user.getStatus())){
+			throw new LockedException("用户状态异常："+user.getStatusName());
+		}
 		
 		List<GrantedAuthority> authes = fetchUserGrantedAuthorities(user);
 		UserDetails userDetail = buildUserDetail(user, authes);

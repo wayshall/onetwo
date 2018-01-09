@@ -46,6 +46,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_IMAGE = "path.image";*/
 
 	public static final String ENABLE_UPLOAD_PREFIX = "site.upload.fileStorePath";
+	public static final String ENABLE_STORETYPE_PROPERTY = "site.upload.storeType";
 //	public static final String ENABLE_KINDEDITOR_UPLOADSERVICE = "site.kindeditor.uploadService";
 	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compressImage.enable";
 	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.storeFileMetaToDatabase";
@@ -65,6 +66,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	private String cssPath;
 	private String imagePath;
 	
+	List<String> notifyThrowables;
 	
 	private ImageServer imageServer = new ImageServer();
 	
@@ -188,6 +190,14 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		this.imageServer = imageServer;
 	}
 
+	public List<String> getNotifyThrowables() {
+		return notifyThrowables;
+	}
+
+	public void setNotifyThrowables(List<String> notifyThrowables) {
+		this.notifyThrowables = notifyThrowables;
+	}
+
 	@Data
 	public class ImageServer {
 		String basePath;
@@ -199,7 +209,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	@Data
 	public class UploadConfig {
 		
-		StoreType storeType = StoreType.LOCAL;
+//		StoreType storeType = StoreType.LOCAL;
 		String fileStorePath;
 		boolean fileStorePathToResourceHandler = true;
 		Integer resourceCacheInDays = 30;
@@ -218,9 +228,14 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		
 		CompressConfig compressImage = new CompressConfig();
 
+		public Integer getResourceCacheInDays() {
+			return resourceCacheInDays;
+		}
+
 		/*public int getMaxUploadSize(){
 			return maxUploadSize;
 		}*/
+		
 	}
 	
 	@Data
@@ -229,7 +244,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	@AllArgsConstructor
 	static public class CompressConfig {
 		//超过了配置值就启用自动压缩功能，比如：5KB
-		//少于0则所有大小一律压缩
+		//少于0则一律不压缩
 		String thresholdSize;
 		Double scale;
 		Double quality;
@@ -253,7 +268,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	
 	public static enum StoreType {
 		LOCAL,
-		FTP;
+		FTP,
+		ALI_OSS;
 		
 		public static StoreType of(String str){
 			if(StringUtils.isBlank(str)){

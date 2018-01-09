@@ -25,10 +25,4 @@ public class LoginException extends ServiceException {
 		super(message, cause);
 	}
 
-	@Override
-	public String getDefaultCode() {
-		return LoginErrorCode.BASE_CODE;
-	}
-	
-	
 }

@@ -2,7 +2,10 @@ package org.onetwo.common.exception;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
+
+import org.onetwo.common.reflect.ReflectUtils;
 
 import com.google.common.collect.Maps;
 
@@ -21,11 +24,11 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 
 	private static final String SEP_LIE = "--------------------";
 	
-	protected static final String DefaultMsg = "occur error";
-	public static final String Prefix = "[ERROR]:";
+	protected static final String DefaultMsg = "[ERROR]";
+//	public static final String Prefix = "[ERROR]";
 
-	protected String code;
-	
+	protected String code = getClass().getSimpleName();
+
 	private Map<String, Object> errorContext;
 
 //	protected List<Throwable> list = null;
@@ -35,7 +38,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	}
 
 	public BaseException(String msg) {
-		super(Prefix + msg);
+		super(msg);
 	}
 
 	public BaseException(Throwable cause) {
@@ -62,15 +65,38 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T extends BaseException> T put(String key, Object value){
+	final public <T extends BaseException> T put(String key, Object value){
+		errorContext().put(key, value);
+		return (T)this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	final public <T extends BaseException> T put(Object context){
+		this.errorContext().put(context.getClass().getSimpleName(), context);
+		return (T)this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	final public <T extends BaseException> T putAsMap(Object context){
+		try {
+			Map<String, Object> map = ReflectUtils.toMap(context);
+			this.errorContext().putAll(map);
+		} catch (Exception e) {
+			put(context);
+		}
+		return (T)this;
+	}
+	
+
+	private Map<String, Object> errorContext() {
 		Map<String, Object> errorContext = this.errorContext;
 		if(errorContext==null){
 			errorContext = Maps.newHashMap();
 			this.errorContext = errorContext;
 		}
-		errorContext.put(key, value);
-		return (T)this;
+		return errorContext;
 	}
+	
 
     public void printStackTrace(PrintStream s) {
     	if(this.errorContext!=null){
@@ -84,5 +110,16 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
     	}
     	super.printStackTrace(s);
     }
+    
+	public Map<String, Object> getErrorContext() {
+		return errorContext==null?Collections.emptyMap():errorContext;
+	}
+
+	/****
+	 * http://www.infoq.com/cn/articles/things-of-java-log-performance
+	 */
+    /*public Throwable fillInStackTrace() {
+    	return this;
+    }*/
 
 }

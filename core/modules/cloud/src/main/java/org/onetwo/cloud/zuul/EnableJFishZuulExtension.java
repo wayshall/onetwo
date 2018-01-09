@@ -13,6 +13,6 @@ import org.springframework.context.annotation.Import;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import({ExtZuulContextConfig.class})
+@Import({EnableJFishZuulExtensionSelector.class})
 public @interface EnableJFishZuulExtension {
 }

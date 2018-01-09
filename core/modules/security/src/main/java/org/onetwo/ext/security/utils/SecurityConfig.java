@@ -1,5 +1,6 @@
 package org.onetwo.ext.security.utils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -11,11 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.ext.security.jwt.JwtAuthStores;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 
 import redis.clients.jedis.JedisPoolConfig;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
@@ -69,6 +72,8 @@ public class SecurityConfig {
 	private JwtConfig jwt = new JwtConfig();
 	
 	private Map<String[], String> intercepterUrls = Maps.newHashMap();
+	private List<InterceptersConfig> intercepters = Lists.newArrayList();
+	
 	private String anyRequest;
 	private boolean ignoringDefautStaticPaths = true;
 	private String[] ignoringUrls;
@@ -77,6 +82,9 @@ public class SecurityConfig {
 	
 	public String[] getIgnoringUrls(){
 		return ignoringUrls;
+	}
+	public String getAnyRequest(){
+		return anyRequest;
 	}
 	/**
 	 * for page
@@ -89,6 +97,10 @@ public class SecurityConfig {
 			url = cas.getLogoutUrl();
 		}*/
 		return resolveUrl(url);
+	}
+	
+	public String getDefaultLoginPage(){
+		return defaultLoginPage;
 	}
 	
 	/****
@@ -151,6 +163,10 @@ public class SecurityConfig {
 	}
 	public boolean isCasEnabled(){
 		return Springs.getInstance().containsClassBean("org.springframework.security.cas.web.CasAuthenticationFilter");
+	}
+	
+	public Map<String, MemoryUser> getMemoryUsers(){
+		return this.memoryUsers;
 	}
 	
 	@Data
@@ -229,12 +245,15 @@ public class SecurityConfig {
 	@Data
 	public static class JwtConfig {
 		String authHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
+		String authKey;
+		JwtAuthStores authStore = JwtAuthStores.HEADER;
 		String signingKey;
 		Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);
 		
 		public boolean isEnabled(){
 			return StringUtils.isNotBlank(signingKey);
 		}
+		
 	}
 	
 	@Data
@@ -253,6 +272,11 @@ public class SecurityConfig {
 		String password = "$2a$10$1Qrdb4WZcn7gDKrTfgJEAOZMOQRiUNWjuPcOmU520nLbrz2wHQlpa";//default is jfish
 		String[] roles;
 		String[] authorities;
+	}
+	@Data
+	public static class InterceptersConfig {
+		String[] pathPatterns;
+		String access;
 	}
 	
 }

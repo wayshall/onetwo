@@ -2,7 +2,24 @@
 交流群：  604158262    
 一些通用功能，使用频繁的工具类的封装
 
+## 要求
+JDK 1.8+
+
 ## maven
+
+添加仓储：
+```xml
+<repositories>
+	<repository>
+	     <id>oss</id>
+	     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+	    <snapshots>
+	        <enabled>true</enabled>
+	    </snapshots>
+	</repository> 
+</repositories>
+```
+添加依赖：
 ```xml
 
 <dependency>
@@ -14,6 +31,7 @@
 ```
 ## 常用工具类
 ### LangUtils 一些常用的工具方法集合
+
 ### ReflectUtils 反射相关工具类
    
 ```java   
@@ -37,6 +55,22 @@ BeanToMapBuilder.newBuilder()
 
 //实例化一个UserEntity对象，并把map的值设置到UserEntity对象
 UserEntity user = ReflectUtils.fromMap(map, UserEntity.class);
+```
+
+
+### bean转成map
+把一个pojo转换为map，其中pojo的属性名作为key，属性值作为对象
+```java   
+
+//把对象转为map，对象的属性名称为key，对应属性的值为value
+Map<String, Object> map = ReflectUtils.toMap(user);
+
+//更多定制转换规则
+BeanToMapBuilder.newBuilder()
+				.propertyAcceptor((p, v)->v!=null) //只有属性值不为null的才转为map
+				.enableUnderLineStyle() //把属性的驼峰命名风格转为下划线风格
+				.build()
+				.toMap(user)
 ```
 
 ### DateUtils 日期相关工具类

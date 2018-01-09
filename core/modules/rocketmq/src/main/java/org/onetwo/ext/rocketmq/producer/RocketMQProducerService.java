@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.ext.alimq.MessageSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -29,7 +30,7 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	private DefaultMQProducer defaultMQProducer;
 //	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
 	private Consumer<Throwable> errorHandler = null;
-	private MessageSerializer messageSerializer = msg->SerializationUtils.serialize((Serializable)msg);
+	private MessageSerializer messageSerializer = (body, messageDelegate)->SerializationUtils.serialize((Serializable)body);
 
 	public RocketMQProducerService() {
 	}
@@ -60,7 +61,7 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 
 	public void sendMessage(String topic, String tags, Object body){
 		Assert.notNull(messageSerializer);
-		sendBytesMessage(topic, tags, messageSerializer.serialize(body));
+		sendBytesMessage(topic, tags, messageSerializer.serialize(body, null));
 	}
 	
 	public void sendBytesMessage(String topic, String tags, byte[] body){

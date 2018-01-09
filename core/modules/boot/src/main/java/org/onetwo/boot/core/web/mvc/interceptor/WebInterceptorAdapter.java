@@ -34,7 +34,7 @@ abstract public class WebInterceptorAdapter implements HandlerInterceptor, Order
 		return order - INCREMENTAL;
 	}
 
-	private final String[] pathPatterns;
+	private String[] pathPatterns;
 
 	public WebInterceptorAdapter(String[] pathPatterns) {
 		this.pathPatterns = pathPatterns;
@@ -67,6 +67,10 @@ abstract public class WebInterceptorAdapter implements HandlerInterceptor, Order
 
 	public String[] getPathPatterns() {
 		return pathPatterns;
+	}
+
+	public void setPathPatterns(String[] pathPatterns) {
+		this.pathPatterns = pathPatterns;
 	}
 
 }

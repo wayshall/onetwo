@@ -9,6 +9,7 @@ import org.onetwo.common.utils.CUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.OrderComparator;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -35,7 +36,8 @@ public class ExtRequestMappingHandlerMapping extends RequestMappingHandlerMappin
 			combiners = Lists.newArrayList();
 		}
 		if(!combiners.isEmpty()){
-			combiners.sort(OrderComparator.INSTANCE);
+//			combiners.sort(OrderComparator.INSTANCE);
+			AnnotationAwareOrderComparator.sort(combiners);
 		}
 		this.combiners = ImmutableList.copyOf(combiners);
 		super.afterPropertiesSet();

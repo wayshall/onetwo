@@ -28,8 +28,4 @@ public class SessionTimeoutException extends NotLoginException {
 		super(DEFAULT_MESSAGE+message, cause);
 	}
 
-	@Override
-	protected String getDefaultCode() {
-		return AuthenticErrorCode.SESSION_TIMEOUT;
-	}
 }
