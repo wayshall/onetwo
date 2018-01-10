@@ -430,6 +430,34 @@ public class ReflectUtils {
 			return defaultCLass;
 		}
 	}
+	
+
+	public static Optional<ParameterizedType> getParameterizedType(final Object obj, final int index) {
+
+		Class clazz = getObjectClass(obj);
+		Type genType = null;
+		if(obj instanceof Type){
+			genType = (Type) obj;
+		}else{
+			genType = (Type) clazz;
+		}
+
+		if (!(genType instanceof ParameterizedType)) {
+			return Optional.empty();
+		}
+
+		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
+
+		if (index >= params.length || index < 0) {
+			return Optional.empty();
+		}
+		if(ParameterizedType.class.isInstance(params[index])){
+			ParameterizedType ptype = (ParameterizedType) params[index];
+			return Optional.of(ptype);
+		}else{
+			return Optional.empty();
+		}
+	}
 
 	public static Class getListGenricType(final Class clazz) {
 		Class genClass = null;
