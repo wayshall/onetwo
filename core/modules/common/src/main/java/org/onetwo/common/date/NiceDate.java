@@ -71,6 +71,14 @@ public class NiceDate {
 		this.dateType = dateType;
 		atTheBeginning();
 	}
+	
+	public NiceDate setTimeByString(String timeString){
+		String dateString = formatAsDate();
+		String dateTimeString = dateString + " " + timeString;
+		Date date = DateUtils.parse(dateTimeString);
+		calendar.setTime(date);
+		return this;
+	}
 
 
 	/*********

@@ -30,7 +30,7 @@ import feign.MethodMetadata;
 @Slf4j
 public class EnhanceSpringMvcContract extends SpringMvcContract implements ApplicationContextAware, InitializingBean {
 	private static final String FEIGN_BASE_PATH_TAG = ":";
-	private static final String FEIGN_BASE_PATH_KEY = "jfish.cloud.feign.basePath.";
+	private static final String FEIGN_BASE_PATH_KEY = FeignProperties.PROPERTIES_PREFIX+".basePath.";
 
 	private ApplicationContext applicationContext;
 	private RelaxedPropertyResolver relaxedPropertyResolver;

@@ -725,6 +725,12 @@ abstract public class DateUtils {
 		return PATTERN_HH_MM_SS.matcher(dateStr).matches();
 	}
 	
+	/****
+	 * 简单匹配时间模式
+	 * @author wayshall
+	 * @param dateStr
+	 * @return
+	 */
 	public static String matchPattern(String dateStr){
 		if(isYyyy(dateStr)){
 			return YEAR_ONLY;
@@ -743,7 +749,7 @@ abstract public class DateUtils {
 		}else if(isHH_mm_ss(dateStr)){
 			return "HH:mm:ss";
 		}else{
-			return null;
+			return DATE_TIME_MILLS;
 		}
 	}
 	

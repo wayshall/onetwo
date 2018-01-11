@@ -1262,6 +1262,14 @@ public class LangUtils {
 			LangUtils.throwBaseException("await error : " + e.getMessage(), e);
 		}
 	}
+	
+	public static void awaitInMillis(long millis){
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			LangUtils.throwBaseException("await error : " + e.getMessage(), e);
+		}
+	}
 
 	public static boolean isIterable(Object object) {
         if (object == null) {
