@@ -39,10 +39,8 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/common</module>
-                <module>modules/spring</module>
+                <module>modules/boot</module>
                 <module>modules/cloud</module>
-                <module>../../dbm</module>
 			</modules>
            <build>
               <plugins>
