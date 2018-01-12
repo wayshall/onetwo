@@ -13,8 +13,9 @@ import feign.Logger;
 @ConfigurationProperties(FeignProperties.PROPERTIES_PREFIX)
 @Data
 public class FeignProperties {
-	
+
 	public static final String PROPERTIES_PREFIX = "jfish.cloud.feign";
+	public static final String ENABLE_KEY = PROPERTIES_PREFIX + ".enabled";
 	
 	LoggerProps logger = new LoggerProps();
 	
