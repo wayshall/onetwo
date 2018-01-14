@@ -47,7 +47,7 @@ public class OssFileStore implements FileStorer<SimpleFileStoredMeta>, Initializ
 		wrapper.objectOperation(bucketName, key)
 				.store(context.getInputStream());
 		
-		String accessablePath = key;
+		String accessablePath = "/"+key;
 		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), key);
 		meta.setSotredFileName(key);
 		meta.setAccessablePath(accessablePath);
