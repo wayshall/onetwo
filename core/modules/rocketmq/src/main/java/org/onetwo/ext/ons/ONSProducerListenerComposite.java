@@ -16,11 +16,11 @@ import com.aliyun.openservices.ons.api.SendResult;
  * @author wayshall
  * <br/>
  */
-public class ONSProducerListenerComposite implements InitializingBean, ProducerListener<Message> {
+public class ONSProducerListenerComposite implements InitializingBean, ProducerListener {
 	private final Logger logger = ONSUtils.getONSLogger();
 
 	@Autowired(required=false)
-	private List<ProducerListener<Message>> listeners;
+	private List<ProducerListener> listeners;
 	
 	public ONSProducerListenerComposite() {
 	}
@@ -32,32 +32,35 @@ public class ONSProducerListenerComposite implements InitializingBean, ProducerL
 	}
 	
 	@Override
-	public void beforeSendMessage(Message message) {
+	public void beforeSendMessage(SendMessageContext ctx) {
+		Message message = ctx.getMessage();
 		if(logger.isInfoEnabled()){
 			logger.info("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
 		}
-		for(ProducerListener<Message> listener : listeners){
-			listener.beforeSendMessage(message);
+		for(ProducerListener listener : listeners){
+			listener.beforeSendMessage(ctx);
 		}
 	}
 	
 	@Override
-	public void afterSendMessage(Message message, SendResult sendResult) {
+	public void afterSendMessage(SendMessageContext ctx, SendResult sendResult) {
+		Message message = ctx.getMessage();
 		if(logger.isInfoEnabled()){
 			logger.info("send message success. topic: {}, tags: {}, sendResult: {}", message.getTopic(), message.getTag(), sendResult);
 		}
-		for(ProducerListener<Message> listener : listeners){
-			listener.afterSendMessage(message, sendResult);
+		for(ProducerListener listener : listeners){
+			listener.afterSendMessage(ctx, sendResult);
 		}
 	}
 
 	@Override
-	public void onSendMessageError(Message message, Throwable throable) {
+	public void onSendMessageError(SendMessageContext ctx, Throwable throable) {
+		Message message = ctx.getMessage();
 		if(logger.isErrorEnabled()){
 			logger.error("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
 		}
-		for(ProducerListener<Message> listener : listeners){
-			listener.onSendMessageError(message, throable);
+		for(ProducerListener listener : listeners){
+			listener.onSendMessageError(ctx, throable);
 		}
 	}
 

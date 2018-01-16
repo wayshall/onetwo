@@ -4,27 +4,26 @@ import org.onetwo.ext.alimq.ProducerListener;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.SendResult;
 
 /**
  * @author wayshall
  * <br/>
  */
-public class DatabaseTransactionListener implements ProducerListener<Message> {
+public class DatabaseTransactionListener implements ProducerListener {
 
 	@Override
-	public void beforeSendMessage(Message message) {
+	public void beforeSendMessage(SendMessageContext ctx) {
 		storeMessage(message);
 	}
 
 	@Override
-	public void afterSendMessage(Message message, SendResult sendResult) {
+	public void afterSendMessage(SendMessageContext ctx, SendResult sendResult) {
 		//不用处理
 	}
 
 	@Override
-	public void onSendMessageError(Message message, Throwable throable) {
+	public void onSendMessageError(SendMessageContext ctx, Throwable throable) {
 		//不用处理
 	}
 	

@@ -10,6 +10,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
+import org.onetwo.ext.alimq.ProducerListener.SendMessageContext;
 import org.onetwo.ext.alimq.SendMessageErrorHandler;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProducerListenerComposite;
@@ -128,16 +129,20 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	}
 
 	protected SendResult sendRawMessage(Message message, LocalTransactionExecuter executer, Object arg, SendMessageErrorHandler<SendResult> errorHandler){
+		SendMessageContext ctx = SendMessageContext.builder()
+													.transactionProducer(this)
+													.message(message)
+													.build();
 		try {
-			producerListenerComposite.beforeSendMessage(message);
+			producerListenerComposite.beforeSendMessage(ctx);
 			SendResult sendResult = this.send(message, executer, arg);
-			producerListenerComposite.afterSendMessage(message, sendResult);
+			producerListenerComposite.afterSendMessage(ctx, sendResult);
 			return sendResult;
 		} catch (ONSClientException e) {
-			producerListenerComposite.onSendMessageError(message, e);
+			producerListenerComposite.onSendMessageError(ctx, e);
 			return this.handleException(e, message, errorHandler).orElseThrow(()->new BaseException("send message error", e));
 		}catch (Throwable e) {
-			producerListenerComposite.onSendMessageError(message, e);
+			producerListenerComposite.onSendMessageError(ctx, e);
 			return this.handleException(e, message, errorHandler).orElseThrow(()->new BaseException("send message error", e));
 		}
 	}
