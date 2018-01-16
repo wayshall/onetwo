@@ -152,14 +152,14 @@ final public class LangOps {
 				Assert.hasLength(size, "Size must not be empty");
 			}
 		}
-		size = size.toUpperCase();
-		if (size.toLowerCase().endsWith("kb")) {
+		size = size.toLowerCase();
+		if (size.endsWith("kb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
 		}
-		if (size.toLowerCase().endsWith("mb")) {
+		if (size.endsWith("mb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
 		}
-		if (size.toLowerCase().endsWith("gb")) {
+		if (size.endsWith("gb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024* 1024;
 		}
 		return Integer.valueOf(size);
@@ -175,15 +175,15 @@ final public class LangOps {
 		if(StringUtils.isBlank(time)){
 			return def;
 		}
-		time = time.toUpperCase();
+		time = time.toLowerCase();
 		TimeUnit timeUnit = null;
-		if (time.toLowerCase().endsWith("s")) {
+		if (time.endsWith("s")) {
 			timeUnit = TimeUnit.SECONDS;
-		}else if (time.toLowerCase().endsWith("m")) {
+		}else if (time.endsWith("m")) {
 			timeUnit = TimeUnit.MINUTES;
-		}else if (time.toLowerCase().endsWith("h")) {
+		}else if (time.endsWith("h")) {
 			timeUnit = TimeUnit.HOURS;
-		}else if (time.toLowerCase().endsWith("d")) {
+		}else if (time.endsWith("d")) {
 			timeUnit = TimeUnit.DAYS;
 		}
 		if(timeUnit!=null){

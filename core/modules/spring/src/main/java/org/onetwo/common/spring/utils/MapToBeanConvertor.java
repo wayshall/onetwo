@@ -1,9 +1,11 @@
 package org.onetwo.common.spring.utils;
 
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
@@ -17,6 +19,7 @@ import org.onetwo.common.utils.FieldName;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -89,7 +92,7 @@ public class MapToBeanConvertor {
 		}
 		
 		public String getName(){
-			Method method = propertyDescriptor.getReadMethod();
+			/*Method method = propertyDescriptor.getReadMethod();
 			FieldName fn = null;
 			if(method==null || (fn = method.getAnnotation(FieldName.class))==null){
 				Field field = ReflectUtils.getIntro(getBeanClass()).getField(propertyDescriptor.getName());
@@ -97,7 +100,29 @@ public class MapToBeanConvertor {
 					fn = field.getAnnotation(FieldName.class);
 				}
 			}
-			return fn==null?propertyDescriptor.getName():fn.value();
+			return fn==null?propertyDescriptor.getName():fn.value();*/
+			
+			Optional<FieldName> fn = findAnnotation(FieldName.class);
+			if(fn.isPresent()){
+				return fn.get().value();
+			}
+			Optional<JsonProperty> jp = findAnnotation(JsonProperty.class);
+			if(jp.isPresent()){
+				return jp.get().value();
+			}
+			return propertyDescriptor.getName();
+		}
+		
+		protected <A extends Annotation> Optional<A> findAnnotation(Class<A> annoClass){
+			Method method = propertyDescriptor.getReadMethod();
+			A fn = null;
+			if(method==null || (fn = method.getAnnotation(annoClass))==null){
+				Field field = ReflectUtils.getIntro(getBeanClass()).getField(propertyDescriptor.getName());
+				if(field!=null){
+					fn = field.getAnnotation(annoClass);
+				}
+			}
+			return Optional.ofNullable(fn);
 		}
 		
 		public Class<?> getBeanClass() {
