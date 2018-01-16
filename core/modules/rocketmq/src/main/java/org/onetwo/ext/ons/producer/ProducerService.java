@@ -1,7 +1,7 @@
 package org.onetwo.ext.ons.producer;
 
+import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SendMessageErrorHandler;
-import org.onetwo.ext.alimq.SimpleMessage;
 
 import com.aliyun.openservices.ons.api.SendResult;
 
@@ -13,8 +13,8 @@ public interface ProducerService {
 
 	void sendMessage(String topic, String tags, Object body);
 
-	SendResult sendMessage(SimpleMessage onsMessage);
+	SendResult sendMessage(OnsMessage onsMessage);
 
-	SendResult sendMessage(SimpleMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler);
+	SendResult sendMessage(OnsMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler);
 
 }

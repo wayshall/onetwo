@@ -9,6 +9,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
+import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SendMessageErrorHandler;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProducerListenerComposite;
@@ -101,12 +102,12 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	}
 
 	@Override
-	public SendResult sendMessage(SimpleMessage onsMessage, LocalTransactionExecuter executer, Object arg){
+	public SendResult sendMessage(OnsMessage onsMessage, LocalTransactionExecuter executer, Object arg){
 		return sendMessage(onsMessage, executer, arg, errorHandler);
 	}
 	
 	@Override
-	public SendResult sendMessage(SimpleMessage onsMessage, LocalTransactionExecuter executer, Object arg, SendMessageErrorHandler<SendResult> errorHandler){
+	public SendResult sendMessage(OnsMessage onsMessage, LocalTransactionExecuter executer, Object arg, SendMessageErrorHandler<SendResult> errorHandler){
 		Message message = onsMessage.toMessage();
 		String topic = SpringUtils.resolvePlaceholders(applicationContext, message.getTopic());
 		message.setTopic(topic);
@@ -182,13 +183,13 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		}
 
 		@Override
-		public SendResult sendMessage(SimpleMessage onsMessage) {
+		public SendResult sendMessage(OnsMessage onsMessage) {
 			SendResult result = transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null);
 			return result;
 		}
 
 		@Override
-		public SendResult sendMessage(SimpleMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler) {
+		public SendResult sendMessage(OnsMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler) {
 			SendResult result = transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null, errorHandler);
 			return result;
 		}

@@ -1,7 +1,7 @@
 package org.onetwo.ext.ons.producer;
 
+import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SendMessageErrorHandler;
-import org.onetwo.ext.alimq.SimpleMessage;
 
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
@@ -12,10 +12,10 @@ import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
  */
 public interface TransactionProducerService {
 
-	SendResult sendMessage(SimpleMessage onsMessage,
+	SendResult sendMessage(OnsMessage onsMessage,
 			LocalTransactionExecuter executer, Object arg);
 
-	SendResult sendMessage(SimpleMessage onsMessage,
+	SendResult sendMessage(OnsMessage onsMessage,
 			LocalTransactionExecuter executer, Object arg,
 			SendMessageErrorHandler<SendResult> errorHandler);
 	
