@@ -38,7 +38,7 @@ public class BootPluginRequestMappingCombiner implements RequestMappingCombiner 
 			String contextPath = this.getPluginContextPath(method, handlerType);
 			String existPath = LangUtils.getFirst(info.getPatternsCondition().getPatterns());
 			//如果路径不是以插件前缀开始，则自动加插件前缀
-			final String contextPathWithSlash = StringUtils.appendEndWithWithSlash(contextPath);
+			final String contextPathWithSlash = StringUtils.appendEndWithSlash(contextPath);
 			if(StringUtils.isNotBlank(contextPath) && !existPath.startsWith(contextPathWithSlash)){
 				info = createPluginRequestMappingInfo(contextPath, method, handlerType).combine(info);
 			}
