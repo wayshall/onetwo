@@ -38,7 +38,8 @@ public class BootPluginRequestMappingCombiner implements RequestMappingCombiner 
 			String contextPath = this.getPluginContextPath(method, handlerType);
 			String existPath = LangUtils.getFirst(info.getPatternsCondition().getPatterns());
 			//如果路径不是以插件前缀开始，则自动加插件前缀
-			if(StringUtils.isNotBlank(contextPath) && !existPath.startsWith(contextPath)){
+			final String contextPathWithSlash = StringUtils.appendEndWithSlash(contextPath);
+			if(StringUtils.isNotBlank(contextPath) && !existPath.startsWith(contextPathWithSlash)){
 				info = createPluginRequestMappingInfo(contextPath, method, handlerType).combine(info);
 			}
 		}
@@ -68,6 +69,9 @@ public class BootPluginRequestMappingCombiner implements RequestMappingCombiner 
 	
 	private String resolvePluginContextPath(final String pluginContextPath){
 		String path = SpringUtils.resolvePlaceholders(applicationContext, pluginContextPath);
+		if(StringUtils.isNotBlank(path)){
+			path = StringUtils.appendStartWithSlash(path);
+		}
 		return path;
 	}
 

@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
@@ -20,11 +20,11 @@ public abstract class OAuth2Utils {
 	private static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 
 	public static <T extends Serializable> Optional<T> getCurrentClientDetails() {
-		HttpServletRequest req = BootWebUtils.request();
-		if(req==null){
+		Optional<HttpServletRequest> req = WebHolder.getRequest();
+		if(!req.isPresent()){
 			return Optional.empty();
 		}
-		return getClientDetails(req);
+		return getClientDetails(req.get());
 	}
 	public static <T extends Serializable> Optional<T> getClientDetails(HttpServletRequest request) {
 		return getOrSetClientDetails(request, null);

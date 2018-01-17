@@ -25,7 +25,7 @@ spring 4.0+
 
 <dependency>
     <groupId>org.onetwo4j</groupId>
-    <artifactId>onetwo-spring</artifactId>
+    <artifactId>onetwo-boot</artifactId>
     <version>4.6.1-SNAPSHOT</version>
 </dependency>
 

@@ -213,10 +213,18 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args, boolean flatable){
 		MultiValueMap<String, Object> values = new LinkedMultiValueMap<>(methodParameters.size());
 		for(ApiClientMethodParameter parameter : methodParameters){
+			//忽略特殊参数
+			if(isSpecalPemerater(parameter)){
+				continue;
+			}
 			Object pvalue = args[parameter.getParameterIndex()];
 			handleArg(values, parameter, pvalue, flatable);
 		}
 		return values;
+	}
+	
+	protected boolean isSpecalPemerater(ApiClientMethodParameter parameter){
+		return parameter.getParameterIndex()==apiHeaderCallbackIndex || parameter.getParameterIndex()==headerParameterIndex;
 	}
 	
 	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean flatable){

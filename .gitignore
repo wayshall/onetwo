@@ -47,3 +47,6 @@ application-product.yaml
 /core/modules/rocketmq/src/test/resources/ons-test.properties
 /core/deploy-microcloud.bat
 /core/modules/rocketmq/src/test/resources/rmqwithonsclient-test.properties
+/core/modules/spring/src/test/java/org/onetwo/common/apiclient/api/PapaBookingClient.java
+/core/modules/spring/src/test/java/org/onetwo/common/apiclient/PapaBookingSoccerTest.java
+/core/modules/spring/src/test/java/org/onetwo/common/apiclient/PapaBookingService.java

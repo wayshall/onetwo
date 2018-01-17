@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.cos;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
@@ -187,7 +188,14 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 		}
 		
 		public ObjectOperation store(InputStream in){
-			return store(in, null);
+			ObjectMetadata meta = new ObjectMetadata();
+			try {
+				long contentLength = in.available();
+				meta.setContentLength(contentLength);
+			} catch (IOException e) {
+				throw new BaseException("store stream to cos error.", e);
+			}
+			return store(in, meta);
 		}
 		
 		public ObjectOperation storeAsJson(Object object){

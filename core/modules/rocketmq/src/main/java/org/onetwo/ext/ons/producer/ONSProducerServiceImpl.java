@@ -9,6 +9,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
+import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SendMessageErrorHandler;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProducerListenerComposite;
@@ -107,13 +108,13 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	}*/
 	
 	@Override
-	public SendResult sendMessage(SimpleMessage onsMessage){
+	public SendResult sendMessage(OnsMessage onsMessage){
 		return sendMessage(onsMessage, errorHandler);
 	}
 	
 	
 	@Override
-	public SendResult sendMessage(SimpleMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler){
+	public SendResult sendMessage(OnsMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler){
 		Message message = onsMessage.toMessage();
 		
 		String topic = resolvePlaceholders(message.getTopic());

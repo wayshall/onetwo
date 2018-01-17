@@ -51,6 +51,12 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 		}*/
 		configIntercepterUrls(http, resourceServerProps.getIntercepterUrls(), null);
 		defaultAnyRequest(http, resourceServerProps.getAnyRequest());
+		http.headers()
+				.frameOptions()
+				.sameOrigin()
+				.xssProtection()
+				.xssProtectionEnabled(true)
+			.and();
 	}
 
 	@Override

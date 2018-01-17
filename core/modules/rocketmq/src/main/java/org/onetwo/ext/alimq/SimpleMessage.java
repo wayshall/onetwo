@@ -17,7 +17,7 @@ import com.aliyun.openservices.ons.api.Message;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SimpleMessage {
+public class SimpleMessage implements OnsMessage {
 	
 	String key;
 	String topic;

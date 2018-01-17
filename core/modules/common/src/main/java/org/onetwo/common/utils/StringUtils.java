@@ -780,6 +780,10 @@ public abstract class StringUtils {
 		return path;
 	}
 
+	public static String appendEndWithSlash(String path) {
+		return appendEndWith(path, FileUtils.SLASH);
+	}
+	
 	public static String appendEndWith(String path, String postfix) {
 		if (path == null)
 			path = EMPTY;
