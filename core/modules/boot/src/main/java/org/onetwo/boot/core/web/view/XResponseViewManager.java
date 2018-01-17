@@ -1,11 +1,11 @@
 package org.onetwo.boot.core.web.view;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.common.data.DataResultWrapper;
 import org.onetwo.common.data.DataResultWrapper.NoWrapper;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
@@ -41,7 +42,7 @@ public class XResponseViewManager implements HandlerMappingListener {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private Cache<Method, Map<String, XResponseViewData>> viewDataCaces = CacheBuilder.newBuilder()
+	private Cache<String, Map<String, XResponseViewData>> viewDataCaces = CacheBuilder.newBuilder()
 																		.maximumSize(100)
 																		.build();
 	private boolean alwaysWrapDataResult = false;
@@ -54,7 +55,7 @@ public class XResponseViewManager implements HandlerMappingListener {
 		for(HandlerMethod hm : handlerMethods.values()){
 			Map<String, XResponseViewData> viewDatas = findXResponseViewData(hm);
 			if(!viewDatas.isEmpty()){
-				viewDataCaces.put(hm.getMethod(), viewDatas);
+				viewDataCaces.put(hm.getMethod().getName(), viewDatas);
 			}
 		}
 	}
@@ -156,7 +157,12 @@ public class XResponseViewManager implements HandlerMappingListener {
 	}
 
 	protected Optional<XResponseViewData> getCurrentHandlerMatchResponseView(Optional<String> responseView, HandlerMethod hm){
-		Map<String, XResponseViewData> viewDataMap = viewDataCaces.getIfPresent(hm.getMethod());
+		Map<String, XResponseViewData> viewDataMap;
+		try {
+			viewDataMap = viewDataCaces.get(hm.getMethod().getName(), ()->findXResponseViewData(hm));
+		} catch (ExecutionException e) {
+			throw new BaseException("getCurrentHandlerMatchResponseView error", e);
+		}
 		if(viewDataMap==null){
 			return Optional.empty();
 		}
