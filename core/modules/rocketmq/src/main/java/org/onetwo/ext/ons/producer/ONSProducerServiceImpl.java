@@ -148,6 +148,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	protected SendResult sendRawMessage(Message message, SendMessageErrorHandler<SendResult> errorHandler){
 		SendMessageContext ctx = SendMessageContext.builder()
 				.producer(this)
+				.source(this)
 				.message(message)
 				.build();
 		try {
@@ -178,6 +179,16 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		}else{
 			throw new ServiceException("发送消息失败", e);
 		}
+	}
+
+	@Override
+	public <T> T getRawProducer(Class<T> targetClass) {
+		return targetClass.cast(this);
+	}
+
+	@Override
+	public boolean isTransactional() {
+		return false;
 	}
 	
 	

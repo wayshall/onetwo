@@ -37,8 +37,12 @@ public class RedisLockRunner {
 	}
 	
 	public <T> T tryLock(Supplier<T> action){
+		return tryLock(action, null);
+	}
+	
+	public <T> T tryLock(Supplier<T> action, Supplier<T> lockFailAction){
 		Function<Lock, Boolean> lockTryer = null;
-		if(time==null && unit!=null){
+		if(time!=null && unit!=null){
 			lockTryer = lock->{
 				try {
 					return lock.tryLock(time, unit);
@@ -49,14 +53,30 @@ public class RedisLockRunner {
 		}else{
 			lockTryer = lock->lock.tryLock();
 		}
-		return tryLock(lockTryer, action);
+		return tryLock(lockTryer, action, lockFailAction);
 	}
 	
 	public <T> T tryLock(Function<Lock, Boolean> lockTryer, Supplier<T> action){
+		return tryLock(lockTryer, action, null);
+	}
+	
+	/***
+	 * 
+	 * @author wayshall
+	 * @param lockTryer
+	 * @param action 锁成功后执行
+	 * @param lockFailAction 锁失败后执行
+	 * @return
+	 */
+	public <T> T tryLock(Function<Lock, Boolean> lockTryer, Supplier<T> action, Supplier<T> lockFailAction){
 		Lock lock = redisLockRegistry.obtain(lockKey);
 		T result = null;
 		try {
 			if(!lockTryer.apply(lock)){
+				if(lockFailAction!=null){
+					return lockFailAction.get();
+				}
+				
 				log.info("can not obtain task lock, ignore task. lock key: {}", lockKey);
 				return null;
 			}
@@ -84,3 +104,5 @@ public class RedisLockRunner {
 	}
 
 }
+
+	

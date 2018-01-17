@@ -131,6 +131,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	protected SendResult sendRawMessage(Message message, LocalTransactionExecuter executer, Object arg, SendMessageErrorHandler<SendResult> errorHandler){
 		SendMessageContext ctx = SendMessageContext.builder()
 													.transactionProducer(this)
+													.source(this)
 													.message(message)
 													.build();
 		try {
@@ -161,6 +162,17 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		}else{
 			throw new ServiceException("发送消息失败", e);
 		}
+	}
+	
+
+	@Override
+	public boolean isTransactional() {
+		return true;
+	}
+
+	@Override
+	public <T> T getRawProducer(Class<T> targetClass) {
+		return targetClass.cast(this);
 	}
 
 	/***
@@ -197,6 +209,16 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		public SendResult sendMessage(OnsMessage onsMessage, SendMessageErrorHandler<SendResult> errorHandler) {
 			SendResult result = transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null, errorHandler);
 			return result;
+		}
+
+		@Override
+		public <T> T getRawProducer(Class<T> targetClass) {
+			return transactionProducerService.getRawProducer(targetClass);
+		}
+
+		@Override
+		public boolean isTransactional() {
+			return transactionProducerService.isTransactional();
 		}
 		
 	}

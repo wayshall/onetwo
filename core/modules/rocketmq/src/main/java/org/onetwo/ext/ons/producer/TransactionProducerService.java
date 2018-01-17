@@ -10,7 +10,7 @@ import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
  * @author wayshall
  * <br/>
  */
-public interface TransactionProducerService {
+public interface TransactionProducerService extends TraceableProducer {
 
 	SendResult sendMessage(OnsMessage onsMessage,
 			LocalTransactionExecuter executer, Object arg);

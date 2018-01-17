@@ -1,6 +1,8 @@
 package org.onetwo.ext.ons.transaction;
 
 import org.onetwo.ext.alimq.ProducerListener;
+import org.onetwo.ext.ons.producer.ProducerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -11,10 +13,16 @@ import com.aliyun.openservices.ons.api.SendResult;
  * <br/>
  */
 public class DatabaseTransactionListener implements ProducerListener {
+	@Autowired
+	private ProducerService producer;
 
 	@Override
 	public void beforeSendMessage(SendMessageContext ctx) {
-		storeMessage(message);
+		//如果是事务producer，则忽略
+		if(ctx.getSource().isTransactional()){
+			return ;
+		}
+		storeMessage(ctx.getMessage());
 	}
 
 	@Override

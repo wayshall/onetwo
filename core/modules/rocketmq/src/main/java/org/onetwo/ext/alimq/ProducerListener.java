@@ -3,6 +3,8 @@ package org.onetwo.ext.alimq;
 import lombok.Builder;
 import lombok.Data;
 
+import org.onetwo.ext.ons.producer.TraceableProducer;
+
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.SendResult;
@@ -24,6 +26,7 @@ public interface ProducerListener {
 	@Builder
 	public class SendMessageContext {
 		final private Message message;
+		final private TraceableProducer source;
 		final private Producer producer;
 		final private TransactionProducer transactionProducer;
 	}

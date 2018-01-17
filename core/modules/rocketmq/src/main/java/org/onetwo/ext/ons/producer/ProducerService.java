@@ -9,7 +9,7 @@ import com.aliyun.openservices.ons.api.SendResult;
  * @author wayshall
  * <br/>
  */
-public interface ProducerService {
+public interface ProducerService extends TraceableProducer {
 
 	void sendMessage(String topic, String tags, Object body);
 
