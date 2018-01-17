@@ -22,6 +22,8 @@ import com.google.common.collect.Maps;
 @Data
 @ConfigurationProperties("jfish.ons")
 public class ONSProperties {
+	
+	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
 
 	MqServerTypes serverType = MqServerTypes.ONS;
 	

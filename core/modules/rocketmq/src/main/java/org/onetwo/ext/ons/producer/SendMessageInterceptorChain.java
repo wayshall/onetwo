@@ -1,170 +1,85 @@
 package org.onetwo.ext.ons.producer;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.List;
 import java.util.function.Supplier;
 
-import org.onetwo.common.annotation.AnnotationUtils;
-import org.onetwo.common.db.dquery.DynamicMethod;
-import org.onetwo.common.db.dquery.MethodDynamicQueryInvokeContext;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
-import org.onetwo.dbm.annotation.DbmJdbcOperationMark;
-import org.onetwo.dbm.exception.DbmException;
-import org.onetwo.dbm.jdbc.spi.DbmInterceptor;
-import org.onetwo.dbm.jdbc.spi.DbmJdbcOperationType;
-import org.onetwo.dbm.jdbc.spi.DbmJdbcOperationType.DatabaseOperationType;
-import org.springframework.core.NestedRuntimeException;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.ext.ons.ONSUtils;
+import org.slf4j.Logger;
 
-abstract public class SendMessageInterceptorChain {
+import com.aliyun.openservices.ons.api.Message;
+import com.aliyun.openservices.ons.api.SendResult;
+import com.aliyun.openservices.ons.api.exception.ONSClientException;
 
-	final private Supplier<Object> actualInvoker;
+public class SendMessageInterceptorChain {
+//	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+
+	final private Supplier<SendResult> actualInvoker;
 	
-	private LinkedList<SendMessageInterceptor> interceptors;
-	private Iterator<SendMessageInterceptor> iterator;
-	private Object result;
+	final private List<SendMessageInterceptor> interceptors;
+	final private Iterator<SendMessageInterceptor> iterator;
+	private SendMessageContext sendMessageContext;
+	
+	private SendResult result;
 	private Throwable throwable;
 
-	public SendMessageInterceptorChain(Supplier<Object> actualInvoker, LinkedList<SendMessageInterceptor> interceptors) {
+	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, Supplier<SendResult> actualInvoker) {
 		super();
 		this.actualInvoker = actualInvoker;
 		this.interceptors = interceptors;
 		this.iterator = this.interceptors.iterator();
 	}
 
-	public SendMessageInterceptorChain addInterceptorToHead(SendMessageInterceptor...interceptors){
-		if(LangUtils.isEmpty(interceptors)){
-			return this;
-		}
-		this.interceptors.addAll(0, Arrays.asList(interceptors));
-		return this;
-	}
-	
-	public SendMessageInterceptorChain addInterceptorToTail(SendMessageInterceptor...interceptors){
-		if(LangUtils.isEmpty(interceptors)){
-			return this;
-		}
-		for (int i = 0; i < interceptors.length; i++) {
-			this.interceptors.addLast(interceptors[i]);
-		}
-		return this;
-	}
-	
-
-	public Object invoke(){
+	public SendResult invoke(){
 		if(iterator.hasNext()){
-			DbmInterceptor interceptor = iterator.next();
+			SendMessageInterceptor interceptor = iterator.next();
 			result = interceptor.intercept(this);
 		}else{
-			if(actualInvoker!=null){
-				result = actualInvoker.get();
-			}else{
-				if (!targetMethod.isAccessible()){
-					targetMethod.setAccessible(true);
-				}
-				try {
-					result = targetMethod.invoke(targetObject, targetArgs);
-					state = STATE_FINISH;
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					state = STATE_EXCEPTION;
-					throwable = e;
-					throw convertRuntimeException(e);
-				}
-			}
+//			result = actualInvoker.get();
+			result = doSendRawMessage();
 		}
 		return result;
 	}
 	
-	private RuntimeException convertRuntimeException(Exception e){
-		if(e instanceof InvocationTargetException){
-			InvocationTargetException ite = (InvocationTargetException)e;
-			if(ite.getTargetException() instanceof NestedRuntimeException){
-				return (NestedRuntimeException)ite.getTargetException();
-			}
+	private SendResult doSendRawMessage(){
+		try {
+			return actualInvoker.get();
+		} catch (ONSClientException e) {
+			handleException(e, sendMessageContext.getMessage());
+		}catch (Throwable e) {
+			handleException(e, sendMessageContext.getMessage());
 		}
-		return new DbmException("invoke method error: " + targetMethod, e);
+		return null;
 	}
 
-	@Override
-	public Object getResult() {
+	protected void handleException(Throwable e, Message message){
+		final Logger logger = ONSUtils.getONSLogger();
+		if(logger.isErrorEnabled()){
+			logger.error("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
+		}
+		
+		if(e instanceof ONSClientException){
+			throw (ONSClientException)e;
+		}else{
+			throw new BaseException("发送消息失败", e);
+		}
+	}
+	
+	public SendResult getResult() {
 		return result;
 	}
 	
-	@Override
 	public Throwable getThrowable() {
 		return throwable;
 	}
 
-	public static class JdbcDbmInterceptorChain extends SendMessageInterceptorChain {
-		private Optional<DbmJdbcOperationType> dbmJdbcOperationType;
-
-		public JdbcDbmInterceptorChain(Object targetObject, Method targetMethod, Object[] targetArgs, Collection<DbmInterceptor> interceptors) {
-			super(targetObject, targetMethod, targetArgs, interceptors);
-			this.setType(InterceptorType.JDBC);
-		}
-
-		@Override
-		public Optional<DbmJdbcOperationType> getJdbcOperationType() {
-			if(dbmJdbcOperationType==null){
-				DbmJdbcOperationMark operation = AnnotationUtils.findAnnotationWithStopClass(getTargetObject().getClass(), getTargetMethod(), DbmJdbcOperationMark.class);
-				Optional<DbmJdbcOperationType> dbmJdbcOperationType = operation==null?Optional.empty():Optional.ofNullable(operation.type());
-				this.dbmJdbcOperationType = dbmJdbcOperationType;
-				return dbmJdbcOperationType;
-			}
-			return dbmJdbcOperationType;
-		}
-
-		@Override
-		public Optional<DatabaseOperationType> getDatabaseOperationType() {
-			Optional<DbmJdbcOperationType> jdbcType = this.getJdbcOperationType();
-			return jdbcType.isPresent()?Optional.of(jdbcType.get().getDatabaseOperationType()):Optional.empty();
-		}
+	public SendMessageContext getSendMessageContext() {
+		return sendMessageContext;
 	}
-	
-	public static class SessionDbmInterceptorChain extends JdbcDbmInterceptorChain {
 
-		public SessionDbmInterceptorChain(Object targetObject, Method targetMethod, Object[] targetArgs, Collection<DbmInterceptor> interceptors) {
-			super(targetObject, targetMethod, targetArgs, interceptors);
-			this.setType(InterceptorType.SESSION);
-		}
-		
-	}
-	
-	
-	public static class RepositoryDbmInterceptorChain extends SendMessageInterceptorChain {
-		final private MethodDynamicQueryInvokeContext invokeContext;
-
-		public RepositoryDbmInterceptorChain(Object targetObject, MethodDynamicQueryInvokeContext invokeContext, Collection<DbmInterceptor> interceptors, Supplier<Object> actualInvoker) {
-			super(targetObject, invokeContext.getDynamicMethod().getMethod(), invokeContext.getParameterValues(), interceptors, actualInvoker);
-			this.invokeContext = invokeContext;
-			this.setType(InterceptorType.REPOSITORY);
-		}
-
-		@Override
-		public Optional<DbmJdbcOperationType> getJdbcOperationType() {
-			return Optional.empty();
-		}
-
-		@Override
-		public Optional<DatabaseOperationType> getDatabaseOperationType() {
-			DatabaseOperationType type = null;
-			DynamicMethod dynamicMethod = invokeContext.getDynamicMethod();
-			if(dynamicMethod.isBatch()){
-				type = DatabaseOperationType.BATCH;
-			}else if(dynamicMethod.isExecuteUpdate()){
-				type = DatabaseOperationType.UPDATE;
-			}else{
-				type = DatabaseOperationType.QUERY;
-			}
-			return Optional.<DbmJdbcOperationType.DatabaseOperationType>of(type);
-		}
-
+	void setSendMessageContext(SendMessageContext sendMessageContext) {
+		this.sendMessageContext = sendMessageContext;
 	}
 
 }

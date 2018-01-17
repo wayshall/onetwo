@@ -2,70 +2,65 @@ package org.onetwo.ext.ons.transaction;
 
 import java.util.Set;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.ext.alimq.ProducerListener;
-import org.onetwo.ext.ons.producer.ProducerService;
+import org.onetwo.ext.ons.producer.SendMessageContext;
+import org.onetwo.ext.ons.producer.SendMessageInterceptor;
+import org.onetwo.ext.ons.producer.SendMessageInterceptorChain;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.SendResult;
 
 /**
+ * 应该第一个调用拦截
  * @author wayshall
  * <br/>
  */
-@Slf4j
-public class DatabaseTransactionListener implements ProducerListener {
-	@Autowired
-	private ProducerService producer;
-	@Autowired
-	private DbmSendMessageRepository sendMessageRepository;
-
-	@Override
-	public void beforeSendMessage(SendMessageContext ctx) {
-		//如果是事务producer，则忽略
-		if(ctx.getSource().isTransactional()){
-			return ;
-		}
-		this.sendMessageRepository.save(ctx);
-	}
-
-	@Override
-	public void afterSendMessage(SendMessageContext ctx, SendResult sendResult) {
-		//不用处理
-	}
-
-	@Override
-	public void onSendMessageError(SendMessageContext ctx, Throwable throable) {
-		//不用处理
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class DatabaseTransactionListener implements SendMessageInterceptor {
+	/**
+	 * 挂起
+	 */
+	public static final SendResult SUSPEND = new SendResult();
+	static {
+		SUSPEND.setMessageId("SUSPEND");
 	}
 	
+	@Autowired
+	private SendMessageRepository sendMessageRepository;
+	
+
+	@Override
+	public SendResult intercept(SendMessageInterceptorChain chain) {
+		SendMessageContext ctx = chain.getSendMessageContext();
+		//如果是事务producer，则忽略
+		if(ctx.getSource().isTransactional()){
+			return chain.invoke();
+		}
+		this.sendMessageRepository.save(ctx);
+		return SUSPEND;
+	}
+
 	@TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT)
 	public void afterCommit(){
 		Set<SendMessageContext> contexts = sendMessageRepository.findCurrentSendMessageContext();
 		if(LangUtils.isEmpty(contexts)){
 			return ;
 		}
-		if(producer!=null || producer.isTransactional()){
-			return ;
-		}
 		for(SendMessageContext ctx: contexts){
-			Producer producer = ctx.getProducer();
-			if(producer==null){
-				log.info("no producer found, ignroe send current message.");
-				continue;
-			}
-			producer.send(ctx.getMessage());
+			//继续执行发送
+			ctx.getChain().invoke();
 		}
+		
+		sendMessageRepository.clearCurrentContexts();
 	}
 	
-	@TransactionalEventListener(phase=TransactionPhase.AFTER_ROLLBACK)
+	@TransactionalEventListener(phase=TransactionPhase.AFTER_COMPLETION)
 	public void afterRollback(){
-		//不用处理
+		sendMessageRepository.clearCurrentContexts();
 	}
 
 }
