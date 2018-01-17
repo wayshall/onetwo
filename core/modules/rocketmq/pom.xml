@@ -22,6 +22,12 @@
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
+      <artifactId>onetwo-dbm</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo4j</groupId>
       <artifactId>onetwo-common</artifactId>
     </dependency>
     
