@@ -3,6 +3,8 @@ package org.onetwo.ext.ons.transaction;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.id.SnowflakeIdGenerator;
@@ -17,6 +19,7 @@ import com.aliyun.openservices.ons.api.Message;
  * @author wayshall
  * <br/>
  */
+@Slf4j
 public class DbmSendMessageRepository implements SendMessageRepository {
 
 	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(1000);
@@ -51,7 +54,9 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 			TransactionSynchronizationManager.bindResource(this, contexts);
 		}
 		contexts.add(ctx);
-		
+		if(log.isInfoEnabled()){
+			log.info("storeInThread: {}", ctx.getMessage());
+		}
 	}
 	
 	@Override
@@ -64,6 +69,9 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 	@Override
 	public void clearCurrentContexts(){
 		TransactionSynchronizationManager.unbindResourceIfPossible(this);
+		if(log.isInfoEnabled()){
+			log.info("clearCurrentContexts");
+		}
 	}
 
 }

@@ -27,7 +27,13 @@ public class ONSConfiguration {
 	public ONSPushConsumerStarter onsPushConsumerStarter(MessageDeserializer messageDeserializer){
 		ONSPushConsumerStarter starter = new ONSPushConsumerStarter(messageDeserializer);
 		starter.setOnsProperties(onsProperties);
+		starter.setConsumerListenerComposite(onsConsumerListenerComposite());
 		return starter;
+	}
+	
+	@Bean
+	public ONSConsumerListenerComposite onsConsumerListenerComposite(){
+		return new ONSConsumerListenerComposite();
 	}
 	
 	@Bean
