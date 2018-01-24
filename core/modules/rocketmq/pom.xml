@@ -22,6 +22,12 @@
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
+      <artifactId>onetwo-dbm</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo4j</groupId>
       <artifactId>onetwo-common</artifactId>
     </dependency>
     
@@ -68,6 +74,12 @@
       <artifactId>spring-tx</artifactId>
       <optional>true</optional>
     </dependency>
+    
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <scope>test</scope>
+    </dependency> 
         
     <dependency>
         <groupId>com.alibaba.rocketmq</groupId>

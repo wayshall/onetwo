@@ -27,7 +27,7 @@ public class Asyncs {
 		if(ds==null){
 			ds = Springs.getInstance().getBean(AsyncTaskDelegateService.class);
 			if(ds==null){
-				throw new BaseException("no AsyncTaskDelegateService found!");
+				throw new BaseException("no AsyncTaskDelegateService found! Maybe ["+AsyncTaskProperties.ENABLE_KEY+"] not enabled!");
 			}
 			delegateService = ds;
 		}

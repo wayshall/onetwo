@@ -40,6 +40,8 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/boot</module>
+                <module>../../onetwo-wechat</module>
+                <module>modules/rocketmq</module>
 			</modules>
            <build>
               <plugins>

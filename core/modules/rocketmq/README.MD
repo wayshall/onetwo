@@ -71,6 +71,32 @@ jfish:
         onsAddr: broker地址
 ```
 
+## 生产者使用
+使用注解@EnableONSClient 启用rocketmq模块后，直接注入org.onetwo.ext.ons.producer.ProducerService服务发送消息即可：
+```Java
+
+@Transactional
+public class DataBaseProducerServiceImpl {
+
+	@Autowired
+	ProducerService onsProducerService;
+
+	public void sendMessage(){
+		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
+																	  .topic(RmqONSProducerTest.TOPIC)
+																	  .tags(RmqONSProducerTest.ORDER_PAY)
+																	  .body(OrderTestMessage.builder()
+																			  				.orderId(1L)
+																			  				.title("支付")
+																			  				.build())
+																	  .build());
+		System.out.println("res: " + res);
+		
+		
+	}
+}
+```
+
 ## 消费者使用
 使用@ONSConsumer 注解标注作为consumer的bean，然后使用@ONSSubscribe 标注消费者的方法，消费方法只有一个ConsumContext类型的参数
 ```java
@@ -89,3 +115,98 @@ public class ProductTestAppMQConsumer{
 
 
 启动spring容器后将会自动启动消费组。
+
+
+## 事务消息
+### 阿里云事务消息
+如果是使用阿里云上的消息服务，可以直接在阿里云上申请一个事务消息的producerId，然后按下面方式启用配置：
+```java     
+  
+	@EnableONSClient(producers=@ONSProducer(producerId="producerId", transactional=true))
+	@Configuration
+	public class SpringContextConfig {
+	}   
+```
+启用后，直接注入TransactionProducerService服务即可使用ons的原生事务消息。
+```Java
+
+@Transactional
+public class DataBaseProducerServiceImpl {
+
+	@Autowired
+	TransactionProducerService transactionProducerService;
+
+	public void sendMessage(){
+		//详细参加阿里云事务消息的使用方式
+		transactionProducerService.sendMessage ....
+		
+	}
+}
+```
+### JFish的rocketmq模块提供的事务消息
+JFish的rocketmq利用本地数据库的方式实现了事务消息，不过只有使用框架提供的ProducerService服务接口发送的消息才会被拦截处理为本地事务消息。
+启用事务消息配置：
+- 1、添加dbm依赖，因为内置使用了dbm来做持久化，你可以通过自定义SendMessageRepository接口来避免dbm依赖：   
+```xml
+
+<dependency>
+    <groupId>org.onetwo4j</groupId>
+    <artifactId>onetwo-dbm</artifactId>
+    <version>4.6.1-SNAPSHOT</version>
+</dependency>
+
+```
+dbm 详情见：[dbm](https://github.com/wayshall/dbm)
+启用dbm需要在配置类增加@EnableDbm 注解：
+```Java
+@EnableDbm
+@Configuration
+public class SpringContextConfig {
+}   
+```
+
+dbm作为一个orm，自然需要配置数据源，请自行配置。
+
+- 2、在本地数据库增加保存发送消息的表：
+```sql
+drop table if exists data_rmq_send;
+
+/*==============================================================*/
+/* Table: data_rmq_send                                         */
+/*==============================================================*/
+create table data_rmq_send
+(
+   msgkey               varchar(64) not null,
+   body                 blob,
+   state                tinyint comment '消息状态：
+            待发送：0
+            已发送：1
+            正常来说只有待发送，因为发送后一般不保留，直接删掉',
+   create_at            datetime,
+   update_at            datetime,
+   primary key (msgkey)
+);
+
+alter table data_rmq_send comment 'rmq消息发送暂存表';
+```
+
+- 3、增加使用事务消息的配置
+```yaml
+jfish: 
+	ons: 
+		transactional: 
+			enabled: true
+```
+
+完成上面三步后，注入并通过ProducerService接口发送的消息都会被拦截，并首先保存到本地数据库，待事务提交后自动把消息发送出去，并删除数据表的rocketmq消息。
+如果发送或者删除失败，会有定时任务定时扫描消息表并重新发送。
+默认配置为一分钟扫描一次，可自定义配置任务的表达式：
+```yaml
+jfish.ons.transactional.task.cron
+jfish: 
+	ons: 
+		transactional: 
+			task: 
+				cron: 0 0/2 * * * *
+```
+cron表达式参见spring task文档

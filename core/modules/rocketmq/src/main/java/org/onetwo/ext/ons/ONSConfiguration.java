@@ -3,11 +3,19 @@ package org.onetwo.ext.ons;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
+import org.onetwo.ext.ons.transaction.CompensationSendMessageTask;
+import org.onetwo.ext.ons.transaction.DatabaseTransactionMessageInterceptor;
+import org.onetwo.ext.ons.transaction.DbmSendMessageRepository;
+import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor;
+import org.onetwo.ext.ons.transaction.MessageBodyStoreSerializer;
+import org.onetwo.ext.ons.transaction.SendMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author wayshall
@@ -20,11 +28,16 @@ public class ONSConfiguration {
 	private ONSProperties onsProperties;
 	
 	@Bean
-	public ONSPushConsumerStarter onsPushConsumerStarter(ONSConsumerListenerComposite composite, MessageDeserializer messageDeserializer){
+	public ONSPushConsumerStarter onsPushConsumerStarter(MessageDeserializer messageDeserializer){
 		ONSPushConsumerStarter starter = new ONSPushConsumerStarter(messageDeserializer);
 		starter.setOnsProperties(onsProperties);
-		starter.setConsumerListenerComposite(composite);
+		starter.setConsumerListenerComposite(onsConsumerListenerComposite());
 		return starter;
+	}
+	
+	@Bean
+	public ONSConsumerListenerComposite onsConsumerListenerComposite(){
+		return new ONSConsumerListenerComposite();
 	}
 	
 	@Bean
@@ -39,17 +52,43 @@ public class ONSConfiguration {
 		return onsProperties.getSerializer().getSerializer();
 	}
 	
-	@Bean
-	@ConditionalOnMissingBean(ONSConsumerListenerComposite.class)
-	public ONSConsumerListenerComposite onsConsumerListenerComposite(){
-		ONSConsumerListenerComposite composite = new ONSConsumerListenerComposite();
-		return composite;
-	}
 	
 	@Bean
-	@ConditionalOnMissingBean(ONSProducerListenerComposite.class)
-	public ONSProducerListenerComposite onsProducerListenerComposite(){
-		return new ONSProducerListenerComposite();
+	@ConditionalOnMissingBean(SendMessageLogInterceptor.class)
+	public SendMessageLogInterceptor sendMessageLogInterceptor(){
+		return new SendMessageLogInterceptor();
+	}
+
+	@Configuration
+	@ConditionalOnProperty(ONSProperties.TRANSACTIONAL_ENABLED_KEY)
+	@EnableScheduling
+	protected static class TransactionalConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(DefaultDatabaseTransactionMessageInterceptor.class)
+		public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
+			DefaultDatabaseTransactionMessageInterceptor interceptor = new DefaultDatabaseTransactionMessageInterceptor();
+			interceptor.setSendMessageRepository(sendMessageRepository);
+			return interceptor;
+		}
+		
+		@Bean
+		@ConditionalOnMissingBean(SendMessageRepository.class)
+		public SendMessageRepository sendMessageRepository(){
+			return new DbmSendMessageRepository();
+		}
+		
+		@Bean
+		@ConditionalOnMissingBean(MessageBodyStoreSerializer.class)
+		public MessageBodyStoreSerializer messageBodyStoreSerializer(){
+			return MessageBodyStoreSerializer.INSTANCE;
+		}
+		
+		@Bean
+		@ConditionalOnMissingBean(CompensationSendMessageTask.class)
+		public CompensationSendMessageTask compensationSendMessageTask(){
+			return new CompensationSendMessageTask();
+		}
 	}
 	
 }
