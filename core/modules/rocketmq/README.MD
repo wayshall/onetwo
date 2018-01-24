@@ -136,8 +136,12 @@ public class DataBaseProducerServiceImpl {
 	TransactionProducerService transactionProducerService;
 
 	public void sendMessage(){
-		//详细参加阿里云事务消息的使用方式
-		transactionProducerService.sendMessage ....
+		//详细参见阿里云事务消息的使用方式
+		transactionProducerService.sendMessage(msg, new LocalTransactionExecuter(){
+			public TransactionStatus execute(final Message msg, final Object arg){
+				return TransactionStatus.CommitTransaction;
+			}
+		}, null)
 		
 	}
 }
