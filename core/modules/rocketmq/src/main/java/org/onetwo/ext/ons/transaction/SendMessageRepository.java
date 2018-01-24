@@ -1,6 +1,6 @@
 package org.onetwo.ext.ons.transaction;
 
-import java.util.Set;
+import java.util.Collection;
 
 import org.onetwo.ext.ons.producer.SendMessageContext;
 
@@ -12,8 +12,10 @@ public interface SendMessageRepository {
 
 	void save(SendMessageContext ctx);
 
-	Set<SendMessageContext> findCurrentSendMessageContext();
+	/*Set<SendMessageContext> findCurrentSendMessageContext();
 
-	void clearCurrentContexts();
+	void clearCurrentContexts();*/
+
+	void remove(Collection<SendMessageContext> msgCtxs);
 
 }

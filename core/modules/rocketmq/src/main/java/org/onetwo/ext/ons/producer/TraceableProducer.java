@@ -5,6 +5,12 @@ package org.onetwo.ext.ons.producer;
  */
 public interface TraceableProducer {
 
+	/***
+	 * ProducerBean or TransactionProducerBean
+	 * @author wayshall
+	 * @param targetClass
+	 * @return
+	 */
 	<T> T getRawProducer(Class<T> targetClass);
 	
 	/***

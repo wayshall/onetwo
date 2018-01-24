@@ -2,6 +2,7 @@ package org.onetwo.ext.ons.producer;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Predicate;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
@@ -114,7 +115,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	}
 
 	protected SendResult sendRawMessage(Message message, LocalTransactionExecuter executer, Object arg){
-		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, ()->this.send(message, executer, arg));
+		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, ()->this.send(message, executer, arg), null);
 		SendMessageContext ctx = SendMessageContext.builder()
 													.message(message)
 													.source(this)
@@ -173,6 +174,11 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		@Override
 		public boolean isTransactional() {
 			return transactionProducerService.isTransactional();
+		}
+
+		@Override
+		public SendResult sendMessage(OnsMessage onsMessage, Predicate<SendMessageInterceptor> interceptorPredicate) {
+			return transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null);
 		}
 		
 	}

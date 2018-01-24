@@ -2,6 +2,7 @@ package org.onetwo.ext.ons.producer;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Predicate;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
@@ -98,6 +99,16 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	
 	@Override
 	public SendResult sendMessage(OnsMessage onsMessage){
+		return sendMessage(onsMessage, null);
+	}
+	
+	@Override
+	public SendResult sendMessage(OnsMessage onsMessage, Predicate<SendMessageInterceptor> interceptorPredicate){
+		Object body = onsMessage.getBody();
+		if(body instanceof Message){
+			return sendRawMessage((Message)body, interceptorPredicate);
+		}
+		
 		Message message = onsMessage.toMessage();
 		
 		String topic = resolvePlaceholders(message.getTopic());
@@ -105,16 +116,14 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		String tag = resolvePlaceholders(message.getTag());
 		message.setTag(tag);
 		
-		Object body = onsMessage.getBody();
 		if(needSerialize(body)){
 			message.setBody(this.messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
 		}else{
 			message.setBody((byte[])body);
 		}
 		
-		return sendRawMessage(message);
+		return sendRawMessage(message, interceptorPredicate);
 	}
-	
 
 	protected String resolvePlaceholders(String value){
 		return SpringUtils.resolvePlaceholders(applicationContext, value);
@@ -128,13 +137,16 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	}
 	
 	
-	protected SendResult sendRawMessage(Message message){
-		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, ()->this.send(message));
+	protected SendResult sendRawMessage(Message message, Predicate<SendMessageInterceptor> interceptorPredicate){
+		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, 
+																			()->this.send(message), 
+																			interceptorPredicate);
 		SendMessageContext ctx = SendMessageContext.builder()
 													.message(message)
 													.source(this)
 													.producer(this)
 													.chain(chain)
+													.threadId(Thread.currentThread().getId())
 													.build();
 		chain.setSendMessageContext(ctx);
 		return chain.invoke();

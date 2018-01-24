@@ -2,6 +2,7 @@ package org.onetwo.ext.ons.producer;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.onetwo.common.exception.BaseException;
@@ -20,21 +21,27 @@ public class SendMessageInterceptorChain {
 	final private List<SendMessageInterceptor> interceptors;
 	final private Iterator<SendMessageInterceptor> iterator;
 	private SendMessageContext sendMessageContext;
+	final private Predicate<SendMessageInterceptor> interceptorPredicate;
 	
 	private SendResult result;
 	private Throwable throwable;
 
-	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, Supplier<SendResult> actualInvoker) {
+	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, Supplier<SendResult> actualInvoker, Predicate<SendMessageInterceptor> interceptorPredicate) {
 		super();
 		this.actualInvoker = actualInvoker;
 		this.interceptors = interceptors;
 		this.iterator = this.interceptors.iterator();
+		this.interceptorPredicate = interceptorPredicate;
 	}
 
 	public SendResult invoke(){
 		if(iterator.hasNext()){
 			SendMessageInterceptor interceptor = iterator.next();
-			result = interceptor.intercept(this);
+			if(interceptorPredicate==null || interceptorPredicate.test(interceptor)){
+				result = interceptor.intercept(this);
+			}else{
+				result = this.invoke();
+			}
 		}else{
 //			result = actualInvoker.get();
 			result = doSendRawMessage();

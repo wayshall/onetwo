@@ -24,6 +24,7 @@ import com.google.common.collect.Maps;
 public class ONSProperties {
 	
 	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
+	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
 
 	MqServerTypes serverType = MqServerTypes.ONS;
 	

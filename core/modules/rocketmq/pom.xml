@@ -74,6 +74,12 @@
       <artifactId>spring-tx</artifactId>
       <optional>true</optional>
     </dependency>
+    
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <scope>test</scope>
+    </dependency> 
         
     <dependency>
         <groupId>com.alibaba.rocketmq</groupId>

@@ -6,8 +6,9 @@ import com.aliyun.openservices.ons.api.Message;
 
 
 public interface MessageBodyStoreSerializer {
-	
+
 	byte[] serialize(Message message);
+	Message deserialize(byte[] body);
 	
 	MessageBodyStoreSerializer INSTANCE = new Default();
 	
@@ -16,6 +17,11 @@ public interface MessageBodyStoreSerializer {
 		@Override
 		public byte[] serialize(Message message) {
 			return SerializationUtils.serialize(message);
+		}
+
+		@Override
+		public Message deserialize(byte[] body) {
+			return SerializationUtils.deserialize(body);
 		}
 		
 	}

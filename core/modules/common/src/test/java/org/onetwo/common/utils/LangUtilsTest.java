@@ -375,9 +375,8 @@ public class LangUtilsTest {
 	@Test
 	public void testRandomString(){
 		String key = RandomStringUtils.randomAscii(128);
-		key = key.replaceAll("[&#*!\\s]", "");
-		key = StringUtils.trimLeft(key, "@");
-		key = StringUtils.trimLeft(key, "%");
+		System.out.println("key:" + key);
+		key = RandomStringUtils.randomAlphanumeric(32);
 		System.out.println("key:" + key);
 	}
 }

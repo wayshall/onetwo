@@ -1,5 +1,6 @@
 package org.onetwo.ext.ons.transaction;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,6 +24,7 @@ import org.onetwo.dbm.jpa.BaseEntity;
 public class SendMessageEntity extends BaseEntity {
 	
 	@Id
+	@Column(name="msgkey")
 	private String key;
 	private byte[] body;
 	@Enumerated(EnumType.ORDINAL)

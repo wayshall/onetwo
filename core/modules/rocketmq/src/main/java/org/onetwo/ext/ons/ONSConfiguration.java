@@ -3,8 +3,11 @@ package org.onetwo.ext.ons;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
-import org.onetwo.ext.ons.transaction.DatabaseTransactionListener;
+import org.onetwo.ext.ons.transaction.CompensationSendMessageTask;
+import org.onetwo.ext.ons.transaction.DatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.DbmSendMessageRepository;
+import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor;
+import org.onetwo.ext.ons.transaction.MessageBodyStoreSerializer;
 import org.onetwo.ext.ons.transaction.SendMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -12,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author wayshall
@@ -57,17 +61,33 @@ public class ONSConfiguration {
 
 	@Configuration
 	@ConditionalOnProperty(ONSProperties.TRANSACTIONAL_ENABLED_KEY)
+	@EnableScheduling
 	protected static class TransactionalConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(DatabaseTransactionListener.class)
-		public DatabaseTransactionListener satabaseTransactionListener(){
-			return new DatabaseTransactionListener();
+		@ConditionalOnMissingBean(DefaultDatabaseTransactionMessageInterceptor.class)
+		public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
+			DefaultDatabaseTransactionMessageInterceptor interceptor = new DefaultDatabaseTransactionMessageInterceptor();
+			interceptor.setSendMessageRepository(sendMessageRepository);
+			return interceptor;
 		}
+		
 		@Bean
 		@ConditionalOnMissingBean(SendMessageRepository.class)
 		public SendMessageRepository sendMessageRepository(){
 			return new DbmSendMessageRepository();
+		}
+		
+		@Bean
+		@ConditionalOnMissingBean(MessageBodyStoreSerializer.class)
+		public MessageBodyStoreSerializer messageBodyStoreSerializer(){
+			return MessageBodyStoreSerializer.INSTANCE;
+		}
+		
+		@Bean
+		@ConditionalOnMissingBean(CompensationSendMessageTask.class)
+		public CompensationSendMessageTask compensationSendMessageTask(){
+			return new CompensationSendMessageTask();
 		}
 	}
 	
