@@ -121,11 +121,10 @@ public class ProductTestAppMQConsumer{
 ### 阿里云事务消息
 如果是使用阿里云上的消息服务，可以直接在阿里云上申请一个事务消息的producerId，然后按下面方式启用配置：
 ```java     
-  
-	@EnableONSClient(producers=@ONSProducer(producerId="producerId", transactional=true))
-	@Configuration
-	public class SpringContextConfig {
-	}   
+@EnableONSClient(producers=@ONSProducer(producerId="producerId", transactional=true))
+@Configuration
+public class SpringContextConfig {
+}   
 ```
 启用后，直接注入TransactionProducerService服务即可使用ons的原生事务消息。
 ```Java
