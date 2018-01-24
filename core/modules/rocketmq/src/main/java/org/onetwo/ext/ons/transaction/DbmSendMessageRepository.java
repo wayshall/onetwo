@@ -2,7 +2,9 @@ package org.onetwo.ext.ons.transaction;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.db.spi.BaseEntityManager;
@@ -15,6 +17,7 @@ import org.onetwo.ext.ons.transaction.SendMessageEntity.SendStates;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.aliyun.openservices.ons.api.Message;
 
@@ -50,7 +53,7 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		baseEntityManager.persist(send);
 
 		ctx.setMessageEntity(send);
-//		storeInThread(ctx);
+		storeInCurrentContext(ctx);
 	}
 
 	@Override
@@ -63,8 +66,8 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		}
 	}
 	
-	/*@SuppressWarnings("unchecked")
-	protected void storeInThread(SendMessageContext ctx){
+	@SuppressWarnings("unchecked")
+	protected void storeInCurrentContext(SendMessageContext ctx){
 		boolean debug = ctx.isDebug();
 		Set<SendMessageContext> msgCtxs = (Set<SendMessageContext>)TransactionSynchronizationManager.unbindResourceIfPossible(this);
 		if(debug && log.isInfoEnabled()){
@@ -72,7 +75,7 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 			log.info("clear old SendMessageContext from transaction resources before store: {}", keys);
 		}
 		
-		Set<SendMessageContext> contexts = findCurrentSendMessageContext();
+		Set<SendMessageContext> contexts = findAllInCurrentContext();
 		if(contexts==null){
 			contexts = new LinkedHashSet<SendMessageContext>();
 //			messageStorer.set(contexts);
@@ -80,18 +83,18 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		}
 		contexts.add(ctx);
 		if(debug && log.isInfoEnabled()){
-			log.info("storeInThread: {}", ctx.getMessage());
+			log.info("store in current context: {}", ctx.getMessage());
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<SendMessageContext> findCurrentSendMessageContext(){
+	public Set<SendMessageContext> findAllInCurrentContext(){
 //		return messageStorer.get();
 		return (Set<SendMessageContext>)TransactionSynchronizationManager.getResource(this);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void clearCurrentContexts(){
+	public void clearInCurrentContext(){
 		Set<SendMessageContext> msgCtxs = (Set<SendMessageContext>)TransactionSynchronizationManager.unbindResourceIfPossible(this);
 		if(LangUtils.isEmpty(msgCtxs)){
 			return ;
@@ -100,13 +103,13 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		boolean debug = msgCtxs.iterator().next().isDebug();
 		List<String> keys = getSendMessageKeys(msgCtxs);
 		if(debug && log.isInfoEnabled()){
-			log.info("clear SendMessageContext from transaction resources: {}", msgCtxs);
+			log.info("clear SendMessageContext from transaction resources: {}", keys);
 		}
-		baseEntityManager.removeByIds(SendMessageEntity.class, keys.toArray(new String[0]));
+		/*baseEntityManager.removeByIds(SendMessageEntity.class, keys.toArray(new String[0]));
 		if(debug && log.isInfoEnabled()){
 			log.info("clear SendMessageContext from database: {}", keys);
-		}
-	}*/
+		}*/
+	}
 	
 	public static List<String> getSendMessageKeys(Collection<SendMessageContext> msgCtxs){
 		if(LangUtils.isEmpty(msgCtxs)){

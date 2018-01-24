@@ -70,6 +70,7 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 		if(debug && log.isInfoEnabled()){
 			log.info("committed transactional message in thread[{}]...", Thread.currentThread().getId());
 		}
+//		sendMessageRepository.clearInCurrentContext();
 	}
 	
 	@Override
@@ -78,6 +79,7 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 		if(debug && log.isInfoEnabled()){
 			log.info("rollback transactional message in thread[{}]...", Thread.currentThread().getId());
 		}
+//		sendMessageRepository.clearInCurrentContext();
 	}
 
 	public SendMessageRepository getSendMessageRepository() {

@@ -2,7 +2,9 @@ package org.onetwo.ext.ons;
 
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
+import org.onetwo.ext.ons.ONSProperties.SendMode;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
+import org.onetwo.ext.ons.transaction.AsyncDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.CompensationSendMessageTask;
 import org.onetwo.ext.ons.transaction.DatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.DbmSendMessageRepository;
@@ -63,11 +65,19 @@ public class ONSConfiguration {
 	@ConditionalOnProperty(ONSProperties.TRANSACTIONAL_ENABLED_KEY)
 	@EnableScheduling
 	protected static class TransactionalConfiguration {
+		@Autowired
+		private ONSProperties onsProperties;
 
 		@Bean
 		@ConditionalOnMissingBean(DefaultDatabaseTransactionMessageInterceptor.class)
 		public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
-			DefaultDatabaseTransactionMessageInterceptor interceptor = new DefaultDatabaseTransactionMessageInterceptor();
+			DefaultDatabaseTransactionMessageInterceptor interceptor = null;
+			SendMode sendMode = onsProperties.getTransactional().getSendMode();
+			if(sendMode==SendMode.ASYNC){
+				interceptor = new AsyncDatabaseTransactionMessageInterceptor();
+			}else{
+				interceptor = new DefaultDatabaseTransactionMessageInterceptor();
+			}
 			interceptor.setSendMessageRepository(sendMessageRepository);
 			return interceptor;
 		}

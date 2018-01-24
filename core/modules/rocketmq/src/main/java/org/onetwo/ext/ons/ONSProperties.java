@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
 @Data
 @ConfigurationProperties("jfish.ons")
 public class ONSProperties {
-	
+
 	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
 	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
 
@@ -37,6 +37,7 @@ public class ONSProperties {
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
 	
+	TransactionalProps transactional = new TransactionalProps();
 
 	public Map<String, Properties> getProducers() {
 		return producers;
@@ -63,6 +64,14 @@ public class ONSProperties {
 		return baseConfig;
 	}
 	
+	@Data
+	public class TransactionalProps {
+		SendMode sendMode = SendMode.SYNC;
+	}
+	public static enum SendMode {
+		SYNC,
+		ASYNC
+	}
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
 		JSON(JsonMessageSerializer.INSTANCE, JsonMessageDeserializer.INSTANCE),
