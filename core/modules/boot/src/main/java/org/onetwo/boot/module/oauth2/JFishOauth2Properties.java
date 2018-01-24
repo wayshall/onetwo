@@ -9,6 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import com.google.common.collect.Maps;
 
 /**
+ * 统一在网关验证授权，因此后端的api项目除了需要获取auth2而配置tokenStore外，
+ * 一般可把security简单配置为：
+ * security: 
+   		ignored: /**
  * @author wayshall
  * <br/>
  */
@@ -26,6 +30,22 @@ public class JFishOauth2Properties {
 	
 	/****
 	 * auth server
+	 * oauth2认证security的拦截器链，所以当auth server项目里有其它不需要验证的rest api时，
+	 * 不能简单地配置为： 
+	 * security: 
+			ignored: /**
+			
+	 要手动配置需要忽略的api路径，如：
+	 security:
+	 		ignored: /swagger**, /api/**
+	 		
+	   也可以把security的相关配置disabled：
+	    management: 
+		    security: 
+		        enabled: false
+		security: 
+		    basic: 
+		        enabled: false
 	 */
 	AuthorizationServerProps authorizationServer = new AuthorizationServerProps();
 	ResourceServerProps resourceServer = new ResourceServerProps();
