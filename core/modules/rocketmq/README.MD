@@ -192,9 +192,9 @@ alter table data_rmq_send comment 'rmq消息发送暂存表';
 - 3、增加使用事务消息的配置
 ```yaml
 jfish: 
-	ons: 
-		transactional: 
-			enabled: true
+    ons: 
+        transactional: 
+            enabled: true
 ```
 
 完成上面三步后，注入并通过ProducerService接口发送的消息都会被拦截，并首先保存到本地数据库，待事务提交后自动把消息发送出去，并删除数据表的rocketmq消息。
@@ -202,9 +202,9 @@ jfish:
 默认配置为一分钟扫描一次，可自定义配置任务的表达式：
 ```yaml
 jfish: 
-	ons: 
-		transactional: 
-			task: 
-				cron: 0 0/2 * * * *
+    ons: 
+        transactional: 
+            task: 
+                cron: 0 0/2 * * * *
 ```
 cron表达式参见spring task文档
