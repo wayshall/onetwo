@@ -2,7 +2,6 @@ package org.onetwo.ext.ons.producer;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Predicate;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
@@ -10,6 +9,8 @@ import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
+import org.onetwo.ext.ons.ONSUtils.SendMessageFlags;
+import org.onetwo.ext.ons.producer.SendMessageInterceptor.InterceptorPredicate;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.bean.ProducerBean;
+import com.google.common.collect.Lists;
 
 /**
  * @author wayshall
@@ -99,11 +101,11 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	
 	@Override
 	public SendResult sendMessage(OnsMessage onsMessage){
-		return sendMessage(onsMessage, null);
+		return sendMessage(onsMessage, SendMessageFlags.Default);
 	}
 	
 	@Override
-	public SendResult sendMessage(OnsMessage onsMessage, Predicate<SendMessageInterceptor> interceptorPredicate){
+	public SendResult sendMessage(OnsMessage onsMessage, InterceptorPredicate interceptorPredicate){
 		Object body = onsMessage.getBody();
 		if(body instanceof Message){
 			return sendRawMessage((Message)body, interceptorPredicate);
@@ -137,8 +139,16 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	}
 	
 	
-	protected SendResult sendRawMessage(Message message, Predicate<SendMessageInterceptor> interceptorPredicate){
-		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, 
+	protected SendResult sendRawMessage(Message message, final InterceptorPredicate interPredicate){
+		InterceptorPredicate interceptorPredicate = interPredicate==null?SendMessageFlags.Default:interPredicate;
+		
+		List<SendMessageInterceptor> messageInterceptors = Lists.newArrayList(sendMessageInterceptors);
+		List<SendMessageInterceptor> increasingInters = interceptorPredicate.getIncreasingInterceptors();
+		if(!increasingInters.isEmpty()){
+			messageInterceptors.addAll(interceptorPredicate.getIncreasingInterceptors());
+			AnnotationAwareOrderComparator.sort(messageInterceptors);
+		}
+		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
 																			()->this.send(message), 
 																			interceptorPredicate);
 		SendMessageContext ctx = SendMessageContext.builder()

@@ -2,7 +2,6 @@ package org.onetwo.ext.ons.producer;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Predicate;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
@@ -10,6 +9,9 @@ import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
+import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.producer.SendMessageInterceptor.InterceptorPredicate;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	@Autowired
 //	private ConfigurableListableBeanFactory configurableListableBeanFactory;
 	private FakeProducerService fakeProducerService = new FakeProducerService();
+	private Logger logger = ONSUtils.getONSLogger();
 	
 	
 	@Autowired
@@ -146,7 +149,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		return fakeProducerService;
 	}
 	
-	public static class FakeProducerService implements ProducerService {
+	public class FakeProducerService implements ProducerService {
 		@Autowired
 		private TransactionProducerService transactionProducerService;
 
@@ -177,7 +180,10 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		}
 
 		@Override
-		public SendResult sendMessage(OnsMessage onsMessage, Predicate<SendMessageInterceptor> interceptorPredicate) {
+		public SendResult sendMessage(OnsMessage onsMessage, InterceptorPredicate interceptorPredicate) {
+			if(logger.isWarnEnabled()){
+				logger.warn("FakeProducerService is not support InterceptorPredicate arguments, ignored: {}", interceptorPredicate);
+			}
 			return transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null);
 		}
 		

@@ -2,11 +2,12 @@ package org.onetwo.ext.ons.producer;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.producer.SendMessageInterceptor.InterceptorPredicate;
 import org.slf4j.Logger;
 
 import com.aliyun.openservices.ons.api.Message;
@@ -21,12 +22,14 @@ public class SendMessageInterceptorChain {
 	final private List<SendMessageInterceptor> interceptors;
 	final private Iterator<SendMessageInterceptor> iterator;
 	private SendMessageContext sendMessageContext;
-	final private Predicate<SendMessageInterceptor> interceptorPredicate;
+	final private InterceptorPredicate interceptorPredicate;
 	
 	private SendResult result;
 	private Throwable throwable;
+	private boolean debug = true;
+	final private Logger logger = ONSUtils.getONSLogger();
 
-	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, Supplier<SendResult> actualInvoker, Predicate<SendMessageInterceptor> interceptorPredicate) {
+	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, Supplier<SendResult> actualInvoker, InterceptorPredicate interceptorPredicate) {
 		super();
 		this.actualInvoker = actualInvoker;
 		this.interceptors = interceptors;
@@ -35,10 +38,15 @@ public class SendMessageInterceptorChain {
 	}
 
 	public SendResult invoke(){
+		int index = 0;
 		if(iterator.hasNext()){
 			SendMessageInterceptor interceptor = iterator.next();
-			if(interceptorPredicate==null || interceptorPredicate.test(interceptor)){
+			if(interceptorPredicate==null || interceptorPredicate.isApply(interceptor)){
+				if(debug && logger.isInfoEnabled()){
+					logger.info("{}->", LangUtils.repeatString(index, "--"), interceptor.getClass().getSimpleName());
+				}
 				result = interceptor.intercept(this);
+				index++;
 			}else{
 				result = this.invoke();
 			}
@@ -87,6 +95,10 @@ public class SendMessageInterceptorChain {
 
 	void setSendMessageContext(SendMessageContext sendMessageContext) {
 		this.sendMessageContext = sendMessageContext;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 }

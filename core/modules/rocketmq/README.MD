@@ -201,7 +201,32 @@ jfish:
             enabled: true
 ```
 
-完成上面三步后，注入并通过ProducerService接口发送的消息都会被拦截，并首先保存到本地数据库，待事务提交后自动把消息发送出去，并删除数据表的rocketmq消息。
+完成上面三步后，注入并通过ProducerService接口的sendMessage(OnsMessage onsMessage, InterceptorPredicate interceptorPredicate)方法发送的消息，都会首先保存到本地数据库，待事务提交后自动把消息发送出去，并删除数据表的rocketmq消息。代用代码如下：
+
+```Java
+
+@Transactional
+public class DataBaseProducerServiceImpl {
+
+	@Autowired
+	ProducerService onsProducerService;
+
+	public void sendMessage(){
+		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
+																	  .topic(RmqONSProducerTest.TOPIC)
+																	  .tags(RmqONSProducerTest.ORDER_PAY)
+																	  .body(OrderTestMessage.builder()
+																			  				.orderId(1L)
+																			  				.title("支付")
+																			  				.build())
+																	  .build(), SendMessageFlags.EnableDatabaseTransactional);
+		System.out.println("res: " + res);
+		
+		
+	}
+}
+```
+
 如果发送或者删除失败，会有定时任务定时扫描消息表并重新发送。
 默认配置为一分钟扫描一次，可自定义配置任务的表达式：
 ```yaml

@@ -2,7 +2,6 @@ package org.onetwo.ext.ons.transaction;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
@@ -11,8 +10,8 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.dialet.DBDialect.LockInfo;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
+import org.onetwo.ext.ons.ONSUtils.SendMessageFlags;
 import org.onetwo.ext.ons.producer.ProducerService;
-import org.onetwo.ext.ons.producer.SendMessageInterceptor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import com.aliyun.openservices.ons.api.Message;
  */
 @Transactional
 public class CompensationSendMessageTask implements InitializingBean {
-	private final Predicate<SendMessageInterceptor> disableDatabaseTransactionMessageInterceptor = inter->!DatabaseTransactionMessageInterceptor.class.isInstance(inter);
 	
 	protected Logger log = JFishLoggerFactory.getLogger(CompensationSendMessageTask.class);
 	
@@ -73,7 +71,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 		for(SendMessageEntity message : messages){
 			Message rmqMessage = messageBodyStoreSerializer.deserialize(message.getBody());
 			SimpleMessage simple = SimpleMessage.builder().body(rmqMessage).build();
-			producerService.sendMessage(simple, disableDatabaseTransactionMessageInterceptor);
+			producerService.sendMessage(simple, SendMessageFlags.DisableDatabaseTransactional);
 			baseEntityManager.remove(message);
 			if(log.isInfoEnabled()){
 				log.info("resend message and remove from database, id: {}, msgId: {}", message.getKey(), rmqMessage.getMsgID());
