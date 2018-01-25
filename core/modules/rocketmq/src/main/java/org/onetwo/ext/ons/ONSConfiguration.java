@@ -97,10 +97,10 @@ public class ONSConfiguration {
 		}
 		
 		@Bean
-		@ConditionalOnMissingBean(CompensationSendMessageTask.class)
+		@ConditionalOnProperty(value=ONSProperties.TRANSACTIONAL_TASK_ENABLED_KEY, matchIfMissing=false)
 		public CompensationSendMessageTask compensationSendMessageTask(){
 			CompensationSendMessageTask task = null;
-			TaskLocks taskLock = onsProperties.getTransactional().getTaskLock();
+			TaskLocks taskLock = onsProperties.getTransactional().getTask().getLock();
 			if(taskLock==TaskLocks.REDIS){
 				task = new ReidsLokableCompensationSendMessageTask();
 			}else{
