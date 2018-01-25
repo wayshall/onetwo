@@ -151,14 +151,18 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
 																			()->this.send(message), 
 																			interceptorPredicate);
+		
 		SendMessageContext ctx = SendMessageContext.builder()
 													.message(message)
 													.source(this)
 													.producer(this)
 													.chain(chain)
+													.debug(true)
 													.threadId(Thread.currentThread().getId())
 													.build();
 		chain.setSendMessageContext(ctx);
+		chain.setDebug(ctx.isDebug());
+		
 		return chain.invoke();
 	}
 

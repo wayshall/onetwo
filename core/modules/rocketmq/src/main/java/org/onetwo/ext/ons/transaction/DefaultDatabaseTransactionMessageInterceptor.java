@@ -34,7 +34,7 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 	
 	protected Logger log = ONSUtils.getONSLogger();
 	private SendMessageRepository sendMessageRepository;
-	protected boolean debug = true;
+//	protected boolean debug = true;
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 	
@@ -46,7 +46,7 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 		if(ctx.getSource().isTransactional()){
 			return chain.invoke();
 		}
-
+		boolean debug = ctx.isDebug();
 		if(debug && log.isInfoEnabled()){
 			log.info("start transactional message in thread[{}]...", ctx.getThreadId());
 		}
@@ -65,6 +65,7 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 
 	@Override
 	public void afterCommit(SendMessageEvent event){
+		boolean debug = event.getSendMessageContext().isDebug();
 		event.getSendMessageContext().getChain().invoke();
 		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
 		if(debug && log.isInfoEnabled()){
@@ -75,6 +76,7 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 	
 	@Override
 	public void afterRollback(SendMessageEvent event){
+		boolean debug = event.getSendMessageContext().isDebug();
 		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
 		if(debug && log.isInfoEnabled()){
 			log.info("rollback transactional message in thread[{}]...", Thread.currentThread().getId());
@@ -86,9 +88,6 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 		return sendMessageRepository;
 	}
 
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
 
 	public void setSendMessageRepository(SendMessageRepository sendMessageRepository) {
 		this.sendMessageRepository = sendMessageRepository;

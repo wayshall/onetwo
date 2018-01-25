@@ -28,6 +28,8 @@ public class SendMessageInterceptorChain {
 	private Throwable throwable;
 	private boolean debug = true;
 	final private Logger logger = ONSUtils.getONSLogger();
+	private int currentIndex = 0;
+	private StringBuilder interLog = new StringBuilder(100);
 
 	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, Supplier<SendResult> actualInvoker, InterceptorPredicate interceptorPredicate) {
 		super();
@@ -38,20 +40,23 @@ public class SendMessageInterceptorChain {
 	}
 
 	public SendResult invoke(){
-		int index = 0;
 		if(iterator.hasNext()){
 			SendMessageInterceptor interceptor = iterator.next();
 			if(interceptorPredicate==null || interceptorPredicate.isApply(interceptor)){
-				if(debug && logger.isInfoEnabled()){
-					logger.info("{}-> {}", LangUtils.repeatString(index, "--"), interceptor.getClass().getSimpleName());
+				if(debug){
+//					logger.info("{}-> {}", LangUtils.repeatString(index, "--"), interceptor.getClass().getSimpleName());
+					interLog.append(LangUtils.repeatString(currentIndex, "--")).append("-> ").append(interceptor.getClass().getSimpleName()).append('\n');
 				}
 				result = interceptor.intercept(this);
-				index++;
+				currentIndex++;
 			}else{
 				result = this.invoke();
 			}
 		}else{
 //			result = actualInvoker.get();
+			if(interLog.length()>0 && logger.isInfoEnabled()){
+				logger.info("SendMessageInterceptors chain:\n{}", interLog.toString());
+			}
 			result = doSendRawMessage();
 		}
 		return result;
