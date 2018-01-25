@@ -24,7 +24,8 @@ import com.google.common.collect.Maps;
 public class ONSProperties {
 
 	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
-	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
+//	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
+	public static final String TRANSACTIONAL_FIXED_RATE_STRING_KEY = "jfish.ons.transactional.taskFixedRateString";
 
 	MqServerTypes serverType = MqServerTypes.ONS;
 	
@@ -67,10 +68,15 @@ public class ONSProperties {
 	@Data
 	public class TransactionalProps {
 		SendMode sendMode = SendMode.SYNC;
+		TaskLocks taskLock = TaskLocks.DB;
 	}
 	public static enum SendMode {
 		SYNC,
 		ASYNC
+	}
+	public static enum TaskLocks {
+		DB,
+		REDIS
 	}
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),

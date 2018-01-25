@@ -228,12 +228,11 @@ public class DataBaseProducerServiceImpl {
 ```
 
 如果发送或者删除失败，会有定时任务定时扫描消息表并重新发送。
-默认配置为一分钟扫描一次，可自定义配置任务的表达式：
+定时任务使用spring task的fixedRate，默认配置为一分钟扫描一次，可自定义配置任务的延迟时间：
 ```yaml
 jfish: 
     ons: 
         transactional: 
-            task: 
-                cron: 0 0/2 * * * *
+            taskFixedRateString: 120000 #毫秒
 ```
 cron表达式参见spring task文档

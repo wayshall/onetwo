@@ -43,7 +43,7 @@ public class SendMessageInterceptorChain {
 			SendMessageInterceptor interceptor = iterator.next();
 			if(interceptorPredicate==null || interceptorPredicate.isApply(interceptor)){
 				if(debug && logger.isInfoEnabled()){
-					logger.info("{}->", LangUtils.repeatString(index, "--"), interceptor.getClass().getSimpleName());
+					logger.info("{}-> {}", LangUtils.repeatString(index, "--"), interceptor.getClass().getSimpleName());
 				}
 				result = interceptor.intercept(this);
 				index++;

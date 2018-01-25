@@ -3,6 +3,7 @@ package org.onetwo.ext.ons;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.ONSProperties.SendMode;
+import org.onetwo.ext.ons.ONSProperties.TaskLocks;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
 import org.onetwo.ext.ons.transaction.AsyncDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.CompensationSendMessageTask;
@@ -10,6 +11,7 @@ import org.onetwo.ext.ons.transaction.DatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.DbmSendMessageRepository;
 import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.MessageBodyStoreSerializer;
+import org.onetwo.ext.ons.transaction.ReidsLokableCompensationSendMessageTask;
 import org.onetwo.ext.ons.transaction.SendMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -97,8 +99,16 @@ public class ONSConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(CompensationSendMessageTask.class)
 		public CompensationSendMessageTask compensationSendMessageTask(){
-			return new CompensationSendMessageTask();
+			CompensationSendMessageTask task = null;
+			TaskLocks taskLock = onsProperties.getTransactional().getTaskLock();
+			if(taskLock==TaskLocks.REDIS){
+				task = new ReidsLokableCompensationSendMessageTask();
+			}else{
+				task = new CompensationSendMessageTask();
+			}
+			return task;
 		}
+		
 	}
 	
 }
