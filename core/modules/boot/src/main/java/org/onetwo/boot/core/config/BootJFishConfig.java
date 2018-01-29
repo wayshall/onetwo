@@ -48,7 +48,14 @@ public class BootJFishConfig {
 	private MvcConfig mvc = new MvcConfig();
 //	private JFishProperties plugin = new JFishProperties();
 	private Map<String, PluginProperties> plugin = Maps.newHashMap();
+	/***
+	 * 是否自动增加插件路径
+	 */
 	boolean appendPluginContextPath = true;
+	PluginContextPathModes pluginContextPathModes = PluginContextPathModes.AUTO;
+	/***
+	 * 
+	 */
 	private JwtConfig jwt = new JwtConfig();
 	/*private JsonConfig json = new JsonConfig();
 	private Properties mediaTypes;*/
@@ -62,6 +69,14 @@ public class BootJFishConfig {
 	 */
 //	private String autoConfig;
 	private GraceKillConfig graceKill = new GraceKillConfig();
+	
+	public void setAppendPluginContextPath(boolean appendPluginContextPath){
+		if(appendPluginContextPath){
+			pluginContextPathModes = PluginContextPathModes.APPEND;
+		}else{
+			pluginContextPathModes = PluginContextPathModes.NO_APPEND;
+		}
+	}
 	
 	@Data
 	public class MessageSourceConfig {
