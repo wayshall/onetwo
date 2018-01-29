@@ -50,7 +50,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements InitializingBean {
 	
-//	@Autowired
+//	@Autowired //注释，由spring自动检测添加
 	private BootWebExceptionResolver bootWebExceptionResolver;
 
 	@Autowired
@@ -133,7 +133,10 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 		}
 	}
 	
-
+	/***
+	 * 添加到exceptionResolvers里的HandlerExceptionResolver，会统一由 HandlerExceptionResolverComposite 组合分派
+	 * 实际上如果HandlerExceptionResolver本身是spring bean，dispather会自动扫描检测并添加到handlerExceptionResolvers
+	 */
 	@Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
 		if(bootWebExceptionResolver!=null){

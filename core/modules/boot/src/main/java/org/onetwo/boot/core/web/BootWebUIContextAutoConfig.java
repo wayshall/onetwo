@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -68,6 +69,7 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
 //	@ConditionalOnMissingBean({BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
 //	@Autowired
+	@ConditionalOnMissingBean({BootWebExceptionResolver.class})
 	public BootWebExceptionResolver bootWebExceptionResolver(){
 		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
 //		resolver.setExceptionMessage(exceptionMessage);

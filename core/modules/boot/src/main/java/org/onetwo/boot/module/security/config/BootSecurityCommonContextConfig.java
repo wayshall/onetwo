@@ -1,7 +1,6 @@
 package org.onetwo.boot.module.security.config;
 
 import org.onetwo.boot.core.BootWebCommonAutoConfig;
-import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
@@ -15,7 +14,6 @@ import org.onetwo.ext.security.jwt.JwtContxtConfig;
 import org.onetwo.ext.security.redis.RedisContextConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,7 +22,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /****
  * boot security的通用配置
@@ -54,7 +51,6 @@ public class BootSecurityCommonContextConfig{
 
 	@Bean
 	@ConditionalOnMissingBean({LoggerInterceptor.class})
-	@ConditionalOnBean(BootSiteConfig.class)
 	@ConditionalOnProperty(value=AccessLogProperties.ENABLE_MVC_LOGGER_INTERCEPTOR, matchIfMissing=true, havingValue="true")
 	public LoggerInterceptor loggerInterceptor(){
 		LoggerInterceptor log = new LoggerInterceptor();
@@ -77,8 +73,8 @@ public class BootSecurityCommonContextConfig{
 	}
 
 	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
-	@ConditionalOnBean(BootSiteConfig.class)
-	@ConditionalOnMissingBean(name=BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER, value={BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
+//	@ConditionalOnMissingBean(name=BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER, value={BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
+	@ConditionalOnMissingBean(name=BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER, value={BootWebExceptionResolver.class})
 	public SecurityWebExceptionResolver bootWebExceptionResolver(){
 		return new SecurityWebExceptionResolver();
 	}

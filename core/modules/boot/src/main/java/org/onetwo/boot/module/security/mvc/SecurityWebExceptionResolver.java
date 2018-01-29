@@ -18,6 +18,11 @@ public class SecurityWebExceptionResolver extends BootWebExceptionResolver {
 	
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
+		Throwable cause = org.springframework.security.core.AuthenticationException.class.isInstance(ex)?ex:ex.getCause();
+		if(org.springframework.security.core.AuthenticationException.class.isInstance(cause)){
+			throw (org.springframework.security.core.AuthenticationException)cause;
+		}
+		
 		if(ex instanceof AuthenticationException){
 			if(authenticationFailureHandler!=null){
 				try {
