@@ -41,7 +41,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 	}
 
 //	@Scheduled(cron="${"+ONSProperties.TRANSACTIONAL_TASK_CRON_KEY+":0 0/1 * * * *}")
-	@Scheduled(fixedRateString="${"+ONSProperties.TRANSACTIONAL_FIXED_RATE_STRING_KEY+":60000}")
+	@Scheduled(fixedRateString="${"+ONSProperties.TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY+":60000}")
 	public void scheduleCheckSendMessage(){
 		log.info("start to check unsend message...");
 		doCheckSendMessage();

@@ -1,6 +1,7 @@
 package org.onetwo.ext.rmqwithonsclient.producer;
 
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.dbm.id.SnowflakeIdGenerator;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSUtils.SendMessageFlags;
 import org.onetwo.ext.ons.producer.ProducerService;
@@ -19,11 +20,13 @@ public class DataBaseProducerServiceImpl {
 
 	@Autowired
 	ProducerService onsProducerService;
+	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
 
 	public void sendMessage(){
 		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
 																	  .topic(RmqONSProducerTest.TOPIC)
 																	  .tags(RmqONSProducerTest.ORDER_PAY)
+																	  .key("test_"+idGenerator.nextId())
 																	  .body(OrderTestMessage.builder()
 																			  				.orderId(1L)
 																			  				.title("支付")
@@ -34,6 +37,7 @@ public class DataBaseProducerServiceImpl {
 		res = onsProducerService.sendMessage(SimpleMessage.builder()
 				  .topic(RmqONSProducerTest.TOPIC)
 				  .tags(RmqONSProducerTest.ORDER_CANCEL)
+				  .key("test_"+idGenerator.nextId())
 				  .body(OrderTestMessage.builder()
 			  				.orderId(1L)
 			  				.title("取消")
@@ -46,6 +50,7 @@ public class DataBaseProducerServiceImpl {
 		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
 																	  .topic(RmqONSProducerTest.TOPIC)
 																	  .tags(RmqONSProducerTest.ORDER_PAY)
+																	  .key("test_"+idGenerator.nextId())
 																	  .body(OrderTestMessage.builder()
 																			  				.orderId(1L)
 																			  				.title("支付")
@@ -56,6 +61,7 @@ public class DataBaseProducerServiceImpl {
 		res = onsProducerService.sendMessage(SimpleMessage.builder()
 				  .topic(RmqONSProducerTest.TOPIC)
 				  .tags(RmqONSProducerTest.ORDER_CANCEL)
+				  .key("test_"+idGenerator.nextId())
 				  .body(OrderTestMessage.builder()
 			  				.orderId(1L)
 			  				.title("取消")

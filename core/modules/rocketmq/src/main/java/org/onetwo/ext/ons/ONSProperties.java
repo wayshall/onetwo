@@ -25,8 +25,12 @@ public class ONSProperties {
 
 	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
 //	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
-	public static final String TRANSACTIONAL_TASK_ENABLED_KEY = "jfish.ons.transactional.task.enabled";
-	public static final String TRANSACTIONAL_FIXED_RATE_STRING_KEY = "jfish.ons.transactional.task.fixedRateString";
+	public static final String TRANSACTIONAL_SEND_TASK_ENABLED_KEY = "jfish.ons.transactional.sendTask.enabled";
+	public static final String TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY = "jfish.ons.transactional.sendTask.fixedRateString";
+
+	//TODO
+	public static final String TRANSACTIONAL_DELETE_TASK_ENABLED_KEY = "jfish.ons.transactional.deleteTask.enabled";
+	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
 
 	MqServerTypes serverType = MqServerTypes.ONS;
 	
@@ -69,10 +73,10 @@ public class ONSProperties {
 	@Data
 	public class TransactionalProps {
 		SendMode sendMode = SendMode.SYNC;
-		TaskProps task = new TaskProps();
+		SendTaskProps sendTask = new SendTaskProps();
 	}
 	@Data
-	public static class TaskProps {
+	public static class SendTaskProps {
 		TaskLocks lock = TaskLocks.DB;
 	}
 	public static enum SendMode {

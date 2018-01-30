@@ -15,11 +15,8 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
-import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.ons.ListenerType;
-import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSProperties;
-import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.slf4j.Logger;
@@ -53,33 +50,38 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	private MessageDeserializer messageDeserializer;
+//	private MessageDeserializer messageDeserializer;
 	
 	private List<Consumer> consumers = Lists.newArrayList();
 	
 	private ONSProperties onsProperties;
 	
-	private ONSConsumerListenerComposite consumerListenerComposite;
+//	private ONSConsumerListenerComposite consumerListenerComposite;
+	private DelegateMessageService delegateMessageService;
 	
 
-	public ONSPushConsumerStarter(MessageDeserializer messageDeserializer) {
+	public ONSPushConsumerStarter(/*MessageDeserializer messageDeserializer*/) {
 		super();
-		this.messageDeserializer = messageDeserializer;
+//		this.messageDeserializer = messageDeserializer;
 	}
 
 	public void setOnsProperties(ONSProperties onsProperties) {
 		this.onsProperties = onsProperties;
 	}
 	
-	public void setConsumerListenerComposite(ONSConsumerListenerComposite consumerListenerComposite) {
+	/*public void setConsumerListenerComposite(ONSConsumerListenerComposite consumerListenerComposite) {
 		this.consumerListenerComposite = consumerListenerComposite;
+	}*/
+
+	public void setDelegateMessageService(DelegateMessageService delegateMessageService) {
+		this.delegateMessageService = delegateMessageService;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		logger.info("ons consumer init. namesrvAddr: {}", onsProperties.getOnsAddr());
-		Assert.notNull(messageDeserializer);
-		Assert.notNull(consumerListenerComposite);
+//		Assert.notNull(messageDeserializer);
+//		Assert.notNull(consumerListenerComposite);
 
 		ConsumerScanner scanner = new ConsumerScanner(applicationContext);
 		Map<String, ConsumerMeta> consumers = scanner.findConsumers();
@@ -133,7 +135,16 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		}
 		logger.info("ONSConsumer[{}] started! meta: {}", meta.getConsumerId(), meta);
 	}
-	
+
+	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
+		rawConsumer.registerMessageListener(new MessageListenerConcurrently() {
+			@Override
+			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+				return delegateMessageService.processMessages(meta, msgs, context);
+			}
+		});
+	}
+	/*
 	@SuppressWarnings("rawtypes")
 	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
 		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
@@ -187,7 +198,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		});
 
 //		rawConsumer.start();
-	}
+	}*/
 
 	@Override
 	public void destroy() {

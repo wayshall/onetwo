@@ -4,6 +4,7 @@ import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.ONSProperties.SendMode;
 import org.onetwo.ext.ons.ONSProperties.TaskLocks;
+import org.onetwo.ext.ons.consumer.DelegateMessageService;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
 import org.onetwo.ext.ons.transaction.AsyncDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.CompensationSendMessageTask;
@@ -32,11 +33,17 @@ public class ONSConfiguration {
 	private ONSProperties onsProperties;
 	
 	@Bean
-	public ONSPushConsumerStarter onsPushConsumerStarter(MessageDeserializer messageDeserializer){
-		ONSPushConsumerStarter starter = new ONSPushConsumerStarter(messageDeserializer);
+	public ONSPushConsumerStarter onsPushConsumerStarter(DelegateMessageService delegateMessageService){
+		ONSPushConsumerStarter starter = new ONSPushConsumerStarter();
 		starter.setOnsProperties(onsProperties);
-		starter.setConsumerListenerComposite(onsConsumerListenerComposite());
+		starter.setDelegateMessageService(delegateMessageService);
 		return starter;
+	}
+	
+	@Bean
+	public DelegateMessageService delegateMessageService(MessageDeserializer messageDeserializer){
+		DelegateMessageService delegateMessageService = new DelegateMessageService(messageDeserializer, onsConsumerListenerComposite());
+		return delegateMessageService;
 	}
 	
 	@Bean
@@ -97,10 +104,10 @@ public class ONSConfiguration {
 		}
 		
 		@Bean
-		@ConditionalOnProperty(value=ONSProperties.TRANSACTIONAL_TASK_ENABLED_KEY, matchIfMissing=false)
+		@ConditionalOnProperty(value=ONSProperties.TRANSACTIONAL_SEND_TASK_ENABLED_KEY, matchIfMissing=false)
 		public CompensationSendMessageTask compensationSendMessageTask(){
 			CompensationSendMessageTask task = null;
-			TaskLocks taskLock = onsProperties.getTransactional().getTask().getLock();
+			TaskLocks taskLock = onsProperties.getTransactional().getSendTask().getLock();
 			if(taskLock==TaskLocks.REDIS){
 				task = new ReidsLokableCompensationSendMessageTask();
 			}else{
