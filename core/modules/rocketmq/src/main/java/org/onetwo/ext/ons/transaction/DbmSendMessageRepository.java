@@ -8,9 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.db.spi.BaseEntityManager;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.dbm.id.SnowflakeIdGenerator;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.producer.SendMessageContext;
 import org.onetwo.ext.ons.transaction.SendMessageEntity.SendStates;
@@ -30,7 +30,7 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 	
 	private Logger log = ONSUtils.getONSLogger();
 	
-	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
+//	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
 	@Autowired
 	private MessageBodyStoreSerializer messageBodyStoreSerializer;
 	@Autowired
@@ -44,7 +44,9 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		SendMessageEntity send = new SendMessageEntity();
 		String key = message.getKey();
 		if(StringUtils.isBlank(key)){
-			key = String.valueOf(idGenerator.nextId());
+//			key = String.valueOf(idGenerator.nextId());
+			//强制必填，可用于client做idempotent
+			throw new ServiceException("message key can not be blank!");
 		}
 		send.setKey(key);
 		send.setState(SendStates.TO_SEND);
