@@ -182,7 +182,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				return response;
 			} catch (ApiClientException e) {
 				throw e;
-			}catch (Exception e) {
+			} catch (Exception e) {
 				throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
 			}
 		}

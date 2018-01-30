@@ -18,7 +18,7 @@ public class WeatherClientTest extends ApicientBaseTests {
 	WeatherClient weatherClient;
 	
 	@Test
-	public void test(){
+	public void testGetWeather(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("header1", "header value");
 		WeatherResponse res = this.weatherClient.getWeather("101010100", headers, h->{
