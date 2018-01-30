@@ -121,6 +121,22 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return contentType;
 	}
 
+	public Map<String, Object> getUriVariables(Object[] args){
+		if(LangUtils.isEmpty(args)){
+			return Collections.emptyMap();
+		}
+		
+		List<ApiClientMethodParameter> urlVariableParameters = parameters.stream()
+												.filter(p->{
+													return isUriVariables(p);
+												})
+												.collect(Collectors.toList());
+		
+		Map<String, Object> values = toMap(urlVariableParameters, args).toSingleValueMap();
+		
+		return values;
+	}
+
 	public Map<String, ?> getQueryStringParameters(Object[] args){
 		if(LangUtils.isEmpty(args)){
 			return Collections.emptyMap();
@@ -140,7 +156,11 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			//post方法，使用了RequestParam才转化为queryString
 			return p.hasParameterAnnotation(RequestParam.class);
 		}
-		return true;
+		return !isUriVariables(p);
+	}
+	
+	protected boolean isUriVariables(ApiClientMethodParameter p){
+		return p.hasParameterAnnotation(PathVariable.class);
 	}
 
 	public Map<String, ?> getPathVariables(Object[] args){
@@ -292,11 +312,17 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			if(StringUtils.isNotBlank(pname)){
 				return pname;
 			}*/
-			String pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElse(null);
+			String pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElseGet(()->{
+				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+			});
 			if(StringUtils.isBlank(pname)){
-				pname = getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+				/*pname = getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+				
+				if(StringUtils.isNotBlank(pname)){
+					return pname;
+				}*/
 
-				if(StringUtils.isBlank(pname) && parameter!=null && parameter.isNamePresent()){
+				if(parameter!=null && parameter.isNamePresent()){
 					pname = parameter.getName();
 				}else{
 					pname = String.valueOf(getParameterIndex());

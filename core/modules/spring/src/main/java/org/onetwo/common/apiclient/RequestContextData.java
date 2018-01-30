@@ -22,16 +22,16 @@ public class RequestContextData {
 //	private Object requestBody;
 	final private Map<String, ?> uriVariables;
 	@Getter
-	final private Map<String, ?> pathVariables;
+	final private Map<String, ?> queryParameters;
 	private Consumer<HttpHeaders> headerCallback;
 	private RequestBodySupplier requestBodySupplier;
 	
 	@Builder
-	public RequestContextData(String requestId, RequestMethod requestMethod, Map<String, ?> pathVariables, Map<String, ?> uriVariables, Class<?> responseType) {
+	public RequestContextData(String requestId, RequestMethod requestMethod, Map<String, ?> queryParameters, Map<String, ?> uriVariables, Class<?> responseType) {
 		super();
 		this.httpMethod = HttpMethod.resolve(requestMethod.name());
 		this.uriVariables = uriVariables;
-		this.pathVariables = pathVariables;
+		this.queryParameters = queryParameters;
 		this.responseType = responseType;
 		this.requestId = requestId;
 	}
