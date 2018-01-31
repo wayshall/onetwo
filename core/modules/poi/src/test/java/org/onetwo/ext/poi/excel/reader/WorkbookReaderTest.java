@@ -27,6 +27,15 @@ public class WorkbookReaderTest {
 		assertThat(cards, notNullValue());
 		assertThat(cards.size(), is(10));
 		assertThat(cards.get(0).getId(), is(1L));
+		
+		List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(CardEntity.class, 1, 
+																			"主键", "id", 
+																			"卡号", "cardNo", 
+																			"密码", "cardPwd")
+														.readFirstSheet(path);
+		assertThat(cardList, notNullValue());
+		assertThat(cardList.size(), is(10));
+		assertThat(cardList.get(0).getId(), is(1L));
 	}
 
 }

@@ -1,20 +1,19 @@
 # onetw-poi
 基于poi，对操作excel的简单封装。
-交流群： 604158262
 
 ## maven ##
 ```xml
 
 <dependency>
     <groupId>org.onetwo4j</groupId>
-    <artifactId>onetwo-dbm</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <artifactId>onetwo-poi</artifactId>
+    <version>4.6.1-SNAPSHOT</version>
 </dependency>   
 
 ```
 
 ## 使用 ##
-###定义xml模板
+### 定义xml模板
 excel_template.xml:   
 ```xml
 
@@ -39,7 +38,7 @@ excel_template.xml:
 </template>
 
 ```
-###java代码
+### java代码
 创建Java类Card：   
 
 ```Java
@@ -73,4 +72,20 @@ public class CardEntity {
 		String path = "c:/excel_generated.xls";
 		g.write(path);
 
+```
+
+### 读取excel为Java对象
+excel模板如下：   
+![excel_test.jpg](doc/image/excel_test.jpg)
+
+用poi模块读取此模板的数据为Java对象代码如下：
+
+```Java
+String path = "excel_template_path.xls";
+List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(CardEntity.class, 1, 
+																			"主键", "id", 
+																			"卡号", "cardNo", 
+																			"密码", "cardPwd")
+														.readFirstSheet(path);
+		
 ```
