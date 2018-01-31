@@ -63,6 +63,9 @@ public class BootJFishConfig {
 	//security=BootSecurityConfig
 	
 	private boolean profile;
+	private boolean logErrorDetail;
+	List<String> notifyThrowables;
+	
 	/***
 	 * default is web
 	 * option: web, ms
@@ -76,6 +79,17 @@ public class BootJFishConfig {
 		}else{
 			pluginContextPathModes = PluginContextPathModes.NO_APPEND;
 		}
+	}
+
+    public boolean isLogErrorDetail(){
+    	if(logErrorDetail){
+    		return true;
+    	}
+    	return bootSpringConfig.isProduct();
+    }
+
+	public void setLogErrorDetail(boolean logErrorDetail) {
+		this.logErrorDetail = logErrorDetail;
 	}
 	
 	@Data

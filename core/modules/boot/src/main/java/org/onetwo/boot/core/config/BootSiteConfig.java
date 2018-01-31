@@ -66,7 +66,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	private String cssPath;
 	private String imagePath;
 	
-	List<String> notifyThrowables;
+//	List<String> notifyThrowables;
 	
 	private ImageServer imageServer = new ImageServer();
 	
@@ -80,8 +80,6 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 
 	@Getter
 	EditorConfig kindeditor = new EditorConfig();
-	
-	private boolean logErrorDetail;
 	
 	
 
@@ -98,16 +96,6 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	    return this;
     }
     
-    public boolean isLogErrorDetail(){
-    	if(logErrorDetail){
-    		return true;
-    	}
-    	return isProduct();
-    }
-
-	public void setLogErrorDetail(boolean logErrorDetail) {
-		this.logErrorDetail = logErrorDetail;
-	}
     
     public String getWebjarsStaticPath(){
     	return getWebjarsPath()+"/static";
@@ -203,13 +191,13 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		this.imageServer = imageServer;
 	}
 
-	public List<String> getNotifyThrowables() {
+	/*public List<String> getNotifyThrowables() {
 		return notifyThrowables;
 	}
 
 	public void setNotifyThrowables(List<String> notifyThrowables) {
 		this.notifyThrowables = notifyThrowables;
-	}
+	}*/
 
 	@Data
 	public class ImageServer {

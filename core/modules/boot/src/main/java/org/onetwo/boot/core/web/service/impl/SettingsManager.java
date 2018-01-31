@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 
-import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Page;
@@ -28,7 +28,7 @@ public class SettingsManager {
 	private ConcurrentMap<String, String> settingsDefaultValueHolder = Maps.newConcurrentMap();
 	private Map<String, Function<String, String>> settingsUpdater = Maps.newHashMap();
 	@Autowired
-	private BootSiteConfig bootSiteConfig;
+	private BootJFishConfig bootJFishConfig;
 	
 	@PostConstruct
 	public void initConfigUpdator(){
@@ -38,8 +38,8 @@ public class SettingsManager {
 			return String.valueOf(originValue);
 		});
 		this.registerUpdater("logErrorDetail", (newValue)->{
-			boolean log = bootSiteConfig.isLogErrorDetail();
-			bootSiteConfig.setLogErrorDetail(Types.asValue(newValue, boolean.class));
+			boolean log = bootJFishConfig.isLogErrorDetail();
+			bootJFishConfig.setLogErrorDetail(Types.asValue(newValue, boolean.class));
 			return String.valueOf(log);
 		});
 	}
