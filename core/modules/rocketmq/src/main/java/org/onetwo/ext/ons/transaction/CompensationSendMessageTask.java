@@ -59,6 +59,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 												.where()
 													.field("createAt").lessThan(createAt)
 												.end()
+												.asc("createAt")
 												.limit(0, 100)
 												.lock(LockInfo.write())
 												.toQuery()
