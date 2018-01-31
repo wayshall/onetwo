@@ -110,16 +110,19 @@ public class BootCommonServiceConfig {
 	 * @author wayshall
 	 * @return
 	 */
-	@Bean
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_SETTING, matchIfMissing=false)
-	public SettingsController settingsController(){
-		return new SettingsController();
-	}
+	@Configuration
+	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_SETTING, matchIfMissing=true)
+	protected static class SettingsConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean({SettingsManager.class})
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_SETTING, matchIfMissing=false)
-	public SettingsManager settingsManager(){
-		return new SettingsManager();
+		@Bean
+		public SettingsController settingsController(){
+			return new SettingsController();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean({SettingsManager.class})
+		public SettingsManager settingsManager(){
+			return new SettingsManager();
+		}
 	}
 }

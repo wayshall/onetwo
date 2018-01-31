@@ -280,7 +280,15 @@ abstract public class AbstractBaseController {
 	 */
 	protected <T extends UserDetail> T checkAndGetCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound){
 		Assert.notNull(clazz);
-		UserDetail user = sessionUserManager.getCurrentUser();
+		UserDetail user = null;
+		try {
+			user = sessionUserManager.getCurrentUser();
+		} catch (RuntimeException e) {
+			if(throwIfNotFound){
+				throw e;
+			}
+			return null;
+		}
 		if(user==null && throwIfNotFound){
 			throw new NotLoginException();
 		}

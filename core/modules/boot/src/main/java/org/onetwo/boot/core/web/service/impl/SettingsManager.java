@@ -6,9 +6,11 @@ import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 
+import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Maps;
 
@@ -25,6 +27,8 @@ public class SettingsManager {
 
 	private ConcurrentMap<String, String> settingsDefaultValueHolder = Maps.newConcurrentMap();
 	private Map<String, Function<String, String>> settingsUpdater = Maps.newHashMap();
+	@Autowired
+	private BootSiteConfig bootSiteConfig;
 	
 	@PostConstruct
 	public void initConfigUpdator(){
@@ -32,6 +36,11 @@ public class SettingsManager {
 			int originValue = Page.getDefaultPageSize();
 			Page.setDefaultPageSize(Types.asInteger(newValue));
 			return String.valueOf(originValue);
+		});
+		this.registerUpdater("logErrorDetail", (newValue)->{
+			boolean log = bootSiteConfig.isLogErrorDetail();
+			bootSiteConfig.setLogErrorDetail(Types.asValue(newValue, boolean.class));
+			return String.valueOf(log);
 		});
 	}
 	
@@ -48,6 +57,11 @@ public class SettingsManager {
 		String oldValue = updater.apply(value);
 		settingsDefaultValueHolder.putIfAbsent(configName, oldValue);
 		logger.info("configName[{}] change to {}", configName, value);
+	}
+	
+	public String reset(String configName){
+		String originValue = settingsDefaultValueHolder.get(configName);
+		return this.settingsUpdater.get(configName).apply(originValue);
 	}
 	
 	public void reset(){

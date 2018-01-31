@@ -82,7 +82,7 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	protected ErrorMessage handleException(Exception ex){
 		ErrorMessage errorMessage = (ErrorMessage)RequestContextHolder.getRequestAttributes().getAttribute(BootWebExceptionResolver.ERROR_MESSAGE_OBJECT_KEY, RequestAttributes.SCOPE_REQUEST);;
 		if(errorMessage==null){
-			errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
+			errorMessage = this.getErrorMessage(ex, bootSiteConfig.isLogErrorDetail());
 		}
 		Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
 		doLog(reqOpt.orElse(null), errorMessage);

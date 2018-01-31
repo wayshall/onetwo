@@ -96,7 +96,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
-		ErrorMessage errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
+		ErrorMessage errorMessage = this.getErrorMessage(ex, bootSiteConfig.isLogErrorDetail());
 		String viewName = determineViewName(ex, request);
 		errorMessage.setViewName(viewName);
 		

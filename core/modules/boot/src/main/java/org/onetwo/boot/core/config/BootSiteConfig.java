@@ -81,6 +81,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	@Getter
 	EditorConfig kindeditor = new EditorConfig();
 	
+	private boolean logErrorDetail;
+	
 	
 
     @Override
@@ -95,6 +97,17 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		logger.info("=====>>> baseURL: {}", baseURL);
 	    return this;
     }
+    
+    public boolean isLogErrorDetail(){
+    	if(logErrorDetail){
+    		return true;
+    	}
+    	return isProduct();
+    }
+
+	public void setLogErrorDetail(boolean logErrorDetail) {
+		this.logErrorDetail = logErrorDetail;
+	}
     
     public String getWebjarsStaticPath(){
     	return getWebjarsPath()+"/static";

@@ -24,7 +24,14 @@ public class SettingsController extends AbstractBaseController {
 	@ResponseBody
 	public Object update(@PathVariable("configName") String configName, @RequestParam("value") String value){
 		settingsManager.updateConfig(configName, value);
-		return DataResults.success("change config success!").build();
+		return DataResults.success("change config["+configName+"] to :"+value).build();
+	}
+	
+	@PutMapping("/setting/{configName}/reset")
+	@ResponseBody
+	public Object reset(@PathVariable("configName") String configName){
+		String value = settingsManager.reset(configName);
+		return DataResults.success("change config["+configName+"] to :"+value).build();
 	}
 	
 	@PutMapping("/settings/reset")
