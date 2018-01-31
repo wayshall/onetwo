@@ -42,12 +42,12 @@ public class ONSConsumerListenerComposite implements InitializingBean, ConsumerL
 		}
 	}
 
-	@Override
+	/*@Override
 	public void onConsumeMessageError(ConsumContext context, Throwable e) {
 		for(ConsumerListener listener : listeners){
 			listener.onConsumeMessageError(context, e);
 		}
-	}
+	}*/
 
 
 }

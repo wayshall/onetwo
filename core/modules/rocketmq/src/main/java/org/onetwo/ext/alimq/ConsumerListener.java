@@ -10,6 +10,6 @@ public interface ConsumerListener {
 
 	void beforeConsumeMessage(ConsumContext context);
 	void afterConsumeMessage(ConsumContext context);
-	void onConsumeMessageError(ConsumContext context, Throwable e);
+//	void onConsumeMessageError(ConsumContext context, Throwable e);
 
 }

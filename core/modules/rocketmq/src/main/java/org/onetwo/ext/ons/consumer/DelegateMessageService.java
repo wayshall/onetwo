@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 
 /**
@@ -38,50 +37,37 @@ public class DelegateMessageService implements InitializingBean {
 		Assert.notNull(consumerListenerComposite);
 	}
 
+	/***
+	 * 返回最近一次消费上下文
+	 * @author wayshall
+	 * @param meta
+	 * @param msgs
+	 * @param context
+	 * @return
+	 */
 	@SuppressWarnings("rawtypes")
-	public ConsumeConcurrentlyStatus processMessages(ConsumerMeta meta, List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+	public ConsumContext processMessages(ConsumerMeta meta, List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
 		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
 
 		ConsumContext currentConetxt = null;
-		try {
-			if(meta.getIgnoreOffSetThreshold()>0){
-				long diff = ONSUtils.getMessageDiff(msgs.get(0));
-				if(diff>meta.getIgnoreOffSetThreshold()){
-					logger.info("message offset diff[{}] is greater than ignoreOffSetThreshold[{}], ignore!", diff, meta.getIgnoreOffSetThreshold());
-					return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-				}
-			}
-			for(MessageExt message : msgs){
-				String msgId = ONSUtils.getMessageId(message);
-				logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
-				
-//				Object body = consumer.deserialize(message);
-				Object body = messageDeserializer.deserialize(message.getBody(), message);
-				currentConetxt = ConsumContext.builder()
-												.messageId(msgId)
-												.message(message)
-												.deserializedBody(body)
-												.build();
-				
-				consumerListenerComposite.beforeConsumeMessage(currentConetxt);
-				consumer.doConsume(currentConetxt);
-				consumerListenerComposite.afterConsumeMessage(currentConetxt);
-				logger.info("consumed message. id: {}, topic: {}, tag: {}, body: {}", msgId,  message.getTopic(), message.getTags(), body);
-			}
-		} catch (Exception e) {
-			String errorMsg = "consume message error.";
-			if(currentConetxt!=null){
-				consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
-				errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+
-								", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
-			}
-			logger.error(errorMsg, e);
-			return ConsumeConcurrentlyStatus.RECONSUME_LATER;
-//			throw new BaseException(e);
+		for(MessageExt message : msgs){
+			String msgId = ONSUtils.getMessageId(message);
+			logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
+			
+//			Object body = consumer.deserialize(message);
+			Object body = messageDeserializer.deserialize(message.getBody(), message);
+			currentConetxt = ConsumContext.builder()
+											.messageId(msgId)
+											.message(message)
+											.deserializedBody(body)
+											.build();
+			
+			consumerListenerComposite.beforeConsumeMessage(currentConetxt);
+			consumer.doConsume(currentConetxt);
+			consumerListenerComposite.afterConsumeMessage(currentConetxt);
+			logger.info("consumed message. id: {}, topic: {}, tag: {}, body: {}", msgId,  message.getTopic(), message.getTags(), body);
 		}
-//		logger.info("consumed firstMessage. id: {}, topic: {}, tag: {}", firstMessage.getMsgId(),  firstMessage.getTopic(), firstMessage.getTags());
-
-		return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+		return currentConetxt;
 	}
 
 }

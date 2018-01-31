@@ -17,6 +17,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.ListenerType;
 import org.onetwo.ext.ons.ONSProperties;
+import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.slf4j.Logger;
@@ -140,7 +141,33 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		rawConsumer.registerMessageListener(new MessageListenerConcurrently() {
 			@Override
 			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-				return delegateMessageService.processMessages(meta, msgs, context);
+//				return delegateMessageService.processMessages(meta, msgs, context);
+				
+				if(meta.getIgnoreOffSetThreshold()>0){
+					long diff = ONSUtils.getMessageDiff(msgs.get(0));
+					if(diff>meta.getIgnoreOffSetThreshold()){
+						logger.info("message offset diff[{}] is greater than ignoreOffSetThreshold[{}], ignore!", diff, meta.getIgnoreOffSetThreshold());
+						return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+					}
+				}
+
+				ConsumContext currentConetxt = null;
+				try {
+					currentConetxt = delegateMessageService.processMessages(meta, msgs, context);
+				} catch (Exception e) {
+					String errorMsg = "consume message error.";
+					if(currentConetxt!=null){
+//						consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+						errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+
+										", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
+					}
+					logger.error(errorMsg, e);
+					return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+//					throw new BaseException(e);
+				}
+//				logger.info("consumed firstMessage. id: {}, topic: {}, tag: {}", firstMessage.getMsgId(),  firstMessage.getTopic(), firstMessage.getTags());
+
+				return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 			}
 		});
 	}
