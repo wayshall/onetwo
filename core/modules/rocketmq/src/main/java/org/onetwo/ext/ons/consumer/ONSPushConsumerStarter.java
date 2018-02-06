@@ -146,7 +146,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				if(meta.getIgnoreOffSetThreshold()>0){
 					long diff = ONSUtils.getMessageDiff(msgs.get(0));
 					if(diff>meta.getIgnoreOffSetThreshold()){
-						logger.info("message offset diff[{}] is greater than ignoreOffSetThreshold[{}], ignore!", diff, meta.getIgnoreOffSetThreshold());
+						logger.warn("message offset diff[{}] is greater than ignoreOffSetThreshold[{}], ignore!", diff, meta.getIgnoreOffSetThreshold());
 						return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 					}
 				}

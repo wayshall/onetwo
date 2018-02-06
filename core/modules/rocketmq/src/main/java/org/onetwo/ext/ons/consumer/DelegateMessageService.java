@@ -45,6 +45,7 @@ public class DelegateMessageService implements InitializingBean {
 	 * @param context
 	 * @return
 	 */
+	@Transactional
 	@SuppressWarnings("rawtypes")
 	public ConsumContext processMessages(ConsumerMeta meta, List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
 		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
