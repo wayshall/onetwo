@@ -30,7 +30,7 @@ public class JFishOauth2Properties {
 	
 	/****
 	 * auth server
-	 * oauth2认证security的拦截器链，所以当auth server项目里有其它不需要验证的rest api时，
+	 * oauth2认证security的拦截器链，所以当auth server项目里有其它不需要验证的rest api，或者后台管理系统需要security的过滤器时，
 	 * 不能简单地配置为： 
 	 * security: 
 			ignored: /**

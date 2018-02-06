@@ -3,12 +3,14 @@ package org.onetwo.plugins.admin;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.db.spi.BaseEntityManager;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.Springs.SpringsInitEvent;
 import org.onetwo.dbm.spring.EnableDbmRepository;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
@@ -42,6 +44,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import com.google.common.collect.Sets;
 
 
 //@Configuration
@@ -121,7 +125,12 @@ public class WebAdminPluginContext implements InitializingBean {
 	@Autowired
 	public PermissionManagerImpl permissionManagerImpl(AdminPermissionConfigListAdapetor configs){
 		PermissionManagerImpl manager = new PermissionManagerImpl();
+		Set<Class<?>> menuClasses = Sets.newHashSetWithExpectedSize(configs.size());
 		List<MenuInfoParser<AdminPermission>> parsers = configs.stream().map(cfg->{
+			if(menuClasses.contains(cfg.getRootMenuClass())){
+				throw new BaseException("duplicate config menu class : " + cfg.getRootMenuClass());
+			}
+			menuClasses.add(cfg.getRootMenuClass());
 			return new DefaultMenuInfoParser<AdminPermission>(cfg);
 		})
 		.collect(Collectors.toList());

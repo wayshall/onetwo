@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
@@ -40,16 +41,19 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class BootWebExceptionHandler extends ResponseEntityExceptionHandler implements ExceptionMessageFinder, InitializingBean {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
+//	@Autowired
+//	private BootSiteConfig bootSiteConfig;
 	@Autowired
-	private BootSiteConfig bootSiteConfig;
+	private BootJFishConfig bootJFishConfig;
+	
 	@Autowired(required=false)
 	private ExceptionMessageAccessor exceptionMessageAccessor;
-	private List<String> notifyThrowables;
+//	private List<String> notifyThrowables;
 	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.notifyThrowables = this.bootSiteConfig.getNotifyThrowables();
+//		this.notifyThrowables = this.bootJFishConfig.getNotifyThrowables();
 	}
 
 	@ExceptionHandler({
@@ -82,7 +86,7 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	protected ErrorMessage handleException(Exception ex){
 		ErrorMessage errorMessage = (ErrorMessage)RequestContextHolder.getRequestAttributes().getAttribute(BootWebExceptionResolver.ERROR_MESSAGE_OBJECT_KEY, RequestAttributes.SCOPE_REQUEST);;
 		if(errorMessage==null){
-			errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
+			errorMessage = this.getErrorMessage(ex, bootJFishConfig.isLogErrorDetail());
 		}
 		Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
 		doLog(reqOpt.orElse(null), errorMessage);
@@ -107,7 +111,7 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		if(printDetail){
 			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
-			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
+			JFishLoggerFactory.mailLog(this.bootJFishConfig.getNotifyThrowables(), ex, msg);
 		}else{
 			logger.error(msg + "[{}] error: code[{}], message[{}]", handlerMethod, LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}

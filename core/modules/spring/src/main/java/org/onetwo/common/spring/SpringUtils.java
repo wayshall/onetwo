@@ -56,10 +56,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.core.OrderComparator;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
@@ -205,7 +205,7 @@ final public class SpringUtils {
 		if(beanMaps==null || beanMaps.isEmpty())
 			return Collections.emptyList();
 		List<T> list = new ArrayList<T>(beanMaps.values());
-		OrderComparator.sort(list);
+		AnnotationAwareOrderComparator.sort(list);
 		return list;
 	}
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<?> clazz, ParameterizedTypeReference<T> typeRef) {

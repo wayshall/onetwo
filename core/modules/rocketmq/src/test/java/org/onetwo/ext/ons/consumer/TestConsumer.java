@@ -1,5 +1,6 @@
 package org.onetwo.ext.ons.consumer;
 
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.producer.ONSProducerTest;
@@ -16,9 +17,14 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.Consum
  */
 @ONSSubscribe(consumerId="${consumerIds.test1}", topic=ONSProducerTest.TOPIC, tags={ONSProducerTest.ORDER_CANCEL, ONSProducerTest.ORDER_PAY}, consumeFromWhere=ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET)
 public class TestConsumer implements CustomONSConsumer<String> /*MessageListener*/ {
+	int count = 0;
 
 //	@Override
 	public void doConsume(ConsumContext consumContext) {
+		if(count<1){
+			count++;
+			throw new ServiceException("抛错");
+		}
 		System.out.println("收到消息：" + consumContext.getDeserializedBody());
 	}
 

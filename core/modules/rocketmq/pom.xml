@@ -22,6 +22,12 @@
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
+      <artifactId>onetwo-dbm</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo4j</groupId>
       <artifactId>onetwo-common</artifactId>
     </dependency>
     
@@ -46,6 +52,12 @@
 	   <artifactId>ons-client</artifactId>
        <optional>true</optional>
 	</dependency>
+	
+    <dependency>
+       <groupId>org.springframework.integration</groupId>
+       <artifactId>spring-integration-redis</artifactId>
+       <optional>true</optional>
+    </dependency>
     
     <dependency>
       <groupId>org.springframework</groupId>
@@ -68,6 +80,12 @@
       <artifactId>spring-tx</artifactId>
       <optional>true</optional>
     </dependency>
+    
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <scope>test</scope>
+    </dependency> 
         
     <dependency>
         <groupId>com.alibaba.rocketmq</groupId>

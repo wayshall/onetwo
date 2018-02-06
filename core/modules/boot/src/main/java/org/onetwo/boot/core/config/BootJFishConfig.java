@@ -48,7 +48,14 @@ public class BootJFishConfig {
 	private MvcConfig mvc = new MvcConfig();
 //	private JFishProperties plugin = new JFishProperties();
 	private Map<String, PluginProperties> plugin = Maps.newHashMap();
+	/***
+	 * 是否自动增加插件路径
+	 */
 	boolean appendPluginContextPath = true;
+	PluginContextPathModes pluginContextPathModes = PluginContextPathModes.AUTO;
+	/***
+	 * 
+	 */
 	private JwtConfig jwt = new JwtConfig();
 	/*private JsonConfig json = new JsonConfig();
 	private Properties mediaTypes;*/
@@ -56,12 +63,34 @@ public class BootJFishConfig {
 	//security=BootSecurityConfig
 	
 	private boolean profile;
+	private boolean logErrorDetail;
+	List<String> notifyThrowables;
+	
 	/***
 	 * default is web
 	 * option: web, ms
 	 */
 //	private String autoConfig;
 	private GraceKillConfig graceKill = new GraceKillConfig();
+	
+	public void setAppendPluginContextPath(boolean appendPluginContextPath){
+		if(appendPluginContextPath){
+			pluginContextPathModes = PluginContextPathModes.APPEND;
+		}else{
+			pluginContextPathModes = PluginContextPathModes.NO_APPEND;
+		}
+	}
+
+    public boolean isLogErrorDetail(){
+    	if(logErrorDetail){
+    		return true;
+    	}
+    	return bootSpringConfig.isProduct();
+    }
+
+	public void setLogErrorDetail(boolean logErrorDetail) {
+		this.logErrorDetail = logErrorDetail;
+	}
 	
 	@Data
 	public class MessageSourceConfig {

@@ -159,7 +159,7 @@ public class XResponseViewManager implements HandlerMappingListener {
 	protected Optional<XResponseViewData> getCurrentHandlerMatchResponseView(Optional<String> responseView, HandlerMethod hm){
 		Map<String, XResponseViewData> viewDataMap;
 		try {
-			viewDataMap = viewDataCaces.get(hm.getMethod().getName(), ()->findXResponseViewData(hm));
+			viewDataMap = viewDataCaces.get(hm.getMethod().toGenericString(), ()->findXResponseViewData(hm));
 		} catch (ExecutionException e) {
 			throw new BaseException("getCurrentHandlerMatchResponseView error", e);
 		}

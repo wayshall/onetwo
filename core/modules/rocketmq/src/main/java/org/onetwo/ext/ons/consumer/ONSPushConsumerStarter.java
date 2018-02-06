@@ -15,9 +15,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
-import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.ons.ListenerType;
-import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
@@ -53,33 +51,38 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	private MessageDeserializer messageDeserializer;
+//	private MessageDeserializer messageDeserializer;
 	
 	private List<Consumer> consumers = Lists.newArrayList();
 	
 	private ONSProperties onsProperties;
 	
-	private ONSConsumerListenerComposite consumerListenerComposite;
+//	private ONSConsumerListenerComposite consumerListenerComposite;
+	private DelegateMessageService delegateMessageService;
 	
 
-	public ONSPushConsumerStarter(MessageDeserializer messageDeserializer) {
+	public ONSPushConsumerStarter(/*MessageDeserializer messageDeserializer*/) {
 		super();
-		this.messageDeserializer = messageDeserializer;
+//		this.messageDeserializer = messageDeserializer;
 	}
 
 	public void setOnsProperties(ONSProperties onsProperties) {
 		this.onsProperties = onsProperties;
 	}
 	
-	public void setConsumerListenerComposite(ONSConsumerListenerComposite consumerListenerComposite) {
+	/*public void setConsumerListenerComposite(ONSConsumerListenerComposite consumerListenerComposite) {
 		this.consumerListenerComposite = consumerListenerComposite;
+	}*/
+
+	public void setDelegateMessageService(DelegateMessageService delegateMessageService) {
+		this.delegateMessageService = delegateMessageService;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		logger.info("ons consumer init. namesrvAddr: {}", onsProperties.getOnsAddr());
-		Assert.notNull(messageDeserializer);
-		Assert.notNull(consumerListenerComposite);
+//		Assert.notNull(messageDeserializer);
+//		Assert.notNull(consumerListenerComposite);
 
 		ConsumerScanner scanner = new ConsumerScanner(applicationContext);
 		Map<String, ConsumerMeta> consumers = scanner.findConsumers();
@@ -133,7 +136,42 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		}
 		logger.info("ONSConsumer[{}] started! meta: {}", meta.getConsumerId(), meta);
 	}
-	
+
+	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
+		rawConsumer.registerMessageListener(new MessageListenerConcurrently() {
+			@Override
+			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+//				return delegateMessageService.processMessages(meta, msgs, context);
+				
+				if(meta.getIgnoreOffSetThreshold()>0){
+					long diff = ONSUtils.getMessageDiff(msgs.get(0));
+					if(diff>meta.getIgnoreOffSetThreshold()){
+						logger.warn("message offset diff[{}] is greater than ignoreOffSetThreshold[{}], ignore!", diff, meta.getIgnoreOffSetThreshold());
+						return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+					}
+				}
+
+				ConsumContext currentConetxt = null;
+				try {
+					currentConetxt = delegateMessageService.processMessages(meta, msgs, context);
+				} catch (Exception e) {
+					String errorMsg = "consume message error.";
+					if(currentConetxt!=null){
+//						consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+						errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+
+										", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
+					}
+					logger.error(errorMsg, e);
+					return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+//					throw new BaseException(e);
+				}
+//				logger.info("consumed firstMessage. id: {}, topic: {}, tag: {}", firstMessage.getMsgId(),  firstMessage.getTopic(), firstMessage.getTags());
+
+				return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+			}
+		});
+	}
+	/*
 	@SuppressWarnings("rawtypes")
 	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
 		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
@@ -187,7 +225,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		});
 
 //		rawConsumer.start();
-	}
+	}*/
 
 	@Override
 	public void destroy() {

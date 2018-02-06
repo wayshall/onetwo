@@ -1,6 +1,11 @@
 package org.onetwo.ext.ons;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.Springs;
+import org.onetwo.ext.ons.producer.SendMessageInterceptor;
+import org.onetwo.ext.ons.producer.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.ext.ons.transaction.DatabaseTransactionMessageInterceptor;
 import org.slf4j.Logger;
 
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageConst;
@@ -10,8 +15,41 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message
  * @author wayshall
  * <br/>
  */
-public class ONSUtils {
+final public class ONSUtils {
 	public static final String LOGGER_NAME = "org.onetwo.ext.ons.ONSMessageLog";
+	
+	public static enum SendMessageFlags implements InterceptorPredicate {
+		/***
+		 * 默认
+		 */
+		Default(){
+			@Override
+			public boolean isApply(SendMessageInterceptor inter) {
+				//即使配置了事务消息，默认也过滤掉，以兼容以前接口
+				return DisableDatabaseTransactional.isApply(inter);
+			}
+		},
+		DisableDatabaseTransactional(){
+			@Override
+			public boolean isApply(SendMessageInterceptor inter) {
+				return !DatabaseTransactionMessageInterceptor.class.isInstance(inter);
+			}
+		},
+		EnableDatabaseTransactional(){
+			@Override
+			public boolean isApply(SendMessageInterceptor inter) {
+				if(Springs.getInstance().isInitialized()){
+					DatabaseTransactionMessageInterceptor dbi = Springs.getInstance().getBean(DatabaseTransactionMessageInterceptor.class);
+					if(dbi==null){
+						throw new BaseException(""+DatabaseTransactionMessageInterceptor.class.getSimpleName()+" not found!");
+					}
+				}
+				return true;
+			}
+		};
+		
+		private SendMessageFlags(){}
+	}
 	
 	public static Logger getONSLogger(){
 		return JFishLoggerFactory.getLogger(LOGGER_NAME);

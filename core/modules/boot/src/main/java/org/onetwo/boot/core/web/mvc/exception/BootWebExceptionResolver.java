@@ -1,11 +1,9 @@
 package org.onetwo.boot.core.web.mvc.exception;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
@@ -55,10 +53,12 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Autowired
 	private MessageSource exceptionMessage;*/
 	
-	private List<String> notifyThrowables;// = BaseSiteConfig.getInstance().getErrorNotifyThrowabbles();
+//	private List<String> notifyThrowables;// = BaseSiteConfig.getInstance().getErrorNotifyThrowabbles();
 	
+//	@Autowired
+//	private BootSiteConfig bootSiteConfig;
 	@Autowired
-	private BootSiteConfig bootSiteConfig;
+	private BootJFishConfig bootJFishConfig;
 
 	@Autowired(required=false)
 	private ExceptionMessageAccessor exceptionMessageAccessor;
@@ -79,7 +79,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		initResolver();
-		this.notifyThrowables = bootSiteConfig.getNotifyThrowables();
+//		this.notifyThrowables = bootSiteConfig.getNotifyThrowables();
 	}
 	
 	protected void initResolver(){
@@ -96,7 +96,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
-		ErrorMessage errorMessage = this.getErrorMessage(ex, bootSiteConfig.isProduct());
+		ErrorMessage errorMessage = this.getErrorMessage(ex, bootJFishConfig.isLogErrorDetail());
 		String viewName = determineViewName(ex, request);
 		errorMessage.setViewName(viewName);
 		
@@ -126,7 +126,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		}
 
 		String eInfo = "";
-		if(!bootSiteConfig.isProduct() && errorMessage.isDetail()){
+		if(!errorMessage.isDetail()){
 			eInfo = LangUtils.toString(ex, true);
 //			WebContextUtils.attr(request, EXCEPTION_STATCK_KEY, eInfo);
 //			WebContextUtils.attr(request, EXCEPTION_STATCK_KEY2, eInfo);
@@ -186,7 +186,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		if(errorMessage.isDetail()){
 			msg += " ["+helper.getControllerHandler()+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
-			JFishLoggerFactory.mailLog(notifyThrowables, ex, msg);
+			JFishLoggerFactory.mailLog(bootJFishConfig.getNotifyThrowables(), ex, msg);
 		}else{
 			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}

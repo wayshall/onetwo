@@ -23,6 +23,15 @@ import com.google.common.collect.Maps;
 @ConfigurationProperties("jfish.ons")
 public class ONSProperties {
 
+	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
+//	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
+	public static final String TRANSACTIONAL_SEND_TASK_ENABLED_KEY = "jfish.ons.transactional.sendTask.enabled";
+	public static final String TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY = "jfish.ons.transactional.sendTask.fixedRateString";
+
+	//TODO
+	public static final String TRANSACTIONAL_DELETE_TASK_ENABLED_KEY = "jfish.ons.transactional.deleteTask.enabled";
+	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
+
 	MqServerTypes serverType = MqServerTypes.ONS;
 	
 	String accessKey;
@@ -34,6 +43,7 @@ public class ONSProperties {
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
 	
+	TransactionalProps transactional = new TransactionalProps();
 
 	public Map<String, Properties> getProducers() {
 		return producers;
@@ -60,6 +70,23 @@ public class ONSProperties {
 		return baseConfig;
 	}
 	
+	@Data
+	public class TransactionalProps {
+		SendMode sendMode = SendMode.SYNC;
+		SendTaskProps sendTask = new SendTaskProps();
+	}
+	@Data
+	public static class SendTaskProps {
+		TaskLocks lock = TaskLocks.DB;
+	}
+	public static enum SendMode {
+		SYNC,
+		ASYNC
+	}
+	public static enum TaskLocks {
+		DB,
+		REDIS
+	}
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
 		JSON(JsonMessageSerializer.INSTANCE, JsonMessageDeserializer.INSTANCE),

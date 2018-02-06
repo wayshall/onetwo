@@ -144,7 +144,7 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 			}
 		}
 		this.permissionManager.getMemoryRootMenu().forEach(rootMenu->{
-			logger.info("menu:\n" + rootMenu.toTreeString("\n"));
+			logger.info("menu:\n{}", rootMenu.toTreeString("\n"));
 		});
 	}
 	

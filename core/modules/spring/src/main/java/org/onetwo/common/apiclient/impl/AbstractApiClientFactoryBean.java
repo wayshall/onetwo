@@ -12,7 +12,6 @@ import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.exception.ApiClientException;
-import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
 import org.onetwo.common.spring.SpringUtils;
@@ -183,7 +182,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				return response;
 			} catch (ApiClientException e) {
 				throw e;
-			}catch (Exception e) {
+			} catch (Exception e) {
 				throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
 			}
 		}
@@ -199,7 +198,9 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		}
 		
 		protected RequestContextData createRequestContextData(Object[] args, M invokeMethod){
-			Map<String, ?> uriVariables = invokeMethod.getQueryStringParameters(args);
+			Map<String, ?> queryParameters = invokeMethod.getQueryStringParameters(args);
+			Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
+			uriVariables.putAll(queryParameters);
 			RequestMethod requestMethod = invokeMethod.getRequestMethod();
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			
@@ -207,6 +208,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 															.requestId(restExecutor.requestId())
 															.requestMethod(requestMethod)
 															.uriVariables(uriVariables)
+															.queryParameters(queryParameters)
 															.responseType(responseType)
 															.build();
 			
@@ -243,7 +245,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		}
 		
 		/****
-		 * 解释pathvariable参数，并且把所有UriVariables转化为queryString参数
+		 * 解释pathvariable参数，并且把所有queryParameters转化为queryString参数
 		 * @author wayshall
 		 * @param url
 		 * @param invokeMethod
@@ -252,12 +254,12 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		 */
 		protected String processUrlBeforeRequest(final String url, M invokeMethod, RequestContextData context){
 			String actualUrl = url;
-			if(LangUtils.isNotEmpty(context.getPathVariables())){
+			/*if(LangUtils.isNotEmpty(context.getPathVariables())){
 				actualUrl = ExpressionFacotry.newStrSubstitutor("{", "}", context.getPathVariables()).replace(actualUrl);
-			}
-			Map<String, ?> uriVariables = context.getUriVariables();
-			if(!uriVariables.isEmpty()){
-				String paramString = RestUtils.keysToParamString(uriVariables);
+			}*/
+			Map<String, ?> queryParameters = context.getQueryParameters();
+			if(!queryParameters.isEmpty()){
+				String paramString = RestUtils.keysToParamString(queryParameters);
 				actualUrl = ParamUtils.appendParamString(actualUrl, paramString);
 			}
 			return actualUrl;
