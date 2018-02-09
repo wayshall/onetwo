@@ -65,6 +65,7 @@ import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -72,6 +73,7 @@ import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ResourceUtils;
 
 import com.google.common.collect.Maps;
 
@@ -269,6 +271,17 @@ final public class SpringUtils {
 		return false;
 	}
 	
+	public static Resource newPathResource(String location){
+		Assert.hasText(location);
+		Resource resource = null;
+		if(location.startsWith(ResourceUtils.CLASSPATH_URL_PREFIX)){
+			String classpath = StringUtils.substringAfter(location, ResourceUtils.CLASSPATH_URL_PREFIX);
+			resource = new ClassPathResource(classpath);
+		}else{
+			resource = new FileSystemResource(location);
+		}
+		return resource;
+	}
 	public static Resource newClassPathResource(String location){
 		return new ClassPathResource(location);
 	}
