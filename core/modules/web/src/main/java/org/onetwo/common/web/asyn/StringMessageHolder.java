@@ -38,17 +38,20 @@ public class StringMessageHolder extends BlockQueueMessageHolder{
 		AsyncTask task = ctx.getTask();
 		String msg = "";
 		if(state==ProcessMessageType.SPLITED){
-			msg = "进度 ：共分成"+taskCount+"个导入任务……";
+			msg = "进度: 共分成"+taskCount+"个导入任务……";
 		}else if(state==ProcessMessageType.PROGRESSING){
-			int done = taskCount/10;
-			msg = "进度 ：正在执行["+task.getName()+"]"+taskCount+"% "+LangUtils.repeatString(done, "- ")+LangUtils.repeatString(10-done, "| ");
+			int done = ctx.getTaskDonePercent();
+			msg = "进度: "+done+"% "+LangUtils.repeatString(done/10, "- ")+LangUtils.repeatString((100-done)/10, "| ");
+			if(task!=null){
+				msg += "正在执行["+task.getName()+"]";
+			}
 		}else if(state==ProcessMessageType.FAILED){
-			msg = "进度 ：任务["+task.getName()+"]出错,已中止"+task.getException().getMessage();
+			msg = "进度: 任务["+task.getName()+"]出错,已中止"+task.getException().getMessage();
 		}else if(state==ProcessMessageType.SUCCEED){
-			msg = "进度 ：["+task.getName()+"]完成！";
+			msg = "进度: ["+task.getName()+"]完成！";
 		}else if(state==ProcessMessageType.FINISHED){
 //			msg = "结果 ：一共导入"+getTotalCount()+". " + getStatesAsString();
-			msg = "结果 ：一共执行了"+taskCount+"个任务. " + countStatesAsString();
+			msg = "结果: 一共执行了"+taskCount+"个任务. " + countStatesAsString();
 		}else{
 			throw new UnsupportedOperationException();
 		}

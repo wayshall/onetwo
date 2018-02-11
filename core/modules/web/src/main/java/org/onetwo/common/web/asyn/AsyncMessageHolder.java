@@ -133,22 +133,27 @@ abstract public class AsyncMessageHolder {
 		private final ProcessMessageType state;
 		private final int taskCount;
 		private final AsyncTask task;
+		private final int taskDonePercent;
 		
-		public CreateTaskMessageContext(ProcessMessageType state,
-				int taskCount, AsyncTask task) {
+		public CreateTaskMessageContext(int taskCount, ProcessMessageType state,
+				int taskDonePercent, AsyncTask task) {
 			super();
-			this.state = state;
 			this.taskCount = taskCount;
+			this.state = state;
+			this.taskDonePercent = taskDonePercent;
 			this.task = task;
 		}
 		public ProcessMessageType getState() {
 			return state;
 		}
-		public int getTaskCount() {
-			return taskCount;
+		public int getTaskDonePercent() {
+			return taskDonePercent;
 		}
 		public AsyncTask getTask() {
 			return task;
+		}
+		public int getTaskCount() {
+			return taskCount;
 		}
 	}
 	

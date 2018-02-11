@@ -10,6 +10,11 @@ import org.onetwo.common.spring.Springs;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.util.Assert;
 
+/********
+ * 
+ * @author wayshall
+ *
+ */
 public class AsyncWebProcessorBuilder {
 
 //	private static final String DEFAULT_ASYNCALLBACK = "jfishAsynCallback";
@@ -26,10 +31,11 @@ public class AsyncWebProcessorBuilder {
 	private AsyncMessageHolder messageTunnel;
 	private AsyncTaskExecutor asyncTaskExecutor;
 	private String contentType = AsyncUtils.CONTENT_TYPE;
-	private int flushInSecond = 1;
+	private int flushInMilliSecond = 1000;
 	private String asynCallback = "parent.doAsynCallback";
 //	private String progressCallback = "doProgressCallback";
-	protected boolean writeEmptyMessage;
+	private boolean writeEmptyMessage;
+	private boolean useCompletableFeture;
 	
 	private AsyncWebProcessorBuilder(HttpServletResponse response) {
 		super();
@@ -67,8 +73,12 @@ public class AsyncWebProcessorBuilder {
 		return this;
 	}
 
-	public AsyncWebProcessorBuilder flushInSecond(int flushInSecond) {
-		this.flushInSecond = flushInSecond;
+	public AsyncWebProcessorBuilder useCompletableFeture(boolean useCompletableFeture) {
+		this.useCompletableFeture = useCompletableFeture;
+		return this;
+	}
+	public AsyncWebProcessorBuilder flushInMilliSecond(int flushInSecond) {
+		this.flushInMilliSecond = flushInSecond;
 		return this;
 	}
 
@@ -91,7 +101,7 @@ public class AsyncWebProcessorBuilder {
 		DefaultAsyncWebProcessor processor = null;
 		try {
 			processor = new DefaultAsyncWebProcessor(response.getWriter(), messageTunnel, asyncTaskExecutor);
-			processor.setSleepTime(flushInSecond);
+			processor.setSleepTime(flushInMilliSecond);
 			processor.setAsynCallback(asynCallback);
 			processor.setWriteEmptyMessage(writeEmptyMessage);
 		} catch (IOException e) {
@@ -109,8 +119,12 @@ public class AsyncWebProcessorBuilder {
 		response.setContentType(contentType);
 		DefaultProgressAsyncWebProcessor processor = null;
 		try {
-			processor = new DefaultProgressAsyncWebProcessor(response.getWriter(), messageTunnel, asyncTaskExecutor, /*progressCallback, */asynCallback);
-			processor.setSleepTime(flushInSecond);
+			if(useCompletableFeture){
+				processor = new CompletableProgressAsyncWebProcessor(response.getWriter(), messageTunnel, asyncTaskExecutor, /*progressCallback, */asynCallback);
+			}else{
+				processor = new DefaultProgressAsyncWebProcessor(response.getWriter(), messageTunnel, asyncTaskExecutor, /*progressCallback, */asynCallback);
+			}
+			processor.setSleepTime(flushInMilliSecond);
 			processor.setWriteEmptyMessage(writeEmptyMessage);
 		} catch (IOException e) {
 			throw new BaseException("build ProgressAsyncWebProcessor error: " + e.getMessage());

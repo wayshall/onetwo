@@ -28,7 +28,7 @@ public class DefaultAsyncWebProcessor implements AsyncWebProcessor{
 	private AsyncMessageHolder asynMessageHolder;
 	protected String asynCallback;
 	
-	private int sleepTime = 1;//seconds
+	private int sleepTime = 1000;//millis seconds
 	protected final AsyncTaskExecutor asyncTaskExecutor;
 	protected boolean writeEmptyMessage;
 	
@@ -77,7 +77,8 @@ public class DefaultAsyncWebProcessor implements AsyncWebProcessor{
 	}
 	
 	public void sleep(){
-		LangUtils.await(sleepTime);
+//		LangUtils.await(sleepTime);
+		LangUtils.awaitInMillis(sleepTime);
 	}
 
 	void setAsynCallback(String asynCallback) {
@@ -100,7 +101,8 @@ public class DefaultAsyncWebProcessor implements AsyncWebProcessor{
 	}
 	
 	/***
-	 * 默认实现为每个人物都是阻塞执行，可扩展为并行
+	 * 默认实现为每个任务都是阻塞执行，可扩展为并行
+	 * 默认实现哪怕任务执行时间少于休眠时间，整个任务也会因为阻塞而导致任务话费的时间至少等于休眠时间。
 	 * @author wayshall
 	 * @param closeWriter
 	 * @param task
@@ -133,7 +135,8 @@ public class DefaultAsyncWebProcessor implements AsyncWebProcessor{
 			logger.error("async processor error: " + task.getException().getMessage(), task.getException());
 	}
 
-	public void flushMessage(String content) {
+	public synchronized void flushMessage(String content) {
+//		logger.info("print content: " + content);
 		if (StringUtils.isBlank(content))
 			return;
 		out.println("<script>");

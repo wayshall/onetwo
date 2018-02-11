@@ -18,16 +18,18 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * async-demo.html:
    <iframe id="taskFrame" name="taskFrame" src="" style="display: none;">
-   </iframe>
+       </iframe>
        <div id="msgProgress">处理进度。。。</div>
-       <div id="msgDetail">处理明细：<br/></div>
-       <form id="taskForm" target="taskFrame" action="${pluginHelper.baseURL}/doTask">
+       <div id="msgDetail">错误：<br/></div>
+       <form id="taskForm" target="taskFrame" action="${pluginHelper.baseURL}/asyncDemo/doTask" method="post">
         <input type="submit" value="提交">
        </form>
        
        <script>
     function doAsynCallback(data){
+        function doAsynCallback(data){
         if(data.state=='FINISHED'){
+            $('#msgProgress').append("<br/>")
             $('#msgProgress').append(data.message)
         }else if(data.state=='EMPTY'){
             //$('#msgDetail').append(data.message)
@@ -36,6 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
         }else{
             $('#msgProgress').html(data.message)
         }
+    } 
     }   
 </script>
  * @author wayshall

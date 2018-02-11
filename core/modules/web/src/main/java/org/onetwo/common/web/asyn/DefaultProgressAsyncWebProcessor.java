@@ -31,9 +31,9 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor i
 //		this.progressCallback = progressCallback;
 	}
 
-	private boolean isIncludeJsFunction(String msg){
+	/*private boolean isIncludeJsFunction(String msg){
 		return (msg.indexOf('(')!=-1 && msg.indexOf(')')!=-1);
-	}
+	}*/
 	
 	/*public AsyncMessageHolder getAsynMessageHolder() {
 		return (AsyncMessageHolder)super.getAsynMessageHolder();
@@ -42,10 +42,10 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor i
 	public void flushMessage(ProcessMessageType state, int percent, String msg){
 		if(StringUtils.isBlank(msg))
 			return ;
-		if(isIncludeJsFunction(msg)){
+		/*if(isIncludeJsFunction(msg)){
 			flushMessage(msg);
 			return;
-		}
+		}*/
 //		String jsmsg = asynCallback + "('"+msg+"');";
 		StringBuilder jsmsg = new StringBuilder(asynCallback)
 												.append("({message: '").append(msg).append("'")
@@ -63,7 +63,7 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor i
 	}*/
 	
 	public void flushProgressingMessage(int percent, AsyncTask task){
-		CreateTaskMessageContext ctx = new CreateTaskMessageContext(ProcessMessageType.PROGRESSING, percent, task);
+		CreateTaskMessageContext ctx = new CreateTaskMessageContext(taskCount, ProcessMessageType.PROGRESSING, percent, task);
 //		flushMessage(ProcessMessageType.PROGRESSING, percent, getAsynMessageHolder().createTaskMessage(ProcessMessageType.PROGRESSING, percent, task));
 		flushMessage(ProcessMessageType.PROGRESSING, percent, getAsynMessageHolder().createTaskMessage(ctx));
 	}
@@ -91,36 +91,43 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor i
 
 	protected void doAfterTaskCompleted(boolean notifyFinish, AsyncTask task){
 		flushAndClearTunnelMessage();
-		if(notifyFinish)
-			flushProgressingMessage(100, task);
-//		boolean notifyFinish = taskCount==(currentTaskIndex+1);
-		if(task.isError()){
-			logger.error("任务["+task.getName()+"]出错,已中止", task.getException());
-			CreateTaskMessageContext ctx = new CreateTaskMessageContext(ProcessMessageType.FAILED, 100, task);
-//			flushMessage(ProcessMessageType.FAILED, 100, getAsynMessageHolder().createTaskMessage(ProcessMessageType.FAILED, 100, task));
-			this.getAsynMessageHolder().countMessage(TaskState.FAILED);
-			flushMessage(ProcessMessageType.FAILED, 100, getAsynMessageHolder().createTaskMessage(ctx));
-//			renderScript(out, taskMsg);
+		
+		if(task!=null){
 			if(notifyFinish){
-				IOUtils.closeQuietly(out);
+				flushProgressingMessage(100, task);
+			}else{
+				/*int percent = (int)((task.getTaskCount()+1)*100/taskCount);
+				this.flushProgressingMessage(percent, task);*/
 			}
-			return ;
-		}else{
-			CreateTaskMessageContext ctx = new CreateTaskMessageContext(ProcessMessageType.SUCCEED, 100, task);
-//			flushMessage(ProcessMessageType.SUCCEED, 100, getAsynMessageHolder().createTaskMessage(ProcessMessageType.SUCCEED, 100, task));
-			this.getAsynMessageHolder().countMessage(TaskState.SUCCEED);
-			flushMessage(ProcessMessageType.SUCCEED, 100, getAsynMessageHolder().createTaskMessage(ctx));
-//			renderScript(out, taskMsg);
+//			boolean notifyFinish = taskCount==(currentTaskIndex+1);
+			if(task.isError()){
+				logger.error("任务["+task.getName()+"]出错,已中止", task.getException());
+				CreateTaskMessageContext ctx = new CreateTaskMessageContext(taskCount, ProcessMessageType.FAILED, getTaskProcessPercent(task), task);
+//				flushMessage(ProcessMessageType.FAILED, 100, getAsynMessageHolder().createTaskMessage(ProcessMessageType.FAILED, 100, task));
+				this.getAsynMessageHolder().countMessage(TaskState.FAILED);
+				flushMessage(ProcessMessageType.FAILED, 100, getAsynMessageHolder().createTaskMessage(ctx));
+//				renderScript(out, taskMsg);
+				if(notifyFinish){
+					IOUtils.closeQuietly(out);
+				}
+				return ;
+			}else if(task.isDone()){
+				CreateTaskMessageContext ctx = new CreateTaskMessageContext(taskCount, ProcessMessageType.SUCCEED, getTaskProcessPercent(task), task);
+//				flushMessage(ProcessMessageType.SUCCEED, 100, getAsynMessageHolder().createTaskMessage(ProcessMessageType.SUCCEED, 100, task));
+				this.getAsynMessageHolder().countMessage(TaskState.SUCCEED);
+				flushMessage(ProcessMessageType.SUCCEED, 100, getAsynMessageHolder().createTaskMessage(ctx));
+//				renderScript(out, taskMsg);
+			}
 		}
 
 		if(notifyFinish){
-			CreateTaskMessageContext ctx = new CreateTaskMessageContext(ProcessMessageType.FINISHED, taskCount, null);
+			CreateTaskMessageContext ctx = new CreateTaskMessageContext(taskCount, ProcessMessageType.FINISHED, getTaskProcessPercent(task), null);
 //			flushMessage(ProcessMessageType.FINISHED, 100, getAsynMessageHolder().createTaskMessage(ProcessMessageType.FINISHED, taskCount, null));
 			flushMessage(ProcessMessageType.FINISHED, 100, getAsynMessageHolder().createTaskMessage(ctx));
 //			renderScript(out, taskMsg);
 			IOUtils.closeQuietly(out);
 		}
-		getAsynMessageHolder().clearMessages();
+//		getAsynMessageHolder().clearMessages();
 		task = null;
 	}
 	
@@ -140,10 +147,12 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor i
 		int total = datas.size();
 		taskCount = total%dataCountPerTask==0?(total/dataCountPerTask):(total/dataCountPerTask+1);
 
-		CreateTaskMessageContext msgCtx = new CreateTaskMessageContext(ProcessMessageType.SPLITED, taskCount, null);
+		CreateTaskMessageContext msgCtx = new CreateTaskMessageContext(taskCount, ProcessMessageType.SPLITED, 0, null);
 //		flushMessage(ProcessMessageType.SPLITED, taskCount, getAsynMessageHolder().createTaskMessage(ProcessMessageType.SPLITED, taskCount, null));
 		flushMessage(ProcessMessageType.SPLITED, taskCount, getAsynMessageHolder().createTaskMessage(msgCtx));
 //		renderScript(out, taskMsg);
+		
+		flushProgressingMessage(0, null);
 		for(int i=0; i<taskCount; i++){
 //			int taskSleepCount = 0;
 			int startIndex = i*dataCountPerTask;
@@ -156,13 +165,30 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor i
 //			this.doAsynWithSingle((i+1)==taskCount, i, taskDatas, creator);
 			CreateContext<T> ctx = new CreateContext<T>(i, taskDatas, getAsynMessageHolder());
 			AsyncTask task = creator.create(ctx);
-			int percent = (int)((i+1)*100/taskCount);
-			this.flushProgressingMessage(percent, task);
+			/*int percent = (int)((i+1)*100/taskCount);
+			this.flushProgressingMessage(percent, task);*/
 			
 			handleTask((i+1)==taskCount, task);
-			
+			doAfterAddTask(task);
 		}
 
+	}
+	
+	protected void doAfterAddTask(AsyncTask task){
+		int percent = (int)((task.getTaskIndex()+1)*100/taskCount);
+		this.flushProgressingMessage(percent, task);
+	}
+	
+	protected int getTaskProcessPercent(AsyncTask task){
+		if(task==null){
+			return 0;
+		}
+		return getTaskProcessPercent(task.getTaskIndex());
+	}
+	
+	protected int getTaskProcessPercent(int doneTaskCount){
+		int percent = (int)((doneTaskCount+1)*100/taskCount);
+		return percent;
 	}
 
 }
