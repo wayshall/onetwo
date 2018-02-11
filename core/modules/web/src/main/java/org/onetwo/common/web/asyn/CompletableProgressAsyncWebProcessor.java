@@ -35,7 +35,7 @@ public class CompletableProgressAsyncWebProcessor extends DefaultProgressAsyncWe
 						.thenAccept(f->{
 							flushAndClearTunnelMessage();
 							doAfterTaskCompleted(false, task);
-							System.out.println("doneTaskCount:"+doneTaskCount.get());
+//							System.out.println("doneTaskCount:"+doneTaskCount.get());
 							flushProgressingMessage(getTaskProcessPercent(doneTaskCount.get()), task);
 							doneTaskCount.getAndIncrement();
 						});
@@ -54,11 +54,13 @@ public class CompletableProgressAsyncWebProcessor extends DefaultProgressAsyncWe
 		
 		flushAndClearTunnelMessage();
 		doAfterTaskCompleted(true, null);
+//		logger.info("message:\n {}", messages);
 		futures.clear();
-		logger.info("message:\n {}", messages);
+		messages.clear();
 	}
 
 	protected void doAfterAddTask(AsyncTask task){
+		//do nothing
 	}
 	
 	public void flushMessage(String content) {
