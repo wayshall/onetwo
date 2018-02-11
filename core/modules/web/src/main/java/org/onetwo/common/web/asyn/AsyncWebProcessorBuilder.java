@@ -27,7 +27,7 @@ public class AsyncWebProcessorBuilder {
 	private AsyncTaskExecutor asyncTaskExecutor;
 	private String contentType = AsyncUtils.CONTENT_TYPE;
 	private int flushInSecond = 1;
-	private String asynCallback = "doAsynCallback";
+	private String asynCallback = "parent.doAsynCallback";
 //	private String progressCallback = "doProgressCallback";
 	protected boolean writeEmptyMessage;
 	
