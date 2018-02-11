@@ -7,6 +7,7 @@ import org.onetwo.common.utils.StringUtils;
 
 public final class AsyncUtils {
 	public static final String CONTENT_TYPE = "text/html;charset=utf-8";
+//	public static final String CONTENT_TYPE = MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 	private final static String CALLBACK_PARAMETER = "asynCallback";
 	
@@ -25,7 +26,7 @@ public final class AsyncUtils {
 	}
 
 	public static String getAsyncCallbackName(String name){
-		return "parent.$.jfish.asyncCallbackManager."+name;
+		return "parent.asyncCallbackManager."+name;
 	}
 	
 	private AsyncUtils(){}

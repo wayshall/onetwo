@@ -1,13 +1,13 @@
 package org.onetwo.common.web.asyn;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -20,34 +20,42 @@ import org.springframework.util.Assert;
  * @author way
  *
  */
-public class DefaultAsyncWebProcessor<MSG> implements AsyncWebProcessor<MSG>{
+public class DefaultAsyncWebProcessor implements AsyncWebProcessor{
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(getClass());
 	
 	protected PrintWriter out;
-	private AsyncMessageTunnel<MSG> asynMessageTunnel;
+	private AsyncMessageHolder asynMessageHolder;
 	protected String asynCallback;
 	
 	private int sleepTime = 1;//seconds
 	protected final AsyncTaskExecutor asyncTaskExecutor;
+	protected boolean writeEmptyMessage;
 	
 
-	public DefaultAsyncWebProcessor(PrintWriter out, AsyncMessageTunnel<MSG> holder, String asynCallback) {
+	public DefaultAsyncWebProcessor(PrintWriter out, AsyncMessageHolder holder, String asynCallback) {
 		this(out, holder, Springs.getInstance().getBean(AsyncTaskExecutor.class));
 		if(StringUtils.isNotBlank(asynCallback))
 			this.asynCallback = asynCallback;
 	}
-	public DefaultAsyncWebProcessor(PrintWriter out, AsyncMessageTunnel<MSG> holder, AsyncTaskExecutor asyncTaskExecutor) {
+	public DefaultAsyncWebProcessor(PrintWriter out, AsyncMessageHolder holder, AsyncTaskExecutor asyncTaskExecutor) {
 		super();
 		this.out = out;
 //		this.dataCountPerTask = taskInterval;
-		this.asynMessageTunnel = holder;
-		Assert.notNull(asyncTaskExecutor, "no asyncTaskExecutor found, please add a asyncTaskExecutor to spring context!");
-		this.asyncTaskExecutor = asyncTaskExecutor;
+		this.asynMessageHolder = holder;
+		if(asyncTaskExecutor==null){
+			this.asyncTaskExecutor = Springs.getInstance().getBean(AsyncTaskExecutor.class);
+			Assert.notNull(this.asyncTaskExecutor, "no asyncTaskExecutor found, please add a asyncTaskExecutor to spring context!");
+		}else{
+			this.asyncTaskExecutor = asyncTaskExecutor;
+		}
 	}
 	
-	public AsyncMessageTunnel<MSG> getAsynMessageTunnel() {
-		return asynMessageTunnel;
+	public void setWriteEmptyMessage(boolean writeEmptyMessage) {
+		this.writeEmptyMessage = writeEmptyMessage;
+	}
+	public AsyncMessageHolder getAsynMessageHolder() {
+		return asynMessageHolder;
 	}
 	
 	void setSleepTime(int sleepTime) {
@@ -55,8 +63,13 @@ public class DefaultAsyncWebProcessor<MSG> implements AsyncWebProcessor<MSG>{
 	}
 	
 	public void flushMessage(Object message){
-		if(message==null)
+		if(message==null){
 			return ;
+		}
+		//没有配置回调函数则忽略
+		/*if(StringUtils.isBlank(asynCallback)){
+			return ;
+		}*/
 		String jsObj = JsonMapper.IGNORE_EMPTY.toJson(message);
 		StringBuilder jsmsg = new StringBuilder(asynCallback)
 												.append("(").append(jsObj).append(");");
@@ -72,8 +85,13 @@ public class DefaultAsyncWebProcessor<MSG> implements AsyncWebProcessor<MSG>{
 	}
 	
 	public void flushAndClearTunnelMessage(){
-		List<?> meesages = asynMessageTunnel.getAndClearMessages(); 
-		flushMessage(meesages);
+		List<?> meesages = asynMessageHolder.getAndClearMessages();
+		if(LangUtils.isNotEmpty(meesages)){
+			flushMessage(meesages);
+		}else if(writeEmptyMessage){
+			meesages = Arrays.asList(new SimpleMessage("", TaskState.PROCESSING, TaskState.PROCESSING.getName()));
+			flushMessage(meesages);
+		}
 	}
 	
 	@Override
@@ -81,6 +99,12 @@ public class DefaultAsyncWebProcessor<MSG> implements AsyncWebProcessor<MSG>{
 		handleTask(true, task);
 	}
 	
+	/***
+	 * 默认实现为每个人物都是阻塞执行，可扩展为并行
+	 * @author wayshall
+	 * @param closeWriter
+	 * @param task
+	 */
 	protected void handleTask(boolean closeWriter, AsyncTask task){
 		Assert.notNull(task);
 		Future<?> future = this.asyncTaskExecutor.submit(task);
@@ -91,26 +115,22 @@ public class DefaultAsyncWebProcessor<MSG> implements AsyncWebProcessor<MSG>{
 			flushAndClearTunnelMessage();
 		}
 		
-		logIfThrowable(future);
-		doAfterTaskCompleted(true, task);
+		flushAndClearTunnelMessage();
+		doAfterTaskCompleted(closeWriter, task);
 	}
 	
 	protected void doAfterTaskCompleted(boolean closeWriter, AsyncTask task){
-		flushAndClearTunnelMessage();
-		asynMessageTunnel.clearMessages();
+//		asynMessageTunnel.clearMessages();
+		logIfThrowable(task);
 		if(closeWriter){
 			IOUtils.closeQuietly(out);
 		}
 		task = null;
 	}
 	
-	protected void logIfThrowable(Future<?> future){
-		Object sync = ReflectUtils.getFieldValue(future, "sync", false);
-		if(sync!=null){
-			Throwable exp = (Throwable)ReflectUtils.getFieldValue(sync, "exception");
-			if(exp!=null)
-				logger.error("async processor error: " + exp.getMessage(), exp);
-		}
+	protected void logIfThrowable(AsyncTask task){
+		if(task.isError())
+			logger.error("async processor error: " + task.getException().getMessage(), task.getException());
 	}
 
 	public void flushMessage(String content) {

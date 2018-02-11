@@ -1,10 +1,10 @@
 package org.onetwo.common.web.asyn;
 
 
-public interface AsyncWebProcessor<MSG> {
+public interface AsyncWebProcessor {
 
 	public void handleTask(AsyncTask task);
 	
-	public AsyncMessageTunnel<MSG> getAsynMessageTunnel();
+	public AsyncMessageHolder getAsynMessageHolder();
 
 }

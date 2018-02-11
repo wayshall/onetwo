@@ -1,14 +1,16 @@
 package org.onetwo.common.web.asyn;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
-@SuppressWarnings("serial")
-abstract public class AsyncMessageHolder extends AsyncMessageTunnel<SimpleMessage> {
+//@SuppressWarnings("serial")
+abstract public class AsyncMessageHolder {
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -17,6 +19,33 @@ abstract public class AsyncMessageHolder extends AsyncMessageTunnel<SimpleMessag
 	protected Map<TaskState, Integer> stateCounter = LangUtils.newHashMap();
 	
 //	private int succeedCount = 0;
+	
+
+
+	/*******
+	 * 
+	 * @param state
+	 * @param taskCount 当state是ProccessorState.SplitTas时，是被分割成的任务数量；
+	 * 					当state是ProccessorState.executing时，是百分比
+	 * 					其他情况为-1，没用。
+	 * @param task
+	 * @return
+	 */
+	abstract public String createTaskMessage(CreateTaskMessageContext ctx);
+	
+	/***
+	 * un-thread-safe
+	 * @return
+	 */
+	public List<SimpleMessage> getAndClearMessages(){
+		List<SimpleMessage> messages = new ArrayList<SimpleMessage>(getMessages());
+		this.clearMessages();
+		return messages;
+	}
+	
+	protected void clearMessages() {
+		getMessages().clear();
+	}
 	
 	abstract protected Collection<SimpleMessage> getMessages();
 	
@@ -30,17 +59,6 @@ abstract public class AsyncMessageHolder extends AsyncMessageTunnel<SimpleMessag
 		return this;
 	}*/
 	
-
-	/*******
-	 * 
-	 * @param state
-	 * @param taskCount 当state是ProccessorState.SplitTas时，是被分割成的任务数量；
-	 * 					当state是ProccessorState.executing时，是百分比
-	 * 					其他情况为-1，没用。
-	 * @param task
-	 * @return
-	 */
-	abstract public String createTaskMessage(ProcessMessageType state, int taskCount, AsyncTask task);
 
 	public String countStatesAsString(){
 		/*StringBuilder str = new StringBuilder();
@@ -66,7 +84,7 @@ abstract public class AsyncMessageHolder extends AsyncMessageTunnel<SimpleMessag
 			return;
 		try {
 			getMessages().add(msg);
-			countMessage(msg);
+			countMessage(msg.getState());
 		} catch (Exception e) {
 			logger.error("can not add msg to queue, ignore["+msg.getDetail()+"] : " + e.getMessage());
 //			e.printStackTrace();
@@ -102,17 +120,36 @@ abstract public class AsyncMessageHolder extends AsyncMessageTunnel<SimpleMessag
 	
 
 	
-	protected void countMessage(SimpleMessage msg){
-		if(msg.getState()!=null){
-			Integer count = stateCounter.get(msg.getState());
+	public void countMessage(TaskState state){
+		if(state!=null){
+			Integer count = stateCounter.get(state);
 			count = count==null?1:count+1;
-			stateCounter.put(msg.getState(), count);
+			stateCounter.put(state, count);
 		}
 	}
 
 
-	public void clearMessages() {
-		getMessages().clear();
+	public static class CreateTaskMessageContext {
+		private final ProcessMessageType state;
+		private final int taskCount;
+		private final AsyncTask task;
+		
+		public CreateTaskMessageContext(ProcessMessageType state,
+				int taskCount, AsyncTask task) {
+			super();
+			this.state = state;
+			this.taskCount = taskCount;
+			this.task = task;
+		}
+		public ProcessMessageType getState() {
+			return state;
+		}
+		public int getTaskCount() {
+			return taskCount;
+		}
+		public AsyncTask getTask() {
+			return task;
+		}
 	}
 	
 }

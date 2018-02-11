@@ -21,6 +21,13 @@ public class SimpleMessage implements Serializable {
 	public SimpleMessage(){
 	}
 	
+	public SimpleMessage(Object source, TaskState state, String detail) {
+		super();
+		this.source = source;
+		this.state = state;
+		this.detail = detail;
+	}
+
 	public SimpleMessage(Object source){
 		this.source = source;
 	}

@@ -1,12 +1,14 @@
 package org.onetwo.common.web.asyn;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 
 import org.onetwo.apache.io.IOUtils;
-import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.asyn.AsyncMessageHolder.CreateTaskMessageContext;
+import org.onetwo.common.web.asyn.ProgressAsyncTaskCreator.CreateContext;
 import org.springframework.core.task.AsyncTaskExecutor;
 
 /****
@@ -14,28 +16,28 @@ import org.springframework.core.task.AsyncTaskExecutor;
  * @author way
  *
  */
-public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor<SimpleMessage> implements ProgressAsyncWebProcessor{
+public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor implements ProgressAsyncWebProcessor {
 	
-
-	public DefaultProgressAsyncWebProcessor(PrintWriter out, String asynCallback) {
-		this(out, new StringMessageHolder());
-		if(StringUtils.isNotBlank(asynCallback))
-			this.asynCallback = asynCallback;
-	}
-
-	public DefaultProgressAsyncWebProcessor(PrintWriter out, AsyncMessageHolder holder) {
-		this(out, holder, Springs.getInstance().getBean(AsyncTaskExecutor.class));
-	}
-	public DefaultProgressAsyncWebProcessor(PrintWriter out, AsyncMessageHolder holder, AsyncTaskExecutor asyncTaskExecutor) {
+	private int taskCount;
+//	private String progressCallback;
+	
+	/*public DefaultProgressAsyncWebProcessor(PrintWriter out, String progressCallback, String asynCallback) {
+		this(out, new StringMessageHolder(), null, progressCallback, asynCallback);
+	}*/
+	public DefaultProgressAsyncWebProcessor(PrintWriter out, AsyncMessageHolder holder, AsyncTaskExecutor asyncTaskExecutor, /*String progressCallback, */String asynCallback) {
+//		this(out, new StringMessageHolder());
 		super(out, holder, asyncTaskExecutor);
+		this.asynCallback = asynCallback;
+//		this.progressCallback = progressCallback;
 	}
+
 	private boolean isIncludeJsFunction(String msg){
 		return (msg.indexOf('(')!=-1 && msg.indexOf(')')!=-1);
 	}
 	
-	public AsyncMessageHolder getAsynMessageTunnel() {
-		return (AsyncMessageHolder)super.getAsynMessageTunnel();
-	}
+	/*public AsyncMessageHolder getAsynMessageHolder() {
+		return (AsyncMessageHolder)super.getAsynMessageHolder();
+	}*/
 
 	public void flushMessage(ProcessMessageType state, int percent, String msg){
 		if(StringUtils.isBlank(msg))
@@ -46,28 +48,40 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor<S
 		}
 //		String jsmsg = asynCallback + "('"+msg+"');";
 		StringBuilder jsmsg = new StringBuilder(asynCallback)
-												.append("('").append(msg).append("'")
-												.append(", ").append(percent)
-												.append(", '").append(state.toString()).append("'")
-												.append(");");
+												.append("({message: '").append(msg).append("'")
+												.append(", percent: ").append(percent)
+												.append(", state: '").append(state.toString()).append("'")
+												.append("});");
 		flushMessage(jsmsg.toString());
 	}
 	
 	
 	/*public void flushInfoMessage(){
-		List<SimpleMessage> meesages = getAsynMessageTunnel().getAndClearMessages(); 
+		List<SimpleMessage> meesages = getAsynMessageHolder().getAndClearMessages(); 
 		String msglist = formatMessages(meesages);
 		flushMessage(ProcessMessageType.INFO, 0, msglist);
 	}*/
 	
 	public void flushProgressingMessage(int percent, AsyncTask task){
-		flushMessage(ProcessMessageType.PROGRESSING, percent, getAsynMessageTunnel().createTaskMessage(ProcessMessageType.PROGRESSING, percent, task));
+		CreateTaskMessageContext ctx = new CreateTaskMessageContext(ProcessMessageType.PROGRESSING, percent, task);
+//		flushMessage(ProcessMessageType.PROGRESSING, percent, getAsynMessageHolder().createTaskMessage(ProcessMessageType.PROGRESSING, percent, task));
+		flushMessage(ProcessMessageType.PROGRESSING, percent, getAsynMessageHolder().createTaskMessage(ctx));
 	}
 
+	/***
+	 * 刷新用户处理过程中添加的消息
+	 * 类型为：ProcessMessageType.INFO
+	 */
 	public void flushAndClearTunnelMessage(){
-		List<SimpleMessage> meesages = getAsynMessageTunnel().getAndClearMessages(); 
-		String msglist = formatMessages(meesages);
-		flushMessage(ProcessMessageType.INFO, 0, msglist);
+		List<?> meesages = getAsynMessageHolder().getAndClearMessages(); 
+		if(LangUtils.isNotEmpty(meesages)){
+			String msglist = formatMessages(meesages);
+			flushMessage(ProcessMessageType.INFO, 0, msglist);
+		}else if(writeEmptyMessage){
+			List<?> emptyMessages = Arrays.asList(new SimpleMessage("", TaskState.PROCESSING, TaskState.PROCESSING.getName()));
+			String msglist = formatMessages(emptyMessages);
+			flushMessage(ProcessMessageType.EMPTY, 0, msglist);
+		}
 	}
 
 	@Override
@@ -81,44 +95,54 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor<S
 			flushProgressingMessage(100, task);
 //		boolean notifyFinish = taskCount==(currentTaskIndex+1);
 		if(task.isError()){
-			logger.error("导入出错,任务终止", task.getException());
-			flushMessage(ProcessMessageType.FAILED, 100, getAsynMessageTunnel().createTaskMessage(ProcessMessageType.FAILED, 100, task));
+			logger.error("任务["+task.getName()+"]出错,已中止", task.getException());
+			CreateTaskMessageContext ctx = new CreateTaskMessageContext(ProcessMessageType.FAILED, 100, task);
+//			flushMessage(ProcessMessageType.FAILED, 100, getAsynMessageHolder().createTaskMessage(ProcessMessageType.FAILED, 100, task));
+			this.getAsynMessageHolder().countMessage(TaskState.FAILED);
+			flushMessage(ProcessMessageType.FAILED, 100, getAsynMessageHolder().createTaskMessage(ctx));
 //			renderScript(out, taskMsg);
 			if(notifyFinish){
 				IOUtils.closeQuietly(out);
 			}
 			return ;
 		}else{
-			flushMessage(ProcessMessageType.SUCCEED, 100, getAsynMessageTunnel().createTaskMessage(ProcessMessageType.SUCCEED, 100, task));
+			CreateTaskMessageContext ctx = new CreateTaskMessageContext(ProcessMessageType.SUCCEED, 100, task);
+//			flushMessage(ProcessMessageType.SUCCEED, 100, getAsynMessageHolder().createTaskMessage(ProcessMessageType.SUCCEED, 100, task));
+			this.getAsynMessageHolder().countMessage(TaskState.SUCCEED);
+			flushMessage(ProcessMessageType.SUCCEED, 100, getAsynMessageHolder().createTaskMessage(ctx));
 //			renderScript(out, taskMsg);
 		}
 
 		if(notifyFinish){
-			flushMessage(ProcessMessageType.FINISHED, 100, getAsynMessageTunnel().createTaskMessage(ProcessMessageType.FINISHED, task.getDataCount(), null));
+			CreateTaskMessageContext ctx = new CreateTaskMessageContext(ProcessMessageType.FINISHED, taskCount, null);
+//			flushMessage(ProcessMessageType.FINISHED, 100, getAsynMessageHolder().createTaskMessage(ProcessMessageType.FINISHED, taskCount, null));
+			flushMessage(ProcessMessageType.FINISHED, 100, getAsynMessageHolder().createTaskMessage(ctx));
 //			renderScript(out, taskMsg);
 			IOUtils.closeQuietly(out);
 		}
-		getAsynMessageTunnel().clearMessages();
+		getAsynMessageHolder().clearMessages();
 		task = null;
 	}
 	
 
-	protected String formatMessages(List<SimpleMessage> simpleMessages) {
+	protected String formatMessages(List<?> simpleMessages) {
 		if(LangUtils.isEmpty(simpleMessages))
 			return "";
 		StringBuilder sb = new StringBuilder();
-		for(SimpleMessage msg : simpleMessages){
+		for(Object msg : simpleMessages){
 			sb.append(msg.toString()).append("<br/>");
 		}
 //		System.out.println("format: " + sb);
 		return sb.toString();
 	}
 	
-	public void handleList(List<?> datas, int dataCountPerTask, ProgressAsyncTaskCreator<List<?>> creator){
+	public <T> void handleList(List<T> datas, int dataCountPerTask, ProgressAsyncTaskCreator<T> creator){
 		int total = datas.size();
-		int taskCount = total%dataCountPerTask==0?(total/dataCountPerTask):(total/dataCountPerTask+1);
+		taskCount = total%dataCountPerTask==0?(total/dataCountPerTask):(total/dataCountPerTask+1);
 
-		flushMessage(ProcessMessageType.SPLITED, taskCount, getAsynMessageTunnel().createTaskMessage(ProcessMessageType.SPLITED, taskCount, null));
+		CreateTaskMessageContext msgCtx = new CreateTaskMessageContext(ProcessMessageType.SPLITED, taskCount, null);
+//		flushMessage(ProcessMessageType.SPLITED, taskCount, getAsynMessageHolder().createTaskMessage(ProcessMessageType.SPLITED, taskCount, null));
+		flushMessage(ProcessMessageType.SPLITED, taskCount, getAsynMessageHolder().createTaskMessage(msgCtx));
 //		renderScript(out, taskMsg);
 		for(int i=0; i<taskCount; i++){
 //			int taskSleepCount = 0;
@@ -127,10 +151,11 @@ public class DefaultProgressAsyncWebProcessor extends DefaultAsyncWebProcessor<S
 			if(endIndex>total){
 				endIndex = total;
 			}
-			final List<?> taskDatas = datas.subList(startIndex, endIndex);
+			final List<T> taskDatas = datas.subList(startIndex, endIndex);
 			
 //			this.doAsynWithSingle((i+1)==taskCount, i, taskDatas, creator);
-			AsyncTask task = creator.create(i, taskDatas);
+			CreateContext<T> ctx = new CreateContext<T>(i, taskDatas, getAsynMessageHolder());
+			AsyncTask task = creator.create(ctx);
 			int percent = (int)((i+1)*100/taskCount);
 			this.flushProgressingMessage(percent, task);
 			

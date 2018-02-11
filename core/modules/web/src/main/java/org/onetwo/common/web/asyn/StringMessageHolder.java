@@ -32,7 +32,10 @@ public class StringMessageHolder extends BlockQueueMessageHolder{
 		addMessage(null, msg, null);
 	}
 
-	public String createTaskMessage(ProcessMessageType state, int taskCount, AsyncTask task){
+	public String createTaskMessage(CreateTaskMessageContext ctx){
+		ProcessMessageType state = ctx.getState();
+		int taskCount = ctx.getTaskCount();
+		AsyncTask task = ctx.getTask();
 		String msg = "";
 		if(state==ProcessMessageType.SPLITED){
 			msg = "进度 ：共分成"+taskCount+"个导入任务……";
@@ -40,7 +43,7 @@ public class StringMessageHolder extends BlockQueueMessageHolder{
 			int done = taskCount/10;
 			msg = "进度 ：正在执行["+task.getName()+"]"+taskCount+"% "+LangUtils.repeatString(done, "- ")+LangUtils.repeatString(10-done, "| ");
 		}else if(state==ProcessMessageType.FAILED){
-			msg = "进度 ：导入出错,任务终止"+task.getException().getMessage();
+			msg = "进度 ：任务["+task.getName()+"]出错,已中止"+task.getException().getMessage();
 		}else if(state==ProcessMessageType.SUCCEED){
 			msg = "进度 ：["+task.getName()+"]完成！";
 		}else if(state==ProcessMessageType.FINISHED){

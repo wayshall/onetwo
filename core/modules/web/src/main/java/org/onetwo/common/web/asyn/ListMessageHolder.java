@@ -16,7 +16,7 @@ abstract public class ListMessageHolder extends AsyncMessageHolder {
 		lock.lock();
 		try {
 			this.messages.add(msg);
-			countMessage(msg);
+			countMessage(msg.getState());
 //			this.totalCount++;
 //			this.triggerCounters(msg);
 		}finally{
