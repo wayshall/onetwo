@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.ConsumerListener;
+import org.onetwo.ext.ons.consumer.ConsumerMeta;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -29,16 +30,16 @@ public class ONSConsumerListenerComposite implements InitializingBean, ConsumerL
 	}
 
 	@Override
-	public void beforeConsumeMessage(ConsumContext context) {
+	public void beforeConsumeMessage(ConsumerMeta consumerMeta, ConsumContext context) {
 		for(ConsumerListener listener : listeners){
-			listener.beforeConsumeMessage(context);
+			listener.beforeConsumeMessage(consumerMeta, context);
 		}
 	}
 
 	@Override
-	public void afterConsumeMessage(ConsumContext context) {
+	public void afterConsumeMessage(ConsumerMeta consumerMeta, ConsumContext context) {
 		for(ConsumerListener listener : listeners){
-			listener.afterConsumeMessage(context);
+			listener.afterConsumeMessage(consumerMeta, context);
 		}
 	}
 

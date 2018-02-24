@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import lombok.Data;
 
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.ext.alimq.JsonMessageDeserializer;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
@@ -71,13 +72,19 @@ public class ONSProperties {
 	}
 	
 	@Data
-	public class TransactionalProps {
+	static public class TransactionalProps {
 		SendMode sendMode = SendMode.SYNC;
 		SendTaskProps sendTask = new SendTaskProps();
 	}
 	@Data
 	public static class SendTaskProps {
 		TaskLocks lock = TaskLocks.DB;
+		String deleteBeforeAt;
+		int deleteCountPerTask = 300;
+		
+		public long getDeleteBeforeAtInSeconds(){
+			return LangOps.timeToSeconds(deleteBeforeAt, 60);
+		}
 	}
 	public static enum SendMode {
 		SYNC,

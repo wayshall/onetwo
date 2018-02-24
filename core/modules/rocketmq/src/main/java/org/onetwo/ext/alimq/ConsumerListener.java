@@ -1,5 +1,7 @@
 package org.onetwo.ext.alimq;
 
+import org.onetwo.ext.ons.consumer.ConsumerMeta;
+
 
 
 /**
@@ -8,8 +10,8 @@ package org.onetwo.ext.alimq;
  */
 public interface ConsumerListener {
 
-	void beforeConsumeMessage(ConsumContext context);
-	void afterConsumeMessage(ConsumContext context);
+	void beforeConsumeMessage(ConsumerMeta consumerMeta, ConsumContext context);
+	void afterConsumeMessage(ConsumerMeta consumerMeta, ConsumContext context);
 //	void onConsumeMessageError(ConsumContext context, Throwable e);
 
 }

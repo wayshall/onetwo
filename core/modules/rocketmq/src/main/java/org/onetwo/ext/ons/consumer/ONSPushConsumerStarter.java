@@ -100,6 +100,11 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	private String resloveValue(String value){
 		return SpringUtils.resolvePlaceholders(applicationContext, value);
 	}
+	
+
+    protected Consumer createConsumer(final Properties comsumerProperties) {
+        return ONSFactory.createConsumer(comsumerProperties);
+    }
 
 	private void initializeConsumers(ConsumerMeta meta) throws InterruptedException, MQClientException {
 		Assert.hasText(meta.getConsumerId(), "consumerId can not be empty!");
@@ -109,16 +114,19 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		Properties comsumerProperties = onsProperties.baseProperties();
 		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
 		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
-		comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
+		if(meta.getMaxReconsumeTimes()>0){
+			comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
+		}
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
 		if(customProps!=null){
 			comsumerProperties.putAll(customProps);
 		}
 //		rawConsumer.setMessageModel(meta.getMessageModel());
 		
-		Consumer consumer = ONSFactory.createConsumer(comsumerProperties);
+		Consumer consumer = createConsumer(comsumerProperties);
 		DefaultMQPushConsumer rawConsumer = (DefaultMQPushConsumer)ReflectUtils.getFieldValue(consumer, "defaultMQPushConsumer");
 		rawConsumer.setConsumeFromWhere(meta.getConsumeFromWhere());
+		meta.setComsumerProperties(comsumerProperties);
 		
 //		consumer.subscribe(meta.getTopic(), meta.getSubExpression(), listener);
 		ListenerType listenerType = meta.getListenerType(); 
@@ -128,10 +136,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			rawConsumer.start();
 		}else if(listenerType==ListenerType.RMQ){
 			rawConsumer.subscribe(meta.getTopic(), meta.getSubExpression());
-			rawConsumer.registerMessageListener((MessageListenerConcurrently)meta.getListener());
+			rawConsumer.registerMessageListener((MessageListenerConcurrently)meta.getConsumerAction());
 			rawConsumer.start();
 		}else{
-			consumer.subscribe(meta.getTopic(), meta.getSubExpression(), (MessageListener)meta.getListener());
+			consumer.subscribe(meta.getTopic(), meta.getSubExpression(), (MessageListener)meta.getConsumerAction());
 			consumer.start();
 		}
 		logger.info("ONSConsumer[{}] started! meta: {}", meta.getConsumerId(), meta);
@@ -171,61 +179,6 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			}
 		});
 	}
-	/*
-	@SuppressWarnings("rawtypes")
-	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
-		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
-		final Logger logger = ONSUtils.getONSLogger();
-		rawConsumer.registerMessageListener(new MessageListenerConcurrently() {
-
-			@Override
-			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-
-				ConsumContext currentConetxt = null;
-				try {
-					if(meta.getIgnoreOffSetThreshold()>0){
-						long diff = ONSUtils.getMessageDiff(msgs.get(0));
-						if(diff>meta.getIgnoreOffSetThreshold()){
-							logger.info("message offset diff[{}] is greater than ignoreOffSetThreshold[{}], ignore!", diff, meta.getIgnoreOffSetThreshold());
-							return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-						}
-					}
-					for(MessageExt message : msgs){
-						String msgId = ONSUtils.getMessageId(message);
-						logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
-						
-//						Object body = consumer.deserialize(message);
-						Object body = messageDeserializer.deserialize(message.getBody(), message);
-						currentConetxt = ConsumContext.builder()
-														.messageId(msgId)
-														.message(message)
-														.deserializedBody(body)
-														.build();
-						
-						consumerListenerComposite.beforeConsumeMessage(currentConetxt);
-						consumer.doConsume(currentConetxt);
-						consumerListenerComposite.afterConsumeMessage(currentConetxt);
-						logger.info("consumed message. id: {}, topic: {}, tag: {}, body: {}", msgId,  message.getTopic(), message.getTags(), body);
-					}
-				} catch (Exception e) {
-					String errorMsg = "consume message error.";
-					if(currentConetxt!=null){
-						consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
-						errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+
-										", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
-					}
-					logger.error(errorMsg, e);
-					return ConsumeConcurrentlyStatus.RECONSUME_LATER;
-//					throw new BaseException(e);
-				}
-//				logger.info("consumed firstMessage. id: {}, topic: {}, tag: {}", firstMessage.getMsgId(),  firstMessage.getTopic(), firstMessage.getTags());
-
-				return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-			}
-		});
-
-//		rawConsumer.start();
-	}*/
 
 	@Override
 	public void destroy() {
@@ -263,7 +216,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					if(consumers.containsKey(meta.getConsumerId())){
 						throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
 																		.put("add listener", name)
-																		.put("exists listener", consumers.get(meta.getConsumerId()).getListenerName());
+																		.put("exists listener", consumers.get(meta.getConsumerId()).getConsumerBeanName());
 					}
 					consumers.put(meta.getConsumerId(), meta);
 				});
@@ -299,7 +252,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				if(consumers.containsKey(meta.getConsumerId())){
 					throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
 																	.put("add listener", name)
-																	.put("exists listener", consumers.get(meta.getConsumerId()).getListenerName());
+																	.put("exists listener", consumers.get(meta.getConsumerId()).getConsumerBeanName());
 				}
 				consumers.put(meta.getConsumerId(), meta);
 			});
@@ -326,8 +279,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					.maxReconsumeTimes(subscribe.maxReconsumeTimes())
 					.ignoreOffSetThreshold(subscribe.ignoreOffSetThreshold())//ONS类型的listener不支持
 					.listenerType(listenerType)
-					.listener(listener)
-					.listenerName(listernName)
+					.consumerAction(listener)
+					.consumerBeanName(listernName)
 					.build();
 			return meta;
 		}
