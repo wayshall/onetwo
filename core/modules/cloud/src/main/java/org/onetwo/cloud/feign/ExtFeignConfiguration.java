@@ -1,7 +1,10 @@
 package org.onetwo.cloud.feign;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,6 +22,9 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.netflix.feign.AnnotatedParameterProcessor;
 import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.netflix.feign.annotation.PathVariableParameterProcessor;
+import org.springframework.cloud.netflix.feign.annotation.RequestHeaderParameterProcessor;
+import org.springframework.cloud.netflix.feign.annotation.RequestParamParameterProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,8 +78,23 @@ public class ExtFeignConfiguration implements InitializingBean {
 	@Bean
 	@ConditionalOnMissingBean
 	public Contract feignContract(ConversionService feignConversionService) {
-		EnhanceSpringMvcContract contract = new EnhanceSpringMvcContract(this.parameterProcessors, feignConversionService);
+		List<AnnotatedParameterProcessor> parameterProcessors = getDefaultAnnotatedArgumentsProcessors();
+		if(!this.parameterProcessors.isEmpty()){
+			parameterProcessors.addAll(this.parameterProcessors);
+		}
+		EnhanceSpringMvcContract contract = new EnhanceSpringMvcContract(parameterProcessors, feignConversionService);
 		return contract;
+	}
+
+
+	private List<AnnotatedParameterProcessor> getDefaultAnnotatedArgumentsProcessors() {
+		List<AnnotatedParameterProcessor> annotatedArgumentResolvers = new ArrayList<>();
+
+		annotatedArgumentResolvers.add(new PathVariableParameterProcessor());
+		annotatedArgumentResolvers.add(new RequestParamParameterProcessor());
+		annotatedArgumentResolvers.add(new RequestHeaderParameterProcessor());
+
+		return annotatedArgumentResolvers;
 	}
 
 	@Bean
