@@ -71,6 +71,12 @@
             <scope>provided</scope>
         </dependency>
         
+        <dependency>
+          <groupId>io.github.openfeign</groupId>
+          <artifactId>feign-okhttp</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
         <!-- feign hystrix -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.Closure;
@@ -175,9 +177,16 @@ final public class LangOps {
 		if(StringUtils.isBlank(time)){
 			return def;
 		}
+		Pair<Integer, TimeUnit> tu = parseTimeUnit(time);
+		return convert.apply(tu.getKey(), tu.getValue());
+		/*if(StringUtils.isBlank(time)){
+			return def;
+		}
 		time = time.toLowerCase();
 		TimeUnit timeUnit = null;
-		if (time.endsWith("s")) {
+		if (time.endsWith("mis")) {
+			timeUnit = TimeUnit.MILLISECONDS;
+		}else if (time.endsWith("s")) {
 			timeUnit = TimeUnit.SECONDS;
 		}else if (time.endsWith("m")) {
 			timeUnit = TimeUnit.MINUTES;
@@ -191,7 +200,39 @@ final public class LangOps {
 //			return timeUnit.toMillis(numb);
 			return convert.apply(duration, timeUnit);
 		}
-		return Integer.valueOf(time);
+		return Integer.valueOf(time);*/
+	}
+	
+	/***
+	 * default is seconds
+	 * @author wayshall
+	 * @param time
+	 * @return
+	 */
+	public static Pair<Integer, TimeUnit> parseTimeUnit(String time) {
+		time = Objects.requireNonNull(time).toLowerCase();
+		TimeUnit timeUnit = null;
+		int unitLength = 1;
+		if (time.endsWith("mis")) {
+			timeUnit = TimeUnit.MILLISECONDS;
+			unitLength = 3;
+		}else if (time.endsWith("mcs")) {
+			timeUnit = TimeUnit.MICROSECONDS;
+			unitLength = 3;
+		}else if (time.endsWith("s")) {
+			timeUnit = TimeUnit.SECONDS;
+		}else if (time.endsWith("m")) {
+			timeUnit = TimeUnit.MINUTES;
+		}else if (time.endsWith("h")) {
+			timeUnit = TimeUnit.HOURS;
+		}else if (time.endsWith("d")) {
+			timeUnit = TimeUnit.DAYS;
+		}else{
+			unitLength = 0;
+			timeUnit = TimeUnit.SECONDS;
+		}
+		int duration = Integer.valueOf(time.substring(0, time.length() - unitLength));
+		return Pair.of(duration, timeUnit);
 	}
 	
 	private LangOps(){}

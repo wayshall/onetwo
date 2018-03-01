@@ -1,26 +1,32 @@
 package org.onetwo.cloud.feign;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import okhttp3.ConnectionPool;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.netflix.feign.AnnotatedParameterProcessor;
+import org.springframework.cloud.netflix.feign.FeignAutoConfiguration;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.cloud.netflix.feign.annotation.PathVariableParameterProcessor;
 import org.springframework.cloud.netflix.feign.annotation.RequestHeaderParameterProcessor;
@@ -123,6 +129,40 @@ public class ExtFeignConfiguration implements InitializingBean {
 			simpleLoggerManager.changeLevels("DEBUG", apiNames.toArray(new String[0]));
 		}
 		return level;
+	}
+	
+	
+	
+	@Configuration
+	@ConditionalOnClass(OkHttpClient.class)
+	@ConditionalOnProperty(value = "feign.okhttp.enabled", matchIfMissing = true)
+	@AutoConfigureBefore(FeignAutoConfiguration.class)
+	protected static class OkHttpClientConfiguration {
+
+		@Autowired(required=false)
+	    private List<Interceptor> interceptors;
+		@Autowired
+		private FeignProperties feignProperties;
+
+		@Bean
+		@ConditionalOnMissingBean(okhttp3.OkHttpClient.class)
+		public OkHttpClient okHttpClient(){
+			Pair<Integer, TimeUnit> read = feignProperties.getOkHttpClient().getReadTimeoutTime();
+			Pair<Integer, TimeUnit> conn = feignProperties.getOkHttpClient().getConnectTimeoutTime();
+			Pair<Integer, TimeUnit> write = feignProperties.getOkHttpClient().getWriteTimeoutTime();
+			okhttp3.OkHttpClient.Builder okclientBuilder = new okhttp3.OkHttpClient.Builder()
+																	            .readTimeout(read.getKey(), read.getValue()) 
+																	            .connectTimeout(conn.getKey(), conn.getValue()) 
+																	            .writeTimeout(write.getKey(), write.getValue()) 
+//																	            .connectionPool(new ConnectionPool())
+																	            ;
+			if(LangUtils.isNotEmpty(interceptors)){
+				for(Interceptor interceptor : this.interceptors){
+					okclientBuilder.addInterceptor(interceptor);
+				}
+			}
+			return okclientBuilder.build();
+	    }
 	}
 
 	/*@Configuration
