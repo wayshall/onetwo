@@ -1,6 +1,6 @@
 package org.onetwo.ext.ons.transaction;
 
-import org.onetwo.ext.ons.producer.SendMessageInterceptor;
+import org.onetwo.boot.mq.SendMessageInterceptor;
 import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor.SendMessageEvent;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;

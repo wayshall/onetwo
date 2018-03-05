@@ -1,11 +1,13 @@
 package org.onetwo.ext.ons;
 
+import org.onetwo.boot.mq.SendMessageRepository;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.ONSProperties.SendMode;
 import org.onetwo.ext.ons.ONSProperties.TaskLocks;
 import org.onetwo.ext.ons.consumer.DelegateMessageService;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
+import org.onetwo.ext.ons.producer.SendMessageContext;
 import org.onetwo.ext.ons.transaction.AsyncDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.CompensationSendMessageTask;
 import org.onetwo.ext.ons.transaction.DatabaseTransactionMessageInterceptor;
@@ -13,7 +15,6 @@ import org.onetwo.ext.ons.transaction.DbmSendMessageRepository;
 import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.transaction.MessageBodyStoreSerializer;
 import org.onetwo.ext.ons.transaction.ReidsLokableCompensationSendMessageTask;
-import org.onetwo.ext.ons.transaction.SendMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -79,7 +80,7 @@ public class ONSConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(DefaultDatabaseTransactionMessageInterceptor.class)
-		public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
+		public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository<SendMessageContext> sendMessageRepository){
 			DefaultDatabaseTransactionMessageInterceptor interceptor = null;
 			SendMode sendMode = onsProperties.getTransactional().getSendMode();
 			if(sendMode==SendMode.ASYNC){
@@ -93,7 +94,7 @@ public class ONSConfiguration {
 		
 		@Bean
 		@ConditionalOnMissingBean(SendMessageRepository.class)
-		public SendMessageRepository sendMessageRepository(){
+		public SendMessageRepository<SendMessageContext> sendMessageRepository(){
 			return new DbmSendMessageRepository();
 		}
 		

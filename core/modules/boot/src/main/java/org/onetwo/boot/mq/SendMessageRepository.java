@@ -1,18 +1,19 @@
-package org.onetwo.ext.ons.transaction;
+package org.onetwo.boot.mq;
 
 import java.util.Collection;
-
-import org.onetwo.ext.ons.producer.SendMessageContext;
 
 /**
  * @author wayshall
  * <br/>
  */
-public interface SendMessageRepository {
+public interface SendMessageRepository<C> {
 
-	void save(SendMessageContext ctx);
+	void save(C ctx);
 
-	void remove(Collection<SendMessageContext> msgCtxs);
+	void updateToSent(C ctx);
+	void updateToSent(SendMessageEntity messageEntity);
+
+	void remove(Collection<C> msgCtxs);
 
 	/***
 	 * 查找当前上下文的所有发送消息

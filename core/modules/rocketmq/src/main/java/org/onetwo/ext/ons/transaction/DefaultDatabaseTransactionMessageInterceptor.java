@@ -5,10 +5,10 @@ import java.util.Arrays;
 import lombok.Builder;
 import lombok.Data;
 
+import org.onetwo.boot.mq.SendMessageInterceptor;
+import org.onetwo.boot.mq.SendMessageRepository;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.producer.SendMessageContext;
-import org.onetwo.ext.ons.producer.SendMessageInterceptor;
-import org.onetwo.ext.ons.producer.SendMessageInterceptorChain;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -33,18 +33,18 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 	}
 	
 	protected Logger log = ONSUtils.getONSLogger();
-	private SendMessageRepository sendMessageRepository;
+	private SendMessageRepository<SendMessageContext> sendMessageRepository;
 //	protected boolean debug = true;
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 	
 
 	@Override
-	public SendResult intercept(SendMessageInterceptorChain chain) {
-		SendMessageContext ctx = chain.getSendMessageContext();
+	public SendResult intercept(org.onetwo.boot.mq.SendMessageInterceptorChain chain) {
+		SendMessageContext ctx = (SendMessageContext)chain.getSendMessageContext();
 		//如果是事务producer，则忽略
 		if(ctx.getSource().isTransactional()){
-			return chain.invoke();
+			return (SendResult)chain.invoke();
 		}
 		boolean debug = ctx.isDebug();
 		if(debug && log.isInfoEnabled()){
@@ -67,7 +67,8 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 	public void afterCommit(SendMessageEvent event){
 		boolean debug = event.getSendMessageContext().isDebug();
 		event.getSendMessageContext().getChain().invoke();
-		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
+//		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
+		sendMessageRepository.updateToSent(event.getSendMessageContext());
 		if(debug && log.isInfoEnabled()){
 			log.info("committed transactional message in thread[{}]...", Thread.currentThread().getId());
 		}
@@ -84,12 +85,12 @@ public class DefaultDatabaseTransactionMessageInterceptor implements SendMessage
 //		sendMessageRepository.clearInCurrentContext();
 	}
 
-	public SendMessageRepository getSendMessageRepository() {
+	public SendMessageRepository<SendMessageContext> getSendMessageRepository() {
 		return sendMessageRepository;
 	}
 
 
-	public void setSendMessageRepository(SendMessageRepository sendMessageRepository) {
+	public void setSendMessageRepository(SendMessageRepository<SendMessageContext> sendMessageRepository) {
 		this.sendMessageRepository = sendMessageRepository;
 	}
 

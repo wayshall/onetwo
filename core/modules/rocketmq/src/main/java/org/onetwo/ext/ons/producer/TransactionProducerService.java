@@ -1,7 +1,8 @@
 package org.onetwo.ext.ons.producer;
 
-import org.onetwo.ext.alimq.OnsMessage;
+import org.onetwo.boot.mq.MQMessage;
 
+import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
 
@@ -11,7 +12,7 @@ import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
  */
 public interface TransactionProducerService extends TraceableProducer {
 
-	SendResult sendMessage(OnsMessage onsMessage,
+	SendResult sendMessage(MQMessage<Message> onsMessage,
 			LocalTransactionExecuter executer, Object arg);
 
 	/***

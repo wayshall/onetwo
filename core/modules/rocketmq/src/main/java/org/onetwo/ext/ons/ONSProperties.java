@@ -83,7 +83,7 @@ public class ONSProperties {
 		int deleteCountPerTask = 300;
 		
 		public long getDeleteBeforeAtInSeconds(){
-			return LangOps.timeToSeconds(deleteBeforeAt, 60);
+			return LangOps.timeToSeconds(deleteBeforeAt, 50);
 		}
 	}
 	public static enum SendMode {

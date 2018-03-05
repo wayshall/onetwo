@@ -2,22 +2,21 @@ package org.onetwo.ext.ons.transaction;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.onetwo.boot.mq.SendMessageEntity;
+import org.onetwo.boot.mq.SendMessageRepository;
+import org.onetwo.boot.mq.SendMessageEntity.SendStates;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.producer.SendMessageContext;
-import org.onetwo.ext.ons.transaction.SendMessageEntity.SendStates;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.aliyun.openservices.ons.api.Message;
 
@@ -26,7 +25,7 @@ import com.aliyun.openservices.ons.api.Message;
  * <br/>
  */
 @Transactional
-public class DbmSendMessageRepository implements SendMessageRepository {
+public class DbmSendMessageRepository implements SendMessageRepository<SendMessageContext> {
 	
 	private Logger log = ONSUtils.getONSLogger();
 	
@@ -55,8 +54,28 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		baseEntityManager.persist(send);
 
 		ctx.setMessageEntity(send);
-		storeInCurrentContext(ctx);
+//		storeInCurrentContext(ctx);
 	}
+
+	
+	@Override
+	public void updateToSent(SendMessageContext ctx) {
+		boolean debug = ctx.isDebug();
+		SendMessageEntity messageEntity = ctx.getMessageEntity();
+		messageEntity.setState(SendStates.SENT);
+		baseEntityManager.update(messageEntity);
+		
+		if(debug && log.isInfoEnabled()){
+			log.info("update the state of message[{}] to : {}", ctx.getMessageEntity().getKey(), SendStates.SENT);
+		}
+	}
+	
+	@Override
+	public void updateToSent(SendMessageEntity messageEntity) {
+		messageEntity.setState(SendStates.SENT);
+		baseEntityManager.update(messageEntity);
+	}
+
 
 	@Override
 	public void remove(Collection<SendMessageContext> msgCtxs){
@@ -68,7 +87,7 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	protected void storeInCurrentContext(SendMessageContext ctx){
 		boolean debug = ctx.isDebug();
 		Set<SendMessageContext> msgCtxs = (Set<SendMessageContext>)TransactionSynchronizationManager.unbindResourceIfPossible(this);
@@ -107,11 +126,11 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		if(debug && log.isInfoEnabled()){
 			log.info("clear SendMessageContext from transaction resources: {}", keys);
 		}
-		/*baseEntityManager.removeByIds(SendMessageEntity.class, keys.toArray(new String[0]));
+		baseEntityManager.removeByIds(SendMessageEntity.class, keys.toArray(new String[0]));
 		if(debug && log.isInfoEnabled()){
 			log.info("clear SendMessageContext from database: {}", keys);
-		}*/
-	}
+		}
+	}*/
 	
 	public static List<String> getSendMessageKeys(Collection<SendMessageContext> msgCtxs){
 		if(LangUtils.isEmpty(msgCtxs)){

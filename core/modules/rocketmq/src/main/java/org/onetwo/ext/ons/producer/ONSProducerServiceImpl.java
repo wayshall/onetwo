@@ -3,14 +3,15 @@ package org.onetwo.ext.ons.producer;
 import java.util.List;
 import java.util.Properties;
 
+import org.onetwo.boot.mq.MQMessage;
+import org.onetwo.boot.mq.SendMessageInterceptor;
+import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
-import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils.SendMessageFlags;
-import org.onetwo.ext.ons.producer.SendMessageInterceptor.InterceptorPredicate;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,12 +101,12 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	
 	
 	@Override
-	public SendResult sendMessage(OnsMessage onsMessage){
+	public SendResult sendMessage(MQMessage<Message> onsMessage){
 		return sendMessage(onsMessage, SendMessageFlags.Default);
 	}
 	
 	@Override
-	public SendResult sendMessage(OnsMessage onsMessage, InterceptorPredicate interceptorPredicate){
+	public SendResult sendMessage(MQMessage<Message> onsMessage, InterceptorPredicate interceptorPredicate){
 		Object body = onsMessage.getBody();
 		if(body instanceof Message){
 			return sendRawMessage((Message)body, interceptorPredicate);
@@ -163,7 +164,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		chain.setSendMessageContext(ctx);
 		chain.setDebug(ctx.isDebug());
 		
-		return chain.invoke();
+		return (SendResult)chain.invoke();
 	}
 
 	

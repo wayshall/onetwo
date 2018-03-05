@@ -1,10 +1,10 @@
 package org.onetwo.ext.ons;
 
+import org.onetwo.boot.mq.SendMessageInterceptor;
+import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs;
-import org.onetwo.ext.ons.producer.SendMessageInterceptor;
-import org.onetwo.ext.ons.producer.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.ext.ons.transaction.DatabaseTransactionMessageInterceptor;
 import org.slf4j.Logger;
 

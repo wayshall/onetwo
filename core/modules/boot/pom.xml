@@ -284,6 +284,37 @@
           </exclusions>
 	    </dependency>
 	    
+	    <!-- activemq -->
+        <!--
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-all</artifactId>
+            <version>5.13.4</version>
+            <optional>true</optional>
+        </dependency>
+        -->
+	    <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-activemq</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-pool</artifactId>
+            <optional>true</optional>
+        </dependency>
+		<dependency>
+		    <groupId>org.apache.activemq</groupId>
+		    <artifactId>activemq-kahadb-store</artifactId>
+            <optional>true</optional>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.activemq</groupId>
+		    <artifactId>activemq-jdbc-store</artifactId>
+            <optional>true</optional>
+		</dependency>
+
+	    
         <!-- test -->
         <dependency>
           <groupId>junit</groupId>

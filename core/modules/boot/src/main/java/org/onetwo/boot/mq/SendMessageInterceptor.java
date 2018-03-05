@@ -1,13 +1,11 @@
-package org.onetwo.ext.ons.producer;
+package org.onetwo.boot.mq;
 
 import java.util.Collections;
 import java.util.List;
 
-import com.aliyun.openservices.ons.api.SendResult;
-
 public interface SendMessageInterceptor {
 	
-	SendResult intercept(SendMessageInterceptorChain chain);
+	Object intercept(SendMessageInterceptorChain chain);
 
 	public interface InterceptorPredicate {
 		boolean isApply(SendMessageInterceptor inter);

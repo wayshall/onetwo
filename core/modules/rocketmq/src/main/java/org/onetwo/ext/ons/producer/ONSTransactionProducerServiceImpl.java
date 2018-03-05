@@ -3,14 +3,15 @@ package org.onetwo.ext.ons.producer;
 import java.util.List;
 import java.util.Properties;
 
+import org.onetwo.boot.mq.MQMessage;
+import org.onetwo.boot.mq.SendMessageInterceptor;
+import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
-import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.producer.SendMessageInterceptor.InterceptorPredicate;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -97,7 +98,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	
 
 	@Override
-	public SendResult sendMessage(OnsMessage onsMessage, LocalTransactionExecuter executer, Object arg){
+	public SendResult sendMessage(MQMessage<Message> onsMessage, LocalTransactionExecuter executer, Object arg){
 		Message message = onsMessage.toMessage();
 		String topic = SpringUtils.resolvePlaceholders(applicationContext, message.getTopic());
 		message.setTopic(topic);
@@ -126,7 +127,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 													.chain(chain)
 													.build();
 		chain.setSendMessageContext(ctx);
-		return chain.invoke();
+		return (SendResult)chain.invoke();
 	}
 	
 	@Override
@@ -164,7 +165,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		}
 
 		@Override
-		public SendResult sendMessage(OnsMessage onsMessage) {
+		public SendResult sendMessage(MQMessage<Message> onsMessage) {
 			SendResult result = transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null);
 			return result;
 		}
@@ -180,7 +181,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		}
 
 		@Override
-		public SendResult sendMessage(OnsMessage onsMessage, InterceptorPredicate interceptorPredicate) {
+		public SendResult sendMessage(MQMessage<Message> onsMessage, InterceptorPredicate interceptorPredicate) {
 			if(logger.isWarnEnabled()){
 				logger.warn("FakeProducerService is not support InterceptorPredicate arguments, ignored: {}", interceptorPredicate);
 			}
