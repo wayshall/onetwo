@@ -1,14 +1,16 @@
 package org.onetwo.ext.ons.producer;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 
-import org.onetwo.boot.mq.MQMessage;
 import org.onetwo.boot.mq.SendMessageInterceptor;
 import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.boot.mq.SendMessageInterceptorChain;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
+import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
@@ -98,7 +100,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	
 
 	@Override
-	public SendResult sendMessage(MQMessage<Message> onsMessage, LocalTransactionExecuter executer, Object arg){
+	public SendResult sendMessage(OnsMessage onsMessage, LocalTransactionExecuter executer, Object arg){
 		Message message = onsMessage.toMessage();
 		String topic = SpringUtils.resolvePlaceholders(applicationContext, message.getTopic());
 		message.setTopic(topic);
@@ -119,8 +121,8 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	}
 
 	protected SendResult sendRawMessage(Message message, LocalTransactionExecuter executer, Object arg){
-		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, ()->this.send(message, executer, arg), null);
-		SendMessageContext ctx = SendMessageContext.builder()
+		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, null, ()->this.send(message, executer, arg));
+		ONSSendMessageContext ctx = ONSSendMessageContext.builder()
 													.message(message)
 													.source(this)
 													.transactionProducer(this)
@@ -154,6 +156,32 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		@Autowired
 		private TransactionProducerService transactionProducerService;
 
+
+		@Override
+		public Object sendMessage(Serializable onsMessage) {
+			if(onsMessage instanceof Message){
+				return sendRawMessage((Message)onsMessage, COMMIT_EXECUTER, null);
+			}else if(onsMessage instanceof OnsMessage){
+				return sendMessage((OnsMessage)onsMessage);
+			}else{
+				throw new IllegalArgumentException("error message type: " + onsMessage.getClass());
+			}
+		}
+
+		@Override
+		public Object sendMessage(Serializable onsMessage, InterceptorPredicate interceptorPredicate) {
+			if(logger.isWarnEnabled()){
+				logger.warn("FakeProducerService is not support InterceptorPredicate arguments, ignored: {}", interceptorPredicate);
+			}
+			if(onsMessage instanceof Message){
+				return sendRawMessage((Message)onsMessage, COMMIT_EXECUTER, null);
+			}else if(onsMessage instanceof OnsMessage){
+				return sendMessage((OnsMessage)onsMessage, interceptorPredicate);
+			}else{
+				throw new IllegalArgumentException("error message type: " + onsMessage.getClass());
+			}
+		}
+
 		@Override
 		public void sendMessage(String topic, String tags, Object body) {
 			SimpleMessage message = SimpleMessage.builder()
@@ -165,7 +193,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		}
 
 		@Override
-		public SendResult sendMessage(MQMessage<Message> onsMessage) {
+		public SendResult sendMessage(OnsMessage onsMessage) {
 			SendResult result = transactionProducerService.sendMessage(onsMessage, COMMIT_EXECUTER, null);
 			return result;
 		}
@@ -181,7 +209,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		}
 
 		@Override
-		public SendResult sendMessage(MQMessage<Message> onsMessage, InterceptorPredicate interceptorPredicate) {
+		public SendResult sendMessage(OnsMessage onsMessage, InterceptorPredicate interceptorPredicate) {
 			if(logger.isWarnEnabled()){
 				logger.warn("FakeProducerService is not support InterceptorPredicate arguments, ignored: {}", interceptorPredicate);
 			}

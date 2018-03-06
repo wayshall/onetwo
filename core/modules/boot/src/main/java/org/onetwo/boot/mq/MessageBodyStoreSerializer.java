@@ -1,26 +1,27 @@
-package org.onetwo.ext.ons.transaction;
+package org.onetwo.boot.mq;
+
+import java.io.Serializable;
 
 import org.apache.commons.lang3.SerializationUtils;
 
-import com.aliyun.openservices.ons.api.Message;
 
 
 public interface MessageBodyStoreSerializer {
 
-	byte[] serialize(Message message);
-	Message deserialize(byte[] body);
+	byte[] serialize(Serializable message);
+	Serializable deserialize(byte[] body);
 	
-	MessageBodyStoreSerializer INSTANCE = new Default();
+	MessageBodyStoreSerializer DEFAULT = new Default(); 
 	
 	public class Default implements MessageBodyStoreSerializer {
 
 		@Override
-		public byte[] serialize(Message message) {
+		public byte[] serialize(Serializable message) {
 			return SerializationUtils.serialize(message);
 		}
 
 		@Override
-		public Message deserialize(byte[] body) {
+		public Serializable deserialize(byte[] body) {
 			return SerializationUtils.deserialize(body);
 		}
 		

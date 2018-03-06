@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.onetwo.boot.mq.SendMessageRepository;
+import org.onetwo.boot.mq.SimpleDatabaseTransactionMessageInterceptor;
 import org.onetwo.common.ds.DatasourceFactoryBean;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
@@ -17,8 +18,6 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.spring.EnableDbm;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
 import org.onetwo.ext.ons.annotation.ONSProducer;
-import org.onetwo.ext.ons.producer.SendMessageContext;
-import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.rmqwithonsclient.producer.RmqONSProducerTest.ProducerTestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -90,14 +89,14 @@ public class RmqONSProducerTest {
 		}
 
 		@Bean
-		public TestDatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository<SendMessageContext> sendMessageRepository){
+		public TestDatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
 			TestDatabaseTransactionMessageInterceptor interceptor = new TestDatabaseTransactionMessageInterceptor();
 			interceptor.setSendMessageRepository(sendMessageRepository);
 			return interceptor;
 		}
 	}
 	
-	public static class TestDatabaseTransactionMessageInterceptor extends DefaultDatabaseTransactionMessageInterceptor {
+	public static class TestDatabaseTransactionMessageInterceptor extends SimpleDatabaseTransactionMessageInterceptor {
 		private volatile boolean throwWhenExecuteSendMessage;
 		@Override
 		public void afterCommit(SendMessageEvent event){

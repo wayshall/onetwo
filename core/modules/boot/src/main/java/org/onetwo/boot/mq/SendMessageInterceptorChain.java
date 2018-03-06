@@ -2,15 +2,19 @@ package org.onetwo.boot.mq;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
-abstract public class SendMessageInterceptorChain {
+@SuppressWarnings("rawtypes")
+public class SendMessageInterceptorChain {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
+	final private Supplier<Object> actualInvoker;
+	private SendMessageContext sendMessageContext;
 	final private List<SendMessageInterceptor> interceptors;
 	final private Iterator<SendMessageInterceptor> iterator;
 //	private SendMessageContext<?> sendMessageContext;
@@ -22,11 +26,17 @@ abstract public class SendMessageInterceptorChain {
 	private int currentIndex = 0;
 	private StringBuilder interLog = new StringBuilder(100);
 
-	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, InterceptorPredicate interceptorPredicate) {
+//	@Builder
+	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, InterceptorPredicate interceptorPredicate, Supplier<Object> actualInvoker) {
 		super();
 		this.interceptors = interceptors;
 		this.iterator = this.interceptors.iterator();
 		this.interceptorPredicate = interceptorPredicate;
+		this.actualInvoker = actualInvoker;
+	}
+	
+	public void setSendMessageContext(SendMessageContext sendMessageContext) {
+		this.sendMessageContext = sendMessageContext;
 	}
 
 	public Object invoke(){
@@ -56,9 +66,9 @@ abstract public class SendMessageInterceptorChain {
 	protected Logger getLogger(){
 		return JFishLoggerFactory.getLogger(this.getClass());
 	}
-	abstract protected Object doSendRawMessage();
-	abstract public SendMessageContext getSendMessageContext();
-
+	protected Object doSendRawMessage(){
+		return this.actualInvoker.get();
+	}
 	
 	public Object getResult() {
 		return result;
@@ -78,6 +88,10 @@ abstract public class SendMessageInterceptorChain {
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
+	}
+
+	public SendMessageContext getSendMessageContext() {
+		return sendMessageContext;
 	}
 
 }

@@ -31,7 +31,7 @@ public class SendMessageEntity extends BaseEntity {
 	private SendStates state;
 	
 	public static enum SendStates {
-		TO_SEND,
+		UNSEND,
 		SENT;
 	}
 

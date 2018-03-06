@@ -1,33 +1,29 @@
-package org.onetwo.ext.ons.transaction;
+package org.onetwo.boot.mq;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.onetwo.boot.mq.SendMessageEntity;
-import org.onetwo.boot.mq.SendMessageRepository;
 import org.onetwo.boot.mq.SendMessageEntity.SendStates;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.producer.SendMessageContext;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.aliyun.openservices.ons.api.Message;
 
 /**
  * @author wayshall
  * <br/>
  */
 @Transactional
-public class DbmSendMessageRepository implements SendMessageRepository<SendMessageContext> {
+public class DbmSendMessageRepository implements SendMessageRepository {
 	
-	private Logger log = ONSUtils.getONSLogger();
+	private Logger log = JFishLoggerFactory.getLogger(getClass());
 	
 //	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
 	@Autowired
@@ -38,17 +34,17 @@ public class DbmSendMessageRepository implements SendMessageRepository<SendMessa
 //	private NamedThreadLocal<Set<SendMessageContext>> messageStorer = new NamedThreadLocal<>("rmq message thread storer");
 	
 	@Override
-	public void save(SendMessageContext ctx){
-		Message message = ctx.getMessage();
+	public void save(SendMessageContext<?> ctx){
+		Serializable message = ctx.getMessage();
 		SendMessageEntity send = new SendMessageEntity();
-		String key = message.getKey();
+		String key = ctx.getKey();
 		if(StringUtils.isBlank(key)){
 //			key = String.valueOf(idGenerator.nextId());
 			//强制必填，可用于client做idempotent
 			throw new ServiceException("message key can not be blank!");
 		}
 		send.setKey(key);
-		send.setState(SendStates.TO_SEND);
+		send.setState(SendStates.UNSEND);
 		send.setBody(messageBodyStoreSerializer.serialize(message));
 		
 		baseEntityManager.persist(send);
@@ -59,7 +55,7 @@ public class DbmSendMessageRepository implements SendMessageRepository<SendMessa
 
 	
 	@Override
-	public void updateToSent(SendMessageContext ctx) {
+	public void updateToSent(SendMessageContext<?> ctx) {
 		boolean debug = ctx.isDebug();
 		SendMessageEntity messageEntity = ctx.getMessageEntity();
 		messageEntity.setState(SendStates.SENT);
@@ -78,7 +74,7 @@ public class DbmSendMessageRepository implements SendMessageRepository<SendMessa
 
 
 	@Override
-	public void remove(Collection<SendMessageContext> msgCtxs){
+	public void remove(Collection<SendMessageContext<?>> msgCtxs){
 		boolean debug = msgCtxs.iterator().next().isDebug();
 		List<String> keys = getSendMessageKeys(msgCtxs);
 		baseEntityManager.removeByIds(SendMessageEntity.class, keys.toArray(new String[0]));
@@ -132,7 +128,7 @@ public class DbmSendMessageRepository implements SendMessageRepository<SendMessa
 		}
 	}*/
 	
-	public static List<String> getSendMessageKeys(Collection<SendMessageContext> msgCtxs){
+	public static List<String> getSendMessageKeys(Collection<SendMessageContext<?>> msgCtxs){
 		if(LangUtils.isEmpty(msgCtxs)){
 			return Collections.emptyList();
 		}

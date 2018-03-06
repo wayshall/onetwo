@@ -17,7 +17,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes=ActivemqTestApplication.class,
 //				properties={"spring.activemq.in-memory=false", "spring.activemq.pool.enabled=false", "spring.activemq.broker-url=tcp://localhost:61616"},
-				properties={"spring.activemq.in-memory=true", "spring.activemq.pool.enabled=false"}
+				properties={
+//							"spring.activemq.in-memory=true", "spring.activemq.pool.enabled=false", 
+							"spring.activemq.in-memory=false", "spring.activemq.pool.enabled=false", "spring.activemq.broker-url=tcp://localhost:61616", 
+//							"jfish.activemq.embedded.enabled=true", "jfish.activemq.jdbcStore.enabled=true"
+							}
 )
 public class ActivemqTest {
 	@Rule
@@ -36,6 +40,8 @@ public class ActivemqTest {
 		String receiveMessage = this.producer.sendReplyQueue("Test message");
 		Thread.sleep(1000L);
 		assertThat(receiveMessage).isEqualTo("I got it!");
+		
+//		LangUtils.CONSOLE.exitIf("exit");
 	}
 
 }

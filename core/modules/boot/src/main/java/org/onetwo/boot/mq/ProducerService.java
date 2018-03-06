@@ -1,5 +1,7 @@
 package org.onetwo.boot.mq;
 
+import java.io.Serializable;
+
 import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
 
 /**
@@ -7,10 +9,10 @@ import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
  * <br/>
  */
 //@SuppressWarnings("rawtypes")
-public interface ProducerService<M, R> {
+public interface ProducerService {
 
-	R sendMessage(MQMessage<M> onsMessage);
-	R sendMessage(MQMessage<M> onsMessage, InterceptorPredicate interceptorPredicate);
+	Object sendMessage(Serializable onsMessage);
+	Object sendMessage(Serializable onsMessage, InterceptorPredicate interceptorPredicate);
 
 
 }

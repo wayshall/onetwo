@@ -6,14 +6,14 @@ import java.util.Collection;
  * @author wayshall
  * <br/>
  */
-public interface SendMessageRepository<C> {
+public interface SendMessageRepository {
 
-	void save(C ctx);
+	void save(SendMessageContext<?> ctx);
 
-	void updateToSent(C ctx);
+	void updateToSent(SendMessageContext<?> ctx);
 	void updateToSent(SendMessageEntity messageEntity);
 
-	void remove(Collection<C> msgCtxs);
+	void remove(Collection<SendMessageContext<?>> msgCtxs);
 
 	/***
 	 * 查找当前上下文的所有发送消息
