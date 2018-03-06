@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.activemq;
+package org.onetwo.boot.module.jms;
 
 import java.io.Serializable;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.springframework.jms.core.JmsMessagingTemplate;
  * @author wayshall
  * <br/>
  */
-public class ActivemqProducerService implements ProducerService, InitializingBean {
+public class JmsProducerService implements ProducerService<JmsMessage, Object>, InitializingBean {
 	@Autowired(required=false)
 	private List<SendMessageInterceptor> sendMessageInterceptors;
 	private InterceptableMessageSender<Object> interceptableMessageSender;
@@ -34,18 +34,27 @@ public class ActivemqProducerService implements ProducerService, InitializingBea
 	}
 
 	@Override
-	public Object sendMessage(Serializable onsMessage) {
+	public Object send(Serializable message, InterceptorPredicate interceptorPredicate) {
+		if(message instanceof JmsMessage){
+			return sendMessage((JmsMessage)message);
+		}
+		throw new IllegalArgumentException("error message type:"+message.getClass());
+	}
+
+	@Override
+	public Object sendMessage(JmsMessage onsMessage) {
 		return sendMessage(onsMessage, null);
 	}
 
 	@Override
-	public Object sendMessage(Serializable onsMessage, InterceptorPredicate interPredicate) {
+	public Object sendMessage(JmsMessage onsMessage, InterceptorPredicate interPredicate) {
 		final InterceptorPredicate interceptorPredicate = interPredicate==null?SendMessageFlags.Default:interPredicate;
+		
 		return interceptableMessageSender.sendIntercetableMessage(interPredicate, messageInterceptors->{
 			SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
 					interceptorPredicate,
 					()->{
-						this.jmsMessagingTemplate.convertAndSend(onsMessage);
+						this.jmsMessagingTemplate.convertAndSend(onsMessage.getDestination(), onsMessage.getMessageBody());
 						return null;
 					});
 			

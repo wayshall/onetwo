@@ -115,19 +115,9 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		return sendMessage(onsMessage, SendMessageFlags.Default);
 	}
 	
-	@Override
-	public Object sendMessage(Serializable onsMessage) {
-		if(onsMessage instanceof Message){
-			return sendRawMessage((Message)onsMessage, null);
-		}else if(onsMessage instanceof OnsMessage){
-			return sendMessage((OnsMessage)onsMessage);
-		}else{
-			throw new IllegalArgumentException("error message type: " + onsMessage.getClass());
-		}
-	}
 
 	@Override
-	public Object sendMessage(Serializable onsMessage, InterceptorPredicate interceptorPredicate) {
+	public SendResult send(Serializable onsMessage, InterceptorPredicate interceptorPredicate) {
 		if(onsMessage instanceof Message){
 			return sendRawMessage((Message)onsMessage, interceptorPredicate);
 		}else if(onsMessage instanceof OnsMessage){

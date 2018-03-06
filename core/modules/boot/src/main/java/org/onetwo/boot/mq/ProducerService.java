@@ -9,10 +9,11 @@ import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
  * <br/>
  */
 //@SuppressWarnings("rawtypes")
-public interface ProducerService {
+public interface ProducerService<M, R> {
 
-	Object sendMessage(Serializable onsMessage);
-	Object sendMessage(Serializable onsMessage, InterceptorPredicate interceptorPredicate);
+	R sendMessage(M message);
+	R sendMessage(M message, InterceptorPredicate interceptorPredicate);
+	R send(Serializable message, InterceptorPredicate interceptorPredicate);
 
 
 }

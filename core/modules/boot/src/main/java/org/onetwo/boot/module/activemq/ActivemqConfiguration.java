@@ -13,6 +13,7 @@ import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.module.activemq.ActivemqProperties.JdbcStoreProps;
 import org.onetwo.boot.module.activemq.ActivemqProperties.KahaDBStoreProps;
+import org.onetwo.boot.module.jms.JmsProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,8 +34,8 @@ import org.springframework.jms.annotation.EnableJms;
 public class ActivemqConfiguration {
 	
 	@Bean
-	public ActivemqProducerService activemqProducerService(){
-		ActivemqProducerService producer = new ActivemqProducerService();
+	public JmsProducerService activemqProducerService(){
+		JmsProducerService producer = new JmsProducerService();
 		return producer;
 	}
 	

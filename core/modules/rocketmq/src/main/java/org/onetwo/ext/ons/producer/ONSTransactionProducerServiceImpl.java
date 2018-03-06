@@ -158,18 +158,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 
 
 		@Override
-		public Object sendMessage(Serializable onsMessage) {
-			if(onsMessage instanceof Message){
-				return sendRawMessage((Message)onsMessage, COMMIT_EXECUTER, null);
-			}else if(onsMessage instanceof OnsMessage){
-				return sendMessage((OnsMessage)onsMessage);
-			}else{
-				throw new IllegalArgumentException("error message type: " + onsMessage.getClass());
-			}
-		}
-
-		@Override
-		public Object sendMessage(Serializable onsMessage, InterceptorPredicate interceptorPredicate) {
+		public SendResult send(Serializable onsMessage, InterceptorPredicate interceptorPredicate) {
 			if(logger.isWarnEnabled()){
 				logger.warn("FakeProducerService is not support InterceptorPredicate arguments, ignored: {}", interceptorPredicate);
 			}

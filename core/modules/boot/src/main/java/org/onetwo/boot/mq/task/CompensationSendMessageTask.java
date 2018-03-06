@@ -49,7 +49,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 	@Autowired
 	private SendMessageRepository sendMessageRepository;
 	@Autowired
-	private ProducerService producerService;
+	private ProducerService<?, ?> producerService;
 	
 	private boolean useReidsLock;
 	@Autowired
@@ -126,7 +126,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 	}
 	
 	protected void processUnsendMessage(SendMessageEntity message, Serializable mqMessage){
-		producerService.sendMessage(mqMessage, SendMessageFlags.DisableDatabaseTransactional);
+		producerService.send(mqMessage, SendMessageFlags.DisableDatabaseTransactional);
 	}
 	
 

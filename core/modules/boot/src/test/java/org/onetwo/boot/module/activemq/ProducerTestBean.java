@@ -1,5 +1,7 @@
 package org.onetwo.boot.module.activemq;
 
+import org.onetwo.boot.module.jms.JmsMessage;
+import org.onetwo.boot.mq.ProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -13,18 +15,26 @@ public class ProducerTestBean {
 
 	@Autowired
 	private JmsMessagingTemplate jmsMessagingTemplate;
+	@Autowired
+	private ProducerService<JmsMessage, Object> producerService;
 	/*@Autowired
 	private Queue queue;*/
 	
 	public void send(String msg){
 //		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
-		this.jmsMessagingTemplate.convertAndSend("sample.queue", msg);
+		String destinationName = "sample.queue";
+//		this.jmsMessagingTemplate.convertAndSend(destinationName, msg);
+		this.producerService.sendMessage(ActivemqMessage.builder()
+														.destinationName(destinationName)
+														.messageBody(msg)
+														.build());
 	}
 	
 	public String sendReplyQueue(String msg){
 //		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
 //		GenericMessage<String> message = new GenericMessage<>(msg);
-		String receive = this.jmsMessagingTemplate.convertSendAndReceive("sample.replyQueue", msg, String.class);
+		String destinationName = "sample.queue";
+		String receive = this.jmsMessagingTemplate.convertSendAndReceive(destinationName, msg, String.class);
 		return receive;
 	}
 }
