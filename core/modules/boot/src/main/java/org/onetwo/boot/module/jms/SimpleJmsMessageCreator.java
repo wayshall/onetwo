@@ -22,11 +22,11 @@ public class SimpleJmsMessageCreator implements JmsMessageCreator {
 	private JmsMessage<Serializable> jmsMessage;
 
 	@Builder
-	public SimpleJmsMessageCreator(String destinationName, DesinationType desinationType, String key, Serializable payload) {
+	public SimpleJmsMessageCreator(String destinationName, DesinationType desinationType, String key, Serializable body) {
 		super();
 		this.destinationName = destinationName;
 		this.desinationType = desinationType==null?DesinationType.QUEUE:desinationType;
-		this.jmsMessage = new JmsMessage<>(key, payload);
+		this.jmsMessage = new JmsMessage<>(key, body);
 	}
 	
 }

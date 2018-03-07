@@ -88,6 +88,9 @@ final public class LangOps {
 	public static void ntimesRun(Integer times, Closure closure){
 		ntimesRun(null, times, closure);
 	}
+	public static void ntimesRun(Integer times, Consumer<Integer> consumer){
+		ntimesRun(null, times, consumer);
+	}
 	
 	public static void ntimesRun(String printTimeTag, Integer times, Closure closure){
 		ntimesRun(printTimeTag, times, i->closure.execute());

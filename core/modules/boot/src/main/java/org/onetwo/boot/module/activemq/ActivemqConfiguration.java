@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -21,6 +22,7 @@ import org.onetwo.boot.module.jms.JmsDestinationConverter;
 import org.onetwo.boot.module.jms.JmsMessage;
 import org.onetwo.boot.module.jms.JmsMessageCreator;
 import org.onetwo.boot.module.jms.JmsProducerService;
+import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
 import org.onetwo.boot.mq.ProducerService;
 import org.onetwo.common.spring.utils.BeanPropertiesMapper;
 import org.onetwo.common.utils.GuavaUtils;
@@ -29,10 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -66,6 +70,27 @@ public class ActivemqConfiguration implements InitializingBean {
 		BeanPropertiesMapper bpm = new BeanPropertiesMapper(cfProps, "", true);
 		bpm.mapToObject(activeMQConnectionFactory);
 		activeMQConnectionFactory.setTrustedPackages(trustedPackagesList);
+	}
+	
+
+	@Bean(name=ContainerFactorys.QUEUE)
+	public DefaultJmsListenerContainerFactory queueListenerContainerFactory(
+			DefaultJmsListenerContainerFactoryConfigurer configurer,
+			ConnectionFactory connectionFactory) {
+		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+		configurer.configure(factory, connectionFactory);
+		factory.setPubSubDomain(false);
+		return factory;
+	}
+	
+	@Bean(name=ContainerFactorys.TOPIC)
+	public DefaultJmsListenerContainerFactory topicListenerContainerFactory(
+			DefaultJmsListenerContainerFactoryConfigurer configurer,
+			ConnectionFactory connectionFactory) {
+		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+		configurer.configure(factory, connectionFactory);
+		factory.setPubSubDomain(true);
+		return factory;
 	}
 
 	@Bean

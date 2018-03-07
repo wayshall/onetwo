@@ -21,6 +21,6 @@ public class JmsMessage<T extends Serializable> implements Serializable {
 	 */
 	private static final long serialVersionUID = -8805102399544290246L;
 	String key;
-	T payload;
+	T body;
 
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.onetwo.boot.module.jms.JmsMessageCreator;
 import org.onetwo.boot.module.jms.SimpleJmsMessageCreator;
+import org.onetwo.boot.module.jms.JmsMessageCreator.DesinationType;
 import org.onetwo.boot.mq.ProducerService;
 import org.onetwo.common.date.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ProducerTestBean {
 	private ProducerService<JmsMessageCreator, Object> producerService;
 	/*@Autowired
 	private Queue queue;*/
-	
+
 	public void send(String msg){
 //		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
 		String destinationName = "sample.queue";
@@ -31,7 +32,18 @@ public class ProducerTestBean {
 		this.producerService.sendMessage(SimpleJmsMessageCreator.builder()
 														.destinationName(destinationName)
 														.key("test_"+DateUtils.formatDateTimeMillis(new Date()))
-														.payload(msg)
+														.body(msg)
+														.build());
+	}
+	public void send2Topic(String msg){
+//		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
+		String destinationName = "sample.queue";
+//		this.jmsMessagingTemplate.convertAndSend(destinationName, msg);
+		this.producerService.sendMessage(SimpleJmsMessageCreator.builder()
+														.destinationName(destinationName)
+														.key("test_"+DateUtils.formatDateTimeMillis(new Date()))
+														.desinationType(DesinationType.TOPIC)
+														.body(msg)
 														.build());
 	}
 	
