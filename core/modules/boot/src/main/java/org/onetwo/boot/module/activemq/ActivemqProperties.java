@@ -1,5 +1,7 @@
 package org.onetwo.boot.module.activemq;
 
+import java.util.Properties;
+
 import lombok.Data;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,6 +17,7 @@ public class ActivemqProperties {
 	public static final String ENABLE_KEY = PREFIX_KEY+".enabled";
 	public static final String EMBEDDED_ENABLE_KEY = PREFIX_KEY+".embedded.enabled";
 	
+	Properties connectionFactory = new Properties();
 	KahaDBStoreProps kahadbStore = new KahaDBStoreProps();
 	JdbcStoreProps jdbcStore = new JdbcStoreProps();
 	

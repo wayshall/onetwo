@@ -26,7 +26,8 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class, RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class, 
 								ElasticsearchAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class, SessionAutoConfiguration.class})
 //@EnableJms
-@Import(ActivemqTestContext.class)
+@Configuration
+@Import({ActivemqTestContext.class, ActivemqConfiguration.class})
 public class ActivemqTestApplication {
 	/*@Bean
 	public Queue queue() {
@@ -41,7 +42,6 @@ public class ActivemqTestApplication {
 	@Configuration
 //	@PropertySource("classpath:activemq-test.properties")
 	@ComponentScan
-	@Import(ActivemqConfiguration.class)
 	public static class ActivemqTestContext {
 		
 		@Bean
