@@ -9,9 +9,11 @@ public class TaskState {
 	private static final Map<Integer, TaskState> STATES = LangUtils.newHashMap();
 	public static final TaskState SUCCEED;
 	public static final TaskState FAILED;
+	public static final TaskState PROCESSING;
 	static {
 		SUCCEED = createState(1, "成功");
-		FAILED = createState(0, "失败");
+		FAILED = createState(-1, "失败");
+		PROCESSING = createState(0, "处理中");
 	}
 //	public static final TaskState NONE = TaskState.createState(0, "进度");
 

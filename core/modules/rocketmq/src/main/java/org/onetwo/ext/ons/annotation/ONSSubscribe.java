@@ -26,5 +26,5 @@ public @interface ONSSubscribe {
 	MessageModel messageModel() default MessageModel.CLUSTERING;
 	ConsumeFromWhere consumeFromWhere() default ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET ;
 	long ignoreOffSetThreshold() default -1;
-	int maxReconsumeTimes() default 16;
+	int maxReconsumeTimes() default -1;
 }

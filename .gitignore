@@ -50,3 +50,4 @@ application-product.yaml
 /core/modules/spring/src/test/java/org/onetwo/common/apiclient/api/PapaBookingClient.java
 /core/modules/spring/src/test/java/org/onetwo/common/apiclient/PapaBookingSoccerTest.java
 /core/modules/spring/src/test/java/org/onetwo/common/apiclient/PapaBookingService.java
+/core/modules/common/src/test/java/org/onetwo/common/project/CloudsoftRefactorTest.java

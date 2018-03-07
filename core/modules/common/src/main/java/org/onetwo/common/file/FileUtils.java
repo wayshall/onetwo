@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -79,6 +80,20 @@ public class FileUtils {
 	}
 
 	public static boolean delete(File file){
+		return delete(file, false);
+	}
+
+	public static boolean delete(File file, boolean deleteChildrenFilesIfDir){
+		if(file.isFile()){
+			return file.delete();
+		}
+		if(!deleteChildrenFilesIfDir){
+			return file.delete();
+		}
+		File[] files = file.listFiles();
+		for(File f : files){
+			delete(f, deleteChildrenFilesIfDir);
+		}
 		return file.delete();
 	}
 
@@ -467,7 +482,16 @@ public class FileUtils {
 	}
 
 	public static String readAsString(InputStream in){
-		return StringUtils.join(readAsList(in), "");
+		return readAsString(in, null);
+	}
+	
+	public static String readAsString(InputStream in, String charset){
+//		return StringUtils.join(readAsList(in), "");
+		try {
+			return IOUtils.toString(in, charset);
+		} catch (Exception e) {
+			throw new BaseException("read InputStream error: " + in);
+		} 
 	}
 	
 	public static String readAsString(String fileName, String charset){
@@ -475,11 +499,13 @@ public class FileUtils {
 	}
 	
 	public static String readAsStringWith(String fileName, Object... context){
-		return StringUtils.join(readAsListWith(fileName, DEFAULT_CHARSET, LangUtils.asMap(context)), "");
+//		return StringUtils.join(readAsListWith(fileName, DEFAULT_CHARSET, LangUtils.asMap(context)), "");
+		return readAsStringWith(fileName, DEFAULT_CHARSET, LangUtils.asMap(context));
 	}
 	
 	public static String readAsStringWith(String fileName, String charset, Map<String, Object> context){
-		return StringUtils.join(readAsListWith(fileName, charset, context), "");
+//		return StringUtils.join(readAsListWith(fileName, charset, context), "");
+		return readAsStringWith(new File(fileName), charset, context);
 	}
 	
 
@@ -491,7 +517,16 @@ public class FileUtils {
 	}
 	
 	public static String readAsStringWith(File file, String charset, Map<String, Object> context){
-		return StringUtils.join(readAsListWithMap(file, charset, context), "");
+//		return StringUtils.join(readAsListWithMap(file, charset, context), "");
+		try(InputStream in = new FileInputStream(file)) {
+			String text = IOUtils.toString(in, charset);
+			if(LangUtils.isNotEmpty(context) && PLACE_HODER_EXP.isExpresstion(text)){
+				text = PLACE_HODER_EXP.parseByProvider(text, context);
+			}
+			return text;
+		} catch (Exception e) {
+			throw new BaseException("read file error: " + file.getPath());
+		} 
 	}
 	
 	public static ClassLoader getClassLoader(){
@@ -829,7 +864,7 @@ public class FileUtils {
 	}
 	
 	public static List<File> listFile(File dirFile, Pattern pattern) {
-		File[] files = dirFile.listFiles();
+		/*File[] files = dirFile.listFiles();
 		if (files == null)
 			return Collections.EMPTY_LIST;
 
@@ -840,6 +875,37 @@ public class FileUtils {
 			} 
 			else {
 				List<File> l = listFile(f, pattern);
+				if(l==null || l.isEmpty())
+					continue;
+				fileList.addAll(l);
+			}
+		}
+
+		return fileList;*/
+		
+		return listFile(dirFile, f->pattern==null || pattern.matcher(f.getPath()).matches());
+	}
+	
+	
+	public static List<File> listFile(File dirFile, Predicate<File> fileMatcher) {
+		return list(dirFile, fileMatcher, false);
+	}
+	
+	public static List<File> list(File dirFile, Predicate<File> fileMatcher, boolean includeDir) {
+		File[] files = dirFile.listFiles();
+		if (files == null)
+			return Collections.EMPTY_LIST;
+
+		List<File> fileList = new ArrayList<File>();
+		for (File f : files) {
+			if (f.isFile()) {
+				if(fileMatcher==null || fileMatcher.test(f))
+					fileList.add(f);
+			} else {
+				if(includeDir && (fileMatcher==null || fileMatcher.test(f))){
+					fileList.add(f);
+				}
+				List<File> l = list(f, fileMatcher, includeDir);
 				if(l==null || l.isEmpty())
 					continue;
 				fileList.addAll(l);

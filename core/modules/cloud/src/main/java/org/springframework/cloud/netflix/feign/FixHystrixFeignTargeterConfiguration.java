@@ -16,6 +16,6 @@ public class FixHystrixFeignTargeterConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Targeter feignTargeter() {
-		return new HystrixTargeter();
+		return new EnhanceHystrixTargeter();
 	}
 }

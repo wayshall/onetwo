@@ -10,15 +10,15 @@ abstract public class AsyncTask implements Runnable {
 //	private Tasker<T> tasker;
 //	private int threadPriority = Thread.NORM_PRIORITY;
 	
-//	private boolean finished;
+	private volatile boolean done;
 	private Exception exception;
 	
-	private int dataCount = 0;
+	private int taskIndex = 0;
 	
-	public AsyncTask(String name, int dataCount) {
+	public AsyncTask(String name, int taskIndex) {
 		super();
 		this.name = name;
-		this.dataCount = dataCount;
+		this.taskIndex = taskIndex;
 //		this.tasker = tasker;
 	}
 	
@@ -55,7 +55,7 @@ abstract public class AsyncTask implements Runnable {
 		} catch (Exception e) {
 			exception = e;
 		}
-//		finished = true;
+		done = true;
 	}
 
 
@@ -74,12 +74,16 @@ abstract public class AsyncTask implements Runnable {
 		return exception;
 	}
 	
+	public boolean isDone() {
+		return done;
+	}
+
 	public boolean isError(){
 		return getException()!=null;
 	}
 
-	public int getDataCount() {
-		return dataCount;
+	public int getTaskIndex() {
+		return taskIndex;
 	}
 
 }

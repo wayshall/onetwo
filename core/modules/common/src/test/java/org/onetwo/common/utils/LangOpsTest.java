@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -69,6 +71,29 @@ public class LangOpsTest {
 		datas.add(new BigDecimalBox(5.0));
 		total = LangOps.sumBigDecimal(datas, BigDecimalBox::getValue);
 		Assert.assertEquals(BigDecimal.valueOf(15.0), total);
+	}
+	
+	@Test
+	public void testParseTimeUnit(){
+		Pair<Integer, TimeUnit> tu = LangOps.parseTimeUnit("11mis");
+		assertThat(tu.getLeft()).isEqualTo(11);
+		assertThat(tu.getRight()).isEqualTo(TimeUnit.MILLISECONDS);
+		
+		tu = LangOps.parseTimeUnit("11s");
+		assertThat(tu.getLeft()).isEqualTo(11);
+		assertThat(tu.getRight()).isEqualTo(TimeUnit.SECONDS);
+		
+		tu = LangOps.parseTimeUnit("11m");
+		assertThat(tu.getLeft()).isEqualTo(11);
+		assertThat(tu.getRight()).isEqualTo(TimeUnit.MINUTES);
+		
+		tu = LangOps.parseTimeUnit("101h");
+		assertThat(tu.getLeft()).isEqualTo(101);
+		assertThat(tu.getRight()).isEqualTo(TimeUnit.HOURS);
+		
+		tu = LangOps.parseTimeUnit("11d");
+		assertThat(tu.getLeft()).isEqualTo(11);
+		assertThat(tu.getRight()).isEqualTo(TimeUnit.DAYS);
 	}
 
 	class BigDecimalBox {

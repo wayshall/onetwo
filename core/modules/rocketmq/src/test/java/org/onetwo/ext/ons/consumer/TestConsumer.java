@@ -1,6 +1,5 @@
 package org.onetwo.ext.ons.consumer;
 
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.producer.ONSProducerTest;
@@ -21,10 +20,10 @@ public class TestConsumer implements CustomONSConsumer<String> /*MessageListener
 
 //	@Override
 	public void doConsume(ConsumContext consumContext) {
-		if(count<1){
+		/*if(count<1){
 			count++;
 			throw new ServiceException("抛错");
-		}
+		}*/
 		System.out.println("收到消息：" + consumContext.getDeserializedBody());
 	}
 

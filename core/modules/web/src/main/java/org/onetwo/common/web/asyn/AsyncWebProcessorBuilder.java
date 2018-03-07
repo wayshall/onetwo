@@ -7,18 +7,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.Springs;
-import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.util.Assert;
 
+/********
+ * 
+ * @author wayshall
+ *
+ */
 public class AsyncWebProcessorBuilder {
 
-	private static final String DEFAULT_ASYNCALLBACK = "jfishAsynCallback";
+//	private static final String DEFAULT_ASYNCALLBACK = "jfishAsynCallback";
 
 	public static AsyncWebProcessorBuilder newBuilder(HttpServletResponse response){
 		return new AsyncWebProcessorBuilder(response);
-	}
-	public static AsyncWebProcessorBuilder newBuilder(HttpServletResponse response, String jscallback){
-		return new AsyncWebProcessorBuilder(response, jscallback);
 	}
 	public static AsyncWebProcessorBuilder newBuilder(HttpServletRequest request, HttpServletResponse response){
 		return new AsyncWebProcessorBuilder(request, response);
@@ -26,13 +28,14 @@ public class AsyncWebProcessorBuilder {
 	
 //	private final HttpServletRequest request;
 	private final HttpServletResponse response;
-	private AsyncMessageTunnel<?> messageTunnel;
+	private AsyncMessageHolder messageTunnel;
 	private AsyncTaskExecutor asyncTaskExecutor;
 	private String contentType = AsyncUtils.CONTENT_TYPE;
-	private int flushInSecond = 1;
-	private String asynCallback = DEFAULT_ASYNCALLBACK;
-	
-	private boolean progressProcessor;
+	private int flushInMilliSecond = 1000;
+	private String asynCallback = "parent.doAsynCallback";
+//	private String progressCallback = "doProgressCallback";
+	private boolean writeEmptyMessage;
+	private boolean useCompletableFeture;
 	
 	private AsyncWebProcessorBuilder(HttpServletResponse response) {
 		super();
@@ -61,55 +64,72 @@ public class AsyncWebProcessorBuilder {
 		return this;
 	}
 	
-	
+	public AsyncWebProcessorBuilder writeEmptyMessage(boolean writeEmptyMessage) {
+		this.writeEmptyMessage = writeEmptyMessage;
+		return this;
+	}
 	public AsyncWebProcessorBuilder asynCallback(String asynCallback) {
 		this.asynCallback = asynCallback;
 		return this;
 	}
 
-	public AsyncWebProcessorBuilder flushInSecond(int flushInSecond) {
-		this.flushInSecond = flushInSecond;
+	public AsyncWebProcessorBuilder useCompletableFeture(boolean useCompletableFeture) {
+		this.useCompletableFeture = useCompletableFeture;
+		return this;
+	}
+	public AsyncWebProcessorBuilder flushInMilliSecond(int flushInSecond) {
+		this.flushInMilliSecond = flushInSecond;
 		return this;
 	}
 
-	public AsyncWebProcessorBuilder progressProcessor(boolean progress) {
-		this.progressProcessor = progress;
-		return this;
-	}
-
-	public AsyncWebProcessorBuilder messageTunnel(AsyncMessageTunnel<?> messageTunnel) {
+	public AsyncWebProcessorBuilder messageTunnel(AsyncMessageHolder messageTunnel) {
 		this.messageTunnel = messageTunnel;
 		return this;
 	}
 
-	public AsyncWebProcessor<?> build(){
+	/*public AsyncWebProcessorBuilder<MSG> progressCallback(String progressCallback) {
+		this.progressCallback = progressCallback;
+		return this;
+	}*/
+	public AsyncWebProcessor buildAsyncWebProcessor(){
 		if(asyncTaskExecutor==null){
 			asyncTaskExecutor = Springs.getInstance().getBean(AsyncTaskExecutor.class);
 		}
-		if(StringUtils.isBlank(asynCallback)){
-			asynCallback = AsyncUtils.getAsyncCallbackName(DEFAULT_ASYNCALLBACK);
-		}
+		Assert.hasText(asynCallback);
+//		Assert.hasText(progressCallback);
 		response.setContentType(contentType);
-		DefaultAsyncWebProcessor<?> processor = null;
+		DefaultAsyncWebProcessor processor = null;
 		try {
-			if(progressProcessor){
-				if(messageTunnel==null){
-					messageTunnel = new StringMessageHolder();
-				}
-				processor = new DefaultProgressAsyncWebProcessor(response.getWriter(), (AsyncMessageHolder)messageTunnel, asyncTaskExecutor);
-			}else{
-				if(messageTunnel==null){
-					messageTunnel = new StringMessageTunnel();
-				}
-				processor = new DefaultAsyncWebProcessor<>(response.getWriter(), messageTunnel, asyncTaskExecutor);
-			}
-			processor.setSleepTime(flushInSecond);
+			processor = new DefaultAsyncWebProcessor(response.getWriter(), messageTunnel, asyncTaskExecutor);
+			processor.setSleepTime(flushInMilliSecond);
 			processor.setAsynCallback(asynCallback);
+			processor.setWriteEmptyMessage(writeEmptyMessage);
 		} catch (IOException e) {
 			throw new BaseException("build processor error: " + e.getMessage());
 		}
 		return processor;
 	}
-	
+
+	public ProgressAsyncWebProcessor buildProgressAsyncWebProcessor(){
+		if(asyncTaskExecutor==null){
+			asyncTaskExecutor = Springs.getInstance().getBean(AsyncTaskExecutor.class);
+		}
+		Assert.hasText(asynCallback);
+//		Assert.hasText(progressCallback);
+		response.setContentType(contentType);
+		DefaultProgressAsyncWebProcessor processor = null;
+		try {
+			if(useCompletableFeture){
+				processor = new CompletableProgressAsyncWebProcessor(response.getWriter(), messageTunnel, asyncTaskExecutor, /*progressCallback, */asynCallback);
+			}else{
+				processor = new DefaultProgressAsyncWebProcessor(response.getWriter(), messageTunnel, asyncTaskExecutor, /*progressCallback, */asynCallback);
+			}
+			processor.setSleepTime(flushInMilliSecond);
+			processor.setWriteEmptyMessage(writeEmptyMessage);
+		} catch (IOException e) {
+			throw new BaseException("build ProgressAsyncWebProcessor error: " + e.getMessage());
+		}
+		return processor;
+	}
 
 }

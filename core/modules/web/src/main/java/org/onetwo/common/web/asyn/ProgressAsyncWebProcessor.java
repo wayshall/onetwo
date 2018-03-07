@@ -2,7 +2,7 @@ package org.onetwo.common.web.asyn;
 
 import java.util.List;
 
-public interface ProgressAsyncWebProcessor {
+public interface ProgressAsyncWebProcessor extends AsyncWebProcessor {
 	
-	public void handleList(List<?> datas, int dataCountPerTask, ProgressAsyncTaskCreator<List<?>> creator);
+	public <T> void handleList(List<T> datas, int dataCountPerTask, ProgressAsyncTaskCreator<T> creator);
 }

@@ -48,7 +48,7 @@ public class DelegateMessageService implements InitializingBean {
 	@Transactional
 	@SuppressWarnings("rawtypes")
 	public ConsumContext processMessages(ConsumerMeta meta, List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getListener();
+		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getConsumerAction();
 
 		ConsumContext currentConetxt = null;
 		for(MessageExt message : msgs){
@@ -61,11 +61,12 @@ public class DelegateMessageService implements InitializingBean {
 											.messageId(msgId)
 											.message(message)
 											.deserializedBody(body)
+//											.consumerMeta(meta)
 											.build();
 			
-			consumerListenerComposite.beforeConsumeMessage(currentConetxt);
+			consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 			consumer.doConsume(currentConetxt);
-			consumerListenerComposite.afterConsumeMessage(currentConetxt);
+			consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
 			logger.info("consumed message. id: {}, topic: {}, tag: {}, body: {}", msgId,  message.getTopic(), message.getTags(), body);
 		}
 		return currentConetxt;

@@ -10,6 +10,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.dialet.DBDialect.LockInfo;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
+import org.onetwo.ext.ons.ONSProperties.SendTaskProps;
 import org.onetwo.ext.ons.ONSUtils.SendMessageFlags;
 import org.onetwo.ext.ons.producer.ProducerService;
 import org.slf4j.Logger;
@@ -35,11 +36,17 @@ public class CompensationSendMessageTask implements InitializingBean {
 	private ProducerService producerService;
 	@Autowired
 	private MessageBodyStoreSerializer messageBodyStoreSerializer;
+	@Autowired
+	private ONSProperties onsProperties;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 	}
 
+	/***
+	 * 定时器运行时间，默认60秒一次
+	 * @author wayshall
+	 */
 //	@Scheduled(cron="${"+ONSProperties.TRANSACTIONAL_TASK_CRON_KEY+":0 0/1 * * * *}")
 	@Scheduled(fixedRateString="${"+ONSProperties.TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY+":60000}")
 	public void scheduleCheckSendMessage(){
@@ -49,18 +56,20 @@ public class CompensationSendMessageTask implements InitializingBean {
 	}
 	
 	/***
-	 * 扫描一分钟前的100条未发送消息，使用悲观锁
+	 * 扫描指定时间前的100条未发送消息，使用悲观锁
 	 * 可扩展为其它类型锁
 	 * @author wayshall
 	 */
 	protected void doCheckSendMessage(){
-		LocalDateTime createAt = LocalDateTime.now().minusMinutes(1);
+		SendTaskProps taskProps = this.onsProperties.getTransactional().getSendTask();
+		long deleteBeforeAt = taskProps.getDeleteBeforeAtInSeconds();
+		LocalDateTime createAt = LocalDateTime.now().minusSeconds(deleteBeforeAt);
 		List<SendMessageEntity> messages = Querys.from(baseEntityManager, SendMessageEntity.class)
 												.where()
 													.field("createAt").lessThan(createAt)
 												.end()
 												.asc("createAt")
-												.limit(0, 100)
+												.limit(0, taskProps.getDeleteCountPerTask())
 												.lock(LockInfo.write())
 												.toQuery()
 												.list();

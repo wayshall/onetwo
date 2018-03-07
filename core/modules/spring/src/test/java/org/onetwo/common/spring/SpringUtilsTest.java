@@ -2,6 +2,7 @@ package org.onetwo.common.spring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,9 @@ import java.util.Map;
 import org.junit.Test;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.FieldName;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class SpringUtilsTest {
@@ -19,6 +23,17 @@ public class SpringUtilsTest {
 		String[] strs = SpringUtils.getConstructorNames(TestBean.class, 1);
 		System.out.println("names:"+Arrays.asList(strs));
 		assertThat(strs).contains("name");
+	}
+	
+	@Test
+	public void testNewPathResource() throws Exception{
+		Resource res = SpringUtils.newPathResource("classpath:/org");
+		assertThat(res).isInstanceOf(ClassPathResource.class);
+		System.out.println("path:"+res.getFile());
+		
+		res = SpringUtils.newPathResource("D:/tmp");
+		assertThat(res).isInstanceOf(FileSystemResource.class);
+		System.out.println("path:"+res.getFile());
 	}
 
 	@Test
