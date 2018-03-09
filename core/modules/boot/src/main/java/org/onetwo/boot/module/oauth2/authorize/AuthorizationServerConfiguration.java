@@ -17,13 +17,16 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.builders.ClientDetailsServiceBuilder.ClientBuilder;
 import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
+import org.springframework.security.oauth2.config.annotation.builders.JdbcClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -99,7 +102,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		if(oauth2AccessDeniedHandler!=null){
 			security.accessDeniedHandler(oauth2AccessDeniedHandler);
 		}
-		
+		if(passwordEncoder!=null){
+			security.passwordEncoder(passwordEncoder);
+		}
 	}
 	
 	protected class ClientCredentialsTokenEndpointFilterPostProcessor implements ObjectPostProcessor<ClientCredentialsTokenEndpointFilter> {
@@ -124,9 +129,18 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	protected void configJdbc(ClientDetailsServiceConfigurer clients) throws Exception{
 		Assert.notNull(dataSource, "dataSource is required!");
-		clients.jdbc(dataSource)
-				.passwordEncoder(passwordEncoder)
-				.build();
+		JdbcClientDetailsServiceBuilder b = clients.jdbc(dataSource);
+		if(passwordEncoder!=null){
+			b.passwordEncoder(passwordEncoder);
+		}
+		b.build();
+	}
+	
+
+//	@Bean
+	public BCryptPasswordEncoder passwordEncoder(){
+		BCryptPasswordEncoder coder = new BCryptPasswordEncoder();
+		return coder;
 	}
 
 	@SuppressWarnings("rawtypes")

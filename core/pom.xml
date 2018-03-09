@@ -40,11 +40,8 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/common</module>
-                <module>modules/spring</module>
-                <module>../../dbm</module>
                 <module>modules/boot</module>
                 <module>modules/rocketmq</module>
-                <module>modules/cloud</module>
 			</modules>
            <build>
               <plugins>
