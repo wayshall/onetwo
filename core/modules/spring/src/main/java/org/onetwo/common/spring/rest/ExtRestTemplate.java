@@ -8,13 +8,14 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
+import net.jodah.typetools.TypeResolver;
+
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.convertor.ApiclientJackson2HttpMessageConverter;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
-import org.onetwo.common.reflect.TypeResolver;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.slf4j.Logger;

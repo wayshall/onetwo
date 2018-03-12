@@ -3,8 +3,9 @@ package org.onetwo.common.spring.context;
 import java.lang.annotation.Annotation;
 import java.util.stream.Stream;
 
+import net.jodah.typetools.TypeResolver;
+
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.reflect.TypeResolver;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanClassLoaderAware;
