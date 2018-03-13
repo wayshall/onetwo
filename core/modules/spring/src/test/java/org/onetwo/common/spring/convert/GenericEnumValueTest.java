@@ -1,9 +1,9 @@
 package org.onetwo.common.spring.convert;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import net.jodah.typetools.TypeResolver;
 
 import org.junit.Test;
-import org.onetwo.common.reflect.TypeResolver;
 
 /**
  * @author wayshall

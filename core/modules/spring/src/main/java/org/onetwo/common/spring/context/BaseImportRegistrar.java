@@ -2,9 +2,10 @@ package org.onetwo.common.spring.context;
 
 import java.lang.annotation.Annotation;
 
+import net.jodah.typetools.TypeResolver;
+
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.reflect.TypeResolver;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;

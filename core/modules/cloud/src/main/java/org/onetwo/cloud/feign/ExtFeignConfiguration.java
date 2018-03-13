@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import okhttp3.ConnectionPool;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
@@ -47,7 +46,7 @@ import feign.codec.Decoder;
  */
 @Configuration
 @ConditionalOnClass(Feign.class)
-//@Import(FixHystrixFeignTargeterConfiguration.class)
+//@Import(LocalFeignTargeterConfiguration.class)
 @EnableConfigurationProperties({FeignProperties.class, BootSpringConfig.class})
 @ConditionalOnProperty(value=FeignProperties.ENABLE_KEY, matchIfMissing=true)
 public class ExtFeignConfiguration implements InitializingBean {
@@ -74,6 +73,12 @@ public class ExtFeignConfiguration implements InitializingBean {
 			this.simpleLoggerManager = new SimpleLoggerManager();
 		}
 	}
+	
+	/*@Bean
+	static public LocalFeignBeanDefinitionRegistryPostProcessor localFeignBeanDefinitionRegistryPostProcessor(){
+		return new LocalFeignBeanDefinitionRegistryPostProcessor();
+	}*/
+	
 
 	@Bean
 	@ConditionalOnMissingBean
