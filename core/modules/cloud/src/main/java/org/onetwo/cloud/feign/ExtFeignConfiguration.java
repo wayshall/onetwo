@@ -46,7 +46,7 @@ import feign.codec.Decoder;
  */
 @Configuration
 @ConditionalOnClass(Feign.class)
-//@Import(FixHystrixFeignTargeterConfiguration.class)
+//@Import(LocalFeignTargeterConfiguration.class)
 @EnableConfigurationProperties({FeignProperties.class, BootSpringConfig.class})
 @ConditionalOnProperty(value=FeignProperties.ENABLE_KEY, matchIfMissing=true)
 public class ExtFeignConfiguration implements InitializingBean {
@@ -78,6 +78,7 @@ public class ExtFeignConfiguration implements InitializingBean {
 	static public LocalFeignBeanDefinitionRegistryPostProcessor localFeignBeanDefinitionRegistryPostProcessor(){
 		return new LocalFeignBeanDefinitionRegistryPostProcessor();
 	}*/
+	
 
 	@Bean
 	@ConditionalOnMissingBean
