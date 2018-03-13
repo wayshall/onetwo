@@ -35,6 +35,9 @@ public class LocalFeignBeanDefinitionRegistryPostProcessor implements BeanDefini
 	
 	protected void modifyFeignBeanFacotries(ConfigurableListableBeanFactory beanFactory){
 		ListableBeanFactory bf = (ListableBeanFactory)beanFactory.getParentBeanFactory();
+		if(bf==null){
+			return ;
+		}
 		String[] feignBeanNames = bf.getBeanNamesForAnnotation(EnhanceFeignClient.class);
 		
 		BeanDefinitionRegistry bdr = (BeanDefinitionRegistry)bf;

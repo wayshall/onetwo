@@ -16,6 +16,6 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import({EnableJFishCloudExtensionSelector.class})
-@EnableFeignClients(defaultConfiguration=ExtFeignConfiguration.class)
+@EnableFeignClients(defaultConfiguration={ExtFeignConfiguration.class})
 public @interface EnableJFishCloudExtension {
 }

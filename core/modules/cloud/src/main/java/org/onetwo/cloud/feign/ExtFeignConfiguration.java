@@ -13,7 +13,6 @@ import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
-import org.onetwo.cloud.feign.local.LocalFeignBeanDefinitionRegistryPostProcessor;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -75,10 +74,10 @@ public class ExtFeignConfiguration implements InitializingBean {
 		}
 	}
 	
-	@Bean
+	/*@Bean
 	static public LocalFeignBeanDefinitionRegistryPostProcessor localFeignBeanDefinitionRegistryPostProcessor(){
 		return new LocalFeignBeanDefinitionRegistryPostProcessor();
-	}
+	}*/
 
 	@Bean
 	@ConditionalOnMissingBean
