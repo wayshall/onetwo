@@ -37,7 +37,8 @@ public class SimpleLoggerManager {
 		}
 		Level targetLevel = Level.toLevel(level);
 		if(targetLevel.equals(targetLogger.getLevel())){
-			throw new ServiceException("logger's level is equals target level");
+//			throw new ServiceException("logger's level is equals target level");
+			return ;
 		}
 		loggerOriginLevelHoders.putIfAbsent(targetLogger, Optional.ofNullable(targetLogger.getLevel()));
 		targetLogger.setLevel(targetLevel);
