@@ -40,10 +40,11 @@ public class LocalTargeter implements Targeter, ApplicationContextAware {
 		Class<?> fallbackType = factory.getFallback();
 		Class<?> clientInterface = factory.getType();
 		EnhanceFeignClient enhanceAnno = clientInterface.getAnnotation(EnhanceFeignClient.class);
-		if(enhanceAnno==null){
+		if(enhanceAnno==null || enhanceAnno.local()==void.class){
 			return defaultTarget.get();
 		}
-		Class<?> apiInterface = enhanceAnno.local()==void.class?clientInterface.getInterfaces()[0]:enhanceAnno.local();//parent interface
+//		Class<?> apiInterface = enhanceAnno.local()==void.class?clientInterface.getInterfaces()[0]:enhanceAnno.local();//parent interface
+		Class<?> apiInterface = enhanceAnno.local();
 		String[] typeBeanNames = appContext.getBeanNamesForType(apiInterface);//maybe: feignclient, fallback, controller
 //		ApplicationContext app = Springs.getInstance().getAppContext();
 		if(typeBeanNames.length<=1){
