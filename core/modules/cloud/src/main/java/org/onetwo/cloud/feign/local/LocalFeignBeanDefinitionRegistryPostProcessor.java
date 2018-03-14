@@ -7,19 +7,26 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.cloud.feign.EnhanceFeignClient;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.aop.Proxys;
+import org.onetwo.common.spring.aop.Proxys.SpringBeanMethodInterceptor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.context.ApplicationContext;
 
 /**
+ * 废弃。。。这个方法没有成功替换feign的factoryBean，因为实际执行的结果是原来的FactoryBean的getObject方法被调用后，postProcessBeanDefinitionRegistry才被执行。。。。。
  * @author wayshall
  * <br/>
  */
+@Deprecated
 public class LocalFeignBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
 	@Override
@@ -67,7 +74,6 @@ public class LocalFeignBeanDefinitionRegistryPostProcessor implements BeanDefini
 			feignBeanDefinition.setBeanClassName(LocalFeignInvokerFactoryBean.class.getName());
 			mpvs.addPropertyValue("remoteInterface", clientInterface);
 			mpvs.addPropertyValue("localBeanName", localBeanNameOpt.get());
-			System.out.println("typeBeanNames: " + typeBeanNames);
 		});
 	}
 	
@@ -79,5 +85,37 @@ public class LocalFeignBeanDefinitionRegistryPostProcessor implements BeanDefini
 		}
 	}
 	
+	public class LocalFeignInvokerFactoryBean implements FactoryBean<Object>{
+		@Autowired
+		private ApplicationContext applicationContext;
+		private Class<?> remoteInterface;
+		private String localBeanName;
+		
+
+		@Override
+		public Object getObject() throws Exception {
+			Object localProxy = Proxys.delegateInterface(remoteInterface, new SpringBeanMethodInterceptor(applicationContext, localBeanName));
+			return localProxy;
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return remoteInterface;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return true;
+		}
+
+		public void setRemoteInterface(Class<?> remoteInterface) {
+			this.remoteInterface = remoteInterface;
+		}
+
+		public void setLocalBeanName(String localBeanName) {
+			this.localBeanName = localBeanName;
+		}
+
+	}
 
 }
