@@ -51,8 +51,8 @@ public abstract class Proxys {
 	public static <T> T interceptInterface(Class<T> proxiedInterface, MethodInterceptor methodInterceptor){
 		return interceptInterfaces(Arrays.asList(proxiedInterface), methodInterceptor);
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> T interceptInterfaces(List<Class> proxiedInterfaces, MethodInterceptor methodInterceptor){
+	@SuppressWarnings({ "unchecked" })
+	public static <T> T interceptInterfaces(List<Class<?>> proxiedInterfaces, MethodInterceptor methodInterceptor){
 		ProxyFactory pf = new ProxyFactory();
 		/*pf.setOptimize(true);
 		pf.setProxyTargetClass(true);*/
