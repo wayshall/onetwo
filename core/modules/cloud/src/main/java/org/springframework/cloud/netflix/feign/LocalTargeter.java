@@ -28,9 +28,14 @@ public class LocalTargeter implements Targeter, ApplicationContextAware {
 	
 	@Override
 	public <T> T target(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
-		return getTarget(applicationContext.getParent(), factory, ()->{
-			return hystrixTargeter.target(factory, feign, context, target);
+		return getTarget(applicationContext, factory, ()->{
+			return (T)getTarget(applicationContext.getParent(), factory, ()->{
+				return hystrixTargeter.target(factory, feign, context, target);
+			});
 		});
+		/*return getTarget(applicationContext.getParent(), factory, ()->{
+			return hystrixTargeter.target(factory, feign, context, target);
+		});*/
 	}
 	
 	@SuppressWarnings("unchecked")
