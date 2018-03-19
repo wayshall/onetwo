@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.oauth2.result;
 
 import org.onetwo.boot.core.json.ObjectMapperProvider;
+import org.onetwo.boot.core.json.ObjectMapperProvider.ObjectMapperCustomizer;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.boot.module.oauth2.result.OAuth2ExceptionDataResultJsonSerializer.OAuth2ExceptionMixin;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -13,8 +14,6 @@ import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 配置定制的OAuth2ExceptionRenderer，返回框架约定的的格式
@@ -39,30 +38,37 @@ public class OAuth2CustomResultConfiguration implements InitializingBean{
 			}, new OAuth2DataResultWrapper());
 		}
 	}
-	@Bean
+	/*@Bean
 	public ObjectMapperProvider objectMapperProvider(){
 		return ()->{
 			ObjectMapper jsonMapper = ObjectMapperProvider.DEFAULT.createObjectMapper();
 			jsonMapper.addMixIn(OAuth2Exception.class, OAuth2ExceptionMixin.class);
 			return jsonMapper;
 		};
+	}*/
+	
+	@Bean
+	public ObjectMapperCustomizer oauth2ObjectMapperCustomizer(){
+		return jsonMapper->{
+			jsonMapper.addMixIn(OAuth2Exception.class, OAuth2ExceptionMixin.class);
+		};
 	}
 	@Bean
-	public DataResultOAuth2ExceptionRenderer oauth2ExceptionRenderer(){
-		return new DataResultOAuth2ExceptionRenderer(objectMapperProvider());
+	public DataResultOAuth2ExceptionRenderer oauth2ExceptionRenderer(ObjectMapperProvider objectMapperProvider){
+		return new DataResultOAuth2ExceptionRenderer(objectMapperProvider);
 	}
 	
 	@Bean
-	public OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint(){
+	public OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint(ObjectMapperProvider objectMapperProvider){
 		OAuth2AuthenticationEntryPoint ep = new OAuth2AuthenticationEntryPoint();
-		ep.setExceptionRenderer(oauth2ExceptionRenderer());
+		ep.setExceptionRenderer(oauth2ExceptionRenderer(objectMapperProvider));
 		return ep;
 	}
 	
 	@Bean
-	public OAuth2AccessDeniedHandler oauth2AccessDeniedHandler(){
+	public OAuth2AccessDeniedHandler oauth2AccessDeniedHandler(ObjectMapperProvider objectMapperProvider){
 		OAuth2AccessDeniedHandler dh = new OAuth2AccessDeniedHandler();
-		dh.setExceptionRenderer(oauth2ExceptionRenderer());
+		dh.setExceptionRenderer(oauth2ExceptionRenderer(objectMapperProvider));
 		return dh;
 	}
 	
