@@ -1,6 +1,12 @@
 package org.onetwo.boot.plugin.core;
 
+import java.util.Map;
+import java.util.Optional;
+
+import org.onetwo.boot.core.config.BootJFishConfig;
+import org.onetwo.boot.core.config.PluginProperties;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 abstract public class WebPluginAdapter implements WebPlugin {
 	
@@ -8,12 +14,15 @@ abstract public class WebPluginAdapter implements WebPlugin {
 	
 	private String contextPath;
 	
+	@Autowired
+	private BootJFishConfig bootJFishConfig;
+	
 	public String toString(){
 		return this.getPluginMeta().toString();
 	}
 
 	public String getContextPath() {
-		String contextPath = this.contextPath;
+		/*String contextPath = this.contextPath;
 		if(contextPath==null){
 			contextPath = StringUtils.uncapitalize(getPluginMeta().getName());
 			if(contextPath.endsWith(PLUGIN_POSTFIX)){
@@ -21,6 +30,27 @@ abstract public class WebPluginAdapter implements WebPlugin {
 			}
 			this.contextPath = StringUtils.appendStartWith(contextPath, "/");;
 		}
+		return contextPath;*/
+		String contextPath = this.contextPath;
+		if(contextPath==null){
+			contextPath = getPluginContextPathFromConfig().orElseGet(()->{
+				String defaultCtxPath = StringUtils.uncapitalize(getPluginMeta().getName());
+				if(defaultCtxPath.endsWith(PLUGIN_POSTFIX)){
+					defaultCtxPath = defaultCtxPath.substring(0, defaultCtxPath.length()-PLUGIN_POSTFIX.length());
+				}
+				return defaultCtxPath;
+			});
+			this.contextPath = StringUtils.appendStartWith(contextPath, "/");
+		}
 		return contextPath;
+	}
+	
+	protected Optional<String> getPluginContextPathFromConfig(){
+		Map<String, PluginProperties> plugins = bootJFishConfig.getPlugin();
+		PluginProperties pluginProps = plugins.get(getPluginMeta().getName());
+		if(pluginProps==null || StringUtils.isBlank(pluginProps.getContextPath())){
+			return Optional.empty();
+		}
+		return Optional.of(pluginProps.getContextPath());
 	}
 }
