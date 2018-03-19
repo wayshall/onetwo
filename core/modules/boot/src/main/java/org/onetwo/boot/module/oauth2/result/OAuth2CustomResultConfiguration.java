@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.oauth2.result;
 
 import org.onetwo.boot.core.json.ObjectMapperProvider;
+import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvider;
 import org.onetwo.boot.core.json.ObjectMapperProvider.ObjectMapperCustomizer;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.boot.module.oauth2.result.OAuth2ExceptionDataResultJsonSerializer.OAuth2ExceptionMixin;
@@ -8,6 +9,7 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -38,14 +40,12 @@ public class OAuth2CustomResultConfiguration implements InitializingBean{
 			}, new OAuth2DataResultWrapper());
 		}
 	}
-	/*@Bean
+
+	@Bean
+	@ConditionalOnMissingBean(ObjectMapperProvider.class)
 	public ObjectMapperProvider objectMapperProvider(){
-		return ()->{
-			ObjectMapper jsonMapper = ObjectMapperProvider.DEFAULT.createObjectMapper();
-			jsonMapper.addMixIn(OAuth2Exception.class, OAuth2ExceptionMixin.class);
-			return jsonMapper;
-		};
-	}*/
+		return new DefaultObjectMapperProvider();
+	}
 	
 	@Bean
 	public ObjectMapperCustomizer oauth2ObjectMapperCustomizer(){
