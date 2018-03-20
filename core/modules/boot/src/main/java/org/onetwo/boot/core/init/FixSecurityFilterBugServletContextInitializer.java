@@ -13,7 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /***
  * boot 不启动security的autoconfig时，有bug，会自动注册不受控的filter

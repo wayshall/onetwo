@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.6.1-SNAPSHOT</version>
+		<version>4.7.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -223,7 +223,7 @@
 	    </dependency>
 	    <dependency> 
 	        <groupId>org.springframework.boot</groupId>
-	        <artifactId>spring-boot-starter-redis</artifactId>
+	        <artifactId>spring-boot-starter-data-redis</artifactId>
             <optional>true</optional>
 	    </dependency>
         
@@ -349,22 +349,22 @@
 	</dependencies>
 	
 	<repositories>
-		<!-- <repository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository> -->
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
+        <repository>
+            <id>Central</id>
+            <name>Central Repository</name>
+            <url>http://central.maven.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>

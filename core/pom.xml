@@ -3,7 +3,7 @@
 
   <groupId>org.onetwo4j</groupId>
   <artifactId>onetwo-modules</artifactId>
-  <version>4.6.1-SNAPSHOT</version>
+  <version>4.7.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>onetwo-modules</name>
@@ -39,6 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
+                <module>modules/bom</module>
                 <module>modules/boot</module>
 			</modules>
            <build>
