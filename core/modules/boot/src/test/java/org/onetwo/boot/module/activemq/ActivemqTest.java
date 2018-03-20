@@ -1,7 +1,5 @@
 package org.onetwo.boot.module.activemq;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +19,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 //				properties={"spring.activemq.in-memory=false", "spring.activemq.pool.enabled=false", "spring.activemq.broker-url=tcp://localhost:61616"},
 				properties={
 //							"spring.activemq.in-memory=true", "spring.activemq.pool.enabled=false", 
-							"spring.activemq.in-memory=false", "spring.activemq.pool.enabled=false", "spring.activemq.broker-url=tcp://localhost:61616", 
+							"spring.activemq.in-memory=false", "spring.activemq.pool.enabled=false", "spring.activemq.broker-url=tcp://newserver.microcloudtech.com:61616", 
+							"spring.activemq.packages.trustAll=true",
 //							"jfish.activemq.embedded.enabled=true", "jfish.activemq.jdbcStore.enabled=true"
 							"jfish.activemq.enabled=true"
 							}
@@ -35,8 +34,10 @@ public class ActivemqTest {
 
 	@Test
 	public void sendSimpleMessage() throws InterruptedException {
-		LangOps.ntimesRun(10, (i)->this.producer.send2Topic("Test message " + i));
+		LangOps.ntimesRun(5, (i)->this.producer.send("Test message " + i));
 		Thread.sleep(1000L);
+		/*LangOps.ntimesRun(5, (i)->this.producer.send2Topic("Test topic message " + i));
+		Thread.sleep(1000L);*/
 //		assertThat(this.outputCapture.toString().contains("Test message")).isTrue();
 		
 

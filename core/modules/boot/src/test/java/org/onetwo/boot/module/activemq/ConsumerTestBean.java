@@ -15,14 +15,21 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ConsumerTestBean {
 
-	@JmsListener(destination = "sample.queue", subscription="ConsumerTestBean#receiveQueue", containerFactory=ContainerFactorys.TOPIC)
+	@JmsListener(destination = "sample.topic", containerFactory=ContainerFactorys.TOPIC)
+//	@JmsListener(destination = "sample.queue", subscription="ConsumerTestBean#receiveQueue")
+	public void receiveTopic(JmsMessage<String> msg) {
+		System.out.println(msg.getBody());
+		log.info("ConsumerTestBean receive topic message: "+msg.getBody());
+	}
+
+	@JmsListener(destination = "sample.queue", containerFactory=ContainerFactorys.QUEUE)
 //	@JmsListener(destination = "sample.queue", subscription="ConsumerTestBean#receiveQueue")
 	public void receiveQueue(JmsMessage<String> msg) {
 		System.out.println(msg.getBody());
 		log.info("ConsumerTestBean receive: "+msg.getBody());
 	}
 
-	@JmsListener(destination = "sample.replyQueue", subscription="ConsumerTestBean#receiveReplyQueue")
+	@JmsListener(destination = "sample.replyQueue")
 	public String receiveReplyQueue(String text) {
 		System.out.println(text);
 		return "I got it!";

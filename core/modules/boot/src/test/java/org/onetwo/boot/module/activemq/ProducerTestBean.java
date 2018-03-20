@@ -37,7 +37,7 @@ public class ProducerTestBean {
 	}
 	public void send2Topic(String msg){
 //		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
-		String destinationName = "sample.queue";
+		String destinationName = "sample.topic";
 //		this.jmsMessagingTemplate.convertAndSend(destinationName, msg);
 		this.producerService.sendMessage(SimpleJmsMessageCreator.builder()
 														.destinationName(destinationName)
