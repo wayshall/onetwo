@@ -2,14 +2,10 @@ package org.onetwo.boot.module.activemq;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
 
 import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.openwire.OpenWireFormat;
 import org.apache.activemq.store.PersistenceAdapter;
@@ -19,13 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.module.activemq.ActivemqProperties.JdbcStoreProps;
 import org.onetwo.boot.module.activemq.ActivemqProperties.KahaDBStoreProps;
 import org.onetwo.boot.module.jms.JmsDestinationConverter;
-import org.onetwo.boot.module.jms.JmsMessage;
 import org.onetwo.boot.module.jms.JmsMessageCreator;
 import org.onetwo.boot.module.jms.JmsProducerService;
 import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
 import org.onetwo.boot.mq.ProducerService;
-import org.onetwo.common.spring.utils.BeanPropertiesMapper;
-import org.onetwo.common.utils.GuavaUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,8 +31,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 
-import com.google.common.collect.Lists;
-
 /**
  * @author wayshall
  * <br/>
@@ -51,8 +42,8 @@ import com.google.common.collect.Lists;
 @Configuration
 public class ActivemqConfiguration implements InitializingBean {
 	
-	@Autowired
-	private ActiveMQConnectionFactory activeMQConnectionFactory;
+	/*@Autowired
+	private ActiveMQConnectionFactory activeMQConnectionFactory;*/
 	@Autowired
 	private ActivemqProperties activemqProperties;
 	
@@ -60,7 +51,7 @@ public class ActivemqConfiguration implements InitializingBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Properties cfProps = activemqProperties.getConnectionFactory();
+		/*Properties cfProps = activemqProperties.getConnectionFactory();
 		
 		String trustedPackages = (String)cfProps.remove("trustedPackages");
 		List<String> trustedPackagesList = Lists.newArrayList(activeMQConnectionFactory.getTrustedPackages());
@@ -69,7 +60,7 @@ public class ActivemqConfiguration implements InitializingBean {
 		
 		BeanPropertiesMapper bpm = new BeanPropertiesMapper(cfProps, "", true);
 		bpm.mapToObject(activeMQConnectionFactory);
-		activeMQConnectionFactory.setTrustedPackages(trustedPackagesList);
+		activeMQConnectionFactory.setTrustedPackages(trustedPackagesList);*/
 	}
 	
 

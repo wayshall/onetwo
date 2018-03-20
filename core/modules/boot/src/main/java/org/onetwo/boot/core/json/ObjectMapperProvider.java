@@ -39,8 +39,10 @@ public interface ObjectMapperProvider {
 				}else{
 					objectMapper = JsonMapper.ignoreNull().getObjectMapper();
 				}
-				for(ObjectMapperCustomizer c : customizers){
-					c.afterCreate(objectMapper);
+				if(customizers!=null){
+					for(ObjectMapperCustomizer c : customizers){
+						c.afterCreate(objectMapper);
+					}
 				}
 				this.objectMapper = objectMapper;
 			}
