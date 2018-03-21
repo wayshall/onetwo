@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.onetwo.cloud.feign.EnhanceFeignClient;
 import org.onetwo.common.spring.aop.Proxys;
 import org.onetwo.common.spring.aop.Proxys.SpringBeanMethodInterceptor;
@@ -21,6 +23,7 @@ import feign.Target;
  * @author wayshall
  * <br/>
  */
+@Slf4j
 public class LocalTargeter implements Targeter, ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
@@ -55,7 +58,7 @@ public class LocalTargeter implements Targeter, ApplicationContextAware {
 		if(typeBeanNames.length<=1){
 			return defaultTarget.get();
 		}
-		//排除fallback和自己后，取第一个bean
+		//排除fallback和FeignClientFactoryBean后，取第一个bean
 		Optional<String> localBeanNameOpt = Stream.of(typeBeanNames).filter(lbn->{
 			BeanDefinition bd = bdr.getBeanDefinition(lbn);
 			return !bd.getBeanClassName().equals(fallbackType.getName()) && !bd.getBeanClassName().equals(FeignClientFactoryBean.class.getName());
@@ -63,10 +66,16 @@ public class LocalTargeter implements Targeter, ApplicationContextAware {
 		.findFirst();
 		
 		if(!localBeanNameOpt.isPresent()){
+			if(log.isInfoEnabled()){
+				log.info("local implement not found for feign interface: {}, use default target.", apiInterface);
+			}
 			return defaultTarget.get();
 		}
 
 		T localProxy = (T)Proxys.interceptInterface(clientInterface, new SpringBeanMethodInterceptor(appContext, localBeanNameOpt.get()));
+		if(log.isInfoEnabled()){
+			log.info("local implement has been found for feign interface: {}, use local bean: {}", apiInterface, localBeanNameOpt.get());
+		}
 		return localProxy;
 	}
 
