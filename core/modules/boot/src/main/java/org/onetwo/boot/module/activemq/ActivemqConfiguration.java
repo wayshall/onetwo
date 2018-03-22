@@ -42,6 +42,8 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 @Configuration
 public class ActivemqConfiguration implements InitializingBean {
 	
+	/*@Autowired
+	private ActiveMQConnectionFactory activeMQConnectionFactory;*/
 	@Autowired
 	private ActivemqProperties activemqProperties;
 	
@@ -49,6 +51,16 @@ public class ActivemqConfiguration implements InitializingBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		/*Properties cfProps = activemqProperties.getConnectionFactory();
+		
+		String trustedPackages = (String)cfProps.remove("trustedPackages");
+		List<String> trustedPackagesList = Lists.newArrayList(activeMQConnectionFactory.getTrustedPackages());
+		trustedPackagesList.add(JmsMessage.class.getPackage().getName());
+		trustedPackagesList.addAll(Arrays.asList(GuavaUtils.split(trustedPackages, ",")));
+		
+		BeanPropertiesMapper bpm = new BeanPropertiesMapper(cfProps, "", true);
+		bpm.mapToObject(activeMQConnectionFactory);
+		activeMQConnectionFactory.setTrustedPackages(trustedPackagesList);*/
 	}
 	
 
