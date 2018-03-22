@@ -13,7 +13,8 @@ final public class JmsUtils {
 	 */
 	public static class ContainerFactorys {
 		public static final String TOPIC = "topicListenerContainerFactory";
-		public static final String QUEUE = "queueListenerContainerFactory";
+//		public static final String QUEUE = "queueListenerContainerFactory";
+		public static final String QUEUE = "jmsListenerContainerFactory";
 		private ContainerFactorys(){}
 	}
 	
