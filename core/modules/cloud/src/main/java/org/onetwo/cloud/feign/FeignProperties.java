@@ -21,6 +21,8 @@ public class FeignProperties {
 	public static final String PROPERTIES_PREFIX = "jfish.cloud.feign";
 	public static final String ENABLE_KEY = PROPERTIES_PREFIX + ".enabled";
 	
+	public static final String LOCAL_ENABLE_KEY = PROPERTIES_PREFIX + ".local.enabled";
+	
 	LoggerProps logger = new LoggerProps();
 	OkHttpClientProps okHttpClient = new OkHttpClientProps();
 	
