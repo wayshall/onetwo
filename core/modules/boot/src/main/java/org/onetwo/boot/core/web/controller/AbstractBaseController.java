@@ -278,7 +278,7 @@ abstract public class AbstractBaseController {
 	 * @return
 	 */
 	protected <T extends UserDetail> T checkAndGetCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound){
-		Assert.notNull(clazz);
+		Assert.notNull(clazz, "class can not be null!");
 		UserDetail user = null;
 		try {
 			user = sessionUserManager.getCurrentUser();
@@ -404,6 +404,10 @@ abstract public class AbstractBaseController {
 	 */
 	protected boolean isResponsePage(){
 		return getResponseType()==ResponseType.PAGE;
+	}
+	
+	protected boolean isResponseJFxls(){
+		return getResponseType()==ResponseType.JFXLS;
 	}
 	
 	protected boolean isResponseType(ResponseType ResponseType){

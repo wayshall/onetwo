@@ -57,6 +57,12 @@
         </dependency>
         
         <dependency>
+          <groupId>org.onetwo4j</groupId>
+          <artifactId>onetwo-poi</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
+        <dependency>
           <groupId>io.jsonwebtoken</groupId>
           <artifactId>jjwt</artifactId>
           <optional>true</optional>

@@ -1,6 +1,6 @@
 package org.onetwo.common.spring.cache;
 
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mcache.CacheElement;
 import org.slf4j.Logger;
 import org.springframework.cache.Cache;
@@ -8,7 +8,7 @@ import org.springframework.cache.Cache.ValueWrapper;
 
 public class SimpleCacheWrapper {
 	
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	public static final int DEFAULT_EXPIRE_TIME = 60 * 30;//a half hour
 	
 	private Cache cache;

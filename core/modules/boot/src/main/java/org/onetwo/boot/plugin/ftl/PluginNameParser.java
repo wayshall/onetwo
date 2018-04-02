@@ -1,11 +1,15 @@
 package org.onetwo.boot.plugin.ftl;
 
+import org.onetwo.common.expr.Expression;
+import org.onetwo.common.expr.ExpressionFacotry;
+
 public class PluginNameParser {
 	public static final PluginNameParser INSTANCE = new PluginNameParser();
 	
 	private final String start;
 	private final String end;
 	private final int length;
+	private final Expression pluginExpression;
 	
 
 	public PluginNameParser() {
@@ -16,6 +20,7 @@ public class PluginNameParser {
 		this.start = start;
 		this.end = end;
 		this.length = start.length()+end.length();
+		this.pluginExpression = ExpressionFacotry.newExpression(start, end);
 	}
 	
 	public boolean isPluginAccess(String name){
@@ -30,6 +35,13 @@ public class PluginNameParser {
 			return "";
 		String pname = name.substring(startIndex+1, endIndex);
 		return pname;
+	}
+	
+	public String resolvePath(String path, String plugName, String value){
+		if(!pluginExpression.isExpresstion(path)){
+			return path;
+		}
+		return pluginExpression.parse(path, plugName, value);
 	}
 	/***
 	 * [pluginName]viewpath1/viewpath2

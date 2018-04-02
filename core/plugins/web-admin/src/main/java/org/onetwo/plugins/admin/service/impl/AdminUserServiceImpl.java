@@ -35,7 +35,13 @@ public class AdminUserServiceImpl {
     public void findPage(Page<AdminUser> page, AdminUser adminUser){
         Querys.from(baseEntityManager, AdminUser.class)
         		.where()
-        		.field("id").notEqualTo(LoginUserDetails.ROOT_USER_ID)
+	        		.field("id").notEqualTo(LoginUserDetails.ROOT_USER_ID)
+	        		.field("userName").like(adminUser.getUserName())
+	        		.field("nickName").like(adminUser.getNickName())
+	        		.field("email").like(adminUser.getEmail())
+	        		.field("mobile").like(adminUser.getMobile())
+	        		.field("status").equalTo(adminUser.getStatus())
+	        		.ignoreIfNull()
         		.end()
         		.toQuery()
         		.page(page);

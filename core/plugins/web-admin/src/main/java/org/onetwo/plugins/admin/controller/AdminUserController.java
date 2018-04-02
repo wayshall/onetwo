@@ -22,7 +22,7 @@ public class AdminUserController extends WebAdminBaseController {
     @Autowired
     private AdminUserServiceImpl adminUserServiceImpl;
     
-    
+
     @ByPermissionClass(UserMgr.class)
     @RequestMapping(method=RequestMethod.GET)
     @XResponseView(value="easyui", wrapper=EasyGridView.class)
@@ -32,6 +32,14 @@ public class AdminUserController extends WebAdminBaseController {
         			adminUserServiceImpl.findPage(page, adminUser);
         			return page;
                 });
+    }
+    @ByPermissionClass(UserMgr.class)
+    @RequestMapping(value="export", method=RequestMethod.GET)
+    public ModelAndView export(PageRequest easyPage, AdminUser adminUser){
+    	Page<AdminUser> page = easyPage.toPageObject();//Page.create(easyPage.getPage(), easyPage.getPageSize());
+    	page.noLimited();
+		adminUserServiceImpl.findPage(page, adminUser);
+        return pluginMv("admin-user-export", "datas", page.getResult());
     }
     
     @ByPermissionClass(UserMgr.Create.class)

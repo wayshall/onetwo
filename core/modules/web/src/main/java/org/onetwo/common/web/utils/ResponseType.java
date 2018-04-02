@@ -5,7 +5,8 @@ import java.util.stream.Stream;
 public enum ResponseType {
 	PAGE,
 	JSON,
-	XML;
+	XML,
+	JFXLS;
 	
 	public static ResponseType of(String ext){
 		return Stream.of(values()).filter(e->e.name().equalsIgnoreCase(ext))
