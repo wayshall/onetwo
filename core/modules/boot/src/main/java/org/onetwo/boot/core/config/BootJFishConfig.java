@@ -112,6 +112,7 @@ public class BootJFishConfig {
 			this.mediaTypes.put("json", "application/json");
 			this.mediaTypes.put("xml", "application/xml");
 			this.mediaTypes.put("xls", "application/vnd.ms-excel");
+			this.mediaTypes.put("jfxls", "application/jfxls");
 		}
 
 		@Data

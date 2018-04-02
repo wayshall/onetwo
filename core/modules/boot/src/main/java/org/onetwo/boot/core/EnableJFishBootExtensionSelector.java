@@ -20,6 +20,7 @@ import org.onetwo.boot.module.alioss.OssConfiguration;
 import org.onetwo.boot.module.cache.SpringCacheConfiguration;
 import org.onetwo.boot.module.cos.CosConfiguration;
 import org.onetwo.boot.module.dbm.BootDbmConfiguration;
+import org.onetwo.boot.module.poi.ExcelViewConfiguration;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
@@ -54,6 +55,9 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		}else if(appcationType==AppcationType.WEB_UI){
 			classNames.add(BootWebUIContextAutoConfig.class.getName());
 		}
+		
+		classNames.add(ExcelViewConfiguration.class.getName());
+		
 		classNames.add(BootDbmConfiguration.class.getName());
 		classNames.add(ErrorHandleConfiguration.class.getName());
 		classNames.add(EnhanceRequestMappingConfiguration.class.getName());

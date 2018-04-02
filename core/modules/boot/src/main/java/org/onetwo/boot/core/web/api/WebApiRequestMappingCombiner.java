@@ -42,7 +42,7 @@ public class WebApiRequestMappingCombiner implements RequestMappingCombiner {
 		if(StringUtils.isBlank(prefixPath)){
 			return info;
 		}
-		RequestMappingInfo combinerInfo = RequestMappingCombiner.createRequestMappingInfo(prefixPath, method, handlerType)
+		RequestMappingInfo combinerInfo = RequestMappingCombiner.createRequestMappingInfo(prefixPath, method, handlerType, info)
 																.combine(info);
 		return combinerInfo;
 	}

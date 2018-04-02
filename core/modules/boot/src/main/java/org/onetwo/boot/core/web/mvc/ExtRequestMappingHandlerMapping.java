@@ -69,15 +69,15 @@ public class ExtRequestMappingHandlerMapping extends RequestMappingHandlerMappin
 	public static interface RequestMappingCombiner {
 		RequestMappingInfo combine(Method method, Class<?> handlerType, RequestMappingInfo info);
 		
-		static RequestMappingInfo createRequestMappingInfo(String path, Method method, Class<?> handlerType) {
+		static RequestMappingInfo createRequestMappingInfo(String path, Method method, Class<?> handlerType, RequestMappingInfo info) {
 			return new RequestMappingInfo(
 					new PatternsRequestCondition(path),
-					null,
-					null,
-					null,
-					null,
-					null, 
-					null);
+					info.getMethodsCondition(),
+					info.getParamsCondition(),
+					info.getHeadersCondition(),
+					info.getConsumesCondition(), 
+					info.getProducesCondition(),
+					info.getCustomCondition());
 		}
 	}
 

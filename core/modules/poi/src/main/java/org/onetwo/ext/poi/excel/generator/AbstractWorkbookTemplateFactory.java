@@ -66,7 +66,7 @@ abstract public class AbstractWorkbookTemplateFactory implements XmlTemplateGene
 		return model;
 	}
 
-	@Override
+//	@Override
 	public boolean checkTemplate(String template) {
 		return getWorkbookModel(template, cacheTemplate)!=null;
 	}

@@ -50,7 +50,7 @@ public class BootPluginRequestMappingCombiner implements RequestMappingCombiner 
 										.build();
 			contextPath = bootJFishConfig.getPluginContextPathModes().getPluginContextPath(pc);
 			if(StringUtils.isNotBlank(contextPath)){
-				info = createPluginRequestMappingInfo(contextPath, method, handlerType).combine(info);
+				info = RequestMappingCombiner.createRequestMappingInfo(contextPath, method, handlerType, info).combine(info);
 			}
 		}
 		return info;
@@ -76,9 +76,6 @@ public class BootPluginRequestMappingCombiner implements RequestMappingCombiner 
 		return null;
 	}
 
-	private RequestMappingInfo createPluginRequestMappingInfo(String rootPath, Method method, Class<?> handlerType) {
-		return RequestMappingCombiner.createRequestMappingInfo(rootPath, method, handlerType);
-	}
 	
 	private String resolvePluginContextPath(final String pluginContextPath){
 		String path = SpringUtils.resolvePlaceholders(applicationContext, pluginContextPath);

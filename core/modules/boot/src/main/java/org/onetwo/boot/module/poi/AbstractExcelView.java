@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.AbstractUrlBasedView;
  * @author weishao
  *
  */
-abstract public class AbstractJFishExcelView extends AbstractUrlBasedView {
+abstract public class AbstractExcelView extends AbstractUrlBasedView {
 	
 	public static final String FILENAME_KEY = "fileName";
 	public static final String RESPONSE_CONTENT_TYPE = "application/download; charset=GBK";
@@ -54,17 +54,14 @@ abstract public class AbstractJFishExcelView extends AbstractUrlBasedView {
 	private String fileName;
 	private String suffix;
 	
-	public AbstractJFishExcelView(){
+	public AbstractExcelView(){
 	}
 	
-	protected String getDownloadFileName(HttpServletRequest request, Map<String, Object> model){
-		return getDownloadFileName(request, model, fileName);
-	}
-	
-	protected String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, boolean encode){
-		return getDownloadFileName(request, model, fileName, encode);
-	}
 
+	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, boolean encode) {
+		return getDownloadFileName(request, null, "excel-export-filename", encode);
+	}
+	
 	protected void setReponseHeader(String downloadFileName, HttpServletRequest request, HttpServletResponse response){
 		response.setContentType(RESPONSE_CONTENT_TYPE); 
 		response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
