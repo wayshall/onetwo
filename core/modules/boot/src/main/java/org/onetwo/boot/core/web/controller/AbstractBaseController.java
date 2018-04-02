@@ -58,12 +58,7 @@ abstract public class AbstractBaseController {
 	public static final String MESSAGE_TYPE_ERROR = "error";
 	public static final String MESSAGE_TYPE_SUCCESS = "success";
 	
-
-	/*public static final String FILTER_KEYS = BootJsonView.FILTER_KEYS;
-	public static final String JSON_DATAS = BootJsonView.JSON_DATAS;*/
-	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	
 
 	@Resource
 	private BootSiteConfig bootSiteConfig;
@@ -78,15 +73,19 @@ abstract public class AbstractBaseController {
 	protected AbstractBaseController(){
 	}
 	
+	public SessionUserManager<UserDetail> getSessionUserManager() {
+		return sessionUserManager;
+	}
+
 	protected FileStoredMeta uploadFile(String module, MultipartFile file){
-		Assert.notNull(file);
-		Assert.notNull(fileStorer);
+		Assert.notNull(file, "file is required; it must not be null");
+		Assert.notNull(fileStorer, "fileStorer is required; it must not be null");
 		return uploadFile(module, file, null);
 	}
 	
 	protected FileStoredMeta uploadFile(String module, MultipartFile file, StoreFilePathStrategy storeFilePathStrategy){
-		Assert.notNull(file);
-		Assert.notNull(fileStorer);
+		Assert.notNull(file, "file is required; it must not be null");
+		Assert.notNull(fileStorer, "fileStorer is required; it must not be null");
 //		context = StoringFileContext.create(module, file.getInputStream(), file.getOriginalFilename());
 //		Assert.notNull(storeFilePathStrategy);
 		StoringFileContext context = BootWebUtils.createStoringFileContext(module, file);
