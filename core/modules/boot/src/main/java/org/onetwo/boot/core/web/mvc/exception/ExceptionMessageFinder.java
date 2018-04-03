@@ -76,7 +76,7 @@ public interface ExceptionMessageFinder {
 				detail = false;
 				error.setHttpStatus(HttpStatus.UNAUTHORIZED);
 			}else{
-				error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+				error.setHttpStatus(HttpStatus.OK);
 			}
 			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
 			detail = !product;
