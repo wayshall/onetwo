@@ -42,7 +42,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
  */
 public interface ExceptionMessageFinder {
 
-	default ErrorMessage getErrorMessage(Exception throwable, boolean product){
+	default ErrorMessage getErrorMessage(Exception throwable, boolean alwaysLogErrorDetail){
 		String errorCode = "";
 		String errorMsg = "";
 		Object[] errorArgs = null;
@@ -75,14 +75,16 @@ public interface ExceptionMessageFinder {
 			}else if(ex instanceof AuthenticationException){
 				detail = false;
 				error.setHttpStatus(HttpStatus.UNAUTHORIZED);
+			}else if(ex instanceof ServiceException){
+				detail = ((ServiceException)ex).getCause()!=null;
+				//ServiceException 一般为义务异常，属于预期错误，直接返回正常状态
+				error.setHttpStatus(HttpStatus.OK);
 			}else{
+				//其它实现了ExceptionCodeMark的异常也可以视为预期错误，直接返回正常状态
 				error.setHttpStatus(HttpStatus.OK);
 			}
 			findMsgByCode = StringUtils.isNotBlank(errorCode);// && !codeMark.isDefaultErrorCode();
-			detail = !product;
-			if(ex instanceof ServiceException){
-				detail = ((ServiceException)ex).getCause()!=null;
-			}
+			
 		}else if(BootUtils.isDmbPresent() && DbmException.class.isInstance(ex)){
 //			defaultViewName = ExceptionView.UNDEFINE;
 //			errorCode = JFishErrorCode.ORM_ERROR;//find message from resouce
@@ -131,7 +133,7 @@ public interface ExceptionMessageFinder {
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		detail = product?detail:true;
+		detail = alwaysLogErrorDetail?true:detail;
 //		error.setMesage(errorMsg);
 		error.setDetail(detail);
 		
