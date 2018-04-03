@@ -21,22 +21,35 @@ import org.springframework.web.servlet.view.AbstractUrlBasedView;
 abstract public class AbstractExcelView extends AbstractUrlBasedView {
 	
 	public static final String FILENAME_KEY = "fileName";
-	public static final String RESPONSE_CONTENT_TYPE = "application/download; charset=GBK";
+	public static final String RESPONSE_CONTENT_TYPE = "application/download; charset=";
 	public static final String DEFAULT_CONTENT_TYPE = "application/jfxls";//
 
 
-	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName){
+
+	
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+
+	private String fileNameField = FILENAME_KEY;
+	private String charset = "GBK";
+	private String suffix;
+	
+	public AbstractExcelView(){
+	}
+	
+
+	public String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName){
 		return getDownloadFileName(request, model, defaultFileName, true);
 	}
 	
-	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName, boolean encode){
-		String downloadFileName = request.getParameter("fileName");
+	public String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, String defaultFileName, boolean encode){
+		String downloadFileName = request.getParameter(fileNameField);
 		if(StringUtils.isBlank(downloadFileName)){
 			//在model里的，由用户自己转码
-			downloadFileName = (model!=null && model.containsKey("fileName"))?model.get("fileName").toString():defaultFileName;
+			downloadFileName = (model!=null && model.containsKey(fileNameField))?model.get(fileNameField).toString():defaultFileName;
 		}else{
 			if(encode){
-				downloadFileName = LangUtils.changeCharset(downloadFileName, "GBK", "ISO8859-1");
+//				downloadFileName = LangUtils.changeCharset(downloadFileName, "GBK", "ISO8859-1");
+				downloadFileName = LangUtils.changeCharset(downloadFileName, charset, "ISO8859-1");
 			}
 			/*try {
 				downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
@@ -47,23 +60,13 @@ abstract public class AbstractExcelView extends AbstractUrlBasedView {
 //		downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
 		return downloadFileName;
 	}
-
 	
-	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
-	
-	private String fileName;
-	private String suffix;
-	
-	public AbstractExcelView(){
-	}
-	
-
-	public static String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, boolean encode) {
+	public String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, boolean encode) {
 		return getDownloadFileName(request, null, "excel-export-filename", encode);
 	}
 	
 	protected void setReponseHeader(String downloadFileName, HttpServletRequest request, HttpServletResponse response){
-		response.setContentType(RESPONSE_CONTENT_TYPE); 
+		response.setContentType(RESPONSE_CONTENT_TYPE+charset); 
 		response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
 	}
 	
@@ -81,12 +84,20 @@ abstract public class AbstractExcelView extends AbstractUrlBasedView {
 		return DEFAULT_CONTENT_TYPE;
 	}
 
-	public String getFileName() {
-		return fileName;
+	public String getFileNameField() {
+		return fileNameField;
 	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setFileNameField(String fileNameField) {
+		this.fileNameField = fileNameField;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 
 	public String getSuffix() {

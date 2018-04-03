@@ -1,11 +1,9 @@
 package org.onetwo.boot.module.poi;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.plugin.core.PluginManager;
-import org.onetwo.boot.plugin.core.WebPlugin;
 import org.onetwo.ext.poi.excel.interfaces.XmlTemplateGeneratorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +52,7 @@ public class XmlTemplateExcelViewResolver extends UrlBasedViewResolver implement
 	protected PoiExcelView buildView(String viewName) throws Exception {
 		String actualView = pluginManager.resovleAsCurrentPluginPath(viewName, plugin->plugin.getPluginMeta().getName());
 		PoiExcelView exceView = (PoiExcelView)super.buildView(actualView);
-		exceView.setFileName(actualView);
+//		exceView.setFileName(actualView);
 		exceView.setXmlTemplateExcelFactory(xmlTemplateGeneratorFactory);
 		return exceView;
 	}
