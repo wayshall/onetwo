@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.poi;
 
 import org.onetwo.ext.poi.excel.interfaces.XmlTemplateGeneratorFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -9,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnProperty(value=PoiProperties.EXPORT_VIEW_ENABLE_KEY, matchIfMissing=true)
-//@ConditionalOnClass(XmlTemplateGeneratorFactory.class)
+@ConditionalOnClass(XmlTemplateGeneratorFactory.class)
 @EnableConfigurationProperties(value=PoiProperties.class)
 public class ExcelViewConfiguration {
 

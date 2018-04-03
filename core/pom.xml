@@ -39,11 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/spring</module>
-                <module>modules/web</module>
-                <module>modules/poi</module>
                 <module>modules/boot</module>
-                <module>plugins/web-admin</module>
 			</modules>
            <build>
               <plugins>
