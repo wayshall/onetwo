@@ -16,13 +16,12 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.builders.ClientDetailsServiceBuilder.ClientBuilder;
 import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
@@ -32,6 +31,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
@@ -73,6 +73,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint;
 	@Autowired(required=false)
 	private OAuth2AccessDeniedHandler oauth2AccessDeniedHandler;
+	
+	@Autowired(required=false)
+	@Qualifier("oauth2ClientDetailsService")
+	private ClientDetailsService clientDetailsService;
 	
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -119,6 +123,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+		if(clientDetailsService!=null){
+			clients.withClientDetails(clientDetailsService);
+			return ;
+		}
 		ClientDetailStore store = oauth2Properties.getAuthorizationServer().getClientDetailStore();
 		if(store==ClientDetailStore.JDBC){
 			configJdbc(clients);
@@ -136,12 +144,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		b.build();
 	}
 	
-
-//	@Bean
-	public BCryptPasswordEncoder passwordEncoder(){
-		BCryptPasswordEncoder coder = new BCryptPasswordEncoder();
-		return coder;
-	}
 
 	@SuppressWarnings("rawtypes")
 	protected void configInMemory(ClientDetailsServiceConfigurer clients) throws Exception{
