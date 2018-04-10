@@ -230,6 +230,7 @@ abstract public class ExcelUtils {
 		int type = cell.getCellType();
 		Object value = null;
 		if(Cell.CELL_TYPE_STRING==type){
+//			value = StringUtils.cleanInvisibleUnicode(cell.getStringCellValue().trim());
 			value = cell.getStringCellValue().trim();
 		}else if(Cell.CELL_TYPE_NUMERIC==type){
 			value = cell.getNumericCellValue();

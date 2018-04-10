@@ -50,6 +50,7 @@ public abstract class WorkbookReaderFactory {
 		
 		protected String getStringValue(Cell cell){
 			String strValue = StringUtils.trimToEmpty(cell.getStringCellValue());
+//			strValue = org.onetwo.common.utils.StringUtils.cleanInvisibleUnicode(strValue);
 			return strValue;
 		}
 		abstract protected Object doConvert(Cell cell);

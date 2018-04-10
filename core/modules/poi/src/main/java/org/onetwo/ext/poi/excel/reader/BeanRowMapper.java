@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.poi.excel.exception.ExcelException;
 import org.onetwo.ext.poi.excel.generator.CellValueConvertor;
 import org.onetwo.ext.poi.utils.ExcelUtils;
@@ -38,6 +39,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	private boolean autoGetCellValue = true;
 	//0-based
 	private int dataRowStartIndex = 1;
+	private boolean cleanUnvisibleUnicode = true;
 	
 	/******
 	 * 
@@ -66,6 +68,10 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		if(propertyMapper!=null){
 			this.propertyMapper = propertyMapper;
 		}
+	}
+
+	public void setCleanUnvisibleUnicode(boolean cleanUnvisibleUnicode) {
+		this.cleanUnvisibleUnicode = cleanUnvisibleUnicode;
 	}
 
 	@Override
@@ -99,7 +105,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 			cell = row.getCell(i);
 			cellValue = ExcelUtils.getCellValue(cell);
 			String label = ExcelUtils.trimToEmpty(cellValue);
-			if(ExcelUtils.isBlank(label)){
+			if(ExcelUtils.isBlank(label) && i-1>0){
 				//if title is empty (region column), get the previous title name
 				label = rowValues.get(i-1);
 			}
@@ -190,7 +196,8 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 					return ;
 				if(!this.propertyMapper.containsKey(titleLable)){
 //					continue;
-					throw new RuntimeException("no field mapping for title name: " + titleLable);
+					return ;
+//					throw new RuntimeException("no field mapping for title name: " + titleLable);
 				}
 				
 				cellValue = getCellValue(cell, titleLable, cellIndex);
@@ -257,10 +264,11 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 					if(type!=null)
 						convertor = this.getCellValueConvertor(type.getSimpleName());
 				}
-				if(convertor!=null)
+				if(convertor!=null){
 					value = convertor.convert(cell);
-				else
+				}else{
 					value = ExcelUtils.getCellValue(cell);
+				}
 			}else{
 				value = cellValue;
 			}
@@ -275,8 +283,20 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	protected void setBeanProperty(BeanWrapper bw, String name, Object value){
 		if(!bw.isWritableProperty(name))
 			return ;
-		if(value!=null && (!String.class.isInstance(value) || !ExcelUtils.isBlank((String)value)))
-			bw.setPropertyValue(name, value);
+		/*if(value!=null && (!String.class.isInstance(value) || !ExcelUtils.isBlank((String)value)))
+			bw.setPropertyValue(name, value);*/
+		if(value==null){
+			return ;
+		}
+		if(value instanceof String){
+			if(ExcelUtils.isBlank((String)value)){
+				return ;
+			}
+			if(cleanUnvisibleUnicode){
+				value = StringUtils.cleanInvisibleUnicode(value.toString());
+			}
+		}
+		bw.setPropertyValue(name, value);
 	}
 
 	@Override
