@@ -33,7 +33,7 @@ public class AdminUserController extends WebAdminBaseController {
         			return page;
                 });
     }
-    @ByPermissionClass(UserMgr.class)
+    @ByPermissionClass(value=UserMgr.class, overrideMenuUrl=false)
     @RequestMapping(value="export", method=RequestMethod.GET)
     public ModelAndView export(PageRequest easyPage, AdminUser adminUser){
     	Page<AdminUser> page = easyPage.toPageObject();//Page.create(easyPage.getPage(), easyPage.getPageSize());
