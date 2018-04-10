@@ -17,6 +17,8 @@ import org.springframework.util.Assert;
  * <br/>
  */
 public abstract class OAuth2Utils {
+	public static final String OAUTH2_CLIENT_DETAILS_SERVICE = "oauth2ClientDetailsService";
+	
 	private static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 
 	public static <T extends Serializable> Optional<T> getCurrentClientDetails() {

@@ -12,6 +12,7 @@ import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.AuthorizationServerProps;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.ClientDetailStore;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.MemoryUser;
+import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.aop.Proxys;
 import org.onetwo.common.utils.LangUtils;
@@ -76,8 +77,11 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private OAuth2AccessDeniedHandler oauth2AccessDeniedHandler;
 	
 	@Autowired(required=false)
-	@Qualifier("oauth2ClientDetailsService")
+	@Qualifier(OAuth2Utils.OAUTH2_CLIENT_DETAILS_SERVICE)
 	private ClientDetailsService clientDetailsService;
+	
+	@Autowired(required=false)
+	private TokenEndpointFilterInterceptor tokenEndpointFilterInterceptor;
 	
 
 	@Override
@@ -119,7 +123,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 			if(oauth2ExceptionRenderer!=null){
 				SpringUtils.newPropertyAccessor(filter, true).setPropertyValue("authenticationEntryPoint.exceptionRenderer", oauth2ExceptionRenderer);
 			}
-			filter = Proxys.intercept(filter, new ClientDetailFilterInterceptor());
+			filter = Proxys.intercept(filter, tokenEndpointFilterInterceptor);
 			return filter;
 		}
 	}
