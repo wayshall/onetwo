@@ -61,6 +61,7 @@ public class JFishOauth2Properties {
 	@Data
 	public static class AuthorizationServerProps {
 		boolean allowFormAuthenticationForClients;
+		boolean customFormAuthenticationForClients;
 		boolean sslOnly;
 		String realm;
 		String tokenKeyAccess;
