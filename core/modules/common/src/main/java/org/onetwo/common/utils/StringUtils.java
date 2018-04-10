@@ -22,7 +22,20 @@ public abstract class StringUtils {
 	public static final String ENCODING = "UTF-8";
 	public static final String EMPTY = "";
 
-
+	
+	/***
+	 * 清除不可见unicode
+	 * http://www.regular-expressions.info/unicode.html
+	 * https://stackoverflow.com/questions/6198986/how-can-i-replace-non-printable-unicode-characters-in-java
+	 * @param source
+	 * @return
+	 */
+	public static String cleanInvisibleUnicode(String source){
+		if(source.length()<1){
+			return source;
+		}
+		return source.replaceAll("\\p{C}", "");
+	}
 	public static boolean isNullOrBlankString(Object value){
 		return value==null || (String.class.isInstance(value) && org.apache.commons.lang3.StringUtils.isBlank(value.toString()));
 	}
