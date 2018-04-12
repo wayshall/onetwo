@@ -62,12 +62,14 @@ abstract public class AbstractExcelView extends AbstractUrlBasedView {
 	}
 	
 	public String getDownloadFileName(HttpServletRequest request, Map<String, Object> model, boolean encode) {
-		return getDownloadFileName(request, null, "excel-export-filename", encode);
+		return getDownloadFileName(request, model, "excel-export-filename", encode);
 	}
 	
 	protected void setReponseHeader(String downloadFileName, HttpServletRequest request, HttpServletResponse response){
 		response.setContentType(RESPONSE_CONTENT_TYPE+charset); 
 		response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
+//		response.setContentType("application/octet-stream"); 
+//		response.setHeader("Content-Disposition", "attachment;filename*=utf-8'zh_cn'"+downloadFileName);
 	}
 	
 	protected String getTemplatePath(){
