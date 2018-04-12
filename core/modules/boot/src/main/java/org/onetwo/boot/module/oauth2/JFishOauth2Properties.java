@@ -4,6 +4,7 @@ import java.util.Map;
 
 import lombok.Data;
 
+import org.onetwo.boot.module.oauth2.util.PasswordEncoders;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Maps;
@@ -50,6 +51,7 @@ public class JFishOauth2Properties {
 	AuthorizationServerProps authorizationServer = new AuthorizationServerProps();
 	ResourceServerProps resourceServer = new ResourceServerProps();
 	JwtProps jwt = new JwtProps();
+	String passwordEncoder = PasswordEncoders.NoOp.name();
 	
 	@Data
 	public static class JwtProps {
@@ -59,6 +61,7 @@ public class JFishOauth2Properties {
 	@Data
 	public static class AuthorizationServerProps {
 		boolean allowFormAuthenticationForClients;
+		boolean customFormAuthenticationForClients;
 		boolean sslOnly;
 		String realm;
 		String tokenKeyAccess;
@@ -71,7 +74,9 @@ public class JFishOauth2Properties {
 		String[] requestMatchers;
 		Map<String[], String> intercepterUrls = Maps.newHashMap();
 		String anyRequest;
+		
 	}
+	
 
 	@Data
 	public static class ResourceServerProps {

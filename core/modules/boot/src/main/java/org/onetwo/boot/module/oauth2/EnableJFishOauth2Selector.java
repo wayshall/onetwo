@@ -27,6 +27,8 @@ public class EnableJFishOauth2Selector extends AbstractImportSelector<EnableJFis
 		
 		List<OAuth2Role> roles = Arrays.asList((OAuth2Role[])attributes.get("value"));
 		
+		classNames.add(PasswordEncoderConfiguration.class.getName());
+		
 		if(roles.contains(OAuth2Role.AUTHORIZATION_SERVER)){
 			classNames.add(AuthorizationServerConfiguration.class.getName());
 			classNames.add(Oauth2TokenStoreConfiguration.class.getName());
