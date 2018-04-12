@@ -2,6 +2,7 @@ package org.onetwo.boot.module.oauth2.authorize;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
@@ -50,8 +51,8 @@ public class DefaultClientDetailFilterInterceptor implements TokenEndpointFilter
 	
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		if(isInterceptMethod(invocation)){
-			return invoke(invocation);
+		if(!isInterceptMethod(invocation)){
+			return invokeTarget(invocation);
 		}
 		HttpServletRequest request = (HttpServletRequest) invocation.getArguments()[0];
 		ServletServerHttpRequest inputMessage = new ServletServerHttpRequest(request);
@@ -92,6 +93,13 @@ public class DefaultClientDetailFilterInterceptor implements TokenEndpointFilter
 	
 	protected HttpServletRequest createHttpServletRequestWrapper(HttpServletRequest request, ClientDetailRequest messageBody){
 		Map<String, Object> params = mapConverter.toFlatMap(messageBody);
+		Map<String, String[]> paramMap = params.entrySet()
+												.stream()
+												.collect(Collectors.toMap(
+															entry->entry.getKey(), 
+															entry->new String[]{entry.getValue().toString()}
+															)
+												);
 		return new HttpServletRequestWrapper(request){
 			@Override
 			public String getParameter(String name) {
@@ -101,6 +109,12 @@ public class DefaultClientDetailFilterInterceptor implements TokenEndpointFilter
 				}
 				return super.getParameter(name);
 			}
+
+			@Override
+			public Map<String, String[]> getParameterMap() {
+				return super.getParameterMap();
+			}
+			
 		};
 	}
 

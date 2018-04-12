@@ -24,6 +24,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
  * @author wayshall
  * <br/>
  */
+@Deprecated
 public class CustomClientCredentialsTokenEndpointFilter extends ClientCredentialsTokenEndpointFilter {
 
 	private boolean allowOnlyPost = false;
@@ -31,6 +32,10 @@ public class CustomClientCredentialsTokenEndpointFilter extends ClientCredential
 	private ExtJackson2HttpMessageConverter httpMessageConverter;
 	private Class<? extends ClientDetailRequest> bodyType;
 	
+	public CustomClientCredentialsTokenEndpointFilter(String path) {
+		super(path);
+	}
+
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {

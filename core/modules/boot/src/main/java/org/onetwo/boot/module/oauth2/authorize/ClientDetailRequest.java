@@ -12,7 +12,7 @@ public interface ClientDetailRequest {
 
 	String getClientId();
 	String getClientSecret();
-	String getClientType();
+	String getClientCategory();
 	
 	@Data
 	public class DefaultClientDetailRequest implements ClientDetailRequest {
@@ -20,7 +20,8 @@ public interface ClientDetailRequest {
 		String clientId;
 		@JsonProperty("client_secret")
 		String clientSecret = "";
-		String clientType;
+		@JsonProperty("client_category")
+		String clientCategory;
 	}
 
 }

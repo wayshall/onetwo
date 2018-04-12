@@ -17,6 +17,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.aop.Proxys;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,8 +51,9 @@ import org.springframework.util.Assert;
 @EnableAuthorizationServer
 @Configuration
 @EnableConfigurationProperties(JFishOauth2Properties.class)
+//@Import(CustomOAuth2SecurityConfigurerAdapter.class)
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
-
+	
 	@Autowired
 	private JFishOauth2Properties oauth2Properties;
 	@Autowired(required=false)
@@ -93,6 +95,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 			//FIX: AuthorizationServerSecurityConfigurer创建form验证filter的时，没有使用配置的oauth2AuthenticationEntryPoint
 			security.addObjectPostProcessor(new ClientCredentialsTokenEndpointFilterPostProcessor());
 		}
+		
 		if(authProps.isSslOnly()){
 			security.sslOnly();
 		}
@@ -120,10 +123,16 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	protected class ClientCredentialsTokenEndpointFilterPostProcessor implements ObjectPostProcessor<ClientCredentialsTokenEndpointFilter> {
 		@Override
 		public <O extends ClientCredentialsTokenEndpointFilter> O postProcess(O filter) {
+			ConfigurablePropertyAccessor filterAccessor = SpringUtils.newPropertyAccessor(filter, true);
 			if(oauth2ExceptionRenderer!=null){
-				SpringUtils.newPropertyAccessor(filter, true).setPropertyValue("authenticationEntryPoint.exceptionRenderer", oauth2ExceptionRenderer);
+				filterAccessor.setPropertyValue("authenticationEntryPoint.exceptionRenderer", oauth2ExceptionRenderer);
 			}
-			filter = Proxys.intercept(filter, tokenEndpointFilterInterceptor);
+			/*AuthenticationManager origin = (AuthenticationManager)filterAccessor.getPropertyValue("authenticationManager");
+			DelegateAuthenticationManager delegate = new DelegateAuthenticationManager(origin);
+			filter.setAuthenticationManager(delegate);*/
+			if(tokenEndpointFilterInterceptor!=null){
+				filter = Proxys.intercept(filter, tokenEndpointFilterInterceptor);
+			}
 			return filter;
 		}
 	}
