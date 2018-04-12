@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+columnWidth="2:30" 第几列:长度,
+ -->
 <template name="用户" columnWidth="2:30">
     <rows>
        <!-- CellStyle -->
