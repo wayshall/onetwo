@@ -47,15 +47,19 @@ abstract public class AbstractExcelView extends AbstractUrlBasedView {
 			//在model里的，由用户自己转码
 			downloadFileName = (model!=null && model.containsKey(fileNameField))?model.get(fileNameField).toString():defaultFileName;
 		}else{
-			if(encode){
+			/*if(encode){
 //				downloadFileName = LangUtils.changeCharset(downloadFileName, "GBK", "ISO8859-1");
 				downloadFileName = LangUtils.changeCharset(downloadFileName, charset, "ISO8859-1");
-			}
+			}*/
 			/*try {
 				downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
 			} catch (Exception e) {
 				throw new BaseException("get down file name error: " +e.getMessage());
 			}*/
+		}
+		if(encode){
+//			downloadFileName = LangUtils.changeCharset(downloadFileName, charset, "ISO8859-1");
+			downloadFileName = LangUtils.encodeUrl(downloadFileName);
 		}
 //		downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
 		return downloadFileName;
@@ -66,10 +70,10 @@ abstract public class AbstractExcelView extends AbstractUrlBasedView {
 	}
 	
 	protected void setReponseHeader(String downloadFileName, HttpServletRequest request, HttpServletResponse response){
-		response.setContentType(RESPONSE_CONTENT_TYPE+charset); 
-		response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
-//		response.setContentType("application/octet-stream"); 
-//		response.setHeader("Content-Disposition", "attachment;filename*=utf-8'zh_cn'"+downloadFileName);
+//		response.setContentType(RESPONSE_CONTENT_TYPE+charset); 
+//		response.setHeader("Content-Disposition", "attachment;filename=" + downloadFileName);
+		response.setContentType("application/octet-stream"); 
+		response.setHeader("Content-Disposition", "attachment;filename*=utf-8''"+downloadFileName);
 	}
 	
 	protected String getTemplatePath(){
