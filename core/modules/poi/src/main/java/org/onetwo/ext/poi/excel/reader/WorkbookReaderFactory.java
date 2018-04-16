@@ -277,4 +277,8 @@ public abstract class WorkbookReaderFactory {
 		ExcelReader wb = new DefaultPOIExcelReader();
 		return wb;
 	}
+
+	public static Map<String, CellValueConvertor> getConvertors() {
+		return convertors;
+	}
 }

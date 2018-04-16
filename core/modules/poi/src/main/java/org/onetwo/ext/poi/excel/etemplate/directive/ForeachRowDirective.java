@@ -115,7 +115,7 @@ public class ForeachRowDirective extends AbstractRowDirective<ForeachRowDirectiv
 		for(Cell cell : repeateRow.getRow()){
 			Cell newCell = endRow.createCell(cell.getColumnIndex());
 			ExcelUtils.copyCellStyle(cell, newCell);
-			Object newCellValue = provider.parseCellValue(cell, provider);
+			Object newCellValue = provider.parseCellValue(cell);
 			ExcelUtils.setCellValue(newCell, newCellValue);
 			
 			CellRangeAddress cr = provider.getCellRange(repeateRow, cell);

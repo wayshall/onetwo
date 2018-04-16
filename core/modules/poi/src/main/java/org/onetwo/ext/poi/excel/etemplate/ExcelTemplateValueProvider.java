@@ -1,9 +1,12 @@
 package org.onetwo.ext.poi.excel.etemplate;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.onetwo.common.convert.Types;
 import org.onetwo.ext.poi.excel.etemplate.directive.ForeachRowDirectiveModel.ForeachRowInfo;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.SimpleExcelExpression;
@@ -24,16 +27,55 @@ public class ExcelTemplateValueProvider implements ValueProvider {
 		super();
 		this.templateContext = context;
 	}
+	
 
-	public Object parseCellValue(Cell cell, final ExcelTemplateValueProvider provider){
+	public void setCellValue(Cell cell, Object value){
+		if(value==null){
+			return ;
+		}
+		
+		switch (cell.getCellType()) {
+			case Cell.CELL_TYPE_NUMERIC:
+				cell.setCellValue(Types.convertValue(value, Double.class));
+				break;
+			case Cell.CELL_TYPE_STRING:
+				cell.setCellValue(value.toString());
+				break;
+			case Cell.CELL_TYPE_BOOLEAN:
+				cell.setCellValue(Types.convertValue(value, Boolean.class));
+				break;
+			case Cell.CELL_TYPE_FORMULA:
+				cell.setCellValue(Types.convertValue(value, Date.class));
+				break;
+	
+			default:
+				HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
+				cell.setCellValue(cellValue);
+				break;
+		}
+	}
+	
+	public boolean isExpresstion(String cellText){
+		return expression.isExpresstion(cellText);
+	}
+
+	public Object parseCellValue(String cellText){
+		final String text = expression.parse(cellText, this);
+		if(this.isDebug())
+			logger.info("parse [{}] as [{}]", cellText, text);
+		return text;
+	}
+	
+//	public Object parseCellValue(Cell cell, final ExcelTemplateValueProvider provider){
+	public Object parseCellValue2(Cell cell){
 		Object cellValue = ExcelUtils.getCellValue(cell);
 		if(cellValue==null)
 			return null;
 		String cellText = cellValue.toString();
 		if(expression.isExpresstion(cellText)){
-			final String text = expression.parse(cellText, provider);
+			final String text = expression.parse(cellText, this);
 //			ExcelUtils.setCellValue(cell, text);
-			if(provider.isDebug())
+			if(this.isDebug())
 				logger.info("parse [{}] as [{}]", cellText, text);
 			return text;
 		}else{

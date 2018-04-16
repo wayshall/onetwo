@@ -3,13 +3,14 @@ package org.onetwo.ext.poi.excel.etemplate;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.ext.poi.excel.etemplate.ETemplateContext;
-import org.onetwo.ext.poi.excel.etemplate.ExcelTemplateEngineer;
+import org.onetwo.ext.poi.excel.reader.BeanRowMapper;
+import org.onetwo.ext.poi.excel.reader.WorkbookReaderFactory;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.TheFunction;
 
@@ -83,6 +84,39 @@ public class ExcelTemplateTest {
 				put("totalLabel", "合计");
 			}
 		});
+	}
+	
+	@Test
+	public void testDataFromExcel(){
+//		String templateName = "excel-template.xlsx";
+		BeanRowMapper<HashMap> bm = new BeanRowMapper<>(2, HashMap.class);
+		bm.setConvertCellTypeAsString(true);
+		List<HashMap> datas = WorkbookReaderFactory.createWorkbookByMapper(bm)
+								.readFirstSheet("F:/资料/gf/杂/酒店.xls");
+		
+		System.out.println("datas:"+datas);
+		
+		/*ExcelTemplateEngineer g1 = new ExcelTemplateEngineer();
+		g1.generate(new File("F:/资料/gf/杂/模板.xls"), "F:/资料/gf/杂/数据-test.xls", new ETemplateContext(){
+			{
+				put("year", TheFunction.getInstance().formatDateByPattern("yyyy", new Date()));
+				put("now", new Date());
+			}
+		});*/
+		
+		int index = 0;
+		for(HashMap data : datas){
+			System.out.println("生成第"+index+"个");
+			ExcelTemplateEngineer g = new ExcelTemplateEngineer();
+			g.generate(new File("F:/资料/gf/杂/模板.xls"), "F:/资料/gf/杂/数据-"+index+".xls", new ETemplateContext(){
+				{
+					put("year", TheFunction.getInstance().formatDateByPattern("yyyy", new Date()));
+					put("now", new Date());
+					putAll(data);
+				}
+			});
+			index++;
+		}
 	}
 	
 

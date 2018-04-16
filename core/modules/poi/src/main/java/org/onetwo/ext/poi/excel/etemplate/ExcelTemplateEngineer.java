@@ -70,6 +70,7 @@ public class ExcelTemplateEngineer {
 			}
 		}
 		ExcelUtils.parseCommonRow(row, sheetContext.getValueProvider());
+//		ExcelUtils.copyRow(sheetContext.getSheet(), newRow, repeateRow.getRow());
 		return row.getRowNum();
 	}
 	
@@ -110,7 +111,11 @@ public class ExcelTemplateEngineer {
 		for(int i=0; i< sheet.getNumMergedRegions(); i++){
 			CellRangeAddress cellRange = sheet.getMergedRegion(i);
 			cellRangeList.add(cellRange);
-//			logger.info("find mergedRegion, first row:{}, last row:{} " + cellRange.getFirstRow(), cellRange.getLastRow());
+			if(logger.isDebugEnabled()){
+				logger.debug("find mergedRegion, first row:{}, last row:{}, firstCol: {}, lastCol: {} ",
+								cellRange.getFirstRow(), cellRange.getLastRow(),
+								cellRange.getFirstColumn(), cellRange.getLastColumn());
+			}
 		}
 		provider.setCellRangeList(cellRangeList);
 		

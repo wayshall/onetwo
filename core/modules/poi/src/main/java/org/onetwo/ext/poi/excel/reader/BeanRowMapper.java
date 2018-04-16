@@ -40,6 +40,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 	//0-based
 	private int dataRowStartIndex = 1;
 	private boolean cleanUnvisibleUnicode = true;
+	private boolean convertCellTypeAsString = false;
 	
 	/******
 	 * 
@@ -103,7 +104,7 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		Object cellValue = null;
 		for(int i=0; i<cellCount; i++){
 			cell = row.getCell(i);
-			cellValue = ExcelUtils.getCellValue(cell);
+			cellValue = ExcelUtils.getCellValue(cell, convertCellTypeAsString);
 			String label = ExcelUtils.trimToEmpty(cellValue);
 			if(ExcelUtils.isBlank(label) && i-1>0){
 				//if title is empty (region column), get the previous title name
@@ -158,7 +159,8 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		}
 		
 		T bean = newBean();
-		BeanWrapper bw = ExcelUtils.newBeanWrapper(bean);
+//		BeanWrapper bw = ExcelUtils.newBeanWrapper(bean);
+		BeanWrapper bw = ExcelUtils.newBeanMapWrapper(bean);
 		
 		for(int cellIndex=0; cellIndex<cellCount; cellIndex++){
 			this.mapDataObjectField(names, row, bw, cellCount, cellIndex);
@@ -267,7 +269,8 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 				if(convertor!=null){
 					value = convertor.convert(cell);
 				}else{
-					value = ExcelUtils.getCellValue(cell);
+//					value = ExcelUtils.getCellValue(cell);
+					value = ExcelUtils.getCellValue(cell, convertCellTypeAsString);
 				}
 			}else{
 				value = cellValue;
@@ -304,5 +307,8 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 		return clazz.getName();
 	}
 
-	
+	public void setConvertCellTypeAsString(boolean convertCellTypeAsString) {
+		this.convertCellTypeAsString = convertCellTypeAsString;
+	}
+
 }

@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import ognl.Ognl;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -224,6 +225,18 @@ abstract public class ExcelUtils {
 		
 	}
 	
+
+	public static Object getCellValue(Cell cell, boolean convertCellTypeAsString){
+		if(!convertCellTypeAsString){
+			return getCellValue(cell);
+		}
+		if(cell==null)
+			return null;
+		cell.setCellType(Cell.CELL_TYPE_STRING);
+		String value = StringUtils.trimToEmpty(cell.getStringCellValue());
+		return value;
+	}
+	
 	public static Object getCellValue(Cell cell){
 		if(cell==null)
 			return null;
@@ -400,9 +413,12 @@ abstract public class ExcelUtils {
 			Object cellValue = getCellValue(cell);
 			if(cellValue==null)
 				continue;
-			
-			Object newCellValue = provider.parseCellValue(cell, provider);
-			ExcelUtils.setCellValue(cell, newCellValue);
+
+			String cellText = cellValue.toString();
+			if(provider.isExpresstion(cellText)){
+				Object newCellValue = provider.parseCellValue(cellText);
+				provider.setCellValue(cell, newCellValue);
+			}
 		}
 	}
 	
@@ -589,6 +605,18 @@ abstract public class ExcelUtils {
 			sb.append(str);
 		}
 		return sb.toString();
+	}
+	
+
+	public static BeanWrapper newBeanMapWrapper(Object obj, Object...listElementTypes){
+		BeanWrapper bw = null;
+		if(Map.class.isInstance(obj)){
+			bw = new BeanMapWrapper(obj, listElementTypes);
+		}else{
+			bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+		}
+		bw.setAutoGrowNestedPaths(true);
+		return bw;
 	}
 	
 	public static BeanWrapper newBeanWrapper(Object obj){
