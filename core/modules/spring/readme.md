@@ -98,8 +98,8 @@ public class WeatherResponse {
 
 解释：   
 - 所有rest客户端接口必须使用@RestApiClient 注解标注为rest接口
-- @RestApiClient 注解的path指定本接口下的所有方法的请求路径都是“/sk/{cityid}.html”的子路径
-- @GetMapping 是spring mvc的注解，本库利用了一些spring mvc的现成注解，@GetMapping(value="/create")标识这个方法是 get 请求，并且请求路径是/sk/{cityid}.html
+- @RestApiClient 注解的path指定本接口下的所有方法的请求路径都是“http://www.weather.com.cn/data”的子路径
+- @GetMapping 是spring mvc的注解，本库利用了一些spring mvc的现成注解，@GetMapping(value="/sk/{cityid}.html")标识这个方法是 get 请求，并且请求路径是/sk/{cityid}.html
 - @PathVariable 表示 getWeather 参数将会用于解释请求路径
 - WeatherResponse 是一个VO，表示响应内容，按照返回的格式编写即可。
 - @SupportedMediaType 注解是为了兼容一些不规范的接口，比如这个天气接口，明明返回的是json格式数据，但response的contentType却是text/html。
