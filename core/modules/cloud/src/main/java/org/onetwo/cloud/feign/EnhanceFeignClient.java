@@ -27,4 +27,6 @@ public @interface EnhanceFeignClient {
 	 */
 	@AliasFor("basePath")
 	String value() default "";
+	
+	Class<?> local() default void.class;
 }

@@ -1,7 +1,7 @@
 package org.onetwo.ext.ons;
 
-import org.onetwo.ext.ons.producer.SendMessageInterceptor;
-import org.onetwo.ext.ons.producer.SendMessageInterceptorChain;
+import org.onetwo.boot.mq.SendMessageInterceptor;
+import org.onetwo.ext.ons.producer.ONSSendMessageContext;
 import org.slf4j.Logger;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -23,12 +23,13 @@ public class SendMessageLogInterceptor implements SendMessageInterceptor {
 	}
 
 	@Override
-	public SendResult intercept(SendMessageInterceptorChain chain) {
-		Message message = chain.getSendMessageContext().getMessage();
+	public SendResult intercept(org.onetwo.boot.mq.SendMessageInterceptorChain chain) {
+		ONSSendMessageContext ctx = (ONSSendMessageContext)chain.getSendMessageContext();
+		Message message = ctx.getMessage();
 		if(logger.isInfoEnabled()){
 			logger.info("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
 		}
-		SendResult result = chain.invoke();
+		SendResult result = (SendResult)chain.invoke();
 		if(logger.isInfoEnabled()){
 			logger.info("send message success. topic: {}, tags: {}, sendResult: {}", message.getTopic(), message.getTag(), result);
 		}

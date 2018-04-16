@@ -39,7 +39,8 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/rocketmq</module>
+                <module>modules/common</module>
+                <module>modules/poi</module>
 			</modules>
            <build>
               <plugins>
@@ -89,12 +90,9 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/bom</module>
-                
-                <module>modules/parent</module>
                 <module>modules/common</module>
-                <module>modules/jackson</module>
-                <module>modules/spring</module>
+                <module>modules/poi</module>
+                <module>../../dbm</module>
 	  	</modules>
         <build>
             <plugins>

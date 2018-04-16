@@ -36,7 +36,7 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 		List<WebPlugin> plugins = SpringUtils.getBeans(applicationContext, WebPlugin.class);
 		logger.info("find plugins : {} ", plugins);
 		plugins.stream().forEach(plugin->registerPlugin(plugin));
-		logger.info("find plugins : {} ", pluginMapping);
+//		logger.info("find plugins : {} ", pluginMapping);
 	}
 	
 	public PluginNameParser getPluginNameParser() {

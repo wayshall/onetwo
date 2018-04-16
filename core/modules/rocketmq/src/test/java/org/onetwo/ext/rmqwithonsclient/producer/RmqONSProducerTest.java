@@ -5,8 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.onetwo.boot.mq.SendMessageRepository;
+import org.onetwo.boot.mq.SimpleDatabaseTransactionMessageInterceptor;
 import org.onetwo.common.ds.DatasourceFactoryBean;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
@@ -14,8 +18,6 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.spring.EnableDbm;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
 import org.onetwo.ext.ons.annotation.ONSProducer;
-import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor;
-import org.onetwo.ext.ons.transaction.SendMessageRepository;
 import org.onetwo.ext.rmqwithonsclient.producer.RmqONSProducerTest.ProducerTestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @ContextConfiguration(classes=ProducerTestContext.class)
 @RunWith(SpringJUnit4ClassRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RmqONSProducerTest {
 	public static final String TOPIC = "${topic}";
 	public static final String PRODUER_ID = "${producerId}";
@@ -44,19 +47,19 @@ public class RmqONSProducerTest {
 	TestDatabaseTransactionMessageInterceptor testDatabaseTransactionMessageInterceptor;
 	
 	@Test
-	public void testSendMessage(){
+	public void test1SendMessage(){
 		dataBaseProducerService.sendMessage();
 //		LangUtils.CONSOLE.exitIf("test");
 	}
 	
 	@Test
-	public void sendMessageWithException(){
+	public void test2sendMessageWithException(){
 		dataBaseProducerService.sendMessageWithException();
 //		LangUtils.CONSOLE.exitIf("test");
 	}
 	
 	@Test
-	public void sendMessageWithExceptionWhenExecuteSendMessage(){
+	public void test3sendMessageWithExceptionWhenExecuteSendMessage(){
 		testDatabaseTransactionMessageInterceptor.setThrowWhenExecuteSendMessage(true);
 		LangUtils.await(3);
 		dataBaseProducerService.sendMessage();
@@ -93,7 +96,7 @@ public class RmqONSProducerTest {
 		}
 	}
 	
-	public static class TestDatabaseTransactionMessageInterceptor extends DefaultDatabaseTransactionMessageInterceptor {
+	public static class TestDatabaseTransactionMessageInterceptor extends SimpleDatabaseTransactionMessageInterceptor {
 		private volatile boolean throwWhenExecuteSendMessage;
 		@Override
 		public void afterCommit(SendMessageEvent event){

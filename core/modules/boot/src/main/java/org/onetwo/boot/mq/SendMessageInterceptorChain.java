@@ -1,45 +1,45 @@
-package org.onetwo.ext.ons.producer;
+package org.onetwo.boot.mq;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.producer.SendMessageInterceptor.InterceptorPredicate;
 import org.slf4j.Logger;
 
-import com.aliyun.openservices.ons.api.Message;
-import com.aliyun.openservices.ons.api.SendResult;
-import com.aliyun.openservices.ons.api.exception.ONSClientException;
-
+@SuppressWarnings("rawtypes")
 public class SendMessageInterceptorChain {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
-	final private Supplier<SendResult> actualInvoker;
-	
+	final private Supplier<Object> actualInvoker;
+	private SendMessageContext sendMessageContext;
 	final private List<SendMessageInterceptor> interceptors;
 	final private Iterator<SendMessageInterceptor> iterator;
-	private SendMessageContext sendMessageContext;
+//	private SendMessageContext<?> sendMessageContext;
 	final private InterceptorPredicate interceptorPredicate;
 	
-	private SendResult result;
+	private Object result;
 	private Throwable throwable;
 	private boolean debug = true;
-	final private Logger logger = ONSUtils.getONSLogger();
 	private int currentIndex = 0;
 	private StringBuilder interLog = new StringBuilder(100);
 
-	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, Supplier<SendResult> actualInvoker, InterceptorPredicate interceptorPredicate) {
+//	@Builder
+	public SendMessageInterceptorChain(List<SendMessageInterceptor> interceptors, InterceptorPredicate interceptorPredicate, Supplier<Object> actualInvoker) {
 		super();
-		this.actualInvoker = actualInvoker;
 		this.interceptors = interceptors;
 		this.iterator = this.interceptors.iterator();
 		this.interceptorPredicate = interceptorPredicate;
+		this.actualInvoker = actualInvoker;
+	}
+	
+	public void setSendMessageContext(SendMessageContext sendMessageContext) {
+		this.sendMessageContext = sendMessageContext;
 	}
 
-	public SendResult invoke(){
+	public Object invoke(){
 		if(iterator.hasNext()){
 			SendMessageInterceptor interceptor = iterator.next();
 			if(interceptorPredicate==null || interceptorPredicate.isApply(interceptor)){
@@ -54,6 +54,7 @@ public class SendMessageInterceptorChain {
 			}
 		}else{
 //			result = actualInvoker.get();
+			Logger logger = getLogger();
 			if(interLog.length()>0 && logger.isInfoEnabled()){
 				logger.info("SendMessageInterceptors chain:\n{}", interLog.toString());
 			}
@@ -61,32 +62,15 @@ public class SendMessageInterceptorChain {
 		}
 		return result;
 	}
-	
-	private SendResult doSendRawMessage(){
-		try {
-			return actualInvoker.get();
-		} catch (ONSClientException e) {
-			handleException(e, sendMessageContext.getMessage());
-		}catch (Throwable e) {
-			handleException(e, sendMessageContext.getMessage());
-		}
-		return null;
-	}
 
-	protected void handleException(Throwable e, Message message){
-		final Logger logger = ONSUtils.getONSLogger();
-		if(logger.isErrorEnabled()){
-			logger.error("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
-		}
-		
-		if(e instanceof ONSClientException){
-			throw (ONSClientException)e;
-		}else{
-			throw new BaseException("发送消息失败", e);
-		}
+	protected Logger getLogger(){
+		return JFishLoggerFactory.getLogger(this.getClass());
+	}
+	protected Object doSendRawMessage(){
+		return this.actualInvoker.get();
 	}
 	
-	public SendResult getResult() {
+	public Object getResult() {
 		return result;
 	}
 	
@@ -94,16 +78,20 @@ public class SendMessageInterceptorChain {
 		return throwable;
 	}
 
-	public SendMessageContext getSendMessageContext() {
+	/*public SendMessageContext<?> getSendMessageContext() {
 		return sendMessageContext;
 	}
 
-	void setSendMessageContext(SendMessageContext sendMessageContext) {
+	void setSendMessageContext(SendMessageContext<?> sendMessageContext) {
 		this.sendMessageContext = sendMessageContext;
-	}
+	}*/
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
+	}
+
+	public SendMessageContext getSendMessageContext() {
+		return sendMessageContext;
 	}
 
 }

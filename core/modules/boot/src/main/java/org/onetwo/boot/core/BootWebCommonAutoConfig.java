@@ -12,6 +12,8 @@ import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
+import org.onetwo.boot.core.json.ObjectMapperProvider;
+import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvider;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
@@ -42,10 +44,14 @@ import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /***
  * web环境的通用配置
@@ -185,13 +191,6 @@ public class BootWebCommonAutoConfig {
 	}
 	
 	@Bean
-	public BootJsonView bootJsonView(){
-		BootJsonView jv = new BootJsonView();
-		jv.setPrettyPrint(bootJfishConfig.getMvc().getJson().isPrettyPrint());
-		return jv;
-	}
-	
-	@Bean
 	public ResultBodyAdvice resultBodyAdvice(){
 		return new ResultBodyAdvice();
 	}
@@ -217,10 +216,6 @@ public class BootWebCommonAutoConfig {
 		return new BootSessionUserManager();
 	}
 
-	@Bean
-	public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
-		return new BootJackson2ObjectMapperBuilder();
-	}
 	
 
 	/****
@@ -257,5 +252,35 @@ public class BootWebCommonAutoConfig {
 		fs.setAppContextDir(config.getAppContextDir());
 		return fs;
 	}
+
 	
+	@Configuration
+	protected static class JsonConfiguration {
+		@Autowired
+		protected BootJFishConfig bootJfishConfig;
+		@Bean
+		public BootJsonView bootJsonView(){
+			BootJsonView jv = new BootJsonView();
+			jv.setPrettyPrint(bootJfishConfig.getMvc().getJson().isPrettyPrint());
+			return jv;
+		}
+		
+		@Bean
+		@ConditionalOnMissingBean(ObjectMapperProvider.class)
+		public ObjectMapperProvider objectMapperProvider(){
+			return new DefaultObjectMapperProvider();
+		}
+
+		@Primary
+		@Bean
+		@ConditionalOnMissingBean(ObjectMapper.class)
+		public ObjectMapper objectMapper(){
+			return objectMapperProvider().createObjectMapper();
+		}
+		
+		@Bean
+		public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
+			return new BootJackson2ObjectMapperBuilder();
+		}
+	}
 }

@@ -32,12 +32,12 @@ public class Mixins {
 	 * mixin mixinInterfaces ot target object
 	 * 混入接口的实现类寻找策略可由MixinAdvisorStrategy指定
 	 * @author wayshall
-	 * @param obj
+	 * @param target
 	 * @param mixinInterfaces
 	 * @return
 	 */
-	public static <T> T of(Object obj, Class<?>... mixinInterfaces){
-		return DEFAULT_MIXIN_FACTORY.of(obj, mixinInterfaces);
+	public static <T> T of(Object target, Class<?>... mixinInterfaces){
+		return DEFAULT_MIXIN_FACTORY.of(target, mixinInterfaces);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -49,8 +49,8 @@ public class Mixins {
 		ProxyFactory proxy = new ProxyFactory(obj);
 		proxy.addAdvisors(advisors);
 		proxy.setOptimize(true);
-		obj = proxy.getProxy();
-		return (T)obj;
+		T proxyObject = (T)proxy.getProxy();
+		return proxyObject;
 	}
 	
 }

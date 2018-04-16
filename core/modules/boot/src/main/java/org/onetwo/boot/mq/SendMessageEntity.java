@@ -1,4 +1,4 @@
-package org.onetwo.ext.ons.transaction;
+package org.onetwo.boot.mq;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +18,7 @@ import org.onetwo.dbm.jpa.BaseEntity;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="data_rmq_send")
+@Table(name="data_mq_send")
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class SendMessageEntity extends BaseEntity {
@@ -31,7 +31,7 @@ public class SendMessageEntity extends BaseEntity {
 	private SendStates state;
 	
 	public static enum SendStates {
-		TO_SEND,
+		UNSEND,
 		SENT;
 	}
 

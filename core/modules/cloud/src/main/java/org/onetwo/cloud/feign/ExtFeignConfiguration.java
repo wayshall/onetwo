@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import okhttp3.ConnectionPool;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
@@ -28,9 +27,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.netflix.feign.AnnotatedParameterProcessor;
 import org.springframework.cloud.netflix.feign.FeignAutoConfiguration;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.cloud.netflix.feign.annotation.PathVariableParameterProcessor;
-import org.springframework.cloud.netflix.feign.annotation.RequestHeaderParameterProcessor;
-import org.springframework.cloud.netflix.feign.annotation.RequestParamParameterProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +43,7 @@ import feign.codec.Decoder;
  */
 @Configuration
 @ConditionalOnClass(Feign.class)
-//@Import(FixHystrixFeignTargeterConfiguration.class)
+//@Import(LocalFeignTargeterConfiguration.class)
 @EnableConfigurationProperties({FeignProperties.class, BootSpringConfig.class})
 @ConditionalOnProperty(value=FeignProperties.ENABLE_KEY, matchIfMissing=true)
 public class ExtFeignConfiguration implements InitializingBean {
@@ -74,6 +70,12 @@ public class ExtFeignConfiguration implements InitializingBean {
 			this.simpleLoggerManager = new SimpleLoggerManager();
 		}
 	}
+	
+	/*@Bean
+	static public LocalFeignBeanDefinitionRegistryPostProcessor localFeignBeanDefinitionRegistryPostProcessor(){
+		return new LocalFeignBeanDefinitionRegistryPostProcessor();
+	}*/
+	
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -96,9 +98,9 @@ public class ExtFeignConfiguration implements InitializingBean {
 	private List<AnnotatedParameterProcessor> getDefaultAnnotatedArgumentsProcessors() {
 		List<AnnotatedParameterProcessor> annotatedArgumentResolvers = new ArrayList<>();
 
-		annotatedArgumentResolvers.add(new PathVariableParameterProcessor());
+		/*annotatedArgumentResolvers.add(new PathVariableParameterProcessor());
 		annotatedArgumentResolvers.add(new RequestParamParameterProcessor());
-		annotatedArgumentResolvers.add(new RequestHeaderParameterProcessor());
+		annotatedArgumentResolvers.add(new RequestHeaderParameterProcessor());*/
 
 		return annotatedArgumentResolvers;
 	}

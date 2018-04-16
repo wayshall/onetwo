@@ -49,9 +49,15 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 				
 			}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
 				dataResult.success(entry.getValue().toString());
+				//只返回message，清空data
+				dataResult.data(null);
+				return dataResult;
 				
 			}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
 				dataResult.error(entry.getValue().toString());
+				//只返回message，清空data
+				dataResult.data(null);
+				return dataResult;
 				
 			}else{
 				dataResult.put(entry.getKey(), entry.getValue());

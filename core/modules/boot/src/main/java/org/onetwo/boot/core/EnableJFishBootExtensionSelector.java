@@ -73,6 +73,9 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		classNames.add(OssConfiguration.class.getName());
 		classNames.add(CosConfiguration.class.getName());
 		
+		//activemq
+		classNames.add("org.onetwo.boot.module.activemq.ActivemqConfiguration");
+		
 		Collection<String> exts = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(this.annotationClass, this.beanClassLoader));
 		for(String extClassName : exts){
 			Class<?> extClass;

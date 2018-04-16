@@ -1,9 +1,9 @@
 package org.onetwo.ext.rmqwithonsclient.producer;
 
+import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.dbm.id.SnowflakeIdGenerator;
 import org.onetwo.ext.alimq.SimpleMessage;
-import org.onetwo.ext.ons.ONSUtils.SendMessageFlags;
 import org.onetwo.ext.ons.producer.ProducerService;
 import org.onetwo.ext.rmqwithonsclient.producer.RmqONSProducerTest.OrderTestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class DataBaseProducerServiceImpl {
 																			  				.orderId(1L)
 																			  				.title("支付")
 																			  				.build())
-																	  .build(), SendMessageFlags.EnableDatabaseTransactional);
+																	  .build());
 		System.out.println("res: " + res);
 		
 		res = onsProducerService.sendMessage(SimpleMessage.builder()
@@ -39,7 +39,7 @@ public class DataBaseProducerServiceImpl {
 				  .tags(RmqONSProducerTest.ORDER_CANCEL)
 				  .key("test_"+idGenerator.nextId())
 				  .body(OrderTestMessage.builder()
-			  				.orderId(1L)
+			  				.orderId(2L)
 			  				.title("取消")
 			  				.build())
 				  .build(), SendMessageFlags.EnableDatabaseTransactional);

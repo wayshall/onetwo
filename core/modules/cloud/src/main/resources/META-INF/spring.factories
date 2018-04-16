@@ -1,2 +1,6 @@
+# Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.onetwo.cloud.feign.local.LocalFeignContextInitializer
+
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.onetwo.cloud.eureka.EurekaClientContextConfig

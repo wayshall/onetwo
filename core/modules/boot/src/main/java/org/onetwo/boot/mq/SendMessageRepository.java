@@ -1,8 +1,6 @@
-package org.onetwo.ext.ons.transaction;
+package org.onetwo.boot.mq;
 
 import java.util.Collection;
-
-import org.onetwo.ext.ons.producer.SendMessageContext;
 
 /**
  * @author wayshall
@@ -10,9 +8,12 @@ import org.onetwo.ext.ons.producer.SendMessageContext;
  */
 public interface SendMessageRepository {
 
-	void save(SendMessageContext ctx);
+	void save(SendMessageContext<?> ctx);
 
-	void remove(Collection<SendMessageContext> msgCtxs);
+	void updateToSent(SendMessageContext<?> ctx);
+	void updateToSent(SendMessageEntity messageEntity);
+
+	void remove(Collection<SendMessageContext<?>> msgCtxs);
 
 	/***
 	 * 查找当前上下文的所有发送消息

@@ -1,7 +1,8 @@
-package org.onetwo.ext.ons.transaction;
+package org.onetwo.boot.mq;
 
-import org.onetwo.ext.ons.producer.SendMessageInterceptor;
-import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor.SendMessageEvent;
+import lombok.Builder;
+import lombok.Data;
+
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -17,4 +18,9 @@ public interface DatabaseTransactionMessageInterceptor extends SendMessageInterc
 	@TransactionalEventListener(phase=TransactionPhase.AFTER_ROLLBACK)
 	void afterRollback(SendMessageEvent event);
 
+	@Data
+	@Builder
+	static public class SendMessageEvent {
+		private final SendMessageContext<?> sendMessageContext;
+	}
 }

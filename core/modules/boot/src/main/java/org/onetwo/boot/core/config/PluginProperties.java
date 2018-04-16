@@ -19,4 +19,6 @@ public class PluginProperties {
 	boolean appendPluginContextPath = true;
 	String templatePath;
 	JFishProperties viewMapping = new JFishProperties();
+	
+	String contextPath;
 }

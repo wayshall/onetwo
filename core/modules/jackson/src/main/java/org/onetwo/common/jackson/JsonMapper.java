@@ -71,21 +71,24 @@ public class JsonMapper {
 	}
 	
 	public static JsonMapper mapper(Include include, boolean fieldVisibility){
-		JsonMapper jsonm = new JsonMapper(include, fieldVisibility);
+		JsonMapper jsonm = new JsonMapper(new ObjectMapper(), include, fieldVisibility);
 		return jsonm;
 	}
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper;
 	private SimpleFilterProvider filterProvider = new SimpleFilterProvider();
 	private TypeFactory typeFactory;
 	
 
 	public JsonMapper(Include include){
-		this(include, false);
+		this(new ObjectMapper(), include);
 	}
-	public JsonMapper(Include include, boolean fieldVisibility){
+	public JsonMapper(ObjectMapper objectMapper, Include include){
+		this(objectMapper, include, false);
+	}
+	public JsonMapper(ObjectMapper objectMapper, Include include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 //		setDateFormat(DateUtils.DATE_TIME);
@@ -97,7 +100,8 @@ public class JsonMapper {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		if(fieldVisibility)
 			objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-		this.objectMapper.setFilters(filterProvider);
+		objectMapper.setFilters(filterProvider);
+		this.objectMapper = objectMapper;
 		this.typeFactory = this.objectMapper.getTypeFactory();
 	}
 	

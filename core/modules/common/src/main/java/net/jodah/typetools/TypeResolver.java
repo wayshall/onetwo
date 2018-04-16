@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.onetwo.common.reflect;
+package net.jodah.typetools;
 
 
 import java.lang.ref.Reference;

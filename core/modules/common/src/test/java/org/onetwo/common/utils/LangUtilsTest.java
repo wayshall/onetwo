@@ -376,7 +376,7 @@ public class LangUtilsTest {
 	public void testRandomString(){
 		String key = RandomStringUtils.randomAscii(128);
 		System.out.println("key:" + key);
-		key = RandomStringUtils.randomAlphanumeric(32);
+		key = RandomStringUtils.randomAlphanumeric(128);
 		System.out.println("key:" + key);
 	}
 }
