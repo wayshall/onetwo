@@ -1,12 +1,9 @@
 package org.onetwo.ext.poi.excel.etemplate;
 
-import java.util.Date;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.onetwo.common.convert.Types;
 import org.onetwo.ext.poi.excel.etemplate.directive.ForeachRowDirectiveModel.ForeachRowInfo;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.SimpleExcelExpression;
@@ -30,10 +27,12 @@ public class ExcelTemplateValueProvider implements ValueProvider {
 	
 
 	public void setCellValue(Cell cell, Object value){
-		if(value==null){
+		ExcelUtils.setCellValue(cell, value);
+		
+		/*if(value==null){
 			return ;
 		}
-		
+		不修改样式
 		switch (cell.getCellType()) {
 			case Cell.CELL_TYPE_NUMERIC:
 				cell.setCellValue(Types.convertValue(value, Double.class));
@@ -52,7 +51,7 @@ public class ExcelTemplateValueProvider implements ValueProvider {
 				HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
 				cell.setCellValue(cellValue);
 				break;
-		}
+		}*/
 	}
 	
 	public boolean isExpresstion(String cellText){

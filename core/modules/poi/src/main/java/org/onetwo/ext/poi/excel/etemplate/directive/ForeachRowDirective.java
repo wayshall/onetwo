@@ -3,13 +3,11 @@ package org.onetwo.ext.poi.excel.etemplate.directive;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.util.CellRangeAddress;
+import org.onetwo.ext.poi.excel.etemplate.ETSheetContext.ETRowContext;
 import org.onetwo.ext.poi.excel.etemplate.ETemplateContext;
 import org.onetwo.ext.poi.excel.etemplate.ExcelTemplateValueProvider;
-import org.onetwo.ext.poi.excel.etemplate.ETSheetContext.ETRowContext;
 import org.onetwo.ext.poi.excel.etemplate.directive.ForeachRowDirectiveModel.ForeachRowInfo;
 import org.onetwo.ext.poi.excel.exception.ExcelException;
 import org.onetwo.ext.poi.utils.ExcelUtils;
@@ -109,7 +107,7 @@ public class ForeachRowDirective extends AbstractRowDirective<ForeachRowDirectiv
 		ExcelUtils.copyRow(sheet, newRow, repeateRow.getRow());
 		return newRow;
 	}
-	protected Row generateRow2(ForeachRowInfo repeateRow, final ExcelTemplateValueProvider provider, int rownumb){
+	/*protected Row generateRow2(ForeachRowInfo repeateRow, final ExcelTemplateValueProvider provider, int rownumb){
 		Row endRow = repeateRow.getRow().getSheet().createRow(rownumb);
 		endRow.setHeight(repeateRow.getRow().getHeight());
 		for(Cell cell : repeateRow.getRow()){
@@ -127,6 +125,6 @@ public class ForeachRowDirective extends AbstractRowDirective<ForeachRowDirectiv
 			}
 		}
 		return endRow;
-	}
+	}*/
 
 }

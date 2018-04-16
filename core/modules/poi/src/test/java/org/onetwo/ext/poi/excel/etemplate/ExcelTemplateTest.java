@@ -92,7 +92,7 @@ public class ExcelTemplateTest {
 		BeanRowMapper<HashMap> bm = new BeanRowMapper<>(2, HashMap.class);
 		bm.setConvertCellTypeAsString(true);
 		List<HashMap> datas = WorkbookReaderFactory.createWorkbookByMapper(bm)
-								.readFirstSheet("F:/资料/gf/杂/酒店.xls");
+								.readFirstSheet("F:/资料/gf/杂/excel/酒店.xls");
 		
 		System.out.println("datas:"+datas);
 		
@@ -108,7 +108,7 @@ public class ExcelTemplateTest {
 		for(HashMap data : datas){
 			System.out.println("生成第"+index+"个");
 			ExcelTemplateEngineer g = new ExcelTemplateEngineer();
-			g.generate(new File("F:/资料/gf/杂/模板.xls"), "F:/资料/gf/杂/数据-"+index+".xls", new ETemplateContext(){
+			g.generate(new File("F:/资料/gf/杂/excel/模板.xls"), "F:/资料/gf/杂/excel/数据-"+index+".xls", new ETemplateContext(){
 				{
 					put("year", TheFunction.getInstance().formatDateByPattern("yyyy", new Date()));
 					put("now", new Date());
