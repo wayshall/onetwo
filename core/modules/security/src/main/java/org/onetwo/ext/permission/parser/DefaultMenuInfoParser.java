@@ -358,5 +358,8 @@ public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements M
 		return rootMenuParser;
 	}
 	
+	public String toString(){
+		return "{rooteMenuClass:"+this.permissionConfig.getRootMenuClass()+"}";
+	}
 	
 }
