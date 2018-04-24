@@ -14,6 +14,7 @@ import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.ResponseType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,7 +169,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		if (viewName != null) {
 			mv = getModelAndView(viewName, ex, request);
 			mv.addObject("statusCode", statusCode);
-		} else if (StringUtils.isNotBlank(bootJFishConfig.getErrorView())){
+		} else if (StringUtils.isNotBlank(bootJFishConfig.getErrorView()) && isResponsePage(request)){
 			mv = getModelAndView(bootJFishConfig.getErrorView(), ex, request);
 			mv.addObject("statusCode", statusCode);
 		} else {
@@ -176,6 +177,11 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 			mv = null;
 		}
 		return mv;
+	}
+
+	protected boolean isResponsePage(HttpServletRequest request){
+		ResponseType responseType = RequestUtils.getResponseType(request);
+		return responseType==ResponseType.PAGE;
 	}
 	
 	
