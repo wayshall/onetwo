@@ -42,6 +42,13 @@ public class RedisConfiguration {
 		return jf;
     }
 	
+	/***
+	 * 和StringRedisSerializer不同，只有key使用string
+	 * @author wayshall
+	 * @param jedisConnectionFactory
+	 * @return
+	 * @throws Exception
+	 */
 	@Bean
 	@ConditionalOnMissingBean(name="stringKeyRedisTemplate")
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
@@ -62,6 +69,16 @@ public class RedisConfiguration {
 																lockRegistryProperties.getKey(), 
 																lockRegistryProperties.getExpireAfter());
 		return lockRegistry;
+	}
+	
+	@Bean
+	public RedisOperationService redisOperationService(){
+		return new RedisOperationService();
+	}
+	
+	@Bean
+	public OnceTokenValidator onceTokenValidator(){
+		return new OnceTokenValidator();
 	}
     
 }

@@ -55,7 +55,7 @@ public class JmsProducerService implements ProducerService<JmsMessageCreator, Ob
 		final InterceptorPredicate interceptorPredicate = interPredicate==null?SendMessageFlags.Default:interPredicate;
 		
 		Destination dest = jmsDestinationConverter.getDestination(jmsMessage);
-		Assert.notNull(dest);
+		Assert.notNull(dest, "jms Destination can not be null");
 		return interceptableMessageSender.sendIntercetableMessage(interPredicate, messageInterceptors->{
 			SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
 					interceptorPredicate,
@@ -67,7 +67,7 @@ public class JmsProducerService implements ProducerService<JmsMessageCreator, Ob
 			SendMessageContext<Serializable> ctx = SendMessageContext.<Serializable>newBuilder()
 															.message(jmsMessage)
 															.chain(chain)
-															.debug(true)
+															.debug(false)
 															.threadId(Thread.currentThread().getId())
 															.build();
 			chain.setSendMessageContext(ctx);

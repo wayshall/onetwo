@@ -226,6 +226,12 @@
       <version>${onetwo.version}</version>
     </dependency>
     
+    <dependency>
+      <groupId>org.onetwo4j</groupId>
+      <artifactId>onetwo-wechat</artifactId>
+      <version>0.0.4-SNAPSHOT</version>
+    </dependency>
+    
     
 	<dependency>
 	  <groupId>commons-codec</groupId>
