@@ -1,10 +1,7 @@
-package org.onetwo.boot.module.activemq;
+package org.onetwo.boot.module.activemq.consume;
 
-import javax.sql.DataSource;
-
-import org.onetwo.boot.module.activemq.ActivemqTestApplication.ActivemqTestContext;
-import org.onetwo.common.propconf.JFishProperties;
-import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.boot.module.activemq.ActivemqConfiguration;
+import org.onetwo.boot.module.activemq.producer.ActivemqProducerApplication.ActivemqTestContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
@@ -12,10 +9,7 @@ import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDa
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -28,18 +22,18 @@ import org.springframework.context.annotation.Import;
 //@EnableJms
 @Configuration
 @Import({ActivemqTestContext.class, ActivemqConfiguration.class})
-public class ActivemqTestApplication {
+public class ActivemqConsumeApplication {
 	/*@Bean
 	public Queue queue() {
 		return new ActiveMQQueue("sample.queue");
 	}*/
 
 	public static void main(String[] args) {
-		SpringApplication.run(ActivemqTestApplication.class, args);
+		SpringApplication.run(ActivemqConsumeApplication.class, args);
 	}
 	
 
-	@Configuration
+	/*@Configuration
 //	@PropertySource("classpath:activemq-test.properties")
 	@ComponentScan
 	public static class ActivemqTestContext {
@@ -55,7 +49,7 @@ public class ActivemqTestApplication {
 											 .build();
 			return ds;
 		}
-	}
+	}*/
 	
 	
 }

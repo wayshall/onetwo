@@ -63,6 +63,10 @@ public class ActivemqConfiguration implements InitializingBean {
 		activeMQConnectionFactory.setTrustedPackages(trustedPackagesList);*/
 	}
 	
+	@Bean
+	public ConfigActiveMQConnectionFactory configActiveMQConnectionFactory(){
+		return new ConfigActiveMQConnectionFactory();
+	}
 
 	@Bean(name=ContainerFactorys.QUEUE)
 	public DefaultJmsListenerContainerFactory queueListenerContainerFactory(

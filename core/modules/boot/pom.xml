@@ -322,6 +322,11 @@
 		    <artifactId>activemq-jdbc-store</artifactId>
             <optional>true</optional>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-web</artifactId>
+            <optional>true</optional>
+        </dependency>
 	    
         <!-- test -->
         <!-- <dependency>

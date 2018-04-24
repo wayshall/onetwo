@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.activemq;
+package org.onetwo.boot.module.activemq.producer;
 
 import java.util.Date;
 

@@ -1,9 +1,11 @@
-package org.onetwo.boot.module.activemq;
+package org.onetwo.boot.module.activemq.consume;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.onetwo.boot.module.jms.JmsMessage;
 import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
+import org.onetwo.common.convert.Types;
+import org.onetwo.common.exception.BaseException;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +28,11 @@ public class ConsumerTestBean {
 //	@JmsListener(destination = "sample.queue", subscription="ConsumerTestBean#receiveQueue")
 	public void receiveQueue(JmsMessage<String> msg) {
 		System.out.println(msg.getBody());
+		Integer num = Types.asInteger(msg.getBody());
 		log.info("ConsumerTestBean receive: "+msg.getBody());
+		if(num%2==0){
+			throw new BaseException("consume error"+msg.getBody());
+		}
 	}
 
 	@JmsListener(destination = "sample.replyQueue")

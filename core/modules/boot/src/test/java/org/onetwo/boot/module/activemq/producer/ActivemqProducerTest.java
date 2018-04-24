@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.activemq;
+package org.onetwo.boot.module.activemq.producer;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * <br/>
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=ActivemqTestApplication.class,
+@SpringBootTest(classes=ActivemqProducerApplication.class,
 //				properties={"spring.activemq.in-memory=false", "spring.activemq.pool.enabled=false", "spring.activemq.broker-url=tcp://localhost:61616"},
 				properties={
 //							"spring.activemq.in-memory=true", "spring.activemq.pool.enabled=false", 
@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 							"jfish.activemq.enabled=true"
 							}
 )
-public class ActivemqTest {
+public class ActivemqProducerTest {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
@@ -34,7 +34,7 @@ public class ActivemqTest {
 
 	@Test
 	public void sendSimpleMessage() throws InterruptedException {
-		LangOps.ntimesRun(5, (i)->this.producer.send("Test message " + i));
+		LangOps.ntimesRun(5, (i)->this.producer.send("" + i));
 		Thread.sleep(1000L);
 		/*LangOps.ntimesRun(5, (i)->this.producer.send2Topic("Test topic message " + i));
 		Thread.sleep(1000L);*/
