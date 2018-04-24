@@ -84,7 +84,7 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 	
 	protected ErrorMessage handleException(Exception ex){
-		ErrorMessage errorMessage = (ErrorMessage)RequestContextHolder.getRequestAttributes().getAttribute(BootWebExceptionResolver.ERROR_MESSAGE_OBJECT_KEY, RequestAttributes.SCOPE_REQUEST);;
+		ErrorMessage errorMessage = (ErrorMessage)RequestContextHolder.getRequestAttributes().getAttribute(BootWebExceptionResolver.ERROR_MESSAGE_OBJECT_KEY, RequestAttributes.SCOPE_REQUEST);
 		if(errorMessage==null){
 			errorMessage = this.getErrorMessage(ex, bootJFishConfig.isLogErrorDetail());
 		}
