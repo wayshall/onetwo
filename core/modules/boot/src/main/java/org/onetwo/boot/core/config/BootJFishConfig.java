@@ -65,6 +65,8 @@ public class BootJFishConfig {
 	private boolean profile;
 	private boolean logErrorDetail;
 	List<String> notifyThrowables;
+
+	private String errorView = "error";
 	
 	/***
 	 * default is web
@@ -85,7 +87,7 @@ public class BootJFishConfig {
     	if(logErrorDetail){
     		return true;
     	}
-    	return bootSpringConfig.isProduct();
+    	return !bootSpringConfig.isProduct();
     }
 
 	public void setLogErrorDetail(boolean logErrorDetail) {
