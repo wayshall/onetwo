@@ -52,7 +52,7 @@ public class BootJFishConfig {
 	 * 是否自动增加插件路径
 	 */
 	boolean appendPluginContextPath = true;
-	PluginContextPathModes pluginContextPathModes = PluginContextPathModes.AUTO;
+	PluginContextPathModes pluginContextPathModes = PluginContextPathModes.APPEND;
 	/***
 	 * 
 	 */

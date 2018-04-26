@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -110,8 +111,13 @@ public class AnnotationUtils {
 		T annotation = clazz.getAnnotation(annotationClass);
 		if(annotation!=null)
 			return annotation;
-		Class<?>[] interfaces = clazz.getInterfaces();
-		for(Class<?> interf : interfaces){
+//		Class<?>[] interfaces = clazz.getInterfaces();
+		Set<Class<?>> superClasses = new LinkedHashSet<Class<?>>();
+		if(clazz.getSuperclass()!=Object.class){
+			superClasses.add(clazz.getSuperclass());
+		}
+		superClasses.addAll(Arrays.asList(clazz.getInterfaces()));
+		for(Class<?> interf : superClasses){
 			annotation = findAnnotationWithInterfaces(interf, annotationClass);
 			if(annotation!=null)
 				break;
