@@ -43,7 +43,10 @@
                 <module>modules/common</module>
                 <module>modules/poi</module>
 				-->
+                <module>modules/jackson</module>
+                <module>modules/web</module>
                 <module>modules/boot</module>
+                <module>plugins/web-admin</module>
 			</modules>
            <build>
               <plugins>
