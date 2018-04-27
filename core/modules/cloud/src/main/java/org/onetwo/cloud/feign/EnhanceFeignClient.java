@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 import org.springframework.core.annotation.AliasFor;
 
 /**
+ * 最好加载最顶层的api接口，而非client接口，避免使用框架的插件开发功能时，自动注入了插件路径，污染feign的调用路径
  * @author wayshall
  * <br/>
  */
