@@ -3,13 +3,17 @@ package org.onetwo.boot.module.security.config;
 import org.onetwo.boot.core.BootWebCommonAutoConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
+import org.onetwo.boot.core.web.mvc.DefaultExceptionMessageFinder;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
+import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.module.security.BootSecurityConfig;
+import org.onetwo.boot.module.security.BootSecurityExceptionMessager;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.ext.security.SecurityExceptionMessager;
 import org.onetwo.ext.security.jwt.JwtContxtConfig;
 import org.onetwo.ext.security.redis.RedisContextConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +39,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 public class BootSecurityCommonContextConfig{
 	@Autowired
 	private AccessLogProperties accessLogProperties;
+	@Autowired(required=false)
+	private ExceptionMessageAccessor exceptionMessageAccessor;
 
 	/*@Autowired
 	private BootSecurityConfig bootSecurityConfig;
@@ -70,6 +76,11 @@ public class BootSecurityCommonContextConfig{
 		});
 		log.setPathPatterns(accessLogProperties.getPathPatterns());
 		return log;
+	}
+	
+	@Bean
+	public SecurityExceptionMessager securityExceptionMessager(){
+		return new BootSecurityExceptionMessager(new DefaultExceptionMessageFinder(exceptionMessageAccessor));
 	}
 
 	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)

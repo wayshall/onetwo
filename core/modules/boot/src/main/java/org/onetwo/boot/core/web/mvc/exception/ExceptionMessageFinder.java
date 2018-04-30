@@ -21,6 +21,7 @@ import org.onetwo.common.exception.NoAuthorizationException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -237,7 +238,7 @@ public interface ExceptionMessageFinder {
 	}
 	
 	default void hanldeFindMessageError(Exception e) {
-		System.err.println("getMessage error :" + e.getMessage());
+		JFishLoggerFactory.getCommonLogger().error("getMessage error :" + e.getMessage());
 	}
 	
 	ExceptionMessageAccessor getExceptionMessageAccessor();

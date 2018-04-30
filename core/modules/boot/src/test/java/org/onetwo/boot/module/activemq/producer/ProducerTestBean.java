@@ -1,11 +1,16 @@
 package org.onetwo.boot.module.activemq.producer;
 
+import java.io.Serializable;
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import org.onetwo.boot.module.jms.JmsMessageCreator;
-import org.onetwo.boot.module.jms.SimpleJmsMessageCreator;
 import org.onetwo.boot.module.jms.JmsMessageCreator.DesinationType;
+import org.onetwo.boot.module.jms.SimpleJmsMessageCreator;
 import org.onetwo.boot.mq.ProducerService;
+import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.common.date.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsMessagingTemplate;
@@ -24,6 +29,11 @@ public class ProducerTestBean {
 	private ProducerService<JmsMessageCreator, Object> producerService;
 	/*@Autowired
 	private Queue queue;*/
+	@Data
+	@AllArgsConstructor
+	public static class MessageBody implements Serializable {
+		String message;
+	}
 
 	public void send(String msg){
 //		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
@@ -32,8 +42,9 @@ public class ProducerTestBean {
 		this.producerService.sendMessage(SimpleJmsMessageCreator.builder()
 														.destinationName(destinationName)
 														.key("test_"+DateUtils.formatDateTimeMillis(new Date()))
-														.body(msg)
-														.build());
+														.body(new MessageBody(msg))
+														.build(),
+										SendMessageFlags.EnableDatabaseTransactional);
 	}
 	public void send2Topic(String msg){
 //		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);

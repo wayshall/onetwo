@@ -16,10 +16,14 @@ public class ActivemqProperties {
 	public static final String ENABLE_KEY = PREFIX_KEY+".enabled";
 	public static final String EMBEDDED_ENABLE_KEY = PREFIX_KEY+".embedded.enabled";
 	
+
+	public static final String MESSAGE_CONVERTER_KEY = "jfish.activemq.messageConverter";
+	
 //	Properties connectionFactory = new Properties();
 	KahaDBStoreProps kahadbStore = new KahaDBStoreProps();
 	JdbcStoreProps jdbcStore = new JdbcStoreProps();
 	RedeliveryProps redelivery = new RedeliveryProps();
+	String messageConverter = "simple";
 	
 	@Data
 	static public class KahaDBStoreProps {
@@ -53,13 +57,12 @@ public class ActivemqProperties {
 		    boolean useCollisionAvoidance;
 		    /***
 		     * 重发时是否成倍地增大：nextDelay = (long) (previousDelay * backOffMultiplier);
-		     * activemq默认为false，这里修改为true
+		     * activemq默认为false
 		     */
-		    boolean useExponentialBackOff = true;
+		    boolean useExponentialBackOff = false;
 		    double backOffMultiplier = 5.0;
 		    long redeliveryDelay = initialRedeliveryDelay;
 		}
 	}
 	
-
 }

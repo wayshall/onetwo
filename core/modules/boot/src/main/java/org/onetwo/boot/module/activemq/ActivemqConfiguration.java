@@ -150,4 +150,42 @@ public class ActivemqConfiguration implements InitializingBean {
 		}
 	}
 
+	/*
+	@Configuration
+	protected static class JmsMessageConvertorConfiguration {
+		@Autowired
+		ActivemqProperties activemqProperties;
+		
+		@Bean
+//		@ConditionalOnMissingBean
+//		@ConditionalOnSingleCandidate(JmsTemplate.class)
+		@ConditionalOnProperty(value=ActivemqProperties.MESSAGE_CONVERTER_KEY)
+		public JmsMessagingTemplate jmsMessagingTemplate(JmsTemplate jmsTemplate) {
+			MessageConverter messageConverter = null;
+			switch (activemqProperties.getMessageConverter()) {
+				case "simple":
+					messageConverter = new SimpleMessageConverter();
+					break;
+				case "jackson2":
+					messageConverter = new MappingJackson2MessageConverter();
+					break;
+				case "string":
+					messageConverter = new StringMessageConverter();
+					break;
+				case "byteArray":
+					messageConverter = new ByteArrayMessageConverter();
+					break;
+				case "marshalling":
+					messageConverter = new MarshallingMessageConverter();
+					break;
+				default:
+					messageConverter = ReflectUtils.newInstance(activemqProperties.getMessageConverter());
+					break;
+			}
+			JmsMessagingTemplate jms = new JmsMessagingTemplate(jmsTemplate);
+			jms.setMessageConverter(messageConverter);
+			return jms;
+		}
+	}
+	*/
 }
