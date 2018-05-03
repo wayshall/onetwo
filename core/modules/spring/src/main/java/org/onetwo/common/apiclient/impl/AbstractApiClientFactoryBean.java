@@ -220,6 +220,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				invokeMethod.getAcceptHeader().ifPresent(accept->{
 					headers.set(ACCEPT, accept);
 				});
+				//HttpEntityRequestCallback#doWithRequest -> requestContentType
 				invokeMethod.getContentType().ifPresent(contentType->{
 					headers.set(CONTENT_TYPE, contentType);
 				});

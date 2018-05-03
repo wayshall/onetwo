@@ -63,6 +63,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private Class<?> componentType;
 	
 	private Optional<String> acceptHeader;
+	/***
+	 * resttemplate会根据contentType（consumes）决定采用什么样的httpMessageConvertor
+	 * 详见HttpEntityRequestCallback#doWithRequest -> requestContentType
+	 */
 	private Optional<String> contentType;
 	private String[] headers;
 	private int apiHeaderCallbackIndex = -1;
