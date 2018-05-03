@@ -51,9 +51,10 @@ public class ApiclientJackson2HttpMessageConverter extends MappingJackson2HttpMe
 	
 	public ApiclientJackson2HttpMessageConverter() {
 		super(JsonMapper.IGNORE_NULL.getObjectMapper());
-		/*setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, 
+		setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, 
 														MediaType.APPLICATION_JSON_UTF8,
-														MediaType.TEXT_PLAIN));*/
+														MediaType.TEXT_PLAIN,//for wechat api
+														MediaType.TEXT_HTML));
 	}
 
 	public void setSupportedMediaTypes(List<MediaType> supportedMediaTypes) {
