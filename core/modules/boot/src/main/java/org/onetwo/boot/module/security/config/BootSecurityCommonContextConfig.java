@@ -10,12 +10,15 @@ import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.BootSecurityExceptionMessager;
+import org.onetwo.boot.module.security.handler.BootSecurityAccessDeniedHandler;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.SecurityExceptionMessager;
+import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.ext.security.jwt.JwtContxtConfig;
 import org.onetwo.ext.security.redis.RedisContextConfig;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,6 +44,8 @@ public class BootSecurityCommonContextConfig{
 	private AccessLogProperties accessLogProperties;
 	@Autowired(required=false)
 	private ExceptionMessageAccessor exceptionMessageAccessor;
+	@Autowired
+	private SecurityConfig securityConfig;
 
 	/*@Autowired
 	private BootSecurityConfig bootSecurityConfig;
@@ -54,6 +59,15 @@ public class BootSecurityCommonContextConfig{
 	public ExtRestTemplate extRestTemplate(){
 		return new ExtRestTemplate();
 	}*/
+
+	
+	@Bean
+	@ConditionalOnMissingBean(AjaxSupportedAccessDeniedHandler.class)
+	public AjaxSupportedAccessDeniedHandler ajaxSupportedAccessDeniedHandler(){
+		BootSecurityAccessDeniedHandler adh = new BootSecurityAccessDeniedHandler();
+		adh.setErrorPage(securityConfig.getErrorPage());
+		return adh;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean({LoggerInterceptor.class})

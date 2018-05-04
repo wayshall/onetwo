@@ -33,12 +33,12 @@ import com.google.common.base.Charsets;
  */
 public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, InitializingBean {
 	
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 			
-	private AccessDeniedHandler delegateAccessDeniedHandler;
-	private JsonMapper mapper = JsonMapper.IGNORE_NULL;
-	private String redirectErrorUrl;
-	private String errorPage;
+	protected AccessDeniedHandler delegateAccessDeniedHandler;
+	protected JsonMapper mapper = JsonMapper.IGNORE_NULL;
+	protected String redirectErrorUrl;
+	protected String errorPage;
 	@Autowired(required=false)
 	private SecurityExceptionMessager securityExceptionMessager;
 	
@@ -59,10 +59,8 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			AccessDeniedException accessDeniedException) throws IOException,
 			ServletException {
 		String url = request.getMethod() + "|" + request.getRequestURI();
-		String errorMsg = accessDeniedException.getMessage();
-		if(securityExceptionMessager!=null){
-			errorMsg = securityExceptionMessager.findMessageByThrowable(accessDeniedException);
-		}
+		String errorMsg = getErrorMessage(accessDeniedException);
+		
 		if(RequestUtils.isAjaxRequest(request)){
 			SimpleResultBuilder<?> builder = DataResults.error(errorMsg+
 																	", at "+request.getRequestURI())
@@ -85,9 +83,22 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			logger.info("{} AccessDenied, redirect to {}", url, rurl);
 			response.sendRedirect(rurl);
 		}else{
-			logger.info("{} AccessDenied, delegateAccessDeniedHandler forward to errorPage: {}", url, errorPage);
-			this.delegateAccessDeniedHandler.handle(request, response, accessDeniedException);
+			defaultHandle(request, response, accessDeniedException);
 		}
+	}
+	
+	protected void defaultHandle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException{
+		String url = request.getMethod() + "|" + request.getRequestURI();
+		logger.info("{} AccessDenied, delegateAccessDeniedHandler forward to errorPage: {}", url, errorPage);
+		this.delegateAccessDeniedHandler.handle(request, response, accessDeniedException);
+	}
+	
+	final protected String getErrorMessage(AccessDeniedException accessDeniedException){
+		String errorMsg = accessDeniedException.getMessage();
+		if(securityExceptionMessager!=null){
+			errorMsg = securityExceptionMessager.findMessageByThrowable(accessDeniedException);
+		}
+		return errorMsg;
 	}
 
 	public void setErrorPage(String errorPage) {

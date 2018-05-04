@@ -24,6 +24,7 @@ import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
 import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
+import org.onetwo.boot.core.web.view.MvcViewRender;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.boot.dsrouter.DsRouterConfiguration;
@@ -88,6 +89,11 @@ public class BootWebCommonAutoConfig {
 	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
+	}
+	
+	@Bean
+	public MvcViewRender mvcViewRender(){
+		return new MvcViewRender();
 	}
 	
 	/***
