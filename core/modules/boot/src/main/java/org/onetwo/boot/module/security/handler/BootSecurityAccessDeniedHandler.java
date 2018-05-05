@@ -24,7 +24,7 @@ public class BootSecurityAccessDeniedHandler extends AjaxSupportedAccessDeniedHa
 	
 	protected void defaultHandle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException{
 		String url = request.getMethod() + "|" + request.getRequestURI();
-		logger.info("{} AccessDenied, delegateAccessDeniedHandler forward to errorPage: {}", url, errorPage);
+		logger.info("{} AccessDenied, render errorPage: {}", url, errorPage);
 		ModelAndView mv = new ModelAndView(errorPage);
 		mv.addObject("exception", accessDeniedException);
 		mv.addObject("errorMessage", getErrorMessage(accessDeniedException));
