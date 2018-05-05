@@ -1,5 +1,6 @@
 package org.onetwo.cloud.feign.local;
 
+import org.onetwo.cloud.feign.FeignClientPluginContextPathChecker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,30 +10,11 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 //@AutoConfigureBefore(FeignAutoConfiguration.classS)
-public class LocalFeignConfiguration /*implements ImportBeanDefinitionRegistrar, BeanFactoryAware*/ {
-	/*private ConfigurableListableBeanFactory beanFactory;
+public class LocalFeignConfiguration {
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		if (beanFactory instanceof ConfigurableListableBeanFactory) {
-			this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
-		}
+	@Bean
+	public FeignClientPluginContextPathChecker feignClientPluginContextPathChecker(){
+		return new FeignClientPluginContextPathChecker();
 	}
-	
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		registry.registerBeanDefinition("LocalFeignBeanPostProcessor", new RootBeanDefinition(LocalFeignBeanPostProcessor.class));
-	}*/
-
-	/*@Bean
-	static public LocalFeignBeanPostProcessor localFeignBeanPostProcessor(){
-		return new LocalFeignBeanPostProcessor();
-	}*/
-
-	/*@Bean
-	static public LocalFeignBeanDefinitionRegistryPostProcessor localFeignBeanDefinitionRegistryPostProcessor(){
-		return new LocalFeignBeanDefinitionRegistryPostProcessor();
-	}*/
-
 	
 }

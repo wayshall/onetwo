@@ -52,6 +52,9 @@ public class CosFileStore implements FileStorer<SimpleFileStoredMeta>, Initializ
 		meta.setSotredFileName(key);
 		meta.setAccessablePath(accessablePath);
 		meta.setFullAccessablePath(cosProperties.getDownloadUrl(key));
+		if(cosProperties.isAlwaysStoreFullPath()){
+			meta.setAccessablePath(meta.getFullAccessablePath());
+		}
 		meta.setStoredServerLocalPath(key);
 		meta.setBizModule(context.getModule());
 		meta.setSotredFileName(key);

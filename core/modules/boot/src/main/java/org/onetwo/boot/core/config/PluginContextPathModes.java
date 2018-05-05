@@ -3,8 +3,6 @@ package org.onetwo.boot.core.config;
 import lombok.Builder;
 import lombok.Data;
 
-import org.onetwo.common.utils.StringUtils;
-
 /**
  * @author wayshall
  * <br/>
@@ -24,7 +22,7 @@ public enum PluginContextPathModes {
 	NO_APPEND,
 	/***
 	 * 检查controller的路径是否以插件路径开始，如果是则不添加插件路径，否则添加插件路径
-	 */
+	 
 	AUTO(){
 		public String getPluginContextPath(PathContext ctx){
 			//如果路径不是以插件前缀开始，则自动加插件前缀
@@ -34,7 +32,8 @@ public enum PluginContextPathModes {
 			}
 			return null;
 		}
-	};
+	}*/
+	;
 
 	public String getPluginContextPath(PathContext ctx){
 		return null;
@@ -44,6 +43,6 @@ public enum PluginContextPathModes {
 	@Builder
 	public static class PathContext {
 		String pluginContextPath;
-		String controllerPath;
+//		String controllerPath;
 	}
 }

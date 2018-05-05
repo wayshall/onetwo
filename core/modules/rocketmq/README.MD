@@ -2,7 +2,6 @@
 spring rocketmq的集成模块
 
 ## maven
-当前snapshot版本：4.5.0-SNAPSHOT
 
 若使用snapshot版本，请添加snapshotRepository仓储：
 ```xml
@@ -76,23 +75,18 @@ jfish:
 ```Java
 
 @Transactional
-public class DataBaseProducerServiceImpl {
+public class ProducerServiceTest {
 
 	@Autowired
 	ProducerService onsProducerService;
 
 	public void sendMessage(){
+		Long orderId = 1L;
 		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
-																	  .topic(RmqONSProducerTest.TOPIC)
-																	  .tags(RmqONSProducerTest.ORDER_PAY)
-																	  .body(OrderTestMessage.builder()
-																			  				.orderId(1L)
-																			  				.title("支付")
-																			  				.build())
-																	  .build());
-		System.out.println("res: " + res);
-		
-		
+							.topic(Const.TOPIC)
+							.tags(Const.ORDER_PAY)
+							.body(new OrderMessage(orderId, "支付"))
+							.build());
 	}
 }
 ```

@@ -23,6 +23,10 @@ public class FeignProperties {
 	
 	public static final String LOCAL_ENABLE_KEY = PROPERTIES_PREFIX + ".local.enabled";
 	
+	/***
+	 * 拒绝插件路径
+	 */
+	boolean rejectPluginContextPath = true;
 	LoggerProps logger = new LoggerProps();
 	OkHttpClientProps okHttpClient = new OkHttpClientProps();
 	

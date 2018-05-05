@@ -94,7 +94,6 @@ public class ExtFeignConfiguration implements InitializingBean {
 		return contract;
 	}
 
-
 	private List<AnnotatedParameterProcessor> getDefaultAnnotatedArgumentsProcessors() {
 		List<AnnotatedParameterProcessor> annotatedArgumentResolvers = new ArrayList<>();
 

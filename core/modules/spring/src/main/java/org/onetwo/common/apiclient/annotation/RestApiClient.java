@@ -6,6 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * produces -> acceptHeader
+ * consumes -> contentType
  * @author wayshall
  * <br/>
  */

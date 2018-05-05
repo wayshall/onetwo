@@ -43,6 +43,7 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 	}
 	
 	protected final boolean isHttpPath(String subPath){
+		subPath = subPath.toLowerCase();
 		return subPath.startsWith("http://") || subPath.startsWith("https://");
 	}
 	protected String fixPath(String basePath, String subPath){

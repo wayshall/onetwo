@@ -52,7 +52,7 @@ public class BootJFishConfig {
 	 * 是否自动增加插件路径
 	 */
 	boolean appendPluginContextPath = true;
-	PluginContextPathModes pluginContextPathModes = PluginContextPathModes.AUTO;
+	PluginContextPathModes pluginContextPathModes = PluginContextPathModes.APPEND;
 	/***
 	 * 
 	 */
@@ -65,6 +65,8 @@ public class BootJFishConfig {
 	private boolean profile;
 	private boolean logErrorDetail;
 	List<String> notifyThrowables;
+
+	private String errorView = "error";
 	
 	/***
 	 * default is web
@@ -85,7 +87,7 @@ public class BootJFishConfig {
     	if(logErrorDetail){
     		return true;
     	}
-    	return bootSpringConfig.isProduct();
+    	return !bootSpringConfig.isProduct();
     }
 
 	public void setLogErrorDetail(boolean logErrorDetail) {

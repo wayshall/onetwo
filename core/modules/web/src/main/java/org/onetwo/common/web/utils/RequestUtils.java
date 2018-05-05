@@ -372,6 +372,12 @@ public final class RequestUtils {
 		return Optional.ofNullable(session);
 	}
 	
+
+	public static boolean isHttpPath(String path){
+		final String subPath = path.toLowerCase();
+		return subPath.startsWith(HTTP_KEY) || subPath.startsWith(HTTPS_KEY);
+	}
+	
 	private RequestUtils(){
 	}
 }
