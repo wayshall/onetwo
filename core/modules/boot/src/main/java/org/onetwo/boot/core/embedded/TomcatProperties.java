@@ -16,5 +16,16 @@ public class TomcatProperties {
 	int maxConnections = -1;
 	int connectionTimeout = 60000;
 	int asyncTimeout = 60000;
+	
+	/***
+	 * 为true，则上传文件时使用connectionTimeout
+	 * 为false，则使用connectionUploadTimeout
+	 * 默认为true
+	 */
+//	boolean disableUploadTimeout = true;
+	/***
+	 * 使用容器默认connectionUploadTimeout=300000,300秒
+	 */
+	int connectionUploadTimeout = -1;
 
 }
