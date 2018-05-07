@@ -18,6 +18,7 @@ import org.onetwo.boot.module.jms.JmsDestinationConverter;
 import org.onetwo.boot.module.jms.JmsMessageCreator;
 import org.onetwo.boot.module.jms.JmsProducerService;
 import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
+import org.onetwo.boot.mq.MQTransactionalConfiguration;
 import org.onetwo.boot.mq.ProducerService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFac
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 
@@ -40,6 +42,7 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 @EnableJms
 @EnableConfigurationProperties(ActivemqProperties.class)
 @Configuration
+@Import(MQTransactionalConfiguration.class)
 public class ActivemqConfiguration implements InitializingBean {
 	
 	/*@Autowired

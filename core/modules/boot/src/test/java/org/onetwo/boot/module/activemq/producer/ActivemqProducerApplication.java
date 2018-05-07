@@ -6,6 +6,7 @@ import org.onetwo.boot.module.activemq.ActivemqConfiguration;
 import org.onetwo.boot.module.activemq.producer.ActivemqProducerApplication.ActivemqTestContext;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.dbm.spring.EnableDbm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author wayshall
@@ -43,6 +45,8 @@ public class ActivemqProducerApplication {
 	@Configuration
 //	@PropertySource("classpath:activemq-test.properties")
 	@ComponentScan
+	@EnableDbm
+	@EnableTransactionManagement
 	public static class ActivemqTestContext {
 		
 		@Bean

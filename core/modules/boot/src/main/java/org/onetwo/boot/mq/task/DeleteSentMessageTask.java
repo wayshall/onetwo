@@ -3,6 +3,7 @@ package org.onetwo.boot.mq.task;
 import java.time.LocalDateTime;
 
 import org.onetwo.boot.module.redis.RedisLockRunner;
+import org.onetwo.boot.mq.MQProperties;
 import org.onetwo.boot.mq.SendMessageEntity;
 import org.onetwo.boot.mq.SendMessageEntity.SendStates;
 import org.onetwo.common.db.builder.Querys;
@@ -25,7 +26,7 @@ import org.springframework.util.Assert;
 @Transactional
 public class DeleteSentMessageTask implements InitializingBean {
 	public static final String LOCK_KEY = "lock_ons_delete_message_task";
-	public static final long DEFAULT_RUN_FIXEDRATE = 1000*60*60*1;//每小时运行一次
+//	public static final long DEFAULT_RUN_FIXEDRATE = 1000*60*60*1;//每小时运行一次
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
@@ -56,10 +57,10 @@ public class DeleteSentMessageTask implements InitializingBean {
 	}
 
 	/***
-	 * 每小时运行一次
 	 * @author wayshall
 	 */
-	@Scheduled(fixedRate=DeleteSentMessageTask.DEFAULT_RUN_FIXEDRATE)
+//	@Scheduled(fixedRate=DeleteSentMessageTask.DEFAULT_RUN_FIXEDRATE)
+	@Scheduled(cron=MQProperties.TRANSACTIONAL_DELETE_TASK_CRON)
 	public void doDeleteSentMessage(){
 		log.info("start to check unsend message...");
 		int deleteCount = 0;
