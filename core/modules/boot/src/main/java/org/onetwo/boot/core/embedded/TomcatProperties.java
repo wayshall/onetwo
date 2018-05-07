@@ -13,6 +13,7 @@ public class TomcatProperties {
 	public static final String ENABLED_CUSTOMIZER_TOMCAT = "enabled";
 	
 	int backlog = 500;
+	int acceptCount = backlog;
 	int maxConnections = -1;
 	int connectionTimeout = 60000;
 	int asyncTimeout = 60000;

@@ -43,7 +43,8 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 	Http11NioProtocol handler = (Http11NioProtocol)connector.getProtocolHandler();
                 	if(tomcatProperties.getBacklog()!=-1){
                 		//socket 连接队列大小
-                		handler.setBacklog(tomcatProperties.getBacklog());
+//                		handler.setBacklog(tomcatProperties.getBacklog());
+                		handler.setAcceptCount(tomcatProperties.getAcceptCount());
                 	}
                 	if(tomcatProperties.getMaxConnections()!=-1){
                 		//最大连接数，默认10000
