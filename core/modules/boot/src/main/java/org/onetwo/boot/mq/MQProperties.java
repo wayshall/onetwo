@@ -21,6 +21,12 @@ public class MQProperties {
 	public static final String TRANSACTIONAL_SEND_TASK_ENABLED_KEY = PREFIX_KEY+".transactional.sendTask.enabled";
 
 	public static final String TRANSACTIONAL_DELETE_TASK_ENABLED_KEY = PREFIX_KEY+".transactional.deleteTask.enabled";
+	
+	/***
+	 * 默认半夜两点触发
+	 */
+	public static final String TRANSACTIONAL_DELETE_TASK_CRON = "${jfish.mq.transactional.deleteTask.cron:0 0 2 * * ?}";
+//	public static final String TRANSACTIONAL_DELETE_TASK_CRON = "${jfish.mq.transactional.deleteTask.cron:0 11 16 * * ?}"; //for test
 
 	TransactionalProps transactional = new TransactionalProps();
 	

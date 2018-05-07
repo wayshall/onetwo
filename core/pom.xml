@@ -39,15 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-				<!--
-                <module>modules/common</module>
-                <module>modules/poi</module>
-                <module>modules/jackson</module>
-                <module>modules/web</module>
-                <module>plugins/web-admin</module>
-				-->
                 <module>modules/boot</module>
-                <module>modules/spring</module>
 			</modules>
            <build>
               <plugins>
@@ -97,9 +89,7 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/common</module>
-                <module>modules/poi</module>
-                <module>../../dbm</module>
+                <module>modules/boot</module>
 	  	</modules>
         <build>
             <plugins>
