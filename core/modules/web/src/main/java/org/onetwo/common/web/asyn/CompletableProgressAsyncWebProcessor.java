@@ -20,7 +20,7 @@ public class CompletableProgressAsyncWebProcessor extends DefaultProgressAsyncWe
 
 	private List<CompletableFuture<Void>> futures = new ArrayList<>();
 	private List<String> messages = Lists.newArrayList();
-	private AtomicInteger doneTaskCount = new AtomicInteger(0);
+	private volatile AtomicInteger doneTaskCount = new AtomicInteger(0);
 
 	public CompletableProgressAsyncWebProcessor(PrintWriter out,
 			AsyncMessageHolder holder, AsyncTaskExecutor asyncTaskExecutor,
