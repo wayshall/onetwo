@@ -2,6 +2,8 @@ package org.onetwo.boot.core.embedded;
 
 import lombok.Data;
 
+import org.onetwo.common.utils.LangOps;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @author wayshall
@@ -28,5 +30,16 @@ public class TomcatProperties {
 	 * 使用容器默认connectionUploadTimeout=300000,300秒
 	 */
 	int connectionUploadTimeout = -1;
+	String connectionUploadTimeoutTime;
+	
+	public int getConnectionUploadTimeout(){
+		if(StringUtils.isBlank(connectionUploadTimeoutTime)){
+			return connectionUploadTimeout;
+		}else{
+			Long val = LangOps.timeToMills(connectionUploadTimeoutTime, Long.valueOf(connectionUploadTimeoutTime));
+			this.connectionUploadTimeout = val.intValue();
+		}
+		return connectionUploadTimeout;
+	}
 
 }
