@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.config;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class BootSpringConfig {
 	
 	@Data
 	public class ProfilesConfig {
-		private List<String> active;
+		private List<String> active = new ArrayList<String>();
 	}
 	
 	@Data

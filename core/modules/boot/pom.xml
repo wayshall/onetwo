@@ -46,7 +46,6 @@
         <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-wechat</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
           <optional>true</optional>
         </dependency>
         
@@ -202,6 +201,8 @@
             <artifactId>spring-rabbit</artifactId>
             <optional>true</optional>
         </dependency>
+        
+        <!-- redis -->
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-redis</artifactId>
@@ -219,6 +220,34 @@
             <artifactId>jedis</artifactId>
             <optional>true</optional>
         </dependency> -->
+        
+        <!-- jetcache -->
+        <dependency>
+		    <groupId>com.alicp.jetcache</groupId>
+		    <artifactId>jetcache-starter-redis</artifactId>
+		    <version>2.4.4</version>
+		    <optional>true</optional>
+		    <exclusions>
+              <exclusion>
+                <groupId>org.mvel</groupId>
+                <artifactId>mvel2</artifactId>
+              </exclusion>
+              <!-- 不能排除，内置的序列化方案
+              <exclusion>
+	            <groupId>com.esotericsoftware</groupId>
+	            <artifactId>kryo</artifactId>
+              </exclusion> 
+              <exclusion>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+              </exclusion>
+              -->
+              <exclusion>
+	            <groupId>org.slf4j</groupId>
+	            <artifactId>slf4j-api</artifactId>
+              </exclusion>
+		    </exclusions>
+		</dependency>
         
 	    <dependency>
 	        <groupId>org.springframework.session</groupId>
