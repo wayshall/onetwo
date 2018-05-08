@@ -21,6 +21,7 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
  */
 @EnableConfigurationProperties({JFishRedisProperties.class})
 @ConditionalOnClass({JedisConnectionFactory.class, RedisLockRegistry.class})
+@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
 public class RedisConfiguration {
 	
 	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";
@@ -32,7 +33,7 @@ public class RedisConfiguration {
     
 	@Bean
     @ConditionalOnMissingBean(name=BEAN_REDISCONNECTIONFACTORY)
-	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
+//	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
     public JedisConnectionFactory redisConnectionFactory() throws Exception {
 		JedisConnectionFactory jf = new JedisConnectionFactory();
 		CopyUtils.copy(jf, redisProperties);
@@ -51,7 +52,7 @@ public class RedisConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name="stringKeyRedisTemplate")
-	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
+//	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
 	public RedisTemplate<String, Object> stringKeyRedisTemplate(@Autowired @Qualifier(BEAN_REDISCONNECTIONFACTORY) JedisConnectionFactory jedisConnectionFactory) throws Exception  {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setKeySerializer(new StringRedisSerializer());

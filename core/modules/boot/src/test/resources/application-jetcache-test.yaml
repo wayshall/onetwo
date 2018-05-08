@@ -1,0 +1,30 @@
+debug: true
+spring: 
+    datasource: 
+        url: jdbc:mysql://localhost:3306/jormtest?&useSSL=false&characterEncoding=UTF-8
+        username: root
+        password: root
+        driver-class-name: com.mysql.jdbc.Driver
+jetcache: 
+    statIntervalMinutes: 15
+    areaInCacheName: false
+    local:
+        default:
+            type: linkedhashmap #caffeine
+            keyConvertor: fastjson
+            limit: 100
+    remote:
+        default:
+            type: redis
+            keyConvertor: fastjson
+            valueEncoder: java
+            valueDecoder: java
+            poolConfig:
+                minIdle: 5
+                maxIdle: 20
+                maxTotal: 50
+            host: localhost
+            port: 6379
+jfish: 
+    dbm: 
+        autoProxySessionTransaction: true
