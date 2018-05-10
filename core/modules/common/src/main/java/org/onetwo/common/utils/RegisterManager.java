@@ -1,6 +1,7 @@
 package org.onetwo.common.utils;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.onetwo.common.exception.BaseException;
 
@@ -21,9 +22,13 @@ public interface RegisterManager<K, V> {
 		return register.get(name);
 	}
 	
-	default public V findRegistered(K name){
-		return getRegister().get(name);
+	default public Optional<V> findRegistered(K name){
+		return Optional.ofNullable(getRegistered(name));
 	}
+	
+	/*default public V findRegistered(K name){
+		return getRegister().get(name);
+	}*/
 	
 
 	public Map<K, V> getRegister();
