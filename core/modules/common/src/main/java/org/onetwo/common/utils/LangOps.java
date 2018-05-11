@@ -216,7 +216,7 @@ final public class LangOps {
 		time = Objects.requireNonNull(time).toLowerCase();
 		TimeUnit timeUnit = null;
 		int unitLength = 1;
-		if (time.endsWith("mis")) {
+		if (time.endsWith("mis") || time.endsWith("mls")) {
 			timeUnit = TimeUnit.MILLISECONDS;
 			unitLength = 3;
 		}else if (time.endsWith("mcs")) {

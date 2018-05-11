@@ -15,6 +15,7 @@ public interface InvokeLimiter {
 	void consume(InvokeContext invokeContext);
 	
 	public abstract class AbstractInvokeLimiter implements InvokeLimiter {
+		private String key;
 		private Matcher matcher;
 		private int limitTimes;
 		
@@ -37,6 +38,15 @@ public interface InvokeLimiter {
 		public void setLimitTimes(int limitTimes) {
 			this.limitTimes = limitTimes;
 		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public void setKey(String key) {
+			this.key = key;
+		}
+		
 	}
 	
 	public abstract class BaseInvokeLimiter extends AbstractInvokeLimiter {
@@ -53,7 +63,7 @@ public interface InvokeLimiter {
 		}
 		
 		public boolean match(InvokeContext invokeContext){
-			return getInvokeType()==invokeContext.getInvokeType() && super.match(invokeContext);
+			return (getInvokeType()==InvokeType.ALL || getInvokeType()==invokeContext.getInvokeType()) && super.match(invokeContext);
 		}
 
 		public InvokeType getInvokeType() {

@@ -1,9 +1,12 @@
 package org.onetwo.boot.limiter;
 
+import java.util.Map;
 import java.util.Optional;
 
 import lombok.Builder;
 import lombok.Data;
+
+import com.google.common.collect.Maps;
 
 
 /**
@@ -19,13 +22,16 @@ public interface InvokeContext {
 	String getServiceId();
 	int getInvokeTimes();
 	
-	default Optional<String> getAttribute(String key) {
+	default <T> Optional<T> getAttributeOpt(String key) {
 		return Optional.empty();
 	}
 	
+	void setAttribute(String key, Object value);
+	
 	public enum InvokeType {
 		BEFORE,
-		AFTER
+		AFTER,
+		ALL
 	}
 	
 	@Data
@@ -37,5 +43,18 @@ public interface InvokeContext {
 		String clientIp;
 		String serviceId;
 		int invokeTimes = 1;
+		
+		Map<String, Object> attributes = Maps.newHashMap();
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> Optional<T> getAttributeOpt(String key) {
+			return Optional.ofNullable((T)attributes.get(key));
+		}
+		
+		@Override
+		public void setAttribute(String key, Object value) {
+			attributes.put(key, value);
+		}
 	}
 }
