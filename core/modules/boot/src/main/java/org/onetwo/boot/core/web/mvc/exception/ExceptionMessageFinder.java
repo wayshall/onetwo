@@ -140,8 +140,9 @@ public interface ExceptionMessageFinder {
 		
 		if(StringUtils.isBlank(errorCode)){
 			errorCode = SystemErrorCode.UNKNOWN;//ex.getClass().getName();
-			error.setCode(errorCode);
 		}
+		//设置code，findMessage需要用到
+		error.setCode(errorCode);
 
 		if(findMsgByCode){
 			errorMsg = findMessage(findMsgByCode, error, errorArgs);
