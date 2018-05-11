@@ -140,6 +140,7 @@ public interface ExceptionMessageFinder {
 		
 		if(StringUtils.isBlank(errorCode)){
 			errorCode = SystemErrorCode.UNKNOWN;//ex.getClass().getName();
+			error.setCode(errorCode);
 		}
 
 		if(findMsgByCode){
@@ -160,7 +161,6 @@ public interface ExceptionMessageFinder {
 		}
 		
 //		detail = product?detail:true;
-		error.setCode(errorCode);
 		error.setMesage(errorMsg);
 //		error.setDetail(detail);
 //		error.setViewName(viewName);
