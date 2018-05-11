@@ -159,7 +159,8 @@ public interface ExceptionMessageFinder {
 				});
 			}
 		}
-		
+
+		error.setCode(errorCode);
 //		detail = product?detail:true;
 		error.setMesage(errorMsg);
 //		error.setDetail(detail);
