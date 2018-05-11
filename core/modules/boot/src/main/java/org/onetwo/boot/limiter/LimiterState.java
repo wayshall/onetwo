@@ -2,6 +2,7 @@ package org.onetwo.boot.limiter;
 
 import java.io.Serializable;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -10,6 +11,7 @@ import lombok.Data;
  */
 @SuppressWarnings("serial")
 @Data
+@Builder
 public class LimiterState implements Serializable {
 //	long startMillis;
 	/***

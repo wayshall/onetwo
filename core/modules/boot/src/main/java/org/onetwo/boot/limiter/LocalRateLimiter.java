@@ -10,7 +10,7 @@ import com.google.common.util.concurrent.RateLimiter;
  * @author wayshall
  * <br/>
  */
-public class LocalInvokeLimiter extends BaseInvokeLimiter {
+public class LocalRateLimiter extends BaseInvokeLimiter {
 	private RateLimiter rateLimiter;
 	
 	@Override

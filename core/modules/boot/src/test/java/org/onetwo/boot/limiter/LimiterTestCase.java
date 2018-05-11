@@ -11,7 +11,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	MatcherTest.class,
-	LocalInvokeLimiterTest.class
+	LocalRateLimiterTest.class
 })
 public class LimiterTestCase {
 

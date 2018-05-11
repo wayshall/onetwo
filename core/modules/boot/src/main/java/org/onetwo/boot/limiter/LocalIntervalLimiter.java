@@ -37,4 +37,8 @@ public class LocalIntervalLimiter extends BaseInvokeLimiter {
 		}
 	}
 	
+	protected LimiterState getCurrentValidLimiterState(){
+		
+	}
+	
 }

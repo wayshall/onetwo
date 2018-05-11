@@ -12,12 +12,12 @@ import org.onetwo.common.utils.LangUtils;
  * @author wayshall
  * <br/>
  */
-public class LocalInvokeLimiterTest {
+public class LocalRateLimiterTest {
 	MatcherRegister matcherRegister = new MatcherRegister();
 	
 	@Test
 	public void testLocalInvokeLimiter(){
-		LocalInvokeLimiter limiter = new LocalInvokeLimiter();
+		LocalRateLimiter limiter = new LocalRateLimiter();
 		limiter.setMatcherName("antpath");
 		limiter.setPatterns("/uaa/**", "/order/**");
 		/***
