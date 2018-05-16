@@ -14,6 +14,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import feign.Feign;
 import feign.Target;
@@ -47,7 +48,8 @@ public class LocalTargeter implements Targeter, ApplicationContextAware {
 		
 		Class<?> fallbackType = factory.getFallback();
 		Class<?> clientInterface = factory.getType();
-		EnhanceFeignClient enhanceAnno = clientInterface.getAnnotation(EnhanceFeignClient.class);
+//		EnhanceFeignClient enhanceAnno = clientInterface.getAnnotation(EnhanceFeignClient.class);
+		EnhanceFeignClient enhanceAnno = AnnotatedElementUtils.findMergedAnnotation(clientInterface, EnhanceFeignClient.class);
 		if(enhanceAnno==null || enhanceAnno.local()==void.class){
 			return defaultTarget.get();
 		}
