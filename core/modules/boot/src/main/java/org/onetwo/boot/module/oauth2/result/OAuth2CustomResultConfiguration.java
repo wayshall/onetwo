@@ -60,7 +60,7 @@ public class OAuth2CustomResultConfiguration implements InitializingBean{
 	
 	@Bean
 	public OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint(ObjectMapperProvider objectMapperProvider){
-		OAuth2AuthenticationEntryPoint ep = new OAuth2AuthenticationEntryPoint();
+		OAuth2AuthenticationEntryPoint ep = new OAuth2CustomAuthenticationEntryPoint();
 		ep.setExceptionRenderer(oauth2ExceptionRenderer(objectMapperProvider));
 		return ep;
 	}
