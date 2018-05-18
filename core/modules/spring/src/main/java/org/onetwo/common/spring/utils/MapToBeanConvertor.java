@@ -115,7 +115,7 @@ public class MapToBeanConvertor {
 			if(fn.isPresent()){
 				return fn.get().value();
 			}
-			Optional<JsonProperty> jp = findAnnotation(JsonProperty.class);
+			Optional<JsonProperty> jp = findAnnotation(JsonProperty.class);//findAnnotationOnPropertyOrField
 			if(jp.isPresent()){
 				return jp.get().value();
 			}

@@ -36,6 +36,7 @@ import feign.Contract;
 import feign.Feign;
 import feign.Logger;
 import feign.codec.Decoder;
+import feign.codec.Encoder;
 
 /**
  * @author wayshall
@@ -81,6 +82,13 @@ public class ExtFeignConfiguration implements InitializingBean {
 	@ConditionalOnMissingBean
 	public Decoder feignDecoder() {
 		return new ExtResponseEntityDecoder(messageConverters);
+	}
+	
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Encoder feignEncoder() {
+		return new ExtSpringEncoder(this.messageConverters);
 	}
 
 	@Bean
@@ -132,6 +140,14 @@ public class ExtFeignConfiguration implements InitializingBean {
 		return level;
 	}
 	
+	@Configuration
+	protected static class FeignRequestInterceptorConfiguration {
+		
+		@Bean
+		public KeepHeaderRequestInterceptor keepHeaderRequestInterceptor(){
+			return new KeepHeaderRequestInterceptor();
+		}
+	}
 	
 	
 	@Configuration

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.onetwo.common.reflect.ReflectUtils;
@@ -218,6 +219,19 @@ public class AnnotationUtils {
 
 	public static <T extends Annotation> T findFieldAnnotation(Class<?> clazz, Field field, Class<T> annotationClass) {
 		return field != null?field.getAnnotation(annotationClass):null;
+	}
+	
+
+	final public static <A extends Annotation> Optional<A> findAnnotationOnPropertyOrField(Class<?> beanClass, PropertyDescriptor propertyDescriptor, Class<A> annoClass){
+		Method method = propertyDescriptor.getReadMethod();
+		A fn = null;
+		if(method==null || (fn = method.getAnnotation(annoClass))==null){
+			Field field = ReflectUtils.getIntro(beanClass).getField(propertyDescriptor.getName());
+			if(field!=null){
+				fn = field.getAnnotation(annoClass);
+			}
+		}
+		return Optional.ofNullable(fn);
 	}
 
 	public static Method findMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
