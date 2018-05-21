@@ -45,12 +45,6 @@
         
         <dependency>
           <groupId>org.onetwo4j</groupId>
-          <artifactId>onetwo-wechat</artifactId>
-          <optional>true</optional>
-        </dependency>
-        
-        <dependency>
-          <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-security</artifactId>
           <optional>true</optional>
         </dependency>
