@@ -184,7 +184,7 @@ public class BeanToMapConvertor {
 	 * @param obj
 	 */
 	public void toFlatMap(final Map<String, Object> params, final Object obj){
-		flatObject(prefix, obj, (k, v, c)->params.put(toPropertyName(c.getName()), v));
+		flatObject(prefix, obj, (k, v, c)->params.put(toPropertyName(k), v));
 	}
 	
 	/****
