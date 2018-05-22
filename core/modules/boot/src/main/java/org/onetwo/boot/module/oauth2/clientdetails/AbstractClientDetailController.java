@@ -17,8 +17,7 @@ public class AbstractClientDetailController extends AbstractBaseController {
 		return oauth2ClientDetailManager.getCurrentClientDetail();
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected <T extends ClientDetails> Optional<T> getCurrentClientDetail(Class<T> clazz){
-		return (Optional<T>)oauth2ClientDetailManager.getCurrentClientDetail();
+		return oauth2ClientDetailManager.getCurrentClientDetail();
 	}
 }

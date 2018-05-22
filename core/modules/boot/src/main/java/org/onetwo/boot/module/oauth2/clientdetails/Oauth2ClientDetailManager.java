@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface Oauth2ClientDetailManager {
 
 	<T extends Serializable> Optional<T> getCurrentClientDetail();
+	
 }
