@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,27 +40,55 @@ public class AutoScanPluginSwaggerConfig {
     	}
     	return Collections.emptySet();
 	}
-
-    @Bean
-    public Docket api(){
-    	Set<Predicate<RequestHandler>> packages = Sets.newHashSet();
+	
+	protected Set<Predicate<RequestHandler>> getAllApiDocPackages(){
+		Set<Predicate<RequestHandler>> packages = Sets.newHashSet();
     	packages.addAll(getPluginBasePackages());
     	String scanPackageName = getScanPackageName();//ClassUtils.getPackageName(ServiceApplication.class);
     	if(StringUtils.isNotBlank(scanPackageName)){
     		packages.add(RequestHandlerSelectors.basePackage(scanPackageName));
     	}
-    	Docket docket = new Docket(DocumentationType.SWAGGER_2)
-		    		.ignoredParameterTypes(ApiIgnore.class)
-//		    		.pathProvider(pathProvider)
-		            .select()
-			            .apis(Predicates.or(packages))
-			            .paths(PathSelectors.any())
-		            .build()
-		            .apiInfo(apiInfo());
+    	return packages;
+	}
+	
+	@SuppressWarnings("deprecation")
+	protected Predicate<RequestHandler> webApi(){
+		Set<Predicate<RequestHandler>> packages = getAllApiDocPackages();
+    	return rh->{
+        	return Predicates.or(packages).apply(rh) && 
+        								WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
+        															rh.declaringClass())
+        															.isPresent();
+        };
+	}
+
+	@SuppressWarnings("deprecation")
+	protected Predicate<RequestHandler> notWebApi(){
+		Set<Predicate<RequestHandler>> packages = getAllApiDocPackages();
+    	return rh->{
+        	return Predicates.or(packages).apply(rh) && 
+										!WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
+																	rh.declaringClass())
+																	.isPresent();
+        };
+	}
+
+    @Bean
+    public Docket api(){
+    	Set<Predicate<RequestHandler>> packages = getAllApiDocPackages();
+    	Docket docket = createDocket(packages);
     	return docket;
     }
     
-    protected Docket configDocket(Docket docket){
+    protected Docket createDocket(Set<Predicate<RequestHandler>> packages){
+    	Docket docket = new Docket(DocumentationType.SWAGGER_2)
+								.ignoredParameterTypes(ApiIgnore.class)
+						//		.pathProvider(pathProvider)
+						        .select()
+						            .apis(Predicates.or(packages))
+						            .paths(PathSelectors.any())
+						        .build()
+						        .apiInfo(apiInfo());
     	return docket;
     }
     
