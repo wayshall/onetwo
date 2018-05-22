@@ -54,9 +54,9 @@ jfish:
 	
 	@Data
 	public class OkHttpClientProps {
-		String readTimeout = "60s";
-		String connectTimeout = "60s";
-		String writeTimeout = "120s";
+		String readTimeout = "50s";
+		String connectTimeout = "50s";
+		String writeTimeout = "50s";
 		
 		public Pair<Integer, TimeUnit> getReadTimeoutTime() {
 			Pair<Integer, TimeUnit> tu = LangOps.parseTimeUnit(readTimeout);
