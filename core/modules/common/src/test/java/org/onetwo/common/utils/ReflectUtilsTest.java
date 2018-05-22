@@ -14,8 +14,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.profiling.TimeProfileStack;
+import org.onetwo.common.reflect.BeanToMapConvertor;
+import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.CopyConfig;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.User.Address;
 
 public class ReflectUtilsTest {
 	
@@ -96,14 +99,23 @@ public class ReflectUtilsTest {
 	
 	@Test
 	public void testToMap(){
+		BeanToMapConvertor bean2MapConvertor = BeanToMapBuilder.newBuilder()
+				.propertyAcceptor((p, v)->v!=null)
+				.build();
+		
+		Address address = new Address();
+		address.setDetail("test address");
 		User user = new User();
 		user.setUserName("testName");
 		user.setAge(11);
 		user.setBirthDate(NiceDate.New("2013-4-18 14:00:00").getTime());
-		Map<String, Object> map = ReflectUtils.toMap(user);
+		user.setAddress(address);
+		
+		Map<String, Object> map = bean2MapConvertor.toFlatMap(user);
 		Assert.assertEquals(false, map.get("avaiable"));
 		Assert.assertEquals(11, map.get("age"));
 		Assert.assertEquals(map.get("userName"), "testName");
+		Assert.assertEquals(map.get("address.detail"), address.getDetail());
 	}
 	
 	@Test
