@@ -23,6 +23,8 @@ public class UserEntity {
 	
 	private List<RoleEntity> roles;
 	
+	private RoleEntity role;
+	
 	public Long getId() {
 		return id;
 	}
@@ -91,6 +93,14 @@ public class UserEntity {
 
 	public void setRoles(List<RoleEntity> roles) {
 		this.roles = roles;
+	}
+
+	public RoleEntity getRole() {
+		return role;
+	}
+
+	public void setRole(RoleEntity role) {
+		this.role = role;
 	}
 
 

@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
+import org.onetwo.common.spring.utils.EnhanceBeanToMapConvertor.EnhanceBeanToMapBuilder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
 import org.onetwo.common.utils.ParamUtils;
@@ -38,10 +39,16 @@ public final class RestUtils {
 	public static final HttpHeaders TEXT_HEADER;
 
 	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder().build();
-	private static final BeanToMapConvertor STRING_VALUE_CONVERTOR = BeanToMapBuilder.newBuilder()
+	/*private static final BeanToMapConvertor STRING_VALUE_CONVERTOR = BeanToMapBuilder.newBuilder()
 																						.propertyAcceptor((p, v)->v!=null)
 																						.valueConvertor((p, v)->v.toString())
-																						.build();
+																						.build();*/
+	private static final BeanToMapConvertor STRING_VALUE_CONVERTOR = EnhanceBeanToMapBuilder.enhanceBuilder()
+																							.enableJsonPropertyAnnotation()
+																							.enableFieldNameAnnotation()
+																							.propertyAcceptor((p, v)->v!=null)
+																							.valueConvertor((p, v)->v.toString())
+																							.build();
 	
 	static{
 		FORM_HEADER = createHeader(MediaType.APPLICATION_FORM_URLENCODED);
