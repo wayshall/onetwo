@@ -51,5 +51,11 @@ public class ClientDetailsResolverConfiguration {
 	public ClientDetailsMvcInterceptor clientDetailsMvcInterceptor(){
 		return new ClientDetailsMvcInterceptor();
 	}
+	
+	@Bean
+	@ConditionalOnMissingBean(Oauth2ClientDetailManager.class)
+	public Oauth2ClientDetailManager oauth2ClientDetailManager(){
+		return new DefaultOauth2ClientDetailManager();
+	}
 
 }

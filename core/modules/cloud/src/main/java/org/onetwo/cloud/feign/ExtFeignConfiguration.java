@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 
+import com.google.common.collect.ImmutableSet;
+
 import feign.Contract;
 import feign.Feign;
 import feign.Logger;
@@ -142,10 +144,16 @@ public class ExtFeignConfiguration implements InitializingBean {
 	
 	@Configuration
 	protected static class FeignRequestInterceptorConfiguration {
+		@Autowired
+		private FeignProperties feignProperties;
 		
 		@Bean
 		public KeepHeaderRequestInterceptor keepHeaderRequestInterceptor(){
-			return new KeepHeaderRequestInterceptor();
+			KeepHeaderRequestInterceptor interceptor = new KeepHeaderRequestInterceptor();
+			if(!LangUtils.isEmpty(feignProperties.getKeepHeaders())){
+				interceptor.setKeepHeaders(ImmutableSet.copyOf(feignProperties.getKeepHeaders()));
+			}
+			return interceptor;
 		}
 	}
 	

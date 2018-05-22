@@ -22,7 +22,7 @@ public class ExtSpringEncoder extends SpringEncoder {
 	EnhanceBeanToMapConvertor beanToMapConvertor = EnhanceBeanToMapBuilder.enhanceBuilder()
 										 				.enableFieldNameAnnotation()
 										 				.enableJsonPropertyAnnotation()
-										 				.enableUnderLineStyle()
+//										 				.enableUnderLineStyle()
 										 				.build();
 
 	public ExtSpringEncoder(ObjectFactory<HttpMessageConverters> messageConverters) {

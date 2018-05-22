@@ -36,6 +36,9 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 			});
 		});
 	}
-	
 
+	public void setKeepHeaders(Set<String> keepHeaders) {
+		this.keepHeaders = keepHeaders;
+	}
+	
 }

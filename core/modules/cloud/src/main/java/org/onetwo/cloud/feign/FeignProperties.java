@@ -30,6 +30,8 @@ public class FeignProperties {
 	LoggerProps logger = new LoggerProps();
 	OkHttpClientProps okHttpClient = new OkHttpClientProps();
 	
+	String[] keepHeaders;
+	
 	/***
 	 * 
 jfish: 

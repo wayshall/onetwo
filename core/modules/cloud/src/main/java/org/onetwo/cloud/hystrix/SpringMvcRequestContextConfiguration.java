@@ -1,16 +1,14 @@
 package org.onetwo.cloud.hystrix;
 
-import javax.annotation.PostConstruct;
-
 import org.onetwo.cloud.hystrix.SpringMvcRequestContextConfiguration.SpringMvcRequestContextCondition;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
+import com.netflix.hystrix.Hystrix;
 
 /**
  * @author wayshall
@@ -19,13 +17,7 @@ import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
 @Configuration
 @Conditional(SpringMvcRequestContextCondition.class)
 public class SpringMvcRequestContextConfiguration {
-	@Autowired(required = false)
-	private HystrixConcurrencyStrategy existingConcurrencyStrategy;
 
-	@PostConstruct
-	public void init() {
-	}
-	
 	@Bean
 	public RequestContextConcurrencyStrategy requestContextConcurrencyStrategy(){
 		return new RequestContextConcurrencyStrategy();
@@ -44,6 +36,10 @@ public class SpringMvcRequestContextConfiguration {
 
 		@ConditionalOnProperty(name = "jfish.cloud.hystrix.shareRequestContext")
 		static class ShareRequestContext {
+		}
+
+		@ConditionalOnClass(Hystrix.class)
+		static class OnHystrix {
 		}
 	}
 

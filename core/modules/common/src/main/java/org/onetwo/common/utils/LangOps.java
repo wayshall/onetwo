@@ -216,6 +216,7 @@ final public class LangOps {
 		time = Objects.requireNonNull(time).toLowerCase();
 		TimeUnit timeUnit = null;
 		int unitLength = 1;
+		int times = 1;
 		if (time.endsWith("mis")) {
 			timeUnit = TimeUnit.MILLISECONDS;
 			unitLength = 3;
@@ -230,11 +231,17 @@ final public class LangOps {
 			timeUnit = TimeUnit.HOURS;
 		}else if (time.endsWith("d")) {
 			timeUnit = TimeUnit.DAYS;
+		}else if (time.endsWith("month")) {//月
+			timeUnit = TimeUnit.DAYS;
+			times = 30;//按30天算
+		}else if (time.endsWith("y")) {//年
+			timeUnit = TimeUnit.DAYS;
+			times = 365;
 		}else{
 			unitLength = 0;
 			timeUnit = TimeUnit.SECONDS;
 		}
-		int duration = Integer.valueOf(time.substring(0, time.length() - unitLength));
+		int duration = Integer.valueOf(time.substring(0, time.length() - unitLength)) * times;
 		return Pair.of(duration, timeUnit);
 	}
 	
