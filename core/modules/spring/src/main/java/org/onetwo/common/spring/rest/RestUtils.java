@@ -47,7 +47,7 @@ public final class RestUtils {
 																							.enableJsonPropertyAnnotation()
 																							.enableFieldNameAnnotation()
 																							.propertyAcceptor((p, v)->v!=null)
-																							.valueConvertor((p, v)->v.toString())
+//																							.valueConvertor((p, v)->v.toString())
 																							.build();
 	
 	static{
@@ -101,7 +101,9 @@ public final class RestUtils {
 	}
 	
 	public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj){
-		return toMultiValueMap(obj, STRING_VALUE_CONVERTOR);
+		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		STRING_VALUE_CONVERTOR.flatObject("", obj, (key, value, ctx)->params.set(key, value.toString()));
+		return params;
 	}
 	/*public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj, BeanToMapConvertor convertor){
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
