@@ -38,6 +38,17 @@ public class SpringMvcRequestContextConfiguration {
 		static class ShareRequestContext {
 		}
 
+		/***
+		 * 以前默认为true，Dalston版本后修改了默认值
+		 * 参看：HystrixFeignConfiguration
+		 * https://github.com/spring-cloud/spring-cloud-netflix/issues/1277
+		 * @author wayshall
+		 *
+		 */
+		@ConditionalOnProperty(name = "feign.hystrix.enabled")
+		static class feignHystrixConfig {
+		}
+
 		@ConditionalOnClass(Hystrix.class)
 		static class OnHystrix {
 		}
