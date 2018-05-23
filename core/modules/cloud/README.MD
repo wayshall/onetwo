@@ -37,6 +37,12 @@ public class Application{
 }
 ```
 
+## 扩展
+- feign client的get方法调用可直接使用对象定义参数
+- 可自定义feign client调用时传递当前请求头
+- 重新定义了feign client的errorCoder，远程调用返回错误时，直接抛异常
+- 支持feign client远程调用转本地调用
+
 
 ## 配置
 
@@ -80,14 +86,6 @@ jfish:
                 writeTimeout: 50s 
 ```
 
-### 设置feign调用的时候把当前header传递给服务提供者，可使用下面配置，默认会传递两个头：Authorization和auth
-```yaml
-jfish: 
-    cloud: 
-        feign: 
-            keepHeaders: Authorization, auth, otherHeader1, otherHeader2
-```
-
 ### 当使用hystrix调用feign client的时候，hystrix线程隔离会导致feign拦截器无法获取当前上下文的spring mvc请求上下文，开启下面这个配置可共享当前请求的requestContext
 ```yaml
 
@@ -96,6 +94,17 @@ jfish:
         hystrix: 
             shareRequestContext: true
 ```
+
+### 设置feign调用的时候把当前header传递给服务提供者，可使用下面配置，默认会传递两个头：Authorization和auth
+```yaml
+jfish: 
+    cloud: 
+        hystrix: 
+            shareRequestContext: true
+        feign: 
+            keepHeaders: Authorization, auth, otherHeader1, otherHeader2
+```
+
 
 ### oauth2配置
 ```yaml

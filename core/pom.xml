@@ -39,7 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/common</module>
+                <module>modules/spring</module>
 			</modules>
            <build>
               <plugins>
