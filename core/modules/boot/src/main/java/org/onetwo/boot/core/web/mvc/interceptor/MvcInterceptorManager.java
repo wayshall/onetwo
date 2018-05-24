@@ -1,6 +1,5 @@
 package org.onetwo.boot.core.web.mvc.interceptor;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,16 +9,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
+
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+
+
 
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.boot.core.web.mvc.annotation.Interceptor;
-import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -38,8 +42,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
+
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 
 
@@ -52,6 +60,15 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	private static final String INTERCEPTORS_KEY = MvcInterceptorManager.class.getName() + ".interceptors";
 	
 	private Cache<Method, HandlerMethodInterceptorMeta> interceptorMetaCaces = CacheBuilder.newBuilder().build();
+	private LoadingCache<MvcInterceptorMeta, MvcInterceptor> interceptorCaces = CacheBuilder.newBuilder()
+																					.build(new CacheLoader<MvcInterceptorMeta, MvcInterceptor>(){
+
+																						@Override
+																						public MvcInterceptor load(MvcInterceptorMeta attr) throws Exception {
+																							return getMvcInterceptor(attr);
+																						}
+																						
+																					});
 	private ApplicationContext applicationContext;
 	private PropertyAnnotationReader propertyAnnotationReader = PropertyAnnotationReader.INSTANCE;
 
@@ -126,7 +143,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		this.applicationContext = applicationContext;
 	}
 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		for(HandlerMethod hm : handlerMethods.values()){
@@ -141,28 +158,13 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 //			Class<? extends MvcInterceptor>[] interClasses = (Class<? extends MvcInterceptor>[])attrs.get("value");
 			List<? extends MvcInterceptor> interceptors = attrsList.stream()
 																.map(attr->{
-																	Class<? extends MvcInterceptor> cls = (Class<? extends MvcInterceptor>)attr.getClass("value");
-																	List<? extends MvcInterceptor> inters = SpringUtils.getBeans(applicationContext, cls);
-																	if(LangUtils.isEmpty(inters)){
-//																		throw new BaseException("MvcInterceptor not found for : " + cls);
-																		MvcInterceptor interInst = ReflectUtils.newInstance(cls);
-																		SpringUtils.injectAndInitialize(applicationContext, interInst);
-																		log.info("create and init MvcInterceptor: {}", cls);
-																		
-																		List<PropertyAnnoMeta> properties = propertyAnnotationReader.readProperties(attr);
-																		BeanWrapper bw = SpringUtils.newBeanWrapper(interInst);
-																		for(PropertyAnnoMeta prop : properties){
-																			bw.setPropertyValue(prop.getName(), prop.getValue());
+																		MvcInterceptorMeta meta = asMvcInterceptorMeta(attr);
+																		try {
+																			return this.interceptorCaces.get(meta);
+																		} catch (Exception e) {
+																			throw new BaseException("get MvcInterceptor error", e);
 																		}
-																		
-																		return interInst;
-																	}else if(inters.size()>1){
-																		throw new BaseException("multip MvcInterceptor found for : " + cls);
-																	}else{
-																		log.info("found MvcInterceptor from applicationContext: {}", cls);
-																	}
-																	return inters.get(0);
-																})
+																	})
 																.collect(Collectors.toList());
 			if(!interceptors.isEmpty()){
 				AnnotationAwareOrderComparator.sort(interceptors);
@@ -174,6 +176,74 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 			}
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	protected MvcInterceptorMeta asMvcInterceptorMeta(AnnotationAttributes attr){
+		List<PropertyAnnoMeta> properties = propertyAnnotationReader.readProperties(attr);
+		return new MvcInterceptorMeta((Class<? extends MvcInterceptor>)attr.getClass("value"), 
+										attr.getBoolean("alwaysCreate"), 
+										properties);
+	}
+	
+	@Value
+	public static class MvcInterceptorMeta {
+		Class<? extends MvcInterceptor> interceptorType;
+		boolean alwaysCreate;
+		List<PropertyAnnoMeta> properties;
+	}
+
+//	@SuppressWarnings("unchecked")
+	protected MvcInterceptor getMvcInterceptor(MvcInterceptorMeta attr){
+		if(attr.isAlwaysCreate()){
+			MvcInterceptor interInst = createInterceptorInstance(attr);
+			return interInst;
+		}
+		
+		MvcInterceptor interInst = null;
+
+		Class<? extends MvcInterceptor> cls = attr.getInterceptorType();
+		List<? extends MvcInterceptor> inters = SpringUtils.getBeans(applicationContext, cls);
+		if(LangUtils.isEmpty(inters)){
+//			throw new BaseException("MvcInterceptor not found for : " + cls);
+			interInst = createInterceptorInstance(attr);
+			return interInst;
+		}else if(inters.size()>1){
+			throw new BaseException("multip MvcInterceptor found for : " + cls);
+		}else{
+			if(log.isDebugEnabled()){
+				log.debug("found MvcInterceptor from applicationContext: {}", cls);
+			}
+		}
+		interInst = injectAnnotationProperties(inters.get(0), attr);
+		return interInst;
+	}
+	
+//	@SuppressWarnings("unchecked")
+	protected MvcInterceptor createInterceptorInstance(MvcInterceptorMeta attr){
+		Class<? extends MvcInterceptor> cls = attr.getInterceptorType();
+		
+		MvcInterceptor interInst = ReflectUtils.newInstance(cls);
+		SpringUtils.injectAndInitialize(applicationContext, interInst);
+		if(log.isDebugEnabled()){
+			log.debug("create and init MvcInterceptor: {}", cls);
+		}
+		
+//		List<PropertyAnnoMeta> properties = propertyAnnotationReader.readProperties(attr);
+		injectAnnotationProperties(interInst, attr);
+		return interInst;
+	}
+	
+	protected MvcInterceptor injectAnnotationProperties(MvcInterceptor interInst, MvcInterceptorMeta attr){
+		List<PropertyAnnoMeta> properties = attr.getProperties();
+		BeanWrapper bw = SpringUtils.newBeanWrapper(interInst);
+		for(PropertyAnnoMeta prop : properties){
+			bw.setPropertyValue(prop.getName(), prop.getValue());
+		}
+		return interInst;
+	}
+	
+	/*@SuppressWarnings("unchecked")
+	@Deprecated
 	public void onHandlerMethodsInitialized1(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		for(HandlerMethod hm : handlerMethods.values()){
 			Optional<AnnotationAttributes> attrsOpt = findExplicitInterceptorAttrs(hm);
@@ -195,7 +265,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 				}
 			}
 		}
-	}
+	}*/
 	
 	/***
 	 * 查找隐式Interceptor
@@ -242,6 +312,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 					.collect(Collectors.toSet());
 	}
 
+	/*@SuppressWarnings("unused")
 	@Deprecated
 	private Optional<AnnotationAttributes> findImplicitInterceptorAttrs(HandlerMethod hm){
 		List<Annotation> combines = AnnotationUtils.findCombineAnnotations(hm.getMethod(), Interceptor.class);
@@ -260,7 +331,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 			attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(hm.getBeanType(), Interceptor.class);
 		}
 		return Optional.ofNullable(attrs);
-	}
+	}*/
 
 	@Override
 	public int getOrder() {

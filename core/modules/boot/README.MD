@@ -140,7 +140,7 @@ jfish:
                 url: 
                 username: 
                 password: 
-				default: true
+                default: true
             ds2: 
                 url: 
                 username: 
@@ -170,7 +170,7 @@ security:
 ```
 
 内存用户配置：
-```xml
+```yaml
 jfish: 
     security: 
         jwt: #使用jwt
@@ -198,7 +198,7 @@ Java配置
 ```Java
 @EnableJFishOauth2(OAuth2Role.AUTHORIZATION_SERVER)
 ```
-```xml
+```yaml
 jfish: 
     oauth2: 
         jwt: 
@@ -224,7 +224,7 @@ Java配置
 @EnableJFishOauth2(OAuth2Role.RESOURCE_SERVER)
 ```
 yaml配置
-```xml
+```yaml
 
 jfish: 
     oauth2: 
@@ -251,19 +251,19 @@ kill -12 pid
 
 ### accessLog
 ```yaml
-jfish: 
-	mvc: 
-		accessLog: 
-			enabled: true
-			pathPatterns: /health
+jfish:
+    mvc: 
+        accessLog: 
+            enabled: true
+            pathPatterns: /health
 ```
 
 ### 其它一些简化使用的扩展
 
-- @BootMvcArgumentResolver 注解
+- @BootMvcArgumentResolver 注解   
 所有标注了@BootMvcArgumentResolver 注解的Bean被自动注册为spring mvc的参数解释器
 
-- @Interceptor 注解
+- @Interceptor 注解   
 JFish自定义的拦截器机制，可以直接在Controller的类或者方法上使用@Interceptor 注解，标注该方法的请求必须经过指定的拦截器，简化Spring mvc的拦截器使用。拦截器类必须实现 MvcInterceptor 接口。
 支持重复和嵌套，如：
 ```Java
