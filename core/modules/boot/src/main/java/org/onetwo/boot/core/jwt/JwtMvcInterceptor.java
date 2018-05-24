@@ -42,4 +42,10 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 		this.canBeAnonymous = canBeAnonymous;
 	}
 
+	@Override
+	public String toString() {
+		return "JwtMvcInterceptor [authHeaderName=" + authHeaderName
+				+ ", canBeAnonymous=" + canBeAnonymous + "]";
+	}
+
 }

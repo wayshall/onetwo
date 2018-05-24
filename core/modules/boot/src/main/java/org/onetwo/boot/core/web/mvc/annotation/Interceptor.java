@@ -25,7 +25,7 @@ public @interface Interceptor {
 	
 	/***
 	 * 是否总是创建新实例
-	 * 若设置为false，则会优先从spring的applicationContext里查找，没有找到则创建并根据注解类型和属性缓存
+	 * 若设置为false，并且properties属性为空，则会从spring的applicationContext里查找，没有找到则创建并根据元数据属性缓存
 	 * @author wayshall
 	 * @return
 	 */

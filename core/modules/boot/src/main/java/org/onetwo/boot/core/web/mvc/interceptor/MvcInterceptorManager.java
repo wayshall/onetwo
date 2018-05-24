@@ -10,17 +10,11 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-
-
 
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.boot.core.web.mvc.annotation.Interceptor;
@@ -41,8 +35,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-
-
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -147,6 +139,9 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		for(HandlerMethod hm : handlerMethods.values()){
+			/*if(hm.getBeanType().getName().contains("SportEventController")){
+				System.out.println("test");
+			}*/
 			Collection<AnnotationAttributes> attrsList = findInterceptorAttrsList(hm);
 			/*if(attrsList.isEmpty()){
 				attrsList = findImplicitInterceptorAttrsList(hm);
@@ -198,14 +193,19 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 			MvcInterceptor interInst = createInterceptorInstance(attr);
 			return interInst;
 		}
+
+		if(!attr.getProperties().isEmpty()){
+			MvcInterceptor interInst = createInterceptorInstance(attr);
+			return interInst;
+		}
 		
-		MvcInterceptor interInst = null;
+//		MvcInterceptor interInst = null;
 
 		Class<? extends MvcInterceptor> cls = attr.getInterceptorType();
 		List<? extends MvcInterceptor> inters = SpringUtils.getBeans(applicationContext, cls);
 		if(LangUtils.isEmpty(inters)){
 //			throw new BaseException("MvcInterceptor not found for : " + cls);
-			interInst = createInterceptorInstance(attr);
+			MvcInterceptor interInst = createInterceptorInstance(attr);
 			return interInst;
 		}else if(inters.size()>1){
 			throw new BaseException("multip MvcInterceptor found for : " + cls);
@@ -214,8 +214,9 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 				log.debug("found MvcInterceptor from applicationContext: {}", cls);
 			}
 		}
-		interInst = injectAnnotationProperties(inters.get(0), attr);
-		return interInst;
+//		interInst = injectAnnotationProperties(inters.get(0), attr);
+//		interInst = inters.get(0);
+		return inters.get(0);
 	}
 	
 //	@SuppressWarnings("unchecked")
