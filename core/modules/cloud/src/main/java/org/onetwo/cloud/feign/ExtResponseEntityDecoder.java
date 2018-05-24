@@ -10,6 +10,7 @@ import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.http.HttpEntity;
@@ -43,7 +44,7 @@ public class ExtResponseEntityDecoder implements Decoder {
 		Object res = null;
 		List<String> headerValues = response.getHeaders().get(BootWebExceptionHandler.ERROR_RESPONSE_HEADER);
 		try {
-			if(headerValues.isEmpty()){
+			if(LangUtils.isEmpty(headerValues)){
 				//没有错误
 				res = decodeByType(response, type);
 			}else{
