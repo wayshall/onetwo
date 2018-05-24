@@ -264,8 +264,18 @@ jfish:
 所有标注了@BootMvcArgumentResolver 注解的Bean被自动注册为spring mvc的参数解释器
 
 - @Interceptor 注解
-可以直接在Controller的类或者方法上使用@Interceptor 注解，标注该方法的请求必须经过指定的拦截器，简化Spring mvc的拦截器使用。拦截器类必须实现 MvcInterceptor 接口
+JFish自定义的拦截器机制，可以直接在Controller的类或者方法上使用@Interceptor 注解，标注该方法的请求必须经过指定的拦截器，简化Spring mvc的拦截器使用。拦截器类必须实现 MvcInterceptor 接口。
+支持重复和嵌套，如：
+```Java
+@Interceptor(MvcInterceptor1.class)
+@Interceptor(MvcInterceptor2.class)
+public static @interface CombinationMVCInterceptor {
+}
 
+@CombinationMVCInterceptor
+public class HomeController {
+}
+```
 - 增加注解+接口风格的RestClient机制，可通过@EnableRestApiClient启用
 
 - 增加@OnMissingBean注解，类似boot的@ConditionalOnMissingBean
