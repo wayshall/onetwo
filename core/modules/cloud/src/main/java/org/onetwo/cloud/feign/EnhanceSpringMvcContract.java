@@ -90,6 +90,11 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		        	continue;
 		        }
 		        MethodMetadata metadata = parseAndValidateMetadata(targetType, method);
+		        /*try {
+			        metadata = parseAndValidateMetadata(targetType, method);
+				} catch (Exception e2) {
+					throw new BaseException("parse and validate meta error", e);
+				}*/
 		        checkState(!result.containsKey(metadata.configKey()), "Overrides unsupported: %s",
 		                   metadata.configKey());
 		        result.put(metadata.configKey(), metadata);
@@ -105,6 +110,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		//父类限制了接口的继承层次，父类只检测了client接口和client父接口，且接口不能再继承任何接口，
 		//导致三层继承的时候，相关的元数据注解解释不到，导致feign请求路径错误404
 //		super.processAnnotationOnClass(data, clz);
+		if(clz.getName().contains("PraiseApiClient")){
+			System.out.println("test");
+		}
 		if (clz.getInterfaces().length == 0 || clz.isAnnotationPresent(EnhanceFeignClient.class)) {
 			RequestMapping classAnnotation = findMergedAnnotation(clz, RequestMapping.class);
 			if (classAnnotation != null) {
