@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptor;
+import org.onetwo.common.spring.annotation.Property;
 
 /**
  * @author wayshall
@@ -18,5 +19,7 @@ import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptor;
 public @interface Interceptor {
 
 	Class<? extends MvcInterceptor>[] value();
+	
+	Property[] properties() default {};
 	
 }

@@ -86,6 +86,14 @@ public class ResultErrorDecoder implements ErrorDecoder {
 		public String getStatusText() throws IOException {
 			return this.response.reason();
 		}
+		
+		public String toString(){
+			try {
+				return IOUtils.toString(getBody());
+			} catch (Exception e) {
+				throw new BaseException("error read input body!");
+			}
+		}
 
 		@Override
 		public void close() {

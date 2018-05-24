@@ -143,6 +143,14 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		}
 		return Optional.ofNullable(attrs);
 	}
+	
+	private Optional<AnnotationAttributes> findInterceptorAttrs2(HandlerMethod hm){
+		AnnotationAttributes attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(hm.getMethod(), Interceptor.class);
+		if(attrs==null){
+			attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(hm.getBeanType(), Interceptor.class);
+		}
+		return Optional.ofNullable(attrs);
+	}
 
 	@Override
 	public int getOrder() {

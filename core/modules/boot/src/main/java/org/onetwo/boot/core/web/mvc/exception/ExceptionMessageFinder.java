@@ -78,7 +78,7 @@ public interface ExceptionMessageFinder {
 				error.setHttpStatus(HttpStatus.UNAUTHORIZED);
 			}else if(ex instanceof ServiceException){
 				detail = ((ServiceException)ex).getCause()!=null;
-				//ServiceException 一般为义务异常，属于预期错误，直接返回正常状态
+				//ServiceException 一般为业务异常，属于预期错误，直接返回正常状态
 				error.setHttpStatus(HttpStatus.OK);
 			}else{
 				//其它实现了ExceptionCodeMark的异常也可以视为预期错误，直接返回正常状态
