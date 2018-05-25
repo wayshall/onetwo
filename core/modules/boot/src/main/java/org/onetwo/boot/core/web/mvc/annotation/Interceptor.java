@@ -12,6 +12,13 @@ import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptor;
 import org.onetwo.common.spring.annotation.Property;
 
 /**
+ * 规则：
+ * 可重复；
+ * 首先在方法上查找拦截器配置，如果找到，则停止查找，并返回配置；
+ * 如果方法没有，则在类和父类查找，合并返回拦截器配置；
+ * 
+ * 
+ * 如果返回的拦截器配置里有@InterceptorDisabled，则所有拦截器失效
  * @author wayshall
  * <br/>
  */
@@ -40,4 +47,5 @@ public @interface Interceptor {
 		
 		Interceptor[] value();
 	}
+
 }

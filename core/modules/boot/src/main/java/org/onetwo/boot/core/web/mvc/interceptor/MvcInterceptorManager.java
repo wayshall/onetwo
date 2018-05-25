@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.boot.core.web.mvc.annotation.Interceptor;
+import org.onetwo.boot.core.web.mvc.annotation.InterceptorDisabled.DisableMvcInterceptor;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -139,37 +140,42 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		for(HandlerMethod hm : handlerMethods.values()){
-			/*if(hm.getBeanType().getName().contains("SportEventController")){
-				System.out.println("test");
-			}*/
-			Collection<AnnotationAttributes> attrsList = findInterceptorAttrsList(hm);
-			/*if(attrsList.isEmpty()){
-				attrsList = findImplicitInterceptorAttrsList(hm);
-			}*/
-			if(attrsList.isEmpty()){
-				continue ;
-			}
-//			AnnotationAttributes attrs = attrsOpt.get();
-//			Class<? extends MvcInterceptor>[] interClasses = (Class<? extends MvcInterceptor>[])attrs.get("value");
-			List<? extends MvcInterceptor> interceptors = attrsList.stream()
-																.map(attr->{
-																		MvcInterceptorMeta meta = asMvcInterceptorMeta(attr);
-																		try {
-																			return this.interceptorCaces.get(meta);
-																		} catch (Exception e) {
-																			throw new BaseException("get MvcInterceptor error", e);
-																		}
-																	})
-																.collect(Collectors.toList());
+			List<? extends MvcInterceptor> interceptors = findMvcInterceptors(hm);
 			if(!interceptors.isEmpty()){
 				AnnotationAwareOrderComparator.sort(interceptors);
 				HandlerMethodInterceptorMeta meta = new HandlerMethodInterceptorMeta(hm, interceptors);
 				interceptorMetaCaces.put(hm.getMethod(), meta);
-			}
-			if(log.isInfoEnabled()){
-				log.info("MvcInterceptor: {} -> {}", hm.getMethod(), interceptors);
+				if(log.isInfoEnabled()){
+					log.info("MvcInterceptor: {} -> {}", hm.getMethod(), interceptors);
+				}
 			}
 		}
+	}
+	
+	protected List<? extends MvcInterceptor> findMvcInterceptors(HandlerMethod hm){
+		/*if(hm.getBeanType().getName().contains("FollowApiController")){
+			System.out.println("test");
+		}*/
+		Collection<AnnotationAttributes> attrsList = findInterceptorAnnotationAttrsList(hm);
+		/*if(attrsList.isEmpty()){
+			attrsList = findImplicitInterceptorAttrsList(hm);
+		}*/
+		if(attrsList.isEmpty()){
+			return Collections.emptyList();
+		}
+//		AnnotationAttributes attrs = attrsOpt.get();
+//		Class<? extends MvcInterceptor>[] interClasses = (Class<? extends MvcInterceptor>[])attrs.get("value");
+		List<? extends MvcInterceptor> interceptors = attrsList.stream()
+															.map(attr->{
+																	MvcInterceptorMeta meta = asMvcInterceptorMeta(attr);
+																	try {
+																		return this.interceptorCaces.get(meta);
+																	} catch (Exception e) {
+																		throw new BaseException("get MvcInterceptor error", e);
+																	}
+																})
+															.collect(Collectors.toList());
+		return interceptors;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -299,7 +305,25 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	 * @param hm
 	 * @return
 	 */
-	private Collection<AnnotationAttributes> findInterceptorAttrsList(HandlerMethod hm){
+	final protected Collection<AnnotationAttributes> findInterceptorAnnotationAttrsList(HandlerMethod hm){
+		Set<Interceptor> inters = AnnotatedElementUtils.getMergedRepeatableAnnotations(hm.getMethod(), Interceptor.class);
+		if(LangUtils.isEmpty(inters)){
+			inters = AnnotatedElementUtils.getMergedRepeatableAnnotations(hm.getBeanType(), Interceptor.class);
+		}
+		if(LangUtils.isEmpty(inters)){
+			return Collections.emptyList();
+		}
+		Collection<AnnotationAttributes> attrs = inters.stream()
+														.map(inter->org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes(null, inter))
+														.collect(Collectors.toSet());
+		boolean hasDisabledFlag = attrs.stream()
+										.anyMatch(attr->asMvcInterceptorMeta(attr).getInterceptorType()==DisableMvcInterceptor.class);
+		if(hasDisabledFlag){
+			return Collections.emptyList();
+		}
+		return attrs;
+	}
+	final protected Collection<AnnotationAttributes> derectFindInterceptorAnnotationAttrsList(HandlerMethod hm){
 		//间接包含了@Interceptor的，也能找到……
 		Set<Interceptor> inters = AnnotatedElementUtils.getMergedRepeatableAnnotations(hm.getMethod(), Interceptor.class);
 		if(LangUtils.isEmpty(inters)){

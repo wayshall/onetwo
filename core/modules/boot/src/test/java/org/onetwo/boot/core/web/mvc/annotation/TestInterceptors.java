@@ -16,6 +16,7 @@ public class TestInterceptors {
 
 	@Interceptor(ParentMvcInterceptor.class)
 	public static class InterceptableParent {
+		@Interceptor(ParentMethodMvcInterceptor.class)
 		public void test1(){
 		}
 	}
@@ -47,7 +48,8 @@ public class TestInterceptors {
 		public void test1(){
 		}
 	}
-	
+
+	@Interceptor(Child2MvcInterceptor.class)
 	public static class InterceptableCombine2 extends InterceptableParent {
 		@CombinationMVCInterceptor
 		public void test1(){
@@ -56,6 +58,8 @@ public class TestInterceptors {
 
 	public static class ParentMvcInterceptor extends MvcInterceptorAdapter{
 	}
+	public static class ParentMethodMvcInterceptor extends MvcInterceptorAdapter{
+	}
 	public static class Child2MvcInterceptor extends MvcInterceptorAdapter{
 	}
 	public static class Child3MvcInterceptor extends MvcInterceptorAdapter{
@@ -63,6 +67,8 @@ public class TestInterceptors {
 	public static class Combine1MvcInterceptor extends MvcInterceptorAdapter{
 	}
 	public static class Combine2MvcInterceptor extends MvcInterceptorAdapter{
+	}
+	public static class Combine2MethodMvcInterceptor extends MvcInterceptorAdapter{
 	}
 	
 
