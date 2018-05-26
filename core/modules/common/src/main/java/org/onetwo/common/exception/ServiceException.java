@@ -68,7 +68,7 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 		this.statusCode = exceptionType.getStatusCode();
 		this.exceptionType = exceptionType;
 	}
-
+	
 	public ServiceException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
