@@ -1,7 +1,6 @@
 # boot
 ------
 基于spring boot的快速开发框架   
-交流群：  604158262
 
 ## 要求
 JDK 1.8+
@@ -283,3 +282,4 @@ public class HomeController {
 - 增加@OnExistingBean 注解，类似boot的@ConditionalOnBean
 
 - 增加@WebApi 注解，在controller前加前缀
+- 使用@UploadFileValidator 注解，限制和验证上传文件的后缀和大小
