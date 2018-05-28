@@ -12,18 +12,16 @@ import org.onetwo.common.utils.LangOps;
  * @author wayshall
  * <br/>
  */
-public class LocalIntervalLimiter extends BaseInvokeLimiter {
+public class TimeLimiter extends BaseInvokeLimiter {
+	public static final String START_KEY = TimeLimiter.class.getName()+"_START_TIME";
 	private String interval;
 	private int intervalInMillis = 1000*60;
-	private LimiterState limiterState;
 	
 	@Override
 	public void init() {
 		super.init();
-		this.setInvokeType(InvokeType.BEFORE);
+		this.setInvokeType(InvokeType.ALL);
 		this.intervalInMillis = (int)LangOps.timeToMills(interval, intervalInMillis);
-		
-		this.limiterState = new DefaultLimiterState();
 	}
 
 	@Override
