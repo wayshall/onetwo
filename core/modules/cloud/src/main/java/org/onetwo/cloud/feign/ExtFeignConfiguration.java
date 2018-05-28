@@ -32,10 +32,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 
+import com.google.common.collect.ImmutableSet;
+
 import feign.Contract;
 import feign.Feign;
 import feign.Logger;
 import feign.codec.Decoder;
+import feign.codec.Encoder;
 
 /**
  * @author wayshall
@@ -81,6 +84,13 @@ public class ExtFeignConfiguration implements InitializingBean {
 	@ConditionalOnMissingBean
 	public Decoder feignDecoder() {
 		return new ExtResponseEntityDecoder(messageConverters);
+	}
+	
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Encoder feignEncoder() {
+		return new ExtSpringEncoder(this.messageConverters);
 	}
 
 	@Bean
@@ -132,6 +142,20 @@ public class ExtFeignConfiguration implements InitializingBean {
 		return level;
 	}
 	
+	@Configuration
+	protected static class FeignRequestInterceptorConfiguration {
+		@Autowired
+		private FeignProperties feignProperties;
+		
+		@Bean
+		public KeepHeaderRequestInterceptor keepHeaderRequestInterceptor(){
+			KeepHeaderRequestInterceptor interceptor = new KeepHeaderRequestInterceptor();
+			if(!LangUtils.isEmpty(feignProperties.getKeepHeaders())){
+				interceptor.setKeepHeaders(ImmutableSet.copyOf(feignProperties.getKeepHeaders()));
+			}
+			return interceptor;
+		}
+	}
 	
 	
 	@Configuration

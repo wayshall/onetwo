@@ -18,11 +18,15 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class BootSecurityAccessDeniedHandler extends AjaxSupportedAccessDeniedHandler {
 	
-	@Autowired
+	@Autowired(required=false)
 	private MvcViewRender mvcViewRender;
 
 	
 	protected void defaultHandle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException{
+		if(mvcViewRender==null){
+			super.defaultHandle(request, response, accessDeniedException);
+			return ;
+		}
 		String url = request.getMethod() + "|" + request.getRequestURI();
 		logger.info("{} AccessDenied, render errorPage: {}", url, errorPage);
 		ModelAndView mv = new ModelAndView(errorPage);

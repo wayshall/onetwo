@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-		<version>4.7.0-SNAPSHOT</version>
+		<version>4.7.1-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -40,12 +40,6 @@
         <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-dbm</artifactId>
-          <optional>true</optional>
-        </dependency>
-        
-        <dependency>
-          <groupId>org.onetwo4j</groupId>
-          <artifactId>onetwo-wechat</artifactId>
           <optional>true</optional>
         </dependency>
         

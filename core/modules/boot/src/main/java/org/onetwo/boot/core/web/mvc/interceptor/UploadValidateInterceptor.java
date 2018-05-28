@@ -63,7 +63,7 @@ public class UploadValidateInterceptor extends WebInterceptorAdapter {
 		List<String> allowed = validator!=null?Arrays.asList(validator.allowedPostfix()):Arrays.asList(DEFAULT_ALLOW_FILE_TYPES);
 		
 		for(MultipartFile item : fileItems){
-			String postfix = FileUtils.getExtendName(item.getOriginalFilename().toLowerCase());
+			String postfix = FileUtils.getExtendName(item.getOriginalFilename().toLowerCase().trim());//trim防止后缀加空格绕过检查
 			
 			if(validator==null){
 				if(!allowed.contains(postfix))

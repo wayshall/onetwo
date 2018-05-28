@@ -43,6 +43,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 
 	public BaseException(Throwable cause) {
 		super(DefaultMsg, cause);
+		fillCauseErrorContext(cause);
 	}
 
 	public BaseException(ErrorType exceptionType) {
@@ -56,6 +57,7 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 
 	public BaseException(String msg, Throwable cause) {
 		super(msg, cause);
+		fillCauseErrorContext(cause);
 //		super("[" + msg + "] : " + (cause==null?"":cause.getMessage()), cause);
 	}
 
@@ -85,6 +87,13 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 			put(context);
 		}
 		return (T)this;
+	}
+	
+	protected final void fillCauseErrorContext(Throwable cause){
+		if(cause instanceof SystemErrorCode){
+			SystemErrorCode se = (SystemErrorCode) cause;
+			putAsMap(se.getErrorContext());
+		}
 	}
 	
 

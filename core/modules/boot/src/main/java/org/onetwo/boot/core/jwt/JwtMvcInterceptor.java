@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorAdapter;
 import org.onetwo.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,22 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 	private String authHeaderName = JwtUtils.DEFAULT_HEADER_KEY;
 	@Autowired
 	private JwtTokenService jwtTokenService;
+	private boolean canBeAnonymous;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
-		Optional<JwtUserDetail> userOpt = JwtUtils.getOrSetJwtUserDetail(request, jwtTokenService, authHeaderName);
+		String token = request.getHeader(authHeaderName);
+		if(StringUtils.isBlank(token) && canBeAnonymous){
+			return true;
+		}
+		Optional<JwtUserDetail> userOpt = Optional.empty();
+		try {
+			userOpt = JwtUtils.getOrSetJwtUserDetail(request, jwtTokenService, authHeaderName);
+		} catch (ServiceException e) {
+			if(e.getExceptionType() instanceof JwtErrors && e.getExceptionType()!=JwtErrors.CM_NOT_LOGIN){
+				throw new ServiceException(JwtErrors.CM_NOT_LOGIN, e);
+			}
+		}
 		if(!userOpt.isPresent()){
 			throw new ServiceException(JwtErrors.CM_NOT_LOGIN);
 		}
@@ -30,6 +43,16 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 
 	public void setAuthHeaderName(String authHeaderName) {
 		this.authHeaderName = authHeaderName;
+	}
+
+	public void setCanBeAnonymous(boolean canBeAnonymous) {
+		this.canBeAnonymous = canBeAnonymous;
+	}
+
+	@Override
+	public String toString() {
+		return "JwtMvcInterceptor [authHeaderName=" + authHeaderName
+				+ ", canBeAnonymous=" + canBeAnonymous + "]";
 	}
 
 }

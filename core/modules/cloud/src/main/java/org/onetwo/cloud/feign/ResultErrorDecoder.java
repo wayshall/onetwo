@@ -50,7 +50,7 @@ public class ResultErrorDecoder implements ErrorDecoder {
 				HttpMessageConverterExtractor<SimpleDataResult<Object>> extractor = new HttpMessageConverterExtractor<SimpleDataResult<Object>>(SimpleDataResult.class, this.httpMessageConverters.getConverters());
 				SimpleDataResult<Object> result = extractor.extractData(new FeignResponseAdapter(response));
 				log.error("error code: {}, result: {}", response.status(), result);
-				//防止普通异常也被熔断,if not convert as HystrixBadRequestException and fallback also throws error, it will be enabled short-circuited get "Hystrix circuit short-circuited and is OPEN" when client frequently invoke
+				//防止普通异常也被熔断,如果不转为 HystrixBadRequestException 并且 fallback 也抛了异常, it will be enabled short-circuited get "Hystrix circuit short-circuited and is OPEN" when client frequently invoke
 				if(result!=null){
 					return new HystrixBadRequestException(result.getMessage(), new ServiceException(result.getMessage(), result.getCode()));
 				}
@@ -85,6 +85,14 @@ public class ResultErrorDecoder implements ErrorDecoder {
 		@Override
 		public String getStatusText() throws IOException {
 			return this.response.reason();
+		}
+		
+		public String toString(){
+			try {
+				return IOUtils.toString(getBody());
+			} catch (Exception e) {
+				throw new BaseException("error read input body!");
+			}
 		}
 
 		@Override

@@ -12,6 +12,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
@@ -33,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.HandlerMethod;
 
 /****
  * TODO: 这里可以修改为非ExceptionCodeMark异常（即没有异常代码）可以根据异常获取映射的错误代码或ErrorType，
@@ -78,7 +80,7 @@ public interface ExceptionMessageFinder {
 				error.setHttpStatus(HttpStatus.UNAUTHORIZED);
 			}else if(ex instanceof ServiceException){
 				detail = ((ServiceException)ex).getCause()!=null;
-				//ServiceException 一般为义务异常，属于预期错误，直接返回正常状态
+				//ServiceException 一般为业务异常，属于预期错误，直接返回正常状态
 				error.setHttpStatus(HttpStatus.OK);
 			}else{
 				//其它实现了ExceptionCodeMark的异常也可以视为预期错误，直接返回正常状态
@@ -141,6 +143,8 @@ public interface ExceptionMessageFinder {
 		if(StringUtils.isBlank(errorCode)){
 			errorCode = SystemErrorCode.UNKNOWN;//ex.getClass().getName();
 		}
+		//设置code，findMessage需要用到
+		error.setCode(errorCode);
 
 		if(findMsgByCode){
 			errorMsg = findMessage(findMsgByCode, error, errorArgs);
@@ -158,9 +162,18 @@ public interface ExceptionMessageFinder {
 				});
 			}
 		}
-		
-//		detail = product?detail:true;
+		//防止远程调用时，方法返回null，且异常定义的httpstatus也为200时，尽管在responsebody里返回error相关数据，
+		//但feign客户端判断200且返回类型为null时，不解释response boyd，从而忽略了错误
+		//即使不是feign调用，而是普通请求，如果不返回任何数据，http status又是200，实际上调用方（浏览器）也无法判断这个调用是否成功，除非它总是解释response body
+		if(error.getHttpStatus()==HttpStatus.OK){
+			HandlerMethod hm = BootWebUtils.currentHandlerMethod();
+			if(hm!=null && hm.isVoid()){
+				error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+
 		error.setCode(errorCode);
+//		detail = product?detail:true;
 		error.setMesage(errorMsg);
 //		error.setDetail(detail);
 //		error.setViewName(viewName);

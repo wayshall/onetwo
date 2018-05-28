@@ -1,9 +1,15 @@
 package org.onetwo.cloud.feign;
 
+import static feign.Util.checkState;
+import static feign.Util.emptyToNull;
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +26,10 @@ import org.springframework.cloud.netflix.feign.support.SpringMvcContract;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import feign.MethodMetadata;
+import feign.Util;
 
 /**
  * @author wayshall
@@ -50,9 +58,75 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		relaxedPropertyResolver = new RelaxedPropertyResolver(applicationContext.getEnvironment());
 	}
 
+
+	@Override
+    public List<MethodMetadata> parseAndValidatateMetadata(Class<?> targetType) {
+		try {
+	    	return super.parseAndValidatateMetadata(targetType);
+		} catch (IllegalStateException e) {
+			
+			if(e.getMessage().startsWith("Only single-level inheritance supported")){
+				//去掉feign对接口继承层次的限制……
+				checkState(targetType.getTypeParameters().length == 0, "Parameterized types unsupported: %s",
+		                 targetType.getSimpleName());
+		      checkState(targetType.getInterfaces().length <= 1, "Only single inheritance supported: %s",
+		                 targetType.getSimpleName());
+		      /*if (targetType.getInterfaces().length == 1) {
+		        checkState(targetType.getInterfaces()[0].getInterfaces().length == 0,
+		                   "Only single-level inheritance supported: %s",
+		                   targetType.getSimpleName());
+		      }*/
+		      Map<String, MethodMetadata> result = new LinkedHashMap<String, MethodMetadata>();
+		      for (Method method : targetType.getMethods()) {
+		        if (method.getDeclaringClass() == Object.class ||
+		            (method.getModifiers() & Modifier.STATIC) != 0 ||
+		            Util.isDefault(method)) {
+		          continue;
+		        }
+		        //fix bug:当使用泛型方法的时候，java编译器会在字节码里生成名字和参数类型相同的两个方法，
+		        //其中一个非泛型的方法会被标记为bridge,而bridge方法是没有注解的元数据的导致下面的parseAndValidateMetadata解释时
+		        //调用method.getAnnotations()返回空数组，从而导致出错
+		        if(method.isBridge()){
+		        	continue;
+		        }
+		        MethodMetadata metadata = parseAndValidateMetadata(targetType, method);
+		        /*try {
+			        metadata = parseAndValidateMetadata(targetType, method);
+				} catch (Exception e2) {
+					throw new BaseException("parse and validate meta error", e);
+				}*/
+		        checkState(!result.containsKey(metadata.configKey()), "Overrides unsupported: %s",
+		                   metadata.configKey());
+		        result.put(metadata.configKey(), metadata);
+		      }
+		      return new ArrayList<MethodMetadata>(result.values());
+			}
+			throw e;
+		}
+    }
+	
 	@Override
 	protected void processAnnotationOnClass(MethodMetadata data, Class<?> clz) {
-		super.processAnnotationOnClass(data, clz);
+		//父类限制了接口的继承层次，父类只检测了client接口和client父接口，且接口不能再继承任何接口，
+		//导致三层继承的时候，相关的元数据注解解释不到，导致feign请求路径错误404
+//		super.processAnnotationOnClass(data, clz);
+		if(clz.getName().contains("PraiseApiClient")){
+			System.out.println("test");
+		}
+		if (clz.getInterfaces().length == 0 || clz.isAnnotationPresent(EnhanceFeignClient.class)) {
+			RequestMapping classAnnotation = findMergedAnnotation(clz, RequestMapping.class);
+			if (classAnnotation != null) {
+				// Prepend path from class annotation if specified
+				if (classAnnotation.value().length > 0) {
+					String pathValue = emptyToNull(classAnnotation.value()[0]);
+					pathValue = SpringUtils.resolvePlaceholders(applicationContext, pathValue);
+					if (!pathValue.startsWith("/")) {
+						pathValue = "/" + pathValue;
+					}
+					data.template().insert(0, pathValue);
+				}
+			}
+		}
 		if (clz.isAnnotationPresent(FeignClient.class)) {
 			EnhanceFeignClient classAnnotation = findMergedAnnotation(clz, EnhanceFeignClient.class);
 			Optional<String> basePathOpt = getFeignBasePath(clz, classAnnotation);

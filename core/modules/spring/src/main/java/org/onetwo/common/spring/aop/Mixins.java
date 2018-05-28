@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.onetwo.common.spring.aop.MixinTest.Bird;
-import org.onetwo.common.spring.aop.MixinTest.Human;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.ProxyFactory;
 

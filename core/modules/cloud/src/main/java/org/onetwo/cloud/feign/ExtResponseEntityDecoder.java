@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
+import java.util.List;
 
+import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.http.HttpEntity;
@@ -39,6 +42,34 @@ public class ExtResponseEntityDecoder implements Decoder {
 	@SuppressWarnings({ "rawtypes" })
 	protected Object decode(FeignResponseAdapter response, Type type) throws IOException, FeignException {
 		Object res = null;
+		List<String> headerValues = response.getHeaders().get(BootWebExceptionHandler.ERROR_RESPONSE_HEADER);
+		try {
+			if(LangUtils.isEmpty(headerValues)){
+				//没有错误
+				res = decodeByType(response, type);
+			}else{
+				SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
+				if(dr.isError()){
+					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+				}
+				res = dr.getData();
+			}
+		} catch (HttpMessageNotReadableException e) {
+			//兼容。。。。。。。。正常解码失败后尝试用SimpleDataResult解码
+			response.getBody().reset();
+			SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
+			if(dr.isError()){
+				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+			}
+			res = dr.getData();
+		}
+		return res;
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	@Deprecated
+	protected Object decode2(FeignResponseAdapter response, Type type) throws IOException, FeignException {
+		Object res = null;
 		try {
 			res = decodeByType(response, type);
 		} catch (HttpMessageNotReadableException e) {
@@ -53,7 +84,6 @@ public class ExtResponseEntityDecoder implements Decoder {
 		}
 		return res;
 	}
-	
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T> T decodeByType(FeignResponseAdapter response, Type type) throws IOException, FeignException {

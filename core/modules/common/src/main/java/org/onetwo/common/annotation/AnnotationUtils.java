@@ -3,6 +3,7 @@ package org.onetwo.common.annotation;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,7 +13,10 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.ArrayUtils;
@@ -219,6 +223,19 @@ public class AnnotationUtils {
 	public static <T extends Annotation> T findFieldAnnotation(Class<?> clazz, Field field, Class<T> annotationClass) {
 		return field != null?field.getAnnotation(annotationClass):null;
 	}
+	
+
+	final public static <A extends Annotation> Optional<A> findAnnotationOnPropertyOrField(Class<?> beanClass, PropertyDescriptor propertyDescriptor, Class<A> annoClass){
+		Method method = propertyDescriptor.getReadMethod();
+		A fn = null;
+		if(method==null || (fn = method.getAnnotation(annoClass))==null){
+			Field field = ReflectUtils.getIntro(beanClass).getField(propertyDescriptor.getName());
+			if(field!=null){
+				fn = field.getAnnotation(annoClass);
+			}
+		}
+		return Optional.ofNullable(fn);
+	}
 
 	public static Method findMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
 		Method method = null;
@@ -230,5 +247,29 @@ public class AnnotationUtils {
 			throw new RuntimeException(e);
 		}
 		return method;
+	}
+	
+	/***
+	 * 查找带有annoType注解的注解上的annoType注解.......................
+	 * @author wayshall
+	 * @param combineAnnotatedElement
+	 * @param annoType
+	 * @return
+	 */
+	public static <T extends Annotation> List<T> findTargetAnnotationsInCombine(AnnotatedElement combineAnnotatedElement, Class<T> annoType){
+		Annotation[] annos = combineAnnotatedElement.getAnnotations();
+		List<T> annotations = Stream.of(annos)
+								.filter(anno->anno.annotationType().isAnnotationPresent(annoType))
+								.map(combine->combine.annotationType().getAnnotation(annoType))
+								.collect(Collectors.toList());
+		return annotations;
+	}
+
+	public static List<Annotation> findCombineAnnotations(AnnotatedElement combineAnnotatedElement, Class<? extends Annotation> annoType){
+		Annotation[] annos = combineAnnotatedElement.getAnnotations();
+		List<Annotation> annotations = Stream.of(annos)
+								.filter(anno->anno.annotationType().isAnnotationPresent(annoType))
+								.collect(Collectors.toList());
+		return annotations;
 	}
 }

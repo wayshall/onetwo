@@ -178,11 +178,11 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 		
 		private T data;
 		
-		private SimpleDataResult() {
+		protected SimpleDataResult() {
 			super();
 		}
 
-		private SimpleDataResult(T data) {
+		protected SimpleDataResult(T data) {
 			super();
 			this.data = data;
 		}

@@ -26,13 +26,19 @@ public class ProducerRegistar extends BaseImportRegistrar<EnableONSClient> {
 		}
 		for(AnnotationAttributes producer : producers){
 			String producerId = resolveAttribute(producer, "producerId", null);
+			String beanName = "ONSProduers-"+producerId;
+			
+			if(registry.containsBeanDefinition(beanName)){
+				logger.info("produer[{}] has been registered, ignored...", beanName);
+				continue;
+			}
+			
 			boolean transactional = producer.getBoolean("transactional");
 			Class<?> producerClass = transactional?ONSTransactionProducerServiceImpl.class:ONSProducerServiceImpl.class;
 			
 			BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(producerClass);
 			definition.addPropertyValue("producerId", producerId);
 //			definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-			String beanName = "ONSProduers"+producerId;
 			BeanDefinitionHolder holder = new BeanDefinitionHolder(definition.getBeanDefinition(), beanName);
 			BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
 			if(logger.isInfoEnabled()){
