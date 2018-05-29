@@ -1,6 +1,5 @@
 package org.onetwo.boot.mq;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -8,10 +7,8 @@ import java.util.stream.Collectors;
 
 import org.onetwo.boot.mq.SendMessageEntity.SendStates;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DbmSendMessageRepository implements SendMessageRepository {
 	
-	private Logger log = JFishLoggerFactory.getLogger(getClass());
+	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
 //	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
-	@Autowired
-	private MessageBodyStoreSerializer messageBodyStoreSerializer;
 	@Autowired
 	private BaseEntityManager baseEntityManager;
 	
@@ -35,21 +30,18 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 	
 	@Override
 	public void save(SendMessageContext<?> ctx){
-		Serializable message = ctx.getMessage();
-		SendMessageEntity send = new SendMessageEntity();
+		/*Serializable message = ctx.getMessage();
 		String key = ctx.getKey();
 		if(StringUtils.isBlank(key)){
 //			key = String.valueOf(idGenerator.nextId());
 			//强制必填，可用于client做idempotent
 			throw new ServiceException("message key can not be blank!");
 		}
-		send.setKey(key);
-		send.setState(SendStates.UNSEND);
-		send.setBody(messageBodyStoreSerializer.serialize(message));
+		SendMessageEntity send = createSendMessageEntity(key, message);*/
 		
-		baseEntityManager.persist(send);
+		baseEntityManager.persist(ctx.getMessageEntity());
+//		ctx.setMessageEntity(send);
 
-		ctx.setMessageEntity(send);
 //		storeInCurrentContext(ctx);
 	}
 
@@ -128,6 +120,11 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		}
 	}*/
 	
+
+	public BaseEntityManager getBaseEntityManager() {
+		return baseEntityManager;
+	}
+
 	public static List<String> getSendMessageKeys(Collection<SendMessageContext<?>> msgCtxs){
 		if(LangUtils.isEmpty(msgCtxs)){
 			return Collections.emptyList();

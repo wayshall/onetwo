@@ -1,5 +1,7 @@
 package org.onetwo.boot.mq;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,6 +31,8 @@ public class SendMessageEntity extends BaseEntity {
 	private byte[] body;
 	@Enumerated(EnumType.ORDINAL)
 	private SendStates state;
+	
+	private Date deliverAt = new Date();
 	
 	public static enum SendStates {
 		UNSEND,

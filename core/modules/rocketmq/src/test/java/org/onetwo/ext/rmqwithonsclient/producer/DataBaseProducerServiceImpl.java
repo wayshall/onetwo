@@ -21,6 +21,21 @@ public class DataBaseProducerServiceImpl {
 	@Autowired
 	ProducerService onsProducerService;
 	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
+	
+
+	public void sendDelayMessage(String deliverTime){
+		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
+				  .topic(RmqONSProducerTest.TOPIC)
+				  .tags(RmqONSProducerTest.ORDER_CANCEL)
+				  .key("test_"+idGenerator.nextId())
+				  .deliverTimeString(deliverTime)
+				  .body(OrderTestMessage.builder()
+			  				.orderId(2L)
+			  				.title("取消")
+			  				.build())
+				  .build(), SendMessageFlags.EnableDatabaseTransactional);
+		System.out.println("res: " + res);
+	}
 
 	public void sendMessage(){
 		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()

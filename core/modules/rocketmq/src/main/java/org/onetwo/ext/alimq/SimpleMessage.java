@@ -44,10 +44,10 @@ public class SimpleMessage implements OnsMessage {
 			message.setStartDeliverTime(System.currentTimeMillis()+delayTimeInMillis);
 		}else if(deliverTime!=null){
 			delayTimeInMillis = deliverTime.getTime();
-			message.setStartDeliverTime(System.currentTimeMillis()+delayTimeInMillis);
+			message.setStartDeliverTime(delayTimeInMillis);
 		}else if(StringUtils.isNotBlank(deliverTimeString)){
 			delayTimeInMillis = DateUtils.parse(deliverTimeString).getTime();
-			message.setStartDeliverTime(System.currentTimeMillis()+delayTimeInMillis);
+			message.setStartDeliverTime(delayTimeInMillis);
 		}
 		message.setUserProperties(userProperties);
 		return message;

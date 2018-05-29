@@ -13,10 +13,12 @@ import org.onetwo.boot.mq.SendMessageEntity;
 import org.onetwo.boot.mq.SendMessageEntity.SendStates;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.SendMessageRepository;
+import org.onetwo.common.date.Dates;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.JodatimeUtils;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.dialet.DBDialect.LockInfo;
@@ -71,7 +73,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 	 * @author wayshall
 	 */
 //	@Scheduled(cron="${"+ONSProperties.TRANSACTIONAL_TASK_CRON_KEY+":0 0/1 * * * *}")
-	@Scheduled(fixedRateString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY+":60000}")
+	@Scheduled(fixedRateString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY+":60000}", initialDelay=30000)
 	public void scheduleCheckSendMessage(){
 		SendTaskProps taskProps = this.mqProperties.getTransactional().getSendTask();
 		int ignoreCreateAtRecently = (int)LangOps.timeToSeconds(taskProps.getIgnoreCreateAtRecently(), 60);
@@ -102,7 +104,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 		List<SendMessageEntity> messages = Querys.from(baseEntityManager, SendMessageEntity.class)
 												.where()
 													.field("state").equalTo(SendStates.UNSEND.ordinal())
-													.field("createAt").lessThan(createAt)
+													.field("deliverAt").lessThan(createAt.toDate())
 												.end()
 												.asc("createAt")
 												.limit(0, sendCountPerTask)
@@ -114,6 +116,9 @@ public class CompensationSendMessageTask implements InitializingBean {
 				log.info("no unsend mesage found from database");
 			}
 			return ;
+		}
+		if(log.isInfoEnabled()){
+			log.info("find [{}] mesage from database to be sending", messages.size());
 		}
 		for(SendMessageEntity message : messages){
 			Serializable mqMessage = messageBodyStoreSerializer.deserialize(message.getBody());
