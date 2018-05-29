@@ -28,8 +28,8 @@ public class SimpleMessage implements OnsMessage {
 	String tags;
 	Object body;
 	Long delayTimeInMillis;
-	Date deliverTime;
-	String deliverTimeString;
+	Date deliverAt;
+	String deliverAtString;
     /**
      * 用户属性
      */
@@ -41,12 +41,13 @@ public class SimpleMessage implements OnsMessage {
 		message.setTopic(topic);
 		message.setTag(tags);
 		if(delayTimeInMillis!=null){
-			message.setStartDeliverTime(System.currentTimeMillis()+delayTimeInMillis);
-		}else if(deliverTime!=null){
-			delayTimeInMillis = deliverTime.getTime();
+			this.delayTimeInMillis = System.currentTimeMillis()+delayTimeInMillis;
 			message.setStartDeliverTime(delayTimeInMillis);
-		}else if(StringUtils.isNotBlank(deliverTimeString)){
-			delayTimeInMillis = DateUtils.parse(deliverTimeString).getTime();
+		}else if(deliverAt!=null){
+			delayTimeInMillis = deliverAt.getTime();
+			message.setStartDeliverTime(delayTimeInMillis);
+		}else if(StringUtils.isNotBlank(deliverAtString)){
+			delayTimeInMillis = DateUtils.parse(deliverAtString).getTime();
 			message.setStartDeliverTime(delayTimeInMillis);
 		}
 		message.setUserProperties(userProperties);
