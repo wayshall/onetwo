@@ -31,7 +31,7 @@ public class SendMessageEntity extends BaseEntity {
 	private byte[] body;
 	@Enumerated(EnumType.ORDINAL)
 	private SendStates state;
-	
+	private String locker;
 	private Date deliverAt = new Date();
 	
 	public static enum SendStates {

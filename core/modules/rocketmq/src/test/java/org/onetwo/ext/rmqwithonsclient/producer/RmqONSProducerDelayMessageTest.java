@@ -37,11 +37,11 @@ public class RmqONSProducerDelayMessageTest {
 	
 	@Test
 	public void test4sendDelayMessage(){
-		dataBaseProducerService.sendDelayMessage("2018-05-29 14:39:00");
-		dataBaseProducerService.sendDelayMessage("2018-05-29 14:40:00");
-		dataBaseProducerService.sendDelayMessage("2018-05-29 14:45:00");
-		dataBaseProducerService.sendDelayMessage("2018-05-29 14:47:00");
-		dataBaseProducerService.sendDelayMessage("2018-05-29 15:55:00");
+		dataBaseProducerService.sendDelayMessage("2018-05-29 16:27:00");
+		dataBaseProducerService.sendDelayMessage("2018-05-29 16:40:00");
+		dataBaseProducerService.sendDelayMessage("2018-05-29 16:45:00");
+		dataBaseProducerService.sendDelayMessage("2018-05-29 16:47:00");
+		dataBaseProducerService.sendDelayMessage("2018-05-29 16:55:00");
 //		LangUtils.CONSOLE.exitIf("test");
 	}
 	
