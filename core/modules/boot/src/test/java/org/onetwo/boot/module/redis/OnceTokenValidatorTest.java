@@ -16,10 +16,10 @@ public class OnceTokenValidatorTest extends RedisBaseTest {
 	private OnceTokenValidator onceTokenValidator;
 	
 	@Test
-	public void test(){
+	public void testCheckAndRun(){
 		String key = "addOrder";
 		String value = "709394";
-		this.onceTokenValidator.generate(key, ()->value);
+		this.onceTokenValidator.save(key, ()->value);
 		
 		//value不正确
 		Assertions.assertThatExceptionOfType(ServiceException.class)
@@ -39,7 +39,7 @@ public class OnceTokenValidatorTest extends RedisBaseTest {
 					})
 					.withMessage(RedisErrors.TOKEN_INVALID.getErrorMessage());
 
-		this.onceTokenValidator.generate(key, ()->value);
+		this.onceTokenValidator.save(key, ()->value);
 		this.onceTokenValidator.checkAndRun(key, value, ()->{
 			System.out.println("run...");
 		});

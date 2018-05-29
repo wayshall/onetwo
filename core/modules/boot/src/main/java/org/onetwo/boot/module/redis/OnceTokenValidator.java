@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -22,11 +23,11 @@ public class OnceTokenValidator {
     	return tokenKeyPrefix + key;
     }
     
-    public String generate(String key){
-    	return generate(key, ()->String.valueOf(System.currentTimeMillis()));
+    public String generate(String key, int length){
+    	return save(key, ()->LangUtils.getRadomNumberString(length));
     }
     
-    public String generate(String key, Supplier<String> valueGenerator){
+    public String save(String key, Supplier<String> valueGenerator){
     	String storeKey = getStoreKey(key);
     	String value = valueGenerator.get();
     	redisOperationService.getStringRedisTemplate()
