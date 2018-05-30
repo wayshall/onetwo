@@ -3,7 +3,6 @@ package org.onetwo.ext.poi.excel.reader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -219,7 +218,7 @@ public abstract class WorkbookReaderFactory {
 		convertors.put(Date.class.getSimpleName().toLowerCase(), new DateConvertor(null));
 	}
 
-	private static Map<String, WorkbookReader> WORKBOOK_CACHES = new ConcurrentHashMap<String, WorkbookReader>();
+	/*private static Map<String, WorkbookReader> WORKBOOK_CACHES = new ConcurrentHashMap<String, WorkbookReader>();
 	static {
 		WorkbookReader listWb = new DefaultRowMapperWorkbookReader(new ListRowMapper());
 //		listWb.setRowMapper(new ListRowMapper());
@@ -228,22 +227,22 @@ public abstract class WorkbookReaderFactory {
 		WorkbookReader stringWb = new DefaultRowMapperWorkbookReader(new StringListRowMapper());
 //		stringWb.setRowMapper(new StringListRowMapper());
 		WORKBOOK_CACHES.put(StringListRowMapper.class.getName(), stringWb);
-	}
+	}*/
 
 	public static WorkbookReader getWorkbookReader(){
 		return getWorkbookReader(HashMap.class);
 	}
 
 	public static WorkbookReader getStringListWorkbookReader(){
-		return getCacheWorkbookReader(StringListRowMapper.class.getName());
+		return getWorkbookReader(StringListRowMapper.class);
 	}
 	public static WorkbookReader getListWorkbookReader(){
-		return getCacheWorkbookReader(ListRowMapper.class.getName());
+		return getWorkbookReader(ListRowMapper.class);
 	}
 	
-	public static WorkbookReader getCacheWorkbookReader(String key){
+	/*public static WorkbookReader getCacheWorkbookReader(String key){
 		return WORKBOOK_CACHES.get(key);
-	}
+	}*/
 	
 	@SuppressWarnings("rawtypes")
 	public static WorkbookReader createWorkbookReader(Class clazz, int dataRowStartIndex, Object...propertyMapper){
@@ -253,13 +252,9 @@ public abstract class WorkbookReaderFactory {
 
 	@SuppressWarnings("rawtypes")
 	public static WorkbookReader getWorkbookReader(Class clazz){
-		String key = clazz.getName();
-		WorkbookReader wb = (WorkbookReader)getCacheWorkbookReader(key);
-		if(wb!=null)
-			return wb;
-		wb = new DefaultRowMapperWorkbookReader(new BeanRowMapper(clazz, convertors));
+		WorkbookReader wb = new DefaultRowMapperWorkbookReader(new BeanRowMapper(clazz, convertors));
 //		wb.setRowMapper(new BeanRowMapper(clazz, convertors));
-		WORKBOOK_CACHES.put(key, wb);
+//		WORKBOOK_CACHES.put(key, wb);
 		return wb;
 	}
 
@@ -276,5 +271,9 @@ public abstract class WorkbookReaderFactory {
 	public static ExcelReader createDefaultExcelReader(){
 		ExcelReader wb = new DefaultPOIExcelReader();
 		return wb;
+	}
+
+	public static Map<String, CellValueConvertor> getConvertors() {
+		return convertors;
 	}
 }
