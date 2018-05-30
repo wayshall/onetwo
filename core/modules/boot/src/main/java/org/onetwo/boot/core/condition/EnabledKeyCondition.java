@@ -19,7 +19,11 @@ abstract public class EnabledKeyCondition extends SpringBootCondition implements
 
 	
 	private ClassLoader beanClassLoader;
+	private boolean defaultEnabledValue = true;
 
+	final public void setDefaultEnabledValue(boolean defaultEnabledValue) {
+		this.defaultEnabledValue = defaultEnabledValue;
+	}
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -34,7 +38,7 @@ abstract public class EnabledKeyCondition extends SpringBootCondition implements
 	abstract protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes);
 	
 	protected boolean isEnabled(Environment environment, String key){
-		return new RelaxedPropertyResolver(environment).getProperty(key, Boolean.class, Boolean.TRUE);
+		return new RelaxedPropertyResolver(environment).getProperty(key, Boolean.class, defaultEnabledValue);
 	}
 	
 	protected AnnotationAttributes getAnnotationAttributes(AnnotatedTypeMetadata metadata){
