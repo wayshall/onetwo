@@ -27,7 +27,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(classes=RedisTtestContextConfig.class,
 				properties={
 							"spring.redis.host=localhost",
-							"spring.redis.port=6379"
+							"spring.redis.port=6379",
+							"jfish.redis.enabled=true"
 							}
 )
 public class RedisBaseTest {
