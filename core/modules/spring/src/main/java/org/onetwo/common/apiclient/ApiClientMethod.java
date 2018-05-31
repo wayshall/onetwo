@@ -25,6 +25,7 @@ import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
@@ -55,6 +56,12 @@ import org.springframework.web.client.RestClientException;
 public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParameter> {
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
 																	.enableFieldNameAnnotation()
+																	.flatableObject(obj->{
+																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
+																		return  flatable &&
+																				!Resource.class.isInstance(obj) &&
+																				!ClassLoader.class.isInstance(obj);
+																	})
 																	.build();
 	
 //	final private AnnotationAttributes requestMappingAttributes;

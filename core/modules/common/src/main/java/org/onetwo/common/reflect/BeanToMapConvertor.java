@@ -2,10 +2,13 @@ package org.onetwo.common.reflect;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,11 +58,21 @@ public class BeanToMapConvertor {
 		}
 		
 	}
-	
-	protected static final Function<Object, Boolean> DEFAULT_FLATABLE = obj->{
-		return !LangUtils.getSimpleClass().contains(obj.getClass());
+
+	@SuppressWarnings("serial")
+	private final static Collection<Class<?>> mapableValueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass()){
+		{
+			add(URL.class);
+			add(URI.class);
+			add(Class.class);
+			add(ClassLoader.class);
+		}
 	};
 
+	public final static Function<Object, Boolean> DEFAULT_FLATABLE = obj->{
+		return !mapableValueTypes.contains(obj.getClass());
+	};
+	
 	private String listOpener = "[";
 	private String listCloser = "]";
 	private String propertyAccesor = ".";
@@ -75,6 +88,11 @@ public class BeanToMapConvertor {
 	
 	protected BeanToMapConvertor(){
 	}
+	
+	/*public BeanToMapConvertor addNotFlatableTypes(Class<?>... types){
+		mapableValueTypes.addAll(Arrays.asList(types));
+		return this;
+	}*/
 
 	/*public void freeze(){
 		this.checkFreezed();
@@ -358,7 +376,9 @@ public class BeanToMapConvertor {
 			beanToFlatMap.setPrefix(prefix);
 			beanToFlatMap.setPropertyAcceptor(propertyAcceptor);
 			beanToFlatMap.setValueConvertor(valueConvertor);
-			beanToFlatMap.setFlatableObject(flatableObject==null?DEFAULT_FLATABLE:flatableObject);
+			if(flatableObject!=null){
+				beanToFlatMap.setFlatableObject(flatableObject);
+			}
 			beanToFlatMap.enableFieldNameAnnotation = enableFieldNameAnnotation;
 			beanToFlatMap.enableUnderLineStyle = enableUnderLineStyle;
 			return beanToFlatMap;
