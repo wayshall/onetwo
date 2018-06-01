@@ -60,6 +60,8 @@ public class JFishOauth2Properties {
 	
 	@Data
 	public static class AuthorizationServerProps {
+		public static final String ENABLED_KEY = CONFIG_PREFIX + ".authorizationServer.enabled";
+		
 		boolean allowFormAuthenticationForClients;
 		boolean customFormAuthenticationForClients;
 		boolean sslOnly;

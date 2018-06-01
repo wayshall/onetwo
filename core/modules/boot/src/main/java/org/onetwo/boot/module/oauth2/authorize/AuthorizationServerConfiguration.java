@@ -20,6 +20,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -52,6 +53,7 @@ import org.springframework.util.Assert;
 @Configuration
 @EnableConfigurationProperties(JFishOauth2Properties.class)
 //@Import(CustomOAuth2SecurityConfigurerAdapter.class)
+@ConditionalOnProperty(name=AuthorizationServerProps.ENABLED_KEY, matchIfMissing=true)
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 	
 	@Autowired
