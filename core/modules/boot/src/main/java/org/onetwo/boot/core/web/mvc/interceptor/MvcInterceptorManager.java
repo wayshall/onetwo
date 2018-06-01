@@ -145,8 +145,8 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 				AnnotationAwareOrderComparator.sort(interceptors);
 				HandlerMethodInterceptorMeta meta = new HandlerMethodInterceptorMeta(hm, interceptors);
 				interceptorMetaCaces.put(hm.getMethod(), meta);
-				if(log.isInfoEnabled()){
-					log.info("MvcInterceptor: {} -> {}", hm.getMethod(), interceptors);
+				if(log.isDebugEnabled()){
+					log.debug("MvcInterceptor: {} -> {}", hm.getMethod(), interceptors);
 				}
 			}
 		}
