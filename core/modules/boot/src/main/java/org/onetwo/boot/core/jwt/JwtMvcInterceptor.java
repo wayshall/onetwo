@@ -31,10 +31,14 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 		try {
 			userOpt = JwtUtils.getOrSetJwtUserDetail(request, jwtTokenService, authHeaderName);
 		} catch (ServiceException e) {
-			if(e.getExceptionType() instanceof JwtErrors && e.getExceptionType()!=JwtErrors.CM_NOT_LOGIN){
+			/*if(e.getExceptionType() instanceof JwtErrors && e.getExceptionType()!=JwtErrors.CM_NOT_LOGIN){
 				throw new ServiceException(JwtErrors.CM_NOT_LOGIN, e);
-			}
+			}*/
+			throw e;
+		} catch (Exception e){
+			throw new ServiceException(JwtErrors.CM_LOGIN_UNKNOW_ERR, e);
 		}
+		
 		if(!userOpt.isPresent()){
 			throw new ServiceException(JwtErrors.CM_NOT_LOGIN);
 		}
