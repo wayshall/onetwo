@@ -10,6 +10,7 @@ import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.ext.security.utils.SecurityConfig.InterceptersConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
@@ -21,6 +22,9 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 	
 	private AccessDecisionManager accessDecisionManager;
 	
+	@Autowired(required=false)
+	private List<AuthenticationProvider> authenticationProviders;
+	
 	
 	public DefaultUrlSecurityConfigurer(AccessDecisionManager accessDecisionManager) {
 		super();
@@ -28,6 +32,9 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 	}
 
 	protected void configure(HttpSecurity http) throws Exception {
+		if(LangUtils.isNotEmpty(authenticationProviders)){
+			authenticationProviders.forEach(authProvider->http.authenticationProvider(authProvider));
+		}
 		http.authorizeRequests().withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
 			@Override
 			public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
