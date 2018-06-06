@@ -6,9 +6,10 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
+import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ErrorMessage;
 import org.onetwo.boot.core.web.mvc.log.OperatorLogEvent;
 import org.onetwo.boot.core.web.mvc.log.OperatorLogInfo;
+import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.ds.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishMathcer;
@@ -125,9 +126,13 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 			info.setOperatorId(userdetail.getUserId());
 			info.setOperatorName(userdetail.getUserName());
 		}
+		ErrorMessage errorMessage = BootWebUtils.webHelper(request).getErrorMessage();
 		if(ex!=null){
 			info.setSuccess(false);
 			info.setMessage(ex.getMessage());
+		}else if(errorMessage!=null){
+			info.setSuccess(false);
+			info.setMessage(errorMessage.getMesage());
 		}
 		info.setOperatorTime(new Date());
 		if(contextHolder!=null){

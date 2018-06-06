@@ -2,6 +2,7 @@ package org.onetwo.boot.core.web.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ErrorMessage;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
@@ -48,6 +49,7 @@ public class BootWebHelper {
 //	private String requestURI;
 	private String requestExtension;
 	private HandlerMethod controllerHandler;
+	private ErrorMessage errorMessage;
 //	private Result<?, ?> ajaxErrorResult;
 	
 	public HttpServletRequest getRequest() {
@@ -69,6 +71,14 @@ public class BootWebHelper {
 	public void setAjaxErrorResult(Result<?, ?> ajaxErrorResult) {
 		this.ajaxErrorResult = ajaxErrorResult;
 	}*/
+
+	public ErrorMessage getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(ErrorMessage errorMessage) {
+		this.errorMessage = errorMessage;
+	}
 
 	public String getRequestUrl(){
 		return this.request.getRequestURL().toString();
