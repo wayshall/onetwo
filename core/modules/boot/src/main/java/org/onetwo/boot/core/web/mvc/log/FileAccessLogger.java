@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.mvc.log;
+package org.onetwo.boot.core.web.mvc.log;
 
 
 import java.util.Map;
@@ -9,9 +9,11 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.event.EventListener;
 import org.springframework.util.Assert;
 
-public class DefaultAccessLogger implements AccessLogger {
+public class FileAccessLogger implements InitializingBean {
 
 	public static final String LOGGER_KEY = "accessLogger";
 	private Logger accessLogger;
@@ -22,10 +24,10 @@ public class DefaultAccessLogger implements AccessLogger {
 //	private boolean debug;
 	
 
-	public DefaultAccessLogger() {
+	public FileAccessLogger() {
 		this(LOGGER_KEY);
 	}
-	public DefaultAccessLogger(String loggerName) {
+	public FileAccessLogger(String loggerName) {
 		super();
 		this.loggerName = loggerName;
 	}
@@ -36,7 +38,13 @@ public class DefaultAccessLogger implements AccessLogger {
 	public void setLogChangedDatas(boolean logChangedDatas) {
 		this.logChangedDatas = logChangedDatas;
 	}
+
 	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.initLogger();
+	}
+	
+//	@Override
 	public void initLogger() {
 		accessLogger = createAccessLoggerLogger();// JFishLoggerFactory.getLogger(LOGGER_KEY);
 		Assert.notNull(accessLogger, "accessLogger not null");
@@ -49,7 +57,12 @@ public class DefaultAccessLogger implements AccessLogger {
 		return JFishLoggerFactory.getLogger(loggerName);
 	}
 	
-	@Override
+	@EventListener
+	public void onLogEvent(OperatorLogEvent event){
+		logOperation(event.getOperatorLog());
+	}
+	
+//	@Override
 	public void logOperation(OperatorLogInfo data){
 		if(accessLogger.isInfoEnabled()){
 			doLogOperation(data);
