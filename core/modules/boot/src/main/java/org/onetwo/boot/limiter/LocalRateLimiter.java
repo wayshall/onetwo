@@ -6,6 +6,7 @@ import org.onetwo.boot.limiter.InvokeLimiter.BaseInvokeLimiter;
 import com.google.common.util.concurrent.RateLimiter;
 
 /**
+ * 每秒的速率
  * qps
  * @author wayshall
  * <br/>
