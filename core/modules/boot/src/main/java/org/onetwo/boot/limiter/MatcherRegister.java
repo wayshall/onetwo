@@ -70,6 +70,9 @@ public class MatcherRegister extends MapRegisterManager<String, Function<String[
 		.register("ip", (patterns)->{
 			return new ContainAnyOneMatcher("clientIp", patterns);
 		})
+		.register("serviceId", (patterns)->{
+			return new ContainAnyOneMatcher("serviceId", patterns);
+		})
 		;
 	}
 	

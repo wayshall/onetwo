@@ -16,7 +16,7 @@ public class LimitInvokeException extends BaseException {
 
 	public LimitInvokeException(int maxLimit) {
 		super("exceed max limit invoke: " + maxLimit);
-		this.maxLimit = 3;
+		this.maxLimit = maxLimit;
 	}
 	
 	public LimitInvokeException(int maxLimit, String message) {

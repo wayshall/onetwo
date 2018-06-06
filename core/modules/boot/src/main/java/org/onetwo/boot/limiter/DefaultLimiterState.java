@@ -21,10 +21,10 @@ public class DefaultLimiterState implements LimiterState, Serializable {
 	 * 剩余次数
 	 */
 	final private AtomicInteger remainTimes;
-	final private int intervalInMillis;
+	final private long intervalInMillis;
 	
 
-	public DefaultLimiterState(int limitTimes, int intervalInMillis) {
+	public DefaultLimiterState(long intervalInMillis, int limitTimes) {
 		super();
 		this.limitTimes = limitTimes;
 		this.intervalInMillis = intervalInMillis;

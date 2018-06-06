@@ -1,10 +1,9 @@
 package org.onetwo.boot.limiter;
 
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.onetwo.boot.limiter.InvokeContext.InvokeType;
 import org.onetwo.boot.limiter.InvokeLimiter.BaseInvokeLimiter;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangOps;
 
 /**
@@ -14,8 +13,12 @@ import org.onetwo.common.utils.LangOps;
  */
 public class LocalIntervalLimiter extends BaseInvokeLimiter {
 	private String interval;
-	private int intervalInMillis = 1000*60;
+	private long intervalInMillis = 1000*60;
 	private LimiterState limiterState;
+	
+	public void setInterval(int time, TimeUnit timeUnit){
+		this.intervalInMillis = timeUnit.toMillis(time);
+	}
 	
 	@Override
 	public void init() {
@@ -23,24 +26,14 @@ public class LocalIntervalLimiter extends BaseInvokeLimiter {
 		this.setInvokeType(InvokeType.BEFORE);
 		this.intervalInMillis = (int)LangOps.timeToMills(interval, intervalInMillis);
 		
-		this.limiterState = new DefaultLimiterState();
+		this.limiterState = new DefaultLimiterState(intervalInMillis, getLimitTimes());
 	}
 
 	@Override
 	public void consume(InvokeContext invokeContext) {
-		if(invokeContext.getInvokeType()==InvokeType.BEFORE){
-			invokeContext.setAttribute(START_KEY, System.currentTimeMillis());
-		}else{
-			Optional<Long> startMillisOpt = invokeContext.getAttributeOpt(START_KEY);
-			if(!startMillisOpt.isPresent()){
-				throw new BaseException("start time not found!");
-			}
-			Long costTime = System.currentTimeMillis() - startMillisOpt.get();
+		if(!limiterState.isAllow()){
+			throw new LimitInvokeException(getLimitTimes());
 		}
-	}
-	
-	protected DefaultLimiterState getCurrentValidLimiterState(){
-		
 	}
 	
 }
