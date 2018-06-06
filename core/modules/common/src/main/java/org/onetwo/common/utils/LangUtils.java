@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.regex.Pattern;
@@ -1085,7 +1086,8 @@ public class LangUtils {
 		  char[] result = new char[length];
 		  char[] takeArr = WORD_CHARS.clone();
 		  for (int i = 0, j = takeArr.length; i < length; ++i, --j) { 
-			  int take = (int) (Math.random() * j); 
+//			  int take = (int) (Math.random() * j); 
+			  int take = (int) (ThreadLocalRandom.current().nextDouble(1) * j); 
 			  result[i] = takeArr[take]; 
 			  char m = takeArr[j - 1]; 
 			  takeArr[j - 1] = takeArr[take]; 
@@ -1093,6 +1095,12 @@ public class LangUtils {
 		   } 
 		  
 		  return new String(result);
+	}
+
+	public static String getRadomNumberString(int length) {
+		int val = ThreadLocalRandom.current().nextInt((int)Math.pow(10, length));
+		String value = LangUtils.padLeft(String.valueOf(val), length, "0");
+		return value;
 	}
 	
 	public static void printMemory(){

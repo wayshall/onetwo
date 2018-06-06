@@ -1,19 +1,20 @@
 package org.onetwo.boot.mq;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.onetwo.boot.mq.SendMessageEntity.SendStates;
+import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -22,38 +23,37 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public class DbmSendMessageRepository implements SendMessageRepository {
+	private static final String LOCK_MESSAGE_SQL = "update data_mq_send set locker=:locker where state = :state and locker='' and deliver_at < :now ";
 	
-	private Logger log = JFishLoggerFactory.getLogger(getClass());
+	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
 //	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
-	@Autowired
-	private MessageBodyStoreSerializer messageBodyStoreSerializer;
 	@Autowired
 	private BaseEntityManager baseEntityManager;
 	
 //	private NamedThreadLocal<Set<SendMessageContext>> messageStorer = new NamedThreadLocal<>("rmq message thread storer");
-	
+
+	@Transactional(propagation=Propagation.REQUIRED)
 	@Override
 	public void save(SendMessageContext<?> ctx){
-		Serializable message = ctx.getMessage();
-		SendMessageEntity send = new SendMessageEntity();
+		/*Serializable message = ctx.getMessage();
 		String key = ctx.getKey();
 		if(StringUtils.isBlank(key)){
 //			key = String.valueOf(idGenerator.nextId());
 			//强制必填，可用于client做idempotent
 			throw new ServiceException("message key can not be blank!");
 		}
-		send.setKey(key);
-		send.setState(SendStates.UNSEND);
-		send.setBody(messageBodyStoreSerializer.serialize(message));
+		SendMessageEntity send = createSendMessageEntity(key, message);*/
 		
-		baseEntityManager.persist(send);
+		ctx.getMessageEntity().setLocker("");
+		baseEntityManager.persist(ctx.getMessageEntity());
+//		ctx.setMessageEntity(send);
 
-		ctx.setMessageEntity(send);
 //		storeInCurrentContext(ctx);
 	}
 
-	
+
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Override
 	public void updateToSent(SendMessageContext<?> ctx) {
 		boolean debug = ctx.isDebug();
@@ -65,7 +65,8 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 			log.info("update the state of message[{}] to : {}", ctx.getMessageEntity().getKey(), SendStates.SENT);
 		}
 	}
-	
+
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Override
 	public void updateToSent(SendMessageEntity messageEntity) {
 		messageEntity.setState(SendStates.SENT);
@@ -73,6 +74,7 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 	}
 
 
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Override
 	public void remove(Collection<SendMessageContext<?>> msgCtxs){
 		boolean debug = msgCtxs.iterator().next().isDebug();
@@ -83,51 +85,40 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		}
 	}
 	
-	/*@SuppressWarnings("unchecked")
-	protected void storeInCurrentContext(SendMessageContext ctx){
-		boolean debug = ctx.isDebug();
-		Set<SendMessageContext> msgCtxs = (Set<SendMessageContext>)TransactionSynchronizationManager.unbindResourceIfPossible(this);
-		if(debug && log.isInfoEnabled()){
-			List<String> keys = getSendMessageKeys(msgCtxs);
-			log.info("clear old SendMessageContext from transaction resources before store: {}", keys);
-		}
-		
-		Set<SendMessageContext> contexts = findAllInCurrentContext();
-		if(contexts==null){
-			contexts = new LinkedHashSet<SendMessageContext>();
-//			messageStorer.set(contexts);
-			TransactionSynchronizationManager.bindResource(this, contexts);
-		}
-		contexts.add(ctx);
-		if(debug && log.isInfoEnabled()){
-			log.info("store in current context: {}", ctx.getMessage());
-		}
+
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Override
+	public int lockToBeSendMessage(String locker, Date now) {
+		int count = baseEntityManager.createQuery(LOCK_MESSAGE_SQL, CUtils.asMap("locker", locker, 
+																				"state", SendStates.UNSEND.ordinal(), 
+																				"now", now
+																				)
+												).executeUpdate();
+		return count;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public Set<SendMessageContext> findAllInCurrentContext(){
-//		return messageStorer.get();
-		return (Set<SendMessageContext>)TransactionSynchronizationManager.getResource(this);
+
+	@Transactional(readOnly=true)
+	@Override
+	public List<SendMessageEntity> findLockerMessage(String locker, Date now, int sendCountPerTask) {
+		List<SendMessageEntity> messages = Querys.from(baseEntityManager, SendMessageEntity.class)
+				.where()
+					.field("state").equalTo(SendStates.UNSEND.ordinal())
+					.field("locker").equalTo(locker)
+					.field("deliverAt").lessThan(now)
+				.end()
+				.asc("createAt")
+				.limit(0, sendCountPerTask)
+//				.lock(LockInfo.write())
+				.toQuery()
+				.list();
+		return messages;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public void clearInCurrentContext(){
-		Set<SendMessageContext> msgCtxs = (Set<SendMessageContext>)TransactionSynchronizationManager.unbindResourceIfPossible(this);
-		if(LangUtils.isEmpty(msgCtxs)){
-			return ;
-		}
-		
-		boolean debug = msgCtxs.iterator().next().isDebug();
-		List<String> keys = getSendMessageKeys(msgCtxs);
-		if(debug && log.isInfoEnabled()){
-			log.info("clear SendMessageContext from transaction resources: {}", keys);
-		}
-		baseEntityManager.removeByIds(SendMessageEntity.class, keys.toArray(new String[0]));
-		if(debug && log.isInfoEnabled()){
-			log.info("clear SendMessageContext from database: {}", keys);
-		}
-	}*/
-	
+
+
+	public BaseEntityManager getBaseEntityManager() {
+		return baseEntityManager;
+	}
+
 	public static List<String> getSendMessageKeys(Collection<SendMessageContext<?>> msgCtxs){
 		if(LangUtils.isEmpty(msgCtxs)){
 			return Collections.emptyList();

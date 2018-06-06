@@ -39,7 +39,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class BootWebExceptionHandler extends ResponseEntityExceptionHandler implements ExceptionMessageFinder, InitializingBean {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	public static final String ERROR_RESPONSE_HEADER = "X-RESPONSE-JFISH-ERROR";
 
 //	@Autowired
 //	private BootSiteConfig bootSiteConfig;
@@ -88,10 +87,7 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		if(errorMessage==null){
 			errorMessage = this.getErrorMessage(ex, bootJFishConfig.isLogErrorDetail());
 		}
-		String errorCode = errorMessage.getCode();
-		WebHolder.getResponse().ifPresent(response->{
-			response.setHeader(ERROR_RESPONSE_HEADER, errorCode);
-		});
+		
 		Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
 		doLog(reqOpt.orElse(null), errorMessage);
 		if(errorMessage.getHttpStatus()==null){

@@ -1,9 +1,13 @@
 package org.onetwo.boot.mq;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.onetwo.boot.core.web.async.AsyncTaskDelegateService;
+import org.onetwo.boot.mq.SendMessageEntity.SendStates;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +30,10 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	protected ApplicationEventPublisher applicationEventPublisher;
 	@Autowired(required=false)
 	private AsyncTaskDelegateService asyncTaskDelegateService;
-	private boolean useAsync;
+	private boolean useAsync = false;
 	private SendMessageRepository sendMessageRepository;
+	@Autowired
+	private MessageBodyStoreSerializer messageBodyStoreSerializer;
 	
 	public boolean isUseAsync() {
 		return useAsync;
@@ -67,7 +73,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	}
 
 	protected void storeAndPublishSendMessageEvent(SendMessageContext<?> ctx){
-		this.getSendMessageRepository().save(ctx);
+		this.storeSendMessage(ctx);
 		SendMessageEvent event = SendMessageEvent.builder()
 												 .sendMessageContext(ctx)
 												 .build();
@@ -80,6 +86,27 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 		}
 	}
 
+	protected void storeSendMessage(SendMessageContext<?> ctx){
+		Serializable message = ctx.getMessage();
+		String key = ctx.getKey();
+		if(StringUtils.isBlank(key)){
+//			key = String.valueOf(idGenerator.nextId());
+			//强制必填，可用于client做idempotent
+			throw new ServiceException("message key can not be blank!");
+		}
+		SendMessageEntity send = createSendMessageEntity(key, message);
+		ctx.setMessageEntity(send);
+		this.getSendMessageRepository().save(ctx);
+	}
+	
+	protected SendMessageEntity createSendMessageEntity(String key, Serializable message){
+		SendMessageEntity send = new SendMessageEntity();
+		send.setKey(key);
+		send.setState(SendStates.UNSEND);
+		send.setBody(messageBodyStoreSerializer.serialize(message));
+		return send;
+	}
+
 	@Override
 	public void afterCommit(SendMessageEvent event){
 		if(useAsync){
@@ -88,7 +115,8 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 			this.doAfterCommit(event);
 		}
 	}
-	public void doAfterCommit(SendMessageEvent event){
+	
+	protected void doAfterCommit(SendMessageEvent event){
 		boolean debug = event.getSendMessageContext().isDebug();
 		event.getSendMessageContext().getChain().invoke();
 //		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
@@ -118,6 +146,9 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 //		sendMessageRepository.clearInCurrentContext();
 	}
 
+	public MessageBodyStoreSerializer getMessageBodyStoreSerializer() {
+		return messageBodyStoreSerializer;
+	}
 
 	public SendMessageRepository getSendMessageRepository() {
 		return sendMessageRepository;

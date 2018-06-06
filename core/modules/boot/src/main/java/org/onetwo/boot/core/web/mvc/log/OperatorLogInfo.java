@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.mvc.log;
+package org.onetwo.boot.core.web.mvc.log;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -22,6 +22,7 @@ public class OperatorLogInfo implements Serializable {
 	final private long startTime;
 	final private long endTime;
 	private String webHandler;
+	private String userAgent;
 	
 	public OperatorLogInfo(long startTime, long endTime) {
 		super();
@@ -103,5 +104,11 @@ public class OperatorLogInfo implements Serializable {
 	}
 	public void setWebHandler(String webHandler) {
 		this.webHandler = webHandler;
+	}
+	public String getUserAgent() {
+		return userAgent;
+	}
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
 	}
 }

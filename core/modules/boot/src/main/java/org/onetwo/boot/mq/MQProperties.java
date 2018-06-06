@@ -2,6 +2,9 @@ package org.onetwo.boot.mq;
 
 import lombok.Data;
 
+import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.NetUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -44,9 +47,22 @@ public class MQProperties {
 	@Data
 	public static class SendTaskProps {
 		TaskLocks lock = TaskLocks.DB;
-		int sendCountPerTask = 300;
+		int sendCountPerTask = 1000;
 		//忽略最近时间创建的消息，默认1分钟
 		String ignoreCreateAtRecently = "1m";
+		//锁定的key
+		String locker;
+		
+		public String getLocker(){
+			String locker = this.locker;
+			if(StringUtils.isNotBlank(locker)){
+				return locker;
+			}
+
+			this.locker = NetUtils.getHostAddress();
+			Assert.hasText(this.locker, "send task locker can not be null");
+			return this.locker;
+		}
 	}
 	@Data
 	public static class DeleteTaskProps {

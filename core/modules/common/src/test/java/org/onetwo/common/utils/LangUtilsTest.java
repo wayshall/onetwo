@@ -374,9 +374,9 @@ public class LangUtilsTest {
 	
 	@Test
 	public void testRandomString(){
-		String key = RandomStringUtils.randomAscii(128);
+		String key = "key"+RandomStringUtils.randomAscii(128).replaceAll("\\s|#|:|\\*|-|!|&|%|\"", "");
 		System.out.println("key:" + key);
-		key = RandomStringUtils.randomAlphanumeric(128);
+		key = "sport-"+RandomStringUtils.randomAlphanumeric(128);
 		System.out.println("key:" + key);
 	}
 }

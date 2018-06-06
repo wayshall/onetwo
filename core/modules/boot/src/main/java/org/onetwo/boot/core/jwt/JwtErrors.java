@@ -11,7 +11,10 @@ import org.onetwo.common.exception.ErrorType;
 public enum JwtErrors implements ErrorType {
 	CM_ERROR_TOKEN("token无效！"),
 	CM_NOT_LOGIN("请先登录！"),
-	CM_SESSION_EXPIREATION("登录已超时！");
+	CM_SESSION_EXPIREATION("登录已超时！"),
+	
+	//未定义的登录错误
+	CM_LOGIN_UNKNOW_ERR("登录出错！");
 
 	final private String message;
 

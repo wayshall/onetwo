@@ -9,8 +9,8 @@ import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
+import org.onetwo.ext.security.provider.ExceptionUserChecker;
 import org.onetwo.ext.security.url.UrlBasedSecurityConfig;
-import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,7 +26,7 @@ import org.springframework.security.access.AccessDecisionManager;
 @Import(BootSecurityCommonContextConfig.class)
 public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 	@Autowired
-	private SecurityConfig securityConfig;
+	private BootSecurityConfig securityConfig;
 	
 	@ConditionalOnMissingBean(AccessDecisionManager.class)
 	@Bean
@@ -50,5 +50,13 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 		return super.securityMetadataSource(dataSource, configs);
 	}
 	
+	@Bean
+	@ConditionalOnProperty(name=BootSecurityConfig.EXCEPTION_USER_CHECKER_ENABLE_KEY, matchIfMissing=true)
+	public ExceptionUserChecker exceptionUserChecker(){
+		ExceptionUserChecker checker = new ExceptionUserChecker();
+		checker.setDuration(securityConfig.getExceptionUserChecker().getDuration());
+		checker.setMaxLoginTimes(securityConfig.getExceptionUserChecker().getMaxLoginTimes());
+		return checker;
+	}
 	
 }

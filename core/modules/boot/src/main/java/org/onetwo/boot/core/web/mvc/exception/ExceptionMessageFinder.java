@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.web.mvc.exception;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.springframework.web.method.HandlerMethod;
  *
  */
 public interface ExceptionMessageFinder {
+	public String ERROR_RESPONSE_HEADER = "X-RESPONSE-JFISH-ERROR";
 
 	default ErrorMessage getErrorMessage(Exception throwable, boolean alwaysLogErrorDetail){
 		String errorCode = "";
@@ -153,15 +155,6 @@ public interface ExceptionMessageFinder {
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}
 		
-		if(ex instanceof HeaderableException){
-			Optional<HttpServletResponse> reponse = WebHolder.getResponse();
-			HeaderableException he = (HeaderableException)ex;
-			if(reponse.isPresent() && he.getHeaders().isPresent()){
-				he.getHeaders().get().forEach((name, value)->{
-					reponse.get().setHeader(name, value.toString());
-				});
-			}
-		}
 		//防止远程调用时，方法返回null，且异常定义的httpstatus也为200时，尽管在responsebody里返回error相关数据，
 		//但feign客户端判断200且返回类型为null时，不解释response boyd，从而忽略了错误
 		//即使不是feign调用，而是普通请求，如果不返回任何数据，http status又是200，实际上调用方（浏览器）也无法判断这个调用是否成功，除非它总是解释response body
@@ -171,6 +164,23 @@ public interface ExceptionMessageFinder {
 				error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
+		
+		//for web
+		if(ex instanceof HeaderableException){
+			Optional<HttpServletResponse> reponse = WebHolder.getResponse();
+			HeaderableException he = (HeaderableException)ex;
+			if(reponse.isPresent() && he.getHeaders().isPresent()){
+				he.getHeaders().get().forEach((name, value)->{
+					reponse.get().setHeader(name, value.toString());
+				});
+			}
+		}
+		WebHolder.getResponse().ifPresent(response->{
+			response.setHeader(ERROR_RESPONSE_HEADER, error.getCode());
+		});
+		WebHolder.getRequest().ifPresent(request->{
+			BootWebUtils.webHelper(request).setErrorMessage(error);
+		});
 
 		error.setCode(errorCode);
 //		detail = product?detail:true;
@@ -258,7 +268,8 @@ public interface ExceptionMessageFinder {
 	
 	
 
-	public static class ErrorMessage {
+	@SuppressWarnings("serial")
+	public static class ErrorMessage implements Serializable {
 		private String code;
 		private String mesage;
 		boolean detail;

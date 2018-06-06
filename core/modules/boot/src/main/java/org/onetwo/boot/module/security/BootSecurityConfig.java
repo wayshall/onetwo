@@ -2,7 +2,8 @@ package org.onetwo.boot.module.security;
 
 import javax.servlet.ServletContext;
 
-import lombok.ToString;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.common.spring.Springs;
@@ -18,9 +19,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  */
 @ConfigurationProperties(prefix=BootSecurityConfig.SECURITY_PREFIX)
-@ToString
+@Data
+@EqualsAndHashCode(callSuper=false)
 public class BootSecurityConfig extends SecurityConfig implements WebContextConfigProvider {
 	public static final String SECURITY_PREFIX = "jfish.security";
+	public static final String EXCEPTION_USER_CHECKER_ENABLE_KEY = SECURITY_PREFIX+".exceptionUserChecker";
 	
 	public static final String METADATA_SOURCE_KEY = "metadataSource";
 	public static final String METADATA_SOURCE_DATABASE = "database";
@@ -29,6 +32,8 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	@Autowired(required=false)
 	private BootSiteConfig bootSiteConfig;
 	private String baseURL;
+	
+	ExceptionUserCheckerConfig exceptionUserChecker = new ExceptionUserCheckerConfig();
 	
 	public Boolean getSyncPermissionData(){
 		if(this.syncPermissionData==null){
@@ -79,5 +84,10 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 		return this;
 	}
 
+	@Data
+	public static class ExceptionUserCheckerConfig {
+		private String duration = "1d";
+		private int maxLoginTimes = 5;
+	}
 
 }

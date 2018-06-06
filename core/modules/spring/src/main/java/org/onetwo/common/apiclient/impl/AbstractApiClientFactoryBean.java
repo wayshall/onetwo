@@ -79,7 +79,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(restExecutor);
+		Assert.notNull(restExecutor, "restExecutor can not be null");
 		
 //		this.apiObject = Proxys.interceptInterfaces(Arrays.asList(interfaceClass), apiClient);
 		
@@ -210,6 +210,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 															.uriVariables(uriVariables)
 															.queryParameters(queryParameters)
 															.responseType(responseType)
+															.methodArgs(args)
 															.build();
 			
 			String actualUrl = getFullPath(invokeMethod.getPath());

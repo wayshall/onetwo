@@ -1,10 +1,15 @@
 package org.onetwo.ext.ons;
 
+import org.onetwo.boot.mq.DatabaseTransactionMessageInterceptor;
+import org.onetwo.boot.mq.MQProperties;
+import org.onetwo.boot.mq.MQProperties.SendMode;
 import org.onetwo.boot.mq.MQTransactionalConfiguration;
+import org.onetwo.boot.mq.SendMessageRepository;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.consumer.DelegateMessageService;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
+import org.onetwo.ext.ons.producer.OnsDatabaseTransactionMessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,6 +27,8 @@ import org.springframework.context.annotation.Import;
 public class ONSConfiguration {
 	@Autowired
 	private ONSProperties onsProperties;
+	@Autowired
+	private MQProperties mqProperties;
 	
 	@Bean
 	public ONSPushConsumerStarter onsPushConsumerStarter(DelegateMessageService delegateMessageService){
@@ -60,7 +67,21 @@ public class ONSConfiguration {
 	public SendMessageLogInterceptor sendMessageLogInterceptor(){
 		return new SendMessageLogInterceptor();
 	}
+	
 
+	@Bean
+	public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
+		OnsDatabaseTransactionMessageInterceptor interceptor = new OnsDatabaseTransactionMessageInterceptor();
+		SendMode sendMode = mqProperties.getTransactional().getSendMode();
+		if(sendMode==SendMode.ASYNC){
+			interceptor.setUseAsync(true);
+		}else{
+			interceptor.setUseAsync(false);
+		}
+		interceptor.setSendMessageRepository(sendMessageRepository);
+		return interceptor;
+	}
+	
 	/*@Configuration
 	@ConditionalOnProperty(ONSProperties.TRANSACTIONAL_ENABLED_KEY)
 	@EnableScheduling

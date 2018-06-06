@@ -69,7 +69,9 @@ public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
 			beanToFlatMap.setPrefix(prefix);
 			beanToFlatMap.setPropertyAcceptor(propertyAcceptor);
 			beanToFlatMap.setValueConvertor(valueConvertor);
-			beanToFlatMap.setFlatableObject(flatableObject==null?DEFAULT_FLATABLE:flatableObject);
+			if(flatableObject!=null){
+				beanToFlatMap.setFlatableObject(flatableObject);
+			}
 			beanToFlatMap.enableFieldNameAnnotation = enableFieldNameAnnotation;
 			beanToFlatMap.enableUnderLineStyle = enableUnderLineStyle;
 			beanToFlatMap.enableJsonPropertyAnnotation = enableJsonPropertyAnnotation;

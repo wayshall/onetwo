@@ -18,7 +18,7 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
  * <br/>
  */
 @EnableConfigurationProperties({JFishRedisProperties.class})
-@ConditionalOnClass({JedisConnectionFactory.class, RedisLockRegistry.class})
+@ConditionalOnClass({JedisConnectionFactory.class})
 @ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
 public class RedisConfiguration {
 	
@@ -62,6 +62,7 @@ public class RedisConfiguration {
 	
 	@Bean
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
+	@ConditionalOnClass({RedisLockRegistry.class})
 	public RedisLockRegistry redisLockRegistry(@Autowired JedisConnectionFactory jedisConnectionFactory){
 		LockRegistryProperties lockRegistryProperties = redisProperties.getLockRegistry();
 		RedisLockRegistry lockRegistry = new RedisLockRegistry(jedisConnectionFactory, 
@@ -76,8 +77,8 @@ public class RedisConfiguration {
 	}
 	
 	@Bean
-	public OnceTokenValidator onceTokenValidator(){
-		return new OnceTokenValidator();
+	public TokenValidator tokenValidator(){
+		return new TokenValidator();
 	}
     
 }
