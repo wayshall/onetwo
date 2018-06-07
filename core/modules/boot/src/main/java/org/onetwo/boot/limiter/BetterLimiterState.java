@@ -3,11 +3,15 @@ package org.onetwo.boot.limiter;
 import java.io.Serializable;
 import java.util.concurrent.atomic.LongAdder;
 
+import lombok.ToString;
+
 /**
+ * 使用并发性能更好的LongAdder实现
  * @author wayshall
  * <br/>
  */
 @SuppressWarnings("serial")
+@ToString
 public class BetterLimiterState implements LimiterState, Serializable {
 	/***
 	 * 重置时刻
@@ -21,10 +25,10 @@ public class BetterLimiterState implements LimiterState, Serializable {
 	 * 剩余次数
 	 */
 	final private LongAdder currentTimes;
-	final private int intervalInMillis;
+	final private long intervalInMillis;
 	
 
-	public BetterLimiterState(int limitTimes, int intervalInMillis) {
+	public BetterLimiterState(long intervalInMillis, int limitTimes) {
 		super();
 		this.limitTimes = limitTimes;
 		this.intervalInMillis = intervalInMillis;
@@ -40,7 +44,7 @@ public class BetterLimiterState implements LimiterState, Serializable {
 			this.resetAt = now;
 		}
 		long value = currentTimes.longValue();
-		if(value<=limitTimes){
+		if(value<limitTimes){
 			currentTimes.increment();
 			return true;
 		}else{

@@ -3,11 +3,14 @@ package org.onetwo.boot.limiter;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import lombok.ToString;
+
 /**
  * @author wayshall
  * <br/>
  */
 @SuppressWarnings("serial")
+@ToString
 public class DefaultLimiterState implements LimiterState, Serializable {
 	/***
 	 * 重置时刻

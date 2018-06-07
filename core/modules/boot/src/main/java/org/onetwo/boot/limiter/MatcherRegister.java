@@ -20,6 +20,33 @@ import org.springframework.util.AntPathMatcher;
  * <br/>
  */
 public class MatcherRegister extends MapRegisterManager<String, Function<String[], Matcher>> {
+	public static final MatcherRegister INSTANCE = new MatcherRegister();
+
+	public MatcherRegister() {
+		super();
+		register("antpath", (patterns)->{
+			return new AntpathMatcher(patterns);
+		})
+		.register("regexpath", (patterns)->{
+			return new RegexpathMatcher(patterns);
+		})
+		.register("ip", (patterns)->{
+			return new ContainAnyOneMatcher("clientIp", patterns);
+		})
+		.register("serviceId", (patterns)->{
+			return new ContainAnyOneMatcher("serviceId", patterns);
+		})
+		;
+	}
+	
+	public Matcher createMatcher(String matcherName, String...patterns){
+		Assert.hasText(matcherName);
+		Assert.notEmpty(patterns);
+		Matcher matcher = findRegistered(matcherName).orElseThrow(()->new BaseException("matcher not found, name: " + matcherName))
+													.apply(patterns);
+		return matcher;
+	}
+
 	
 	public static class AntpathMatcher extends AbstractMathcer {
 		static final private AntPathMatcher antMatcher = new AntPathMatcher();
@@ -58,31 +85,5 @@ public class MatcherRegister extends MapRegisterManager<String, Function<String[
 			return ArrayUtils.contains(getPatterns(), value);
 		}
 	}
-
-	public MatcherRegister() {
-		super();
-		register("antpath", (patterns)->{
-			return new AntpathMatcher(patterns);
-		})
-		.register("regexpath", (patterns)->{
-			return new RegexpathMatcher(patterns);
-		})
-		.register("ip", (patterns)->{
-			return new ContainAnyOneMatcher("clientIp", patterns);
-		})
-		.register("serviceId", (patterns)->{
-			return new ContainAnyOneMatcher("serviceId", patterns);
-		})
-		;
-	}
-	
-	public Matcher createMatcher(String matcherName, String...patterns){
-		Assert.hasText(matcherName);
-		Assert.notEmpty(patterns);
-		Matcher matcher = findRegistered(matcherName).orElseThrow(()->new BaseException("matcher not found, name: " + matcherName))
-													.apply(patterns);
-		return matcher;
-	}
-	
 
 }

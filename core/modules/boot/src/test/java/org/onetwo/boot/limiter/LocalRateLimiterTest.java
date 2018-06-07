@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import org.junit.Test;
 import org.onetwo.boot.limiter.InvokeContext.DefaultInvokeContext;
 import org.onetwo.boot.limiter.InvokeContext.InvokeType;
+import org.onetwo.boot.limiter.LimiterRegister.LimiterConfig;
 import org.onetwo.common.utils.LangUtils;
 
 /**
@@ -13,17 +14,27 @@ import org.onetwo.common.utils.LangUtils;
  * <br/>
  */
 public class LocalRateLimiterTest {
-	MatcherRegister matcherRegister = new MatcherRegister();
 	
 	@Test
 	public void testLocalInvokeLimiter(){
-		LocalRateLimiter limiter = new LocalRateLimiter();
+		/*LocalRateLimiter limiter = new LocalRateLimiter();
 		limiter.setMatcherName("antpath");
 		limiter.setPatterns("/uaa/**", "/order/**");
-		/***
+		*//***
 		 * 每秒钟三次，记住是指速率rate，不是许可，如果太快，连续三次也是会失败的，中间必须休眠
-		 */
-		limiter.setLimitTimes(3);
+		 *//*
+		limiter.setLimitTimes(3);*/
+		
+
+		LimiterConfig config = LimiterConfig.builder()
+											.key("LocalIntervalLimiterTest")
+											.matcher("antpath")
+											.patterns(new String[]{"/uaa/**", "/order/**"})
+											//每秒钟三次，记住是指速率rate，不是许可，如果太快，连续三次也是会失败的，中间必须休眠
+											.limitTimes(3)
+											.limiter(LocalRateLimiter.class.getSimpleName())
+											.build();
+		LocalRateLimiter limiter = LimiterRegister.INSTANCE.createLimiter(config);
 		
 		limiter.init();
 
@@ -35,7 +46,7 @@ public class LocalRateLimiterTest {
 		boolean match = limiter.match(context);
 		assertThat(match).isTrue();
 		limiter.consume(context);
-		LangUtils.awaitInMillis(330);
+		LangUtils.awaitInMillis(400);
 		limiter.consume(context);
 		LangUtils.awaitInMillis(330);
 		limiter.consume(context);
@@ -44,7 +55,7 @@ public class LocalRateLimiterTest {
 			limiter.consume(context);
 			limiter.consume(context);
 		})
-		.withMessage("exceed max limit invoke: "+limiter.getLimitTimes());
+		.withMessage("limiter["+limiter.getKey()+"]: exceed max limit invoke: "+limiter.getLimitTimes());
 	}
 
 }

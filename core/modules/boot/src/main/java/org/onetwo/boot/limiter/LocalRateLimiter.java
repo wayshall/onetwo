@@ -1,7 +1,7 @@
 package org.onetwo.boot.limiter;
 
 import org.onetwo.boot.limiter.InvokeContext.InvokeType;
-import org.onetwo.boot.limiter.InvokeLimiter.BaseInvokeLimiter;
+import org.onetwo.boot.limiter.InvokeLimiter.TimesInvokeLimiter;
 
 import com.google.common.util.concurrent.RateLimiter;
 
@@ -11,13 +11,18 @@ import com.google.common.util.concurrent.RateLimiter;
  * @author wayshall
  * <br/>
  */
-public class LocalRateLimiter extends BaseInvokeLimiter {
+public class LocalRateLimiter extends TimesInvokeLimiter {
+
 	private RateLimiter rateLimiter;
+	
+	public LocalRateLimiter(String key, Matcher matcher) {
+		super(key, null, matcher);
+	}
 	
 	@Override
 	public void init() {
-		super.init();
 		this.setInvokeType(InvokeType.BEFORE);
+		super.init();
 		this.rateLimiter = RateLimiter.create(getLimitTimes());
 	}
 
@@ -25,7 +30,7 @@ public class LocalRateLimiter extends BaseInvokeLimiter {
 	public void consume(InvokeContext invokeContext) {
 //		log.info("times: {}", invokeContext.getInvokeTimes());
 		if(!rateLimiter.tryAcquire(invokeContext.getInvokeTimes())){
-			throw new LimitInvokeException(getLimitTimes());
+			throw new LimitInvokeException(getKey(), getLimitTimes());
 		}
 	}
 	

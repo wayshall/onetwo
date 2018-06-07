@@ -3,9 +3,12 @@ package org.onetwo.common.concurrent;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
+
+
 
 /*****
  * ConcurrentRunnable.create(parties, ()->{
@@ -17,8 +20,11 @@ import com.google.common.collect.Lists;
  *
  */
 public class ConcurrentRunnable {
-	public static ConcurrentRunnable create(int repeate, Runnable runnable){
-		return new ConcurrentRunnable().concurrentRun(repeate, runnable);
+	public static ConcurrentRunnable create(int threadSize, Runnable runnable){
+		return create(null, threadSize, runnable);
+	}
+	public static ConcurrentRunnable create(Executor executor, int threadSize, Runnable runnable){
+		return new ConcurrentRunnable(executor).concurrentRun(threadSize, runnable);
 	}
 	
 	/****
@@ -34,8 +40,10 @@ public class ConcurrentRunnable {
 	
 	private List<Runnable> runnables = Lists.newArrayList();
 	
-	private ConcurrentRunnable() {
-		super();
+	private Executor executor;
+	
+	private ConcurrentRunnable(Executor executor) {
+		this.executor = executor;
 	}
 	public ConcurrentRunnable concurrentRun(int concurrentSize, Runnable runnable){
 		for (int i = 0; i < concurrentSize; i++) {
@@ -59,7 +67,7 @@ public class ConcurrentRunnable {
 		barrier = new CyclicBarrier(size);
 		
 		runnables.stream().forEach(r->{
-			new Thread(()->{
+			Runnable newRunable = ()->{
 				try {
 					barrier.await();
 				} catch (Exception e) {
@@ -67,7 +75,12 @@ public class ConcurrentRunnable {
 				}
 				r.run();
 				latch.countDown();
-			}).start();
+			};
+			if(executor!=null){
+				executor.execute(newRunable);
+			}else{
+				new Thread(newRunable).start();
+			}
 		});
 		started = true;
 		

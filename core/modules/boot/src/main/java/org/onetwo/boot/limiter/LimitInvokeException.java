@@ -11,12 +11,14 @@ import org.onetwo.common.exception.BaseException;
 public class LimitInvokeException extends BaseException {
 	public static final String BASE_CODE = "[LimitInvoke]";//前缀
 
-	protected int maxLimit = -1;
+	private String key;
+	private int maxLimit = -1;
 
 
-	public LimitInvokeException(int maxLimit) {
-		super("exceed max limit invoke: " + maxLimit);
+	public LimitInvokeException(String key, int maxLimit) {
+		super("limiter["+key+"]: exceed max limit invoke: " + maxLimit);
 		this.maxLimit = maxLimit;
+		this.key = key;
 	}
 	
 	public LimitInvokeException(int maxLimit, String message) {
@@ -28,10 +30,11 @@ public class LimitInvokeException extends BaseException {
 	public LimitInvokeException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "LimitInvokeException [" + maxLimit + ", " + getMessage() +  "]";
+		return "LimitInvokeException [key=" + key + ", maxLimit=" + maxLimit
+				+ "]";
 	}
 
 }
