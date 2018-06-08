@@ -40,7 +40,7 @@ public class ClientDetailsResolverConfiguration {
 	
 	@Bean
 	@ConditionalOnMissingBean(AccessTokkenClientDetailsObtainService.class)
-	public ClientDetailsObtainService clientDetailsObtainService(ClientDetailConverter clientDetailConverter){
+	public ClientDetailsObtainService clientDetailsObtainService(ClientDetailConverter<?> clientDetailConverter){
 		AccessTokkenClientDetailsObtainService obtainService = new AccessTokkenClientDetailsObtainService();
 		obtainService.setClientDetailConverter(clientDetailConverter);
 		return obtainService;

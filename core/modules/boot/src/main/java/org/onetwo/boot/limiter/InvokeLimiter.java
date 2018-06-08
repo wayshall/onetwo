@@ -11,6 +11,8 @@ import org.springframework.util.Assert;
  */
 public interface InvokeLimiter {
 	
+	String getKey();
+	
 	default void init(){};
 
 	boolean match(InvokeContext invokeContext);

@@ -1,6 +1,5 @@
 package org.onetwo.boot.module.oauth2.clientdetails;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,13 +20,13 @@ public class DefaultOauth2ClientDetailManager implements Oauth2ClientDetailManag
 	private ClientDetailsObtainService clientDetailsObtainService;
 	
 	@Override
-	public <T extends Serializable> Optional<T> getCurrentClientDetail() {
+	public <T extends ClientDetails> Optional<T> getCurrentClientDetail() {
 		Optional<T> current = getCurrentClientDetail(request);
 		return current;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Serializable> Optional<T> getCurrentClientDetail(HttpServletRequest request) {
+	public <T extends ClientDetails> Optional<T> getCurrentClientDetail(HttpServletRequest request) {
 		Optional<String> at = clientDetailsObtainService.getTokenValue(request);
 		if(!at.isPresent()){
 			return Optional.empty();

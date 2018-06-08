@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.onetwo.boot.limiter.LimiterRegister.LimiterConfig;
+import org.onetwo.boot.limiter.LimiterCreator.LimiterConfig;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangOps;
@@ -22,12 +22,12 @@ import org.onetwo.common.utils.MapRegisterManager;
  * @author wayshall
  * <br/>
  */
-public class LimiterRegister extends MapRegisterManager<String, Function<LimiterConfig, InvokeLimiter>> {
-	public static final LimiterRegister INSTANCE = new LimiterRegister();
+public class LimiterCreator extends MapRegisterManager<String, Function<LimiterConfig, InvokeLimiter>> {
+	public static final LimiterCreator INSTANCE = new LimiterCreator();
 	
 	private MatcherRegister matcherRegister = MatcherRegister.INSTANCE;
 	
-	public LimiterRegister() {
+	public LimiterCreator() {
 		super();
 		register(LocalRateLimiter.class.getSimpleName(), (config)->{
 			Matcher matcher = matcherRegister.createMatcher(config.getMatcher(), config.getPatterns());

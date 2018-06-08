@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import org.junit.Test;
 import org.onetwo.boot.limiter.InvokeContext.DefaultInvokeContext;
 import org.onetwo.boot.limiter.InvokeContext.InvokeType;
-import org.onetwo.boot.limiter.LimiterRegister.LimiterConfig;
+import org.onetwo.boot.limiter.LimiterCreator.LimiterConfig;
 import org.onetwo.common.concurrent.ConcurrentRunnable;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
@@ -34,7 +34,7 @@ public class LocalIntervalLimiterTest {
 											.interval("5s")
 											.limiter(LocalIntervalLimiter.class.getSimpleName())
 											.build();
-		LocalIntervalLimiter limiter = LimiterRegister.INSTANCE.createLimiter(config);
+		LocalIntervalLimiter limiter = LimiterCreator.INSTANCE.createLimiter(config);
 		
 		limiter.init();
 		

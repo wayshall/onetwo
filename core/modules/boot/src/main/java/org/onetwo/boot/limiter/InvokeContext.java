@@ -19,6 +19,7 @@ public interface InvokeContext {
 	String getRequestPath();
 	String getClientUser();
 	String getClientIp();
+	String getClientId();
 	String getServiceId();
 	int getInvokeTimes();
 	
@@ -41,6 +42,7 @@ public interface InvokeContext {
 		String requestPath;
 		String clientUser;
 		String clientIp;
+		String clientId;
 		String serviceId;
 		int invokeTimes = 1;
 		

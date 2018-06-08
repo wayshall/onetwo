@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import org.junit.Test;
 import org.onetwo.boot.limiter.InvokeContext.DefaultInvokeContext;
 import org.onetwo.boot.limiter.InvokeContext.InvokeType;
-import org.onetwo.boot.limiter.LimiterRegister.LimiterConfig;
+import org.onetwo.boot.limiter.LimiterCreator.LimiterConfig;
 import org.onetwo.common.utils.LangUtils;
 
 /**
@@ -14,6 +14,7 @@ import org.onetwo.common.utils.LangUtils;
  * <br/>
  */
 public class LocalRateLimiterTest {
+	LimiterManager limiterManager = new LimiterManager();
 	
 	@Test
 	public void testLocalInvokeLimiter(){
@@ -34,7 +35,10 @@ public class LocalRateLimiterTest {
 											.limitTimes(3)
 											.limiter(LocalRateLimiter.class.getSimpleName())
 											.build();
-		LocalRateLimiter limiter = LimiterRegister.INSTANCE.createLimiter(config);
+		limiterManager.setLimiterConfigs(config);
+		limiterManager.buildLimiter();
+		
+		LocalRateLimiter limiter = limiterManager.get(config.getKey());//LimiterCreator.INSTANCE.createLimiter(config);
 		
 		limiter.init();
 

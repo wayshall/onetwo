@@ -4,7 +4,7 @@ import java.util.Map;
 
 import lombok.Data;
 
-import org.onetwo.boot.limiter.LimiterRegister.LimiterConfig;
+import org.onetwo.boot.limiter.LimiterCreator.LimiterConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
