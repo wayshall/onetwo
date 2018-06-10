@@ -13,6 +13,8 @@ public interface InvokeLimiter {
 	
 	String getKey();
 	
+	InvokeType getInvokeType();
+	
 	default void init(){};
 
 	boolean match(InvokeContext invokeContext);

@@ -53,6 +53,7 @@ public class LimiterCreator extends MapRegisterManager<String, Function<LimiterC
 		Assert.hasText(limiterName);
 		InvokeLimiter limiter = findRegistered(limiterName).orElseThrow(()->new BaseException("Limiter not found, name: " + limiterName))
 													.apply(config);
+		limiter.init();
 		return (T)limiter;
 	}
 	

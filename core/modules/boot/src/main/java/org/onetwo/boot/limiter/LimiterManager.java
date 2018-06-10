@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.onetwo.boot.limiter.InvokeContext.InvokeType;
 import org.onetwo.boot.limiter.LimiterCreator.LimiterConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.util.Assert;
@@ -25,10 +26,19 @@ public class LimiterManager {
 	public Map<String, InvokeLimiter> buildLimiter(){
 		Assert.notEmpty(limiterConfigs, "limiterConfigs can not be empty");
 		limiters = limiterConfigs.stream().map(config->{
-			return (InvokeLimiter)limiterCreator.createLimiter(config);
+			InvokeLimiter limiter = limiterCreator.createLimiter(config);
+//			limiter.init();
+			return limiter;
 		})
 		.collect(Collectors.toMap(limiter->limiter.getKey(), limiter->limiter, LangOps.throwingMerger(), LinkedHashMap::new));
 		return limiters;
+	}
+	
+	public List<InvokeLimiter> findLimiters(InvokeType invokeType){
+		return limiters.values()
+						.stream()
+						.filter(limiter->limiter.getInvokeType()==invokeType)
+						.collect(Collectors.toList());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -51,6 +61,10 @@ public class LimiterManager {
 
 	public void setLimiterConfigs(LimiterConfig... limiterConfigs) {
 		this.limiterConfigs = Arrays.asList(limiterConfigs);
+	}
+
+	public void setLimiterConfigs(List<LimiterConfig> limiterConfigs) {
+		this.limiterConfigs = limiterConfigs;
 	}
 
 }
