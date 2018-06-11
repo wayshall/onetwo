@@ -59,7 +59,7 @@ public class LocalRateLimiterTest {
 			limiter.consume(context);
 			limiter.consume(context);
 		})
-		.withMessage("limiter["+limiter.getKey()+"]: exceed max limit invoke: "+limiter.getLimitTimes());
+		.withMessage("limiter["+limiter.getKey()+"]: exceed max limit.");
 	}
 
 }

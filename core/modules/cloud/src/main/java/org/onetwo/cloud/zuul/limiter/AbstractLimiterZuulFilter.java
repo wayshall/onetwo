@@ -8,6 +8,7 @@ import org.onetwo.boot.limiter.InvokeContext;
 import org.onetwo.boot.limiter.InvokeContext.DefaultInvokeContext;
 import org.onetwo.boot.limiter.InvokeContext.InvokeType;
 import org.onetwo.boot.limiter.InvokeLimiter;
+import org.onetwo.boot.limiter.LimitInvokeException;
 import org.onetwo.boot.module.oauth2.clientdetails.Oauth2ClientDetailManager;
 import org.onetwo.cloud.zuul.ZuulUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -16,11 +17,14 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
+import org.springframework.cloud.netflix.zuul.util.ZuulRuntimeException;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
+import com.netflix.zuul.exception.ZuulException;
 
 
 /**
@@ -51,8 +55,13 @@ abstract public class AbstractLimiterZuulFilter extends ZuulFilter implements In
 		InvokeContext invokeContext = createInvokeContext();
 		
 		for(InvokeLimiter limiter : limiters){
-			if(limiter.match(invokeContext)){
-				limiter.consume(invokeContext);
+			try {
+				if(limiter.match(invokeContext)){
+					limiter.consume(invokeContext);
+				}
+			} catch (LimitInvokeException e) {
+				ZuulException ze = new ZuulException(e, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+				throw new ZuulRuntimeException(ze);
 			}
 		}
 		

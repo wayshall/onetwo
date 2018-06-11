@@ -75,7 +75,7 @@ public class LocalIntervalLimiterTest {
 		assertThatExceptionOfType(LimitInvokeException.class).isThrownBy(()->{
 			limiter.consume(finalContext);
 		})
-		.withMessage("limiter["+limiter.getKey()+"]: exceed max limit invoke: "+limiter.getLimitTimes());
+		.withMessage("limiter["+limiter.getKey()+"]: exceed max limit.");
 		
 		//等待五秒后清除状态
 		LangUtils.await(5);
@@ -94,6 +94,6 @@ public class LocalIntervalLimiterTest {
 		assertThatExceptionOfType(LimitInvokeException.class).isThrownBy(()->{
 			limiter.consume(finalContext);
 		})
-		.withMessage("limiter["+limiter.getKey()+"]: exceed max limit invoke: "+limiter.getLimitTimes());
+		.withMessage("limiter["+limiter.getKey()+"]: exceed max limit.");
 	}
 }

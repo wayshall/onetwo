@@ -16,7 +16,7 @@ public class LimitInvokeException extends BaseException {
 
 
 	public LimitInvokeException(String key, int maxLimit) {
-		super("limiter["+key+"]: exceed max limit invoke: " + maxLimit);
+		super("limiter["+key+"]: exceed max limit.");
 		this.maxLimit = maxLimit;
 		this.key = key;
 	}
