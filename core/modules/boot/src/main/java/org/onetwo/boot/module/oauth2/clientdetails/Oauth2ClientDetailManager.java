@@ -1,6 +1,5 @@
 package org.onetwo.boot.module.oauth2.clientdetails;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 
@@ -10,6 +9,6 @@ import java.util.Optional;
  */
 public interface Oauth2ClientDetailManager {
 
-	<T extends Serializable> Optional<T> getCurrentClientDetail();
+	<T extends ClientDetails> Optional<T> getCurrentClientDetail();
 	
 }

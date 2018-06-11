@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,6 +25,15 @@ import org.onetwo.common.utils.map.KVEntry;
  *
  */
 final public class LangOps {
+	
+	/***
+	 * from java8 collectors
+	 * @author wayshall
+	 * @return
+	 */
+	public static <T> BinaryOperator<T> throwingMerger() {
+        return (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); };
+    }
 	
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> arrayToMap(Object... arrays){
