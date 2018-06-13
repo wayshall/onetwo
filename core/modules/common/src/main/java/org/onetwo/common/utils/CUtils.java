@@ -185,7 +185,7 @@ final public class CUtils {
 		return properties;
 	}
 	
-	public static LinkedHashMap<Object, Object> asLinkedMap(Object...params){
+	public static <K, V> LinkedHashMap<K, V> asLinkedMap(Object...params){
 		return CUtils.arrayIntoMap(CUtils.newLinkedHashMap(), params);
 	}
 
