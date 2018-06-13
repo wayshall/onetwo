@@ -34,8 +34,11 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		List<WebPlugin> plugins = SpringUtils.getBeans(applicationContext, WebPlugin.class);
-		logger.info("find plugins : {} ", plugins);
-		plugins.stream().forEach(plugin->registerPlugin(plugin));
+//		logger.info("find plugins : {} ", plugins);
+		plugins.stream().forEach(plugin->{
+			registerPlugin(plugin);
+			logger.info("register plugin : {} ", plugin);
+		});
 //		logger.info("find plugins : {} ", pluginMapping);
 	}
 	

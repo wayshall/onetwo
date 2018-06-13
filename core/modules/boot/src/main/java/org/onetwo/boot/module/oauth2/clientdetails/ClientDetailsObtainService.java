@@ -1,6 +1,5 @@
 package org.onetwo.boot.module.oauth2.clientdetails;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,8 +12,8 @@ public interface ClientDetailsObtainService {
 
 	Optional<String> getTokenValue(HttpServletRequest request);
 
-	Optional<? extends Serializable> resolveAndStoreClientDetails(HttpServletRequest request);
+	Optional<? extends ClientDetails> resolveAndStoreClientDetails(HttpServletRequest request);
 
-	Serializable resolveClientDetails(String accessTokenValue);
+	ClientDetails resolveClientDetails(String accessTokenValue);
 
 }

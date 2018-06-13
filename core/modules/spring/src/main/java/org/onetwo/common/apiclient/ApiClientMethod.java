@@ -50,6 +50,9 @@ import org.springframework.web.client.RestClientException;
  * get请求忽略requestBody
  * post请求会把非url参数转化为requestBody
  * 
+ * consumes -> contentType，指定提交请求的convertor，详见：HttpEntityRequestCallback
+ * produces -> acceptHeader，指定accept header，从而通过response的contentType头指定读取响应数据的convertor，详见：ResponseEntityResponseExtractor
+ * 
  * @author wayshall
  * <br/>
  */

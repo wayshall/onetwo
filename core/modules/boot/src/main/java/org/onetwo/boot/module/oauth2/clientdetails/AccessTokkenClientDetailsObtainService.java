@@ -1,6 +1,5 @@
 package org.onetwo.boot.module.oauth2.clientdetails;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +38,7 @@ public class AccessTokkenClientDetailsObtainService implements ClientDetailsObta
 	}
 	
 	@Override
-	public Optional<? extends Serializable> resolveAndStoreClientDetails(HttpServletRequest request) {
+	public Optional<? extends ClientDetails> resolveAndStoreClientDetails(HttpServletRequest request) {
 		Optional<String> at = getTokenValue(request);
 		if(!at.isPresent()){
 			return Optional.empty();
