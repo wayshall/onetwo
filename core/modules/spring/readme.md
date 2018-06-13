@@ -135,6 +135,26 @@ public class WeatherClientTest  {
 
 }
 ```
+### @ResponseHandler 自定义响应处理器
+某些情况下需要自行处理response，可以实现CustomResponseHandler接口，并使用@ResponseHandler注解标记
+```Java
+class WeatherResponseHandler implements CustomResponseHandler<byte[]> {
+	@Override
+	public Object handleResponse(ApiClientMethod apiMethod, ResponseEntity<byte[]> responseEntity) {
+		return JsonMapper.IGNORE_NULL.fromJson(responseEntity.getBody(), WeatherResponse.class);
+	}
+}
+
+@RestApiClient(url="http://www.weather.com.cn/data")
+public interface WeatherClient {
+	
+	@GetMapping(value="/sk/{cityid}.html")
+	@ResponseHandler(WeatherResponseHandler.class)
+	WeatherResponse getWeatherWithHandler(@PathVariable String cityid);
+
+}
+```
+
 
 ## 工具类
 ### 复制Bean

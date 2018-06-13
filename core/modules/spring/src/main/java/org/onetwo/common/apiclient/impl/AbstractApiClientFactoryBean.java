@@ -8,6 +8,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
+import org.onetwo.common.apiclient.CustomResponseHandler;
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
@@ -166,25 +167,40 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			super(methodCache);
 		}
 		
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		protected Object doInvoke(MethodInvocation invocation, M invokeMethod) {
 			Object[] args = processArgumentsBeforeRequest(invocation, invokeMethod);
 			invokeMethod.validateArgements(validatorWrapper, args);
 
 			RequestContextData context = createRequestContextData(args, invokeMethod);
-			//WechatApiClientFactoryBean logger
-			if(logger.isDebugEnabled()){
-				logger.debug("rest url : {} - {}, urlVariables: {}", context.getHttpMethod(), context.getRequestUrl(), context.getUriVariables());
-			}
+			Object response = null;
+			CustomResponseHandler<?> customHandler = invokeMethod.getCustomResponseHandler();
 			
 			try {
-				ResponseEntity<Object> responseEntity = restExecutor.execute(context);
-				Object response = responseHandler.handleResponse(invokeMethod, responseEntity, context.getResponseType());
+				if(customHandler!=null){
+					context.setResponseType(customHandler.getResponseType());
+					ResponseEntity responseEntity = invokeRestExector(context);
+					response = customHandler.handleResponse(invokeMethod, responseEntity);
+				}else{
+					ResponseEntity responseEntity = invokeRestExector(context);
+					response = responseHandler.handleResponse(invokeMethod, responseEntity, context.getResponseType());
+				}
 				return response;
 			} catch (ApiClientException e) {
 				throw e;
 			} catch (Exception e) {
 				throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
 			}
+		}
+
+		@SuppressWarnings({ "rawtypes" })
+		private ResponseEntity invokeRestExector(RequestContextData context){
+			//WechatApiClientFactoryBean logger
+			if(logger.isDebugEnabled()){
+				logger.debug("rest url : {} - {}, urlVariables: {}", context.getHttpMethod(), context.getRequestUrl(), context.getUriVariables());
+			}
+			ResponseEntity responseEntity = restExecutor.execute(context);
+			return responseEntity;
 		}
 		
 		protected Object[] processArgumentsBeforeRequest(MethodInvocation invocation, M invokeMethod){

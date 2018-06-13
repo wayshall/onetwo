@@ -18,7 +18,7 @@ public class RequestContextData {
 	final private String requestId;
 	final private HttpMethod httpMethod;
 	private String requestUrl;
-	final private Class<?> responseType;
+	private Class<?> responseType;
 //	private Object requestBody;
 	final private Map<String, ?> uriVariables;
 	@Getter
@@ -100,6 +100,10 @@ public class RequestContextData {
 
 	public Object[] getMethodArgs() {
 		return methodArgs;
+	}
+
+	public void setResponseType(Class<?> responseType) {
+		this.responseType = responseType;
 	}
 
 }
