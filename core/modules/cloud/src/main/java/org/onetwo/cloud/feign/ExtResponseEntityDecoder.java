@@ -6,6 +6,9 @@ import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
@@ -31,6 +34,7 @@ import feign.codec.Decoder;
  * @author wayshall
  * <br/>
  */
+@Slf4j
 public class ExtResponseEntityDecoder implements Decoder {
 	private ObjectFactory<HttpMessageConverters> messageConverters;
 
@@ -55,11 +59,18 @@ public class ExtResponseEntityDecoder implements Decoder {
 				res = dr.getData();
 			}
 		} catch (HttpMessageNotReadableException e) {
+			if(log.isErrorEnabled()){
+				log.error("decode error, try to use[{}] to decode again, error message: {}", SimpleDataResult.class.getSimpleName(), e.getMessage());
+			}
 			//兼容。。。。。。。。正常解码失败后尝试用SimpleDataResult解码
 			response.getBody().reset();
 			SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 			if(dr.isError()){
-				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+				if(StringUtils.isNotBlank(dr.getCode())){
+					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+				}else{
+					throw new HystrixBadRequestException(e.getMessage(), new ServiceException("decode error", e));
+				}
 			}
 			res = dr.getData();
 		}

@@ -33,7 +33,7 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	public static final String EXCEPTION_POSTFIX = "Exception";
 	
 
-	private String code = SUCCESS;//0,1;
+	private String code = null;//SUCCESS;//0,1;
 	private String message;//
 	/***
 	 * 
@@ -42,7 +42,7 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	private Boolean extractableData;
 	
 	public AbstractDataResult(){
-		this.code = SUCCESS;
+//		this.code = SUCCESS;
 	}
 	
 	public T dataOrThrows(){
@@ -76,7 +76,7 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 		if(code!=null){
 			return SUCESS_VALUES.contains(code);
 		}else{
-			return true;
+			return false;
 		}
 	}
 
