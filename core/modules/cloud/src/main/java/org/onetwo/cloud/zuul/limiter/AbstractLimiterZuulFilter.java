@@ -79,7 +79,9 @@ abstract public class AbstractLimiterZuulFilter extends ZuulFilter implements In
 		return path;
 	}
 
-	protected InvokeContext createInvokeContext() {
+	abstract protected InvokeContext createInvokeContext();
+	
+	protected InvokeContext createInvokeContext(InvokeType invokeType) {
         final RequestContext ctx = RequestContext.getCurrentContext();
 //        final HttpServletResponse response = ctx.getResponse();
         final HttpServletRequest request = ctx.getRequest();
@@ -88,7 +90,7 @@ abstract public class AbstractLimiterZuulFilter extends ZuulFilter implements In
 		String clientIp = RequestUtils.getRemoteAddr(request);
 //		ZuulUtils.getRoute(routeLocator, request);
 		DefaultInvokeContext invokeContext = DefaultInvokeContext.builder()
-														  .invokeType(InvokeType.BEFORE)
+														  .invokeType(invokeType)
 														  .requestPath(requestPath)
 														  .clientIp(clientIp)
 //														  .serviceId(serviceId)

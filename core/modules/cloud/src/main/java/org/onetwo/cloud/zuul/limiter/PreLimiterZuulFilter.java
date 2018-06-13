@@ -1,5 +1,7 @@
 package org.onetwo.cloud.zuul.limiter;
 
+import org.onetwo.boot.limiter.InvokeContext;
+import org.onetwo.boot.limiter.InvokeContext.InvokeType;
 import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
 
 
@@ -13,6 +15,14 @@ public class PreLimiterZuulFilter extends AbstractLimiterZuulFilter {
 	public String filterType() {
 		return FilterConstants.PRE_TYPE;
 	}
+	
+
+	@Override
+	protected InvokeContext createInvokeContext() {
+		return createInvokeContext(InvokeType.BEFORE);
+	}
+
+
 
 	@Override
 	public int filterOrder() {
