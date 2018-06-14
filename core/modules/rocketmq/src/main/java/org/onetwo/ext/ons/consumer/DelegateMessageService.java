@@ -53,7 +53,7 @@ public class DelegateMessageService implements InitializingBean {
 		ConsumContext currentConetxt = null;
 		for(MessageExt message : msgs){
 			String msgId = ONSUtils.getMessageId(message);
-			logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
+			logger.info("rmq-consumer[{}] received id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
 			
 //			Object body = consumer.deserialize(message);
 			Object body = messageDeserializer.deserialize(message.getBody(), message);
@@ -67,7 +67,7 @@ public class DelegateMessageService implements InitializingBean {
 			consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 			consumer.doConsume(currentConetxt);
 			consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
-			logger.info("consumed message. id: {}, topic: {}, tag: {}, body: {}", msgId,  message.getTopic(), message.getTags(), body);
+			logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), body);
 		}
 		return currentConetxt;
 	}

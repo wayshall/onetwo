@@ -226,7 +226,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	protected void handleException(Throwable e, Message message){
 		final Logger logger = ONSUtils.getONSLogger();
 		if(logger.isErrorEnabled()){
-			logger.error("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
+			logger.error("send message topic: {}, tags: {}, key: {}, msgId: {}", message.getTopic(), message.getTag(), message.getKey(), message.getMsgID());
 		}
 		
 		if(e instanceof ONSClientException){
