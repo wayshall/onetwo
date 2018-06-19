@@ -468,10 +468,22 @@ final public class CUtils {
 		return JFishList.wrap(datas).groupBy(block);
 	}
 	
+	/***
+	 * 
+	 * @author wayshall
+	 * @param collection
+	 * @param predicate 返回true，则保留；返回false，则移除
+	 */
     public static <T> void filter(Collection<T> collection, Predicate<T> predicate) {
     	CollectionUtils.filter(collection, predicate);
     }
 	
+    /***
+     * 
+     * @author wayshall
+     * @param map
+     * @param predicate 返回true，则保留；返回false，则移除
+     */
     public static <K, V> void filter(Map<K, V> map, Predicate<Entry<K, V>> predicate) {
     	if (map != null && predicate != null) {
             for (Iterator<Entry<K, V>> it = map.entrySet().iterator(); it.hasNext();) {
