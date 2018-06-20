@@ -36,5 +36,7 @@ public class ConsumerMeta {
 	 */
 	final private int maxReconsumeTimes;
 	private Properties comsumerProperties;
+	
+	private boolean autoDeserialize;
 
 }

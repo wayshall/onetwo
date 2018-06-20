@@ -9,6 +9,7 @@ import org.onetwo.ext.alimq.JsonMessageDeserializer;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -21,7 +22,7 @@ import com.google.common.collect.Maps;
  */
 @Data
 @ConfigurationProperties("jfish.ons")
-public class ONSProperties {
+public class ONSProperties implements InitializingBean {
 
 //	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
 //	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
@@ -37,7 +38,8 @@ public class ONSProperties {
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
-	
+
+//	Map<String, String> jsonDeserializerCompatibilityTypeMappings = Maps.newHashMap();	
 
 	public Map<String, Properties> getProducers() {
 		return producers;
@@ -65,6 +67,12 @@ public class ONSProperties {
 	}
 	
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		
+	}
+
+
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
 		JSON(JsonMessageSerializer.INSTANCE, JsonMessageDeserializer.INSTANCE),

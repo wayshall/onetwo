@@ -33,8 +33,8 @@ public class DelegateMessageService implements InitializingBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(messageDeserializer);
-		Assert.notNull(consumerListenerComposite);
+		Assert.notNull(messageDeserializer, "messageDeserializer can not be null");
+		Assert.notNull(consumerListenerComposite, "consumerListenerComposite can not be null");
 	}
 
 	/***
@@ -56,13 +56,25 @@ public class DelegateMessageService implements InitializingBean {
 			logger.info("rmq-consumer[{}] received id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
 			
 //			Object body = consumer.deserialize(message);
-			Object body = messageDeserializer.deserialize(message.getBody(), message);
-			currentConetxt = ConsumContext.builder()
-											.messageId(msgId)
-											.message(message)
-											.deserializedBody(body)
-//											.consumerMeta(meta)
-											.build();
+			Object body = message.getBody();
+			if(meta.isAutoDeserialize()){
+				body = messageDeserializer.deserialize(message.getBody(), message);
+				currentConetxt = ConsumContext.builder()
+												.messageId(msgId)
+												.message(message)
+												.deserializedBody(body)
+												.messageDeserializer(messageDeserializer)
+//												.consumerMeta(meta)
+												.build();
+			}else{
+				currentConetxt = ConsumContext.builder()
+												.messageId(msgId)
+												.message(message)
+												.messageDeserializer(messageDeserializer)
+//												.deserializedBody(body)
+//												.consumerMeta(meta)
+												.build();
+			}
 			
 			consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 			consumer.doConsume(currentConetxt);

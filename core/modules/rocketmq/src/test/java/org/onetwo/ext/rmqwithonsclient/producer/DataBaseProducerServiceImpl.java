@@ -28,7 +28,7 @@ public class DataBaseProducerServiceImpl {
 				  .topic(RmqONSProducerTest.TOPIC)
 				  .tags(RmqONSProducerTest.ORDER_CANCEL)
 				  .key("test_"+idGenerator.nextId())
-				  .deliverTimeString(deliverTime)
+				  .deliverAtString(deliverTime)
 				  .body(OrderTestMessage.builder()
 			  				.orderId(2L)
 			  				.title("取消")
