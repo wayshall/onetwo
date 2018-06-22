@@ -12,6 +12,7 @@ import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
 import org.onetwo.ext.ons.producer.OnsDatabaseTransactionMessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,7 @@ import org.springframework.context.annotation.Import;
  * <br/>
  */
 @Configuration
-@EnableConfigurationProperties(ONSProperties.class)
+@EnableConfigurationProperties({MQProperties.class, ONSProperties.class})
 @Import(MQTransactionalConfiguration.class)
 public class ONSConfiguration {
 	@Autowired
@@ -70,6 +71,7 @@ public class ONSConfiguration {
 	
 
 	@Bean
+	@ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
 	public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
 		OnsDatabaseTransactionMessageInterceptor interceptor = new OnsDatabaseTransactionMessageInterceptor();
 		SendMode sendMode = mqProperties.getTransactional().getSendMode();
