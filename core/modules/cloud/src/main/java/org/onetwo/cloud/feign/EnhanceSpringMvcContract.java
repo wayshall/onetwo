@@ -110,10 +110,12 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		//父类限制了接口的继承层次，父类只检测了client接口和client父接口，且接口不能再继承任何接口，
 		//导致三层继承的时候，相关的元数据注解解释不到，导致feign请求路径错误404
 //		super.processAnnotationOnClass(data, clz);
-		if(clz.getName().contains("PraiseApiClient")){
+		/*if(clz.getName().contains("ProductApiClient") || clz.getName().contains("ProductApi")){
 			System.out.println("test");
-		}
-		if (clz.getInterfaces().length == 0 || clz.isAnnotationPresent(EnhanceFeignClient.class)) {
+		}*/
+		if (clz.getInterfaces().length == 0 || 
+				//避免feignClient同时存在EnhanceFeignClient和FeignClient注解时，@RequestMapping路径多解释了一次的问题
+				(clz.isAnnotationPresent(EnhanceFeignClient.class) && !clz.isAnnotationPresent(FeignClient.class)) ) {
 			RequestMapping classAnnotation = findMergedAnnotation(clz, RequestMapping.class);
 			if (classAnnotation != null) {
 				// Prepend path from class annotation if specified
@@ -141,6 +143,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		if (classAnnotation == null){
 			return Optional.empty();
 		}
+		if(clz.getName().contains("ProductApiClient") || clz.getName().contains("ProductApi")){
+			System.out.println("test");
+		}
 		String pathValue = classAnnotation.basePath();
 		if(StringUtils.isBlank(pathValue)){
 			FeignClient feignClient = findMergedAnnotation(clz, FeignClient.class);
@@ -149,6 +154,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 			//不填，默认查找对应的配置 -> jfish.cloud.feign.basePath.serviceName
 			pathValue = FEIGN_BASE_PATH_KEY + serviceName;
 			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
+			if(StringUtils.isBlank(pathValue)){
+				pathValue = this.relaxedPropertyResolver.getProperty("server.contextPath");
+			}
 		}else if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
 			//:serviceName -> jfish.cloud.feign.basePath.serviceName
 			pathValue = FEIGN_BASE_PATH_KEY + pathValue.substring(1);
@@ -170,6 +178,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 	@Override
 	public MethodMetadata parseAndValidateMetadata(Class<?> targetType, Method method) {
 		MethodMetadata data = super.parseAndValidateMetadata(targetType, method);
+		/*if(targetType.getName().contains("ProductApiClient") || targetType.getName().contains("ProductApi")){
+			System.out.println("test");
+		}*/
 		if(log.isInfoEnabled()){
 			log.info("feign client[{}] path: {}", targetType, data.template().url());
 		}

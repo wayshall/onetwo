@@ -121,7 +121,8 @@ public class ExtFeignConfiguration implements InitializingBean {
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean(Logger.Level.class)
+//	@ConditionalOnMissingBean(Logger.Level.class)
+//	@ConditionalOnProperty("jfish.cloud.feign.logger.level")
 	public Logger.Level feignLoggerLevel(){
 		Logger.Level level = feignProperties.getLogger().getLevel();
 		if(level==null){
