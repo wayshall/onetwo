@@ -32,6 +32,21 @@ import feign.MethodMetadata;
 import feign.Util;
 
 /**
+ * @EnhanceFeignClient注解basePath查找逻辑：
+ * 
+ * @EnhanceFeignClient:
+ * 查找：jfish.cloud.feign.basePath.serviceName
+ * 如果找不到，则查找server.contextPath
+ * 
+ * @EnhanceFeignClient(basePath="${feign.serivceName}"):
+ * 查找：feign.serviceName
+ * 
+ * @EnhanceFeignClient(basePath=":serivceName"):
+ * 查找：jfish.cloud.feign.basePath.serviceName
+ * 
+ * @EnhanceFeignClient(basePath="/servicePath"):
+ * 返回/servicePath
+ * 
  * @author wayshall
  * <br/>
  */
