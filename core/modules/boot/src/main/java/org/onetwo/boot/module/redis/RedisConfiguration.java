@@ -18,8 +18,8 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
  * <br/>
  */
 @EnableConfigurationProperties({JFishRedisProperties.class})
-@ConditionalOnClass({JedisConnectionFactory.class})
-@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
+@ConditionalOnClass({JedisConnectionFactory.class, RedisTemplate.class})
+@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true", matchIfMissing=true)
 public class RedisConfiguration {
 	
 //	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";

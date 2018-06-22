@@ -366,13 +366,6 @@ public class LangUtilsTest {
 	}
 	
 	@Test
-	public void testFormat(){
-		String label = "订单满%s元立减%s元";
-		String res = String.format(label, 100, 50, 30);
-		System.out.println("res:"+res);
-	}
-	
-	@Test
 	public void testRandomString(){
 		String key = "key"+RandomStringUtils.randomAscii(128).replaceAll("\\s|#|:|\\*|-|!|&|%|\"", "");
 		System.out.println("key:" + key);
