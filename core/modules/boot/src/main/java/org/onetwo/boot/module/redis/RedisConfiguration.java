@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.redis;
 
 import org.onetwo.boot.module.redis.JFishRedisProperties.LockRegistryProperties;
+import org.onetwo.boot.module.redis.JFishRedisProperties.OnceTokenProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -78,7 +79,11 @@ public class RedisConfiguration {
 	
 	@Bean
 	public TokenValidator tokenValidator(){
-		return new TokenValidator();
+		OnceTokenProperties config = this.redisProperties.getOnceToken();
+		TokenValidator token = new TokenValidator();
+		token.setTokenKeyPrefix(config.getPrefix());
+		token.setExpiredInSeconds(config.getExpiredInSeconds());
+		return token;
 	}
     
 }
