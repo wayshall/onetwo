@@ -158,9 +158,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		if (classAnnotation == null){
 			return Optional.empty();
 		}
-		if(clz.getName().contains("ProductApiClient") || clz.getName().contains("ProductApi")){
+		/*if(clz.getName().contains("ProductApiClient") || clz.getName().contains("ProductApi")){
 			System.out.println("test");
-		}
+		}*/
 		String pathValue = classAnnotation.basePath();
 		if(StringUtils.isBlank(pathValue)){
 			FeignClient feignClient = findMergedAnnotation(clz, FeignClient.class);
