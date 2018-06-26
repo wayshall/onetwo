@@ -3,7 +3,7 @@
 
   	<groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-bom</artifactId>
-	<version>4.6.1-SNAPSHOT</version>
+	<version>4.7.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-bom</name>
@@ -14,8 +14,8 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<java.version>1.8</java.version>
 	
-	<onetwo.version>4.6.1-SNAPSHOT</onetwo.version>
-	<spring-boot.version>1.4.3.RELEASE</spring-boot.version>
+	<onetwo.version>4.7.1-SNAPSHOT</onetwo.version>
+	<spring-boot.version>1.5.10.RELEASE</spring-boot.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
 	<common-codec.version>1.10</common-codec.version>
@@ -70,6 +70,7 @@
     
     
     <spring-retry.version>1.1.2.RELEASE</spring-retry.version>
+    <kotlin.version>1.2.31</kotlin.version>
         
   </properties> 
 	
@@ -223,6 +224,12 @@
       <groupId>org.onetwo4j</groupId>
       <artifactId>onetwo-test</artifactId>
       <version>${onetwo.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo4j</groupId>
+      <artifactId>onetwo-wechat</artifactId>
+      <version>0.0.4-SNAPSHOT</version>
     </dependency>
     
     
@@ -646,7 +653,13 @@
 	    <artifactId>thumbnailator</artifactId>
 	    <version>0.4.8</version>
 	</dependency>
-	    
+	
+    <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib-jdk8</artifactId>
+        <version>${kotlin.version}</version>
+        <optional>true</optional>
+    </dependency>
     
      <!-- for test -->
      <dependency>

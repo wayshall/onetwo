@@ -40,7 +40,7 @@ public class ClientDetailsResolverConfiguration {
 	
 	@Bean
 	@ConditionalOnMissingBean(AccessTokkenClientDetailsObtainService.class)
-	public ClientDetailsObtainService clientDetailsObtainService(ClientDetailConverter clientDetailConverter){
+	public ClientDetailsObtainService clientDetailsObtainService(ClientDetailConverter<?> clientDetailConverter){
 		AccessTokkenClientDetailsObtainService obtainService = new AccessTokkenClientDetailsObtainService();
 		obtainService.setClientDetailConverter(clientDetailConverter);
 		return obtainService;
@@ -50,6 +50,12 @@ public class ClientDetailsResolverConfiguration {
 	@ConditionalOnMissingBean(ClientDetailsMvcInterceptor.class)
 	public ClientDetailsMvcInterceptor clientDetailsMvcInterceptor(){
 		return new ClientDetailsMvcInterceptor();
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean(Oauth2ClientDetailManager.class)
+	public Oauth2ClientDetailManager oauth2ClientDetailManager(){
+		return new DefaultOauth2ClientDetailManager();
 	}
 
 }

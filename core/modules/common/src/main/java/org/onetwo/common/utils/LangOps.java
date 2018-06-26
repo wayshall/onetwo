@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,6 +25,15 @@ import org.onetwo.common.utils.map.KVEntry;
  *
  */
 final public class LangOps {
+	
+	/***
+	 * from java8 collectors
+	 * @author wayshall
+	 * @return
+	 */
+	public static <T> BinaryOperator<T> throwingMerger() {
+        return (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); };
+    }
 	
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> arrayToMap(Object... arrays){
@@ -87,6 +97,9 @@ final public class LangOps {
 
 	public static void ntimesRun(Integer times, Closure closure){
 		ntimesRun(null, times, closure);
+	}
+	public static void ntimesRun(Integer times, Consumer<Integer> consumer){
+		ntimesRun(null, times, consumer);
 	}
 	
 	public static void ntimesRun(String printTimeTag, Integer times, Closure closure){
@@ -213,6 +226,7 @@ final public class LangOps {
 		time = Objects.requireNonNull(time).toLowerCase();
 		TimeUnit timeUnit = null;
 		int unitLength = 1;
+		int times = 1;
 		if (time.endsWith("mis")) {
 			timeUnit = TimeUnit.MILLISECONDS;
 			unitLength = 3;
@@ -227,11 +241,17 @@ final public class LangOps {
 			timeUnit = TimeUnit.HOURS;
 		}else if (time.endsWith("d")) {
 			timeUnit = TimeUnit.DAYS;
+		}else if (time.endsWith("month")) {//月
+			timeUnit = TimeUnit.DAYS;
+			times = 30;//按30天算
+		}else if (time.endsWith("y")) {//年
+			timeUnit = TimeUnit.DAYS;
+			times = 365;
 		}else{
 			unitLength = 0;
 			timeUnit = TimeUnit.SECONDS;
 		}
-		int duration = Integer.valueOf(time.substring(0, time.length() - unitLength));
+		int duration = Integer.valueOf(time.substring(0, time.length() - unitLength)) * times;
 		return Pair.of(duration, timeUnit);
 	}
 	

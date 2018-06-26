@@ -6,8 +6,12 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message
 
 
 public interface MessageDeserializer {
-	
+
 	Object deserialize(byte[] body, MessageExt message);
+	
+	default <T> T deserialize(byte[] body, Class<T> messageType) {
+		return SerializationUtils.deserialize(body);
+	}
 
 	MessageDeserializer DEFAULT = (body, message)->SerializationUtils.deserialize(body);
 }

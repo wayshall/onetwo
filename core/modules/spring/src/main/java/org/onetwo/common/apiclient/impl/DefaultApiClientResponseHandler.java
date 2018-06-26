@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
-import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.JFishProperty;
@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <br/>
  */
 public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implements ApiClientResponseHandler<M> {
-	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = ApiClientUtils.getApiclientlogger();
 	
 	@Override
 	public Class<?> getActualResponseType(M invokeMethod) {
@@ -40,8 +40,8 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 	}
 	
 	protected <T> T map2Bean(Map<String, ?> props, Class<T> beanClass){
-		Assert.notNull(beanClass);
-		Assert.notNull(props);
+		Assert.notNull(beanClass, "beanClass can not be null");
+		Assert.notNull(props, "props can not be null");
 		T bean = ReflectUtils.newInstance(beanClass);
 		BeanWrapper bw = SpringUtils.newBeanWrapper(bean);
 		for(PropertyDescriptor pd : bw.getPropertyDescriptors()){

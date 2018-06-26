@@ -1,12 +1,10 @@
 package org.onetwo.boot.core.web.mvc.exception;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
-import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -40,6 +38,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class BootWebExceptionHandler extends ResponseEntityExceptionHandler implements ExceptionMessageFinder, InitializingBean {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	
 
 //	@Autowired
 //	private BootSiteConfig bootSiteConfig;
@@ -84,10 +83,11 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 	
 	protected ErrorMessage handleException(Exception ex){
-		ErrorMessage errorMessage = (ErrorMessage)RequestContextHolder.getRequestAttributes().getAttribute(BootWebExceptionResolver.ERROR_MESSAGE_OBJECT_KEY, RequestAttributes.SCOPE_REQUEST);;
+		ErrorMessage errorMessage = (ErrorMessage)RequestContextHolder.getRequestAttributes().getAttribute(BootWebExceptionResolver.ERROR_MESSAGE_OBJECT_KEY, RequestAttributes.SCOPE_REQUEST);
 		if(errorMessage==null){
 			errorMessage = this.getErrorMessage(ex, bootJFishConfig.isLogErrorDetail());
 		}
+		
 		Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
 		doLog(reqOpt.orElse(null), errorMessage);
 		if(errorMessage.getHttpStatus()==null){

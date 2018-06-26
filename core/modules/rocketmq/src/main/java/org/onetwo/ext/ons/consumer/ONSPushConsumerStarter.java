@@ -281,6 +281,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					.listenerType(listenerType)
 					.consumerAction(listener)
 					.consumerBeanName(listernName)
+					.autoDeserialize(subscribe.autoDeserialize())
 					.build();
 			return meta;
 		}

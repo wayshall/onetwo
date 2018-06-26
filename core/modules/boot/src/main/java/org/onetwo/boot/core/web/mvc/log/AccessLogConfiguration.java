@@ -35,4 +35,15 @@ public class AccessLogConfiguration {
 		AccessLogInterceptorConfigurerAdapter adapter = new AccessLogInterceptorConfigurerAdapter();
 		return adapter;
 	}
+	
+	@Bean(name="accessLogger")
+//	@ConditionalOnMissingBean(DefaultAccessLogger.class)
+	public FileAccessLogger accessLogger(){
+		FileAccessLogger accessLogger = new FileAccessLogger();
+		accessLogger.setLoggerName(accessLogProperties.getLoggerName());
+		accessLogger.setSeprator(accessLogProperties.getSeprator());
+		accessLogger.setLogChangedDatas(accessLogProperties.isLogChangedDatas());
+		accessLogger.setLogControllerDatas(accessLogProperties.isLogControllerDatas());
+		return accessLogger;
+	}
 }

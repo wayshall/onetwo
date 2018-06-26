@@ -23,8 +23,14 @@ public class SpringMixinableInterfaceCreator implements MixinableInterfaceCreato
 	}
 
 	final private MixinFactory mixinFactory;
+	/***
+	 * mixin接口有自己的实现类，非动态代理
+	 */
 	final protected List<Class<?>> mixinInterfaces = new ArrayList<Class<?>>();
-	final protected List<Class<?>> proxyInterfaces = new ArrayList<Class<?>>();
+	/***
+	 * 代理接口
+	 */
+	final protected List<Class<?>> proxyInterfaces = new ArrayList<>();
 	
 	public SpringMixinableInterfaceCreator(MixinAdvisorStrategy mixinAdvisorStrategy, Class<?>... proxiedInterfaces){
 		this.proxyInterfaces.addAll(Arrays.asList(proxiedInterfaces));

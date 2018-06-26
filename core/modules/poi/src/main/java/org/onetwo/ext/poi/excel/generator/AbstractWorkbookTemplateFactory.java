@@ -1,6 +1,5 @@
 package org.onetwo.ext.poi.excel.generator;
 
-import java.io.FileInputStream;
 import java.util.Map;
 
 import org.onetwo.ext.poi.excel.interfaces.TemplateGenerator;
@@ -45,11 +44,12 @@ abstract public class AbstractWorkbookTemplateFactory implements XmlTemplateGene
 			}
 			String content = parser.parse(config.getFile().getPath(), Collections.EMPTY_MAP);*/
 			
-			if(config.exists()){
+			/*if(config.exists()){
 				m = (PoiModel)xstream.fromXML(new FileInputStream(config.getFile()));
 			}else{
 				m = (PoiModel)xstream.fromXML(config.getInputStream());
-			}
+			}*/
+			m = (PoiModel)xstream.fromXML(config.getInputStream());
 		} catch (Exception e) {
 			throw ExcelUtils.wrapAsUnCheckedException("读取模板["+config+"]配置出错：" + e.getMessage(), e);
 		}
@@ -66,7 +66,7 @@ abstract public class AbstractWorkbookTemplateFactory implements XmlTemplateGene
 		return model;
 	}
 
-	@Override
+//	@Override
 	public boolean checkTemplate(String template) {
 		return getWorkbookModel(template, cacheTemplate)!=null;
 	}

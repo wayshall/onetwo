@@ -133,6 +133,13 @@ public class DateUtilTest {
 		System.out.println("date: " + date.toLocaleString());
 		Date date1 = NiceDate.New("2013-9-9").atTheBeginning().getTime();
 		System.out.println("date1: " + date1.toLocaleString());
+		
+		try {
+			date = new Date(Date.parse("2013-09-09"));
+			Assert.fail();
+		} catch (Exception e) {
+			Assert.assertNotNull(e);;
+		}
 	}
 	
 	@Test

@@ -3,6 +3,7 @@ package org.onetwo.plugins.admin;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,7 @@ import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs.SpringsInitEvent;
 import org.onetwo.dbm.spring.EnableDbmRepository;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
@@ -30,6 +32,7 @@ import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.AdminPermissionConfigListAdapetor;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassListProvider;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -102,7 +105,14 @@ public class WebAdminPluginContext implements InitializingBean {
 	@Bean
 	@Autowired
 	@ConditionalOnBean(RootMenuClassProvider.class)
-	public AdminPermissionConfigListAdapetor adminPermissionConfigListAdapetor(List<RootMenuClassProvider> providers){
+	public AdminPermissionConfigListAdapetor adminPermissionConfigListAdapetor(Map<String, RootMenuClassProvider> providerMap){
+		Logger logger = JFishLoggerFactory.getCommonLogger();
+		if(logger.isInfoEnabled()){
+			providerMap.forEach((k, v)->{
+				logger.info("loading RootMenuClassProvider: {} -> {}", k, v);
+			});
+		}
+		Collection<RootMenuClassProvider> providers = providerMap.values();
 		AdminPermissionConfigListAdapetor list = new AdminPermissionConfigListAdapetor();
 		providers.forEach(provider->{
 			Collection<Class<?>> rooMenuClassList = new HashSet<>();

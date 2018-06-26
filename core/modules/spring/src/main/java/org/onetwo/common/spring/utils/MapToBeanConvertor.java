@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import lombok.Builder;
@@ -32,8 +33,16 @@ public class MapToBeanConvertor {
 
 	final private static Logger logger = JFishLoggerFactory.getLogger(MapToBeanConvertor.class);
 	
+	final private static MapToBeanConvertor INST = MapToBeanConvertor.builder().build();
+
+	final public static MapToBeanConvertor inst() {
+		return INST;
+	}
+	
 	final protected static Cache<PropertyContext, String> PROPERTIES_CACHES = CacheBuilder.newBuilder()
 																.weakKeys()
+																.expireAfterAccess(30, TimeUnit.MINUTES)
+																.maximumSize(3000)
 																.build();
 	
 	final protected Cache<PropertyContext, String> propertyCaches = PROPERTIES_CACHES;
@@ -106,7 +115,7 @@ public class MapToBeanConvertor {
 			if(fn.isPresent()){
 				return fn.get().value();
 			}
-			Optional<JsonProperty> jp = findAnnotation(JsonProperty.class);
+			Optional<JsonProperty> jp = findAnnotation(JsonProperty.class);//findAnnotationOnPropertyOrField
 			if(jp.isPresent()){
 				return jp.get().value();
 			}

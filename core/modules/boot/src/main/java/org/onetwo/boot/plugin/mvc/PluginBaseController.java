@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 abstract public class PluginBaseController extends AbstractBaseController {
 	
-	private static final String VIEW_MAPPING = "viewMapping";
+//	private static final String VIEW_MAPPING = "viewMapping";
 	
 	@Autowired
 	private PluginManager pluginManager;

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import lombok.Data;
 
+import org.onetwo.boot.module.oauth2.util.PasswordEncoders;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Maps;
@@ -30,7 +31,7 @@ public class JFishOauth2Properties {
 	
 	/****
 	 * auth server
-	 * oauth2认证security的拦截器链，所以当auth server项目里有其它不需要验证的rest api，或者后台管理系统需要security的过滤器时，
+	 * oauth2认证所需的security拦截器链，所以当auth server项目里有其它不需要验证的rest api，或者后台管理系统需要security的过滤器时，
 	 * 不能简单地配置为： 
 	 * security: 
 			ignored: /**
@@ -50,6 +51,7 @@ public class JFishOauth2Properties {
 	AuthorizationServerProps authorizationServer = new AuthorizationServerProps();
 	ResourceServerProps resourceServer = new ResourceServerProps();
 	JwtProps jwt = new JwtProps();
+	String passwordEncoder = PasswordEncoders.NoOp.name();
 	
 	@Data
 	public static class JwtProps {
@@ -58,7 +60,10 @@ public class JFishOauth2Properties {
 	
 	@Data
 	public static class AuthorizationServerProps {
+		public static final String ENABLED_KEY = CONFIG_PREFIX + ".authorizationServer.enabled";
+		
 		boolean allowFormAuthenticationForClients;
+		boolean customFormAuthenticationForClients;
 		boolean sslOnly;
 		String realm;
 		String tokenKeyAccess;
@@ -71,7 +76,9 @@ public class JFishOauth2Properties {
 		String[] requestMatchers;
 		Map<String[], String> intercepterUrls = Maps.newHashMap();
 		String anyRequest;
+		
 	}
+	
 
 	@Data
 	public static class ResourceServerProps {

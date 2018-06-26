@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
+import org.onetwo.common.apiclient.annotation.ResponseHandler;
 import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.exception.ApiClientException;
@@ -20,11 +21,14 @@ import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.converter.ValueEnum;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
@@ -49,12 +53,21 @@ import org.springframework.web.client.RestClientException;
  * get请求忽略requestBody
  * post请求会把非url参数转化为requestBody
  * 
+ * consumes -> contentType，指定提交请求的convertor，详见：HttpEntityRequestCallback
+ * produces -> acceptHeader，指定accept header，从而通过response的contentType头指定读取响应数据的convertor，详见：ResponseEntityResponseExtractor
+ * 
  * @author wayshall
  * <br/>
  */
 public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParameter> {
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
 																	.enableFieldNameAnnotation()
+																	.flatableObject(obj->{
+																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
+																		return  flatable &&
+																				!Resource.class.isInstance(obj) &&
+																				!ClassLoader.class.isInstance(obj);
+																	})
 																	.build();
 	
 //	final private AnnotationAttributes requestMappingAttributes;
@@ -63,10 +76,16 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private Class<?> componentType;
 	
 	private Optional<String> acceptHeader;
+	/***
+	 * resttemplate会根据contentType（consumes）决定采用什么样的httpMessageConvertor
+	 * 详见HttpEntityRequestCallback#doWithRequest -> requestContentType
+	 */
 	private Optional<String> contentType;
 	private String[] headers;
 	private int apiHeaderCallbackIndex = -1;
 	private int headerParameterIndex = -1;
+	
+	private CustomResponseHandler<?> customResponseHandler;
 	
 	public ApiClientMethod(Method method) {
 		super(method);
@@ -99,8 +118,25 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		findParameterByType(HttpHeaders.class).ifPresent(p->{
 			this.headerParameterIndex = p.getParameterIndex();
 		});
+		
+
+		ResponseHandler resHandler = AnnotatedElementUtils.getMergedAnnotation(getMethod(), ResponseHandler.class);
+		if(resHandler==null){
+			resHandler = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), ResponseHandler.class);
+		}
+		if(resHandler!=null){
+			CustomResponseHandler<?> customHandler = ReflectUtils.newInstance(resHandler.value());
+			if(Springs.getInstance().isInitialized()){
+				SpringUtils.injectAndInitialize(Springs.getInstance().getAppContext(), customHandler);
+			}
+			this.customResponseHandler = customHandler;
+		}
 	}
 	
+	public CustomResponseHandler<?> getCustomResponseHandler() {
+		return customResponseHandler;
+	}
+
 	public Optional<ApiHeaderCallback> getApiHeaderCallback(Object[] args){
 		return apiHeaderCallbackIndex<0?Optional.empty():Optional.ofNullable((ApiHeaderCallback)args[apiHeaderCallbackIndex]);
 	}

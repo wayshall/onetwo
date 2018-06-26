@@ -43,7 +43,8 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 	Http11NioProtocol handler = (Http11NioProtocol)connector.getProtocolHandler();
                 	if(tomcatProperties.getBacklog()!=-1){
                 		//socket 连接队列大小
-                		handler.setBacklog(tomcatProperties.getBacklog());
+//                		handler.setBacklog(tomcatProperties.getBacklog());
+                		handler.setAcceptCount(tomcatProperties.getAcceptCount());
                 	}
                 	if(tomcatProperties.getMaxConnections()!=-1){
                 		//最大连接数，默认10000
@@ -51,6 +52,11 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 	}
                 	if(tomcatProperties.getConnectionTimeout()!=-1){
                 		handler.setConnectionTimeout(tomcatProperties.getConnectionTimeout());
+                	}
+                	if(tomcatProperties.getConnectionUploadTimeout()>0){
+                		//为true，则上传文件时使用connectionTimeout, 为false，则使用connectionUploadTimeout
+                		handler.setDisableUploadTimeout(false);
+                		handler.setConnectionUploadTimeout(tomcatProperties.getConnectionUploadTimeout());
                 	}
                 	connector.setAsyncTimeout(tomcatProperties.getAsyncTimeout());
                 }

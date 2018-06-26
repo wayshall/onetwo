@@ -26,6 +26,10 @@ public class WeatherClientTest extends ApicientBaseTests {
 			System.out.println("headers: " + h);
 		});
 		assertThat(res.getWeatherinfo().getCity()).isEqualTo("北京");
+		
+
+		res = this.weatherClient.getWeatherWithHandler("101010100");
+		assertThat(res.getWeatherinfo().getCity()).isEqualTo("北京");
 	}
 
 }

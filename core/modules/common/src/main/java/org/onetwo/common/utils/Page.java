@@ -79,7 +79,7 @@ public class Page<T> implements Serializable {
 	protected int pageSize = DefaultPageSize;
 	protected String orderBy = null;
 	protected String order = null;
-	protected boolean autoCount = true;
+	protected Boolean autoCount;
 
 	protected List<T> result = Collections.emptyList();
 	protected long totalCount = 0;
@@ -200,10 +200,21 @@ public class Page<T> implements Serializable {
 	}
 
 	public boolean isAutoCount() {
-		return isPagination() && autoCount;
+		if(autoCount==null){
+			return isPagination();
+		}else{
+			return autoCount;
+		}
+//		return isPagination() && autoCount;
 	}
 
-	public void setAutoCount(final boolean autoCount) {
+	/****
+	 * 不设置autoCount，是否自动count将会由pagination属性决定；
+	 * 若设置了，则根据设置决定
+	 * @author wayshall
+	 * @param autoCount
+	 */
+	public void setAutoCount(final Boolean autoCount) {
 		this.autoCount = autoCount;
 	}
 

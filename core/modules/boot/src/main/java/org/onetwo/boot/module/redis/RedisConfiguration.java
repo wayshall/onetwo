@@ -1,9 +1,8 @@
 package org.onetwo.boot.module.redis;
 
 import org.onetwo.boot.module.redis.JFishRedisProperties.LockRegistryProperties;
-import org.onetwo.common.spring.copier.CopyUtils;
+import org.onetwo.boot.module.redis.JFishRedisProperties.OnceTokenProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,19 +19,20 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
  * <br/>
  */
 @EnableConfigurationProperties({JFishRedisProperties.class})
-@ConditionalOnClass({JedisConnectionFactory.class, RedisLockRegistry.class})
+@ConditionalOnClass({JedisConnectionFactory.class, RedisTemplate.class})
+@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true", matchIfMissing=true)
 public class RedisConfiguration {
 	
-	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";
+//	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";
 
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
     private JFishRedisProperties redisProperties;
     
-	@Bean
+	/*@Bean
     @ConditionalOnMissingBean(name=BEAN_REDISCONNECTIONFACTORY)
-	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
+	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY)
     public JedisConnectionFactory redisConnectionFactory() throws Exception {
 		JedisConnectionFactory jf = new JedisConnectionFactory();
 		CopyUtils.copy(jf, redisProperties);
@@ -40,12 +40,19 @@ public class RedisConfiguration {
 			jf.setPoolConfig(redisProperties.getPool());
 		}
 		return jf;
-    }
+    }*/
 	
+	/***
+	 * 和StringRedisSerializer不同，只有key使用string
+	 * @author wayshall
+	 * @param jedisConnectionFactory
+	 * @return
+	 * @throws Exception
+	 */
 	@Bean
 	@ConditionalOnMissingBean(name="stringKeyRedisTemplate")
-	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
-	public RedisTemplate<String, Object> stringKeyRedisTemplate(@Autowired @Qualifier(BEAN_REDISCONNECTIONFACTORY) JedisConnectionFactory jedisConnectionFactory) throws Exception  {
+//	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
+	public RedisTemplate<String, Object> stringKeyRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
@@ -56,12 +63,27 @@ public class RedisConfiguration {
 	
 	@Bean
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
+	@ConditionalOnClass({RedisLockRegistry.class})
 	public RedisLockRegistry redisLockRegistry(@Autowired JedisConnectionFactory jedisConnectionFactory){
 		LockRegistryProperties lockRegistryProperties = redisProperties.getLockRegistry();
 		RedisLockRegistry lockRegistry = new RedisLockRegistry(jedisConnectionFactory, 
 																lockRegistryProperties.getKey(), 
 																lockRegistryProperties.getExpireAfter());
 		return lockRegistry;
+	}
+	
+	@Bean
+	public RedisOperationService redisOperationService(){
+		return new RedisOperationService();
+	}
+	
+	@Bean
+	public TokenValidator tokenValidator(){
+		OnceTokenProperties config = this.redisProperties.getOnceToken();
+		TokenValidator token = new TokenValidator();
+		token.setTokenKeyPrefix(config.getPrefix());
+		token.setExpiredInSeconds(config.getExpiredInSeconds());
+		return token;
 	}
     
 }

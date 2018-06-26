@@ -4,6 +4,7 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.file.FileStoredMeta;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.plugins.admin.utils.WebConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,7 +42,12 @@ public class KindeditorController extends WebAdminBaseController {
 													.build())
 					.build();
 		FileStoredMeta meta = bootCommonService.uploadFile(options);*/
-		String url = siteConfig.getKindeditor().getImageBasePath() + meta.getAccessablePath();
+		String url = null;
+		if(RequestUtils.isHttpPath(meta.getAccessablePath())){
+			url = meta.getAccessablePath();
+		}else{
+			url = siteConfig.getKindeditor().getImageBasePath() + meta.getAccessablePath();
+		}
 		return ImmutableMap.of("error", 0, "url", url);
 	}
 

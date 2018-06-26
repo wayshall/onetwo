@@ -24,16 +24,57 @@ public class ExcelTemplateValueProvider implements ValueProvider {
 		super();
 		this.templateContext = context;
 	}
+	
 
-	public Object parseCellValue(Cell cell, final ExcelTemplateValueProvider provider){
+	public void setCellValue(Cell cell, Object value){
+		ExcelUtils.setCellValue(cell, value);
+		
+		/*if(value==null){
+			return ;
+		}
+		不修改样式
+		switch (cell.getCellType()) {
+			case Cell.CELL_TYPE_NUMERIC:
+				cell.setCellValue(Types.convertValue(value, Double.class));
+				break;
+			case Cell.CELL_TYPE_STRING:
+				cell.setCellValue(value.toString());
+				break;
+			case Cell.CELL_TYPE_BOOLEAN:
+				cell.setCellValue(Types.convertValue(value, Boolean.class));
+				break;
+			case Cell.CELL_TYPE_FORMULA:
+				cell.setCellValue(Types.convertValue(value, Date.class));
+				break;
+	
+			default:
+				HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
+				cell.setCellValue(cellValue);
+				break;
+		}*/
+	}
+	
+	public boolean isExpresstion(String cellText){
+		return expression.isExpresstion(cellText);
+	}
+
+	public Object parseCellValue(String cellText){
+		final String text = expression.parse(cellText, this);
+		if(this.isDebug())
+			logger.info("parse [{}] as [{}]", cellText, text);
+		return text;
+	}
+	
+//	public Object parseCellValue(Cell cell, final ExcelTemplateValueProvider provider){
+	public Object parseCellValue2(Cell cell){
 		Object cellValue = ExcelUtils.getCellValue(cell);
 		if(cellValue==null)
 			return null;
 		String cellText = cellValue.toString();
 		if(expression.isExpresstion(cellText)){
-			final String text = expression.parse(cellText, provider);
+			final String text = expression.parse(cellText, this);
 //			ExcelUtils.setCellValue(cell, text);
-			if(provider.isDebug())
+			if(this.isDebug())
 				logger.info("parse [{}] as [{}]", cellText, text);
 			return text;
 		}else{

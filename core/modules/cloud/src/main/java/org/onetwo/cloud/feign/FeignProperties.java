@@ -21,8 +21,16 @@ public class FeignProperties {
 	public static final String PROPERTIES_PREFIX = "jfish.cloud.feign";
 	public static final String ENABLE_KEY = PROPERTIES_PREFIX + ".enabled";
 	
+	public static final String LOCAL_ENABLE_KEY = PROPERTIES_PREFIX + ".local.enabled";
+	
+	/***
+	 * 拒绝插件路径
+	 */
+	boolean rejectPluginContextPath = true;
 	LoggerProps logger = new LoggerProps();
 	OkHttpClientProps okHttpClient = new OkHttpClientProps();
+	
+	String[] keepHeaders;
 	
 	/***
 	 * 
@@ -46,9 +54,9 @@ jfish:
 	
 	@Data
 	public class OkHttpClientProps {
-		String readTimeout = "60s";
-		String connectTimeout = "60s";
-		String writeTimeout = "120s";
+		String readTimeout = "50s";
+		String connectTimeout = "50s";
+		String writeTimeout = "50s";
 		
 		public Pair<Integer, TimeUnit> getReadTimeoutTime() {
 			Pair<Integer, TimeUnit> tu = LangOps.parseTimeUnit(readTimeout);

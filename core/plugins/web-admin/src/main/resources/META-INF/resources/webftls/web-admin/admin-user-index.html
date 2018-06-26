@@ -55,6 +55,7 @@
                    <td>&nbsp;</td>
                     <td>
                         <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索&nbsp;</a>
+                        <a id="btnExport" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">导出&nbsp;</a>
                     </td>
                </tr>
            </table>
@@ -110,6 +111,12 @@
         var url = '${siteConfig.baseURL}/web-admin/user.json?'+param;
         $('#dataGrid').datagrid('options').url = url;
         $('#dataGrid').datagrid('reload');
+    });
+    
+    $('#btnExport').bind('click', function(){
+        var param = $('#searchForm').serialize();
+        var url = '${siteConfig.baseURL}/web-admin/user/export.jfxls?'+param;
+        location.href = url;
     });
     
 

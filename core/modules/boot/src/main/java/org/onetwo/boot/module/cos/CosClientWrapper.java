@@ -51,9 +51,9 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.hasText(cosProperties.getAccessKey());
-		Assert.hasText(cosProperties.getSecretKey());
-		Assert.hasText(cosProperties.getRegionName());
+		Assert.hasText("accessKey", cosProperties.getAccessKey());
+		Assert.hasText("secretKey", cosProperties.getSecretKey());
+		Assert.hasText("regionName", cosProperties.getRegionName());
 		COSCredentials credentials = new BasicCOSCredentials(cosProperties.getAccessKey(), cosProperties.getSecretKey());
 		if(clientConfig==null){
 			clientConfig = cosProperties.getClient();

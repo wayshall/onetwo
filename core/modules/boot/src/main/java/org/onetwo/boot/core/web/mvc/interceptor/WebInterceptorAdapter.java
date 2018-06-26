@@ -14,9 +14,9 @@ abstract public class WebInterceptorAdapter implements HandlerInterceptor, Order
 	public static final int FIRST = Ordered.HIGHEST_PRECEDENCE;
 	public static final int LAST = Ordered.LOWEST_PRECEDENCE;
 	public static final int NORMAL = 0;
-	public static final int INCREMENTAL = 100;
+	public static final int INCREMENTAL = 50;
 
-	public static final int ORDERED_LOG = after(NORMAL);
+	public static final int ORDERED_LOG = after(FIRST);
 	
 	public static MappedInterceptor createMappedInterceptor(WebInterceptorAdapter webi){
 		return new MappedInterceptor(webi.getPathPatterns(), webi);

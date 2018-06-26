@@ -1,36 +1,35 @@
 package org.onetwo.ext.ons;
 
+import org.onetwo.boot.mq.DatabaseTransactionMessageInterceptor;
+import org.onetwo.boot.mq.MQProperties;
+import org.onetwo.boot.mq.MQProperties.SendMode;
+import org.onetwo.boot.mq.MQTransactionalConfiguration;
+import org.onetwo.boot.mq.SendMessageRepository;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
-import org.onetwo.ext.ons.ONSProperties.SendMode;
-import org.onetwo.ext.ons.ONSProperties.TaskLocks;
 import org.onetwo.ext.ons.consumer.DelegateMessageService;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
-import org.onetwo.ext.ons.transaction.AsyncDatabaseTransactionMessageInterceptor;
-import org.onetwo.ext.ons.transaction.CompensationSendMessageTask;
-import org.onetwo.ext.ons.transaction.DatabaseTransactionMessageInterceptor;
-import org.onetwo.ext.ons.transaction.DbmSendMessageRepository;
-import org.onetwo.ext.ons.transaction.DefaultDatabaseTransactionMessageInterceptor;
-import org.onetwo.ext.ons.transaction.MessageBodyStoreSerializer;
-import org.onetwo.ext.ons.transaction.ReidsLokableCompensationSendMessageTask;
-import org.onetwo.ext.ons.transaction.SendMessageRepository;
+import org.onetwo.ext.ons.producer.OnsDatabaseTransactionMessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.context.annotation.Import;
 
 /**
  * @author wayshall
  * <br/>
  */
 @Configuration
-@EnableConfigurationProperties(ONSProperties.class)
+@EnableConfigurationProperties({MQProperties.class, ONSProperties.class})
+@Import(MQTransactionalConfiguration.class)
 public class ONSConfiguration {
 	@Autowired
 	private ONSProperties onsProperties;
+	@Autowired
+	private MQProperties mqProperties;
 	
 	@Bean
 	public ONSPushConsumerStarter onsPushConsumerStarter(DelegateMessageService delegateMessageService){
@@ -69,8 +68,23 @@ public class ONSConfiguration {
 	public SendMessageLogInterceptor sendMessageLogInterceptor(){
 		return new SendMessageLogInterceptor();
 	}
+	
 
-	@Configuration
+	@Bean
+	@ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
+	public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
+		OnsDatabaseTransactionMessageInterceptor interceptor = new OnsDatabaseTransactionMessageInterceptor();
+		SendMode sendMode = mqProperties.getTransactional().getSendMode();
+		if(sendMode==SendMode.ASYNC){
+			interceptor.setUseAsync(true);
+		}else{
+			interceptor.setUseAsync(false);
+		}
+		interceptor.setSendMessageRepository(sendMessageRepository);
+		return interceptor;
+	}
+	
+	/*@Configuration
 	@ConditionalOnProperty(ONSProperties.TRANSACTIONAL_ENABLED_KEY)
 	@EnableScheduling
 	protected static class TransactionalConfiguration {
@@ -78,14 +92,14 @@ public class ONSConfiguration {
 		private ONSProperties onsProperties;
 
 		@Bean
-		@ConditionalOnMissingBean(DefaultDatabaseTransactionMessageInterceptor.class)
+		@ConditionalOnMissingBean(ONSDatabaseTransactionMessageInterceptor.class)
 		public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
-			DefaultDatabaseTransactionMessageInterceptor interceptor = null;
+			ONSDatabaseTransactionMessageInterceptor interceptor = new ONSDatabaseTransactionMessageInterceptor();
 			SendMode sendMode = onsProperties.getTransactional().getSendMode();
 			if(sendMode==SendMode.ASYNC){
-				interceptor = new AsyncDatabaseTransactionMessageInterceptor();
+				interceptor.setUseAsync(true);
 			}else{
-				interceptor = new DefaultDatabaseTransactionMessageInterceptor();
+				interceptor.setUseAsync(false);
 			}
 			interceptor.setSendMessageRepository(sendMessageRepository);
 			return interceptor;
@@ -99,23 +113,33 @@ public class ONSConfiguration {
 		
 		@Bean
 		@ConditionalOnMissingBean(MessageBodyStoreSerializer.class)
-		public MessageBodyStoreSerializer messageBodyStoreSerializer(){
-			return MessageBodyStoreSerializer.INSTANCE;
+		public MessageBodyStoreSerializer<Message> messageBodyStoreSerializer(){
+			return ONSMessageBodyStoreSerializer.INSTANCE;
 		}
 		
 		@Bean
 		@ConditionalOnProperty(value=ONSProperties.TRANSACTIONAL_SEND_TASK_ENABLED_KEY, matchIfMissing=false)
 		public CompensationSendMessageTask compensationSendMessageTask(){
-			CompensationSendMessageTask task = null;
+			CompensationSendMessageTask task = new CompensationSendMessageTask();
 			TaskLocks taskLock = onsProperties.getTransactional().getSendTask().getLock();
 			if(taskLock==TaskLocks.REDIS){
-				task = new ReidsLokableCompensationSendMessageTask();
-			}else{
-				task = new CompensationSendMessageTask();
+				task.setUseReidsLock(true);
 			}
 			return task;
 		}
 		
-	}
+		@Bean
+		@ConditionalOnProperty(value=ONSProperties.TRANSACTIONAL_DELETE_TASK_ENABLED_KEY, matchIfMissing=false)
+		public DeleteSentMessageTask deleteSentMessageTask(){
+			DeleteSentMessageTask task = new DeleteSentMessageTask();
+			DeleteTaskProps deleteProps = onsProperties.getTransactional().getDeleteTask();
+			if(deleteProps.getLock()==TaskLocks.REDIS){
+				task.setUseReidsLock(true);
+			}
+			task.setDeleteBeforeAt(deleteProps.getDeleteBeforeAt());
+			return task;
+		}
+		
+	}*/
 	
 }

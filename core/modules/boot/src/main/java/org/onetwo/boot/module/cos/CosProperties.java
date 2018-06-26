@@ -29,6 +29,7 @@ public class CosProperties {
     String secretKey;
     String bucketName;
     boolean createBucket;
+    boolean alwaysStoreFullPath;
 
 	ClientConfig client = new ClientConfig(null);
 	

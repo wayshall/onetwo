@@ -5,7 +5,6 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.ConfigurablePropertyAccessor;
@@ -79,7 +78,9 @@ public class BeanPropertiesMapper {
 	}
 
 	public void mapToObject(Object obj) {
-		Assert.notEmpty(config);
+		if(config==null || config.isEmpty()){
+			return ;
+		}
 		boolean hasPrefix = StringUtils.isNotBlank(prefix);
 		
 		ConfigurablePropertyAccessor bw = beanAccessors.createAccessor(obj);

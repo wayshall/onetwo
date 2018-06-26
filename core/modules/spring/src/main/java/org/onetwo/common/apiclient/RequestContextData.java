@@ -18,7 +18,7 @@ public class RequestContextData {
 	final private String requestId;
 	final private HttpMethod httpMethod;
 	private String requestUrl;
-	final private Class<?> responseType;
+	private Class<?> responseType;
 //	private Object requestBody;
 	final private Map<String, ?> uriVariables;
 	@Getter
@@ -26,14 +26,19 @@ public class RequestContextData {
 	private Consumer<HttpHeaders> headerCallback;
 	private RequestBodySupplier requestBodySupplier;
 	
+	private Object[] methodArgs;
+	
 	@Builder
-	public RequestContextData(String requestId, RequestMethod requestMethod, Map<String, ?> queryParameters, Map<String, ?> uriVariables, Class<?> responseType) {
+	public RequestContextData(String requestId, RequestMethod requestMethod, 
+							Map<String, ?> queryParameters, Map<String, ?> uriVariables, 
+							Class<?> responseType, Object[] methodArgs) {
 		super();
 		this.httpMethod = HttpMethod.resolve(requestMethod.name());
 		this.uriVariables = uriVariables;
 		this.queryParameters = queryParameters;
 		this.responseType = responseType;
 		this.requestId = requestId;
+		this.methodArgs = methodArgs;
 	}
 	
 	public Class<?> getResponseType() {
@@ -91,6 +96,14 @@ public class RequestContextData {
 
 	public String getRequestId() {
 		return requestId;
+	}
+
+	public Object[] getMethodArgs() {
+		return methodArgs;
+	}
+
+	public void setResponseType(Class<?> responseType) {
+		this.responseType = responseType;
 	}
 
 }

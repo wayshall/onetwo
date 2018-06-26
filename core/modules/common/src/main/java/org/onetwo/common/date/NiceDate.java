@@ -14,6 +14,10 @@ public class NiceDate {
 		return new NiceDate();
 	}
 
+	public static NiceDate Now(){
+		return new NiceDate(DateUtils.now());
+	}
+
 	public static NiceDate New(Date date){
 		Assert.notNull(date);
 		return new NiceDate(date);

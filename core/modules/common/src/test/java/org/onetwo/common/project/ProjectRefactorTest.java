@@ -11,11 +11,15 @@ public class ProjectRefactorTest {
 	
 	@Test
 	public void testRenamePoms(){
-		String dir = "dir path";
+		String dir = "path";
 		ProjectRefactor refactor = new ProjectRefactor(dir);
 		refactor.newFileReplacement()
 					.fileMatcher(f->FileUtils.getFileName(f.getName()).equals("pom.xml"))
-					.textReplace("source", "target")
+					.textReplace("source text", "target text")
+				.end()
+				.newFileReplacement()
+					.fileMatcher(f->FileUtils.getFileName(f.getName()).endsWith(".yaml"))
+					.textReplace("source text", "target text")
 				.end()
 				.newFileDelete()
 					.dirNameEqual(".settings", "target")

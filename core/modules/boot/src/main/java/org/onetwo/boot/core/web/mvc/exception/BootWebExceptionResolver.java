@@ -14,6 +14,7 @@ import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.ResponseType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,16 +157,31 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	
 	protected ModelAndView createModelAndView(String viewName, ModelMap model, HttpServletRequest request, HttpServletResponse response, Exception ex){
 //		return new ModelAndView(viewName, model);
-		if (viewName != null) {
-			// Apply HTTP status code for error views, if specified.
-			// Only apply it if we're processing a top-level request.
-			Integer statusCode = determineStatusCode(ex, request, viewName);
-			if (statusCode != null) {
-				applyStatusCodeIfPossible(request, response, statusCode);
-			}
-			return getModelAndView(viewName, ex, request);
+		
+		// Apply HTTP status code for error views, if specified.
+		// Only apply it if we're processing a top-level request.
+		Integer statusCode = determineStatusCode(ex, request, viewName);
+		if (statusCode != null) {
+			applyStatusCodeIfPossible(request, response, statusCode);
 		}
-		return null;
+		
+		ModelAndView mv = null;
+		if (viewName != null) {
+			mv = getModelAndView(viewName, ex, request);
+			mv.addObject("statusCode", statusCode);
+		} else if (StringUtils.isNotBlank(bootJFishConfig.getErrorView()) && isResponsePage(request)){
+			mv = getModelAndView(bootJFishConfig.getErrorView(), ex, request);
+			mv.addObject("statusCode", statusCode);
+		} else {
+			//will forward next HandlerExceptionResolver, see DispatcherServlet#processHandlerException
+			mv = null;
+		}
+		return mv;
+	}
+
+	protected boolean isResponsePage(HttpServletRequest request){
+		ResponseType responseType = RequestUtils.getResponseType(request);
+		return responseType==ResponseType.PAGE;
 	}
 	
 	

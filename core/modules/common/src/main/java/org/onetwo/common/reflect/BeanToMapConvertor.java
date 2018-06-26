@@ -2,10 +2,13 @@ package org.onetwo.common.reflect;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,11 +58,21 @@ public class BeanToMapConvertor {
 		}
 		
 	}
-	
-	private static final Function<Object, Boolean> DEFAULT_FLATABLE = obj->{
-		return !LangUtils.getSimpleClass().contains(obj.getClass());
+
+	@SuppressWarnings("serial")
+	private final static Collection<Class<?>> mapableValueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass()){
+		{
+			add(URL.class);
+			add(URI.class);
+			add(Class.class);
+			add(ClassLoader.class);
+		}
 	};
 
+	public final static Function<Object, Boolean> DEFAULT_FLATABLE = obj->{
+		return !mapableValueTypes.contains(obj.getClass());
+	};
+	
 	private String listOpener = "[";
 	private String listCloser = "]";
 	private String propertyAccesor = ".";
@@ -70,11 +83,16 @@ public class BeanToMapConvertor {
 	private Function<Object, Boolean> flatableObject = DEFAULT_FLATABLE;
 //	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
 //	private boolean freezed;
-	private boolean enableFieldNameAnnotation = false;
-	private boolean enableUnderLineStyle = false;
+	protected boolean enableFieldNameAnnotation = false;
+	protected boolean enableUnderLineStyle = false;
 	
-	private BeanToMapConvertor(){
+	protected BeanToMapConvertor(){
 	}
+	
+	/*public BeanToMapConvertor addNotFlatableTypes(Class<?>... types){
+		mapableValueTypes.addAll(Arrays.asList(types));
+		return this;
+	}*/
 
 	/*public void freeze(){
 		this.checkFreezed();
@@ -137,11 +155,15 @@ public class BeanToMapConvertor {
 					Object newVal = valueConvertor.apply(prop, val);
 					val = (newVal!=null?newVal:val);
 				}
-				PropertyContext propContext = new PropertyContext(obj, prop, prop.getName());
+				PropertyContext propContext = createPropertyContext(obj, prop);
 				rsMap.put(toPropertyName(propContext.getName()), val);
 			}
 		}
 		return rsMap;
+	}
+	
+	protected PropertyContext createPropertyContext(final Object obj, PropertyDescriptor prop){
+		return new PropertyContext(obj, prop, prop.getName());
 	}
 	
 	private String toPropertyName(String propertyName){
@@ -180,7 +202,7 @@ public class BeanToMapConvertor {
 	 * @param obj
 	 */
 	public void toFlatMap(final Map<String, Object> params, final Object obj){
-		flatObject(prefix, obj, (k, v, c)->params.put(toPropertyName(c.getName()), v));
+		flatObject(prefix, obj, (k, v, c)->params.put(toPropertyName(k), v));
 	}
 	
 	/****
@@ -239,7 +261,7 @@ public class BeanToMapConvertor {
 					}else if(val instanceof Enum){
 						val = ((Enum<?>)val).name();
 					}
-					PropertyContext propContext = new PropertyContext(obj, prop, prop.getName());
+					PropertyContext propContext = createPropertyContext(obj, prop);
 					if(StringUtils.isBlank(prefixName)){
 						flatObject(propContext.getName(), val, valuePutter, propContext);
 					}else{
@@ -255,9 +277,9 @@ public class BeanToMapConvertor {
 	}
 	
 	public class PropertyContext {
-		final private Object source;
-		final private PropertyDescriptor property;
-		final private String name;
+		final protected Object source;
+		final protected PropertyDescriptor property;
+		final protected String name;
 		public PropertyContext(Object source, PropertyDescriptor property,
 				String originName) {
 			super();
@@ -289,49 +311,57 @@ public class BeanToMapConvertor {
 		}
 	}
 
-	public static class BeanToMapBuilder {
+
+	public static class BeanToMapBuilder extends BaseBeanToMapBuilder<BeanToMapBuilder>{
 		public static BeanToMapBuilder newBuilder(){
 			return new BeanToMapBuilder();
 		}
+		
+	}
+	protected static class BaseBeanToMapBuilder<T extends BaseBeanToMapBuilder<T>> {
 //		private BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
-		private BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor = new DefaultPropertyAcceptor();
-		private BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
-		private Function<Object, Boolean> flatableObject;
-		private boolean enableFieldNameAnnotation = false;
-		private boolean enableUnderLineStyle = false;
-		private String prefix = "";
+		protected BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor = new DefaultPropertyAcceptor();
+		protected BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
+		protected Function<Object, Boolean> flatableObject;
+		protected boolean enableFieldNameAnnotation = false;
+		protected boolean enableUnderLineStyle = false;
+		protected String prefix = "";
 
 
-		public BeanToMapBuilder propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
+		public T propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
 			this.propertyAcceptor = propertyAcceptor;
-			return this;
+			return self();
 		}
-		public BeanToMapBuilder excludeProperties(String... properties) {
+		public T excludeProperties(String... properties) {
 			this.propertyAcceptor = new ExcludePropertyAcceptor(Arrays.asList(properties));
-			return this;
+			return self();
 		}
 
-		public BeanToMapBuilder flatableObject(Function<Object, Boolean> flatableObject) {
+		public T flatableObject(Function<Object, Boolean> flatableObject) {
 			this.flatableObject = flatableObject;
-			return this;
+			return self();
 		}
 
-		public BeanToMapBuilder valueConvertor(BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+		public T valueConvertor(BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
 			this.valueConvertor = valueConvertor;
-			return this;
+			return self();
 		}
-		public BeanToMapBuilder enableFieldNameAnnotation() {
+		public T enableFieldNameAnnotation() {
 			this.enableFieldNameAnnotation = true;
-			return this;
+			return self();
 		}
-		public BeanToMapBuilder enableUnderLineStyle() {
+		public T enableUnderLineStyle() {
 			this.enableUnderLineStyle = true;
-			return this;
+			return self();
 		}
 
-		public BeanToMapBuilder prefix(String prefix) {
+		public T prefix(String prefix) {
 			this.prefix = prefix;
-			return this;
+			return self();
+		}
+		
+		protected T self(){
+			return (T)this;
 		}
 		
 		/*public Map<String, Object> toMap(Object obj){
@@ -346,7 +376,9 @@ public class BeanToMapConvertor {
 			beanToFlatMap.setPrefix(prefix);
 			beanToFlatMap.setPropertyAcceptor(propertyAcceptor);
 			beanToFlatMap.setValueConvertor(valueConvertor);
-			beanToFlatMap.setFlatableObject(flatableObject==null?DEFAULT_FLATABLE:flatableObject);
+			if(flatableObject!=null){
+				beanToFlatMap.setFlatableObject(flatableObject);
+			}
 			beanToFlatMap.enableFieldNameAnnotation = enableFieldNameAnnotation;
 			beanToFlatMap.enableUnderLineStyle = enableUnderLineStyle;
 			return beanToFlatMap;

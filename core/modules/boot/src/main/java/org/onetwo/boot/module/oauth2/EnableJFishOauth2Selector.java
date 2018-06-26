@@ -27,6 +27,8 @@ public class EnableJFishOauth2Selector extends AbstractImportSelector<EnableJFis
 		
 		List<OAuth2Role> roles = Arrays.asList((OAuth2Role[])attributes.get("value"));
 		
+		classNames.add(PasswordEncoderConfiguration.class.getName());
+		
 		if(roles.contains(OAuth2Role.AUTHORIZATION_SERVER)){
 			classNames.add(AuthorizationServerConfiguration.class.getName());
 			classNames.add(Oauth2TokenStoreConfiguration.class.getName());
@@ -40,6 +42,7 @@ public class EnableJFishOauth2Selector extends AbstractImportSelector<EnableJFis
 			//仍然可通过ResourceServerProps.ENABLED_KEY关掉
 			classNames.add(ResourceServerConfiguration.class.getName());
 			classNames.add(OAuth2CustomResultConfiguration.class.getName());
+			classNames.add(ClientDetailsResolverConfiguration.class.getName());
 		}
 
 		if(roles.contains(OAuth2Role.CLIENT_DETAILS_RESOLVER)){

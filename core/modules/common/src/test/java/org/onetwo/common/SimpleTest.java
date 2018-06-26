@@ -1,14 +1,17 @@
 package org.onetwo.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 
 public class SimpleTest {
 
-	private static volatile boolean stop = false;
 	
 	public static void main(String[] args) {
-//		LangUtils.CONSOLE.exitIf("exit");
+
+		List<Integer> list = new ArrayList<Integer>();
     }
 	
 

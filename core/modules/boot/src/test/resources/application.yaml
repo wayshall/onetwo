@@ -1,6 +1,6 @@
 spring:
-    profiles:
-        active: dev, test
+    #profiles:
+        # active: dev, test
     freemarker:
         suffix: .html
 jfish: 

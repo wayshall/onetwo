@@ -42,14 +42,14 @@ public class WebApiRequestMappingCombiner implements RequestMappingCombiner {
 		if(StringUtils.isBlank(prefixPath)){
 			return info;
 		}
-		RequestMappingInfo combinerInfo = RequestMappingCombiner.createRequestMappingInfo(prefixPath, method, handlerType)
+		RequestMappingInfo combinerInfo = RequestMappingCombiner.createRequestMappingInfo(prefixPath, method, handlerType, info)
 																.combine(info);
 		return combinerInfo;
 	}
 	
 
 	
-	private Optional<AnnotationAttributes> findWebApiAttrs(Method method, Class<?> handlerType){
+	public static Optional<AnnotationAttributes> findWebApiAttrs(Method method, Class<?> handlerType){
 		AnnotationAttributes attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(method, WebApi.class);
 		if(attrs==null){
 			attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(handlerType, WebApi.class);

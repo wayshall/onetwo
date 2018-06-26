@@ -5,11 +5,11 @@ import java.util.Properties;
 
 import lombok.Data;
 
-import org.onetwo.common.utils.LangOps;
 import org.onetwo.ext.alimq.JsonMessageDeserializer;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -22,16 +22,11 @@ import com.google.common.collect.Maps;
  */
 @Data
 @ConfigurationProperties("jfish.ons")
-public class ONSProperties {
+public class ONSProperties implements InitializingBean {
 
-	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
+//	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
 //	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
-	public static final String TRANSACTIONAL_SEND_TASK_ENABLED_KEY = "jfish.ons.transactional.sendTask.enabled";
-	public static final String TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY = "jfish.ons.transactional.sendTask.fixedRateString";
-
-	//TODO
-	public static final String TRANSACTIONAL_DELETE_TASK_ENABLED_KEY = "jfish.ons.transactional.deleteTask.enabled";
-	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
+//	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
 
 	MqServerTypes serverType = MqServerTypes.ONS;
 	
@@ -43,8 +38,8 @@ public class ONSProperties {
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
-	
-	TransactionalProps transactional = new TransactionalProps();
+
+//	Map<String, String> jsonDeserializerCompatibilityTypeMappings = Maps.newHashMap();	
 
 	public Map<String, Properties> getProducers() {
 		return producers;
@@ -71,29 +66,13 @@ public class ONSProperties {
 		return baseConfig;
 	}
 	
-	@Data
-	static public class TransactionalProps {
-		SendMode sendMode = SendMode.SYNC;
-		SendTaskProps sendTask = new SendTaskProps();
-	}
-	@Data
-	public static class SendTaskProps {
-		TaskLocks lock = TaskLocks.DB;
-		String deleteBeforeAt;
-		int deleteCountPerTask = 300;
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		
-		public long getDeleteBeforeAtInSeconds(){
-			return LangOps.timeToSeconds(deleteBeforeAt, 60);
-		}
 	}
-	public static enum SendMode {
-		SYNC,
-		ASYNC
-	}
-	public static enum TaskLocks {
-		DB,
-		REDIS
-	}
+
+
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
 		JSON(JsonMessageSerializer.INSTANCE, JsonMessageDeserializer.INSTANCE),

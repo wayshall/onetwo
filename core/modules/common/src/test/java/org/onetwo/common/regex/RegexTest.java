@@ -13,8 +13,8 @@ public class RegexTest {
 	
 	@Test
 	public void test(){
-		Pattern navPathPattern = Pattern.compile("^/(19|dongbei)/cms/v2/api-docs$");
-		Matcher matcher = navPathPattern.matcher("/dongbei/cms/v2/api-docs");
+		Pattern navPathPattern = Pattern.compile("^/apidoc/(.+)$");
+		Matcher matcher = navPathPattern.matcher("/apidoc/campus-main/api/common/home/getIndexResource");
 		if(matcher.matches()){
 			int count = matcher.groupCount();
 			for (int i = 0; i <= count; i++) {

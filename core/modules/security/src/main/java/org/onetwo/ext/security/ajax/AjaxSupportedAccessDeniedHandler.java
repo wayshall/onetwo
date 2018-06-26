@@ -15,9 +15,11 @@ import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
+import org.onetwo.ext.security.SecurityExceptionMessager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
@@ -31,12 +33,14 @@ import com.google.common.base.Charsets;
  */
 public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, InitializingBean {
 	
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 			
-	private AccessDeniedHandler delegateAccessDeniedHandler;
-	private JsonMapper mapper = JsonMapper.IGNORE_NULL;
-	private String redirectErrorUrl;
-	private String errorPage;
+	protected AccessDeniedHandler delegateAccessDeniedHandler;
+	protected JsonMapper mapper = JsonMapper.IGNORE_NULL;
+	protected String redirectErrorUrl;
+	protected String errorPage;
+	@Autowired(required=false)
+	private SecurityExceptionMessager securityExceptionMessager;
 	
 	public AjaxSupportedAccessDeniedHandler(){
 		delegateAccessDeniedHandler = new AccessDeniedHandlerImpl();
@@ -55,8 +59,10 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			AccessDeniedException accessDeniedException) throws IOException,
 			ServletException {
 		String url = request.getMethod() + "|" + request.getRequestURI();
+		String errorMsg = getErrorMessage(accessDeniedException);
+		
 		if(RequestUtils.isAjaxRequest(request)){
-			SimpleResultBuilder<?> builder = DataResults.error("操作失败："+accessDeniedException.getMessage()+
+			SimpleResultBuilder<?> builder = DataResults.error(errorMsg+
 																	", at "+request.getRequestURI())
 															.data(url);
 			
@@ -72,14 +78,27 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 				rurl += "?";
 			}
 			rurl += "accessDenied=true&status="+HttpServletResponse.SC_FORBIDDEN+"&message=";
-			rurl += URLEncoder.encode(accessDeniedException.getMessage(), Charsets.UTF_8.name());//encode value, otherwise will redirect failed
+			rurl += URLEncoder.encode(errorMsg, Charsets.UTF_8.name());//encode value, otherwise will redirect failed
 
 			logger.info("{} AccessDenied, redirect to {}", url, rurl);
 			response.sendRedirect(rurl);
 		}else{
-			logger.info("{} AccessDenied, delegateAccessDeniedHandler forward to errorPage: {}", url, errorPage);
-			this.delegateAccessDeniedHandler.handle(request, response, accessDeniedException);
+			defaultHandle(request, response, accessDeniedException);
 		}
+	}
+	
+	protected void defaultHandle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException{
+		String url = request.getMethod() + "|" + request.getRequestURI();
+		logger.info("{} AccessDenied, delegateAccessDeniedHandler forward to errorPage: {}", url, errorPage);
+		this.delegateAccessDeniedHandler.handle(request, response, accessDeniedException);
+	}
+	
+	final protected String getErrorMessage(AccessDeniedException accessDeniedException){
+		String errorMsg = accessDeniedException.getMessage();
+		if(securityExceptionMessager!=null){
+			errorMsg = securityExceptionMessager.findMessageByThrowable(accessDeniedException);
+		}
+		return errorMsg;
 	}
 
 	public void setErrorPage(String errorPage) {

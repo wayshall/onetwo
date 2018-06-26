@@ -33,8 +33,8 @@ public class DelegateMessageService implements InitializingBean {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(messageDeserializer);
-		Assert.notNull(consumerListenerComposite);
+		Assert.notNull(messageDeserializer, "messageDeserializer can not be null");
+		Assert.notNull(consumerListenerComposite, "consumerListenerComposite can not be null");
 	}
 
 	/***
@@ -53,21 +53,33 @@ public class DelegateMessageService implements InitializingBean {
 		ConsumContext currentConetxt = null;
 		for(MessageExt message : msgs){
 			String msgId = ONSUtils.getMessageId(message);
-			logger.info("received id: {}, topic: {}, tag: {}", msgId,  message.getTopic(), message.getTags());
+			logger.info("rmq-consumer[{}] received id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
 			
 //			Object body = consumer.deserialize(message);
-			Object body = messageDeserializer.deserialize(message.getBody(), message);
-			currentConetxt = ConsumContext.builder()
-											.messageId(msgId)
-											.message(message)
-											.deserializedBody(body)
-//											.consumerMeta(meta)
-											.build();
+			Object body = message.getBody();
+			if(meta.isAutoDeserialize()){
+				body = messageDeserializer.deserialize(message.getBody(), message);
+				currentConetxt = ConsumContext.builder()
+												.messageId(msgId)
+												.message(message)
+												.deserializedBody(body)
+												.messageDeserializer(messageDeserializer)
+//												.consumerMeta(meta)
+												.build();
+			}else{
+				currentConetxt = ConsumContext.builder()
+												.messageId(msgId)
+												.message(message)
+												.messageDeserializer(messageDeserializer)
+//												.deserializedBody(body)
+//												.consumerMeta(meta)
+												.build();
+			}
 			
 			consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 			consumer.doConsume(currentConetxt);
 			consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
-			logger.info("consumed message. id: {}, topic: {}, tag: {}, body: {}", msgId,  message.getTopic(), message.getTags(), body);
+			logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), body);
 		}
 		return currentConetxt;
 	}

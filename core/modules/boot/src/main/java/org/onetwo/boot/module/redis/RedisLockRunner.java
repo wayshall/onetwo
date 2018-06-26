@@ -77,7 +77,7 @@ public class RedisLockRunner {
 					return lockFailAction.get();
 				}
 				
-				log.info("can not obtain task lock, ignore task. lock key: {}", lockKey);
+				log.warn("can not obtain task lock, ignore task. lock key: {}", lockKey);
 				return null;
 			}
 			if(log.isDebugEnabled()){
