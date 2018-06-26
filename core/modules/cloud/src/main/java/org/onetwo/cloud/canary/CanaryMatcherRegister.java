@@ -1,4 +1,4 @@
-package org.onetwo.boot.limiter;
+package org.onetwo.cloud.canary;
 
 import java.util.List;
 import java.util.function.Function;
@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.onetwo.boot.limiter.Matcher;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
@@ -18,10 +19,10 @@ import org.springframework.util.AntPathMatcher;
  * @author wayshall
  * <br/>
  */
-public class MatcherRegister extends MapRegisterManager<String, Function<String[], Matcher<InvokeContext>>> {
-	public static final MatcherRegister INSTANCE = new MatcherRegister();
+public class CanaryMatcherRegister extends MapRegisterManager<String, Function<String[], Matcher<CanaryContext>>> {
+	public static final CanaryMatcherRegister INSTANCE = new CanaryMatcherRegister();
 
-	public MatcherRegister() {
+	public CanaryMatcherRegister() {
 		super();
 		register("antpath", (patterns)->{
 			return new AntpathMatcher(patterns);
@@ -32,21 +33,26 @@ public class MatcherRegister extends MapRegisterManager<String, Function<String[
 		.register("ip", (patterns)->{
 			return new ContainAnyOneMatcher("clientIp", patterns);
 		})
-		.register("serviceId", (patterns)->{
-			return new ContainAnyOneMatcher("serviceId", patterns);
+		.register("client-tag", (patterns)->{
+			return new ContainAnyOneMatcher("clientTag", patterns);
 		})
+		/*.register("serviceId", (patterns)->{
+			return new ContainAnyOneMatcher("serviceId", patterns);
+		})*/
 		;
 	}
 	
-	public Matcher<InvokeContext> createMatcher(String matcherName, String...patterns){
+	public Matcher<CanaryContext> createMatcher(String matcherName, String...patterns){
 		Assert.hasText(matcherName);
 		Assert.notEmpty(patterns);
-		Matcher<InvokeContext> matcher = findRegistered(matcherName).orElseThrow(()->new BaseException("matcher not found, name: " + matcherName))
+		Matcher<CanaryContext> matcher = findRegistered(matcherName).orElseThrow(()->new BaseException("matcher not found, name: " + matcherName))
 													.apply(patterns);
 		return matcher;
 	}
+	
+	
 
-	static abstract public class AbstractMathcer implements Matcher<InvokeContext> {
+	static abstract public class AbstractMathcer implements Matcher<CanaryContext> {
 		final private String[] patterns;
 		
 		public AbstractMathcer(String[] patterns) {
@@ -55,13 +61,13 @@ public class MatcherRegister extends MapRegisterManager<String, Function<String[
 			this.patterns = patterns;
 		}
 		@Override
-		public boolean matches(InvokeContext context) {
+		public boolean matches(CanaryContext context) {
 			return Stream.of(getPatterns())
 							.anyMatch(pattern->doMatches(pattern, context));
 //			return antMatcher.match(getPatterns(), context.getRequestPath());
 		}
 		
-		protected boolean doMatches(String pattern, InvokeContext context){
+		protected boolean doMatches(String pattern, CanaryContext context){
 			throw new RuntimeException("operation not implement yet!");
 		}
 		
@@ -76,7 +82,7 @@ public class MatcherRegister extends MapRegisterManager<String, Function<String[
 			super(patterns);
 		}
 		@Override
-		protected boolean doMatches(String pattern, InvokeContext context) {
+		protected boolean doMatches(String pattern, CanaryContext context) {
 			return antMatcher.match(pattern, context.getRequestPath());
 		}
 	}
@@ -90,7 +96,7 @@ public class MatcherRegister extends MapRegisterManager<String, Function<String[
 									.collect(Collectors.toList());
 		}
 		@Override
-		public boolean matches(InvokeContext context) {
+		public boolean matches(CanaryContext context) {
 			return regexPatterns.stream()
 								.anyMatch(pattern->pattern.matcher(context.getRequestPath()).matches());
 		}
@@ -102,7 +108,7 @@ public class MatcherRegister extends MapRegisterManager<String, Function<String[
 			this.property = property;
 		}
 		@Override
-		public boolean matches(InvokeContext context) {
+		public boolean matches(CanaryContext context) {
 			String value = (String)ReflectUtils.getPropertyValue(context, property);
 			return ArrayUtils.contains(getPatterns(), value);
 		}
