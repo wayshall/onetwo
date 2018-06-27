@@ -7,11 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.limiter.Matcher;
 import org.onetwo.cloud.canary.CanaryContext.DefaultCanaryContext;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.PredicateKey;
@@ -57,18 +54,16 @@ public class EurekaMetaPredicate extends AbstractServerPredicate {
 	
 	private CanaryContext createCanaryContext(){
 		DefaultCanaryContext ctx = new DefaultCanaryContext();
-		ServletRequestAttributes attrs = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
-		if(attrs==null){
-			throw new BaseException("ServletRequestAttributes not found, you may missing config [jfish.cloud.hystrix.shareRequestContext=true]");
-		}
-        final HttpServletRequest request = attrs.getRequest();
+        final HttpServletRequest request = CanaryUtils.getHttpServletRequest();
 
 		String requestPath = RequestUtils.getUrlPathHelper().getLookupPathForRequest(request);
 		String clientIp = RequestUtils.getRemoteAddr(request);
-		String cliengTag = attrs.getRequest().getHeader(CanaryConsts.HEADER_CLIENT_TAG);
+		String cliengTag = request.getHeader(CanaryUtils.HEADER_CLIENT_TAG);
 		ctx.setClientTag(cliengTag);
 		ctx.setRequestPath(requestPath);
 		ctx.setClientIp(clientIp);
+		
+		CanaryUtils.storeCanaryContext(ctx);
 		
 		return ctx;
 	}
