@@ -231,12 +231,16 @@ public class Springs {
 	
 	public void printBeanNames(){
 		String[] beanNames = getAppContext().getBeanDefinitionNames();
-		System.out.println("=================================== spring beans ===================================");
+		StringBuilder buf = new StringBuilder(100);
+		buf.append("\n=================================== spring beans ===================================\n");
 		int index = 0;
 		for (String bn : beanNames) {
-			System.out.println("["+(++index)+"]" + bn );
+			buf.append("["+(++index)+"]" + bn ).append("\n");
 		}
-		System.out.println("=================================== spring beans ===================================");
+		buf.append("=================================== spring beans ===================================\n");
+		if(logger.isInfoEnabled()){
+			logger.info(buf.toString());
+		}
 	}
 
 	/*public BaseEntityManager getBaseEntityManager() {
