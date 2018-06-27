@@ -1,10 +1,8 @@
 package org.onetwo.cloud.canary;
 
 import com.google.common.base.Optional;
-import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.CompositePredicate;
 import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.PredicateKey;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
 
@@ -17,8 +15,9 @@ public class CanaryRule extends ZoneAvoidanceRule {
     private CompositePredicate canaryPredicate;
 //	private CanaryPredicate canaryPredicate;
     
-    public CanaryRule(AbstractServerPredicate... predicates){
-    	this.canaryPredicate = CompositePredicate.withPredicates(predicates)
+    public CanaryRule(){
+    	EurekaMetaPredicate metaPredicate = new EurekaMetaPredicate();
+    	this.canaryPredicate = CompositePredicate.withPredicates(metaPredicate)
 								                /*.addFallbackPredicate(this.getPredicate())
 								                .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())*/
 								                .build();
@@ -33,15 +32,6 @@ public class CanaryRule extends ZoneAvoidanceRule {
         } else {
             return super.choose(key);
         }
-    }
-    
-    public static class CanaryPredicate extends AbstractServerPredicate {
-
-		@Override
-		public boolean apply(PredicateKey input) {
-			return false;
-		}
-    	
     }
 
 }

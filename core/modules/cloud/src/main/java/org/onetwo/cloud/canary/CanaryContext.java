@@ -1,5 +1,7 @@
 package org.onetwo.cloud.canary;
 
+import lombok.Data;
+
 import com.netflix.loadbalancer.PredicateKey;
 
 /**
@@ -16,4 +18,12 @@ public interface CanaryContext {
 	
 //	String getClientId();
 //	String getServiceId();
+	
+	@Data
+	static public class DefaultCanaryContext implements CanaryContext {
+		private String requestPath;
+		private String clientTag;
+		private String clientIp;
+		private PredicateKey predicateKey;
+	}
 }

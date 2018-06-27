@@ -6,6 +6,9 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
+ * 可考虑用HystrixRequestContext代替实现变量共享
+ * 详见：HystrixContexSchedulerAction
+ * 
  * @author wayshall
  * <br/>
  */

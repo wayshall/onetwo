@@ -6,9 +6,9 @@ import java.util.List;
 import org.onetwo.boot.core.shutdown.GraceKillConfiguration;
 import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
+import org.onetwo.cloud.canary.CanaryConfiguration;
 import org.onetwo.cloud.core.BootCloudConfigration;
 import org.onetwo.cloud.feign.local.LocalFeignConfiguration;
-import org.onetwo.cloud.hystrix.SpringMvcRequestContextConfiguration;
 import org.onetwo.common.spring.context.AbstractImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -31,7 +31,7 @@ public class EnableJFishCloudExtensionSelector extends AbstractImportSelector<En
 		
 		classNames.add(LocalFeignConfiguration.class.getName());
 		
-		classNames.add(SpringMvcRequestContextConfiguration.class.getName());
+		classNames.add(CanaryConfiguration.class.getName());
 		
 		return classNames;
 	}

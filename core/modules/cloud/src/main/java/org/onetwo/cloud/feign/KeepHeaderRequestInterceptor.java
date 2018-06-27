@@ -4,6 +4,7 @@ import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.onetwo.cloud.canary.CanaryConsts;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
 
@@ -19,7 +20,7 @@ import feign.RequestTemplate;
 @Slf4j
 public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 	
-	final private Set<String> DEFAULT_HEADER_NAMES = Sets.newHashSet("Authorization", "auth");
+	final public static Set<String> DEFAULT_HEADER_NAMES = Sets.newHashSet("Authorization", "auth", CanaryConsts.HEADER_CLIENT_TAG);
 	private Set<String> keepHeaders = DEFAULT_HEADER_NAMES;
 
 	@Override
@@ -39,6 +40,10 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 
 	public void setKeepHeaders(Set<String> keepHeaders) {
 		this.keepHeaders = keepHeaders;
+	}
+
+	public Set<String> getKeepHeaders() {
+		return keepHeaders;
 	}
 	
 }

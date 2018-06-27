@@ -89,12 +89,20 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/bom</module>
+                <module>../../dbm</module>
+                <module>modules/web</module>
+                <module>modules/security</module>
+                <module>modules/boot</module>
+                <module>modules/test</module>
+                <module>../../onetwo-wechat</module>
+                <module>modules/cloud</module>
                 
-                <module>modules/parent</module>
-                <module>modules/common</module>
-                <module>modules/jackson</module>
-                <module>modules/spring</module>
+                <module>plugins/parent</module>
+                <module>plugins/web-admin</module>
+                
+                <module>modules/poi</module>
+                <module>modules/rocketmq</module>
+                <module>modules/tomcat</module>
 	  	</modules>
         <build>
             <plugins>

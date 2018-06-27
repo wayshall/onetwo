@@ -1,45 +1,65 @@
 package org.onetwo.common.spring.utils;
 
-import java.util.Enumeration;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.utils.ConfigableBeanMapper.BeanAccessors;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.ConfigurablePropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 
-public class BeanPropertiesMapper {
+public class ConfigableBeanMapper {
 	
-	
-	public static BeanPropertiesMapper props(Properties config, String prefix, boolean ignoreFoundProperty){
-		return new BeanPropertiesMapper(config, prefix, ignoreFoundProperty);
+	public static enum BeanAccessors {
+		PROPERTY {
+			@Override
+			public ConfigurablePropertyAccessor createAccessor(Object obj) {
+				ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(obj);
+				accessor.setAutoGrowNestedPaths(true);
+				return accessor;
+			}
+		},
+		FIELD{
+			@Override
+			public ConfigurablePropertyAccessor createAccessor(Object obj) {
+				ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forDirectFieldAccess(obj);
+				accessor.setAutoGrowNestedPaths(true);
+				return accessor;
+			}
+		};
+		
+		abstract public ConfigurablePropertyAccessor createAccessor(Object obj);
 	}
 	
-	public static BeanPropertiesMapper ignoreNotFoundProperty(Properties config){
-		return new BeanPropertiesMapper(config, null, true);
+	public static ConfigableBeanMapper props(Map<String,Object> config, String prefix, boolean ignoreFoundProperty){
+		return new ConfigableBeanMapper(config, prefix, ignoreFoundProperty);
+	}
+	
+	public static ConfigableBeanMapper ignoreNotFoundProperty(Map<String,Object> config){
+		return new ConfigableBeanMapper(config, null, true);
 	}
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	final private Properties config;
+	final private Map<String,Object> config;
 	final private String prefix;
 	private boolean ignoreNotFoundProperty = false;
 	private BeanAccessors beanAccessors = BeanAccessors.PROPERTY;
 	private boolean ignoreBlankString;
 	
-	public BeanPropertiesMapper(Properties config, String prefix) {
+	public ConfigableBeanMapper(Map<String,Object> config, String prefix) {
 		this(config, prefix, false);
 	}
-	public BeanPropertiesMapper(Properties config, String prefix, boolean ignoreFoundProperty) {
+	public ConfigableBeanMapper(Map<String,Object> config, String prefix, boolean ignoreFoundProperty) {
 		super();
 		this.config = config;
 		this.prefix = prefix;
 		this.ignoreNotFoundProperty = ignoreFoundProperty;
 	}
 	
-	public BeanPropertiesMapper ignoreBlankString() {
+	public ConfigableBeanMapper ignoreBlankString() {
 		this.ignoreBlankString = true;
 		return this;
 	}
@@ -52,7 +72,7 @@ public class BeanPropertiesMapper {
 		this.beanAccessors = beanAccessors;
 	}
 
-	public BeanPropertiesMapper fieldAccessors() {
+	public ConfigableBeanMapper fieldAccessors() {
 		this.beanAccessors = BeanAccessors.FIELD;
 		return this;
 	}
@@ -64,23 +84,26 @@ public class BeanPropertiesMapper {
 		boolean hasPrefix = StringUtils.isNotBlank(prefix);
 		
 		ConfigurablePropertyAccessor bw = beanAccessors.createAccessor(obj);
-		Enumeration<?> names = config.propertyNames();
-		while(names.hasMoreElements()){
-			String propertyName = names.nextElement().toString();
-			String value = config.getProperty(propertyName);
-			if(value==null){
+//		Enumeration<?> names = config.propertyNames();
+//		while(names.hasMoreElements()){
+		for(Entry<String, Object> entry : config.entrySet()){
+//			String propertyName = names.nextElement().toString();
+//			String value = config.getProperty(propertyName);
+			if(entry.getValue()==null){
 				continue;
 			}
-			if(StringUtils.isBlank(value) && ignoreBlankString){
+			String propertyName = entry.getKey();
+			String text = entry.getValue().toString();
+			if(StringUtils.isBlank(text) && ignoreBlankString){
 				continue;
 			}
 			if(hasPrefix){
 				if(propertyName.startsWith(prefix)){
 					propertyName = propertyName.substring(prefix.length());
-					setPropertyValue(obj, bw, propertyName, value);
+					setPropertyValue(obj, bw, propertyName, text);
 				}
 			}else{
-				setPropertyValue(obj, bw, propertyName, value);
+				setPropertyValue(obj, bw, propertyName, text);
 			}
 		}
 	}

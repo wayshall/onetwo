@@ -21,6 +21,11 @@ import org.springframework.util.AntPathMatcher;
  */
 public class CanaryMatcherRegister extends MapRegisterManager<String, Function<String[], Matcher<CanaryContext>>> {
 	public static final CanaryMatcherRegister INSTANCE = new CanaryMatcherRegister();
+	
+	/*private Cache<String, Matcher<CanaryContext>> matcherCachers = CacheBuilder.newBuilder()
+																					.weakKeys()
+																					.expireAfterWrite(10, TimeUnit.MINUTES)
+																					.build();*/
 
 	public CanaryMatcherRegister() {
 		super();
@@ -41,6 +46,10 @@ public class CanaryMatcherRegister extends MapRegisterManager<String, Function<S
 		})*/
 		;
 	}
+	
+	/*public Matcher<CanaryContext> getOrCreateMatcher(String matcherName, String...patterns){
+		return matcherCachers.get(matcherName, valueLoader);
+	}*/
 	
 	public Matcher<CanaryContext> createMatcher(String matcherName, String...patterns){
 		Assert.hasText(matcherName);

@@ -45,9 +45,9 @@ public class SpringMvcRequestContextConfiguration {
 		 * @author wayshall
 		 *
 		 */
-		@ConditionalOnProperty(name = "feign.hystrix.enabled")
+		/*@ConditionalOnProperty(name = "feign.hystrix.enabled")
 		static class feignHystrixConfig {
-		}
+		}*/
 
 		@ConditionalOnClass(Hystrix.class)
 		static class OnHystrix {
