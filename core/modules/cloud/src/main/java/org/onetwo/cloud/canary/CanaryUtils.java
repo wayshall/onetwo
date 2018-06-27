@@ -54,9 +54,9 @@ final public class CanaryUtils {
 		FORCE;
 		
 
-		public static CanaryMode of(String mode){
+		public static CanaryMode of(String mode, CanaryMode def){
 			if(StringUtils.isBlank(mode)){
-				return CANARY_NONE;
+				return def;
 			}
 			return Stream.of(values()).filter(s->s.name().equalsIgnoreCase(mode))
 										.findAny()

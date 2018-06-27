@@ -26,7 +26,7 @@ public class NoCanaryFilterMetaPredicate extends AbstractServerPredicate {
 		boolean hasCanaryFilter = metaData.entrySet().stream().anyMatch(entry->{
 			return entry.getKey().startsWith(CanaryFilterMetaPredicate.CANARY_FILTERS_KEY);
 		});
-		return hasCanaryFilter;
+		return !hasCanaryFilter;
 	}
 	
 }

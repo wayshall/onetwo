@@ -7,6 +7,7 @@ import org.onetwo.cloud.canary.CanaryUtils.CanaryMode;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.web.utils.WebHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
 import com.netflix.loadbalancer.CompositePredicate;
@@ -20,6 +21,9 @@ import com.netflix.loadbalancer.ZoneAvoidanceRule;
  */
 public class CanaryRule extends ZoneAvoidanceRule {
 
+	@Autowired
+	private CanaryProperties canaryProperties;
+	
     private CompositePredicate canaryPredicate;
 //	private CanaryPredicate canaryPredicate;
     private NoCanaryFilterMetaPredicate noCanaryFilterMetaPredicate;
@@ -36,10 +40,10 @@ public class CanaryRule extends ZoneAvoidanceRule {
     @Override
     public Server choose(Object key) {
     	java.util.Optional<HttpServletRequest> requestOpt = WebHolder.getRequest();
-    	CanaryMode canaryMode = CanaryMode.CANARY_NONE;
+    	CanaryMode canaryMode = canaryProperties.getDefaultMode();
     	if(requestOpt.isPresent()){
     		HttpServletRequest req = requestOpt.get();
-    		canaryMode = CanaryMode.of(req.getHeader(CanaryUtils.HEADER_CANARY_ENABLED));
+    		canaryMode = CanaryMode.of(req.getHeader(CanaryUtils.HEADER_CANARY_ENABLED), canaryProperties.getDefaultMode());
     	}
     	if(canaryMode==CanaryMode.FORCE){
     		ILoadBalancer lb = getLoadBalancer();
