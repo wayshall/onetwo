@@ -169,9 +169,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 			//不填，默认查找对应的配置 -> jfish.cloud.feign.basePath.serviceName
 			pathValue = FEIGN_BASE_PATH_KEY + serviceName;
 			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
-			if(StringUtils.isBlank(pathValue)){
+			/*if(StringUtils.isBlank(pathValue)){
 				pathValue = this.relaxedPropertyResolver.getProperty("server.contextPath");
-			}
+			}*/
 		}else if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
 			//:serviceName -> jfish.cloud.feign.basePath.serviceName
 			pathValue = FEIGN_BASE_PATH_KEY + pathValue.substring(1);
