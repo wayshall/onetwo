@@ -22,19 +22,21 @@ public class CanaryRule extends ZoneAvoidanceRule {
 
     private CompositePredicate canaryPredicate;
 //	private CanaryPredicate canaryPredicate;
+    private NoCanaryFilterMetaPredicate noCanaryFilterMetaPredicate;
     
     public CanaryRule(){
-    	EurekaMetaPredicate metaPredicate = new EurekaMetaPredicate();
+    	CanaryFilterMetaPredicate metaPredicate = new CanaryFilterMetaPredicate();
     	this.canaryPredicate = CompositePredicate.withPredicates(metaPredicate)
 								                /*.addFallbackPredicate(this.getPredicate())
 								                .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())*/
 								                .build();
+    	this.noCanaryFilterMetaPredicate = new NoCanaryFilterMetaPredicate();
     }
 	
     @Override
     public Server choose(Object key) {
     	java.util.Optional<HttpServletRequest> requestOpt = WebHolder.getRequest();
-    	CanaryMode canaryMode = CanaryMode.DISABLED;
+    	CanaryMode canaryMode = CanaryMode.CANARY_NONE;
     	if(requestOpt.isPresent()){
     		HttpServletRequest req = requestOpt.get();
     		canaryMode = CanaryMode.of(req.getHeader(CanaryUtils.HEADER_CANARY_ENABLED));
@@ -55,6 +57,13 @@ public class CanaryRule extends ZoneAvoidanceRule {
             if (server.isPresent()) {
                 return server.get();
             }
+    	}else if(canaryMode==CanaryMode.CANARY_NONE){
+    		ILoadBalancer lb = getLoadBalancer();
+            Optional<Server> server = noCanaryFilterMetaPredicate.chooseRoundRobinAfterFiltering(lb.getAllServers(), key);
+            if (server.isPresent()) {
+                return server.get();
+            }
+    		throw new BaseException(CanaryErrors.CANARY_NONE_SERVER_NOT_MATCH);
     	}
         return super.choose(key);
     	

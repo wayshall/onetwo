@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ErrorType;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -43,8 +44,10 @@ final public class CanaryUtils {
 	
 	
 	public static enum CanaryMode {
-		//不启用
+		//不启用，走默认侧策略
 		DISABLED,
+		//当没有x-canary头的时候，查找没有配置canary.filter的服务
+		CANARY_NONE,
 		//启用，当没有匹配的时候，使用默认查找策略
 		SMOOTHNESS,
 		//启用，强制匹配，没有匹配的时候，抛错
@@ -52,6 +55,9 @@ final public class CanaryUtils {
 		
 
 		public static CanaryMode of(String mode){
+			if(StringUtils.isBlank(mode)){
+				return CANARY_NONE;
+			}
 			return Stream.of(values()).filter(s->s.name().equalsIgnoreCase(mode))
 										.findAny()
 										.orElse(DISABLED);
@@ -61,7 +67,8 @@ final public class CanaryUtils {
 	
 
     public static enum CanaryErrors implements ErrorType {
-        CANARY_SERVER_NOT_MATCH("can not find any matched cannary server!");
+        CANARY_SERVER_NOT_MATCH("can not find any matched cannary server!"),
+        CANARY_NONE_SERVER_NOT_MATCH("can not find any matched server that not configurated cannary.filter!");
 
         final private String message;
 

@@ -18,7 +18,7 @@ import com.netflix.niws.loadbalancer.DiscoveryEnabledServer;
  * @author wayshall
  * <br/>
  */
-public class EurekaMetaPredicate extends AbstractServerPredicate {
+public class CanaryFilterMetaPredicate extends AbstractServerPredicate {
 	public static final String CANARY_FILTERS_KEY = "canary.filters.";
 	
 	private CanaryMatcherRegister matcherManager = CanaryMatcherRegister.INSTANCE;
