@@ -96,6 +96,12 @@ public class JFishOauth2Properties {
 		}
 		
 	}
+	
+
+	@Data
+	public static class ClientDetailsResolverProps {
+		public static final String ENABLED_KEY = CONFIG_PREFIX + ".clientDetailsResolver.enabled";
+	}
 
 
 	@Data
