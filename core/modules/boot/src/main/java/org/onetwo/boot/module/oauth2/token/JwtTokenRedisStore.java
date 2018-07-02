@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.util.Assert;
 
 /**
+ * 基于jwt，把tokenid和jwt token映射保存到redis
  * @author wayshall
  * <br/>
  */
@@ -89,7 +90,11 @@ public class JwtTokenRedisStore extends JwtTokenStore implements InitializingBea
 	}
 	
 	protected String getTokenId(DefaultOAuth2AccessToken at){
-		String tokenId = OAUTH_TOKEN_ID_PREFIX+(String)at.getAdditionalInformation().get(JwtAccessTokenConverter.TOKEN_ID);
+		Object tokenIdValue = at.getAdditionalInformation().get(JwtAccessTokenConverter.TOKEN_ID);
+		if(tokenIdValue==null){
+			throw new ServiceException(JwtErrors.CM_ERROR_TOKEN).put("token", at.getValue());
+		}
+		String tokenId = OAUTH_TOKEN_ID_PREFIX+tokenIdValue.toString();
 		return tokenId;
 	}
 	
