@@ -26,6 +26,7 @@ public class JFishOauth2Properties {
 	public static final String KEYS_REDIS = "redis";
 	public static final String KEYS_JDBC = "jdbc";
 	public static final String KEYS_JWT = "jwt";
+	public static final String KEYS_JWT_REDIS = "jwt-redis";
 	public static final String KEYS_IN_MEMORY = "in_memory";
 	
 	

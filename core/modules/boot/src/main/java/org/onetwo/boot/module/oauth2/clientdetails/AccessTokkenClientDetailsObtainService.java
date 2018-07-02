@@ -51,7 +51,7 @@ public class AccessTokkenClientDetailsObtainService implements ClientDetailsObta
 	@Override
 	public ClientDetails resolveClientDetails(String accessTokenValue) {
 		OAuth2AccessToken accessToken = tokenStore.readAccessToken(accessTokenValue);
-		OAuth2Authentication authentication = tokenStore.readAuthentication(accessTokenValue);
+		OAuth2Authentication authentication = tokenStore.readAuthentication(accessToken);
 		return clientDetailConverter.convert(accessToken, authentication);
 	}
 	

@@ -62,7 +62,31 @@ public class Oauth2TokenStoreConfiguration {
 			JwtTokenStore store = new JwtTokenStore(jwtAccessTokenConverter());
 			return store;
 		}
+
+		@Bean
+		public JwtAccessTokenConverter jwtAccessTokenConverter() {
+			JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+			converter.setSigningKey(jfishOauth2Properties.getJwt().getSigningKey());
+			/*if (keyValue != null) {
+				converter.setVerifierKey(keyValue);
+			}*/
+			return converter;
+		}
+
+	}
+	
+
+	@Configuration
+	@ConditionalOnProperty(name=JFishOauth2Properties.TOKEN_STORE_ENABLED_KEY, havingValue=JFishOauth2Properties.KEYS_JWT_REDIS)
+	protected static class JwtRedisTokenStoreConfiguration {
+		@Autowired
+		private JFishOauth2Properties jfishOauth2Properties;
 		
+		@Bean
+		public JwtTokenStore jwtTokenStore(){
+			JwtTokenStore store = new JwtTokenRedisStore(jwtAccessTokenConverter());
+			return store;
+		}
 
 		@Bean
 		public JwtAccessTokenConverter jwtAccessTokenConverter() {
