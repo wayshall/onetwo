@@ -22,6 +22,7 @@ import org.onetwo.boot.core.web.mvc.annotation.InterceptorDisabled.DisableMvcInt
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.mvc.utils.ModelAttr;
 import org.onetwo.common.spring.utils.PropertyAnnotationReader;
 import org.onetwo.common.spring.utils.PropertyAnnotationReader.PropertyAnnoMeta;
 import org.onetwo.common.utils.LangUtils;
@@ -84,9 +85,14 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		List<? extends MvcInterceptor> interceptors = meta.get().getInterceptors();
 		request.setAttribute(INTERCEPTORS_KEY, interceptors);
 		for(MvcInterceptor inter : interceptors){
-			boolean nextPreHandle = inter.preHandle(request, response, hmethod);
-			if(!nextPreHandle){
-				return nextPreHandle;
+			try {
+				boolean nextPreHandle = inter.preHandle(request, response, hmethod);
+				if(!nextPreHandle){
+					return nextPreHandle;
+				}
+			} catch (BaseException e) {
+				request.setAttribute(ModelAttr.ERROR_MESSAGE, e.getMessage());
+				throw e;
 			}
 		}
 		
