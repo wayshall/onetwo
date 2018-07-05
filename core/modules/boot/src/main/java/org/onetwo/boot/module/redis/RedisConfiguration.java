@@ -4,7 +4,6 @@ import org.onetwo.boot.module.redis.JFishRedisProperties.LockRegistryProperties;
 import org.onetwo.boot.module.redis.JFishRedisProperties.OnceTokenProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +49,8 @@ public class RedisConfiguration {
 	 * @throws Exception
 	 */
 	@Bean
-	@ConditionalOnMissingBean(name="stringKeyRedisTemplate")
+//	@ConditionalOnMissingBean(name="stringKeyRedisTemplate")
+	@ConditionalOnProperty(name=JFishRedisProperties.SERIALIZER_KEY, havingValue="stringKey", matchIfMissing=false)
 //	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
 	public RedisTemplate<String, Object> stringKeyRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
@@ -58,6 +58,14 @@ public class RedisConfiguration {
 		template.setHashKeySerializer(new StringRedisSerializer());
 		template.setConnectionFactory(jedisConnectionFactory);
 		
+		return template;
+	}
+	
+	@Bean
+	@ConditionalOnProperty(name=JFishRedisProperties.SERIALIZER_KEY, havingValue="jackson2", matchIfMissing=true)
+	public JsonRedisTemplate jsonRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
+		JsonRedisTemplate template = new JsonRedisTemplate();
+		template.setConnectionFactory(jedisConnectionFactory);
 		return template;
 	}
 	
@@ -75,15 +83,6 @@ public class RedisConfiguration {
 	@Bean
 	public RedisOperationService redisOperationService(){
 		return new RedisOperationService();
-	}
-	
-	@Bean
-	@ConditionalOnProperty(name=JFishRedisProperties.SERIALIZER_KEY, havingValue="jackson2", matchIfMissing=false)
-	@ConditionalOnMissingBean(name="redisTemplate")
-	public JsonRedisTemplate redisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
-		JsonRedisTemplate template = new JsonRedisTemplate();
-		template.setConnectionFactory(jedisConnectionFactory);
-		return template;
 	}
 	
 	@Bean
