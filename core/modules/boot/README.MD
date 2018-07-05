@@ -260,6 +260,14 @@ jfish:
             pathPatterns: /health
 ```
 
+### redis
+配置redisTemplate的序列化方式为jackson2
+```yaml
+jfish:
+    redis: 
+        serializer: jackson2
+```
+
 ### 其它一些简化使用的扩展
 
 - @BootMvcArgumentResolver 注解   

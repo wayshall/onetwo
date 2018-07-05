@@ -78,8 +78,9 @@ public class RedisConfiguration {
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean(name="jsonRedisTemplate")
-	public JsonRedisTemplate jsonRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
+	@ConditionalOnProperty(name=JFishRedisProperties.SERIALIZER_KEY, havingValue="jackson2", matchIfMissing=false)
+	@ConditionalOnMissingBean(name="redisTemplate")
+	public JsonRedisTemplate redisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
 		JsonRedisTemplate template = new JsonRedisTemplate();
 		template.setConnectionFactory(jedisConnectionFactory);
 		return template;
