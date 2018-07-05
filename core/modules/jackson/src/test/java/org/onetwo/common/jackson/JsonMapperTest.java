@@ -1,5 +1,7 @@
 package org.onetwo.common.jackson;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +18,10 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.map.ParamMap;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -58,6 +63,24 @@ public class JsonMapperTest {
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 //		objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
+	
+	@Test
+	public void testSerialWithType(){
+		JsonMapper json = JsonMapper.ignoreNull();
+		ObjectMapper objectMapper = json.getObjectMapper();
+		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+//		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+
+		TestJsonData u1 = new TestJsonData();
+		u1.setCreate_time(new Timestamp(new Date().getTime()));
+		u1.setUser_name("user_name");
+		
+		String data = json.toJson(u1);
+		System.out.println("data:"+data);
+		
+		Object u2 = json.fromJson(data, Object.class);
+		assertThat(u2.getClass()).isEqualTo(u1.getClass());
 	}
 	
 	@Test

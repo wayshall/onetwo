@@ -78,6 +78,14 @@ public class RedisConfiguration {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean(name="jsonRedisTemplate")
+	public JsonRedisTemplate jsonRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
+		JsonRedisTemplate template = new JsonRedisTemplate();
+		template.setConnectionFactory(jedisConnectionFactory);
+		return template;
+	}
+	
+	@Bean
 	public TokenValidator tokenValidator(){
 		OnceTokenProperties config = this.redisProperties.getOnceToken();
 		TokenValidator token = new TokenValidator();
