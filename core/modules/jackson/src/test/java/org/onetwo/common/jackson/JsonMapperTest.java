@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.jackson.UserEntity.SubUserEntity;
+import org.onetwo.common.jackson.exception.JsonException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.map.ParamMap;
@@ -69,7 +70,7 @@ public class JsonMapperTest {
 	public void testSerialWithType(){
 		JsonMapper json = JsonMapper.ignoreNull();
 		ObjectMapper objectMapper = json.getObjectMapper();
-		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, As.PROPERTY);
 //		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 
 		TestJsonData u1 = new TestJsonData();
@@ -81,6 +82,21 @@ public class JsonMapperTest {
 		
 		Object u2 = json.fromJson(data, Object.class);
 		assertThat(u2.getClass()).isEqualTo(u1.getClass());
+
+		try {
+			TestJsonData2 u3 = json.fromJson(data, TestJsonData2.class);
+//			assertThat(u3.getUser_name()).isEqualTo(u1.getUser_name());
+			Assert.fail();
+		} catch (Exception e) {
+			assertThat(e.getClass()).isEqualTo(JsonException.class);
+		}
+		TestJsonData d = new TestJsonData();
+		d.setCreate_time(new Date());
+		d.setUser_name("user_name");
+		data = json.toJson(d);
+		System.out.println("data:"+data);
+		TestJsonData2 dd = JsonMapper.ignoreNull().fromJson(data, TestJsonData2.class);
+		assertThat(dd.getUser_name()).isEqualTo(d.getUser_name());
 	}
 	
 	@Test

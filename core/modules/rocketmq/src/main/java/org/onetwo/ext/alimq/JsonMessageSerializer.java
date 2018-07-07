@@ -15,6 +15,12 @@ public class JsonMessageSerializer implements MessageSerializer {
 	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
 	private boolean checkMessageBodyInstantiate;
 	
+	public JsonMessageSerializer(){
+		//不使用enableDefaultTyping模式，携带了太多类型信息，对反序列化不友好
+		/*ObjectMapper mapper = jsonMapper.getObjectMapper();
+		mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);*/
+	}
+	
 	public JsonMessageSerializer(boolean checkMessageBodyInstantiate) {
 		super();
 		this.checkMessageBodyInstantiate = checkMessageBodyInstantiate;
