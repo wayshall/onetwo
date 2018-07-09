@@ -51,6 +51,11 @@ final public class LangOps {
 				 .collect(Collectors.toMap(array->(K)array[0], array->(V)array[1]));
 	}
 	
+	public static <K, V> Map<K, V> toMap(List<V> data, Function<V, K> keyExtractor){
+		 return data.stream()
+				 	.collect(Collectors.toMap(item->keyExtractor.apply(item), item->item));
+	}
+	
 	public static Object[] toArray(Map<?, ?> map){
 		return map.entrySet().stream().map(e -> Arrays.asList(e.getKey(), e.getValue())).flatMap(list -> list.stream()).toArray();
 	}

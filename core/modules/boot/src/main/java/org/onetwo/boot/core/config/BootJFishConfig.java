@@ -75,6 +75,8 @@ public class BootJFishConfig {
 //	private String autoConfig;
 	private GraceKillConfig graceKill = new GraceKillConfig();
 	
+	private FtlConfig ftl = new FtlConfig();
+	
 	public void setAppendPluginContextPath(boolean appendPluginContextPath){
 		if(appendPluginContextPath){
 			pluginContextPathModes = PluginContextPathModes.APPEND;
@@ -92,6 +94,11 @@ public class BootJFishConfig {
 
 	public void setLogErrorDetail(boolean logErrorDetail) {
 		this.logErrorDetail = logErrorDetail;
+	}
+	
+	@Data
+	public class FtlConfig {
+		String templateDir;
 	}
 	
 	@Data
