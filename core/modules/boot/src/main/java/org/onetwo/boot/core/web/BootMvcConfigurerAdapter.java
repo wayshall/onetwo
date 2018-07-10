@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
-import org.onetwo.boot.core.config.BootJFishConfig.MvcConfig.ResourceHandlerConfig;
+import org.onetwo.boot.core.config.BootJFishConfig.ResourceHandlerConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
 import org.onetwo.boot.core.web.async.MvcAsyncProperties;
