@@ -3,7 +3,6 @@ package org.onetwo.boot.module.redis;
 import org.onetwo.boot.module.redis.JFishRedisProperties.LockRegistryProperties;
 import org.onetwo.boot.module.redis.JFishRedisProperties.OnceTokenProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -21,7 +20,7 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
 @EnableConfigurationProperties({JFishRedisProperties.class})
 @ConditionalOnClass({JedisConnectionFactory.class, RedisTemplate.class})
 @ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true", matchIfMissing=true)
-@ConditionalOnBean(JedisConnectionFactory.class)
+//@ConditionalOnBean(JedisConnectionFactory.class)
 public class RedisConfiguration {
 	
 //	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";
