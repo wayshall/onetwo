@@ -1,4 +1,4 @@
-package org.onetwo.cloud.bugfix;
+package org.onetwo.boot.bugfix;
 
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;

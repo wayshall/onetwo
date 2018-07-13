@@ -13,7 +13,6 @@ import net.jodah.typetools.TypeResolver;
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.convertor.ApiclientJackson2HttpMessageConverter;
-import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
@@ -134,7 +133,9 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 //			Object requestBody = context.getRequestBodySupplier().get();
 			Object requestBody = context.getRequestBodySupplier().getRequestBody(context);
 			if(logger.isDebugEnabled()){
-				logger.debug("requestBody for json: {}", JsonMapper.IGNORE_NULL.toJson(requestBody));
+				//打印时不能使用toJson，会破坏某些特殊对象，比如resource
+//				logger.debug("requestBody for json: {}", JsonMapper.IGNORE_NULL.toJson(requestBody));
+				logger.debug("requestBody : {}", requestBody);
 			}
 			requestEntity = new HttpEntity<>(requestBody, headers);
 			

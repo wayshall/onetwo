@@ -1,5 +1,6 @@
 package org.onetwo.cloud.bugfix;
 
+import org.onetwo.boot.bugfix.AllEncompassingFormHttpMessageConverter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cloud.netflix.zuul.filters.pre.FormBodyWrapperFilter;
@@ -28,8 +29,7 @@ public class FixFormBodyWrapperFilterPostProcessor implements BeanPostProcessor 
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
 

@@ -1,4 +1,4 @@
-package org.onetwo.cloud.bugfix;
+package org.onetwo.boot.bugfix;
 
 import io.reactivex.annotations.Nullable;
 

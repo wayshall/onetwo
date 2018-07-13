@@ -62,10 +62,28 @@ import org.springframework.web.client.RestClientException;
 public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParameter> {
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
 																	.enableFieldNameAnnotation()
+																	.valueConvertor((prop, v)->{
+																		if(v instanceof Enum){
+																			Enum<?> e = (Enum<?>)v;
+																			if(e instanceof ValueEnum){
+																				v = ((ValueEnum<?>)e).getValue();
+																			}else{//默认使用name
+																				v = e.name();
+																			}
+																		}else if(v instanceof Resource || 
+																				v instanceof byte[] ||
+																				v instanceof ClassLoader){
+																			//ignore，忽略，不转为string
+																		}else{
+																			v = v.toString();
+																		}
+																		return v;
+																	})
 																	.flatableObject(obj->{
 																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
 																		return  flatable &&
 																				!Resource.class.isInstance(obj) &&
+																				!byte[].class.isInstance(obj) &&
 																				!ClassLoader.class.isInstance(obj);
 																	})
 																	.build();
@@ -240,11 +258,14 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			if(getContentType().isPresent()){
 				String contentType = getContentType().get();
 				MediaType consumerMediaType = MediaType.parseMediaType(contentType);
-				if(MediaType.APPLICATION_FORM_URLENCODED.equals(consumerMediaType)){
+				if(MediaType.APPLICATION_FORM_URLENCODED.equals(consumerMediaType) ||
+						MediaType.MULTIPART_FORM_DATA.equals(consumerMediaType)){
 					//form的话，需要转成multipleMap
 					values = toMap(parameters, args);
 				}else{
 					values = args.length==1?args[0]:toMap(parameters, args).toSingleValueMap();
+//					values = args.length==1?args[0]:toMap(parameters, args);
+//					values = toMap(parameters, args);
 				}
 			}else{
 				//默认为form
@@ -294,19 +315,23 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		
 		if(flatable){
 			beanToMapConvertor.flatObject(mp.getParameterName(), paramValue, (k, v, ctx)->{
-				if(v instanceof Enum){
+				/*if(v instanceof Enum){
 					Enum<?> e = (Enum<?>)v;
 					if(e instanceof ValueEnum){
 						v = ((ValueEnum<?>)e).getValue();
 					}else{//默认使用name
 						v = e.name();
 					}
-				}
+				}else if(v instanceof Resource){
+					//ignore，忽略，不转为string
+				}else{
+					v = v.toString();
+				}*/
 				if(ctx!=null){
 //					System.out.println("ctx.getName():"+ctx.getName());
-					values.add(ctx.getName(), v.toString());
+					values.add(ctx.getName(), v);
 				}else{
-					values.add(k, v.toString());
+					values.add(k, v);
 				}
 	//			values.put(k, v);
 			});
