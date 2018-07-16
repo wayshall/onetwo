@@ -3,6 +3,7 @@ package org.onetwo.common.apiclient.resouce;
 import org.springframework.core.io.ByteArrayResource;
 
 /**
+ * 某些情况下需要给byteArrayResource一个 filename
  * @author wayshall
  * <br/>
  */

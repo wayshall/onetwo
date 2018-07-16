@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
 import org.onetwo.common.apiclient.annotation.ResponseHandler;
+import org.onetwo.common.apiclient.resouce.FileNameByteArrayResource;
 import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.reflect.BeanToMapConvertor;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 支持  @PathVariable @RequestBody @RequestParam 注解
@@ -60,7 +63,12 @@ import org.springframework.web.client.RestClientException;
  * <br/>
  */
 public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParameter> {
-	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
+	
+	public static BeanToMapConvertor getBeanToMapConvertor() {
+		return beanToMapConvertor;
+	}
+
+	final static private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
 																	.enableFieldNameAnnotation()
 																	.valueConvertor((prop, v)->{
 																		if(v instanceof Enum){
@@ -74,8 +82,16 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 																				v instanceof byte[] ||
 																				v instanceof ClassLoader){
 																			//ignore，忽略，不转为string
+																		}else if(v instanceof MultipartFile){
+																			MultipartFile mf = (MultipartFile)v;
+																			try{
+																				FileNameByteArrayResource res = new FileNameByteArrayResource(mf.getOriginalFilename(), FileUtils.toByteArray(mf.getInputStream()));
+																				v = res;
+																			}catch(Exception e){
+																				throw new BaseException("convert file error: " + e.getMessage(), e);
+																			}
 																		}else{
-																			v = v.toString();
+																			v = v==null?v:v.toString();
 																		}
 																		return v;
 																	})
@@ -84,7 +100,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 																		return  flatable &&
 																				!Resource.class.isInstance(obj) &&
 																				!byte[].class.isInstance(obj) &&
-																				!ClassLoader.class.isInstance(obj);
+																				!MultipartFile.class.isInstance(obj);
 																	})
 																	.build();
 	

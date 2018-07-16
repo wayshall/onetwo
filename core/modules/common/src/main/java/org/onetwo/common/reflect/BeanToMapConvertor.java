@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.onetwo.common.reflect.ReflectUtils.PropertyDescriptorCallback;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
@@ -62,6 +63,7 @@ public class BeanToMapConvertor {
 	@SuppressWarnings("serial")
 	private final static Collection<Class<?>> mapableValueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass()){
 		{
+			add(Enum.class);
 			add(URL.class);
 			add(URI.class);
 			add(Class.class);
@@ -217,30 +219,42 @@ public class BeanToMapConvertor {
 //		PropertyContext ctx = new PropertyContext(obj, null, prefixName);
 		flatObject(prefixName==null?"":prefixName, obj, valuePutter, null);
 	}
+	
+	private boolean isMapObject(Object obj){
+		return Map.class.isInstance(obj);
+	}
+	
+	private boolean isMultiple(Object obj){
+		return LangUtils.isMultiple(obj);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter, PropertyContext keyContext){
 		Objects.requireNonNull(prefixName);
 		if(isMappableValue(obj)){
-			valuePutter.put(prefixName, obj, keyContext);
-		}else if(Map.class.isInstance(obj)){
+			Object convertedValue = convertValue(null, obj);
+			valuePutter.put(prefixName, convertedValue, keyContext);
+		}else if(isMapObject(obj)){
 			String mapPrefixName = prefixName;
 			if(StringUtils.isNotBlank(prefixName)){
 				mapPrefixName = prefixName+this.propertyAccesor;
 			}
 			for(Entry<String, Object> entry : ((Map<String, Object>)obj).entrySet()){
 				if(isMappableValue(entry.getValue())){
-					valuePutter.put(mapPrefixName+entry.getKey(), entry.getValue(), null);
+					Object convertedValue = convertValue(null, entry.getValue());
+					valuePutter.put(mapPrefixName+entry.getKey(), convertedValue, null);
 				}else{
 					flatObject(mapPrefixName+entry.getKey(), entry.getValue(), valuePutter);
 				}
 			}
-		}else if(LangUtils.isMultiple(obj)){
+		}else if(isMultiple(obj)){
 			List<Object> list = LangUtils.asList(obj);
 			int index = 0;
 			for(Object o : list){
 				String listIndexName = prefixName + this.listOpener+index+this.listCloser;
 				if(isMappableValue(o)){
-					valuePutter.put(listIndexName, o, null);
+					Object convertedValue = convertValue(null, o);
+					valuePutter.put(listIndexName, convertedValue, null);
 				}else{
 					flatObject(listIndexName, o, valuePutter);
 				}
@@ -255,12 +269,15 @@ public class BeanToMapConvertor {
 				Object val = ReflectUtils.getProperty(obj, prop);
 //				System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
 				if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
-					if(valueConvertor!=null){
+					/*if(isMapObject(val) || isMultiple(val)){
+						//no convert
+					}else if(valueConvertor!=null){
 						Object newVal = valueConvertor.apply(prop, val);
 						val = (newVal!=null?newVal:val);
 					}else if(val instanceof Enum){
 						val = ((Enum<?>)val).name();
-					}
+					}*/
+					
 					PropertyContext propContext = createPropertyContext(obj, prop);
 					if(StringUtils.isBlank(prefixName)){
 						flatObject(propContext.getName(), val, valuePutter, propContext);
@@ -270,6 +287,17 @@ public class BeanToMapConvertor {
 				}
 			});
 		}
+	}
+	
+	private Object convertValue(PropertyDescriptor prop, Object val){
+		if(val instanceof Enum){
+			val = ((Enum<?>)val).name();
+		}
+		if(valueConvertor!=null){
+			Object newVal = valueConvertor.apply(prop, val);
+			val = (newVal!=null?newVal:val);
+		}
+		return val;
 	}
 
 	public static interface ValuePutter {
