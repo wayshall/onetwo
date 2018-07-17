@@ -16,6 +16,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.cloud.netflix.zuul.filters.route.okhttp.OkHttpRibbonCommand;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 
 import com.netflix.hystrix.exception.HystrixBadRequestException;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
+import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
 
 import feign.FeignException;
 import feign.Response;
@@ -53,7 +56,11 @@ public class ExtResponseEntityDecoder implements Decoder {
 				res = decodeByType(response, type);
 			}else{
 				SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
-				if(dr.isError()){
+				if(isCutoutError(response, dr)){
+					ServiceException cause = new ServiceException(dr.getMessage(), dr.getCode());
+					String message = "remote service error:"+dr.getMessage();
+					throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
+				}else if(dr.isError()){
 					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 				}
 				res = dr.getData();
@@ -75,6 +82,11 @@ public class ExtResponseEntityDecoder implements Decoder {
 			res = dr.getData();
 		}
 		return res;
+	}
+	
+	protected boolean isCutoutError(FeignResponseAdapter response, SimpleDataResult<?> dr){
+		//TODO dr.getCode().startWith("SHORTCIRCUIT_")，暂时不需要
+		return false;
 	}
 
 	@SuppressWarnings({ "rawtypes" })

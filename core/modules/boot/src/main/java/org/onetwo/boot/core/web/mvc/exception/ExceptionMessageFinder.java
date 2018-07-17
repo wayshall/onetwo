@@ -46,6 +46,8 @@ import org.springframework.web.method.HandlerMethod;
  */
 public interface ExceptionMessageFinder {
 	public String ERROR_RESPONSE_HEADER = "X-RESPONSE-JFISH-ERROR";
+	//TODO: 必要时加上serviceName头，一边追踪，待实现
+	public String ERROR_JSERVICE_HEADER = "X-RESPONSE-JSERVICE";
 
 	default ErrorMessage getErrorMessage(Exception throwable, boolean alwaysLogErrorDetail){
 		String errorCode = "";
