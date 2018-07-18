@@ -52,6 +52,10 @@ import org.springframework.web.multipart.MultipartFile;
  * 没有注解的方法参数：如果为get请求，则所有参数都转为queryString参数，效果和使用了@RequestParam一样；
  * 					 如果为post请求，则自动包装为类型为Map的requestBody
  * 
+ * 如果没有指定requestBody，则根据规则查找可以作为requestBody的参数
+ * 方法多于一个参数时，使用参数名称作为参数前缀；
+ * 只有一个参数的时候，除非用@RequestParam等注解指定了参数名称前缀，否则前缀为空，直接把对象转化为map作为键值对参数
+ * 
  * 
  * get请求忽略requestBody
  * post请求会把非url参数转化为requestBody
@@ -202,8 +206,8 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 												})
 												.collect(Collectors.toList());
 
-		boolean parameterNameAsPrefix = urlVariableParameters.size()>1;
-		Map<String, Object> values = toMap(urlVariableParameters, args, parameterNameAsPrefix).toSingleValueMap();
+//		boolean parameterNameAsPrefix = urlVariableParameters.size()>1;
+		Map<String, Object> values = toMap(urlVariableParameters, args).toSingleValueMap();
 		
 		return values;
 	}
@@ -272,6 +276,14 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				return null;
 			}
 			
+			//如果没有指定requestBody，则根据规则查找可以作为requestBody的参数
+			List<ApiClientMethodParameter> bodyableParameters = parameters.stream()
+					.filter(p->!isSpecalPemerater(p))
+					.collect(Collectors.toList());
+//			List<ApiClientMethodParameter> bodyableParameters = parameters;
+			
+			//大于一个参数时，使用参数名称作为参数前缀
+			boolean parameterNameAsPrefix = bodyableParameters.size()>1;
 			//没有requestBody注解时，根据contentType做简单的转换策略
 			if(getContentType().isPresent()){
 				String contentType = getContentType().get();
@@ -279,16 +291,17 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				if(MediaType.APPLICATION_FORM_URLENCODED.equals(consumerMediaType) ||
 						MediaType.MULTIPART_FORM_DATA.equals(consumerMediaType)){
 					//form的话，需要转成multipleMap
-					values = toMap(parameters, args);
+					values = toMap(bodyableParameters, args, parameterNameAsPrefix);
 				}else{
+					//如contentType为json之类，则转成单值的map
 //					values = args.length==1?args[0]:toMap(parameters, args).toSingleValueMap();
-					values = args.length==1?args[0]:toMap(parameters, args, false);
+					values = args.length==1?args[0]:toMap(bodyableParameters, args, parameterNameAsPrefix).toSingleValueMap();
 //					values = args.length==1?args[0]:toMap(parameters, args);
 //					values = toMap(parameters, args);
 				}
 			}else{
 				//默认为form
-				values = toMap(parameters, args, false);
+				values = toMap(bodyableParameters, args, parameterNameAsPrefix);
 			}
 			return values;
 		}else if(requestBodyParameters.size()==1){
