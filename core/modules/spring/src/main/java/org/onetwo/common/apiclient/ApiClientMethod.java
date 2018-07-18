@@ -201,8 +201,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 													return isUriVariables(p);
 												})
 												.collect(Collectors.toList());
-		
-		Map<String, Object> values = toMap(urlVariableParameters, args).toSingleValueMap();
+
+		boolean parameterNameAsPrefix = urlVariableParameters.size()>1;
+		Map<String, Object> values = toMap(urlVariableParameters, args, parameterNameAsPrefix).toSingleValueMap();
 		
 		return values;
 	}
@@ -212,11 +213,12 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			return Collections.emptyMap();
 		}
 		
-		List<ApiClientMethodParameter> urlVariableParameters = parameters.stream()
+		List<ApiClientMethodParameter> queryParameters = parameters.stream()
 												.filter(p->isQueryStringParameters(p))
 												.collect(Collectors.toList());
-		
-		Map<String, ?> values = toMap(urlVariableParameters, args).toSingleValueMap();
+
+		boolean parameterNameAsPrefix = queryParameters.size()>1;
+		Map<String, ?> values = toMap(queryParameters, args, parameterNameAsPrefix).toSingleValueMap();
 		
 		return values;
 	}
@@ -279,13 +281,14 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 					//form的话，需要转成multipleMap
 					values = toMap(parameters, args);
 				}else{
-					values = args.length==1?args[0]:toMap(parameters, args).toSingleValueMap();
+//					values = args.length==1?args[0]:toMap(parameters, args).toSingleValueMap();
+					values = args.length==1?args[0]:toMap(parameters, args, false);
 //					values = args.length==1?args[0]:toMap(parameters, args);
 //					values = toMap(parameters, args);
 				}
 			}else{
 				//默认为form
-				values = toMap(parameters, args);
+				values = toMap(parameters, args, false);
 			}
 			return values;
 		}else if(requestBodyParameters.size()==1){
@@ -320,18 +323,30 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return parameter.getParameterIndex()==apiHeaderCallbackIndex || parameter.getParameterIndex()==headerParameterIndex;
 	}
 	
-	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean flatable){
+	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean parameterNameAsPrefix){
+		String prefix = "";
 		Object paramValue = pvalue;
 		if(mp.hasParameterAnnotation(RequestParam.class)){
 			RequestParam params = mp.getParameterAnnotation(RequestParam.class);
 			if(pvalue==null && params.required() && (paramValue=params.defaultValue())==ValueConstants.DEFAULT_NONE){
 				throw new BaseException("parameter["+params.name()+"] must be required : " + mp.getParameterName());
 			}
+			parameterNameAsPrefix = true;
+		}else if(isUriVariables(mp)){
+			parameterNameAsPrefix = true;
 		}
 		
-		if(flatable){
+		if(parameterNameAsPrefix){
+			prefix = mp.getParameterName();
+		}
+		beanToMapConvertor.flatObject(prefix, paramValue, (k, v, ctx)->{
+			values.add(k, v);
+		});
+		
+		/*if(falatable){
+//			beanToMapConvertor.flatObject(mp.getParameterName(), paramValue, (k, v, ctx)->{
 			beanToMapConvertor.flatObject(mp.getParameterName(), paramValue, (k, v, ctx)->{
-				/*if(v instanceof Enum){
+				if(v instanceof Enum){
 					Enum<?> e = (Enum<?>)v;
 					if(e instanceof ValueEnum){
 						v = ((ValueEnum<?>)e).getValue();
@@ -342,18 +357,18 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 					//ignore，忽略，不转为string
 				}else{
 					v = v.toString();
-				}*/
-				/*if(ctx!=null){
+				}
+				if(ctx!=null){
 //					System.out.println("ctx.getName():"+ctx.getName());
 					values.add(ctx.getName(), v);
 				}else{
 					values.add(k, v);
-				}*/
-				values.add(k, v);
+				}
+//				values.add(k, v);
 			});
 		}else{
 			values.add(mp.getParameterName(), pvalue);
-		}
+		}*/
 	}
 
 	public String getPath() {
