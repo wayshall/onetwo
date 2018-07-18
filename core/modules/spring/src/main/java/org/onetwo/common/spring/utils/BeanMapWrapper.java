@@ -47,7 +47,11 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 			return listIndex>=0;
 		}
 
-		
+		@Override
+		public String toString() {
+			return "MapTokens [key=" + key + ", propertyPath=" + propertyPath
+					+ ", listIndex=" + listIndex + "]";
+		}
 	}
 
 //	private BeanWrapper beanWrapper;
@@ -179,8 +183,12 @@ public class BeanMapWrapper extends BeanWrapperImpl implements PropertyAccessor 
 				return indexValue;
 			}else if(token.hasPropertyPath()){
 				Object rs = data.get(token.key);
-				BeanWrapper bw = newBeanWrapper(rs);
-				return bw.getPropertyValue(token.propertyPath);
+				try {
+					BeanWrapper bw = newBeanWrapper(rs);
+					return bw.getPropertyValue(token.propertyPath);
+				} catch (Exception e) {
+					throw new BaseException("create BeanWrapper error. propertyName:" + propertyName + ", token:"+token+", token.key:" + token.key, e);
+				}
 			}else{
 				return data.get(propertyName);
 			}
