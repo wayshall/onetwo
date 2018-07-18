@@ -45,11 +45,7 @@ public class ExtSpringEncoder extends SpringEncoder {
 //			MultiValueMap<String, String> map = RestUtils.toMultiValueStringMap(requestBody);
 			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 			getParamsConvertor.flatObject("", requestBody, (k, v, ctx)->{
-				if(ctx!=null){
-					map.add(ctx.getName(), v);
-				}else{
-					map.add(k, v);
-				}
+				map.add(k, v);
 			});
 			map.forEach((name, value)->{
 				if(value!=null){
