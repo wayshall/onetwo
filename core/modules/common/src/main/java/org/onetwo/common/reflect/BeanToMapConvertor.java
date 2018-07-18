@@ -381,7 +381,15 @@ public class BeanToMapConvertor implements Cloneable {
 		protected boolean enableUnderLineStyle = false;
 		protected String prefix = "";
 
-
+		public void copyTo(BaseBeanToMapBuilder<?> builder){
+			builder.prefix = this.prefix;
+			builder.propertyAcceptor = this.propertyAcceptor;
+			builder.valueConvertor = this.valueConvertor;
+			builder.flatableObject = this.flatableObject;
+			builder.enableFieldNameAnnotation = this.enableFieldNameAnnotation;
+			builder.enableUnderLineStyle = this.enableUnderLineStyle;
+		}
+		
 		public T propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
 			this.propertyAcceptor = propertyAcceptor;
 			return self();

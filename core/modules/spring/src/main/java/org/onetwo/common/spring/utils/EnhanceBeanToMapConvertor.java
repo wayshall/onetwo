@@ -54,6 +54,11 @@ public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
 
 
 	public static class EnhanceBeanToMapBuilder extends BaseBeanToMapBuilder<EnhanceBeanToMapBuilder> {
+		public static EnhanceBeanToMapBuilder createFrom(BaseBeanToMapBuilder<?> builder){
+			EnhanceBeanToMapBuilder enhance = new EnhanceBeanToMapBuilder();
+			builder.copyTo(enhance);
+			return enhance;
+		}
 		public static EnhanceBeanToMapBuilder enhanceBuilder(){
 			return new EnhanceBeanToMapBuilder();
 		}
