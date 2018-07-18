@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.reflect.BeanToMapConvertor;
-import org.onetwo.common.spring.rest.RestUtils;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cloud.netflix.feign.support.SpringEncoder;
@@ -29,17 +28,29 @@ public class ExtSpringEncoder extends SpringEncoder {
 //										 				.enableUnderLineStyle()
 										 				.build();*/
 
-	final private BeanToMapConvertor beanToMapConvertor = ApiClientMethod.getBeanToMapConvertor();
+	final private BeanToMapConvertor postToMapConvertor = ApiClientMethod.getBeanToMapConvertor();
+	final private BeanToMapConvertor getParamsConvertor = ApiClientMethod.getBeanToMapConvertor();
 	
 	public ExtSpringEncoder(ObjectFactory<HttpMessageConverters> messageConverters) {
 		super(messageConverters);
+		/*getParamsConvertor.setPropertyAcceptor((prop, value)->{
+			return true;
+		});*/
 	}
 
 	@Override
 	public void encode(Object requestBody, Type bodyType, RequestTemplate request) throws EncodeException {
 		if(GET_METHOD.equalsIgnoreCase(request.method()) && requestBody!=null){
 //			Map<String, Object> map = beanToMapConvertor.toFlatMap(requestBody);
-			MultiValueMap<String, String> map = RestUtils.toMultiValueStringMap(requestBody);
+//			MultiValueMap<String, String> map = RestUtils.toMultiValueStringMap(requestBody);
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+			getParamsConvertor.flatObject("", requestBody, (k, v, ctx)->{
+				if(ctx!=null){
+					map.add(ctx.getName(), v);
+				}else{
+					map.add(k, v);
+				}
+			});
 			map.forEach((name, value)->{
 				if(value!=null){
 					request.query(name, value.toArray(new String[0]));
@@ -57,7 +68,7 @@ public class ExtSpringEncoder extends SpringEncoder {
 				MediaType.MULTIPART_FORM_DATA.equals(contentType)){
 			//form的话，需要转成multipleMap
 			MultiValueMap<String, Object> values = new LinkedMultiValueMap<>();
-			beanToMapConvertor.flatObject("", requestBody, (k, v, ctx)->{
+			postToMapConvertor.flatObject("", requestBody, (k, v, ctx)->{
 				if(ctx!=null){
 					values.add(ctx.getName(), v);
 				}else{

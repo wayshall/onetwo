@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import org.onetwo.common.reflect.ReflectUtils.PropertyDescriptorCallback;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
@@ -27,7 +26,7 @@ import org.onetwo.common.utils.StringUtils;
  * @author way
  *
  */
-public class BeanToMapConvertor {
+public class BeanToMapConvertor implements Cloneable {
 	private static final String GROOVY_META = "groovy.lang.MetaClass";
 	static public class DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
 
@@ -60,10 +59,13 @@ public class BeanToMapConvertor {
 		
 	}
 
+	/***
+	 * 不可扁平化的类型，即可直接映射为值的类型
+	 */
 	@SuppressWarnings("serial")
-	private final static Collection<Class<?>> mapableValueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass()){
+	private final static Collection<Class<?>> NOT_FLATABLE_VALUE_TYPES = new HashSet<Class<?>>(LangUtils.getSimpleClass()){
 		{
-			add(Enum.class);
+//			add(Enum.class);
 			add(URL.class);
 			add(URI.class);
 			add(Class.class);
@@ -72,7 +74,14 @@ public class BeanToMapConvertor {
 	};
 
 	public final static Function<Object, Boolean> DEFAULT_FLATABLE = obj->{
-		return !mapableValueTypes.contains(obj.getClass());
+		Class<?> valueType = obj.getClass();
+		if(NOT_FLATABLE_VALUE_TYPES.contains(valueType)){
+			return false;
+		}else if(Enum.class.isAssignableFrom(valueType)){
+			//枚举类也不再扁平
+			return false;
+		}
+		return true;
 	};
 	
 	private String listOpener = "[";
@@ -106,10 +115,27 @@ public class BeanToMapConvertor {
 		}
 	}*/
 	
+	
 	public void setPropertyAccesor(String propertyAccesor) {
 //		this.checkFreezed();
 		this.propertyAccesor = propertyAccesor;
 	}
+	
+	@Override
+	public BeanToMapConvertor clone() /*throws CloneNotSupportedException */{
+		BeanToMapConvertor convertor = new BeanToMapConvertor();
+		convertor.listOpener = this.listOpener;
+		convertor.listCloser = this.listCloser;
+		convertor.propertyAccesor = this.propertyAccesor;
+		convertor.prefix = this.prefix;
+		convertor.propertyAcceptor = this.propertyAcceptor;
+		convertor.valueConvertor = this.valueConvertor;
+		convertor.flatableObject = this.flatableObject;
+		convertor.enableFieldNameAnnotation = this.enableFieldNameAnnotation;
+		convertor.enableUnderLineStyle = this.enableUnderLineStyle;
+		return convertor;
+	}
+
 	public void setPrefix(String prefix) {
 //		this.checkFreezed();
 		this.prefix = prefix;
