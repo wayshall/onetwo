@@ -268,6 +268,19 @@ jfish:
         serializer: jackson2
 ```
 
+### redis cache
+redis 缓存配置
+使用json序列化缓存
+```yaml
+jfish:
+    cache: 
+        redis: 
+			useJsonRedisTemplate: true
+            usePrefix: true
+            expires:
+                key1:key2: 30m
+```
+
 ### 其它一些简化使用的扩展
 
 - @BootMvcArgumentResolver 注解   

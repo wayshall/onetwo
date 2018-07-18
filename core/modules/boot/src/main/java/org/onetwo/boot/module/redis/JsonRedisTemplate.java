@@ -5,7 +5,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +27,8 @@ public class JsonRedisTemplate extends RedisTemplate<String, Object>{
 		ObjectMapper mapper = jsonMapper.getObjectMapper();
 		mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
 		
-		RedisSerializer<String> keySerializer = new StringRedisSerializer();
+//		RedisSerializer<String> keySerializer = new StringRedisSerializer();
+		RedisSerializer<Object> keySerializer = new GenericJackson2JsonRedisSerializer(mapper);
 		RedisSerializer<Object> valueSerializer = new GenericJackson2JsonRedisSerializer(mapper);
 		setKeySerializer(keySerializer);
 		setValueSerializer(valueSerializer);

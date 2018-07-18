@@ -18,7 +18,23 @@ public class MethodKeyGenerator extends SimpleKeyGenerator implements KeyGenerat
 		}*/
 		keyParamList.add(method.toGenericString());
 		keyParamList.addAll(Arrays.asList(params));
-		return generateKey(keyParamList.toArray());
+//		return generateKey(keyParamList.toArray());
+		return generateMethodKey(keyParamList.toArray());
+	}
+	
+	public static Object generateMethodKey(Object... params) {
+		if (params.length == 0) {
+			return MethodSimpleKey.EMPTY;
+		}
+		if (params.length == 1) {
+			Object param = params[0];
+			if (param != null && !param.getClass().isArray()) {
+				return param;
+			}
+		}
+		MethodSimpleKey key = new MethodSimpleKey();
+		key.setParams(params);
+		return key;
 	}
 	
 }
