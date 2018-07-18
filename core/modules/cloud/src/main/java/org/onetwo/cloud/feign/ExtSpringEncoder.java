@@ -28,7 +28,7 @@ public class ExtSpringEncoder extends SpringEncoder {
 //										 				.enableUnderLineStyle()
 										 				.build();*/
 
-	final private BeanToMapConvertor postToMapConvertor = ApiClientMethod.getBeanToMapConvertor();
+	final private BeanToMapConvertor postBodyConvertor = ApiClientMethod.getBeanToMapConvertor();
 	final private BeanToMapConvertor getParamsConvertor = ApiClientMethod.getBeanToMapConvertor();
 	
 	public ExtSpringEncoder(ObjectFactory<HttpMessageConverters> messageConverters) {
@@ -64,12 +64,13 @@ public class ExtSpringEncoder extends SpringEncoder {
 				MediaType.MULTIPART_FORM_DATA.equals(contentType)){
 			//form的话，需要转成multipleMap
 			MultiValueMap<String, Object> values = new LinkedMultiValueMap<>();
-			postToMapConvertor.flatObject("", requestBody, (k, v, ctx)->{
-				if(ctx!=null){
+			postBodyConvertor.flatObject("", requestBody, (k, v, ctx)->{
+				/*if(ctx!=null){
 					values.add(ctx.getName(), v);
 				}else{
 					values.add(k, v);
-				}
+				}*/
+				values.add(k, v);
 			});
 			return values;
 		}

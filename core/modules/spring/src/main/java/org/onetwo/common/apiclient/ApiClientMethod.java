@@ -343,13 +343,13 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				}else{
 					v = v.toString();
 				}*/
-				if(ctx!=null){
+				/*if(ctx!=null){
 //					System.out.println("ctx.getName():"+ctx.getName());
 					values.add(ctx.getName(), v);
 				}else{
 					values.add(k, v);
-				}
-	//			values.put(k, v);
+				}*/
+				values.add(k, v);
 			});
 		}else{
 			values.add(mp.getParameterName(), pvalue);

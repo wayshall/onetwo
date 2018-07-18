@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.apiclient.ApiClientMethod;
+import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.spring.entity.RoleEntity;
 import org.onetwo.common.spring.entity.UserEntity;
 import org.onetwo.common.utils.ParamUtils;
@@ -14,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 
 
 public class RestUtilsTest {
+	BeanToMapConvertor beanToMapConvertor = ApiClientMethod.getBeanToMapConvertor();
 	
 	@Test
 	public void test(){
@@ -49,6 +52,32 @@ public class RestUtilsTest {
 		String result = RestUtils.keysToParamString(params);
 		System.out.println("result:"+result);
 		assertThat(result).isEqualTo("param1={param1}&param1={param1}&param2={param2}&param3={param3}");
+	}
+	
+	@Test
+	public void testFlatable(){
+		UserEntity user = new UserEntity();
+		user.setId(11L);
+		user.setUserName("testUserName");
+		
+		RoleEntity role = new RoleEntity();
+		role.setId(20L);
+		role.setName("testRoleName");
+
+		RoleEntity role1 = new RoleEntity();
+		role1.setId(21L);
+		role1.setName("testRoleName1");
+		
+		user.setRoles(Arrays.asList(role, role1));
+		
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<String, Object>();
+		beanToMapConvertor.flatObject("", user, (k, v, ctx)->{
+			System.out.println("k:"+k+", ctx.getName():"+ctx.getName());
+			params.add(k, v);
+		});
+		String result = RestUtils.keysToParamString(params);
+		System.out.println("result: " + result);
+		assertThat(result).isEqualTo("age={age}&height={height}&id={id}&roles[0].id={roles[0].id}&roles[0].name={roles[0].name}&roles[0].version={roles[0].version}&roles[1].id={roles[1].id}&roles[1].name={roles[1].name}&roles[1].version={roles[1].version}&userName={userName}");
 	}
 
 }

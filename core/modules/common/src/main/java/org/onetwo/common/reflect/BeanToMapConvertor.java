@@ -308,7 +308,9 @@ public class BeanToMapConvertor implements Cloneable {
 					if(StringUtils.isBlank(prefixName)){
 						flatObject(propContext.getName(), val, valuePutter, propContext);
 					}else{
-						flatObject(prefixName+propertyAccesor+propContext.getName(), val, valuePutter, propContext);
+						String prefix = prefixName+propertyAccesor;
+						propContext.setPrefix(prefix);
+						flatObject(prefix+propContext.getName(), val, valuePutter, propContext);
 					}
 				}
 			});
@@ -334,6 +336,7 @@ public class BeanToMapConvertor implements Cloneable {
 		final protected Object source;
 		final protected PropertyDescriptor property;
 		final protected String name;
+		protected String prefix;
 		public PropertyContext(Object source, PropertyDescriptor property,
 				String originName) {
 			super();
@@ -363,6 +366,13 @@ public class BeanToMapConvertor implements Cloneable {
 			}
 			return name;
 		}
+		public String getPrefix() {
+			return prefix;
+		}
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+		
 	}
 
 
