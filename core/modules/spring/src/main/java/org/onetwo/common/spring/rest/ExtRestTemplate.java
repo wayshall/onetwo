@@ -3,6 +3,7 @@ package org.onetwo.common.spring.rest;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,6 +30,8 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.converter.AbstractHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.MultiValueMap;
@@ -51,6 +54,8 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	private Type extErrorResultType;
 	
 	private AtomicLong requestIdGenerator = new AtomicLong(0);
+	
+	private Charset charset = FormHttpMessageConverter.DEFAULT_CHARSET;
 
 	public ExtRestTemplate(){
 		this(RestUtils.isOkHttp3Present()?new OkHttp3ClientHttpRequestFactory():null);
@@ -73,11 +78,26 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 																	MediaType.TEXT_PLAIN));
 				});*/
 		CUtils.replaceOrAdd(getMessageConverters(), MappingJackson2HttpMessageConverter.class, new ApiclientJackson2HttpMessageConverter());
+		
+		applyDefaultCharset();
+		
 		if(requestFactory!=null){
 			this.setRequestFactory(requestFactory);
 //			this.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 		}
 		this.setErrorHandler(new OnExtRestErrorHandler());
+	}
+	
+
+	private void applyDefaultCharset() {
+		for (HttpMessageConverter<?> candidate : this.getMessageConverters()) {
+			if (candidate instanceof AbstractHttpMessageConverter) {
+				AbstractHttpMessageConverter<?> converter = (AbstractHttpMessageConverter<?>) candidate;
+				if (converter.getDefaultCharset() != null) {
+					converter.setDefaultCharset(this.charset);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -240,4 +260,10 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			}
 		}
 	}
+
+	public void setCharset(Charset charset) {
+		this.charset = charset;
+	}
+	
+	
 }
