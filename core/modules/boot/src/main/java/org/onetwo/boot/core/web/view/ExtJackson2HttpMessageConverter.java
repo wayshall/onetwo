@@ -2,7 +2,6 @@ package org.onetwo.boot.core.web.view;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.onetwo.boot.core.json.ObjectMapperProvider;
@@ -46,7 +45,7 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 
 	@Override
 	protected void writeInternal(Object object, Type type, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-		outputMessage.getHeaders().setAcceptCharset(Arrays.asList(StandardCharsets.UTF_8));
+//		outputMessage.getHeaders().setAcceptCharset(Arrays.asList(StandardCharsets.UTF_8));
 		super.writeInternal(object, type, outputMessage);
 	}
 
