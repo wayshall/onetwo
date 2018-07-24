@@ -5,8 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onetwo.common.apiclient.ApicientBaseTests.ApiclientBaseTestInnerContextConfig;
 import org.onetwo.common.apiclient.annotation.EnableRestApiClient;
+import org.onetwo.common.apiclient.interceptor.RestExecutorSimpleLogInterceptor;
 import org.onetwo.common.propconf.Environment;
 import org.onetwo.common.spring.config.JFishProfile;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,7 +30,13 @@ public class ApicientBaseTests {
 	@Configuration
 	@JFishProfile
 	@EnableRestApiClient(baseUrl="")
+	@ComponentScan(basePackageClasses=RestExecutorSimpleLogInterceptor.class)
 	public static class ApiclientBaseTestInnerContextConfig {
+		
+		/*@Bean
+		public ClientHttpRequestInterceptor restExecutorSimpleLogInterceptor(){
+			return new RestExecutorSimpleLogInterceptor();
+		}*/
 	}
 
 }

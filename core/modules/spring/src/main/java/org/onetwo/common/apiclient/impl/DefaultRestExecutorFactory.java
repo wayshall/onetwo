@@ -1,13 +1,21 @@
 package org.onetwo.common.apiclient.impl;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.RestExecutorFactory;
 import org.onetwo.common.apiclient.annotation.RestExecutorInterceptor;
+import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.spring.rest.ExtRestTemplate;
 import org.onetwo.common.spring.rest.RestUtils;
+import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 
@@ -17,13 +25,14 @@ import com.google.common.collect.Lists;
  * @author wayshall
  * <br/>
  */
-public class DefaultRestExecutorFactory extends RestExecutorFactory {
+public class DefaultRestExecutorFactory extends RestExecutorFactory implements InitializingBean {
+	
+	static private final Logger logger = ApiClientUtils.getApiclientlogger();
 
 	@Autowired(required=false)
 	private RestExecutorConfig restExecutorConfig;
-	//TODO: 未实现，先占坑
-	@Autowired(required=false)
-	private List<RestExecutorInterceptor> restExecutorInterceptors;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	public DefaultRestExecutorFactory() {
 	}
@@ -45,15 +54,27 @@ public class DefaultRestExecutorFactory extends RestExecutorFactory {
 		}else{
 			restTemplate = new ExtRestTemplate();
 		}
-		if(restExecutorInterceptors!=null){
+		return restTemplate;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		ExtRestTemplate restTemplate = (ExtRestTemplate) getObject();
+		Map<String, Object> restExecutorInterceptors = applicationContext.getBeansWithAnnotation(RestExecutorInterceptor.class);
+		if(!LangUtils.isEmpty(restExecutorInterceptors)){
 			List<ClientHttpRequestInterceptor> interList = restTemplate.getInterceptors();
 			if(interList==null){
 				interList = Lists.newArrayList();
 				restTemplate.setInterceptors(interList);
 			}
-//			interList.addAll(restExecutorRequestInterceptors);
+			for(Entry<String, Object> entry : restExecutorInterceptors.entrySet()){
+				if(logger.isDebugEnabled()){
+					logger.debug("register ClientHttpRequestInterceptor for RestExecutor: {}", entry.getKey());
+				}
+				interList.add((ClientHttpRequestInterceptor)entry.getValue());
+			}
+			AnnotationAwareOrderComparator.sort(interList);
 		}
-		return restTemplate;
 	}
 	
 	

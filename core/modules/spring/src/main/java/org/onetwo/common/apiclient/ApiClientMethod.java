@@ -26,6 +26,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.converter.ValueEnum;
 import org.onetwo.common.spring.rest.RestUtils;
+import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -278,9 +279,13 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			
 			//如果没有指定requestBody，则根据规则查找可以作为requestBody的参数
 			List<ApiClientMethodParameter> bodyableParameters = parameters.stream()
-					.filter(p->!isSpecalPemerater(p))
+					.filter(p->!isSpecalPemerater(p) && !isQueryStringParameters(p))
 					.collect(Collectors.toList());
 //			List<ApiClientMethodParameter> bodyableParameters = parameters;
+			
+			if(LangUtils.isEmpty(bodyableParameters)){
+				return null;
+			}
 			
 			//大于一个参数时，使用参数名称作为参数前缀
 			boolean parameterNameAsPrefix = bodyableParameters.size()>1;
@@ -319,7 +324,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args){
 		return toMap(methodParameters, args, true);
 	}
-	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args, boolean flatable){
+	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args, boolean parameterNameAsPrefix){
 		MultiValueMap<String, Object> values = new LinkedMultiValueMap<>(methodParameters.size());
 		for(ApiClientMethodParameter parameter : methodParameters){
 			//忽略特殊参数
@@ -327,7 +332,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				continue;
 			}
 			Object pvalue = args[parameter.getParameterIndex()];
-			handleArg(values, parameter, pvalue, flatable);
+			handleArg(values, parameter, pvalue, parameterNameAsPrefix);
 		}
 		return values;
 	}
@@ -339,13 +344,16 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean parameterNameAsPrefix){
 		String prefix = "";
 		Object paramValue = pvalue;
+		//下列情况，强制使用名称作为前缀
 		if(mp.hasParameterAnnotation(RequestParam.class)){
 			RequestParam params = mp.getParameterAnnotation(RequestParam.class);
 			if(pvalue==null && params.required() && (paramValue=params.defaultValue())==ValueConstants.DEFAULT_NONE){
 				throw new BaseException("parameter["+params.name()+"] must be required : " + mp.getParameterName());
 			}
 			parameterNameAsPrefix = true;
-		}else if(isUriVariables(mp)){
+		}else if(isUriVariables(mp) || mp.hasParameterAnnotation(FieldName.class)){
+			parameterNameAsPrefix = true;
+		}else if(beanToMapConvertor.isMappableValue(pvalue)){//可直接映射为值的参数
 			parameterNameAsPrefix = true;
 		}
 		
@@ -418,7 +426,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				return pname;
 			}*/
 			String pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElseGet(()->{
-				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+//				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElseGet(()->{
+					return getOptionalParameterAnnotation(FieldName.class).map(fn->fn.value()).orElse(null);
+				});
 			});
 			if(StringUtils.isBlank(pname)){
 				/*pname = getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
