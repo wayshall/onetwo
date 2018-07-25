@@ -19,9 +19,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.PropUtils;
@@ -661,94 +663,17 @@ final public class SpringUtils {
 		return MAP_TO_BEAN;
 	}
 	
-	/*public static boolean isSimpleTypeObject(Object obj) {
-		return obj != null && LangUtils.isSimpleType(obj.getClass());
+	public static String readClassPathFile(String path){
+		return readClassPathFile(path, FileUtils.DEFAULT_CHARSET);
 	}
-
-	public static Map<String, Object> toMap(Object obj) {
-		return toMap(obj, o->!isSimpleTypeObject(o), false);
-	}
-
-	public static Map<String, Object> toMap(Object obj, boolean enableFieldName) {
-		return toMap(obj, o->!isSimpleTypeObject(o), enableFieldName);
-	}
-
-	public static Map<String, Object> toMap(Object obj, Function<Object, Boolean> isNestedObject) {
-		return toMap(obj, isNestedObject, false);
-	}
-
-	public static Map<String, Object> toMap(Object obj, Function<Object, Boolean> isNestedObject, boolean enableFieldName) {
-        if (obj == null)
-            return Collections.emptyMap();
-        Map<String, Object> rsMap = new HashMap<>();
-        if(obj instanceof Map){
-        	Map<?, ?> objMap = (Map<?, ?>) obj;
-        	objMap.forEach((k, v)->rsMap.put(k.toString(), v));
-        	return rsMap;
-        }
-        PropertyDescriptor[] props = ReflectUtils.desribProperties(obj.getClass());
-        if (props == null || props.length == 0)
-            return Collections.emptyMap();
-        
-        Map<String, Field> fieldMap = ReflectUtils.getFieldsAsMap(obj.getClass());
-        Object val;
-        for (PropertyDescriptor prop : props) {
-			String name = prop.getName();
-			
-            val = ReflectUtils.getProperty(obj, prop);
-            if(val==null){
-            	continue;
-			}
-            
-            if(isNestedObject!=null && (val instanceof Collection || val.getClass().isArray())){
-				Collection<?> values = CUtils.toCollection(val);
-				int index = 0;
-				for (Object v : values) {
-					String listKey = name+"["+index+"]";
-					putToMap(rsMap, listKey, v, isNestedObject, null, enableFieldName);
-					index++;
-				}
-			}else if(isNestedObject!=null && val instanceof Map){
-				Map<String, Object> map = (Map<String, Object>) val;
-				for(Entry<String, Object> entry : map.entrySet()){
-					putToMap(rsMap, entry.getKey(), entry.getValue(), isNestedObject, null, enableFieldName);
-				}
-			}else{
-            	TypeDescriptor sourceType = null;
-            	Field field = fieldMap.get(prop.getName());
-            	if(field!=null && (field.getAnnotation(DateTimeFormat.class)!=null || field.getAnnotation(NumberFormat.class)!=null) ){
-    	            sourceType = new TypeDescriptor(field);
-            	}
-            	if(sourceType==null){
-    	            sourceType = new TypeDescriptor(new Property(obj.getClass(), prop.getReadMethod(), prop.getWriteMethod()));
-            	}
-            	if(enableFieldName){
-                	FieldName fieldName = sourceType.getAnnotation(FieldName.class);
-                	if(fieldName!=null){
-                		name = fieldName.value();
-                	}else{
-                		continue;
-                	}
-            	}
-				putToMap(rsMap, name, val, isNestedObject, sourceType, enableFieldName);
-			}
-        }
-        return rsMap;
-    }
 	
-	private static void putToMap(Map<String, Object> rsMap, String key, Object value, Function<Object, Boolean> isNestedObject, TypeDescriptor sourceType, boolean enableFieldName){
-		if(isNestedObject==null || !isNestedObject.apply(value)){
-			if(value.getClass()!=String.class && sourceType!=null){
-				value = getFormattingConversionService().convert(value, sourceType, TypeDescriptor.valueOf(String.class));
-			}
-			rsMap.put(key, value);
-		}else{
-			String newKey = key+".";
-			Map<String, Object> props = toMap(value, isNestedObject, enableFieldName);
-			for(Entry<String, Object> entry : props.entrySet()){
-				putToMap(rsMap, newKey+entry.getKey(), entry.getValue(), isNestedObject, null, enableFieldName);
-			}
+	public static String readClassPathFile(String path, String charset){
+		Resource res = classpath(path);
+		try {
+			return IOUtils.toString(res.getInputStream(), charset);
+		} catch (IOException e) {
+			throw new BaseException("read classpath file error: " + path);
 		}
-	}*/
+	}
 	
 }

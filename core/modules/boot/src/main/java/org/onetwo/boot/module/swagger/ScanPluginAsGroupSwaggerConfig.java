@@ -31,16 +31,17 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		int index = 0;
+//		int index = 0;
 		for(WebPlugin plugin : pluginManager.getPlugins()){
 			Predicate<RequestHandler> predicate = RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(plugin.getRootClass()));
 			Collection<Predicate<RequestHandler>> predicates = Arrays.asList(predicate);
 			String appName = plugin.getPluginMeta().getName();
 			
-			Docket docket = createDocket((index++)+".["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
+			Docket docket = createDocket("["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
 			SpringUtils.registerAndInitSingleton(applicationContext, appName+"Docket", docket);
-			Docket innerDocket = createDocket((index++)+".["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
+			Docket innerDocket = createDocket("["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
 			SpringUtils.registerAndInitSingleton(applicationContext, appName+"InnerDocket", innerDocket);
+//			index++;
 		}
 	}
 

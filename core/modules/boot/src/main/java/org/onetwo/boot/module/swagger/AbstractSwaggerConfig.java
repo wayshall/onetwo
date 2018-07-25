@@ -2,9 +2,13 @@ package org.onetwo.boot.module.swagger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
+import org.onetwo.common.utils.LangUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import springfox.documentation.RequestHandler;
 import springfox.documentation.annotations.ApiIgnore;
@@ -12,6 +16,7 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.Parameter;
+import springfox.documentation.service.ResponseMessage;
 import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -29,6 +34,9 @@ public class AbstractSwaggerConfig {
     protected List<Parameter> createGlobalParameters(){
 		List<Parameter> parameters = Lists.newArrayList();
 		return parameters;
+    }
+    protected Map<RequestMethod, List<ResponseMessage>> createGlobalResponseMessages(){
+    	return Collections.emptyMap();
     }
 
 	@SuppressWarnings("deprecation")
@@ -62,6 +70,13 @@ public class AbstractSwaggerConfig {
 						        .build()
 						        .globalOperationParameters(createGlobalParameters())
 						        .apiInfo(apiInfo(applicationName));
+    	
+    	Map<RequestMethod, List<ResponseMessage>> globalResponses = this.createGlobalResponseMessages();
+    	if(LangUtils.isNotEmpty(globalResponses)){
+    		globalResponses.forEach((key, value)->{
+    			docket.globalResponseMessage(key, value);
+    		});
+    	}
     	return docket;
     }
     
