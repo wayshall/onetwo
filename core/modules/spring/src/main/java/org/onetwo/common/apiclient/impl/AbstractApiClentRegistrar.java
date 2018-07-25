@@ -33,7 +33,7 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		this.regiseterRestExecutor(getAnnotationMetadataHelper(importingClassMetadata), registry);
+//		this.regiseterRestExecutor(getAnnotationMetadataHelper(importingClassMetadata), registry);
 		super.registerBeanDefinitions(importingClassMetadata, registry);
 	}
 	

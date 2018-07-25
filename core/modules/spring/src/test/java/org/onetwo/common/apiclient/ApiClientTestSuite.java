@@ -13,7 +13,8 @@ import org.onetwo.common.spring.rest.RestUtilsTest;
 @RunWith(Suite.class)
 @SuiteClasses({
 	RestUtilsTest.class,
-	WeatherClientTest.class
+	WeatherClientTest.class,
+	Ys7AccessTokenClientTest.class
 })
 public class ApiClientTestSuite {
 

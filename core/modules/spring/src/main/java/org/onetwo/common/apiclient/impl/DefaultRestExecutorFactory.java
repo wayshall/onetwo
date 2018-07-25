@@ -1,29 +1,22 @@
 package org.onetwo.common.apiclient.impl;
 
-import java.util.List;
-
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.RestExecutorFactory;
-import org.onetwo.common.apiclient.annotation.RestExecutorInterceptor;
 import org.onetwo.common.spring.rest.ExtRestTemplate;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author wayshall
  * <br/>
  */
 public class DefaultRestExecutorFactory extends RestExecutorFactory {
+	
+//	static private final Logger logger = ApiClientUtils.getApiclientlogger();
 
 	@Autowired(required=false)
 	private RestExecutorConfig restExecutorConfig;
-	//TODO: 未实现，先占坑
-	@Autowired(required=false)
-	private List<RestExecutorInterceptor> restExecutorInterceptors;
 	
 	public DefaultRestExecutorFactory() {
 	}
@@ -45,17 +38,7 @@ public class DefaultRestExecutorFactory extends RestExecutorFactory {
 		}else{
 			restTemplate = new ExtRestTemplate();
 		}
-		if(restExecutorInterceptors!=null){
-			List<ClientHttpRequestInterceptor> interList = restTemplate.getInterceptors();
-			if(interList==null){
-				interList = Lists.newArrayList();
-				restTemplate.setInterceptors(interList);
-			}
-//			interList.addAll(restExecutorRequestInterceptors);
-		}
 		return restTemplate;
 	}
-	
-	
 
 }

@@ -49,6 +49,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	private NamedThreadLocal<RequestContextData> contextThreadLocal = new NamedThreadLocal<>("RestExecutor Context");
 
+	
 	@SuppressWarnings("rawtypes")
 	private ExtRestErrorHandler extErrorHandler;
 	private Type extErrorResultType;
@@ -61,6 +62,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		this(RestUtils.isOkHttp3Present()?new OkHttp3ClientHttpRequestFactory():null);
 	}
 	
+
 	public void setExtErrorHandler(ExtRestErrorHandler<?> extErrorHandler) {
 //		this.extErrorResultType = GenericTypeResolver.resolveTypeArgument(ExtRestErrorHandler.class, extErrorHandler.getClass());
 		this.extErrorResultType = TypeResolver.resolveRawArgument(ExtRestErrorHandler.class, extErrorHandler.getClass());
