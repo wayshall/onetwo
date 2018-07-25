@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 import org.onetwo.common.apiclient.RestExecutorFactory;
 import org.onetwo.common.apiclient.impl.RestApiClentRegistrar;
+import org.onetwo.common.apiclient.impl.RestApiClientConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -45,7 +46,7 @@ import org.springframework.context.annotation.Import;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import({RestApiClentRegistrar.class})
+@Import({RestApiClentRegistrar.class, RestApiClientConfiguration.class})
 public @interface EnableRestApiClient {
 	
 	String[] basePackages() default {};
