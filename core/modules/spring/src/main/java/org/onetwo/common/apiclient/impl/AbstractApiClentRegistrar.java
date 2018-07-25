@@ -37,6 +37,13 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 		super.registerBeanDefinitions(importingClassMetadata, registry);
 	}
 	
+	/***
+	 * @see RestApiClientConfiguration#apiClientRestExecutor()
+	 * @author wayshall
+	 * @param annotationMetadataHelper
+	 * @param registry
+	 */
+	@Deprecated
 	protected void regiseterRestExecutor(AnnotationMetadataHelper annotationMetadataHelper, BeanDefinitionRegistry registry){
 		if(registry.containsBeanDefinition(RestExecutorFactory.REST_EXECUTOR_FACTORY_BEAN_NAME)){
 			return ;

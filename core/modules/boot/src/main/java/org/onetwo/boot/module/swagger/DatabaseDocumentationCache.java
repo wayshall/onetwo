@@ -19,7 +19,7 @@ public class DatabaseDocumentationCache extends DocumentationCache {
 	
 	@Autowired
 	private BaseEntityManager baseEntityManager;
-	private JsonMapper jsonMapper = JsonMapper.IGNORE_EMPTY;
+	private JsonMapper jsonMapper = JsonMapper.ignoreNull();
 
 	public void loadFromDatasource(){
 		List<SwaggerFileEntity> files = Querys.from(baseEntityManager, SwaggerFileEntity.class)
