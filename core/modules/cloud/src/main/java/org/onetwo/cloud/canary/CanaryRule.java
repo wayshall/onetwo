@@ -4,9 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.cloud.canary.CanaryUtils.CanaryErrors;
 import org.onetwo.cloud.canary.CanaryUtils.CanaryMode;
+import org.onetwo.cloud.canary.CanaryUtils.CanaryServerNotFoundActions;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.web.utils.WebHolder;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
@@ -20,6 +22,7 @@ import com.netflix.loadbalancer.ZoneAvoidanceRule;
  * <br/>
  */
 public class CanaryRule extends ZoneAvoidanceRule {
+	final private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private CanaryProperties canaryProperties;
@@ -45,6 +48,8 @@ public class CanaryRule extends ZoneAvoidanceRule {
     		HttpServletRequest req = requestOpt.get();
     		canaryMode = CanaryMode.of(req.getHeader(CanaryUtils.HEADER_CANARY_ENABLED), canaryProperties.getDefaultMode());
     	}
+    	
+    	CanaryErrors canaryErrors = null;
     	if(canaryMode==CanaryMode.FORCE){
     		ILoadBalancer lb = getLoadBalancer();
     		Optional<Server> server = canaryPredicate.chooseRoundRobinAfterFiltering(lb.getAllServers(), key);
@@ -53,7 +58,8 @@ public class CanaryRule extends ZoneAvoidanceRule {
 	        }
     		String errorContext = CanaryUtils.getCurrentCanaryContext().map(ctx->ctx.toString()).orElse("");
     		JFishLoggerFactory.getCommonLogger().error("errorContext: {}", errorContext);
-    		throw new BaseException(CanaryErrors.CANARY_SERVER_NOT_MATCH);
+//    		throw new BaseException(CanaryErrors.CANARY_SERVER_NOT_MATCH);
+    		canaryErrors = CanaryErrors.CANARY_SERVER_NOT_MATCH;
     		
     	}else if(canaryMode==CanaryMode.SMOOTHNESS){
     		ILoadBalancer lb = getLoadBalancer();
@@ -67,7 +73,20 @@ public class CanaryRule extends ZoneAvoidanceRule {
             if (server.isPresent()) {
                 return server.get();
             }
-    		throw new BaseException(CanaryErrors.CANARY_NONE_SERVER_NOT_MATCH);
+//    		throw new BaseException(CanaryErrors.CANARY_NONE_SERVER_NOT_MATCH);
+    		canaryErrors = CanaryErrors.CANARY_NONE_SERVER_NOT_MATCH;
+    	}
+    	if(canaryErrors!=null){
+    		CanaryServerNotFoundActions action = this.canaryProperties.getServerNotFoundAction();
+    		if(action==CanaryServerNotFoundActions.THROW){
+        		throw new BaseException(canaryErrors);
+    		}
+    		if(logger.isInfoEnabled()){
+    			logger.info("client canaryMode[{}] can not found matched server, use {}. CanaryContext: {}", 
+    						canaryMode, 
+    						action,
+    						CanaryUtils.getCurrentCanaryContext().map(ctx->ctx.toString()).orElse(""));
+    		}
     	}
         return super.choose(key);
     	

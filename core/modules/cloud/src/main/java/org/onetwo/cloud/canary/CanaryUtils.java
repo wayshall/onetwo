@@ -65,6 +65,18 @@ final public class CanaryUtils {
 		}
 	}
 	
+	/****
+	 * 但客户端指定的灰度策略没有找到匹配的服务时
+	 * @author wayshall
+	 *
+	 */
+	public static enum CanaryServerNotFoundActions {
+		//平滑处理，使用默认查找策略
+		SMOOTHNESS,
+		//抛出错误
+		THROW
+	}
+	
 
     public static enum CanaryErrors implements ErrorType {
         CANARY_SERVER_NOT_MATCH("can not find any matched cannary server!"),

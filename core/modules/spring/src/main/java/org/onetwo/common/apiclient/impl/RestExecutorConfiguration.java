@@ -26,7 +26,7 @@ import com.google.common.collect.Lists;
  * <br/>
  */
 @Configuration
-public class RestApiClientConfiguration {
+public class RestExecutorConfiguration {
 	
 
 	@Bean(RestExecutorFactory.REST_EXECUTOR_FACTORY_BEAN_NAME)
