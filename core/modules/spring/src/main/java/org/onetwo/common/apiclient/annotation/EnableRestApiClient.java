@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 import org.onetwo.common.apiclient.RestExecutorFactory;
 import org.onetwo.common.apiclient.impl.RestApiClentRegistrar;
-import org.onetwo.common.apiclient.impl.RestApiClientConfiguration;
+import org.onetwo.common.apiclient.impl.RestExecutorConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -31,22 +31,23 @@ import org.springframework.context.annotation.Import;
  * consumes -> contentType，指定提交请求的convertor，详见：HttpEntityRequestCallback
  * produces -> acceptHeader，指定accept header，从而通过response的contentType头指定读取响应数据的convertor，详见：ResponseEntityResponseExtractor
  * 
+ * <br/><br/>
  * 
- * 扩展：
- * &#064;EnableRestApiClient
- * &#064;Configuration
+ * 扩展：<br/>
+ * &#064;EnableRestApiClient<br/>
+ * &#064;Configuration<br/>
  * class XxxxConfiguration {
  * }
- * <br/>
- * 1，自定义@EnableXxxxApiClient和@XxxxApiClient
- * 2，自定XxxxApiClentRegistrar
- * 3，自定义XxxxApiClientFactoryBean
+ * <br/><br/>
+ * 1，自定义@EnableXxxxApiClient和@XxxxApiClient <br/>
+ * 2，自定XxxxApiClentRegistrar <br/>
+ * 3，自定义XxxxApiClientFactoryBean <br/>
  * @author wayshall
  * <br/>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import({RestApiClentRegistrar.class, RestApiClientConfiguration.class})
+@Import({RestApiClentRegistrar.class, RestExecutorConfiguration.class})
 public @interface EnableRestApiClient {
 	
 	String[] basePackages() default {};
