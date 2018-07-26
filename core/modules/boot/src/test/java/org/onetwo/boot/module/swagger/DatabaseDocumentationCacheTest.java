@@ -1,6 +1,8 @@
 package org.onetwo.boot.module.swagger;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import io.swagger.models.Swagger;
+import io.swagger.parser.SwaggerParser;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +23,14 @@ public class DatabaseDocumentationCacheTest {
 	public void setup(){
 		content = SpringUtils.readClassPathFile("data/swagger.json");
 	}
+	
+	@Test
+	public void testReadJson(){
+		SwaggerParser parser = new SwaggerParser();
+		Swagger swagger = parser.read("data/swagger.json");
+		System.out.println("swagger:"+swagger);
+	}
+	
 	
 	@Test
 	public void testParseDocumentation(){
