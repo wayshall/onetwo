@@ -11,12 +11,10 @@ import java.util.stream.Collectors;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
 import org.onetwo.common.apiclient.annotation.ResponseHandler;
-import org.onetwo.common.apiclient.resouce.FileNameByteArrayResource;
 import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.reflect.BeanToMapConvertor;
@@ -24,7 +22,6 @@ import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
-import org.onetwo.common.spring.converter.ValueEnum;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
@@ -75,31 +72,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 
 	final static private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
 																	.enableFieldNameAnnotation()
-																	.valueConvertor((prop, v)->{
-																		if(v instanceof Enum){
-																			Enum<?> e = (Enum<?>)v;
-																			if(e instanceof ValueEnum){
-																				v = ((ValueEnum<?>)e).getValue();
-																			}else{//默认使用name
-																				v = e.name();
-																			}
-																		}else if(v instanceof Resource || 
-																				v instanceof byte[] ||
-																				v instanceof ClassLoader){
-																			//ignore，忽略，不转为string
-																		}else if(v instanceof MultipartFile){
-																			MultipartFile mf = (MultipartFile)v;
-																			try{
-																				FileNameByteArrayResource res = new FileNameByteArrayResource(mf.getOriginalFilename(), FileUtils.toByteArray(mf.getInputStream()));
-																				v = res;
-																			}catch(Exception e){
-																				throw new BaseException("convert file error: " + e.getMessage(), e);
-																			}
-																		}else{
-																			v = v==null?v:v.toString();
-																		}
-																		return v;
-																	})
+																	.valueConvertor(new ValueConvertor())
 																	.flatableObject(obj->{
 																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
 																		return  flatable &&
@@ -342,6 +315,12 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	}
 	
 	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean parameterNameAsPrefix){
+		if(pvalue instanceof ApiArgumentTransformer){
+			Object val = ((ApiArgumentTransformer)pvalue).asApiValue();
+			values.add(mp.getParameterName(), val);
+			return ;
+		}
+		
 		String prefix = "";
 		Object paramValue = pvalue;
 		//下列情况，强制使用名称作为前缀
