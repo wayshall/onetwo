@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @XmlRootElement
 public class Page<T> implements Serializable {
 	/**
@@ -69,11 +71,11 @@ public class Page<T> implements Serializable {
 	/***
 	 * 分页显示时，显示相距当前页的数量，默认为当前页前后5页
 	 */
-	private static final int PAGE_SEP_COUNT = 5;
+//	private static final int PAGE_SEP_COUNT = 5;
 	/****
 	 * 一共显示几个分页，默认为10个页码
 	 */
-	private static final int PAGE_SHOW_COUNT = 10;
+//	private static final int PAGE_SHOW_COUNT = 10;
 
 	protected int pageNo = 1;
 	protected int pageSize = DefaultPageSize;
@@ -189,7 +191,8 @@ public class Page<T> implements Serializable {
 	public boolean needSort(){
 		return (StringUtils.isNotBlank(orderBy) && StringUtils.isNotBlank(order));
 	}
-	
+
+	@JsonIgnore
 	public String getOrderString(){
 		return needSort()?this.order.substring(1):"";
 	}
@@ -199,6 +202,7 @@ public class Page<T> implements Serializable {
 		return this;
 	}
 
+	@JsonIgnore
 	public boolean isAutoCount() {
 		if(autoCount==null){
 			return isPagination();
@@ -296,7 +300,8 @@ public class Page<T> implements Serializable {
 		else
 			return pageNo;
 	}
-	
+
+	/*@JsonIgnore
 	public int getStartPage(){
 		int start = 1;
 		if(getPageNo()>PAGE_SEP_COUNT)
@@ -312,7 +317,8 @@ public class Page<T> implements Serializable {
 			start = 1;
 		return start;
 	}
-	
+
+	@JsonIgnore
 	public int getEndPage(){
 		int end = getPageNo()+PAGE_SEP_COUNT;
 		int totalPage = getTotalPages();
@@ -326,9 +332,9 @@ public class Page<T> implements Serializable {
 		if(end>totalPage)
 			end = totalPage;
 		return end;
-	}
+	}*/
 	
-	public int getStartPage2(){
+	/*public int getStartPage2(){
 		int start = 1;
 		if(getPageNo()>10)
 			start = getPageNo()-10;
@@ -342,8 +348,9 @@ public class Page<T> implements Serializable {
 		if(end<1)
 			end = 1;
 		return end;
-	}
+	}*/
 
+	@JsonIgnore
 	public boolean isPagination() {
 		return pagination;
 	}
