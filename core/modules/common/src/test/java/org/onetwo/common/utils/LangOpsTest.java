@@ -95,6 +95,27 @@ public class LangOpsTest {
 		assertThat(tu.getLeft()).isEqualTo(11);
 		assertThat(tu.getRight()).isEqualTo(TimeUnit.DAYS);
 	}
+	
+	@Test
+	public void testParseSize(){
+		int size = LangOps.parseSize("1kb");
+		assertThat(size).isEqualTo(1024);
+		
+		size = LangOps.parseSize("1mb");
+		assertThat(size).isEqualTo(1024*1024);
+		
+		size = LangOps.parseSize("1GB");
+		assertThat(size).isEqualTo(1024*1024*1024);
+		
+		size = LangOps.parseSize("1k");
+		assertThat(size).isEqualTo(1024);
+		
+		size = LangOps.parseSize("1M");
+		assertThat(size).isEqualTo(1024*1024);
+		
+		size = LangOps.parseSize("1g");
+		assertThat(size).isEqualTo(1024*1024*1024);
+	}
 
 	class BigDecimalBox {
 		private BigDecimal value;

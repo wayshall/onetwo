@@ -175,12 +175,20 @@ final public class LangOps {
 		size = size.toLowerCase();
 		if (size.endsWith("kb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
-		}
-		if (size.endsWith("mb")) {
+		}else if (size.endsWith("mb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
-		}
-		if (size.endsWith("gb")) {
+		}else if (size.endsWith("gb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024* 1024;
+		}else {
+			//fix: 补充兼容不写b的写法
+			int strimCount = 1;
+			if (size.endsWith("k")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024;
+			}else if (size.endsWith("m")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024 * 1024;
+			}else if (size.endsWith("g")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024 * 1024* 1024;
+			}
 		}
 		return Integer.valueOf(size);
 	}
