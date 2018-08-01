@@ -35,7 +35,6 @@ public class SwaggerFileEntity extends BaseEntity {
 	Long id;
 	
 	String fileName;
-	int fileVersion;
 	String applicationName;
 	
 	@Enumerated(EnumType.STRING)

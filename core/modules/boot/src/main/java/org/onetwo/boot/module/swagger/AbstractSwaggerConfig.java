@@ -35,7 +35,7 @@ public class AbstractSwaggerConfig {
 		List<Parameter> parameters = Lists.newArrayList();
 		return parameters;
     }
-    protected Map<RequestMethod, List<ResponseMessage>> createGlobalResponseMessages(){
+    protected Map<List<RequestMethod>, List<ResponseMessage>> createGlobalResponseMessages(){
     	return Collections.emptyMap();
     }
 
@@ -71,10 +71,17 @@ public class AbstractSwaggerConfig {
 						        .globalOperationParameters(createGlobalParameters())
 						        .apiInfo(apiInfo(applicationName));
     	
-    	Map<RequestMethod, List<ResponseMessage>> globalResponses = this.createGlobalResponseMessages();
+    	addGlobalResponseMessages(docket);
+    	return docket;
+    }
+    
+    protected Docket addGlobalResponseMessages(Docket docket){
+    	Map<List<RequestMethod>, List<ResponseMessage>> globalResponses = this.createGlobalResponseMessages();
     	if(LangUtils.isNotEmpty(globalResponses)){
-    		globalResponses.forEach((key, value)->{
-    			docket.globalResponseMessage(key, value);
+    		globalResponses.forEach((methods, value)->{
+    			methods.forEach(method->{
+        			docket.globalResponseMessage(method, value);
+    			});
     		});
     	}
     	return docket;

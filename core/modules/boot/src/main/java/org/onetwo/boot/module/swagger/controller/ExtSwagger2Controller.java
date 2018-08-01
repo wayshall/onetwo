@@ -5,7 +5,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity;
-import org.onetwo.boot.module.swagger.service.DatabaseSwaggerResourceService;
+import org.onetwo.boot.module.swagger.service.impl.DatabaseSwaggerResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;

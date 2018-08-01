@@ -1,47 +1,64 @@
 
 package org.onetwo.boot.module.swagger.service.impl;
 
-import java.util.Collection;
+import io.swagger.models.Response;
 
-import org.onetwo.common.db.spi.BaseEntityManager;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.onetwo.boot.module.swagger.SwaggerUtils;
+import org.onetwo.boot.module.swagger.entity.SwaggerOperationEntity;
+import org.onetwo.boot.module.swagger.entity.SwaggerResponseEntity;
 import org.onetwo.common.db.builder.Querys;
-import org.onetwo.common.utils.Page;
+import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.onetwo.boot.module.swagger.entity.SwaggerResponseEntity;
+import com.google.common.collect.Lists;
 
 @Service
 @Transactional
+@Slf4j
 public class SwaggerResponseServiceImpl {
 
     @Autowired
     private BaseEntityManager baseEntityManager;
-    
-    public Page<SwaggerResponseEntity> findPage(Page<SwaggerResponseEntity> page, SwaggerResponseEntity swaggerResponse){
-        return Querys.from(baseEntityManager, SwaggerResponseEntity.class)
-                	.where()
-            		  .addFields(swaggerResponse)
-            		  .ignoreIfNull()
-            		.end()
-            		.toQuery()
-            		.page(page);
+
+    public List<SwaggerResponseEntity> save(SwaggerOperationEntity operation, Map<String, Response> responses){
+    	this.removeByOperationId(operation.getId());
+    	
+    	List<SwaggerResponseEntity> responseList = Lists.newArrayList();
+    	for(Entry<String, Response> response : responses.entrySet()){
+    		SwaggerResponseEntity e = save(operation.getId(), response.getKey(), response.getValue());
+    		responseList.add(e);
+    	}
+    	return responseList;
     }
-    
-    public void save(SwaggerResponseEntity entity) {
-		baseEntityManager.persist(entity);
-	}
 
-	public void update(SwaggerResponseEntity entity) {
-		baseEntityManager.update(entity);
-	}
-    
-    public SwaggerResponseEntity findById(Long id) {
-		return baseEntityManager.findById(SwaggerResponseEntity.class, id);
-	}
+    public SwaggerResponseEntity save(Long operationId, String code, Response response){
+    	SwaggerResponseEntity entity = new SwaggerResponseEntity();
+    	entity.setDescription(response.getDescription());
+    	entity.setOperationId(operationId);
+    	entity.setResponseCode(code);
+    	entity.setJsonType(response.getClass().getName());
+    	entity.setJsonData(SwaggerUtils.toJson(response));
+    	baseEntityManager.save(entity);
+    	return entity;
+    }
 
-	public Collection<SwaggerResponseEntity> removeByIds(Long... id) {
-		return baseEntityManager.removeByIds(SwaggerResponseEntity.class, id);
-	}
+    public int removeByOperationId(Long operationId){
+    	int deleteCount = Querys.from(SwaggerResponseEntity.class)
+    				 .where()
+    				 	.field("operationId").is(operationId)
+    				 .end()
+    				 .delete();
+    	if(log.isInfoEnabled()){
+    		log.info("remove {} parameters for operation: {}", deleteCount, operationId);
+    	}
+    	return deleteCount;
+    }
 }

@@ -2,6 +2,7 @@ package org.onetwo.common.spring;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -76,6 +77,7 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.collect.Maps;
 
@@ -673,6 +675,26 @@ final public class SpringUtils {
 			return IOUtils.toString(res.getInputStream(), charset);
 		} catch (IOException e) {
 			throw new BaseException("read classpath file error: " + path);
+		}
+	}
+	
+	public static String readMultipartFile(MultipartFile multipartFile){
+		return readMultipartFile(multipartFile, FileUtils.DEFAULT_CHARSET);
+	}
+	
+	public static String readMultipartFile(MultipartFile multipartFile, String charset){
+		try {
+			return IOUtils.toString(multipartFile.getInputStream(), charset);
+		} catch (IOException e) {
+			throw new BaseException("read classpath file error: " + multipartFile.getOriginalFilename());
+		}
+	}
+	
+	public static InputStream getInputStream(Resource resource){
+		try {
+			return resource.getInputStream();
+		} catch (IOException e) {
+			throw new BaseException("get InputStream error: " + resource.getFilename());
 		}
 	}
 	

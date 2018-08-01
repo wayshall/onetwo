@@ -1,47 +1,93 @@
 
 package org.onetwo.boot.module.swagger.service.impl;
 
-import java.util.Collection;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
 
-import org.onetwo.common.db.spi.BaseEntityManager;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.onetwo.boot.module.swagger.entity.SwaggerEntity;
+import org.onetwo.boot.module.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.common.db.builder.Querys;
-import org.onetwo.common.utils.Page;
+import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import org.onetwo.boot.module.swagger.entity.SwaggerOperationEntity;
+import com.google.common.collect.Lists;
 
 @Service
 @Transactional
+@Slf4j
 public class SwaggerOperationServiceImpl {
 
     @Autowired
     private BaseEntityManager baseEntityManager;
-    
-    public Page<SwaggerOperationEntity> findPage(Page<SwaggerOperationEntity> page, SwaggerOperationEntity swaggerOperation){
-        return Querys.from(baseEntityManager, SwaggerOperationEntity.class)
-                	.where()
-            		  .addFields(swaggerOperation)
-            		  .ignoreIfNull()
-            		.end()
-            		.toQuery()
-            		.page(page);
+    @Autowired
+    private SwaggerParameterServiceImpl swaggerParameterService;
+    @Autowired
+    private SwaggerResponseServiceImpl swaggerResponseService;
+
+    public List<SwaggerOperationEntity> saveOperatioins(SwaggerEntity swaggerEntity, Map<String, Path> definitions){
+    	this.removeBySwaggerId(swaggerEntity.getSwaggerFileId());
+    	
+    	List<SwaggerOperationEntity> operations = Lists.newArrayList();
+    	for(Entry<String, Path> entry : definitions.entrySet()){
+    		Path path = entry.getValue();
+    		save(swaggerEntity.getId(), entry.getKey(), path);
+    	}
+    	return operations;
+    }
+
+    public List<SwaggerOperationEntity> save(Long swaggerId, String path, Path pathObject){
+    	List<SwaggerOperationEntity> operations = Lists.newArrayList();
+		save(swaggerId, path, RequestMethod.GET, pathObject.getGet()).ifPresent(entity->operations.add(entity));
+		save(swaggerId, path, RequestMethod.PUT, pathObject.getPut()).ifPresent(entity->operations.add(entity));
+		save(swaggerId, path, RequestMethod.POST, pathObject.getPost()).ifPresent(entity->operations.add(entity));
+		save(swaggerId, path, RequestMethod.HEAD, pathObject.getHead()).ifPresent(entity->operations.add(entity));
+		save(swaggerId, path, RequestMethod.DELETE, pathObject.getDelete()).ifPresent(entity->operations.add(entity));
+		save(swaggerId, path, RequestMethod.PATCH, pathObject.getPatch()).ifPresent(entity->operations.add(entity));
+		save(swaggerId, path, RequestMethod.OPTIONS, pathObject.getOptions()).ifPresent(entity->operations.add(entity));
+    	return operations;
     }
     
-    public void save(SwaggerOperationEntity entity) {
-		baseEntityManager.persist(entity);
-	}
-
-	public void update(SwaggerOperationEntity entity) {
-		baseEntityManager.update(entity);
-	}
+    public Optional<SwaggerOperationEntity> save(Long swaggerId, String path, RequestMethod method, Operation operation){
+    	if(operation==null){
+    		return Optional.empty();
+    	}
+    	SwaggerOperationEntity operationEntity = new SwaggerOperationEntity();
+    	operationEntity.setSwaggerId(swaggerId);
+    	operationEntity.setSummary(operation.getSummary());
+    	operationEntity.setDeprecated(operation.isDeprecated());
+    	operationEntity.setConsumes(operation.getConsumes());
+    	operationEntity.setRequestMethod(method.name());
+    	operationEntity.setSchemes(operation.getSchemes());
+    	operationEntity.setExternaldocs(operation.getExternalDocs());
+    	operationEntity.setTags(operation.getTags());
+    	operationEntity.setPath(path);
+    	baseEntityManager.save(operationEntity);
+    	
+    	swaggerParameterService.save(operationEntity, operation.getParameters());
+    	swaggerResponseService.save(operationEntity, operation.getResponses());
+    	
+    	return Optional.of(operationEntity);
+    }
     
-    public SwaggerOperationEntity findById(Long id) {
-		return baseEntityManager.findById(SwaggerOperationEntity.class, id);
-	}
-
-	public Collection<SwaggerOperationEntity> removeByIds(Long... id) {
-		return baseEntityManager.removeByIds(SwaggerOperationEntity.class, id);
-	}
+    public int removeBySwaggerId(Long swaggerId){
+    	int deleteCount = Querys.from(SwaggerOperationEntity.class)
+    				 .where()
+    				 	.field("swaggerId").is(swaggerId)
+    				 .end()
+    				 .delete();
+    	if(log.isInfoEnabled()){
+    		log.info("remove {} operations for swagger: {}", deleteCount, swaggerId);
+    	}
+    	return deleteCount;
+    }
 }

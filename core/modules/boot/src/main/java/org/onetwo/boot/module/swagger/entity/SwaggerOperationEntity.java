@@ -1,28 +1,28 @@
 
 package org.onetwo.boot.module.swagger.entity;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import io.swagger.models.ExternalDocs;
+import io.swagger.models.Scheme;
+
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.URL;
-
-import org.onetwo.dbm.annotation.DbmIdGenerator;
-import org.onetwo.dbm.id.SnowflakeGenerator;
-import org.onetwo.dbm.jpa.BaseEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.SafeHtml;
+import org.onetwo.dbm.annotation.DbmIdGenerator;
+import org.onetwo.dbm.annotation.DbmJsonField;
+import org.onetwo.dbm.id.SnowflakeGenerator;
+import org.onetwo.dbm.jpa.BaseEntity;
 
 /***
  * swagger操作表
@@ -52,7 +52,7 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 是否废弃
      */
-    Byte deprecated;
+    Boolean deprecated;
     
     /***
      * 请求方法
@@ -68,7 +68,8 @@ public class SwaggerOperationEntity extends BaseEntity  {
     @NotBlank
     @Length(max=200)
     @SafeHtml
-    String schemes;
+    @DbmJsonField
+    List<Scheme> schemes;
     
     /***
      * 外部文档（json）
@@ -76,7 +77,8 @@ public class SwaggerOperationEntity extends BaseEntity  {
     @NotBlank
     @Length(max=500)
     @SafeHtml
-    String externaldocs;
+    @DbmJsonField
+    ExternalDocs externaldocs;
     
     /***
      * 标签（json）
@@ -84,7 +86,8 @@ public class SwaggerOperationEntity extends BaseEntity  {
     @NotBlank
     @Length(max=200)
     @SafeHtml
-    String tags;
+    @DbmJsonField
+    List<String> tags;
     
     /***
      * 请求路径
@@ -108,14 +111,6 @@ public class SwaggerOperationEntity extends BaseEntity  {
     Long swaggerId;
     
     /***
-     * 操作名称
-     */
-    @NotBlank
-    @Length(max=50)
-    @SafeHtml
-    String name;
-    
-    /***
      * 响应格式（json）
      */
     @NotBlank
@@ -129,6 +124,7 @@ public class SwaggerOperationEntity extends BaseEntity  {
     @NotBlank
     @Length(max=500)
     @SafeHtml
-    String consumes;
+    @DbmJsonField
+    List<String> consumes;
     
 }

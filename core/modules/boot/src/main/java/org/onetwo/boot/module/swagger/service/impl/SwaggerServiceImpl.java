@@ -1,16 +1,16 @@
 
 package org.onetwo.boot.module.swagger.service.impl;
 
-import java.util.Collection;
+import io.swagger.models.Model;
+import io.swagger.models.Swagger;
 
+import java.util.Map;
+
+import org.onetwo.boot.module.swagger.entity.SwaggerEntity;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.db.builder.Querys;
-import org.onetwo.common.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.onetwo.boot.module.swagger.entity.SwaggerEntity;
 
 @Service
 @Transactional
@@ -18,30 +18,28 @@ public class SwaggerServiceImpl {
 
     @Autowired
     private BaseEntityManager baseEntityManager;
+    @Autowired
+    private SwaggerModelServiceImpl swaggerModelService;
+    @Autowired
+    private SwaggerOperationServiceImpl swaggerOperationService;
     
-    public Page<SwaggerEntity> findPage(Page<SwaggerEntity> page, SwaggerEntity swagger){
-        return Querys.from(baseEntityManager, SwaggerEntity.class)
-                	.where()
-            		  .addFields(swagger)
-            		  .ignoreIfNull()
-            		.end()
-            		.toQuery()
-            		.page(page);
-    }
-    
-    public void save(SwaggerEntity entity) {
-		baseEntityManager.persist(entity);
-	}
+    public SwaggerEntity save(Long swaggerFileId, Swagger swagger) {
+    	SwaggerEntity swaggerEntity = this.baseEntityManager.findOne(SwaggerEntity.class, "swaggerFileId", swaggerFileId);
+    	if(swaggerEntity==null){
+    		swaggerEntity = new SwaggerEntity();
+    	}
+    	swaggerEntity.setBasePath(swagger.getBasePath());
+    	swaggerEntity.setHost(swagger.getHost());
+    	swaggerEntity.setSwagger(swagger.getSwagger());
+    	swaggerEntity.setInfo(swagger.getInfo());
+    	swaggerEntity.setSwaggerFileId(swaggerFileId);
+    	baseEntityManager.save(swaggerEntity);
 
-	public void update(SwaggerEntity entity) {
-		baseEntityManager.update(entity);
+    	swaggerModelService.saveDefinitions(swaggerEntity, swagger.getDefinitions());
+    	swaggerOperationService.saveOperatioins(swaggerEntity, swagger.getPaths());
+    	
+    	return swaggerEntity;
 	}
     
-    public SwaggerEntity findById(Long id) {
-		return baseEntityManager.findById(SwaggerEntity.class, id);
-	}
 
-	public Collection<SwaggerEntity> removeByIds(Long... id) {
-		return baseEntityManager.removeByIds(SwaggerEntity.class, id);
-	}
 }
