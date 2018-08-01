@@ -1,18 +1,18 @@
 package org.onetwo.boot.module.swagger.service.impl;
 
 import io.swagger.models.Swagger;
-import io.swagger.parser.Swagger20Parser;
+import io.swagger.parser.SwaggerParser;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity;
 import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity.Status;
+import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity.StoreTypes;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,12 +21,14 @@ import org.springframework.web.multipart.MultipartFile;
  * <br/>
  */
 @Transactional
+@Service
 public class DatabaseSwaggerResourceService {
 	
 	@Autowired
 	private BaseEntityManager baseEntityManager;
 	@Autowired
 	private SwaggerServiceImpl swaggerService;
+	
 	
 	/***
 	 * 通过分组名称查找
@@ -49,27 +51,43 @@ public class DatabaseSwaggerResourceService {
 		return files;
 	}
 	
-	public SwaggerFileEntity saveSwaggerFile(MultipartFile swaggerFile, Swagger swagger, String content){
-		SwaggerFileEntity swaggerFileEntity = new SwaggerFileEntity();
-		swaggerFileEntity.setFileName(swaggerFile.getOriginalFilename());
+	public SwaggerFileEntity saveSwaggerFile(StoreTypes storeType, Swagger swagger, String groupName, String content){
+		SwaggerFileEntity swaggerFileEntity = baseEntityManager.findOne(SwaggerFileEntity.class, "fileName", groupName);
+		if(swaggerFileEntity==null){
+			swaggerFileEntity = new SwaggerFileEntity();
+		}
+		swaggerFileEntity.setFileName(groupName);
 		swaggerFileEntity.setApplicationName(swagger.getInfo().getTitle());
 		swaggerFileEntity.setStatus(Status.ENABLED);
+		swaggerFileEntity.setStoreType(storeType);
 		swaggerFileEntity.setContent(content);
 		baseEntityManager.save(swaggerFileEntity);
 		return swaggerFileEntity;
 	}
 	
-	public void importSwagger(MultipartFile swaggerFile){
+	public SwaggerFileEntity importSwagger(MultipartFile swaggerFile){
 		String content = SpringUtils.readMultipartFile(swaggerFile);
+		return importSwagger(swaggerFile.getOriginalFilename(), content);
+	}
+	
+	public SwaggerFileEntity importSwagger(String groupName, String content){
+		StoreTypes storeType;
 		Swagger swagger;
-		try {
-			swagger = new Swagger20Parser().parse(content);
-		} catch (IOException e) {
-			throw new BaseException("parse Swagger file error: " + swaggerFile.getOriginalFilename());
+		SwaggerParser parser = new SwaggerParser();
+		if(content.startsWith("http")){
+			storeType = StoreTypes.URL;
+			swagger = parser.read(content);
+		}else if(content.startsWith("file:")){
+			storeType = StoreTypes.DATA;
+			swagger = parser.read(content);
+		}else{
+			storeType = StoreTypes.DATA;
+			swagger = parser.parse(content);
 		}
-		SwaggerFileEntity file = saveSwaggerFile(swaggerFile, swagger, content);
+		SwaggerFileEntity file = saveSwaggerFile(storeType, swagger, groupName, content);
 		
-		this.swaggerService.save(file.getId(), swagger);
+		this.swaggerService.save(file, swagger);
+		return file;
 	}
 
 }

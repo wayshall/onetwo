@@ -17,6 +17,7 @@ import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
 
@@ -29,19 +30,20 @@ public class SwaggerModelServiceImpl {
     private BaseEntityManager baseEntityManager;
     
     public List<SwaggerModelEntity> saveDefinitions(SwaggerEntity swaggerEntity, Map<String, Model> definitions){
+    	Assert.notNull(swaggerEntity.getSwaggerFileId(), "swaggerEntity.swaggerFileId can not be null");
     	this.removeBySwaggerId(swaggerEntity.getSwaggerFileId());
     	
     	List<SwaggerModelEntity> list = Lists.newArrayList();
     	for(Entry<String, Model> entry : definitions.entrySet()){
-    		SwaggerModelEntity entity = save(swaggerEntity.getSwaggerFileId(), entry.getKey(), entry.getValue());
+    		SwaggerModelEntity entity = save(swaggerEntity, entry.getKey(), entry.getValue());
     		list.add(entity);
     	}
     	return list;
     }
     
-    public SwaggerModelEntity save(Long swaggerId, String name, Model model){
+    public SwaggerModelEntity save(SwaggerEntity swaggerEntity, String name, Model model){
     	SwaggerModelEntity swaggerModelEntity = new SwaggerModelEntity();
-    	swaggerModelEntity.setSwaggerId(swaggerId);
+    	swaggerModelEntity.setSwaggerId(swaggerEntity.getId());
     	swaggerModelEntity.setDescription(model.getDescription());
     	swaggerModelEntity.setName(name);
     	swaggerModelEntity.setRefPath(SwaggerUtils.getModelRefPath(name));

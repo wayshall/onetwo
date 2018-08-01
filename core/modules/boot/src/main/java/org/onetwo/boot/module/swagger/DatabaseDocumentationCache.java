@@ -1,16 +1,16 @@
 package org.onetwo.boot.module.swagger;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Map;
 
-import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity;
-import org.onetwo.common.db.builder.Querys;
+import org.onetwo.boot.module.swagger.service.impl.DatabaseSwaggerResourceService;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.jackson.JsonMapper;
-import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import springfox.documentation.service.Documentation;
 import springfox.documentation.spring.web.DocumentationCache;
+
+import com.google.common.collect.Maps;
 
 /**
  * @author wayshall <br/>
@@ -19,26 +19,29 @@ public class DatabaseDocumentationCache extends DocumentationCache {
 	
 	@Autowired
 	private BaseEntityManager baseEntityManager;
-	private JsonMapper jsonMapper = JsonMapper.ignoreNull();
+	@Autowired
+	private DatabaseSwaggerResourceService databaseSwaggerResourceService;
 
-	public void loadFromDatasource(){
-		List<SwaggerFileEntity> files = Querys.from(baseEntityManager, SwaggerFileEntity.class)
-											  .where()
-											  	.field("status").equalTo(SwaggerFileEntity.Status.ENABLED)
-											  .end()
-											  .toQuery()
-											  .list();
-		if(LangUtils.isEmpty(files)){
-			return ;
-		}
-		for(SwaggerFileEntity file : files){
-			Documentation doc = parseDocumentation(file);
-			this.addDocumentation(doc);
-		}
+	
+	/***
+	 * for groupName
+	 */
+	@Override
+	public Map<String, Documentation> all() {
+		Map<String, Documentation> fakeDocumentations = Maps.newLinkedHashMap();
+		fakeDocumentations.putAll(super.all());
+		databaseSwaggerResourceService.findAllEnabled().forEach(fe->{
+			fakeDocumentations.put(fe.getFileName(), new FakeDocumentation(fe.getFileName()));
+		});
+		return Collections.unmodifiableMap(fakeDocumentations);
 	}
 	
-	protected Documentation parseDocumentation(SwaggerFileEntity fileEntity){
-		Documentation doc = jsonMapper.fromJson(fileEntity.getContent(), Documentation.class);
-		return doc;
+	public static class FakeDocumentation extends Documentation {
+		public FakeDocumentation(String groupName) {
+			super(groupName, "FakeDocumentation_basePath", Collections.emptySet(), 
+					null, null, null,
+					Collections.emptySet(), "FakeDocumentation_host", Collections.emptySet(), Collections.emptyList());
+		}
+		
 	}
 }
