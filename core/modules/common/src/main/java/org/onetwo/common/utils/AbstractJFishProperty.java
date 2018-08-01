@@ -23,6 +23,10 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 		this.beanClassWrapper = beanClassWrapper;
 	}
 	
+	public void setAnnotationInfo(AnnotationInfo annotationInfo) {
+		this.annotationInfo = annotationInfo;
+	}
+
 	public AnnotationInfo getAnnotationInfo() {
 		return annotationInfo;
 	}

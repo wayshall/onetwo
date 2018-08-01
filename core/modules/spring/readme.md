@@ -32,7 +32,7 @@ spring 4.0+
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-spring</artifactId>
-    <version>4.7.1-SNAPSHOT</version>
+    <version>4.7.2-SNAPSHOT</version>
 </dependency>
 
 ```
