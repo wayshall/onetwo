@@ -24,7 +24,7 @@ import org.onetwo.boot.module.poi.ExcelViewConfiguration;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
-import org.onetwo.boot.module.swagger.SwaggerConfiguration;
+import org.onetwo.boot.module.swagger.config.SwaggerConfiguration;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.context.AbstractImportSelector;

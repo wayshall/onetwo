@@ -4,13 +4,13 @@ import io.swagger.models.Model;
 import io.swagger.models.Response;
 import io.swagger.models.parameters.Parameter;
 
-import org.onetwo.boot.module.swagger.SwaggerUtils;
 import org.onetwo.boot.module.swagger.entity.SwaggerModelEntity;
 import org.onetwo.boot.module.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.module.swagger.entity.SwaggerParameterEntity;
 import org.onetwo.boot.module.swagger.entity.SwaggerResponseEntity;
 import org.onetwo.boot.module.swagger.model.OperationListModel;
 import org.onetwo.boot.module.swagger.model.OperationListModel.OperationDetailModel;
+import org.onetwo.boot.module.swagger.util.SwaggerUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.copier.CopyUtils;
 

@@ -9,9 +9,9 @@ import java.util.Map.Entry;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.onetwo.boot.module.swagger.SwaggerUtils;
 import org.onetwo.boot.module.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.module.swagger.entity.SwaggerResponseEntity;
+import org.onetwo.boot.module.swagger.util.SwaggerUtils;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
