@@ -28,7 +28,7 @@ public class CorsFilter implements Filter {
 	
 	protected void configHeader(HttpServletResponse httpResponse){
 		if(headers==null){
-			httpResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+			httpResponse.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE, HEAD");
 			//设置预检的有效时间的，单位是秒
 			httpResponse.setHeader("Access-Control-Max-Age", "3600");
 			httpResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type, authorization");
