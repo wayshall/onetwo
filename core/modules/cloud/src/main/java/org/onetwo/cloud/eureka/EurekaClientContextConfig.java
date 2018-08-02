@@ -13,4 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({BootJfishCloudConfig.class})
 @Configuration
 public class EurekaClientContextConfig {
+	public EurekaClientContextConfig(){
+	}
 }
