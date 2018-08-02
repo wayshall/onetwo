@@ -153,6 +153,9 @@ public class JsonMapper {
 	}
 	
 	public String toJson(Object object, boolean throwIfError){
+		if(object==null){
+			return null;
+		}
 		String json = "";
 		try {
 			json = this.objectMapper.writeValueAsString(object);

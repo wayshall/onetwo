@@ -5,6 +5,7 @@ import io.swagger.parser.SwaggerParser;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity;
 import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity.Status;
 import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity.StoreTypes;
@@ -37,7 +38,7 @@ public class DatabaseSwaggerResourceService {
 	 * @return
 	 */
 	public SwaggerFileEntity findByGroupName(String groupName){
-		SwaggerFileEntity file = baseEntityManager.findOne(SwaggerFileEntity.class, "fileName", groupName);
+		SwaggerFileEntity file = baseEntityManager.findOne(SwaggerFileEntity.class, "groupName", groupName);
 		return file;
 	}
 
@@ -52,11 +53,11 @@ public class DatabaseSwaggerResourceService {
 	}
 	
 	public SwaggerFileEntity saveSwaggerFile(StoreTypes storeType, Swagger swagger, String groupName, String content){
-		SwaggerFileEntity swaggerFileEntity = baseEntityManager.findOne(SwaggerFileEntity.class, "fileName", groupName);
+		SwaggerFileEntity swaggerFileEntity = baseEntityManager.findOne(SwaggerFileEntity.class, "groupName", groupName);
 		if(swaggerFileEntity==null){
 			swaggerFileEntity = new SwaggerFileEntity();
 		}
-		swaggerFileEntity.setFileName(groupName);
+		swaggerFileEntity.setGroupName(groupName);
 		swaggerFileEntity.setApplicationName(swagger.getInfo().getTitle());
 		swaggerFileEntity.setStatus(Status.ENABLED);
 		swaggerFileEntity.setStoreType(storeType);
@@ -65,9 +66,12 @@ public class DatabaseSwaggerResourceService {
 		return swaggerFileEntity;
 	}
 	
-	public SwaggerFileEntity importSwagger(MultipartFile swaggerFile){
+	public SwaggerFileEntity importSwagger(String groupName, MultipartFile swaggerFile){
 		String content = SpringUtils.readMultipartFile(swaggerFile);
-		return importSwagger(swaggerFile.getOriginalFilename(), content);
+		if(StringUtils.isBlank(groupName)){
+			groupName = swaggerFile.getOriginalFilename();
+		}
+		return importSwagger(groupName, content);
 	}
 	
 	public SwaggerFileEntity importSwagger(String groupName, String content){

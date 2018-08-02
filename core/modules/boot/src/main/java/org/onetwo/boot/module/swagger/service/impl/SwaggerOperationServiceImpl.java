@@ -35,42 +35,45 @@ public class SwaggerOperationServiceImpl {
     private SwaggerResponseServiceImpl swaggerResponseService;
 
     public List<SwaggerOperationEntity> saveOperatioins(SwaggerEntity swaggerEntity, Map<String, Path> definitions){
-    	this.removeBySwaggerId(swaggerEntity.getSwaggerFileId());
+    	this.removeBySwaggerId(swaggerEntity.getId());
     	
     	List<SwaggerOperationEntity> operations = Lists.newArrayList();
     	for(Entry<String, Path> entry : definitions.entrySet()){
     		Path path = entry.getValue();
-    		save(swaggerEntity.getId(), entry.getKey(), path);
+    		save(swaggerEntity, entry.getKey(), path);
     	}
     	return operations;
     }
 
-    public List<SwaggerOperationEntity> save(Long swaggerId, String path, Path pathObject){
+    public List<SwaggerOperationEntity> save(SwaggerEntity swaggerEntity, String path, Path pathObject){
     	List<SwaggerOperationEntity> operations = Lists.newArrayList();
-		save(swaggerId, path, RequestMethod.GET, pathObject.getGet()).ifPresent(entity->operations.add(entity));
-		save(swaggerId, path, RequestMethod.PUT, pathObject.getPut()).ifPresent(entity->operations.add(entity));
-		save(swaggerId, path, RequestMethod.POST, pathObject.getPost()).ifPresent(entity->operations.add(entity));
-		save(swaggerId, path, RequestMethod.HEAD, pathObject.getHead()).ifPresent(entity->operations.add(entity));
-		save(swaggerId, path, RequestMethod.DELETE, pathObject.getDelete()).ifPresent(entity->operations.add(entity));
-		save(swaggerId, path, RequestMethod.PATCH, pathObject.getPatch()).ifPresent(entity->operations.add(entity));
-		save(swaggerId, path, RequestMethod.OPTIONS, pathObject.getOptions()).ifPresent(entity->operations.add(entity));
+		save(swaggerEntity, path, RequestMethod.GET, pathObject.getGet()).ifPresent(entity->operations.add(entity));
+		save(swaggerEntity, path, RequestMethod.PUT, pathObject.getPut()).ifPresent(entity->operations.add(entity));
+		save(swaggerEntity, path, RequestMethod.POST, pathObject.getPost()).ifPresent(entity->operations.add(entity));
+		save(swaggerEntity, path, RequestMethod.HEAD, pathObject.getHead()).ifPresent(entity->operations.add(entity));
+		save(swaggerEntity, path, RequestMethod.DELETE, pathObject.getDelete()).ifPresent(entity->operations.add(entity));
+		save(swaggerEntity, path, RequestMethod.PATCH, pathObject.getPatch()).ifPresent(entity->operations.add(entity));
+		save(swaggerEntity, path, RequestMethod.OPTIONS, pathObject.getOptions()).ifPresent(entity->operations.add(entity));
     	return operations;
     }
     
-    public Optional<SwaggerOperationEntity> save(Long swaggerId, String path, RequestMethod method, Operation operation){
+    public Optional<SwaggerOperationEntity> save(SwaggerEntity swaggerEntity, String path, RequestMethod method, Operation operation){
     	if(operation==null){
     		return Optional.empty();
     	}
     	SwaggerOperationEntity operationEntity = new SwaggerOperationEntity();
-    	operationEntity.setSwaggerId(swaggerId);
+    	operationEntity.setSwaggerId(swaggerEntity.getId());
     	operationEntity.setSummary(operation.getSummary());
     	operationEntity.setDeprecated(operation.isDeprecated());
     	operationEntity.setConsumes(operation.getConsumes());
+    	operationEntity.setProduces(operation.getProduces());
     	operationEntity.setRequestMethod(method.name());
     	operationEntity.setSchemes(operation.getSchemes());
     	operationEntity.setExternaldocs(operation.getExternalDocs());
     	operationEntity.setTags(operation.getTags());
     	operationEntity.setPath(path);
+    	operationEntity.setSwaggerFileId(swaggerEntity.getSwaggerFileId());
+    	operationEntity.setDescription(operation.getDescription());
     	baseEntityManager.save(operationEntity);
     	
     	swaggerParameterService.save(operationEntity, operation.getParameters());

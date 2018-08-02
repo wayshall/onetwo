@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.swagger;
 
 import org.onetwo.boot.module.swagger.controller.ExtSwagger2Controller;
+import org.onetwo.boot.module.swagger.mapper.SwaggerModelMapper;
 import org.onetwo.boot.module.swagger.service.impl.DatabaseSwaggerResourceService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,4 +45,9 @@ public class SwaggerConfiguration {
     public DocumentationCache resourceGroupCache(){
     	return new DatabaseDocumentationCache();
     }
+	
+	@Bean
+	public SwaggerModelMapper swaggerModelMapper(){
+		return new SwaggerModelMapper();
+	}
 }

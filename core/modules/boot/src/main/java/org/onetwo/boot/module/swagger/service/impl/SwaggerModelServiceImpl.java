@@ -30,8 +30,8 @@ public class SwaggerModelServiceImpl {
     private BaseEntityManager baseEntityManager;
     
     public List<SwaggerModelEntity> saveDefinitions(SwaggerEntity swaggerEntity, Map<String, Model> definitions){
-    	Assert.notNull(swaggerEntity.getSwaggerFileId(), "swaggerEntity.swaggerFileId can not be null");
-    	this.removeBySwaggerId(swaggerEntity.getSwaggerFileId());
+    	Assert.notNull(swaggerEntity.getId(), "swaggerEntity.id can not be null");
+    	this.removeBySwaggerId(swaggerEntity.getId());
     	
     	List<SwaggerModelEntity> list = Lists.newArrayList();
     	for(Entry<String, Model> entry : definitions.entrySet()){
@@ -49,6 +49,7 @@ public class SwaggerModelServiceImpl {
     	swaggerModelEntity.setRefPath(SwaggerUtils.getModelRefPath(name));
     	swaggerModelEntity.setJsonType(model.getClass().getName());
     	swaggerModelEntity.setJsonData(SwaggerUtils.toJson(model));
+    	swaggerModelEntity.setSwaggerFileId(swaggerEntity.getSwaggerFileId());
     	baseEntityManager.save(swaggerModelEntity);
     	return swaggerModelEntity;
     }

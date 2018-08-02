@@ -10,8 +10,13 @@ import org.springframework.util.Assert;
 public class SwaggerUtils {
 	private static final String REF_PREFIX = "#/definitions/";
 	
-	private static final JsonMapper JSON_MAPPER = JsonMapper.ignoreEmpty();
+	private static final JsonMapper JSON_MAPPER = JsonMapper.ignoreEmpty().enableTyping();
 	
+	
+	public static JsonMapper getJsonMapper() {
+		return JSON_MAPPER;
+	}
+
 	public static String getModelRefPath(String name){
 		Assert.hasText(name, "name must has text");
 		return REF_PREFIX + name;

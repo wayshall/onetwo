@@ -17,7 +17,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onetwo.dbm.annotation.DbmIdGenerator;
 import org.onetwo.dbm.annotation.DbmJsonField;
@@ -40,14 +39,21 @@ public class SwaggerOperationEntity extends BaseEntity  {
     @DbmIdGenerator(name="snowflake", generatorClass=SnowflakeGenerator.class)
     @NotNull
     Long id;
+    /***
+     * 所属导入文件
+     */
+    Long swaggerFileId;
     
     /***
      * api说明摘要
      */
-    @NotBlank
     @Length(max=1000)
     @SafeHtml
     String summary;
+    /***
+     * 接口描述
+     */
+    String description;
     
     /***
      * 是否废弃
@@ -57,7 +63,6 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 请求方法
      */
-    @NotBlank
     @Length(max=10)
     @SafeHtml
     String requestMethod;
@@ -65,7 +70,6 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 访问协议（json）
      */
-    @NotBlank
     @Length(max=200)
     @SafeHtml
     @DbmJsonField
@@ -74,7 +78,6 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 外部文档（json）
      */
-    @NotBlank
     @Length(max=500)
     @SafeHtml
     @DbmJsonField
@@ -83,7 +86,6 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 标签（json）
      */
-    @NotBlank
     @Length(max=200)
     @SafeHtml
     @DbmJsonField
@@ -92,7 +94,6 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 请求路径
      */
-    @NotBlank
     @Length(max=200)
     @SafeHtml
     String path;
@@ -100,7 +101,6 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 
      */
-    @NotBlank
     @Length(max=500)
     @SafeHtml
     String security;
@@ -113,17 +113,14 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 响应格式（json）
      */
-    @NotBlank
     @Length(max=500)
-    @SafeHtml
-    String produces;
+    @DbmJsonField
+    List<String> produces;
     
     /***
      * 请求格式（json）
      */
-    @NotBlank
     @Length(max=500)
-    @SafeHtml
     @DbmJsonField
     List<String> consumes;
     

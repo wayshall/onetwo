@@ -44,6 +44,14 @@ public class SwaggerEntity extends BaseEntity  {
     Long swaggerFileId;
     
     /***
+     * 冗余的分组名称
+     */
+    @NotBlank
+    @Length(max=100)
+    @SafeHtml
+    String groupName;
+    
+    /***
      * 主机
      */
     @NotBlank

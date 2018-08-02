@@ -35,6 +35,10 @@ public class SwaggerModelEntity extends BaseEntity  {
     @DbmIdGenerator(name="snowflake", generatorClass=SnowflakeGenerator.class)
     @NotNull
     Long id;
+    /***
+     * 所属导入文件
+     */
+    Long swaggerFileId;
     
     /***
      * #/definitions/+name

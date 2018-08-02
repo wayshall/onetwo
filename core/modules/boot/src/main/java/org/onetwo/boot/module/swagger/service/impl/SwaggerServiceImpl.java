@@ -28,6 +28,7 @@ public class SwaggerServiceImpl {
     	if(swaggerEntity==null){
     		swaggerEntity = new SwaggerEntity();
     	}
+    	swaggerEntity.setGroupName(swaggerFile.getGroupName());
     	swaggerEntity.setBasePath(swagger.getBasePath());
     	swaggerEntity.setHost(swagger.getHost());
     	swaggerEntity.setSwagger(swagger.getSwagger());

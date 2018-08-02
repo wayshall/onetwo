@@ -31,16 +31,24 @@ public class DatabaseDocumentationCache extends DocumentationCache {
 		Map<String, Documentation> fakeDocumentations = Maps.newLinkedHashMap();
 		fakeDocumentations.putAll(super.all());
 		databaseSwaggerResourceService.findAllEnabled().forEach(fe->{
-			fakeDocumentations.put(fe.getFileName(), new FakeDocumentation(fe.getFileName()));
+			fakeDocumentations.put(fe.getGroupName(), new DatabaseDocumentation(fe.getId(), fe.getGroupName()));
 		});
 		return Collections.unmodifiableMap(fakeDocumentations);
 	}
 	
-	public static class FakeDocumentation extends Documentation {
-		public FakeDocumentation(String groupName) {
+	public static class DatabaseDocumentation extends Documentation {
+		private Long moduleId;
+		public DatabaseDocumentation(Long moduleId, String groupName) {
 			super(groupName, "FakeDocumentation_basePath", Collections.emptySet(), 
 					null, null, null,
 					Collections.emptySet(), "FakeDocumentation_host", Collections.emptySet(), Collections.emptyList());
+			this.moduleId = moduleId;
+		}
+		public Long getModuleId() {
+			return moduleId;
+		}
+		public void setModuleId(Long moduleId) {
+			this.moduleId = moduleId;
 		}
 		
 	}
