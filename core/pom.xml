@@ -40,7 +40,9 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/bom</module>
-                <module>modules/cloud</module>
+                <module>modules/spring</module>
+                <module>modules/boot</module>
+                <module>plugins/swaggerext</module>
 			</modules>
            <build>
               <plugins>

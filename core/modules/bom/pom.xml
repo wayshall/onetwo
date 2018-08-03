@@ -192,6 +192,12 @@
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
+      <artifactId>onetwo-plugin-swaggerext</artifactId>
+      <version>${onetwo.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.onetwo4j</groupId>
       <artifactId>onetwo-boot</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
