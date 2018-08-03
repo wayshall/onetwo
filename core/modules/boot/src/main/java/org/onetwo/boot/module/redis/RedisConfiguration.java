@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 
+
 /**
  * @author wayshall
  * <br/>
@@ -21,6 +22,7 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
 @ConditionalOnClass({JedisConnectionFactory.class, RedisTemplate.class})
 @ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true", matchIfMissing=true)
 //@ConditionalOnBean(JedisConnectionFactory.class)
+//@AutoConfigureBefore(RedisAutoConfiguration.class)
 public class RedisConfiguration {
 	
 //	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";
@@ -69,6 +71,15 @@ public class RedisConfiguration {
 		template.setConnectionFactory(jedisConnectionFactory);
 		return template;
 	}
+
+	/*@Bean
+	@ConditionalOnMissingBean(name = "redisTemplate")
+	@ConditionalOnProperty(name=JFishRedisProperties.SERIALIZER_KEY, havingValue="jackson2", matchIfMissing=true)
+	public RedisTemplate<String, Object> redisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
+		JsonRedisTemplate template = new JsonRedisTemplate();
+		template.setConnectionFactory(jedisConnectionFactory);
+		return template;
+	}*/
 	
 	@Bean
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)

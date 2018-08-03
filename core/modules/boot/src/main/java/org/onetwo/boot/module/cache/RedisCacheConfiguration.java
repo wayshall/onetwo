@@ -24,5 +24,4 @@ public class RedisCacheConfiguration {
 	public RedisCacheManagerCustomizers redisCacheManagerCustomizers(){
 		return new RedisCacheManagerCustomizers();
 	}
-	
 }
