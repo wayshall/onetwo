@@ -1,5 +1,5 @@
 
-package org.onetwo.boot.module.swagger.service.impl;
+package org.onetwo.boot.plugins.swagger.service.impl;
 
 import io.swagger.models.parameters.Parameter;
 
@@ -7,9 +7,9 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.onetwo.boot.module.swagger.entity.SwaggerOperationEntity;
-import org.onetwo.boot.module.swagger.entity.SwaggerParameterEntity;
-import org.onetwo.boot.module.swagger.util.SwaggerUtils;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerParameterEntity;
+import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;

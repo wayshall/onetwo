@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.swagger.service.impl;
+package org.onetwo.boot.plugins.swagger.service.impl;
 
 import io.swagger.models.Swagger;
 import io.swagger.parser.SwaggerParser;
@@ -6,9 +6,9 @@ import io.swagger.parser.SwaggerParser;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity;
-import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity.Status;
-import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity.StoreTypes;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity.Status;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity.StoreTypes;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.SpringUtils;

@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.swagger.model;
+package org.onetwo.boot.plugins.swagger.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

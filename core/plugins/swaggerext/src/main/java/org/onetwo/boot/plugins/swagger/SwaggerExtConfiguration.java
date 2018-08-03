@@ -1,8 +1,10 @@
-package org.onetwo.boot.module.swagger;
+package org.onetwo.boot.plugins.swagger;
 
-import org.onetwo.boot.module.swagger.controller.ExtSwagger2Controller;
-import org.onetwo.boot.module.swagger.mapper.SwaggerModelMapper;
-import org.onetwo.boot.module.swagger.service.impl.DatabaseSwaggerResourceService;
+import org.onetwo.boot.plugin.core.JFishWebPlugin;
+import org.onetwo.boot.plugins.swagger.controller.ExtSwagger2Controller;
+import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
+import org.onetwo.boot.plugins.swagger.service.impl.DatabaseSwaggerResourceService;
+import org.onetwo.boot.plugins.swagger.util.DatabaseDocumentationCache;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +27,8 @@ import springfox.documentation.swagger2.web.Swagger2Controller;
 @ConditionalOnProperty(name="jfish.swagger.dbstore", havingValue="true")
 @ConditionalOnClass(Documentation.class)
 @ComponentScan(basePackageClasses=DatabaseSwaggerResourceService.class)
-public class SwaggerConfiguration {
+@JFishWebPlugin(SwaggerExtPlugin.class)
+public class SwaggerExtConfiguration {
 	/*@Autowired
 	DatabaseSwaggerResourceService databaseSwaggerResourceService;*/
 	@Bean
@@ -49,5 +52,10 @@ public class SwaggerConfiguration {
 	@Bean
 	public SwaggerModelMapper swaggerModelMapper(){
 		return new SwaggerModelMapper();
+	}
+	
+	@Bean
+	public ModelFileParameterBuilderPlugin modelFileParameterBuilderPlugin(){
+		return new ModelFileParameterBuilderPlugin();
 	}
 }

@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.swagger.util;
+package org.onetwo.boot.plugins.swagger.util;
 
 import org.onetwo.common.jackson.JsonMapper;
 import org.springframework.util.Assert;

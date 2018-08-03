@@ -1,5 +1,5 @@
 
-package org.onetwo.boot.module.swagger.entity;
+package org.onetwo.boot.plugins.swagger.entity;
 
 import io.swagger.models.Info;
 

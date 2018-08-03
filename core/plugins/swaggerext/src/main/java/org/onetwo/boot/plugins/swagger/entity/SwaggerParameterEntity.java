@@ -1,5 +1,5 @@
 
-package org.onetwo.boot.module.swagger.entity;
+package org.onetwo.boot.plugins.swagger.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;

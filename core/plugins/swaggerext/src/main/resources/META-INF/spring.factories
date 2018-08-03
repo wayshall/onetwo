@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.onetwo.plugins.admin.WebAdminPluginContext
+org.onetwo.boot.plugins.swagger.SwaggerExtConfiguration

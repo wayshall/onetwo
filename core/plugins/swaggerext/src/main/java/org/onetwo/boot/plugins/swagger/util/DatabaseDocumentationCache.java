@@ -1,9 +1,9 @@
-package org.onetwo.boot.module.swagger;
+package org.onetwo.boot.plugins.swagger.util;
 
 import java.util.Collections;
 import java.util.Map;
 
-import org.onetwo.boot.module.swagger.service.impl.DatabaseSwaggerResourceService;
+import org.onetwo.boot.plugins.swagger.service.impl.DatabaseSwaggerResourceService;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 

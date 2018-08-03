@@ -1,16 +1,16 @@
-package org.onetwo.boot.module.swagger.mapper;
+package org.onetwo.boot.plugins.swagger.mapper;
 
 import io.swagger.models.Model;
 import io.swagger.models.Response;
 import io.swagger.models.parameters.Parameter;
 
-import org.onetwo.boot.module.swagger.entity.SwaggerModelEntity;
-import org.onetwo.boot.module.swagger.entity.SwaggerOperationEntity;
-import org.onetwo.boot.module.swagger.entity.SwaggerParameterEntity;
-import org.onetwo.boot.module.swagger.entity.SwaggerResponseEntity;
-import org.onetwo.boot.module.swagger.model.OperationListModel;
-import org.onetwo.boot.module.swagger.model.OperationListModel.OperationDetailModel;
-import org.onetwo.boot.module.swagger.util.SwaggerUtils;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerModelEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerParameterEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerResponseEntity;
+import org.onetwo.boot.plugins.swagger.model.OperationListModel;
+import org.onetwo.boot.plugins.swagger.model.OperationListModel.OperationDetailModel;
+import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.copier.CopyUtils;
 

@@ -1,10 +1,10 @@
 
-package org.onetwo.boot.module.swagger.service.impl;
+package org.onetwo.boot.plugins.swagger.service.impl;
 
 import io.swagger.models.Swagger;
 
-import org.onetwo.boot.module.swagger.entity.SwaggerEntity;
-import org.onetwo.boot.module.swagger.entity.SwaggerFileEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

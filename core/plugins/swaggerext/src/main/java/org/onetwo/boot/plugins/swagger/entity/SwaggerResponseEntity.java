@@ -1,5 +1,5 @@
 
-package org.onetwo.boot.module.swagger.entity;
+package org.onetwo.boot.plugins.swagger.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,19 +15,18 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onetwo.dbm.annotation.DbmIdGenerator;
-import org.onetwo.dbm.annotation.DbmJsonField;
 import org.onetwo.dbm.id.SnowflakeGenerator;
 import org.onetwo.dbm.jpa.BaseEntity;
 
 /***
- * swagger model表
+ * swagger响应表
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="api_swagger_model")
+@Table(name="api_swagger_response")
 @Data
 @EqualsAndHashCode(callSuper=true)
-public class SwaggerModelEntity extends BaseEntity  {
+public class SwaggerResponseEntity extends BaseEntity  {
 
     @Id
     //@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -35,18 +34,6 @@ public class SwaggerModelEntity extends BaseEntity  {
     @DbmIdGenerator(name="snowflake", generatorClass=SnowflakeGenerator.class)
     @NotNull
     Long id;
-    /***
-     * 所属导入文件
-     */
-    Long swaggerFileId;
-    
-    /***
-     * #/definitions/+name
-     */
-    @NotBlank
-    @Length(max=200)
-    @SafeHtml
-    String refPath;
     
     /***
      * 
@@ -57,25 +44,25 @@ public class SwaggerModelEntity extends BaseEntity  {
     String jsonType;
     
     /***
-     * 所属swagger文档
-     */
-    Long swaggerId;
-    
-    /***
-     * 
+     * 名称
      */
     @NotBlank
-    @Length(max=100)
+    @Length(max=50)
     @SafeHtml
-    String name;
+    String responseCode;
     
     /***
      * 描述
      */
     @NotBlank
-    @Length(max=500)
+    @Length(max=1000)
     @SafeHtml
     String description;
+    
+    /***
+     * 所属操作id，全局参数为0
+     */
+    Long operationId;
     
     /***
      * 
@@ -83,7 +70,6 @@ public class SwaggerModelEntity extends BaseEntity  {
     @NotBlank
     @Length(max=2000)
     @SafeHtml
-    @DbmJsonField
     String jsonData;
     
 }

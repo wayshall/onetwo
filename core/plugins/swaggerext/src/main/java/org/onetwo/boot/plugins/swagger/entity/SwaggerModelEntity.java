@@ -1,10 +1,5 @@
 
-package org.onetwo.boot.module.swagger.entity;
-
-import io.swagger.models.ExternalDocs;
-import io.swagger.models.Scheme;
-
-import java.util.List;
+package org.onetwo.boot.plugins.swagger.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onetwo.dbm.annotation.DbmIdGenerator;
 import org.onetwo.dbm.annotation.DbmJsonField;
@@ -24,14 +20,14 @@ import org.onetwo.dbm.id.SnowflakeGenerator;
 import org.onetwo.dbm.jpa.BaseEntity;
 
 /***
- * swagger操作表
+ * swagger model表
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="api_swagger_operation")
+@Table(name="api_swagger_model")
 @Data
 @EqualsAndHashCode(callSuper=true)
-public class SwaggerOperationEntity extends BaseEntity  {
+public class SwaggerModelEntity extends BaseEntity  {
 
     @Id
     //@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -45,65 +41,20 @@ public class SwaggerOperationEntity extends BaseEntity  {
     Long swaggerFileId;
     
     /***
-     * api说明摘要
+     * #/definitions/+name
      */
-    @Length(max=1000)
-    @SafeHtml
-    String summary;
-    /***
-     * 接口描述
-     */
-    String description;
-    
-    /***
-     * 是否废弃
-     */
-    Boolean deprecated;
-    
-    /***
-     * 请求方法
-     */
-    @Length(max=10)
-    @SafeHtml
-    String requestMethod;
-    
-    /***
-     * 访问协议（json）
-     */
+    @NotBlank
     @Length(max=200)
     @SafeHtml
-    @DbmJsonField
-    List<Scheme> schemes;
-    
-    /***
-     * 外部文档（json）
-     */
-    @Length(max=500)
-    @SafeHtml
-    @DbmJsonField
-    ExternalDocs externaldocs;
-    
-    /***
-     * 标签（json）
-     */
-    @Length(max=200)
-    @SafeHtml
-    @DbmJsonField
-    List<String> tags;
-    
-    /***
-     * 请求路径
-     */
-    @Length(max=200)
-    @SafeHtml
-    String path;
+    String refPath;
     
     /***
      * 
      */
-    @Length(max=500)
+    @NotBlank
+    @Length(max=200)
     @SafeHtml
-    String security;
+    String jsonType;
     
     /***
      * 所属swagger文档
@@ -111,17 +62,28 @@ public class SwaggerOperationEntity extends BaseEntity  {
     Long swaggerId;
     
     /***
-     * 响应格式（json）
+     * 
      */
-    @Length(max=500)
-    @DbmJsonField
-    List<String> produces;
+    @NotBlank
+    @Length(max=100)
+    @SafeHtml
+    String name;
     
     /***
-     * 请求格式（json）
+     * 描述
      */
+    @NotBlank
     @Length(max=500)
+    @SafeHtml
+    String description;
+    
+    /***
+     * 
+     */
+    @NotBlank
+    @Length(max=2000)
+    @SafeHtml
     @DbmJsonField
-    List<String> consumes;
+    String jsonData;
     
 }
