@@ -53,9 +53,4 @@ public class SwaggerExtConfiguration {
 	public SwaggerModelMapper swaggerModelMapper(){
 		return new SwaggerModelMapper();
 	}
-	
-	@Bean
-	public ModelFileParameterBuilderPlugin modelFileParameterBuilderPlugin(){
-		return new ModelFileParameterBuilderPlugin();
-	}
 }

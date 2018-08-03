@@ -1,11 +1,11 @@
 package org.onetwo.boot.module.cache;
 
-import groovy.transform.builder.Builder;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**

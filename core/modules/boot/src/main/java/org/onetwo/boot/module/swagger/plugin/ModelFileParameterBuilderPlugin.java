@@ -1,4 +1,4 @@
-package org.onetwo.boot.plugins.swagger;
+package org.onetwo.boot.module.swagger.plugin;
 
 import static springfox.documentation.swagger.schema.ApiModelProperties.findApiModePropertyAnnotation;
 import io.swagger.annotations.ApiModelProperty;

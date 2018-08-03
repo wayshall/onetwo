@@ -24,6 +24,7 @@ import org.onetwo.boot.module.poi.ExcelViewConfiguration;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
+import org.onetwo.boot.module.swagger.SwaggerConfiguration;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.context.AbstractImportSelector;
@@ -78,6 +79,9 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		//store
 		classNames.add(OssConfiguration.class.getName());
 		classNames.add(CosConfiguration.class.getName());
+		
+		//swagger
+		classNames.add(SwaggerConfiguration.class.getName());
 		
 		//activemq
 		classNames.add("org.onetwo.boot.module.activemq.ActivemqConfiguration");
