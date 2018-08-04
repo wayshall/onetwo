@@ -5,7 +5,10 @@ import io.swagger.models.Swagger;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity;
+import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
+import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
+import org.onetwo.common.exception.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +22,35 @@ public class SwaggerServiceImpl {
     private BaseEntityManager baseEntityManager;
     @Autowired
     private SwaggerModelServiceImpl swaggerModelService;
+	@Autowired
+	private SwaggerModelMapper swaggerModelMapper;
     @Autowired
-    private SwaggerOperationServiceImpl swaggerOperationService;
+	private SwaggerOperationServiceImpl swaggerOperationService;
+	@Autowired
+	private SwaggerParameterServiceImpl swaggerParameterService;
+	@Autowired
+	private SwaggerResponseServiceImpl swaggerResponseService;
+    
+
+	public Swagger convertBySwaggerFileId(Long swaggerFileId){
+		SwaggerEntity swaggerEntity = findBySwaggerFileId(swaggerFileId);
+		if(swaggerEntity==null){
+			throw new BaseException("swagger not found for swaggerFileId: " + swaggerFileId);
+		}
+		Swagger swagger = swaggerModelMapper.map2Swagger(swaggerEntity);
+		//operations, paramters, responses
+		return swagger;
+	}
+	
+    public SwaggerEntity findBySwaggerFileId(Long swaggerFileId){
+    	SwaggerEntity entity = Querys.from(SwaggerEntity.class)
+    								 .where()
+    								 	.field("swaggerFileId").equalTo(swaggerFileId)
+    								 .end()
+    								 .toQuery()
+    								 .one();
+    	return entity;
+    }
     
     public SwaggerEntity save(SwaggerFileEntity swaggerFile, Swagger swagger) {
     	Assert.notNull(swaggerFile.getId(), "swaggerFile.id can not be null");

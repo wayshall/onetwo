@@ -2,8 +2,10 @@ package org.onetwo.boot.plugins.swagger.mapper;
 
 import io.swagger.models.Model;
 import io.swagger.models.Response;
+import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 
+import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerModelEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerParameterEntity;
@@ -20,7 +22,12 @@ import org.onetwo.common.spring.copier.CopyUtils;
  */
 public class SwaggerModelMapper {
 	
-	public OperationListModel map2Operation(SwaggerOperationEntity op){
+	public Swagger map2Swagger(SwaggerEntity swgEntity){
+		Swagger swagger = new Swagger();
+		CopyUtils.copy(swagger, swgEntity);
+		return swagger;
+	}
+	public OperationListModel map2OperationList(SwaggerOperationEntity op){
 		OperationListModel swgOp = new OperationListModel();
 		CopyUtils.copy(swgOp, op);
 		return swgOp;

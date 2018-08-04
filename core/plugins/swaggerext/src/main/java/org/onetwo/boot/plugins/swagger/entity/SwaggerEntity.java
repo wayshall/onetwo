@@ -84,4 +84,6 @@ public class SwaggerEntity extends BaseEntity  {
     @DbmJsonField
     Info info;
     
+//    ExternalDocs externalDocs;
+    
 }

@@ -11,6 +11,7 @@ import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity.Status;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity.StoreTypes;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,19 @@ public class DatabaseSwaggerResourceService {
 	private BaseEntityManager baseEntityManager;
 	@Autowired
 	private SwaggerServiceImpl swaggerService;
+	@Autowired
+	private SwaggerModelServiceImpl swaggerModelService;
+	
+
+	public Swagger convertByGroupName(String groupName){
+		SwaggerFileEntity file = findByGroupName(groupName);
+		if(file==null){
+			throw new BaseException("swagger module not found for: " + groupName);
+		}
+		Swagger swagger = this.swaggerService.convertBySwaggerFileId(file.getId());
+		//model
+		return swagger;a
+	}
 	
 	
 	/***
