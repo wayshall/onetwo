@@ -96,13 +96,7 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 		if (this.jsonpParameterNames != null) {
 			for (String name : this.jsonpParameterNames) {
 				String value = request.getParameter(name);
-				if (StringUtils.isEmpty(value)) {
-					continue;
-				}
-				if (!isValidJsonpQueryParam(value)) {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Ignoring invalid jsonp parameter value: " + value);
-					}
+				if (StringUtils.isEmpty(value) || !isValidJsonpQueryParam(value)) {
 					continue;
 				}
 				return value;
@@ -110,6 +104,7 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 		}
 		return null;
 	}
+	
 	protected boolean isValidJsonpQueryParam(String value) {
 		return CALLBACK_PARAM_PATTERN.matcher(value).matches();
 	}
