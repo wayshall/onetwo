@@ -1,11 +1,14 @@
 package org.onetwo.boot.plugins.swagger.service.impl;
 
+import io.swagger.models.Model;
 import io.swagger.models.Swagger;
 import io.swagger.parser.SwaggerParser;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity.Status;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity.StoreTypes;
@@ -39,9 +42,15 @@ public class DatabaseSwaggerResourceService {
 		if(file==null){
 			throw new BaseException("swagger module not found for: " + groupName);
 		}
-		Swagger swagger = this.swaggerService.convertBySwaggerFileId(file.getId());
+		SwaggerEntity swaggerEntity = swaggerService.findBySwaggerFileId(file.getId());
+		if(swaggerEntity==null){
+			throw new BaseException("swagger not found for swaggerFileId: " + file.getId());
+		}
+		Swagger swagger = this.swaggerService.convertBySwagger(swaggerEntity);
 		//model
-		return swagger;a
+		Map<String, Model> definitions = this.swaggerModelService.convertBySwagger(swaggerEntity);
+		swagger.setDefinitions(definitions);
+		return swagger;
 	}
 	
 	

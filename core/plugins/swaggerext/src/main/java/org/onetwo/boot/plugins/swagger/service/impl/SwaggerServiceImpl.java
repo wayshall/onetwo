@@ -32,11 +32,7 @@ public class SwaggerServiceImpl {
 	private SwaggerResponseServiceImpl swaggerResponseService;
     
 
-	public Swagger convertBySwaggerFileId(Long swaggerFileId){
-		SwaggerEntity swaggerEntity = findBySwaggerFileId(swaggerFileId);
-		if(swaggerEntity==null){
-			throw new BaseException("swagger not found for swaggerFileId: " + swaggerFileId);
-		}
+	public Swagger convertBySwagger(SwaggerEntity swaggerEntity){
 		Swagger swagger = swaggerModelMapper.map2Swagger(swaggerEntity);
 		//operations, paramters, responses
 		return swagger;

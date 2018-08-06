@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerModelEntity;
+import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
 import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
@@ -28,6 +29,13 @@ public class SwaggerModelServiceImpl {
 
     @Autowired
     private BaseEntityManager baseEntityManager;
+	@Autowired
+	private SwaggerModelMapper swaggerModelMapper;
+	
+	public Map<String, Model> convertBySwagger(SwaggerEntity swaggerEntity){
+		Assert.notNull(swaggerEntity, "swaggerEntity can not be null");
+		return swagger;
+	}
     
     public List<SwaggerModelEntity> saveDefinitions(SwaggerEntity swaggerEntity, Map<String, Model> definitions){
     	Assert.notNull(swaggerEntity.getId(), "swaggerEntity.id can not be null");
@@ -63,6 +71,15 @@ public class SwaggerModelServiceImpl {
     	if(log.isInfoEnabled()){
     		log.info("remove {} models for swagger: {}", deleteCount, swaggerId);
     	}
+    	return deleteCount;
+    }
+    
+    public List<SwaggerModelEntity> findListBySwaggerId(Long swaggerId){
+    	List<SwaggerModelEntity> = Querys.from(SwaggerModelEntity.class)
+    				 .where()
+    				 	.field("swaggerId").is(swaggerId)
+    				 .end()
+    				 .delete();
     	return deleteCount;
     }
     
