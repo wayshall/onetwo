@@ -60,7 +60,7 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 //		outputMessage.getHeaders().setAcceptCharset(Arrays.asList(StandardCharsets.UTF_8));
 		Optional<HttpServletRequest> requestOpt = WebHolder.getRequest();
 		if(requestOpt.isPresent()){
-			object = filterAndWrapModel(object, requestOpt.get());
+			object = filterAndWrapModel(object, outputMessage, requestOpt.get());
 		}
 		super.writeInternal(object, type, outputMessage);
 	}
@@ -73,7 +73,7 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 		this.objectMapperProvider = objectMapperProvider;
 	}
 
-	protected Object filterAndWrapModel(Object value, HttpServletRequest request) {
+	protected Object filterAndWrapModel(Object value, HttpOutputMessage outputMessage, HttpServletRequest request) {
 		String jsonpParameterValue = getJsonpParameterValue(request);
 		if (jsonpParameterValue != null) {
 			if (value instanceof MappingJacksonValue) {
@@ -84,6 +84,7 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 				container.setJsonpFunction(jsonpParameterValue);
 				value = container;
 			}
+			outputMessage.getHeaders().setContentType(MediaType.parseMediaType("application/javascript"));
 		}
 		return value;
 	}
