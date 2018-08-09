@@ -50,10 +50,10 @@ public class SwaggerResponseServiceImpl {
     	return entity;
     }
 
-    public int removeByOperationId(Long operationId){
+    public int removeByOperationId(Long... operationId){
     	int deleteCount = Querys.from(SwaggerResponseEntity.class)
     				 .where()
-    				 	.field("operationId").is(operationId)
+    				 	.field("operationId").in(operationId)
     				 .end()
     				 .delete();
     	if(log.isInfoEnabled()){

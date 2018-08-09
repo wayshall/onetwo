@@ -57,7 +57,7 @@ public class SwaggerModelServiceImpl {
     public int removeBySwaggerId(Long swaggerId){
     	int deleteCount = Querys.from(SwaggerModelEntity.class)
     				 .where()
-    				 	.field("swaggerId").is(swaggerId)
+    				 	.field("swaggerId").in(swaggerId)
     				 .end()
     				 .delete();
     	if(log.isInfoEnabled()){

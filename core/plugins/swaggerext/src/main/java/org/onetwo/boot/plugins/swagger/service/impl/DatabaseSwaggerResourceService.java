@@ -29,7 +29,8 @@ public class DatabaseSwaggerResourceService {
 	private BaseEntityManager baseEntityManager;
 	@Autowired
 	private SwaggerServiceImpl swaggerService;
-	
+	@Autowired
+	private SwaggerParameterServiceImpl swaggerParameterService;
 	
 	/***
 	 * 通过分组名称查找
@@ -43,9 +44,14 @@ public class DatabaseSwaggerResourceService {
 	}
 
 	public List<SwaggerFileEntity> findAllEnabled(){
+		return findListByStatus(SwaggerFileEntity.Status.ENABLED);
+	}
+	
+	public List<SwaggerFileEntity> findListByStatus(Status status){
 		List<SwaggerFileEntity> files = Querys.from(baseEntityManager, SwaggerFileEntity.class)
 											  .where()
-											  	.field("status").equalTo(SwaggerFileEntity.Status.ENABLED)
+											  	.field("status").equalTo(status)
+											  	.ignoreIfNull()
 											  .end()
 											  .toQuery()
 											  .list();
@@ -94,4 +100,9 @@ public class DatabaseSwaggerResourceService {
 		return file;
 	}
 
+    public void removeWithCascadeData(Long swaggerFileId){
+		SwaggerFileEntity swaggerFileEntity = baseEntityManager.load(SwaggerFileEntity.class, swaggerFileId);
+    	this.swaggerService.removeWithCascadeData(swaggerFileId);
+    	baseEntityManager.remove(swaggerFileEntity);
+    }
 }

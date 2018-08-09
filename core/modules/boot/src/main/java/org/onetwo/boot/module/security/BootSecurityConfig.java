@@ -57,6 +57,10 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 		if(StringUtils.isNotBlank(baseUrl) && !url.startsWith(baseUrl)){
 			url = baseUrl + url;
 		}
+		String ctxPath = bootSiteConfig.getContextPath();
+		if(StringUtils.isNotBlank(ctxPath) && url.startsWith(ctxPath)){
+			url = url.substring(ctxPath.length());
+		}
 		return url;
 	}
 
