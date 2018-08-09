@@ -4,7 +4,9 @@ package org.onetwo.boot.plugins.swagger.entity;
 import io.swagger.models.ExternalDocs;
 import io.swagger.models.Scheme;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,6 +24,9 @@ import org.onetwo.dbm.annotation.DbmIdGenerator;
 import org.onetwo.dbm.annotation.DbmJsonField;
 import org.onetwo.dbm.id.SnowflakeGenerator;
 import org.onetwo.dbm.jpa.BaseEntity;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 /***
  * swagger操作表
@@ -123,5 +128,23 @@ public class SwaggerOperationEntity extends BaseEntity  {
     @Length(max=500)
     @DbmJsonField
     List<String> consumes;
-    
+
+    @DbmJsonField
+    Map<String, Object> vendorExtensions = new LinkedHashMap<String, Object>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getVendorExtensions() {
+        return vendorExtensions;
+    }
+
+    @JsonAnySetter
+    public void setVendorExtension(String name, Object value) {
+        if (name.startsWith("x-")) {
+            vendorExtensions.put(name, value);
+        }
+    }
+
+    public void setVendorExtensions(Map<String, Object> vendorExtensions) {
+        this.vendorExtensions = vendorExtensions;
+    }
 }

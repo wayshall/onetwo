@@ -35,6 +35,8 @@ public class DatabaseSwaggerResourceService {
 	private SwaggerServiceImpl swaggerService;
 	@Autowired
 	private SwaggerModelServiceImpl swaggerModelService;
+	@Autowired
+	private SwaggerParameterServiceImpl swaggerParameterService;
 	
 
 	public Swagger convertByGroupName(String groupName){
@@ -66,9 +68,14 @@ public class DatabaseSwaggerResourceService {
 	}
 
 	public List<SwaggerFileEntity> findAllEnabled(){
+		return findListByStatus(SwaggerFileEntity.Status.ENABLED);
+	}
+	
+	public List<SwaggerFileEntity> findListByStatus(Status status){
 		List<SwaggerFileEntity> files = Querys.from(baseEntityManager, SwaggerFileEntity.class)
 											  .where()
-											  	.field("status").equalTo(SwaggerFileEntity.Status.ENABLED)
+											  	.field("status").equalTo(status)
+											  	.ignoreIfNull()
 											  .end()
 											  .toQuery()
 											  .list();
@@ -117,4 +124,9 @@ public class DatabaseSwaggerResourceService {
 		return file;
 	}
 
+    public void removeWithCascadeData(Long swaggerFileId){
+		SwaggerFileEntity swaggerFileEntity = baseEntityManager.load(SwaggerFileEntity.class, swaggerFileId);
+    	this.swaggerService.removeWithCascadeData(swaggerFileId);
+    	baseEntityManager.remove(swaggerFileEntity);
+    }
 }

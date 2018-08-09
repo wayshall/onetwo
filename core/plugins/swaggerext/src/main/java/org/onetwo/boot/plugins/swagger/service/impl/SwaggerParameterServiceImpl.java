@@ -48,10 +48,10 @@ public class SwaggerParameterServiceImpl {
     	return entity;
     }
 
-    public int removeByOperationId(Long operationId){
+    public int removeByOperationId(Long... operationId){
     	int deleteCount = Querys.from(SwaggerParameterEntity.class)
     				 .where()
-    				 	.field("operationId").is(operationId)
+    				 	.field("operationId").in(operationId)
     				 .end()
     				 .delete();
     	if(log.isInfoEnabled()){

@@ -93,4 +93,13 @@ public class SwaggerOperationServiceImpl {
     	}
     	return deleteCount;
     }
+    
+    public List<SwaggerOperationEntity> findListBySwaggerId(Long swaggerId){
+    	return Querys.from(SwaggerOperationEntity.class)
+					 .where()
+					 	.field("swaggerId").is(swaggerId)
+					 .end()
+					 .toQuery()
+					 .list();
+    }
 }
