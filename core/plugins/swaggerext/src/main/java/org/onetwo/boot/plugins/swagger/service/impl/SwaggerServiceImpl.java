@@ -1,22 +1,27 @@
 
 package org.onetwo.boot.plugins.swagger.service.impl;
 
+import io.swagger.models.Model;
+import io.swagger.models.Path;
 import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
-import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.exception.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import com.google.common.collect.Lists;
 
 @Service
 @Transactional
@@ -30,10 +35,6 @@ public class SwaggerServiceImpl {
 	private SwaggerModelMapper swaggerModelMapper;
     @Autowired
 	private SwaggerOperationServiceImpl swaggerOperationService;
-	@Autowired
-	private SwaggerParameterServiceImpl swaggerParameterService;
-	@Autowired
-	private SwaggerResponseServiceImpl swaggerResponseService;
     @Autowired
     private SwaggerParameterServiceImpl swaggerParameterService;
     @Autowired
@@ -43,18 +44,26 @@ public class SwaggerServiceImpl {
 	public Swagger convertBySwagger(SwaggerEntity swaggerEntity){
 		Swagger swagger = swaggerModelMapper.map2Swagger(swaggerEntity);
 		//operations, paramters, responses
+		Map<String, Path> paths = swaggerOperationService.convertBySwagger(swaggerEntity);
+		swagger.setPaths(paths);
+		//model
+		Map<String, Model> definitions = this.swaggerModelService.convertBySwagger(swaggerEntity);
+		swagger.setDefinitions(definitions);
+		//tags
+		Set<Tag> tags = paths.values().stream().flatMap(path->{
+			return path.getOperations().stream();
+		})
+		.flatMap(op->{
+			return op.getTags().stream();
+		})
+		.map(tag->new Tag().name(tag))
+		.collect(Collectors.toSet());
+		
+		swagger.setTags(Lists.newArrayList(tags));
+		
 		return swagger;
 	}
 	
-    public SwaggerEntity findBySwaggerFileId(Long swaggerFileId){
-    	SwaggerEntity entity = Querys.from(SwaggerEntity.class)
-    								 .where()
-    								 	.field("swaggerFileId").equalTo(swaggerFileId)
-    								 .end()
-    								 .toQuery()
-    								 .one();
-    	return entity;
-    }
     
     public SwaggerEntity save(SwaggerFileEntity swaggerFile, Swagger swagger) {
     	Assert.notNull(swaggerFile.getId(), "swaggerFile.id can not be null");

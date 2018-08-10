@@ -71,5 +71,9 @@ public class SwaggerResponseEntity extends BaseEntity  {
     @Length(max=2000)
     @SafeHtml
     String jsonData;
+    /***
+     * 所属swagger文档
+     */
+    Long swaggerId;
     
 }

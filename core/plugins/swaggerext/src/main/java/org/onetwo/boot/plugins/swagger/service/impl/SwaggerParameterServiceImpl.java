@@ -4,11 +4,13 @@ package org.onetwo.boot.plugins.swagger.service.impl;
 import io.swagger.models.parameters.Parameter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerParameterEntity;
+import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
 import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
@@ -25,25 +27,28 @@ public class SwaggerParameterServiceImpl {
 
     @Autowired
     private BaseEntityManager baseEntityManager;
+	@Autowired
+	private SwaggerModelMapper swaggerModelMapper;
 
     public List<SwaggerParameterEntity> save(SwaggerOperationEntity operation, List<Parameter> parameters){
     	this.removeByOperationId(operation.getId());
     	
     	List<SwaggerParameterEntity> operations = Lists.newArrayList();
     	for(Parameter parameter : parameters){
-    		SwaggerParameterEntity e = save(operation.getId(), parameter);
+    		SwaggerParameterEntity e = save(operation, parameter);
     		operations.add(e);
     	}
     	return operations;
     }
 
-    public SwaggerParameterEntity save(Long operationId, Parameter parameter){
+    public SwaggerParameterEntity save(SwaggerOperationEntity operation, Parameter parameter){
     	SwaggerParameterEntity entity = new SwaggerParameterEntity();
     	entity.setDescription(parameter.getDescription());
     	entity.setName(parameter.getName());
-    	entity.setOperationId(operationId);
+    	entity.setOperationId(operation.getId());
     	entity.setJsonType(parameter.getClass().getName());
     	entity.setJsonData(SwaggerUtils.toJson(parameter));
+    	entity.setSwaggerId(operation.getSwaggerId());
     	baseEntityManager.save(entity);
     	return entity;
     }
@@ -58,5 +63,14 @@ public class SwaggerParameterServiceImpl {
     		log.info("remove {} parameters for operation: {}", deleteCount, operationId);
     	}
     	return deleteCount;
+    }
+    
+    public List<Parameter> findParametersByOperationId(Long operationId){
+    	List<SwaggerParameterEntity> paramEntities = baseEntityManager.findList(SwaggerParameterEntity.class, "operationId", new Long[]{0L, operationId});
+		List<Parameter> parameters = paramEntities.stream().map(p->{
+			return swaggerModelMapper.map2Parameter(p);
+		})
+		.collect(Collectors.toList());
+		return parameters;
     }
 }

@@ -6,6 +6,7 @@ import io.swagger.models.Model;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +35,9 @@ public class SwaggerModelServiceImpl {
 	
 	public Map<String, Model> convertBySwagger(SwaggerEntity swaggerEntity){
 		Assert.notNull(swaggerEntity, "swaggerEntity can not be null");
-		return swagger;
+		List<SwaggerModelEntity> models = findListBySwaggerId(swaggerEntity.getId());
+		Map<String, Model> modelMap = models.stream().collect(Collectors.toMap(m->m.getName(), m->swaggerModelMapper.map2Model(m)));
+		return modelMap;
 	}
     
     public List<SwaggerModelEntity> saveDefinitions(SwaggerEntity swaggerEntity, Map<String, Model> definitions){
@@ -75,12 +78,13 @@ public class SwaggerModelServiceImpl {
     }
     
     public List<SwaggerModelEntity> findListBySwaggerId(Long swaggerId){
-    	List<SwaggerModelEntity> = Querys.from(SwaggerModelEntity.class)
+    	List<SwaggerModelEntity> models = Querys.from(SwaggerModelEntity.class)
     				 .where()
     				 	.field("swaggerId").is(swaggerId)
     				 .end()
-    				 .delete();
-    	return deleteCount;
+    				 .toQuery()
+    				 .list();
+    	return models;
     }
     
 }

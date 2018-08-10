@@ -3,6 +3,8 @@ package org.onetwo.boot.plugins.swagger.service.impl;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
+import io.swagger.models.Response;
+import io.swagger.models.parameters.Parameter;
 
 import java.util.List;
 import java.util.Map;
@@ -13,11 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
+import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.collect.Lists;
@@ -33,6 +37,8 @@ public class SwaggerOperationServiceImpl {
     private SwaggerParameterServiceImpl swaggerParameterService;
     @Autowired
     private SwaggerResponseServiceImpl swaggerResponseService;
+	@Autowired
+	private SwaggerModelMapper swaggerModelMapper;
 
     public List<SwaggerOperationEntity> saveOperatioins(SwaggerEntity swaggerEntity, Map<String, Path> definitions){
     	this.removeBySwaggerId(swaggerEntity.getId());
@@ -102,4 +108,18 @@ public class SwaggerOperationServiceImpl {
 					 .toQuery()
 					 .list();
     }
+    
+	
+	public Map<String, Path> convertBySwagger(SwaggerEntity swaggerEntity){
+		Assert.notNull(swaggerEntity, "swaggerEntity can not be null");
+		List<SwaggerOperationEntity> operations = findListBySwaggerId(swaggerEntity.getId());
+		//paramters, responses
+		Map<String, Path> paths = this.swaggerModelMapper.map2Paths(operations, (opEntity, op)->{
+			List<Parameter> parameters = swaggerParameterService.findParametersByOperationId(opEntity.getId());
+			op.setParameters(parameters);
+			Map<String, Response> responses = swaggerResponseService.findResponseMapByOperationId(opEntity.getId());
+			op.setResponses(responses);
+		});
+		return paths;
+	}
 }

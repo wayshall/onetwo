@@ -1,9 +1,17 @@
 package org.onetwo.boot.plugins.swagger.mapper;
 
 import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.stream.Collector;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerModelEntity;
@@ -37,6 +45,31 @@ public class SwaggerModelMapper {
 		OperationDetailModel swgOp = new OperationDetailModel();
 		CopyUtils.copy(swgOp, op);
 		return swgOp;
+	}
+	
+	public Operation map2Operation(SwaggerOperationEntity op, BiConsumer<SwaggerOperationEntity, Operation> onMapOperation){
+		Operation swgOp = new Operation();
+		CopyUtils.copy(swgOp, op);
+		onMapOperation.accept(op, swgOp);
+		return swgOp;
+	}
+	
+	public Map<String, Path> map2Paths(List<SwaggerOperationEntity> ops, BiConsumer<SwaggerOperationEntity, Operation> onMapOperation){
+		Map<String, Path> paths = ops.stream().collect(Collector.of(HashMap::new, (acc, op)->{
+			Operation opration = map2Operation(op, onMapOperation);
+			Path path;
+			if(acc.containsKey(op.getPath())){
+				path = acc.get(op.getPath());
+			}else{
+				path = new Path();
+				acc.put(op.getPath(), path);
+			}
+			path.set(op.getRequestMethod().toLowerCase(), opration);
+		}, (a,b)->{
+			a.putAll(b); 
+			return a;
+		}));
+		return paths;
 	}
 	
 	public Parameter map2Parameter(SwaggerParameterEntity param){

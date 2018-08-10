@@ -2,9 +2,10 @@ package org.onetwo.boot.plugins.swagger.controller;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
-import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity;
 import org.onetwo.boot.plugins.swagger.service.impl.DatabaseSwaggerResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -56,11 +57,11 @@ public class ExtSwagger2Controller extends Swagger2Controller {
 		if(res.getStatusCode()!=HttpStatus.NOT_FOUND){
 			return res;
 		}
-		SwaggerFileEntity fileEntity = swaggerResourceService.findByGroupName(swaggerGroup);
-		if(fileEntity==null){
+		Optional<Json> json = swaggerResourceService.findJsonByGroupName(swaggerGroup);
+		if(!json.isPresent()){
 			return res;
 		}
-		res = new ResponseEntity<Json>(new Json(fileEntity.getContent()), HttpStatus.OK);
+		res = new ResponseEntity<Json>(json.get(), HttpStatus.OK);
 		return res;
 	}
 
