@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileFilter;
@@ -1449,6 +1451,19 @@ public class FileUtils {
 			throw new BaseException("copy content from inputStream error: " + e.getMessage(), e);
 		}
     }
+    
+    public static ByteArrayInputStream toByteArrayInputStream(InputStream in) {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			IOUtils.copy(in, output);
+		} catch (IOException e) {
+			throw new BaseException("copy InputStream error: " + e.getMessage(), e);
+		} finally{
+			IOUtils.closeQuietly(in);
+		}
+		ByteArrayInputStream bin = new ByteArrayInputStream(output.toByteArray());
+		return bin;
+	}
 	
 	public static void main(String[] args) {
 		String file = "c:\\aa/bb\\ccsfd.txt";
