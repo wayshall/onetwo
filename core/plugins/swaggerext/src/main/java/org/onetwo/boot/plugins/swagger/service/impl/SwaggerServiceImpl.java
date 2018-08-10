@@ -53,6 +53,7 @@ public class SwaggerServiceImpl {
 		Set<Tag> tags = paths.values().stream().flatMap(path->{
 			return path.getOperations().stream();
 		})
+		.filter(op->op.getTags()!=null)
 		.flatMap(op->{
 			return op.getTags().stream();
 		})
