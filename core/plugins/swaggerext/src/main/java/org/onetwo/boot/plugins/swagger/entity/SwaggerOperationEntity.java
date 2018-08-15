@@ -39,8 +39,17 @@ public class SwaggerOperationEntity extends BaseEntity  {
 	 * 全局唯一，id别名
 	 */
 	public static final String KEY_API_ID = "x-api-id";
+	/***
+	 * 作者
+	 */
 	public static final String KEY_AUTHOR = "x-field-author";
+	/***
+	 * 维护者
+	 */
 	public static final String KEY_VINDICATOR = "x-field-vindicator";
+	/***
+	 * api版本
+	 */
 	public static final String KEY_VERSION = "x-field-api-version";
 
     @Id
