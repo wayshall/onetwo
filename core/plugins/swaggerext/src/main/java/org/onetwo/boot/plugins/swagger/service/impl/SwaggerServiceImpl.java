@@ -71,6 +71,9 @@ public class SwaggerServiceImpl {
     	SwaggerEntity swaggerEntity = findByModuleId(module.getId());
     	if(swaggerEntity==null){
     		swaggerEntity = new SwaggerEntity();
+    		swaggerEntity.setUpdateCount(1);
+    	}else{
+    		swaggerEntity.setUpdateCount(swaggerEntity.getUpdateCount()+1);
     	}
     	swaggerEntity.setApplicationName(module.getApplicationName());
     	swaggerEntity.setBasePath(swagger.getBasePath());

@@ -93,7 +93,7 @@ public class DatabaseSwaggerResourceService {
 		return files;
 	}
 	
-	public SwaggerModuleEntity saveSwaggerFile(StoreTypes storeType, Swagger swagger, String content){
+	public SwaggerModuleEntity saveSwaggerModule(StoreTypes storeType, Swagger swagger, String content){
 		String applicationName = swagger.getInfo().getTitle();
 		SwaggerModuleEntity swaggerFileEntity = baseEntityManager.findOne(SwaggerModuleEntity.class, "applicationName", applicationName);
 		if(swaggerFileEntity==null){
@@ -127,10 +127,10 @@ public class DatabaseSwaggerResourceService {
 			storeType = StoreTypes.DATA;
 			swagger = parser.parse(content);
 		}
-		SwaggerModuleEntity file = saveSwaggerFile(storeType, swagger, content);
+		SwaggerModuleEntity module = saveSwaggerModule(storeType, swagger, content);
 		
-		this.swaggerService.save(file, swagger);
-		return file;
+		this.swaggerService.save(module, swagger);
+		return module;
 	}
 
 	public SwaggerModuleEntity removeWithCascadeData(String groupName){

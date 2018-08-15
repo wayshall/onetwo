@@ -3,7 +3,7 @@
     "info": {
         "description": " REST API",
         "version": "1.0",
-        "title": "Lego Service",
+        "title": "Lego Service2",
         "termsOfService": "termsOfServiceUrl",
         "contact": {
             "name": "way",
@@ -19,12 +19,11 @@
     "paths": {
     "/api/common/consume/addUserChannelLog": {
             "put": {
-                "x-inner-id": "001",
+                "operationId": "001",
                 "tags": [
                     "营销相关Api"
                 ],
                 "summary": "新增用户渠道记录",
-                "operationId": "addUserChannelLogUsingPUT",
                 "consumes": [
                     "application/json"
                 ],
@@ -68,12 +67,11 @@
         },
         "/api/common/home/getCmIndexImage/{id}": {
             "get": {
-                "x-inner-id": "002",
+                "operationId": "002",
                 "tags": [
                     "首页配置Api"
                 ],
                 "summary": "根据id获取指定图片和跳转路径",
-                "operationId": "getCmIndexImageUsingGET",
                 "consumes": [
                     "application/json"
                 ],

@@ -84,6 +84,9 @@ public class SwaggerEntity extends BaseEntity  {
     @DbmJsonField
     Info info;
     
-//    ExternalDocs externalDocs;
+    /***
+     * 文档更新次数
+     */
+    Integer updateCount = 1;
     
 }

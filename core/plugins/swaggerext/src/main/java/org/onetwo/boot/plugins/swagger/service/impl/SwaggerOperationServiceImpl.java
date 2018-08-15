@@ -19,7 +19,7 @@ import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
 import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,9 +83,10 @@ public class SwaggerOperationServiceImpl {
     	operationEntity.setPath(path);
     	operationEntity.setModuleId(swaggerEntity.getModuleId());
     	operationEntity.setDescription(operation.getDescription());
+    	operationEntity.setOperationId(operation.getOperationId());
     	
     	setExtendProperties(operationEntity, operation.getVendorExtensions());
-    	String id = generateOperationId(swaggerEntity.getId(), operation);
+    	String id = generateOperationId(swaggerEntity, operation, method);
     	operationEntity.setId(id);
     	baseEntityManager.save(operationEntity);
     	
@@ -95,12 +96,22 @@ public class SwaggerOperationServiceImpl {
     	return Optional.of(operationEntity);
     }
     
-    public String generateOperationId(Long swaggerId, Operation operation){
+    public String generateOperationId(SwaggerEntity swaggerEntity, Operation operation, RequestMethod method){
     	String apiId = (String)operation.getVendorExtensions().get(SwaggerOperationEntity.KEY_API_ID);
-    	if(StringUtils.isBlank(apiId)){
-    		throw new BaseException("property["+SwaggerOperationEntity.KEY_API_ID+"] must can not be null");
+    	if(StringUtils.isNotBlank(apiId)){
+    		return apiId;
     	}
-    	String id = SwaggerUtils.API_ID_PREFIX+Long.toString(swaggerId, 36)+apiId;
+    	//生成……
+    	//operationId文档内唯一
+    	apiId = operation.getOperationId();
+    	if(StringUtils.isBlank(apiId)){
+    		throw new ServiceException("property[operationId] must can not be null");
+    	}
+    	//如果id是自动生成的
+    	if(apiId.contains(method.name())){
+    		apiId = String.valueOf(apiId.hashCode());
+		}
+    	String id = SwaggerUtils.API_ID_PREFIX+Long.toString(swaggerEntity.getId(), 36)+"-"+apiId;
     	return id;
     }
     

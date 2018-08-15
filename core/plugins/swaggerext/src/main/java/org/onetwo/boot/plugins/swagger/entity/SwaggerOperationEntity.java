@@ -26,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 /***
  * swagger操作表
+ * operationId，文档内唯一
+ * x-api-id: id，全局唯一
  */
 @SuppressWarnings("serial")
 @Entity
@@ -33,10 +35,13 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class SwaggerOperationEntity extends BaseEntity  {
-	public static final String KEY_API_ID = "x-inner-id";
-	public static final String KEY_AUTHOR = "x-author";
-	public static final String KEY_VINDICATOR = "x-vindicator";
-	public static final String KEY_VERSION = "x-api-version";
+	/***
+	 * 全局唯一，id别名
+	 */
+	public static final String KEY_API_ID = "x-api-id";
+	public static final String KEY_AUTHOR = "x-field-author";
+	public static final String KEY_VINDICATOR = "x-field-vindicator";
+	public static final String KEY_VERSION = "x-field-api-version";
 
     @Id
     //@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -128,15 +133,15 @@ public class SwaggerOperationEntity extends BaseEntity  {
     @Length(max=500)
     @DbmJsonField
     List<String> consumes;
+    /***
+     * 文档内唯一
+     */
+    String operationId;
 
     @DbmJsonField
     Map<String, Object> vendorExtensions = new LinkedHashMap<String, Object>();
     
     //扩展属性，写成字段便于检索需求
-    /***
-     * 内部id
-     */
-    String innerId;
     /***
      * 作者
      */
