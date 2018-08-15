@@ -16,8 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
+import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,14 +81,37 @@ public class SwaggerOperationServiceImpl {
     	operationEntity.setExternaldocs(operation.getExternalDocs());
     	operationEntity.setTags(operation.getTags());
     	operationEntity.setPath(path);
-    	operationEntity.setSwaggerFileId(swaggerEntity.getSwaggerFileId());
+    	operationEntity.setModuleId(swaggerEntity.getModuleId());
     	operationEntity.setDescription(operation.getDescription());
+    	
+    	setExtendProperties(operationEntity, operation.getVendorExtensions());
+    	String id = generateOperationId(swaggerEntity.getId(), operation);
+    	operationEntity.setId(id);
     	baseEntityManager.save(operationEntity);
     	
     	swaggerParameterService.save(operationEntity, operation.getParameters());
     	swaggerResponseService.save(operationEntity, operation.getResponses());
     	
     	return Optional.of(operationEntity);
+    }
+    
+    public String generateOperationId(Long swaggerId, Operation operation){
+    	String apiId = (String)operation.getVendorExtensions().get(SwaggerOperationEntity.KEY_API_ID);
+    	if(StringUtils.isBlank(apiId)){
+    		throw new BaseException("property[x-api-id]] must can not be null");
+    	}
+    	String id = "api"+Long.toString(swaggerId, 36)+apiId;
+    	return id;
+    }
+    
+    /***
+     * 设置扩展属性
+     * @author wayshall
+     * @param entity
+     * @param vendorExtensions
+     */
+    private void setExtendProperties(SwaggerOperationEntity entity, Map<String, Object> vendorExtensions){
+    	SwaggerUtils.setExtendProperties(entity, vendorExtensions);
     }
     
     public int removeBySwaggerId(Long swaggerId){

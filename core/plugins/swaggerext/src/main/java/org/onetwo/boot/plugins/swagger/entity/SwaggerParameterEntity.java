@@ -1,9 +1,6 @@
 
 package org.onetwo.boot.plugins.swagger.entity;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,17 +8,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotBlank;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.URL;
 import org.onetwo.dbm.annotation.DbmIdGenerator;
 import org.onetwo.dbm.id.SnowflakeGenerator;
 import org.onetwo.dbm.jpa.BaseEntity;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /***
  * swagger参数表
@@ -67,7 +62,7 @@ public class SwaggerParameterEntity extends BaseEntity  {
     /***
      * 所属操作id，全局参数为0
      */
-    Long operationId;
+    String operationId;
     
     /***
      * 

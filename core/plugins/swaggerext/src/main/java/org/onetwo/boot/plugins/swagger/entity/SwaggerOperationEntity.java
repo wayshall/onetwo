@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -20,9 +18,7 @@ import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onetwo.dbm.annotation.DbmIdGenerator;
 import org.onetwo.dbm.annotation.DbmJsonField;
-import org.onetwo.dbm.id.SnowflakeGenerator;
 import org.onetwo.dbm.jpa.BaseEntity;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -37,17 +33,21 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class SwaggerOperationEntity extends BaseEntity  {
+	public static final String KEY_API_ID = "x-api-id";
+	public static final String KEY_AUTHOR = "x-author";
+	public static final String KEY_VINDICATOR = "x-vindicator";
+	public static final String KEY_VERSION = "x-api-version";
 
     @Id
     //@GeneratedValue(strategy=GenerationType.IDENTITY)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator="snowflake") 
-    @DbmIdGenerator(name="snowflake", generatorClass=SnowflakeGenerator.class)
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator="snowflake") 
+//    @DbmIdGenerator(name="snowflake", generatorClass=SnowflakeGenerator.class)
     @NotNull
-    Long id;
+    String id;
     /***
-     * 所属导入文件
+     * 所属导入模块
      */
-    Long swaggerFileId;
+    Long moduleId;
     
     /***
      * api说明摘要
@@ -131,6 +131,24 @@ public class SwaggerOperationEntity extends BaseEntity  {
 
     @DbmJsonField
     Map<String, Object> vendorExtensions = new LinkedHashMap<String, Object>();
+    
+    //扩展属性，写成字段便于检索需求
+    /***
+     * 内部id
+     */
+    String apiId;
+    /***
+     * 作者
+     */
+    String author;
+    /***
+     * 维护者
+     */
+    String vindicator;
+    /***
+     * 版本
+     */
+    String apiVersion;
 
     @JsonAnyGetter
     public Map<String, Object> getVendorExtensions() {

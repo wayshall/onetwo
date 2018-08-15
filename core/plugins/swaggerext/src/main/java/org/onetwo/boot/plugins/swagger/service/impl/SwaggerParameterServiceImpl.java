@@ -53,7 +53,7 @@ public class SwaggerParameterServiceImpl {
     	return entity;
     }
 
-    public int removeByOperationId(Long... operationId){
+    public int removeByOperationId(String... operationId){
     	int deleteCount = Querys.from(SwaggerParameterEntity.class)
     				 .where()
     				 	.field("operationId").in(operationId)
@@ -65,8 +65,8 @@ public class SwaggerParameterServiceImpl {
     	return deleteCount;
     }
     
-    public List<Parameter> findParametersByOperationId(Long operationId){
-    	List<SwaggerParameterEntity> paramEntities = baseEntityManager.findList(SwaggerParameterEntity.class, "operationId", new Long[]{0L, operationId});
+    public List<Parameter> findParametersByOperationId(String operationId){
+    	List<SwaggerParameterEntity> paramEntities = baseEntityManager.findList(SwaggerParameterEntity.class, "operationId", new String[]{"0", operationId});
 		List<Parameter> parameters = paramEntities.stream().map(p->{
 			return swaggerModelMapper.map2Parameter(p);
 		})

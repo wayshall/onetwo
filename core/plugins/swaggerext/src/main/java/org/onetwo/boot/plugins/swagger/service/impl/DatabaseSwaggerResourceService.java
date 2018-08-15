@@ -6,11 +6,10 @@ import io.swagger.parser.SwaggerParser;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
-import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity;
-import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity.Status;
-import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity.StoreTypes;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerModuleEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerModuleEntity.Status;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerModuleEntity.StoreTypes;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.SpringUtils;
@@ -52,13 +51,13 @@ public class DatabaseSwaggerResourceService {
 	}
 	
 
-	public Optional<Swagger> convertByGroupName(String groupName){
-		SwaggerFileEntity file = findByGroupName(groupName);
+	public Optional<Swagger> convertByGroupName(String applicationName){
+		SwaggerModuleEntity file = findByApplicationName(applicationName);
 		if(file==null){
 //			throw new BaseException("swagger module not found for: " + groupName);
 			return Optional.empty();
 		}
-		SwaggerEntity swaggerEntity = swaggerService.findBySwaggerFileId(file.getId());
+		SwaggerEntity swaggerEntity = swaggerService.findByModuleId(file.getId());
 		if(swaggerEntity==null){
 //			throw new BaseException("swagger not found for swaggerFileId: " + file.getId());
 			return Optional.empty();
@@ -74,17 +73,17 @@ public class DatabaseSwaggerResourceService {
 	 * @param groupName
 	 * @return
 	 */
-	public SwaggerFileEntity findByGroupName(String groupName){
-		SwaggerFileEntity file = baseEntityManager.findOne(SwaggerFileEntity.class, "groupName", groupName);
+	public SwaggerModuleEntity findByApplicationName(String groupName){
+		SwaggerModuleEntity file = baseEntityManager.findOne(SwaggerModuleEntity.class, "applicationName", groupName);
 		return file;
 	}
 
-	public List<SwaggerFileEntity> findAllEnabled(){
-		return findListByStatus(SwaggerFileEntity.Status.ENABLED);
+	public List<SwaggerModuleEntity> findAllEnabled(){
+		return findListByStatus(SwaggerModuleEntity.Status.ENABLED);
 	}
 	
-	public List<SwaggerFileEntity> findListByStatus(Status status){
-		List<SwaggerFileEntity> files = Querys.from(baseEntityManager, SwaggerFileEntity.class)
+	public List<SwaggerModuleEntity> findListByStatus(Status status){
+		List<SwaggerModuleEntity> files = Querys.from(baseEntityManager, SwaggerModuleEntity.class)
 											  .where()
 											  	.field("status").equalTo(status)
 											  	.ignoreIfNull()
@@ -94,12 +93,13 @@ public class DatabaseSwaggerResourceService {
 		return files;
 	}
 	
-	public SwaggerFileEntity saveSwaggerFile(StoreTypes storeType, Swagger swagger, String groupName, String content){
-		SwaggerFileEntity swaggerFileEntity = baseEntityManager.findOne(SwaggerFileEntity.class, "groupName", groupName);
+	public SwaggerModuleEntity saveSwaggerFile(StoreTypes storeType, Swagger swagger, String content){
+		String applicationName = swagger.getInfo().getTitle();
+		SwaggerModuleEntity swaggerFileEntity = baseEntityManager.findOne(SwaggerModuleEntity.class, "applicationName", applicationName);
 		if(swaggerFileEntity==null){
-			swaggerFileEntity = new SwaggerFileEntity();
+			swaggerFileEntity = new SwaggerModuleEntity();
 		}
-		swaggerFileEntity.setGroupName(groupName);
+//		swaggerFileEntity.setGroupName(groupName);
 		swaggerFileEntity.setApplicationName(swagger.getInfo().getTitle());
 		swaggerFileEntity.setStatus(Status.ENABLED);
 		swaggerFileEntity.setStoreType(storeType);
@@ -108,15 +108,12 @@ public class DatabaseSwaggerResourceService {
 		return swaggerFileEntity;
 	}
 	
-	public SwaggerFileEntity importSwagger(String groupName, MultipartFile swaggerFile){
+	public SwaggerModuleEntity importSwagger(MultipartFile swaggerFile){
 		String content = SpringUtils.readMultipartFile(swaggerFile);
-		if(StringUtils.isBlank(groupName)){
-			groupName = swaggerFile.getOriginalFilename();
-		}
-		return importSwagger(groupName, content);
+		return importSwagger(content);
 	}
 	
-	public SwaggerFileEntity importSwagger(String groupName, String content){
+	public SwaggerModuleEntity importSwagger(String content){
 		StoreTypes storeType;
 		Swagger swagger;
 		SwaggerParser parser = new SwaggerParser();
@@ -130,21 +127,21 @@ public class DatabaseSwaggerResourceService {
 			storeType = StoreTypes.DATA;
 			swagger = parser.parse(content);
 		}
-		SwaggerFileEntity file = saveSwaggerFile(storeType, swagger, groupName, content);
+		SwaggerModuleEntity file = saveSwaggerFile(storeType, swagger, content);
 		
 		this.swaggerService.save(file, swagger);
 		return file;
 	}
 
-	public SwaggerFileEntity removeWithCascadeData(String groupName){
-		SwaggerFileEntity swaggerFileEntity = findByGroupName(groupName);
+	public SwaggerModuleEntity removeWithCascadeData(String groupName){
+		SwaggerModuleEntity swaggerFileEntity = findByApplicationName(groupName);
 		return removeWithCascadeData(swaggerFileEntity);
 	}
-	public SwaggerFileEntity removeWithCascadeData(Long swaggerFileId){
-		SwaggerFileEntity swaggerFileEntity = baseEntityManager.load(SwaggerFileEntity.class, swaggerFileId);
+	public SwaggerModuleEntity removeWithCascadeData(Long swaggerFileId){
+		SwaggerModuleEntity swaggerFileEntity = baseEntityManager.load(SwaggerModuleEntity.class, swaggerFileId);
 		return removeWithCascadeData(swaggerFileEntity);
 	}
-    public SwaggerFileEntity removeWithCascadeData(SwaggerFileEntity swaggerFileEntity){
+    public SwaggerModuleEntity removeWithCascadeData(SwaggerModuleEntity swaggerFileEntity){
     	this.swaggerService.removeWithCascadeData(swaggerFileEntity.getId());
     	baseEntityManager.remove(swaggerFileEntity);
     	return swaggerFileEntity;

@@ -39,9 +39,9 @@ public class SwaggerEntity extends BaseEntity  {
     Long id;
     
     /***
-     * 所属导入文件
+     * 所属导入模块
      */
-    Long swaggerFileId;
+    Long moduleId;
     
     /***
      * 冗余的分组名称
@@ -49,7 +49,7 @@ public class SwaggerEntity extends BaseEntity  {
     @NotBlank
     @Length(max=100)
     @SafeHtml
-    String groupName;
+    String applicationName;
     
     /***
      * 主机

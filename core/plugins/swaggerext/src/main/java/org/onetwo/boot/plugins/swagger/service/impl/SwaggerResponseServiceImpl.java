@@ -55,7 +55,7 @@ public class SwaggerResponseServiceImpl {
     	return entity;
     }
 
-    public int removeByOperationId(Long... operationId){
+    public int removeByOperationId(String... operationId){
     	int deleteCount = Querys.from(SwaggerResponseEntity.class)
     				 .where()
     				 	.field("operationId").in(operationId)
@@ -67,8 +67,8 @@ public class SwaggerResponseServiceImpl {
     	return deleteCount;
     }
     
-    public Map<String, Response> findResponseMapByOperationId(Long operationId){
-    	List<SwaggerResponseEntity> responseEntities = baseEntityManager.findList(SwaggerResponseEntity.class, "operationId", new Long[]{0L, operationId});
+    public Map<String, Response> findResponseMapByOperationId(String operationId){
+    	List<SwaggerResponseEntity> responseEntities = baseEntityManager.findList(SwaggerResponseEntity.class, "operationId", new String[]{"0", operationId});
 		Map<String, Response> responses = responseEntities.stream()
 														.collect(Collectors.toMap(r->r.getResponseCode(), r->swaggerModelMapper.map2Response(r)));
 		return responses;

@@ -24,10 +24,10 @@ import org.onetwo.dbm.jpa.BaseEntity;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="api_swagger_file")
+@Table(name="api_swagger_module")
 @Data
 @EqualsAndHashCode(callSuper=true)
-public class SwaggerFileEntity extends BaseEntity {
+public class SwaggerModuleEntity extends BaseEntity {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "snowflake")
@@ -35,7 +35,7 @@ public class SwaggerFileEntity extends BaseEntity {
     @NotNull
 	Long id;
 	
-	String groupName;
+//	String groupName;
 	String applicationName;
 	
 	@Enumerated(EnumType.STRING)
