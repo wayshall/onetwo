@@ -98,9 +98,9 @@ public class SwaggerOperationServiceImpl {
     public String generateOperationId(Long swaggerId, Operation operation){
     	String apiId = (String)operation.getVendorExtensions().get(SwaggerOperationEntity.KEY_API_ID);
     	if(StringUtils.isBlank(apiId)){
-    		throw new BaseException("property[x-api-id]] must can not be null");
+    		throw new BaseException("property["+SwaggerOperationEntity.KEY_API_ID+"] must can not be null");
     	}
-    	String id = "api"+Long.toString(swaggerId, 36)+apiId;
+    	String id = SwaggerUtils.API_ID_PREFIX+Long.toString(swaggerId, 36)+apiId;
     	return id;
     }
     

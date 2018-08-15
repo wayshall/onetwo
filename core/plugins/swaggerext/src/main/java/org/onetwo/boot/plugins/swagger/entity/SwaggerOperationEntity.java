@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class SwaggerOperationEntity extends BaseEntity  {
-	public static final String KEY_API_ID = "x-api-id";
+	public static final String KEY_API_ID = "x-inner-id";
 	public static final String KEY_AUTHOR = "x-author";
 	public static final String KEY_VINDICATOR = "x-vindicator";
 	public static final String KEY_VERSION = "x-api-version";
@@ -136,7 +136,7 @@ public class SwaggerOperationEntity extends BaseEntity  {
     /***
      * 内部id
      */
-    String apiId;
+    String innerId;
     /***
      * 作者
      */

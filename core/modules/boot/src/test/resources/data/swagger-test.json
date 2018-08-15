@@ -19,7 +19,7 @@
     "paths": {
     "/api/common/consume/addUserChannelLog": {
             "put": {
-                "x-api-id": "001",
+                "x-inner-id": "001",
                 "tags": [
                     "营销相关Api"
                 ],
@@ -68,7 +68,7 @@
         },
         "/api/common/home/getCmIndexImage/{id}": {
             "get": {
-                "x-api-id": "002",
+                "x-inner-id": "002",
                 "tags": [
                     "首页配置Api"
                 ],
