@@ -69,6 +69,12 @@ public class OperationListModel {
 	@ApiModelProperty(value="请求格式")
     List<String> consumes;
 
+	@ApiModelProperty(value="接口地址主机(域名)")
+	String host;
+	
+	@ApiModelProperty(value="接口基础路径")
+	String basePath;
+
 	@ApiModel(value="OperationDetail")
 	public static class OperationDetailModel extends OperationListModel {
 	    private Map<String, Object> vendorExtensions = new LinkedHashMap<String, Object>();
@@ -121,5 +127,7 @@ public class OperationListModel {
 	        }
 	        this.responses.put(key, response);
 	    }
+	    
+	    
 	}
 }

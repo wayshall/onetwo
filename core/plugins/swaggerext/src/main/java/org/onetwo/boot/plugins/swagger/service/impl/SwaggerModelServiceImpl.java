@@ -60,7 +60,7 @@ public class SwaggerModelServiceImpl {
     	swaggerModelEntity.setRefPath(SwaggerUtils.getModelRefPath(name));
     	swaggerModelEntity.setJsonType(model.getClass().getName());
     	swaggerModelEntity.setJsonData(SwaggerUtils.toJson(model));
-    	swaggerModelEntity.setSwaggerFileId(swaggerEntity.getSwaggerFileId());
+    	swaggerModelEntity.setModuleId(swaggerEntity.getModuleId());
     	baseEntityManager.save(swaggerModelEntity);
     	return swaggerModelEntity;
     }

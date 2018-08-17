@@ -38,7 +38,7 @@ public class SwaggerModelEntity extends BaseEntity  {
     /***
      * 所属导入文件
      */
-    Long swaggerFileId;
+    Long moduleId;
     
     /***
      * #/definitions/+name

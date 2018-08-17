@@ -16,8 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
+import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
+import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,14 +81,48 @@ public class SwaggerOperationServiceImpl {
     	operationEntity.setExternaldocs(operation.getExternalDocs());
     	operationEntity.setTags(operation.getTags());
     	operationEntity.setPath(path);
-    	operationEntity.setSwaggerFileId(swaggerEntity.getSwaggerFileId());
+    	operationEntity.setModuleId(swaggerEntity.getModuleId());
     	operationEntity.setDescription(operation.getDescription());
+    	operationEntity.setOperationId(operation.getOperationId());
+    	
+    	setExtendProperties(operationEntity, operation.getVendorExtensions());
+    	String id = generateOperationId(swaggerEntity, operation, method);
+    	operationEntity.setId(id);
     	baseEntityManager.save(operationEntity);
     	
     	swaggerParameterService.save(operationEntity, operation.getParameters());
     	swaggerResponseService.save(operationEntity, operation.getResponses());
     	
     	return Optional.of(operationEntity);
+    }
+    
+    public String generateOperationId(SwaggerEntity swaggerEntity, Operation operation, RequestMethod method){
+    	String apiId = (String)operation.getVendorExtensions().get(SwaggerOperationEntity.KEY_API_ID);
+    	if(StringUtils.isNotBlank(apiId)){
+    		return apiId;
+    	}
+    	//生成……
+    	//operationId文档内唯一
+    	apiId = operation.getOperationId();
+    	if(StringUtils.isBlank(apiId)){
+    		throw new ServiceException("property[operationId] must can not be null");
+    	}
+    	//如果id是自动生成的
+    	if(apiId.contains(method.name())){
+    		apiId = String.valueOf(apiId.hashCode());
+		}
+    	String id = SwaggerUtils.API_ID_PREFIX+Long.toString(swaggerEntity.getId(), 36)+"-"+apiId;
+    	return id;
+    }
+    
+    /***
+     * 设置扩展属性
+     * @author wayshall
+     * @param entity
+     * @param vendorExtensions
+     */
+    private void setExtendProperties(SwaggerOperationEntity entity, Map<String, Object> vendorExtensions){
+    	SwaggerUtils.setExtendProperties(entity, vendorExtensions);
     }
     
     public int removeBySwaggerId(Long swaggerId){

@@ -62,7 +62,7 @@ public class SwaggerResponseEntity extends BaseEntity  {
     /***
      * 所属操作id，全局参数为0
      */
-    Long operationId;
+    String operationId;
     
     /***
      * 

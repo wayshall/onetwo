@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -20,9 +18,7 @@ import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.onetwo.dbm.annotation.DbmIdGenerator;
 import org.onetwo.dbm.annotation.DbmJsonField;
-import org.onetwo.dbm.id.SnowflakeGenerator;
 import org.onetwo.dbm.jpa.BaseEntity;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -30,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 /***
  * swagger操作表
+ * operationId，文档内唯一
+ * x-api-id: id，全局唯一
  */
 @SuppressWarnings("serial")
 @Entity
@@ -37,17 +35,33 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class SwaggerOperationEntity extends BaseEntity  {
+	/***
+	 * 全局唯一，id别名
+	 */
+	public static final String KEY_API_ID = "x-api-id";
+	/***
+	 * 作者
+	 */
+	public static final String KEY_AUTHOR = "x-field-author";
+	/***
+	 * 维护者
+	 */
+	public static final String KEY_VINDICATOR = "x-field-vindicator";
+	/***
+	 * api版本
+	 */
+	public static final String KEY_VERSION = "x-field-api-version";
 
     @Id
     //@GeneratedValue(strategy=GenerationType.IDENTITY)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator="snowflake") 
-    @DbmIdGenerator(name="snowflake", generatorClass=SnowflakeGenerator.class)
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator="snowflake") 
+//    @DbmIdGenerator(name="snowflake", generatorClass=SnowflakeGenerator.class)
     @NotNull
-    Long id;
+    String id;
     /***
-     * 所属导入文件
+     * 所属导入模块
      */
-    Long swaggerFileId;
+    Long moduleId;
     
     /***
      * api说明摘要
@@ -128,9 +142,27 @@ public class SwaggerOperationEntity extends BaseEntity  {
     @Length(max=500)
     @DbmJsonField
     List<String> consumes;
+    /***
+     * 文档内唯一
+     */
+    String operationId;
 
     @DbmJsonField
     Map<String, Object> vendorExtensions = new LinkedHashMap<String, Object>();
+    
+    //扩展属性，写成字段便于检索需求
+    /***
+     * 作者
+     */
+    String author;
+    /***
+     * 维护者
+     */
+    String vindicator;
+    /***
+     * 版本
+     */
+    String apiVersion;
 
     @JsonAnyGetter
     public Map<String, Object> getVendorExtensions() {

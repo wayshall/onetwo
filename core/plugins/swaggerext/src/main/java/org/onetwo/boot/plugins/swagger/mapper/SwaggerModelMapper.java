@@ -50,6 +50,7 @@ public class SwaggerModelMapper {
 	public Operation map2Operation(SwaggerOperationEntity op, BiConsumer<SwaggerOperationEntity, Operation> onMapOperation){
 		Operation swgOp = new Operation();
 		CopyUtils.copy(swgOp, op);
+		swgOp.setVendorExtension(SwaggerOperationEntity.KEY_API_ID, op.getId());
 		onMapOperation.accept(op, swgOp);
 		return swgOp;
 	}

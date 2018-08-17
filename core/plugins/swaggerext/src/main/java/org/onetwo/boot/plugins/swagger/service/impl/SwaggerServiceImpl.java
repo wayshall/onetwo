@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
-import org.onetwo.boot.plugins.swagger.entity.SwaggerFileEntity;
+import org.onetwo.boot.plugins.swagger.entity.SwaggerModuleEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
 import org.onetwo.common.db.spi.BaseEntityManager;
@@ -66,18 +66,21 @@ public class SwaggerServiceImpl {
 	}
 	
     
-    public SwaggerEntity save(SwaggerFileEntity swaggerFile, Swagger swagger) {
-    	Assert.notNull(swaggerFile.getId(), "swaggerFile.id can not be null");
-    	SwaggerEntity swaggerEntity = findBySwaggerFileId(swaggerFile.getId());
+    public SwaggerEntity save(SwaggerModuleEntity module, Swagger swagger) {
+    	Assert.notNull(module.getId(), "swaggerFile.id can not be null");
+    	SwaggerEntity swaggerEntity = findByModuleId(module.getId());
     	if(swaggerEntity==null){
     		swaggerEntity = new SwaggerEntity();
+    		swaggerEntity.setUpdateCount(1);
+    	}else{
+    		swaggerEntity.setUpdateCount(swaggerEntity.getUpdateCount()+1);
     	}
-    	swaggerEntity.setGroupName(swaggerFile.getGroupName());
+    	swaggerEntity.setApplicationName(module.getApplicationName());
     	swaggerEntity.setBasePath(swagger.getBasePath());
     	swaggerEntity.setHost(swagger.getHost());
     	swaggerEntity.setSwagger(swagger.getSwagger());
     	swaggerEntity.setInfo(swagger.getInfo());
-    	swaggerEntity.setSwaggerFileId(swaggerFile.getId());
+    	swaggerEntity.setModuleId(module.getId());
     	baseEntityManager.save(swaggerEntity);
 
     	swaggerModelService.saveDefinitions(swaggerEntity, swagger.getDefinitions());
@@ -86,12 +89,12 @@ public class SwaggerServiceImpl {
     	return swaggerEntity;
 	}
     
-    public void removeWithCascadeData(Long swaggerFileId){
-    	SwaggerEntity swaggerEntity = findBySwaggerFileId(swaggerFileId);
-    	Assert.notNull(swaggerEntity, "swagger not found for file: " + swaggerFileId);
+    public void removeWithCascadeData(Long moduleId){
+    	SwaggerEntity swaggerEntity = findByModuleId(moduleId);
+    	Assert.notNull(swaggerEntity, "swagger not found for module: " + moduleId);
 		//operation
     	List<SwaggerOperationEntity> operationEntities = this.swaggerOperationService.findListBySwaggerId(swaggerEntity.getId());
-    	Long[] operationIds = operationEntities.stream().map(e->e.getId()).collect(Collectors.toList()).toArray(new Long[0]);
+    	String[] operationIds = operationEntities.stream().map(e->e.getId()).collect(Collectors.toList()).toArray(new String[0]);
     	//parameter
     	this.swaggerParameterService.removeByOperationId(operationIds);
 		//response
@@ -104,8 +107,8 @@ public class SwaggerServiceImpl {
     	baseEntityManager.remove(swaggerEntity);
     }
     
-    public SwaggerEntity findBySwaggerFileId(Long swaggerFileId){
-    	SwaggerEntity swaggerEntity = this.baseEntityManager.findOne(SwaggerEntity.class, "swaggerFileId", swaggerFileId);
+    public SwaggerEntity findByModuleId(Long moduleId){
+    	SwaggerEntity swaggerEntity = this.baseEntityManager.findOne(SwaggerEntity.class, "moduleId", moduleId);
     	return swaggerEntity;
     }
     
