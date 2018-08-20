@@ -51,3 +51,6 @@ application-product.yaml
 /core/modules/spring/src/test/java/org/onetwo/common/apiclient/PapaBookingSoccerTest.java
 /core/modules/spring/src/test/java/org/onetwo/common/apiclient/PapaBookingService.java
 /core/modules/common/src/test/java/org/onetwo/common/project/CloudsoftRefactorTest.java
+.DS_Store
+core/deploy-all.sh
+core/deploy-microcloud.sh
