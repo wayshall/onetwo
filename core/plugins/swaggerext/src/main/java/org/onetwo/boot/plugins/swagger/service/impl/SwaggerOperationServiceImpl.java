@@ -109,9 +109,9 @@ public class SwaggerOperationServiceImpl {
     	}
     	//如果id是自动生成的
     	if(apiId.contains(method.name())){
-    		apiId = String.valueOf(apiId.hashCode());
+    		apiId = String.valueOf(apiId.hashCode()).replace('-', '0');
 		}
-    	String id = SwaggerUtils.API_ID_PREFIX+Long.toString(swaggerEntity.getId(), 36)+"-"+apiId;
+    	String id = SwaggerUtils.API_ID_PREFIX+Long.toString(swaggerEntity.getId(), 36)+"_"+apiId;
     	return id;
     }
     
