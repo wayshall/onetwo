@@ -2,6 +2,7 @@ package org.onetwo.common.web.captcha;
 
 import lombok.Data;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.common.md.Hashs;
 import org.onetwo.common.md.MessageDigestHasher;
 import org.springframework.util.Assert;
@@ -11,17 +12,17 @@ import org.springframework.util.Assert;
  * <br/>
  */
 public class Captchas {
-	static public final String DEFAULT_SALT = "__jfish_captchas__";
+//	static public final String DEFAULT_SALT = "__jfish_captchas__";
 	/**
 	 * 默认失效时间，三分钟
 	 */
 	static public final int DEFAULT_VALID_IN_SECONDS = 60*3;
 	
-	static private final CaptchaChecker CAPTCHA_CHECKER = new CaptchaChecker(DEFAULT_SALT, DEFAULT_VALID_IN_SECONDS);
+	static private final CaptchaChecker CAPTCHA_CHECKER = new CaptchaChecker(RandomStringUtils.randomAscii(64), DEFAULT_VALID_IN_SECONDS);
 
 	
-	public static CaptchaChecker createCaptchaChecker() {
-		return createCaptchaChecker(DEFAULT_SALT, DEFAULT_VALID_IN_SECONDS);
+	public static CaptchaChecker getCaptchaChecker() {
+		return CAPTCHA_CHECKER;
 	}
 	
 	public static CaptchaChecker createCaptchaChecker(String salt, int validInSeconds) {
@@ -39,8 +40,8 @@ public class Captchas {
 	
 	@Data
 	public static class CaptchaChecker {
-		private String salt;
-		private int expireInSeconds;
+		final private String salt;
+		final private int expireInSeconds;
 		final private MessageDigestHasher hasher = Hashs.SHA;
 
 		public CaptchaChecker(String salt, int validInSeconds) {
