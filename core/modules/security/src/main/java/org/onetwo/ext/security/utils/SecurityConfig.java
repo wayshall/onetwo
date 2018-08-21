@@ -169,6 +169,9 @@ public class SecurityConfig {
 		return this.memoryUsers;
 	}
 	
+	public boolean isIgnoringDefautStaticPaths(){
+		return ignoringDefautStaticPaths;
+	}
 	@Data
 	public class RememberMeConfig {
 		private String key;

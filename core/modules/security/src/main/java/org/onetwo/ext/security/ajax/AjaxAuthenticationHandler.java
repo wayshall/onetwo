@@ -157,10 +157,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 				SavedRequest saveRequest = this.requestCache.getRequest(request, response);
 				if(saveRequest!=null){
 					this.requestCache.removeRequest(request, response);
+					redirectUrl = saveRequest.getRedirectUrl();
+					clearAuthenticationAttributes(request);
 				}
-				
-				redirectUrl = saveRequest.getRedirectUrl();
-				clearAuthenticationAttributes(request);
 			}
 			
 			Object data = redirectUrl;

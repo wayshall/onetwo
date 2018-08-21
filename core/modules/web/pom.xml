@@ -70,6 +70,12 @@
       <artifactId>smiley-http-proxy-servlet</artifactId>
       <optional>true</optional>
     </dependency>
+    
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
 	
 	<!-- <dependency>
 	  <groupId>org.apache.struts</groupId>

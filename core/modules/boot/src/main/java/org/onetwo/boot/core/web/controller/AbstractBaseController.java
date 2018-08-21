@@ -2,11 +2,13 @@ package org.onetwo.boot.core.web.controller;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 
@@ -39,6 +41,7 @@ import org.onetwo.common.web.utils.ResponseType;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -235,6 +238,26 @@ abstract public class AbstractBaseController {
 			logger.error(msg + e.getMessage(), e);
 		} finally{
 			IOUtils.closeQuietly(input);
+		}
+	}
+
+	protected void write(HttpServletResponse response, byte[] data){
+		write(response, MediaType.APPLICATION_OCTET_STREAM_VALUE, data);
+	}
+	
+	protected void write(HttpServletResponse response, String contentType, byte[] data){
+		if(StringUtils.isNotBlank(contentType)){
+			response.setContentType(contentType);
+		}
+		ServletOutputStream ouput = null;
+		try {
+			ouput = response.getOutputStream();
+			ouput.write(data);
+		} catch (IOException e) {
+			String msg = "write data error：";
+			logger.error(msg + e.getMessage(), e);
+		} finally{
+			IOUtils.closeQuietly(ouput);
 		}
 	}
 	
