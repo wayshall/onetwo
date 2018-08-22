@@ -66,6 +66,19 @@ public class SwaggerResponseServiceImpl {
     	}
     	return deleteCount;
     }
+
+
+    public int removeBySwaggerId(Long swaggerId){
+    	int deleteCount = Querys.from(SwaggerResponseEntity.class)
+    				 .where()
+    				 	.field("swaggerId").is(swaggerId)
+    				 .end()
+    				 .delete();
+    	if(log.isInfoEnabled()){
+    		log.info("remove {} parameters for swagger: {}", deleteCount, swaggerId);
+    	}
+    	return deleteCount;
+    }
     
     public Map<String, Response> findResponseMapByOperationId(String operationId){
     	List<SwaggerResponseEntity> responseEntities = baseEntityManager.findList(SwaggerResponseEntity.class, "operationId", new String[]{"0", operationId});

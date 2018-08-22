@@ -6,14 +6,12 @@ import io.swagger.models.Path;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerModuleEntity;
-import org.onetwo.boot.plugins.swagger.entity.SwaggerOperationEntity;
 import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,16 +91,19 @@ public class SwaggerServiceImpl {
     	SwaggerEntity swaggerEntity = findByModuleId(moduleId);
     	Assert.notNull(swaggerEntity, "swagger not found for module: " + moduleId);
 		//operation
-    	List<SwaggerOperationEntity> operationEntities = this.swaggerOperationService.findListBySwaggerId(swaggerEntity.getId());
-    	String[] operationIds = operationEntities.stream().map(e->e.getId()).collect(Collectors.toList()).toArray(new String[0]);
+//    	List<SwaggerOperationEntity> operationEntities = this.swaggerOperationService.findListBySwaggerId(swaggerEntity.getId());
+//    	String[] operationIds = operationEntities.stream().map(e->e.getId()).collect(Collectors.toList()).toArray(new String[0]);
     	//parameter
-    	this.swaggerParameterService.removeByOperationId(operationIds);
+//    	this.swaggerParameterService.removeByOperationId(operationIds);
+    	this.swaggerParameterService.removeBySwaggerId(swaggerEntity.getId());
 		//response
-    	this.swaggerResponseService.removeByOperationId(operationIds);
+//    	this.swaggerResponseService.removeByOperationId(operationIds);
+    	this.swaggerResponseService.removeBySwaggerId(swaggerEntity.getId());
     	//model
     	swaggerModelService.removeBySwaggerId(swaggerEntity.getId());
     	//operation
-    	baseEntityManager.removes(operationEntities);
+//    	baseEntityManager.removes(operationEntities);
+    	this.swaggerOperationService.removeBySwaggerId(swaggerEntity.getId());
     	//swagger
     	baseEntityManager.remove(swaggerEntity);
     }
