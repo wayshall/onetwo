@@ -652,6 +652,16 @@ final public class CUtils {
 		}
 	}
 	
+	public static void removeByClass(List<?> list, Class<?> targetClass){
+		Iterator<?> it = list.iterator();
+		while(it.hasNext()){
+			Object e = it.next();
+			if(e!=null && targetClass.isAssignableFrom(ReflectUtils.getObjectClass(e))){
+				it.remove();
+			}
+		}
+	}
+	
 	private CUtils(){
 	}
 
