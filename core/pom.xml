@@ -39,7 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/dbm</module>
+                <module>plugins/web-admin</module>
 			</modules>
            <build>
               <plugins>
