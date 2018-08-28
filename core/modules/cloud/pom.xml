@@ -31,6 +31,12 @@
           <artifactId>onetwo-boot</artifactId>
           <optional>true</optional>
         </dependency>
+        
+        <dependency>
+          <groupId>org.onetwo4j</groupId>
+          <artifactId>onetwo-dbm</artifactId>
+          <optional>true</optional>
+        </dependency>
 	   
         <dependency>
             <groupId>javax.mail</groupId>
@@ -148,6 +154,13 @@
         <dependency>
            <groupId>org.jolokia</groupId>
            <artifactId>jolokia-core</artifactId>
+        </dependency>
+        
+        
+        <!-- zipkin -->
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-sleuth</artifactId>
         </dependency>
         
         <!-- for test -->

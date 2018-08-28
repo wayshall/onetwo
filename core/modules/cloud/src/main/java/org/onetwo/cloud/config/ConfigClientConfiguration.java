@@ -3,6 +3,7 @@ package org.onetwo.cloud.config;
 import java.util.Arrays;
 
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.config.client.ConfigClientProperties;
 import org.springframework.cloud.config.client.ConfigServicePropertySourceLocator;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
  * <br/>
  */
 @Configuration
+@ConditionalOnClass(ConfigClientProperties.class)
 public class ConfigClientConfiguration {
 
 	@Bean
