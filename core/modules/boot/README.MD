@@ -281,6 +281,16 @@ jfish:
                 key1:key2: 30m
 ```
 
+### dbm
+是否启用dbm sql统计controller
+```yaml
+jfish: 
+    dbm: 
+        web: 
+            statisController: 
+                enabled: true
+```
+
 ### 其它一些简化使用的扩展
 
 - @BootMvcArgumentResolver 注解   
