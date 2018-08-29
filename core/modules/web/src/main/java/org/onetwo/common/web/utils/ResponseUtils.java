@@ -222,6 +222,9 @@ abstract public class ResponseUtils {
 		render(response, text, JSON_TYPE, true);
 	}
 	
+	public static void renderHtml(HttpServletResponse response, String html){
+		render(response, html, HTML_TYPE, true);
+	}
 	public static void render(HttpServletResponse response, String text, String contentType, boolean noCache){
 		try {
 			if(!StringUtils.isBlank(contentType))

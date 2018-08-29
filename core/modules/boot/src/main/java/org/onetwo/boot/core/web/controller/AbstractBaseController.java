@@ -38,6 +38,7 @@ import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;
+import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -261,10 +262,23 @@ abstract public class AbstractBaseController {
 		}
 	}
 	
+	protected void renderHtml(HttpServletResponse response, String html){
+		ResponseUtils.renderHtml(response, html);
+	}
+	
+	
 	protected void exportText(HttpServletResponse response, List<?> datas, String filename){
 		exportText(response, datas, filename, obj->obj.toString());
 	}
 	
+	/****
+	 * 下载文本文件
+	 * @author wayshall
+	 * @param response
+	 * @param datas
+	 * @param filename
+	 * @param block
+	 */
 	protected void exportText(HttpServletResponse response, List<?> datas, String filename, ReturnableClosure<Object, String> block){
 		PrintWriter out = null;
 		try {
