@@ -1,6 +1,6 @@
 package org.onetwo.cloud.sleuth;
 
-import org.onetwo.dbm.jdbc.spi.DbmInterceptor;
+import org.onetwo.dbm.core.spi.DbmInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;

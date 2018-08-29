@@ -2,8 +2,8 @@ package org.onetwo.cloud.sleuth;
 
 import org.onetwo.dbm.annotation.DbmInterceptorFilter;
 import org.onetwo.dbm.annotation.DbmInterceptorFilter.InterceptorType;
-import org.onetwo.dbm.jdbc.spi.DbmInterceptor;
-import org.onetwo.dbm.jdbc.spi.DbmInterceptorChain;
+import org.onetwo.dbm.core.spi.DbmInterceptor;
+import org.onetwo.dbm.core.spi.DbmInterceptorChain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
