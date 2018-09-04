@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -266,6 +267,12 @@ final public class LangOps {
 		}
 		int duration = Integer.valueOf(time.substring(0, time.length() - unitLength)) * times;
 		return Pair.of(duration, timeUnit);
+	}
+	
+
+	static public Color parseColor(String color){
+		String[] strs = GuavaUtils.split(color, ",");
+		return new Color(Integer.parseInt(strs[0]), Integer.parseInt(strs[1]), Integer.parseInt(strs[2]));
 	}
 	
 	private LangOps(){}

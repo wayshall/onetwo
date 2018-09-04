@@ -43,12 +43,14 @@
 		                    <td>密码:</td>
 		                    <td><input class="easyui-textbox" type="password" name="password" data-options="required:true"></input></td>
 		                </tr>
+		              <#if isCaptcha==true>
 		                <tr>
 		                  <td>验证码</td>
 		                  <td><input class="easyui-textbox" type="text" name="verifyCode" data-options="required:true" width="100"></input><br/>
 		                      <img alt="" src="" id="verifyCodeImage" width="80" height="20">
 		                  </td>
 		                </tr>
+		              </#if>
                         <tr>
                           <td>记住我</td>
                           <td>  <input class="easyui-checkbox" type="checkbox" name="remember-me" ></td>
@@ -84,13 +86,16 @@
 		        $(function(){
 		        	helper.gotoTopPage();
 		        	
-		        	var getCaptchar = function(){
-	                    $.getJSON('${pluginHelper.baseURL}/captcha', function(data){
-	                        $('#verifyCodeImage').attr('src', 'data:image/png;base64,'+data.data);
-	                    });
+		        	var verifyCodeImage = $('#verifyCodeImage');
+		        	if(verifyCodeImage.length>0){
+	                    var getCaptchar = function(){
+	                        $.getJSON('${pluginHelper.baseURL}/captcha', function(data){
+	                            $('#verifyCodeImage').attr('src', 'data:image/png;base64,'+data.data);
+	                        });
+	                    }
+	                    $('#verifyCodeImage').click(getCaptchar);
+	                    getCaptchar();
 		        	}
-		        	$('#verifyCodeImage').click(getCaptchar);
-		        	getCaptchar();
 		        })
 		        
 		    </script>

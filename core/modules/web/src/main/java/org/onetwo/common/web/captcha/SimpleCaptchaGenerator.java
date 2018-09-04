@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,6 +19,8 @@ import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangOps;
+import org.onetwo.common.utils.StringUtils;
 
 /**
  * @author wayshall
@@ -109,7 +112,9 @@ public class SimpleCaptchaGenerator {
 			//整个图片高度减去字体高度后的剩余高度，减去字体高度，保证画时字体完整画出来
 			int surplusHeight = height-settings.getFontHeight();
 			int randomMargin = getRandom().nextInt(surplusHeight);
-			g2d.setColor(getRandomColor(getRandom()));
+			//设置画板字体颜色，随机
+			Color color = settings.getActualCodeColor().orElseGet(()->getRandomColor(getRandom()));
+			g2d.setColor(color);
 //			g2d.setColor(Color.RED);
 			//xy为字母最后的点，即最右和最底部的点
 			int y = height-randomMargin*5;
@@ -139,6 +144,8 @@ public class SimpleCaptchaGenerator {
 		String fontName = "Fixedsys";//"Courier New";
 		Font font;
 		String imageFormatName = "png";
+		//验证码颜色,默认随机
+		String codeColor;
 		
 		public Font getFont(){
 			if(font==null){
@@ -146,6 +153,13 @@ public class SimpleCaptchaGenerator {
 				font  = new Font("Courier New", Font.PLAIN, getFontHeight());
 			}
 			return font;
+		}
+		
+		public Optional<Color> getActualCodeColor(){
+			if(StringUtils.isBlank(codeColor)){
+				return Optional.empty();
+			}
+			return Optional.ofNullable(LangOps.parseColor(codeColor));
 		}
 		
 		public int getFontHeight(){

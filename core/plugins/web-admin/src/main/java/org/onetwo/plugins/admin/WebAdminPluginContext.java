@@ -21,6 +21,7 @@ import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
 import org.onetwo.ext.security.provider.CaptchaAuthenticationProvider;
+import org.onetwo.plugins.admin.controller.CaptchaController;
 import org.onetwo.plugins.admin.controller.KindeditorController;
 import org.onetwo.plugins.admin.controller.LoginController;
 import org.onetwo.plugins.admin.controller.WebAdminBaseController;
@@ -34,6 +35,7 @@ import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.AdminPermissionCo
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassListProvider;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
 import org.onetwo.plugins.admin.utils.WebAdminProperties;
+import org.onetwo.plugins.admin.utils.WebAdminProperties.CaptchaProps;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,14 +104,6 @@ public class WebAdminPluginContext implements InitializingBean {
 		return new KindeditorController();
 	}
 	
-	@Bean
-	public CaptchaAuthenticationProvider captchaAuthenticationProvider(){
-		CaptchaAuthenticationProvider provider = new CaptchaAuthenticationProvider();
-		provider.setCaptchaParameterName(webAdminProperties.getCaptcha().getParameterName());
-		provider.setCaptchaCookieName(webAdminProperties.getCaptcha().getCookieName());
-		provider.setCaptchaChecker(webAdminProperties.getCaptchaChecker());
-		return provider;
-	}
 	
 
 	/*@Configuration
@@ -204,6 +198,25 @@ public class WebAdminPluginContext implements InitializingBean {
 		}
 	}
 	
-	
+	@Configuration
+	@ConditionalOnProperty(name=CaptchaProps.ENABLED_KEY, matchIfMissing=true)
+	protected static class CaptchaConfiguration {
+		@Autowired
+		WebAdminProperties webAdminProperties;
+		
+		@Bean
+		public CaptchaAuthenticationProvider captchaAuthenticationProvider(){
+			CaptchaAuthenticationProvider provider = new CaptchaAuthenticationProvider();
+			provider.setCaptchaParameterName(webAdminProperties.getCaptcha().getParameterName());
+			provider.setCaptchaCookieName(webAdminProperties.getCaptcha().getCookieName());
+			provider.setCaptchaChecker(webAdminProperties.getCaptchaChecker());
+			return provider;
+		}
+		
+		@Bean
+		public CaptchaController captchaController(){
+			return new CaptchaController();
+		}
+	}
 
 }
