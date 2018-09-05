@@ -51,6 +51,8 @@ public class AdminUser extends BaseEntity {
 
     private String appCode;
     
+    private String avatar;
+    
     public String getGenderName(){
     	if(StringUtils.isBlank(gender))
     		return "";
