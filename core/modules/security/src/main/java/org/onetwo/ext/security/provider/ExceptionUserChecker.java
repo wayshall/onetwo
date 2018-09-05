@@ -35,7 +35,7 @@ public class ExceptionUserChecker implements InitializingBean, AuthenticationPro
 	 * 默认一天
 	 */
 	@Setter
-	private String duration = "1d";
+	private String duration;
 	/***
 	 * 默认最大5次
 	 */

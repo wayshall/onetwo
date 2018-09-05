@@ -90,7 +90,7 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 
 	@Data
 	public static class ExceptionUserCheckerConfig {
-		private String duration = "1d";
+		private String duration = "1m";
 		private int maxLoginTimes = 5;
 	}
 
