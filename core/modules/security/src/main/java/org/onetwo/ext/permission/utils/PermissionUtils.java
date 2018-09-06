@@ -5,10 +5,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.tree.TreeBuilder;
+import org.onetwo.common.tree.TreeModel;
 import org.onetwo.common.utils.func.Closure1;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
+
 
 final public class PermissionUtils {
 	public static interface BuildBlock {
@@ -61,19 +63,22 @@ final public class PermissionUtils {
 	}
 	
 	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends IPermission> permissions){
-		return createMenuTreeBuilder(permissions, p->new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode()));
-	}
-	
-	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends IPermission> permissions, Function<IPermission, PermisstionTreeModel> treeModelCreator){
-		List<PermisstionTreeModel> pmlist = permissions.stream().map(p->{
-//			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
-			PermisstionTreeModel pm = treeModelCreator.apply(p);
+		return createMenuTreeBuilder(permissions, p->{
+			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
 			pm.setSort(p.getSort());
 			pm.setUrl(p.getUrl());
 			return pm;
+		});
+	}
+	
+	public static <T extends TreeModel<T>> TreeBuilder<T> createMenuTreeBuilder(List<? extends IPermission> permissions, Function<IPermission, T> treeModelCreator){
+		List<T> pmlist = permissions.stream().map(p->{
+//			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
+			T pm = treeModelCreator.apply(p);
+			return pm;
 		}).collect(Collectors.toList());
 		
-		TreeBuilder<PermisstionTreeModel> builder = new TreeBuilder<>(pmlist);
+		TreeBuilder<T> builder = new TreeBuilder<>(pmlist);
 	    return builder;
 	}
 	

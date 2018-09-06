@@ -40,7 +40,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		if(parsers==null || parsers.isEmpty()){
 			this.parsers = SpringUtils.getBeans(applicationContext, MenuInfoParser.class, new ParameterizedTypeReference<MenuInfoParser<P>>(){});
 		}
-		Assert.notEmpty(parsers);
+		checkParsers();
 	}
 
 	protected MenuInfoParser<P> getTopMenuInfoParser(){
@@ -50,10 +50,14 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	public void setParsers(List<MenuInfoParser<P>> parsers) {
 		this.parsers = parsers;
 	}
+	
+	private void checkParsers(){
+		Assert.notEmpty(parsers, "parsers can not be empty");
+	}
 
 
 	public List<P> getMemoryRootMenu() {
-		Assert.notNull(parsers);
+		checkParsers();
 //	    return this.menuInfoParser.getRootMenu();
 	    return parsers.stream()
 	    				.filter(p->p.getRootMenu().isPresent())
@@ -66,7 +70,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	 */
 	@Override
 	public void build(){
-		Assert.notNull(parsers);
+		checkParsers();
 //		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		parsers.stream().forEach(parser->{
 			Optional<P> rootMenu = parser.parseTree();
@@ -80,7 +84,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 
 	@Override
 	public P getPermission(Class<?> permClass){
-		Assert.notNull(parsers);
+		checkParsers();
 //		return menuInfoParser.getPermission(permClass);
 		for(MenuInfoParser<P> parser : parsers){
 			P perm = parser.getPermission(permClass);

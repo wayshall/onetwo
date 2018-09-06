@@ -4,9 +4,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.MenuItemRepository;
+import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,7 +38,13 @@ public class AdminController extends WebAdminBaseController {
 	@RequestMapping(value="/roleRouters", method=RequestMethod.GET)
 	@ResponseBody
 	public List<PermisstionTreeModel> getRoleRouters(UserDetail userDetail){
-		List<PermisstionTreeModel> menus = menuItemRepository.findUserMenus(userDetail);
+		List<PermisstionTreeModel> menus = menuItemRepository.findUserPermissions(userDetail, (userPerms, allPerms)->{
+			TreeBuilder<?> treebuilder = PermissionUtils.createMenuTreeBuilder(userPerms, p->{
+				return null;
+			});
+			treebuilder.buidTree(notFoundAction);
+			return null;
+		});
 		return menus;
 	}
 }

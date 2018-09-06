@@ -34,6 +34,7 @@ public class AdminMenuItemServiceImpl extends DefaultMenuItemRepository {
 	 * @param loginUser
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<PermisstionTreeModel> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<PermisstionTreeModel> builder) {
 		if(loginUser==null){
