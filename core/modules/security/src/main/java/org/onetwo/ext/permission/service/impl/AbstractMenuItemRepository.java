@@ -9,10 +9,10 @@ import org.onetwo.common.tree.TreeModel;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.permission.PermissionConfigAdapter;
 import org.onetwo.ext.permission.PermissionManager;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 
-abstract public class AbstractMenuItemRepository<T extends TreeModel<T>, P extends DefaultIPermission<P>> implements MenuItemRepository<T> {
+abstract public class AbstractMenuItemRepository<T extends TreeModel<T>, P extends IPermission> implements MenuItemRepository<T> {
 	
 	@Resource
 	private PermissionManager<P> permissionManager;

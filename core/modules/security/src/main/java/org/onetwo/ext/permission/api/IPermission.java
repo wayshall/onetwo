@@ -2,7 +2,10 @@ package org.onetwo.ext.permission.api;
 
 import java.util.List;
 
-public interface IPermission<T extends IPermission<T>> {
+import org.onetwo.common.utils.func.Closure1;
+import org.onetwo.ext.permission.utils.PermissionUtils;
+
+public interface IPermission {
 
 	String getCode();
 
@@ -43,33 +46,31 @@ public interface IPermission<T extends IPermission<T>> {
 	boolean isHidden();
 
 	void setHidden(boolean hidden);
-	public List<T> getChildrenPermissions();
+	public List<IPermission> getChildrenPermissions();
 
 	void setChildrenSize(int childrenSize);
 	int getChildrenSize();
 //	public void setChildrenPermissions(List<? extends IPermission> childrenPermissions);
 
-	public void addChild(T permission);
+	public void addChild(IPermission permission);
 
-	public void addChildren(T... permissions);
+	public void addChildren(IPermission... permissions);
 
-	public List<T> getChildrenMenu();
-	public List<T> getChildrenWithouMenu();
+	public List<IPermission> getChildrenMenu();
+	public List<IPermission> getChildrenWithouMenu();
 	
 	public String getResourcesPattern();
 	public void setResourcesPattern(String resources);
 	
 	public DataFrom getDataFrom();
 	public void setDataFrom(DataFrom dataFrom);
-	
 
-//	public String toTreeString(String spliter);
-	/*default public String toTreeString(String spliter){
+	default public String toTreeString(String spliter){
 		final StringBuilder str = new StringBuilder();
-		PermissionUtils.buildString(str, (T)this, "--", new Closure1<T>() {
+		PermissionUtils.buildString(str, (IPermission)this, "--", new Closure1<IPermission>() {
 			
 			@Override
-			public void execute(T obj) {
+			public void execute(IPermission obj) {
 				if(PermissionUtils.isMenu(obj)){
 					str.append(obj.getName()).append("(").append(obj.getCode()).append(")");
 					str.append(":").append(obj.getUrl()==null?"":obj.getUrl() );
@@ -81,5 +82,6 @@ public interface IPermission<T extends IPermission<T>> {
 			}
 		});
 		return str.toString();
-	}*/
+	}
+
 }

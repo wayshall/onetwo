@@ -12,8 +12,8 @@ import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
@@ -52,8 +52,8 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		this.permissionManager.syncMenuToDatabase();
 	}
 
-	private void setMenuUrlByRequestMappingInfo(Class<?> codeClass, DefaultIPermission<?> perm, Entry<RequestMappingInfo, HandlerMethod> entry){
-		DefaultIPermission<?> menu = perm;
+	private void setMenuUrlByRequestMappingInfo(Class<?> codeClass, IPermission perm, Entry<RequestMappingInfo, HandlerMethod> entry){
+		IPermission menu = perm;
 
 		Optional<RequestMethod> method = getFirstMethod(entry.getKey());
 		if(method.isPresent() && RequestMethod.GET!=method.get()){
@@ -87,7 +87,7 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		}*/
 	}
 	
-	private void setResourcePatternByRequestMappingInfo(Class<?> codeClass, DefaultIPermission<?> perm, Entry<RequestMappingInfo, HandlerMethod> entry){
+	private void setResourcePatternByRequestMappingInfo(Class<?> codeClass, IPermission perm, Entry<RequestMappingInfo, HandlerMethod> entry){
 		/*if(perm.getResourcesPattern()!=null){
 			List<UrlResourceInfo> infos = urlResourceInfoParser.parseToUrlResourceInfos(perm.getResourcesPattern());
 			//如果自定义了，忽略自动解释
@@ -152,7 +152,7 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		if(AnnotationUtils.findAnnotationWithDeclaring(codeClass, Deprecated.class)!=null){
 			return;
 		}
-		DefaultIPermission<?> perm = this.permissionManager.getPermission(codeClass);
+		IPermission perm = this.permissionManager.getPermission(codeClass);
 		if(perm==null){
 //			System.out.println("html: " + this.permissionManagerImpl.getMenuInfoParser().getRootMenu());
 			throw new RuntimeException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());

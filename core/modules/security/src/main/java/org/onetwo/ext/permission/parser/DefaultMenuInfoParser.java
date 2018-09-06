@@ -19,16 +19,16 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.ParamMap;
 import org.onetwo.ext.permission.api.DataFrom;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.api.annotation.MenuMapping;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.type.classreading.MetadataReader;
 
-public class DefaultMenuInfoParser<P extends DefaultIPermission<P>> implements MenuInfoParser<P>, InitializingBean {
+public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoParser<P>, InitializingBean {
 	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
 	
 	private static final String CODE_SEPRATOR = "_";

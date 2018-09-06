@@ -3,9 +3,9 @@ package org.onetwo.ext.permission;
 import java.util.List;
 
 import org.onetwo.common.web.userdetails.UserDetail;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
+import org.onetwo.ext.permission.api.IPermission;
 
-public interface PermissionManager<P extends DefaultIPermission<P>> {
+public interface PermissionManager<P extends IPermission> {
 
 	void build();
 

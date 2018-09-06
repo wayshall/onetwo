@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.web.userdetails.UserDetail;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
+import org.onetwo.ext.permission.api.IPermission;
 
 public interface MenuItemRepository<T> {
 
@@ -16,7 +16,6 @@ public interface MenuItemRepository<T> {
 
 
 	public interface TreeMenuBuilder<T> {
-		@SuppressWarnings("rawtypes")
-		List<T> build(List<? extends DefaultIPermission> permissions, Map<String, ? extends DefaultIPermission> allPermissions);
+		List<T> build(List<? extends IPermission> permissions, Map<String, ? extends IPermission> allPermissions);
 	}
 }

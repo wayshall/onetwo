@@ -6,34 +6,34 @@ import java.util.stream.Collectors;
 
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.utils.func.Closure1;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 
 final public class PermissionUtils {
 	public static interface BuildBlock {
-		public void execute(StringBuilder str, DefaultIPermission<?> perm);
+		public void execute(StringBuilder str, IPermission perm);
 	}
 
-	public static <T extends DefaultIPermission<T>> void buildString(StringBuilder str, T node, String sp){
+	public static void buildString(StringBuilder str, IPermission node, String sp){
 		buildString(str, node, sp, null);
 	}
 	
-	public static boolean isFunction(DefaultIPermission<?> node){
+	public static boolean isFunction(IPermission node){
 		return getPermissionType(node)==PermissionType.FUNCTION;
 	}
 	
-	public static boolean isMenu(DefaultIPermission<?> node){
+	public static boolean isMenu(IPermission node){
 		return getPermissionType(node)==PermissionType.MENU;
 	}
 	
-	public static PermissionType getPermissionType(DefaultIPermission<?> node){
+	public static PermissionType getPermissionType(IPermission node){
 		/*if(node==null)
 			return PermissionType.RESOURCE;
 		return PermissionType.of(node.getPtype());*/
 		return node.getPermissionType();
 	}
-	public static <T extends DefaultIPermission<T>> void buildString(StringBuilder str, T node, String sp, Closure1<T> block){
+	public static void buildString(StringBuilder str, IPermission node, String sp, Closure1<IPermission> block){
 		if(block!=null){
 			block.execute(node);
 		}else{
@@ -41,10 +41,10 @@ final public class PermissionUtils {
 		}
 		if(!isMenu(node))
 			return ;
-		T menu = node;
-		List<T> permlist = menu.getChildrenMenu();
+		IPermission menu = node;
+		List<IPermission> permlist = menu.getChildrenMenu();
 		if(permlist!=null){
-			for(T cnode : permlist){
+			for(IPermission cnode : permlist){
 				str.append(sp);
 				String newsp = sp + sp;
 				buildString(str, cnode, newsp, block);
@@ -52,7 +52,7 @@ final public class PermissionUtils {
 		}
 		permlist = menu.getChildrenWithouMenu();
 		if(permlist!=null){
-			for(T cnode : permlist){
+			for(IPermission cnode : permlist){
 				str.append(sp);
 				String newsp = sp + sp;
 				buildString(str, cnode, newsp, block);
@@ -60,11 +60,11 @@ final public class PermissionUtils {
 		}
 	}
 	
-	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends DefaultIPermission<?>> permissions){
+	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends IPermission> permissions){
 		return createMenuTreeBuilder(permissions, p->new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode()));
 	}
 	
-	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends DefaultIPermission<?>> permissions, Function<DefaultIPermission<?>, PermisstionTreeModel> treeModelCreator){
+	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends IPermission> permissions, Function<IPermission, PermisstionTreeModel> treeModelCreator){
 		List<PermisstionTreeModel> pmlist = permissions.stream().map(p->{
 //			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
 			PermisstionTreeModel pm = treeModelCreator.apply(p);

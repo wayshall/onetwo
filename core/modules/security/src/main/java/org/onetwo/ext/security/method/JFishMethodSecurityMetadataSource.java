@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.method.MethodWebExpressionVoter.WebExpressionConfigAttribute;
 import org.onetwo.ext.security.utils.SecurityUtils;
@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
  */
 public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSecurityMetadataSource {
 	@Autowired(required=false)
-	private MenuInfoParser<? extends DefaultIPermission<?>> menuInfoParser;
+	private MenuInfoParser<? extends IPermission> menuInfoParser;
 	
 	private DefaultWebSecurityExpressionHandler securityExpressionHandler = new DefaultWebSecurityExpressionHandler();
 	

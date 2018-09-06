@@ -7,7 +7,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 
 
 
-public interface PermissionConfig<P extends IPermission<P>> {
+public interface PermissionConfig<P extends IPermission> {
 
 	default public String getAppCode(){
 		String appCode = "";

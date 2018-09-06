@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Sets;
 
-abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>> implements PermissionManager<P> {
+abstract public class AbstractPermissionManager<P extends IPermission> implements PermissionManager<P> {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 

@@ -8,7 +8,7 @@ import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.userdetails.UserRoot;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
 import org.onetwo.ext.permission.utils.PermissionUtils;
@@ -40,7 +40,7 @@ public class AdminMenuItemServiceImpl extends DefaultMenuItemRepository {
 			throw new NotLoginException();
 		}
 		
-		List<? extends DefaultIPermission<?>> permissions = null;
+		List<? extends IPermission> permissions = null;
 		if(UserRoot.class.isInstance(loginUser) && ((UserRoot)loginUser).isSystemRootUser()){
 			permissions = permissionManager.findAppPermissions(null);
 		}else{

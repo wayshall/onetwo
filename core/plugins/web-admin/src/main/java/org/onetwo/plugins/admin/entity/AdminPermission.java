@@ -15,15 +15,15 @@ import lombok.Data;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.permission.api.DataFrom;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name="admin_permission")
 @Data
-public class AdminPermission implements Serializable, DefaultIPermission<AdminPermission> {
+public class AdminPermission implements Serializable, IPermission {
 	
 	@Id
 	private String code;
@@ -51,7 +51,7 @@ public class AdminPermission implements Serializable, DefaultIPermission<AdminPe
     private String resourcesPattern;
     
     @Transient
-	private List<AdminPermission> childrenPermissions = LangUtils.newArrayList();
+	private List<IPermission> childrenPermissions = LangUtils.newArrayList();
 
 
 	public PermissionType getPermissionType(){
@@ -63,22 +63,22 @@ public class AdminPermission implements Serializable, DefaultIPermission<AdminPe
 	}
 
 	@Override
-	public List<AdminPermission> getChildrenPermissions() {
+	public List<IPermission> getChildrenPermissions() {
 		return childrenPermissions;
 	}
 
 	@Override
-	public void addChild(AdminPermission permission) {
+	public void addChild(IPermission permission) {
 		childrenPermissions.add(permission);
 	}
 
 	@Override
-	public void addChildren(AdminPermission... permissions) {
+	public void addChildren(IPermission... permissions) {
 		childrenPermissions.addAll(Arrays.asList(permissions));
 	}
 
 	@Override
-	public List<AdminPermission> getChildrenMenu() {
+	public List<IPermission> getChildrenMenu() {
 		if(childrenPermissions==null)
 			return Collections.emptyList();
 		return childrenPermissions.stream()
@@ -87,7 +87,7 @@ public class AdminPermission implements Serializable, DefaultIPermission<AdminPe
 	}
 
 	@Override
-	public List<AdminPermission> getChildrenWithouMenu() {
+	public List<IPermission> getChildrenWithouMenu() {
 		if(childrenPermissions==null)
 			return Collections.emptyList();
 		return childrenPermissions.stream()
