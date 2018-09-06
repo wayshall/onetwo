@@ -28,8 +28,8 @@ public interface PermissionManager<P extends DefaultIPermission<P>> {
 
 	List<P> findAppMenus(String appCode);
 	List<P> findUserAppMenus(String appCode, UserDetail userDetail);
-	/*public List<P> findAppPermissions(String appCode);
-	
+	List<P> findAppPermissions(String appCode);
+	/*
 	public List<P> findPermissionByCodes(String appCode, String[] permissionCodes);*/
 	
 	

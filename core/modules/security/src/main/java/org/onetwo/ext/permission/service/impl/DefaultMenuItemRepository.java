@@ -2,6 +2,7 @@ package org.onetwo.ext.permission.service.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.permission.PermissionManager;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DefaultMenuItemRepository implements MenuItemRepository<PermisstionTreeModel> {
 	
 	@Autowired
-	private PermissionManager<? extends DefaultIPermission<?>> permissionManager;
+	protected PermissionManager<? extends DefaultIPermission<?>> permissionManager;
 
 	/*@Autowired
 	private PermissionConfigAdapter<? extends DefaultIPermission<?>> permissionConfig;*/
@@ -37,6 +38,11 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 		List<? extends DefaultIPermission<?>> permissions = permissionManager.findUserAppMenus(null, loginUser);
 	    return createMenuTreeBuilder(permissions).buidTree();
 //	    return createMenuTreeBuilder(permissions).buidTree().get(0).getChildren();
+	}
+
+	@Override
+	public List<PermisstionTreeModel> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<PermisstionTreeModel> builder) {
+		throw new NotImplementedException("findUserPermissions");
 	}
 
 

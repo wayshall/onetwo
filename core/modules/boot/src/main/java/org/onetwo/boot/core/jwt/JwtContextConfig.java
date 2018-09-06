@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * enable的key少写了d，使用AllNestedConditions修复兼容 
  * @author wayshall
  * <br/>
  */

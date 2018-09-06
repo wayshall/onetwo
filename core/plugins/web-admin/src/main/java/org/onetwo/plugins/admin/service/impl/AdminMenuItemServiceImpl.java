@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.UserRoot;
+import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
 import org.onetwo.ext.permission.utils.PermissionUtils;
@@ -24,8 +27,46 @@ public class AdminMenuItemServiceImpl extends DefaultMenuItemRepository {
 	
 	public AdminMenuItemServiceImpl(){
 	}
-	
+
+	/***
+	 * 查找用户权限（含权限和菜单）
+	 * @author wayshall
+	 * @param loginUser
+	 * @return
+	 */
+	@Override
+	public List<PermisstionTreeModel> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<PermisstionTreeModel> builder) {
+		if(loginUser==null){
+			throw new NotLoginException();
+		}
+		
+		List<? extends DefaultIPermission<?>> permissions = null;
+		if(UserRoot.class.isInstance(loginUser) && ((UserRoot)loginUser).isSystemRootUser()){
+			permissions = permissionManager.findAppPermissions(null);
+		}else{
+			permissions = this.adminPermissionDao.findAppPermissionsByUserId(null, loginUser.getUserId());
+		}
+		
+		List<AdminPermission> allDatas = this.adminPermissionDao.findPermissions(null);
+		Map<String, AdminPermission> allPermissions = allDatas.stream()
+//								.filter(p->PermissionUtils.isMenu(p))
+								.collect(Collectors.toMap(AdminPermission::getCode, p->p));
+		return builder.build(permissions, allPermissions);
+	}
+
+	/****
+	 * 查找用户菜单
+	 * @author wayshall
+	 * @param loginUser
+	 * @return
+	 */
 	public List<PermisstionTreeModel> findUserMenus(UserDetail loginUser) {
+		if(loginUser==null){
+			throw new NotLoginException();
+		}else if(UserRoot.class.isInstance(loginUser) && ((UserRoot)loginUser).isSystemRootUser()){
+			return findAllMenus();
+		}
+		
 		/*List<Permission> permissions = findUserAppPermissions(null, loginUser);
 		return createMenuTreeBuilder(permissions).buidTree();*/
 		//修改为可不选择父节点后，修改构建菜单树的方法

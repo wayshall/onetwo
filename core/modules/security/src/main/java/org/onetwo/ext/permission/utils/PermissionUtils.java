@@ -1,6 +1,7 @@
 package org.onetwo.ext.permission.utils;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.tree.TreeBuilder;
@@ -60,8 +61,13 @@ final public class PermissionUtils {
 	}
 	
 	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends DefaultIPermission<?>> permissions){
+		return createMenuTreeBuilder(permissions, p->new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode()));
+	}
+	
+	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends DefaultIPermission<?>> permissions, Function<DefaultIPermission<?>, PermisstionTreeModel> treeModelCreator){
 		List<PermisstionTreeModel> pmlist = permissions.stream().map(p->{
-			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
+//			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
+			PermisstionTreeModel pm = treeModelCreator.apply(p);
 			pm.setSort(p.getSort());
 			pm.setUrl(p.getUrl());
 			return pm;
