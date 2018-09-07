@@ -35,6 +35,7 @@ final public class PermissionUtils {
 		return PermissionType.of(node.getPtype());*/
 		return node.getPermissionType();
 	}
+	
 	public static void buildString(StringBuilder str, IPermission node, String sp, Closure1<IPermission> block){
 		if(block!=null){
 			block.execute(node);
@@ -55,6 +56,23 @@ final public class PermissionUtils {
 		permlist = menu.getChildrenWithouMenu();
 		if(permlist!=null){
 			for(IPermission cnode : permlist){
+				str.append(sp);
+				String newsp = sp + sp;
+				buildString(str, cnode, newsp, block);
+			}
+		}
+	}
+	
+	public static void buildString(StringBuilder str, PermisstionTreeModel node, String sp, Closure1<PermisstionTreeModel> block){
+		if(block!=null){
+			block.execute(node);
+		}else{
+			str.append(node.getName()).append(sp);
+		}
+		PermisstionTreeModel menu = node;
+		List<PermisstionTreeModel> permlist = menu.getChildren();
+		if(permlist!=null){
+			for(PermisstionTreeModel cnode : permlist){
 				str.append(sp);
 				String newsp = sp + sp;
 				buildString(str, cnode, newsp, block);

@@ -86,7 +86,7 @@ public class AdminMenuItemServiceImpl extends DefaultMenuItemRepository {
 	}
 
 	
-	private PermisstionTreeModel convertToMenuTreeModel(AdminPermission p){
+	public static PermisstionTreeModel convertToMenuTreeModel(AdminPermission p){
 		PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
 		pm.setSort(p.getSort());
 		pm.setUrl(p.getUrl());
