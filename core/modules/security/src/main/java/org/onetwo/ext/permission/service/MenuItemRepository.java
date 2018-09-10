@@ -12,7 +12,7 @@ public interface MenuItemRepository<T> {
 	public List<T> findAllMenus();
 	public List<T> findUserMenus(UserDetail loginUser);
 	
-	public List<T> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<T> builder);
+	public <E> List<E> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<E> builder);
 
 
 	public interface TreeMenuBuilder<T> {

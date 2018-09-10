@@ -44,7 +44,7 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 	}
 
 	@Override
-	public List<PermisstionTreeModel> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<PermisstionTreeModel> builder) {
+	public <E> List<E> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<E> builder) {
 		throw new NotImplementedException("findUserPermissions");
 	}
 

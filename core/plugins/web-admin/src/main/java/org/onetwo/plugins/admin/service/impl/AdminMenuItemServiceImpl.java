@@ -36,7 +36,7 @@ public class AdminMenuItemServiceImpl extends DefaultMenuItemRepository {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<PermisstionTreeModel> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<PermisstionTreeModel> builder) {
+	public <E> List<E> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<E> builder) {
 		if(loginUser==null){
 			throw new NotLoginException();
 		}
