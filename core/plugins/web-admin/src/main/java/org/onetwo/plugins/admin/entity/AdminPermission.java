@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import javax.persistence.Transient;
 import lombok.Data;
 
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.annotation.DbmJsonField;
 import org.onetwo.ext.permission.api.DataFrom;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
@@ -49,6 +51,9 @@ public class AdminPermission implements Serializable, IPermission {
     private String appCode;
 
     private String resourcesPattern;
+    
+    @DbmJsonField
+    private Map<String, Object> meta;
     
     @Transient
 	private List<IPermission> childrenPermissions = LangUtils.newArrayList();

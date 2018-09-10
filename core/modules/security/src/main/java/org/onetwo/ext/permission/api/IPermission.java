@@ -1,6 +1,7 @@
 package org.onetwo.ext.permission.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.common.utils.func.Closure1;
 import org.onetwo.ext.permission.utils.PermissionUtils;
@@ -64,6 +65,9 @@ public interface IPermission {
 	
 	public DataFrom getDataFrom();
 	public void setDataFrom(DataFrom dataFrom);
+	
+	Map<String, Object> getMeta();
+	void setMeta(Map<String, Object> meta);
 
 	default public String toTreeString(String spliter){
 		final StringBuilder str = new StringBuilder();

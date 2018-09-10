@@ -48,8 +48,10 @@ public class AdminController extends WebAdminBaseController {
 	public List<VueRouterTreeModel> getRoleRouters(UserDetail userDetail){
 		List<VueRouterTreeModel> menus = menuItemRepository.findUserPermissions(userDetail, (userPerms, allPerms)->{
 			Function<IPermission, VueRouterTreeModel> treeModelCreater = perm->{
+				AdminPermission adminPerm = (AdminPermission) perm;
 				VueRouterTreeModel tm = new VueRouterTreeModel(perm.getCode(), perm.getName(), perm.getParentCode());
 				tm.setHidden(perm.getPermissionType()==PermissionType.FUNCTION);
+				tm.addMetas(adminPerm.getMeta());
 				return tm;
 			};
 			TreeBuilder<VueRouterTreeModel> treebuilder = PermissionUtils.createMenuTreeBuilder(userPerms, treeModelCreater);

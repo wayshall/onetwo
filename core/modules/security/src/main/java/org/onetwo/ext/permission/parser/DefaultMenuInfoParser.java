@@ -259,6 +259,7 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 		perm.setSort(sort==null?firstNodeSort+permClassParserMap.size():sort.intValue());
 		perm.setHidden(parser.isHidden());
 		perm.setAppCode(syscode);
+		perm.setMeta(parser.getMeta());
 
 		if(parser.getParentPermissionClass()!=null){
 			String parentCode = parseCode(getPermClassParser(parser.getParentPermissionClass()));

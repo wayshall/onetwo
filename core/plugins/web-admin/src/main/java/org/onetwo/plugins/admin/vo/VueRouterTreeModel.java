@@ -2,7 +2,11 @@ package org.onetwo.plugins.admin.vo;
 
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.onetwo.common.tree.AbstractTreeModel;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,14 +19,18 @@ import com.google.common.collect.Maps;
 @SuppressWarnings("serial")
 @JsonIgnoreProperties({"id", "parent", "parentId", "sort", "level", "index", "leafage", "first", "last"})
 public class VueRouterTreeModel extends AbstractTreeModel<VueRouterTreeModel> {
+	@Getter
+	@Setter
 	private String url;
 	//menu is false, permission is true
 	private boolean hidden;
-	private Map<String, String> meta = Maps.newHashMap();
+	@Getter
+	@Setter
+	private Map<String, Object> meta = Maps.newHashMap();
 
 	public VueRouterTreeModel(String id, String title, String parentId) {
 		super(id, id, parentId);
-		meta.put("title", name);
+		meta.put("title", title);
 	}
 	
 	public String getPath() {
@@ -42,19 +50,12 @@ public class VueRouterTreeModel extends AbstractTreeModel<VueRouterTreeModel> {
 	}
 	
 	public String getComponentViewPath() {
-		if(hidden) {
-			return null;
+		if(!getChildren().isEmpty()) {
+			return "Layout";
 		}
-		String id = (String) getId();
-		return "@/views/" + id;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
+		String viewPath = (String) getId();
+		viewPath = viewPath.replace('_', '/');
+		return "@/views/" + viewPath;
 	}
 
 	public boolean isHidden() {
@@ -67,6 +68,16 @@ public class VueRouterTreeModel extends AbstractTreeModel<VueRouterTreeModel> {
 	
 	public void setIcon(String icon) {
 		this.meta.put("icon", icon);
+	}
+	
+	public void addMetas(Map<String, Object> meta){
+		if(LangUtils.isEmpty(meta)){
+			return ;
+		}
+		if(this.meta == null){
+			this.meta = Maps.newHashMap();
+		}
+		this.meta.putAll(meta);
 	}
 
 }
