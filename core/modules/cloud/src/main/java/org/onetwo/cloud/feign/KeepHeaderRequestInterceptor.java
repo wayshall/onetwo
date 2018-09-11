@@ -4,6 +4,8 @@ import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.onetwo.boot.core.web.utils.RemoteClientUtils;
+import org.onetwo.boot.core.web.utils.RemoteClientUtils.ClientTypes;
 import org.onetwo.cloud.canary.CanaryUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
@@ -25,6 +27,8 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 
 	@Override
 	public void apply(RequestTemplate template) {
+		// always add feign client type header
+		template.header(RemoteClientUtils.HEADER_CLIENT_TYPE, ClientTypes.FEIGN.name());
 		WebHolder.getRequest().ifPresent(request->{
 			keepHeaders.forEach(header->{
 				if(log.isDebugEnabled()){

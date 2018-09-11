@@ -75,6 +75,15 @@
 		            <artifactId>maven-source-plugin</artifactId>
 		            <version>3.0.1</version>
 		        </plugin>
+		        <!-- source code encoding -->
+		        <plugin>
+		           <groupId>org.apache.maven.plugins</groupId>
+			       <artifactId>maven-resources-plugin</artifactId>
+			       <version>3.0.2</version>
+			       <configuration>
+			         <encoding>utf-8</encoding>
+			       </configuration>
+		        </plugin>
 	       </plugins>
 	   </pluginManagement>
 	  <plugins>
