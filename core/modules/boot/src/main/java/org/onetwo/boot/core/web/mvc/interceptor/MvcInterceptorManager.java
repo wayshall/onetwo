@@ -34,6 +34,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -50,7 +51,7 @@ import com.google.common.collect.ImmutableList;
  * <br/>
  */
 @Slf4j
-public class MvcInterceptorManager extends WebInterceptorAdapter implements HandlerMappingListener, ApplicationContextAware, HandlerInterceptor {
+public class MvcInterceptorManager extends WebInterceptorAdapter implements HandlerMappingListener, ApplicationContextAware, HandlerInterceptor, AsyncHandlerInterceptor {
 	private static final String INTERCEPTORS_KEY = MvcInterceptorManager.class.getName() + ".interceptors";
 	
 	private Cache<Method, HandlerMethodInterceptorMeta> interceptorMetaCaces = CacheBuilder.newBuilder().build();
@@ -99,6 +100,9 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		return true;
 	}
 
+	/****
+	 * aysnc controller will not invoke
+	 */
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		executeInterceptors(request, handler, (hmethod, inter)->{
@@ -106,6 +110,10 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		});
 	}
 
+	/***
+	 * 
+	 * aysnc controller will not invoke
+	 */
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 		executeInterceptors(request, handler, (hmethod, inter)->{
@@ -113,6 +121,15 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		});
 	}
 	
+	
+	@Override
+	public void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		executeInterceptors(request, handler, (hmethod, inter)->{
+			inter.afterConcurrentHandlingStarted(request, response, handler);
+		});
+
+	}
+
 	@SuppressWarnings("unchecked")
 	private void executeInterceptors(HttpServletRequest request, Object handler, BiConsumer<HandlerMethod, MvcInterceptor> consumer){
 		/*HandlerMethod hmethod = getHandlerMethod(handler);
