@@ -43,7 +43,7 @@ public class AdminController extends WebAdminBaseController {
 		return pluginMv("/admin", "menus", menus, "adminTitle", getBootSiteConfig().getName());
 	}
 	
-	@RequestMapping(value="/roleRouters", method=RequestMethod.GET)
+	@RequestMapping(value="/vueRouters", method=RequestMethod.GET)
 	@ResponseBody
 	public List<VueRouterTreeModel> getRoleRouters(UserDetail userDetail){
 		List<VueRouterTreeModel> menus = menuItemRepository.findUserPermissions(userDetail, (userPerms, allPerms)->{
