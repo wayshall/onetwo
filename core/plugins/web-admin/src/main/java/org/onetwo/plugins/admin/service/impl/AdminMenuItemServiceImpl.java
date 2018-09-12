@@ -48,11 +48,16 @@ public class AdminMenuItemServiceImpl extends DefaultMenuItemRepository {
 			permissions = this.adminPermissionDao.findAppPermissionsByUserId(null, loginUser.getUserId());
 		}
 		
+		Map<String, AdminPermission> allPermissions = getAllPermissions();
+		return builder.build(permissions, allPermissions);
+	}
+	
+	protected Map<String, AdminPermission> getAllPermissions(){
 		List<AdminPermission> allDatas = this.adminPermissionDao.findPermissions(null);
 		Map<String, AdminPermission> allPermissions = allDatas.stream()
 //								.filter(p->PermissionUtils.isMenu(p))
 								.collect(Collectors.toMap(AdminPermission::getCode, p->p));
-		return builder.build(permissions, allPermissions);
+		return allPermissions;
 	}
 
 	/****
@@ -71,10 +76,8 @@ public class AdminMenuItemServiceImpl extends DefaultMenuItemRepository {
 		/*List<Permission> permissions = findUserAppPermissions(null, loginUser);
 		return createMenuTreeBuilder(permissions).buidTree();*/
 		//修改为可不选择父节点后，修改构建菜单树的方法
-		List<AdminPermission> allDatas = this.adminPermissionDao.findPermissions(null);
-		Map<String, AdminPermission> allPermissions = allDatas.stream()
-								.filter(p->PermissionUtils.isMenu(p))
-								.collect(Collectors.toMap(AdminPermission::getCode, p->p));
+//		List<AdminPermission> allDatas = this.adminPermissionDao.findPermissions(null);
+		Map<String, AdminPermission> allPermissions = getAllPermissions();
 		
 		List<AdminPermission> permissions = findUserAppPermissions(null, loginUser);
 		TreeBuilder<PermisstionTreeModel> tb = createMenuTreeBuilder(permissions);

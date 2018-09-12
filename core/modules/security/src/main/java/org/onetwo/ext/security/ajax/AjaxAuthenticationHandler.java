@@ -22,6 +22,7 @@ import org.onetwo.ext.security.jwt.JwtSecurityTokenInfo;
 import org.onetwo.ext.security.jwt.JwtSecurityTokenService;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.utils.CookieStorer;
+import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,7 +190,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			}
 			SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
 			
-			DataResult<?> rs = buildErrorCode(builder, request, exception).build();
+			DataResult<?> rs = buildErrorCode(builder, request, exception)
+										.code(SecurityErrors.AUTH_FAILED)
+										.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else{

@@ -16,6 +16,7 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
 import org.onetwo.ext.security.SecurityExceptionMessager;
+import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,6 +65,7 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 		if(RequestUtils.isAjaxRequest(request)){
 			SimpleResultBuilder<?> builder = DataResults.error(errorMsg+
 																	", at "+request.getRequestURI())
+															.code(SecurityErrors.ACCESS_DENIED)
 															.data(url);
 			
 			DataResult<?> rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).build();

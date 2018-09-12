@@ -11,6 +11,7 @@ public interface MenuItemRepository<T> {
 //	@PreAuthorize("hasRole('ADMIN')")
 	public List<T> findAllMenus();
 	public List<T> findUserMenus(UserDetail loginUser);
+	public <E> List<E> findUserMenus(UserDetail loginUser, TreeMenuBuilder<E> builder);
 	
 	public <E> List<E> findUserPermissions(UserDetail loginUser, TreeMenuBuilder<E> builder);
 

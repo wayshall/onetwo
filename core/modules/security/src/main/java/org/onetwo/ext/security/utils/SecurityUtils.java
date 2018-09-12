@@ -2,6 +2,8 @@ package org.onetwo.ext.security.utils;
 
 import java.util.Set;
 
+import lombok.Getter;
+
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.matcher.MutipleRequestMatcher;
@@ -77,5 +79,20 @@ final public class SecurityUtils {
 				SecurityContextHolder.clearContext();
 			}
 		};
+	}
+	
+	public static enum SecurityErrors {
+		AUTH_FAILED("认证失败"),
+		NOT_AUTHED("未认证的用户"),
+		ACCESS_DENIED("未授权，访问拒绝"),
+		NOT_TRUSTED("不受信任的用户");//包括匿名和rememberMe的用户
+		
+		@Getter
+		private final String label;
+
+		private SecurityErrors(String label) {
+			this.label = label;
+		}
+		
 	}
 }
