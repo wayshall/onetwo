@@ -22,7 +22,7 @@ public class WebAdminProperties {
 	CaptchaChecker captchaChecker;
 	
 	public CaptchaChecker getCaptchaChecker(){
-		Assert.hasText(captcha.getSalt(), "salt property must has text!");
+		Assert.hasText(captcha.getSalt(), "property[jfish.plugin.web-admin.captcha.salt] must has text!");
 		if(captchaChecker==null){
 			captchaChecker = Captchas.createCaptchaChecker(captcha.getSalt(), captcha.getExpireInSeconds());
 		}

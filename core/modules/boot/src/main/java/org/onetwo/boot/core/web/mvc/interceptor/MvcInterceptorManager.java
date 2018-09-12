@@ -127,7 +127,6 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		executeInterceptors(request, handler, (hmethod, inter)->{
 			inter.afterConcurrentHandlingStarted(request, response, handler);
 		});
-
 	}
 
 	@SuppressWarnings("unchecked")

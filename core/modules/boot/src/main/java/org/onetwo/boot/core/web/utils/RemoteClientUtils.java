@@ -11,7 +11,7 @@ import org.onetwo.common.web.utils.WebHolder;
  * <br/>
  */
 public class RemoteClientUtils {
-	public static final String HEADER_CLIENT_TYPE = "X-CLIENT-TYPE";
+	public static final String HEADER_CLIENT_TYPE = "X-Client-Type";
 	
 	public static enum ClientTypes {
 		AJAX,

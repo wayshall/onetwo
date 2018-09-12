@@ -20,7 +20,7 @@ import org.onetwo.common.data.DataResultWrapper;
 @Repeatable(XResponseViews.class)
 @Inherited
 public @interface XResponseView {
-	String DEFAULT_VIEW = "defualt";
+	String DEFAULT_VIEW = "default";
 	
 	String value() default DEFAULT_VIEW;
 	Class<? extends DataResultWrapper> wrapper() default DefaultDataResultWrapper.class;

@@ -39,7 +39,7 @@ public class VueRouterTreeModel extends AbstractTreeModel<VueRouterTreeModel> {
 		if(StringUtils.isNotBlank(parentId)) {
 			path = path.substring(parentId.length()+1);
 		}
-		return path;
+		return "/"+path;
 	}
 	
 	public String getRedirect() {
