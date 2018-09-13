@@ -36,6 +36,7 @@ public class CaptchaController extends WebAdminBaseController {
 //		res.setSign(webAdminProperties.getCaptcha().sign(result.getCode()));
 		String sign = webAdminProperties.getCaptchaChecker().sign(result.getCode());
 		ResponseUtils.setHttpOnlyCookie(response, props.getCookieName(), sign, securityConfig.getCookie().getPath(), -1, null);
+		res.setSign(sign);
 		return res;
 	}
 

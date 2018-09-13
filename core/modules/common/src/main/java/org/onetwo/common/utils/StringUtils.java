@@ -317,7 +317,7 @@ public abstract class StringUtils {
 	}
 
 	public static String[] split(String str, String separatorChars) {
-		return splitWorker(str, separatorChars, -1, false);
+		return org.apache.commons.lang3.StringUtils.split(str, separatorChars);
 	}
 
 	public static boolean isEmpty(String str) {
@@ -327,174 +327,23 @@ public abstract class StringUtils {
 
 
 	public static String substring(String str, int beginIndex, int endIndex) {
-		Assert.isTrue(beginIndex<endIndex);
-		if (isEmpty(str)) {
-			return str;
-		}
-		if(beginIndex>=str.length())
-			return EMPTY;
-		if(endIndex>str.length()){
-			endIndex = str.length();
-		}
-		return str.substring(beginIndex, endIndex);
+		return org.apache.commons.lang3.StringUtils.substring(str, beginIndex, endIndex);
 	}
 
 	public static String substringAfter(String str, String separator) {
-		if (isEmpty(str)) {
-			return str;
-		}
-		if (separator == null) {
-			return EMPTY;
-		}
-		int pos = str.indexOf(separator);
-		if (pos == -1) {
-			return EMPTY;
-		}
-		return str.substring(pos + separator.length());
+		return org.apache.commons.lang3.StringUtils.substringAfter(str, separator);
 	}
 
 	public static String substringBefore(String str, String separator) {
-		if (isEmpty(str) || separator == null) {
-			return str;
-		}
-		if (separator.length() == 0) {
-			return EMPTY;
-		}
-		int pos = str.indexOf(separator);
-		if (pos == -1) {
-			return str;
-		}
-		return str.substring(0, pos);
+		return org.apache.commons.lang3.StringUtils.substringBefore(str, separator);
 	}
 
 	public static String substringBefore(String str, String separator, int fromIndex) {
-		if (isEmpty(str) || separator == null) {
-			return str;
-		}
-		if (separator.length() == 0) {
-			return EMPTY;
-		}
-		int pos = str.indexOf(separator, fromIndex);
-		if (pos == -1) {
-			return str;
-		}
-		return str.substring(0, pos);
-	}
-
-	public static String[] splitWorker(String str, String separatorChars, int max, boolean preserveAllTokens) {
-		// Performance tuned for 2.0 (JDK1.4)
-		// Direct code is quicker than StringTokenizer.
-		// Also, StringTokenizer uses isSpace() not isWhitespace()
-
-		if (str == null) {
-			return null;
-		}
-		int len = str.length();
-		if (len == 0) {
-			return ArrayUtils.EMPTY_STRING_ARRAY;
-		}
-		List list = new ArrayList();
-		int sizePlus1 = 1;
-		int i = 0, start = 0;
-		boolean match = false;
-		boolean lastMatch = false;
-		if (separatorChars == null) {
-			// Null separator means use whitespace
-			while (i < len) {
-				if (Character.isWhitespace(str.charAt(i))) {
-					if (match || preserveAllTokens) {
-						lastMatch = true;
-						if (sizePlus1++ == max) {
-							i = len;
-							lastMatch = false;
-						}
-						list.add(str.substring(start, i));
-						match = false;
-					}
-					start = ++i;
-					continue;
-				} else {
-					lastMatch = false;
-				}
-				match = true;
-				i++;
-			}
-		} else if (separatorChars.length() == 1) {
-			// Optimise 1 character case
-			char sep = separatorChars.charAt(0);
-			while (i < len) {
-				if (str.charAt(i) == sep) {
-					if (match || preserveAllTokens) {
-						lastMatch = true;
-						if (sizePlus1++ == max) {
-							i = len;
-							lastMatch = false;
-						}
-						list.add(str.substring(start, i));
-						match = false;
-					}
-					start = ++i;
-					continue;
-				} else {
-					lastMatch = false;
-				}
-				match = true;
-				i++;
-			}
-		} else {
-			// standard case
-			while (i < len) {
-				if (separatorChars.indexOf(str.charAt(i)) >= 0) {
-					if (match || preserveAllTokens) {
-						lastMatch = true;
-						if (sizePlus1++ == max) {
-							i = len;
-							lastMatch = false;
-						}
-						list.add(str.substring(start, i));
-						match = false;
-					}
-					start = ++i;
-					continue;
-				} else {
-					lastMatch = false;
-				}
-				match = true;
-				i++;
-			}
-		}
-		if (match || (preserveAllTokens && lastMatch)) {
-			list.add(str.substring(start, i));
-		}
-		return (String[]) list.toArray(new String[list.size()]);
+		return org.apache.commons.lang3.StringUtils.substringBefore(str, separator);
 	}
 
 	public static int indexOfAny(String str, String... searchStrs) {
-		if ((str == null) || (searchStrs == null)) {
-			return -1;
-		}
-		int sz = searchStrs.length;
-
-		// String's can't have a MAX_VALUEth index.
-		int ret = Integer.MAX_VALUE;
-
-		int tmp = 0;
-		for (int i = 0; i < sz; i++) {
-			String search = searchStrs[i];
-			if (search == null) {
-				continue;
-			}
-			tmp = str.indexOf(search);
-			if (tmp == -1) {
-				continue;
-			}
-
-			if (tmp < ret) {
-				ret = tmp;
-			}
-		}
-
-		return (ret == Integer.MAX_VALUE) ? -1 : ret;
+		return org.apache.commons.lang3.StringUtils.indexOfAny(str, searchStrs);
 	}
 
 	public static String buildString(Object obj) {
@@ -879,183 +728,22 @@ public abstract class StringUtils {
     }
 
     public static String replaceEach(String text, String search, String replacement) {
-        return replaceEach(text, new String[]{search}, new String[]{replacement}, false, 0);
+        return replaceEach(text, new String[]{search}, new String[]{replacement});
     }
     
 
     public static String replaceEach(String text, String[] searchList, String[] replacementList) {
-        return replaceEach(text, searchList, replacementList, false, 0);
+        return org.apache.commons.lang3.StringUtils.replaceEach(text, searchList, replacementList);
     }
     
-	private static String replaceEach(
-            String text, String[] searchList, String[] replacementList, boolean repeat, int timeToLive) {
 
-        // mchyzer Performance note: This creates very few new objects (one major goal)
-        // let me know if there are performance requests, we can create a harness to measure
-
-        if (text == null || text.length() == 0 || searchList == null ||
-                searchList.length == 0 || replacementList == null || replacementList.length == 0) {
-            return text;
-        }
-
-        // if recursing, this shouldn't be less than 0
-        if (timeToLive < 0) {
-            throw new IllegalStateException("Aborting to protect against StackOverflowError - " +
-                                            "output of one loop is the input of another");
-        }
-
-        int searchLength = searchList.length;
-        int replacementLength = replacementList.length;
-
-        // make sure lengths are ok, these need to be equal
-        if (searchLength != replacementLength) {
-            throw new IllegalArgumentException("Search and Replace array lengths don't match: "
-                + searchLength
-                + " vs "
-                + replacementLength);
-        }
-
-        // keep track of which still have matches
-        boolean[] noMoreMatchesForReplIndex = new boolean[searchLength];
-
-        // index on index that the match was found
-        int textIndex = -1;
-        int replaceIndex = -1;
-        int tempIndex = -1;
-
-        // index of replace array that will replace the search string found
-        // NOTE: logic duplicated below START
-        for (int i = 0; i < searchLength; i++) {
-            if (noMoreMatchesForReplIndex[i] || searchList[i] == null ||
-                    searchList[i].length() == 0 || replacementList[i] == null) {
-                continue;
-            }
-            tempIndex = text.indexOf(searchList[i]);
-
-            // see if we need to keep searching for this
-            if (tempIndex == -1) {
-                noMoreMatchesForReplIndex[i] = true;
-            } else {
-                if (textIndex == -1 || tempIndex < textIndex) {
-                    textIndex = tempIndex;
-                    replaceIndex = i;
-                }
-            }
-        }
-        // NOTE: logic mostly below END
-
-        // no search strings found, we are done
-        if (textIndex == -1) {
-            return text;
-        }
-
-        int start = 0;
-
-        // get a good guess on the size of the result buffer so it doesn't have to double if it goes over a bit
-        int increase = 0;
-
-        // count the replacement text elements that are larger than their corresponding text being replaced
-        for (int i = 0; i < searchList.length; i++) {
-            if (searchList[i] == null || replacementList[i] == null) {
-                continue;
-            }
-            int greater = replacementList[i].length() - searchList[i].length();
-            if (greater > 0) {
-                increase += 3 * greater; // assume 3 matches
-            }
-        }
-        // have upper-bound at 20% increase, then let Java take over
-        increase = Math.min(increase, text.length() / 5);
-
-        StringBuilder buf = new StringBuilder(text.length() + increase);
-
-        while (textIndex != -1) {
-
-            for (int i = start; i < textIndex; i++) {
-                buf.append(text.charAt(i));
-            }
-            buf.append(replacementList[replaceIndex]);
-
-            start = textIndex + searchList[replaceIndex].length();
-
-            textIndex = -1;
-            replaceIndex = -1;
-            tempIndex = -1;
-            // find the next earliest match
-            // NOTE: logic mostly duplicated above START
-            for (int i = 0; i < searchLength; i++) {
-                if (noMoreMatchesForReplIndex[i] || searchList[i] == null ||
-                        searchList[i].length() == 0 || replacementList[i] == null) {
-                    continue;
-                }
-                tempIndex = text.indexOf(searchList[i], start);
-
-                // see if we need to keep searching for this
-                if (tempIndex == -1) {
-                    noMoreMatchesForReplIndex[i] = true;
-                } else {
-                    if (textIndex == -1 || tempIndex < textIndex) {
-                        textIndex = tempIndex;
-                        replaceIndex = i;
-                    }
-                }
-            }
-            // NOTE: logic duplicated above END
-
-        }
-        int textLength = text.length();
-        for (int i = start; i < textLength; i++) {
-            buf.append(text.charAt(i));
-        }
-        String result = buf.toString();
-        if (!repeat) {
-            return result;
-        }
-
-        return replaceEach(result, searchList, replacementList, repeat, timeToLive - 1);
-    }
-	
-
-    public static final int INDEX_NOT_FOUND = -1;
     public static String stripStart(final String str, final String stripChars) {
-        int strLen;
-        if (str == null || (strLen = str.length()) == 0) {
-            return str;
-        }
-        int start = 0;
-        if (stripChars == null) {
-            while (start != strLen && Character.isWhitespace(str.charAt(start))) {
-                start++;
-            }
-        } else if (stripChars.isEmpty()) {
-            return str;
-        } else {
-            while (start != strLen && stripChars.indexOf(str.charAt(start)) != INDEX_NOT_FOUND) {
-                start++;
-            }
-        }
-        return str.substring(start);
+        return StringUtils.stripStart(str, stripChars);
     }
     
 
     public static String stripEnd(final String str, final String stripChars) {
-        int end;
-        if (str == null || (end = str.length()) == 0) {
-            return str;
-        }
-
-        if (stripChars == null) {
-            while (end != 0 && Character.isWhitespace(str.charAt(end - 1))) {
-                end--;
-            }
-        } else if (stripChars.isEmpty()) {
-            return str;
-        } else {
-            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != INDEX_NOT_FOUND) {
-                end--;
-            }
-        }
-        return str.substring(0, end);
+        return org.apache.commons.lang3.StringUtils.stripEnd(str, stripChars);
     }
     
     /****
