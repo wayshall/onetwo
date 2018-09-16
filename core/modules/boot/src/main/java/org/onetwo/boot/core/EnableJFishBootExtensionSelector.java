@@ -24,6 +24,7 @@ import org.onetwo.boot.module.poi.ExcelViewConfiguration;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
+import org.onetwo.boot.module.session.BootSpringSessionConfiguration;
 import org.onetwo.boot.module.swagger.SwaggerConfiguration;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.exception.BaseException;
@@ -85,6 +86,9 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		
 		//activemq
 		classNames.add("org.onetwo.boot.module.activemq.ActivemqConfiguration");
+		
+		//session
+		classNames.add(BootSpringSessionConfiguration.class.getName());
 		
 		Collection<String> exts = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(this.annotationClass, this.beanClassLoader));
 		for(String extClassName : exts){
