@@ -17,7 +17,7 @@ import lombok.Setter;
  * @author weishao zeng
  * <br/>
  */
-public class HeaderFirstHttpSessionStrategy implements HttpSessionStrategy, InitializingBean {
+public class CustomizableHttpSessionStrategy implements HttpSessionStrategy, InitializingBean {
 	@Setter
 	private String strategyHeaderName;
 	@Setter

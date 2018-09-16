@@ -19,9 +19,9 @@ public class BootSpringSessionConfiguration {
 	private SessionProperties sessionProperties;
 	
 	@Bean
-	@ConditionalOnProperty(name=SessionProperties.STRATEGY_KEY, havingValue="headerFirst")
+	@ConditionalOnProperty(name=SessionProperties.STRATEGY_KEY, havingValue=SessionProperties.STRATEGE_CUSTOMIZABLE)
 	public HttpSessionStrategy headerFirst() {
-		HeaderFirstHttpSessionStrategy strategy = new HeaderFirstHttpSessionStrategy();
+		CustomizableHttpSessionStrategy strategy = new CustomizableHttpSessionStrategy();
 		strategy.setStrategyHeaderName(sessionProperties.getStrategyHeaderName());
 		strategy.setTokenHeaderName(sessionProperties.getTokenHeaderName());
 		return strategy;

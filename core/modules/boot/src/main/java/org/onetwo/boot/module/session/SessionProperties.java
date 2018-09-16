@@ -13,6 +13,7 @@ import lombok.Data;
 public class SessionProperties {
 	
 	public static final String PREFIX = "jfish.session";
+	public static final String STRATEGE_CUSTOMIZABLE = "customizable";
 	public static final String STRATEGY_KEY = PREFIX + ".strategy";
 	
 	private String strategyHeaderName = "x-session-strategy";
