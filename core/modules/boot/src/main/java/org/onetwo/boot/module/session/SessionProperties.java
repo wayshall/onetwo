@@ -1,8 +1,10 @@
 package org.onetwo.boot.module.session;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.util.stream.Stream;
 
 import lombok.Data;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author weishao zeng
@@ -21,7 +23,14 @@ public class SessionProperties {
 	
 	public static enum SessionStrategies {
 		COOKIE,
-		HEADER
+		HEADER;
+		
+
+		public static SessionStrategies of(String name){
+			return Stream.of(values()).filter(s->s.name().equals(name))
+										.findAny()
+										.orElseThrow(()->new IllegalArgumentException("error strategy: " + name));
+		}
 	}
 
 }

@@ -3,6 +3,8 @@ package org.onetwo.boot.module.session;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.Setter;
+
 import org.onetwo.boot.module.session.SessionProperties.SessionStrategies;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.session.Session;
@@ -10,8 +12,6 @@ import org.springframework.session.web.http.CookieHttpSessionStrategy;
 import org.springframework.session.web.http.HeaderHttpSessionStrategy;
 import org.springframework.session.web.http.HttpSessionStrategy;
 import org.springframework.util.Assert;
-
-import lombok.Setter;
 
 /**
  * @author weishao zeng
@@ -52,7 +52,8 @@ public class CustomizableHttpSessionStrategy implements HttpSessionStrategy, Ini
 	
 	public HttpSessionStrategy getCurrentStrategy(HttpServletRequest request) {
 		String header = request.getHeader(strategyHeaderName);
-		if(SessionStrategies.HEADER.equals(header)) {
+		SessionStrategies strategy = SessionStrategies.of(header);
+		if(SessionStrategies.HEADER.equals(strategy)) {
 			return headerStrategy;
 		}
 		return cookieStrategy;
