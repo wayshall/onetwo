@@ -3,8 +3,10 @@ package org.onetwo.common.web.captcha;
 import lombok.Data;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.md.Hashs;
 import org.onetwo.common.md.MessageDigestHasher;
+import org.slf4j.Logger;
 import org.springframework.util.Assert;
 
 /**
@@ -29,7 +31,7 @@ public class Captchas {
 		return new CaptchaChecker(salt, validInSeconds);
 	}
 
-	public static String signCode(String code){
+	public static CaptchaSignedResult signCode(String code){
 		return CAPTCHA_CHECKER.sign(code);
 	}
 	
@@ -58,17 +60,31 @@ public class Captchas {
 			return res;
 		}
 		
-		public String sign(String code){
+		public CaptchaSignedResult sign(String code){
 			long validTime = getValidTime();
+			Logger logger = JFishLoggerFactory.getCommonLogger();
+			if(logger.isInfoEnabled()){
+				logger.info("signing validTime: {}", validTime);
+			}
 			String source = code+salt+validTime;
 			String signed = hasher.hash(source);
-			return signed;
+			return new CaptchaSignedResult(signed, validTime);
 		}
 		
 		protected long getValidTime(){
 			//四舍五入，避免接近边界值时，瞬时失效
 			long validTime = Math.round(System.currentTimeMillis() / 1000.0 / expireInSeconds);
 			return validTime;
+		}
+	}
+	@Data
+	public static class CaptchaSignedResult {
+		private final String signed;
+		private final long validTime;
+		public CaptchaSignedResult(String signed, long validTime) {
+			super();
+			this.signed = signed;
+			this.validTime = validTime;
 		}
 	}
 	

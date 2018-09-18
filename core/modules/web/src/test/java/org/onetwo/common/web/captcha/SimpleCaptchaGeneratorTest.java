@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.web.captcha.Captchas.CaptchaChecker;
+import org.onetwo.common.web.captcha.Captchas.CaptchaSignedResult;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaResult;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaSettings;
-import org.onetwo.common.web.captcha.Captchas.CaptchaChecker;
 
 /**
  * @author wayshall
@@ -24,12 +25,12 @@ public class SimpleCaptchaGeneratorTest {
 		SimpleCaptchaGenerator generator = new SimpleCaptchaGenerator();
 		CaptchaResult res = generator.writeTo(settings, "D:/test/captcha.png");
 		
-		String signed = checker.sign(res.getCode());
-		boolean checked = checker.check(res.getCode(), signed);
+		CaptchaSignedResult signed = checker.sign(res.getCode());
+		boolean checked = checker.check(res.getCode(), signed.getSigned());
 		assertThat(checked).isTrue();
 		
 		LangUtils.await(validInSeconds);
-		checked = checker.check(res.getCode(), signed);
+		checked = checker.check(res.getCode(), signed.getSigned());
 		assertThat(checked).isFalse();
 	}
 
