@@ -29,7 +29,7 @@ public class SessionProperties {
 		public static SessionStrategies of(String name){
 			return Stream.of(values()).filter(s->s.name().equals(name))
 										.findAny()
-										.orElseThrow(()->new IllegalArgumentException("error strategy: " + name));
+										.orElse(COOKIE);
 		}
 	}
 
