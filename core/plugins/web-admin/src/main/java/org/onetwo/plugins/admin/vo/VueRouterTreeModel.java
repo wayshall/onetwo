@@ -57,9 +57,12 @@ public class VueRouterTreeModel extends AbstractTreeModel<VueRouterTreeModel> {
 		if(!getChildren().isEmpty()) {
 			return "Layout";
 		}
+		
 		String viewPath = (String) getId();
 		viewPath = viewPath.replace('_', '/');
-		return "@/views/" + viewPath;
+//		String[] viewPaths = StringUtils.split((String) getId(), "_");
+//		String viewPath = viewPaths[viewPaths.length-1];
+		return viewPath;
 	}
 
 	public boolean isHidden() {
