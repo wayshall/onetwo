@@ -73,7 +73,7 @@ public class SwaggerServiceImpl {
     	}else{
     		swaggerEntity.setUpdateCount(swaggerEntity.getUpdateCount()+1);
     	}
-    	swaggerEntity.setApplicationName(module.getApplicationName());
+    	swaggerEntity.setApplicationName(module.getModuleName());
     	swaggerEntity.setBasePath(swagger.getBasePath());
     	swaggerEntity.setHost(swagger.getHost());
     	swaggerEntity.setSwagger(swagger.getSwagger());

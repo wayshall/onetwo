@@ -31,7 +31,7 @@ public class DatabaseDocumentationCache extends DocumentationCache {
 		Map<String, Documentation> fakeDocumentations = Maps.newLinkedHashMap();
 		fakeDocumentations.putAll(super.all());
 		databaseSwaggerResourceService.findAllEnabled().forEach(fe->{
-			fakeDocumentations.put(fe.getApplicationName(), new DatabaseDocumentation(fe.getId(), fe.getApplicationName()));
+			fakeDocumentations.put(fe.getModuleName(), new DatabaseDocumentation(fe.getId(), fe.getModuleName()));
 		});
 		return Collections.unmodifiableMap(fakeDocumentations);
 	}

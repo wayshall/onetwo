@@ -74,6 +74,9 @@ public class OperationListModel {
 	
 	@ApiModelProperty(value="接口基础路径")
 	String basePath;
+	
+	@ApiModelProperty(value="api版本")
+	String apiVersion;
 
 	@ApiModel(value="OperationDetail")
 	public static class OperationDetailModel extends OperationListModel {

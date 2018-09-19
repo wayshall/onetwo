@@ -18,6 +18,7 @@ import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
+import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.dbm.annotation.DbmJsonField;
 import org.onetwo.dbm.jpa.BaseEntity;
 
@@ -42,15 +43,15 @@ public class SwaggerOperationEntity extends BaseEntity  {
 	/***
 	 * 作者
 	 */
-	public static final String KEY_AUTHOR = "x-field-author";
+	public static final String KEY_AUTHOR = SwaggerUtils.API_ID_PREFIX + "author";
 	/***
 	 * 维护者
 	 */
-	public static final String KEY_VINDICATOR = "x-field-vindicator";
+	public static final String KEY_VINDICATOR = SwaggerUtils.API_ID_PREFIX + "vindicator";
 	/***
 	 * api版本
 	 */
-	public static final String KEY_VERSION = "x-field-api-version";
+	public static final String KEY_VERSION = SwaggerUtils.API_ID_PREFIX + "api-version";
 
     @Id
     //@GeneratedValue(strategy=GenerationType.IDENTITY)

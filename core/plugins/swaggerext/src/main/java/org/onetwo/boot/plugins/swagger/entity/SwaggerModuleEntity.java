@@ -36,7 +36,7 @@ public class SwaggerModuleEntity extends BaseEntity {
 	Long id;
 	
 //	String groupName;
-	String applicationName;
+	String moduleName;
 	
 	@Enumerated(EnumType.STRING)
 	StoreTypes storeType;

@@ -52,7 +52,7 @@ public class DatabaseSwaggerResourceService {
 	
 
 	public Optional<Swagger> convertByGroupName(String applicationName){
-		SwaggerModuleEntity file = findByApplicationName(applicationName);
+		SwaggerModuleEntity file = findByModuleName(applicationName);
 		if(file==null){
 //			throw new BaseException("swagger module not found for: " + groupName);
 			return Optional.empty();
@@ -73,8 +73,8 @@ public class DatabaseSwaggerResourceService {
 	 * @param groupName
 	 * @return
 	 */
-	public SwaggerModuleEntity findByApplicationName(String groupName){
-		SwaggerModuleEntity file = baseEntityManager.findOne(SwaggerModuleEntity.class, "applicationName", groupName);
+	public SwaggerModuleEntity findByModuleName(String groupName){
+		SwaggerModuleEntity file = baseEntityManager.findOne(SwaggerModuleEntity.class, "moduleName", groupName);
 		return file;
 	}
 
@@ -94,13 +94,14 @@ public class DatabaseSwaggerResourceService {
 	}
 	
 	public SwaggerModuleEntity saveSwaggerModule(StoreTypes storeType, Swagger swagger, String content){
-		String applicationName = swagger.getInfo().getTitle();
-		SwaggerModuleEntity swaggerFileEntity = baseEntityManager.findOne(SwaggerModuleEntity.class, "applicationName", applicationName);
+//		String moduleName = swagger.getInfo().getTitle() + "_" + swagger.getInfo().getVersion();
+		String moduleName = swagger.getInfo().getTitle();
+		SwaggerModuleEntity swaggerFileEntity = baseEntityManager.findOne(SwaggerModuleEntity.class, "moduleName", moduleName);
 		if(swaggerFileEntity==null){
 			swaggerFileEntity = new SwaggerModuleEntity();
 		}
 //		swaggerFileEntity.setGroupName(groupName);
-		swaggerFileEntity.setApplicationName(swagger.getInfo().getTitle());
+		swaggerFileEntity.setModuleName(moduleName);
 		swaggerFileEntity.setStatus(Status.ENABLED);
 		swaggerFileEntity.setStoreType(storeType);
 		swaggerFileEntity.setContent(content);
@@ -134,7 +135,7 @@ public class DatabaseSwaggerResourceService {
 	}
 
 	public SwaggerModuleEntity removeWithCascadeData(String groupName){
-		SwaggerModuleEntity swaggerFileEntity = findByApplicationName(groupName);
+		SwaggerModuleEntity swaggerFileEntity = findByModuleName(groupName);
 		return removeWithCascadeData(swaggerFileEntity);
 	}
 	public SwaggerModuleEntity removeWithCascadeData(Long swaggerFileId){

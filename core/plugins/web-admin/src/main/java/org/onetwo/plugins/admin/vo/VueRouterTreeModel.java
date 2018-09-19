@@ -35,11 +35,15 @@ public class VueRouterTreeModel extends AbstractTreeModel<VueRouterTreeModel> {
 	
 	public String getPath() {
 		String path = (String)getId();
+		/*
 		String parentId = (String)getParentId();
 		if(StringUtils.isNotBlank(parentId)) {
 			path = path.substring(parentId.length()+1);
 		}
 		return "/"+path;
+		*/
+		path = "/" + StringUtils.replaceEach(path, "_", "/");
+		return path; 
 	}
 	
 	public String getRedirect() {

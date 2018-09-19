@@ -20,6 +20,7 @@ import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class SwaggerOperationServiceImpl {
 	private SwaggerModelMapper swaggerModelMapper;
 
     public List<SwaggerOperationEntity> saveOperatioins(SwaggerEntity swaggerEntity, Map<String, Path> definitions){
-    	this.removeBySwaggerId(swaggerEntity.getId());
+//    	this.removeBySwaggerId(swaggerEntity.getId());
     	
     	List<SwaggerOperationEntity> operations = Lists.newArrayList();
     	for(Entry<String, Path> entry : definitions.entrySet()){
@@ -86,7 +87,7 @@ public class SwaggerOperationServiceImpl {
     	operationEntity.setOperationId(operation.getOperationId());
     	
     	setExtendProperties(operationEntity, operation.getVendorExtensions());
-    	String id = generateOperationId(swaggerEntity, operation, method);
+    	String id = generateOperationId(operationEntity, operation, method);
     	operationEntity.setId(id);
     	baseEntityManager.save(operationEntity);
     	
@@ -96,11 +97,12 @@ public class SwaggerOperationServiceImpl {
     	return Optional.of(operationEntity);
     }
     
-    public String generateOperationId(SwaggerEntity swaggerEntity, Operation operation, RequestMethod method){
+    public String generateOperationId(SwaggerOperationEntity operationEntity, Operation operation, RequestMethod method){
     	String apiId = (String)operation.getVendorExtensions().get(SwaggerOperationEntity.KEY_API_ID);
     	if(StringUtils.isNotBlank(apiId)){
     		return apiId;
     	}
+    	Assert.notNull(operationEntity.getSwaggerId(), "operationEntity swaggerId must can not be null!");
     	//生成……
     	//operationId文档内唯一
     	apiId = operation.getOperationId();
@@ -111,7 +113,11 @@ public class SwaggerOperationServiceImpl {
     	if(apiId.contains(method.name())){
     		apiId = String.valueOf(apiId.hashCode()).replace('-', '0');
 		}
-    	String id = SwaggerUtils.API_ID_PREFIX+Long.toString(swaggerEntity.getId(), 36)+"_"+apiId;
+    	String id = SwaggerUtils.API_ID_PREFIX + Long.toString(operationEntity.getSwaggerId(), 36)+"_"+apiId;
+    	String apiVersion = operationEntity.getApiVersion();
+    	if(StringUtils.isNotBlank(apiVersion)){
+    		id = id + "_" + LangUtils.converTo36Radix(apiVersion);
+    	}
     	return id;
     }
     
