@@ -118,6 +118,14 @@
         <artifactId>commons-collections4</artifactId>
     </dependency>
     
+    <!-- for aes PKCS7Padding -->
+    <dependency>
+	    <groupId>org.bouncycastle</groupId>
+	    <artifactId>bcprov-jdk16</artifactId>
+	    <version>1.46</version>
+	    <optional>true</optional>
+	</dependency>
+    
     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
