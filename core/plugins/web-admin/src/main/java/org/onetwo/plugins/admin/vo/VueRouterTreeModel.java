@@ -1,11 +1,14 @@
 package org.onetwo.plugins.admin.vo;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.onetwo.common.tree.AbstractTreeModel;
+import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -58,10 +61,13 @@ public class VueRouterTreeModel extends AbstractTreeModel<VueRouterTreeModel> {
 			return "Layout";
 		}
 		
-		String viewPath = (String) getId();
-		viewPath = viewPath.replace('_', '/');
-//		String[] viewPaths = StringUtils.split((String) getId(), "_");
-//		String viewPath = viewPaths[viewPaths.length-1];
+//		String viewPath = (String) getId();
+//		viewPath = viewPath.replace('_', '/');
+		List<String> viewPaths = GuavaUtils.splitAsStream((String) getId(), "_")
+										.map(str->StringUtils.uncapitalize(str))
+										.collect(Collectors.toList());
+		String viewPath = StringUtils.join(viewPaths, "/");
+		viewPath = StringUtils.trimStartWith(viewPath, "/");
 		return viewPath;
 	}
 
