@@ -2,7 +2,7 @@ package org.onetwo.plugins.admin.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.common.web.captcha.Captchas.CaptchaSignedResult;
+import org.onetwo.common.web.captcha.CaptchaChecker.CaptchaSignedResult;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaResult;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaSettings;
@@ -35,7 +35,7 @@ public class CaptchaController extends WebAdminBaseController {
 		CaptchaResponse res = new CaptchaResponse();
 		res.setData(result.getDataAsBase64());
 //		res.setSign(webAdminProperties.getCaptcha().sign(result.getCode()));
-		CaptchaSignedResult sign = webAdminProperties.getCaptchaChecker().sign(result.getCode());
+		CaptchaSignedResult sign = webAdminProperties.getCaptchaChecker().encode(result.getCode());
 		ResponseUtils.setHttpOnlyCookie(response, props.getCookieName(), sign.getSigned(), securityConfig.getCookie().getPath(), -1, null);
 		res.setSign(sign.getSigned());
 		return res;
