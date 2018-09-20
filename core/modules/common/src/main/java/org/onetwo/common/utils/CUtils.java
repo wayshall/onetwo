@@ -167,14 +167,14 @@ final public class CUtils {
 	
 	public static <T extends Map> T arrayIntoMap(T properties, Object... params) {
 		if (params.length % 2 == 1)
-			throw new IllegalArgumentException("参数不是key, value形式！ ");
+			throw new IllegalArgumentException("params is not key/value pair!");
 
 		int index = 0;
 		Object name = null;
 		for (Object s : params) {
 			if (index % 2 == 0) {
 				if (s == null || (String.class.isInstance(s) && StringUtils.isBlank(s.toString())))
-					throw new IllegalArgumentException("字段名称不能为空！ ");
+					throw new IllegalArgumentException("key can not be null or blank");
 				name = s;
 			} else {
 				properties.put(name, s);

@@ -6,6 +6,7 @@ import java.util.List;
 
 
 @SuppressWarnings("serial")
+@Deprecated
 public class SimpleUserRoleDetail implements SsoTokenable, UserDetail, RoleDetail, UserRoot, Serializable {
 	
 	private long userId;

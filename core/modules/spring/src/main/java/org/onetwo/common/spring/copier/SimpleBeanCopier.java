@@ -70,31 +70,37 @@ public class SimpleBeanCopier {
 		
     	BeanWrapper srcBean = CopyUtils.newBeanWrapper(src);
     	PropertyDescriptor[] properties = targetBeanWrapper.getPropertyDescriptors();
-		for(PropertyDescriptor property : properties){
+		for(PropertyDescriptor targetProperty : properties){
 			/*if(property.getWriteMethod()==null)
 				continue ;*/
-			String targetPropertyName = property.getName();
 			//if target no writable
-			if(!targetBeanWrapper.isWritableProperty(targetPropertyName)){
+			if(!targetBeanWrapper.isWritableProperty(targetProperty.getName())){
 				continue;
 			}
 			
+			String srcPropertyName = targetProperty.getName();
 			//if src no property
-			if(!isSrcHasProperty(srcBean, targetPropertyName)){
+			/*if(!isSrcHasProperty(srcBean, srcPropertyName)){
 				if(propertyNameConvertor!=null){
-					targetPropertyName = propertyNameConvertor.convert(targetPropertyName);
+					srcPropertyName = propertyNameConvertor.convert(targetProperty.getName());
 				}
-				if(!isSrcHasProperty(srcBean, targetPropertyName)){
+				if(!isSrcHasProperty(srcBean, srcPropertyName)){
 					continue;
 				}
+			}*/
+			if(propertyNameConvertor!=null){
+				srcPropertyName = propertyNameConvertor.convert(targetProperty.getName());
+			}
+			if(!isSrcHasProperty(srcBean, srcPropertyName)){
+				continue;
 			}
 			
-			Object srcValue = getPropertyValue(srcBean, targetPropertyName);
-			if(propertyFilter!=null && !propertyFilter.isCopiable(property, srcValue)){
+			Object srcValue = getPropertyValue(srcBean, srcPropertyName);
+			if(propertyFilter!=null && !propertyFilter.isCopiable(targetProperty, srcValue)){
 				continue;
 			}
 //			setPropertyValue(targetBeanWrapper, property, srcValue);
-			this.propertyValueCopier.copyPropertyValue(this, targetBeanWrapper, property, srcValue);
+			this.propertyValueCopier.copyPropertyValue(this, targetBeanWrapper, targetProperty, srcValue);
     	}
 		return target;
 	}

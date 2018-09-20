@@ -1,10 +1,13 @@
 package org.onetwo.common.spring.copier;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 
 import com.google.common.collect.Lists;
@@ -126,6 +129,19 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 		return propertyNameConvertor(SeperatorNamedConvertor.UNDERLINE_CONVERTOR);
 	}
 	
+	/****
+	 * 
+	 * @author wayshall
+	 * @param propertyMapping targetName => srcName
+	 * @return
+	 */
+	final public B propertyMapping(String...propertyMapping){
+		Map<String, String> mapping = CUtils.typeMap(propertyMapping);
+		PropertyNameMapperConvertor convertor = new PropertyNameMapperConvertor();
+		convertor.setMapping(mapping);
+		return propertyNameConvertor(convertor);
+	}
+	
 	private void checkPropertyNameConvertorNotNull(){
 		if(this.propertyNameConvertor!=null)
 			throw new BaseException("propertyNameConvertor is not null, you can't override it a not null PropertyNameConvertor!");
@@ -195,6 +211,24 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 			build().fromObject(fromObject, target);
 		}
 
+	}
+	
+	protected class PropertyNameMapperConvertor implements PropertyNameConvertor {
+		private Map<String, String> mapping = Collections.emptyMap();
+
+		@Override
+		public String convert(String targetPropertyName) {
+			if(mapping.containsKey(targetPropertyName)){
+				return mapping.get(targetPropertyName);
+			}else{
+				return targetPropertyName;
+			}
+		}
+
+		public void setMapping(Map<String, String> mapping) {
+			this.mapping = mapping;
+		}
+		
 	}
 
 }

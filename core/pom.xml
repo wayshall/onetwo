@@ -39,10 +39,10 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/common</module>
-                <module>modules/boot</module>
+                <module>modules/spring</module>
+                <module>modules/web</module>
+                <module>modules/security</module>
                 <module>plugins/web-admin</module>
-                <module>plugins/swaggerext</module>
 			</modules>
            <build>
               <plugins>

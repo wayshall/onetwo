@@ -7,7 +7,12 @@ import java.util.List;
 
 import org.onetwo.common.utils.LangUtils;
 
-
+/***
+ * 
+ * @author wayshall
+ *
+ */
+@Deprecated
 public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, UserRoot, PermissionDetail, Serializable {
 	
 	protected Date lastActivityTime = new Date();
