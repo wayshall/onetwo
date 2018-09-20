@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.captcha.Captchas.CaptchaChecker;
-import org.onetwo.common.web.captcha.Captchas.CaptchaSignedResult;
+import org.onetwo.common.web.captcha.CaptchaChecker.CaptchaSignedResult;
+import org.onetwo.common.web.captcha.CaptchaChecker.HashCaptchaChecker;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaResult;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaSettings;
 
@@ -15,7 +15,7 @@ import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaSettings;
  */
 public class SimpleCaptchaGeneratorTest {
 	static final int validInSeconds = 3;
-	static private final CaptchaChecker checker = new CaptchaChecker("test", validInSeconds);
+	static private final CaptchaChecker checker = new HashCaptchaChecker("test", validInSeconds);
 	
 	@Test
 	public void testGenerate(){
@@ -25,7 +25,7 @@ public class SimpleCaptchaGeneratorTest {
 		SimpleCaptchaGenerator generator = new SimpleCaptchaGenerator();
 		CaptchaResult res = generator.writeTo(settings, "D:/test/captcha.png");
 		
-		CaptchaSignedResult signed = checker.sign(res.getCode());
+		CaptchaSignedResult signed = checker.encode(res.getCode());
 		boolean checked = checker.check(res.getCode(), signed.getSigned());
 		assertThat(checked).isTrue();
 		
