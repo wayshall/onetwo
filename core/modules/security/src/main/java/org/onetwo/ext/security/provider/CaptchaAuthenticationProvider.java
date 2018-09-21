@@ -45,7 +45,7 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 	protected void check(String validCode){
 		String captchaValue = getCookieValue(request, captchaCookieName);
 		if(!captchaChecker.check(validCode.toLowerCase(), captchaValue)){
-			throw new InternalAuthenticationServiceException("验证码错误！");
+			throw new InternalAuthenticationServiceException("验证码失效或错误！");
 		}
 		this.removeCookie();
 	}
