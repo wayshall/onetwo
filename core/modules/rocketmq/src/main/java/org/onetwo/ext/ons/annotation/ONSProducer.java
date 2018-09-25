@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * 
  *
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ONSProducer {
 	String producerId();
