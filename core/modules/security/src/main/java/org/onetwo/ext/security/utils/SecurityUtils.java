@@ -83,9 +83,9 @@ final public class SecurityUtils {
 	
 	public static enum SecurityErrors {
 		AUTH_FAILED("认证失败"),
-		NOT_AUTHED("未认证的用户"),
+//		NOT_AUTHED("未认证的用户"),
 		ACCESS_DENIED("未授权，访问拒绝"),
-		NOT_TRUSTED("不受信任的用户");//包括匿名和rememberMe的用户
+		NOT_TRUSTED_USER("不受信任的用户");//包括匿名和rememberMe的用户
 		
 		@Getter
 		private final String label;
