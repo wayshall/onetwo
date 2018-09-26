@@ -82,14 +82,11 @@ public class Springs {
 	}
 	
 	public boolean isActive(){
-		if(!isInitialized()){
-			return false;
-		}
 		if(appContext instanceof ConfigurableApplicationContext){
 			ConfigurableApplicationContext cac = (ConfigurableApplicationContext) appContext;
 			return cac.isActive();
 		}
-		return false;
+		return isInitialized();
 	}
 	
 
