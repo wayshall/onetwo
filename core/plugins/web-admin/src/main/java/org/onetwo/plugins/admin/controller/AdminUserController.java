@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -44,8 +45,8 @@ public class AdminUserController extends WebAdminBaseController {
     
     @ByPermissionClass(UserMgr.Create.class)
     @RequestMapping(method=RequestMethod.POST)
-    public ModelAndView create(AdminUser adminUser){
-        adminUserServiceImpl.save(adminUser);
+    public ModelAndView create(AdminUser adminUser, MultipartFile avatarFile){
+        adminUserServiceImpl.save(adminUser, avatarFile);
         return messageMv("保存成功！");
     }
     

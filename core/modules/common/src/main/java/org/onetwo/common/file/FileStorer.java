@@ -4,9 +4,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 
-public interface FileStorer<R extends FileStoredMeta> {
+public interface FileStorer {
 	
-	R write(StoringFileContext context);
+	FileStoredMeta write(StoringFileContext context);
 
 	void readFileTo(final String accessablePath, final OutputStream output);
 	InputStream readFileStream(final String accessablePath);

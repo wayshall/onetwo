@@ -35,7 +35,7 @@ public class UploadViewController {
 	private List<String> imagePostfix = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 	
 	@Autowired
-	private FileStorer<?> fileStorer;
+	private FileStorer fileStorer;
 	
 
 	@GetMapping(value="/**")

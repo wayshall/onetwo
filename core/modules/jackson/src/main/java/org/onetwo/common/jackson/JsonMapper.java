@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -106,6 +108,23 @@ public class JsonMapper {
 		objectMapper.setFilters(filterProvider);
 		this.objectMapper = objectMapper;
 		this.typeFactory = this.objectMapper.getTypeFactory();
+	}
+	
+	public JsonMapper prettyPrint() {
+		this.objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		return this;
+	}
+	
+	public JsonMapper singleQuotes() {
+		this.objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+		this.objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		return this;
+	}
+	
+	public JsonMapper unquotedFieldNames() {
+		this.objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+		this.objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		return this;
 	}
 	
 	public JsonMapper disable(SerializationFeature features){

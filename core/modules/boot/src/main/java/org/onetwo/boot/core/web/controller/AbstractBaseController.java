@@ -68,7 +68,7 @@ abstract public class AbstractBaseController {
 	private BootSiteConfig bootSiteConfig;
 	
 	@Autowired(required=false)
-	private FileStorer<?> fileStorer;
+	private FileStorer fileStorer;
 	
 	@Autowired
 	private SessionUserManager<UserDetail> sessionUserManager;
@@ -130,14 +130,14 @@ abstract public class AbstractBaseController {
 	}
 	
 	protected ModelAndView putSuccessMessage(ModelAndView mv, String message){
-		Assert.notNull(mv);
+		checkModelAndView(mv);
 		mv.addObject(MESSAGE, message);
 		mv.addObject(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 		return mv;
 	}
 	
 	protected ModelAndView putErrorMessage(ModelAndView mv, String message){
-		Assert.notNull(mv);
+		checkModelAndView(mv);
 		mv.addObject(MESSAGE, message);
 		mv.addObject(MESSAGE_TYPE, MESSAGE_TYPE_ERROR);
 		return mv;
@@ -415,9 +415,14 @@ abstract public class AbstractBaseController {
 		return viewName;
 	}
 	protected ModelAndView responsePageOrData(ModelAndView mv, JsonResponseValue value){
-		Assert.notNull(mv);
+		checkModelAndView(mv);
 		mv.addObject(getJsonResponseValue(value));
 		return mv;
+	}
+	private void checkModelAndView(ModelAndView mv){
+		if(mv==null){
+			throw new IllegalArgumentException("ModelAndView can not be null");
+		}
 	}
 	/***
 	 * 如果请求的url是.json后缀

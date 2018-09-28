@@ -17,7 +17,7 @@ public class FtpFileStorer extends SimpleFileStorer  {
 	private FtpConfig ftpConfig;
 	
 	public FtpFileStorer(FtpConfig ftpConfig){
-		Assert.notNull(ftpConfig);
+		Assert.notNull(ftpConfig, "ftpConfig can not be null");
 		this.ftpConfig = ftpConfig;
 //		this.ftpClientManager = new FtpClientManager(ftpConfig);
 	}

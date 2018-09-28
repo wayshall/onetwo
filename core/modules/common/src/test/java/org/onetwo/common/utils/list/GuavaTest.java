@@ -1,5 +1,7 @@
 package org.onetwo.common.utils.list;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,16 +11,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.utils.ArrayUtils;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.UserEntity;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.base.Splitter;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -29,6 +34,14 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 public class GuavaTest {
+	
+	@Test
+	public void testSplit(){
+		String line = "testa:testb：testc";
+		List<String> datas = CUtils.iterableToList(Splitter.on(Pattern.compile(":|：")).trimResults().omitEmptyStrings().split(line));
+		assertThat(datas.size()).isEqualTo(3);
+		assertThat(datas.get(2)).isEqualTo("testc");
+	}
 	
 	public UserEntity createUser(String userName, int age){
 		UserEntity user = new UserEntity();

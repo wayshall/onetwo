@@ -16,7 +16,7 @@ public class StoringFileContext {
 	private String fileName;
 //	private Map<String, Object> context;
 	private String module;
-	private StoreFilePathStrategy storeFilePathStrategy = SimpleFileStorer.SIMPLE_STORE_STRATEGY;
+	private StoreFilePathStrategy storeFilePathStrategy;// = SimpleFileStorer.SIMPLE_STORE_STRATEGY;
 	private String key;
 	
 	

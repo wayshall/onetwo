@@ -7,9 +7,11 @@ import java.util.UUID;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStoredMeta;
+import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,7 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author wayshall
  * <br/>
  */
-public class CosFileStore implements FileStorer<SimpleFileStoredMeta>, InitializingBean {
+public class CosFileStore implements FileStorer, InitializingBean {
 	
 	private CosClientWrapper wrapper;
 	private CosProperties cosProperties;
@@ -37,7 +39,7 @@ public class CosFileStore implements FileStorer<SimpleFileStoredMeta>, Initializ
 	}
 
 	@Override
-	public SimpleFileStoredMeta write(StoringFileContext context) {
+	public FileStoredMeta write(StoringFileContext context) {
 		String key = context.getKey();
 		if(StringUtils.isBlank(key)){
 			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule())).replace("/", "-");
@@ -48,17 +50,26 @@ public class CosFileStore implements FileStorer<SimpleFileStoredMeta>, Initializ
 				.store(context.getInputStream());
 
 		String accessablePath = "/"+key;
-		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), key);
-		meta.setSotredFileName(key);
-		meta.setAccessablePath(accessablePath);
-		meta.setFullAccessablePath(cosProperties.getDownloadUrl(key));
-		if(cosProperties.isAlwaysStoreFullPath()){
-			meta.setAccessablePath(meta.getFullAccessablePath());
+
+		FileStoredMeta fmeta = null;
+		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
+		if(strategy==null){
+			SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), key);
+			meta.setSotredFileName(key);
+			meta.setAccessablePath(accessablePath);
+			meta.setFullAccessablePath(cosProperties.getDownloadUrl(key));
+			if(cosProperties.isAlwaysStoreFullPath()){
+				meta.setAccessablePath(meta.getFullAccessablePath());
+			}
+			meta.setStoredServerLocalPath(key);
+			meta.setBizModule(context.getModule());
+			meta.setSotredFileName(key);
+			fmeta = meta;
+		}else{
+			fmeta = strategy.getStoreFilePath(null, null, context);
 		}
-		meta.setStoredServerLocalPath(key);
-		meta.setBizModule(context.getModule());
-		meta.setSotredFileName(key);
-		return meta;
+		
+		return fmeta;
 	}
 	
 	@Override

@@ -738,7 +738,7 @@ public abstract class StringUtils {
     
 
     public static String stripStart(final String str, final String stripChars) {
-        return StringUtils.stripStart(str, stripChars);
+        return org.apache.commons.lang3.StringUtils.stripStart(str, stripChars);
     }
     
 

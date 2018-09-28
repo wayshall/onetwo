@@ -234,7 +234,7 @@ public class BootWebCommonAutoConfig {
 	 */
 	@Bean
 	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="local")
-	public FileStorer<?> localStorer(){
+	public FileStorer localStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
 		SimpleFileStorer fs = new SimpleFileStorer();
 		fs.setStoreBaseDir(config.getFileStorePath());//site.upload.fileStorePath
@@ -244,7 +244,7 @@ public class BootWebCommonAutoConfig {
 	
 	@Bean
 	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="ftp")
-	public FileStorer<?> ftpStorer(){
+	public FileStorer ftpStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
 		FtpConfig ftpConfig = new FtpConfig();
 		ftpConfig.setEncoding(config.getFtpEncoding());

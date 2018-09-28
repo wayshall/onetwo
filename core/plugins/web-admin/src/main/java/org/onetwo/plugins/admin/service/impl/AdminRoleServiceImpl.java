@@ -50,7 +50,15 @@ public class AdminRoleServiceImpl {
 	}
 	
     public void findPage(Page<AdminRole> page, AdminRole adminRole){
-        baseEntityManager.findPage(AdminRole.class, page);
+//        baseEntityManager.findPage(AdminRole.class, page);
+    	Querys.from(baseEntityManager, AdminRole.class)
+		.where()
+    		.field("name").like(adminRole.getName())
+    		.field("status").equalTo(adminRole.getStatus())
+    		.ignoreIfNull()
+		.end()
+		.toQuery()
+		.page(page);
     }
     
     public List<AdminRole> findByStatus(CommonStatus status, String appCode){

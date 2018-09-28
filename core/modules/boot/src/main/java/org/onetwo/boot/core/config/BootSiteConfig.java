@@ -217,15 +217,29 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		String basePath;
 		boolean useLoadBalance;
 		int serverCount = 2;
+		
+		public String getBasePath(){
+			if(StringUtils.isNotBlank(basePath)){
+				return basePath;
+			}
+			String path = getBaseURL();
+			return path;
+		}
+		public void setBasePath(String basePath){
+			this.basePath = basePath;
+		}
 	}
 
 	//move to jfishConfig?
 	@Data
 	public class UploadConfig {
-		
+		/***
+		 * 如果设置了值，则会把上传目录映射到对应的访问路径，如：/upload/**
+		 */
+		String accessPathPatterns;
 //		StoreType storeType = StoreType.LOCAL;
 		String fileStorePath;
-		boolean fileStorePathToResourceHandler = true;
+//		boolean fileStorePathToResourceHandler = true;
 		Integer resourceCacheInDays = 30;
 		String appContextDir;
 		//multipartProperties

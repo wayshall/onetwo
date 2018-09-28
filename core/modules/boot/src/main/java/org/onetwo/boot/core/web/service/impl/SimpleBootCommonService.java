@@ -28,7 +28,7 @@ public class SimpleBootCommonService implements BootCommonService {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
-	private FileStorer<?> fileStorer;
+	private FileStorer fileStorer;
 	
 	@Autowired(required=false)
 	private FileStorerListener fileStorerListener;
@@ -74,8 +74,8 @@ public class SimpleBootCommonService implements BootCommonService {
 	 */
 	@Override
 	public FileStoredMeta uploadFile(String module, MultipartFile file){
-		Assert.notNull(file);
-		Assert.notNull(fileStorer);
+		Assert.notNull(file, "file can not be null");
+		Assert.notNull(fileStorer, "fileStorer can not be null");
 		StoringFileContext context = create(module, file);
 		FileStoredMeta meta = fileStorer.write(context);
 		if(fileStorerListener!=null){
@@ -87,8 +87,8 @@ public class SimpleBootCommonService implements BootCommonService {
 
 	@Override
 	public FileStoredMeta uploadFile(UploadOptions options){
-		Assert.notNull(options.getModule());
-		Assert.notNull(options.getMultipartFile());
+		Assert.notNull(options.getModule(), "options.module can not be null");
+		Assert.notNull(options.getMultipartFile(), "options.multipartFile can not be null");
 		InputStream in;
 		try {
 			in = options.getMultipartFile().getInputStream();
