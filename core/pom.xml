@@ -39,12 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/common</module>
-                <module>modules/jackson</module>
                 <module>modules/spring</module>
-                <module>modules/boot</module>
-                <module>../../dbm</module>
-                <module>plugins/web-admin</module>
 			</modules>
            <build>
               <plugins>
@@ -111,6 +106,7 @@
                 
                 <module>plugins/parent</module>
                 <module>plugins/web-admin</module>
+                <module>plugins/swaggerext</module>
                 
                 <module>modules/poi</module>
                 <module>modules/rocketmq</module>
