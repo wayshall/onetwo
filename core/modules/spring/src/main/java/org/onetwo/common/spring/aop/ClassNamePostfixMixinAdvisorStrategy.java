@@ -3,10 +3,8 @@ package org.onetwo.common.spring.aop;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.aop.Mixin.MixinFrom;
-import org.onetwo.common.spring.rest.RestUtils;
 import org.slf4j.Logger;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.DynamicIntroductionAdvice;
@@ -14,7 +12,6 @@ import org.springframework.aop.support.DefaultIntroductionAdvisor;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.util.ClassUtils;
 
-import com.mysql.jdbc.log.Log;
 
 /**
  * @author wayshall
