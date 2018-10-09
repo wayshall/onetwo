@@ -1,14 +1,20 @@
 package org.onetwo.common.spring.aop;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.aop.Mixin.MixinFrom;
+import org.onetwo.common.spring.rest.RestUtils;
+import org.slf4j.Logger;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.DynamicIntroductionAdvice;
 import org.springframework.aop.support.DefaultIntroductionAdvisor;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.util.ClassUtils;
+
+import com.mysql.jdbc.log.Log;
 
 /**
  * @author wayshall
@@ -17,6 +23,8 @@ import org.springframework.util.ClassUtils;
 public class ClassNamePostfixMixinAdvisorStrategy implements MixinAdvisorStrategy {
 	
 	private static final String IMPLEMENTOR_POSTFIX = "Impl";
+	
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Override
 	public boolean isMixinInterface(Class<?> interfaceClass) {
@@ -56,7 +64,11 @@ public class ClassNamePostfixMixinAdvisorStrategy implements MixinAdvisorStrateg
 		
 		if(initor == MixinFrom.SPRING){
 			implementor = Springs.getInstance().getBean(implementorClass);
-		}else{
+			if(logger.isInfoEnabled()){
+				logger.info("can not find the mixin implementor for class: {}, will create with reflection, ", implementorClass);
+			}
+		}
+		if(implementor == null){
 			implementor = ReflectUtils.newInstance(implementorClass);
 		}
 

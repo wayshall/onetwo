@@ -30,7 +30,8 @@ public class ValueConvertor implements BiFunction<PropertyDescriptor, Object, Ob
 		}else if(v instanceof ClassPathResource){
 			ClassPathResource res = (ClassPathResource)v;
 	        try {
-				ByteArrayResource byteArrayResource = new FileNameByteArrayResource("kq.jpg", FileUtils.toByteArray(res.getInputStream()));
+	        	final String fileName = res.getFilename();
+				ByteArrayResource byteArrayResource = new FileNameByteArrayResource(fileName, FileUtils.toByteArray(res.getInputStream()));
 				v = byteArrayResource;
 			} catch (IOException e) {
 				throw new BaseException("convert file error: " + e.getMessage(), e);

@@ -32,6 +32,9 @@ import org.springframework.context.annotation.Import;
  * produces -> acceptHeader，指定accept header，从而通过response的contentType头指定读取响应数据的convertor，详见：ResponseEntityResponseExtractor
  * 
  * <br/><br/>
+ * 详见：ApiClientMethod
+ * 
+ * <br/><br/>
  * 
  * 扩展：<br/>
  * &#064;EnableRestApiClient<br/>

@@ -61,6 +61,9 @@ import org.springframework.web.multipart.MultipartFile;
  * consumes -> contentType，指定提交请求的convertor，详见：HttpEntityRequestCallback
  * produces -> acceptHeader，指定accept header，从而通过response的contentType头指定读取响应数据的convertor，详见：ResponseEntityResponseExtractor
  * 
+ * 值转换器：ValueConvertor
+ * HttpEntityRequestCallback
+ * 
  * @author wayshall
  * <br/>
  */
@@ -206,7 +209,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			//post方法，使用了RequestParam才转化为queryString
 			return p.hasParameterAnnotation(RequestParam.class);
 		}
-		return !isUriVariables(p);
+		return !isUriVariables(p) && !isSpecalPemerater(p);
 	}
 	
 	protected boolean isUriVariables(ApiClientMethodParameter p){
