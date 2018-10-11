@@ -10,7 +10,7 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 public class ValidatorWrapper {
 	
 	public static ValidatorWrapper wrap(Validator validator){
-		Assert.notNull(validator);
+		Assert.notNull(validator, "validator can not be null");
 		return new ValidatorWrapper(validator);
 	}
 

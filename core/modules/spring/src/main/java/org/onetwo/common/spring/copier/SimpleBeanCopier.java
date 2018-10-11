@@ -7,6 +7,7 @@ import java.util.Map;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 public class SimpleBeanCopier {
@@ -62,6 +63,8 @@ public class SimpleBeanCopier {
 	 * @return
 	 */
 	public <T> T fromObject(Object src, T target){
+		Assert.notNull(src, "src can not be null");
+		Assert.notNull(target, "target can not be null");
 		if(Class.class.isInstance(target)){
 			Class<T> targetClass = ReflectUtils.getObjectClass(target);
 			target = ReflectUtils.newInstance(targetClass);

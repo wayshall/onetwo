@@ -39,6 +39,7 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 			cacheNames.addAll(properties.getCacheNames());
 		}
 		cacheNames.addAll(cacheExpires.keySet());
+		// 配置文件覆盖
 		cacheNames.addAll(properties.getExpires().keySet());
 		
 		cacheManager.setCacheNames(ImmutableSet.copyOf(cacheNames));
