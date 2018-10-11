@@ -11,6 +11,8 @@ import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
+import org.onetwo.ext.security.utils.SimpleThrowableAnalyzer;
+import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -188,7 +190,14 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 			http.getConfigurer(ExceptionHandlingConfigurer.class).withObjectPostProcessor(new ObjectPostProcessor<ExceptionTranslationFilter>(){
 				@Override
 				public <O extends ExceptionTranslationFilter> O postProcess(O filter) {
-					PropertyAccessorFactory.forDirectFieldAccess(filter).setPropertyValue("authenticationEntryPoint", authenticationEntryPoint);
+					ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forDirectFieldAccess(filter);
+					accessor.setPropertyValue("authenticationEntryPoint", authenticationEntryPoint);
+					// throwableAnalyzer
+//					ThrowableAnalyzer analyzer = (ThrowableAnalyzer)accessor.getPropertyValue("throwableAnalyzer");
+					if(securityConfig.isDebug()){
+						SimpleThrowableAnalyzer analyzer = new SimpleThrowableAnalyzer();
+						filter.setThrowableAnalyzer(analyzer);
+					}
 					return filter;
 				}
 			});

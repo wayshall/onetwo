@@ -1,9 +1,5 @@
 package org.onetwo.ext.security.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.impl.DefaultClaims;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,7 +8,6 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.ext.security.jwt.JwtAuthStores.StoreContext;
 import org.onetwo.ext.security.utils.CookieStorer;
 import org.slf4j.Logger;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -37,6 +32,9 @@ public class JwtSecurityContextRepository implements SecurityContextRepository {
 
 	@Override
 	public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
+		/*HttpServletRequest request = WebHolder.getRequest().get();
+		String url = request.getMethod() + "|" + request.getRequestURL();
+		System.out.println("url:" +url);*/
 		String token = authStore.getToken(requestResponseHolder.getRequest(), authHeaderName);
 
 		if(logger.isDebugEnabled()){

@@ -31,6 +31,7 @@ public enum JwtAuthStores {
 		}
 		@Override
 		public void saveToken(StoreContext ctx) {
+			ctx.getCookieStorer().clear(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey());
 			ctx.getCookieStorer().save(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey(), ctx.getToken().getToken());
 		}
 	},
