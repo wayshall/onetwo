@@ -201,8 +201,10 @@ public interface ExceptionMessageFinder {
 		Exception ex = error.getException();
 //			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
 		if(isInternalError(ex)){
-			//内部调用失败
-			errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
+			// 内部调用失败
+			// 去掉内部调用失败的前缀提示
+//			errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
+			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}else if(SystemErrorCode.UNKNOWN.equals(errorCode)){
 			errorMsg = findMessageByThrowable(ex, errorArgs);
 		}else{
