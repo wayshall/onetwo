@@ -126,7 +126,7 @@ public class CopyUtils {
 		}
 		
 		public List<R> toNewList(){
-			Assert.notNull(elementClass);
+			Assert.notNull(elementClass, "elementClass can not be null");
 			List<R> newDatas = StreamSupport.stream(datas.spliterator(), false)
 						.map((e)->{
 							return build().fromObject(e, elementClass);
@@ -186,6 +186,35 @@ public class CopyUtils {
 
     public static <T> T copy(T target, Object src){
     	return BEAN_COPIER.fromObject(src, target);
+    }
+
+    /****
+     * 
+     * @author wayshall
+     * @param target
+     * @param src
+     * @param propertyNames 需要忽略复制的属性
+     * @return
+     */
+    public static <T> T copyIgnoreProperties(T target, Object src, String... propertyNames){
+    	BeanCopierBuilder.fromObject(src)
+						.ignoreFields(propertyNames)
+						.to(target);
+    	return target;
+    }
+    
+    /****
+     * 
+     * @author wayshall
+     * @param targetClass
+     * @param src
+     * @param propertyNames 需要忽略复制的属性
+     * @return
+     */
+    public static <T> T copyIgnoreProperties(Class<T> targetClass, Object src, String... propertyNames){
+    	return BeanCopierBuilder.fromObject(src)
+								.ignoreFields(propertyNames)
+								.toClass(targetClass);
     }
 
     public static <T> BeanCopierBuilder<T> copyFrom(T src){
