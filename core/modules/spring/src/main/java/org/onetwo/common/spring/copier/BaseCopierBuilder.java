@@ -152,11 +152,11 @@ abstract public class BaseCopierBuilder<B extends BaseCopierBuilder<B>> {
 			throw new BaseException("propertyFilter is not null, you can't override it a not null propertyFilter!");
 	}*/
 
-	final public B nameWithUnderline(){
+	/*final public B nameWithUnderline(){
 		this.checkPropertyNameConvertorNotNull();
 		this.propertyNameConvertor = SeperatorNamedConvertor.UNDERLINE_CONVERTOR;
 		return (B)this;
-	}
+	}*/
 	
 	public SimpleBeanCopier build(){
 		if(LangUtils.isNotEmpty(ignoreFields)){
