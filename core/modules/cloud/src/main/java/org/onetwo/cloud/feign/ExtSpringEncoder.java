@@ -40,6 +40,10 @@ public class ExtSpringEncoder extends SpringEncoder {
 
 	@Override
 	public void encode(Object requestBody, Type bodyType, RequestTemplate request) throws EncodeException {
+		if(requestBody==null){
+			super.encode(requestBody, bodyType, request);
+			return ;
+		}
 		if(GET_METHOD.equalsIgnoreCase(request.method()) && requestBody!=null){
 //			Map<String, Object> map = beanToMapConvertor.toFlatMap(requestBody);
 //			MultiValueMap<String, String> map = RestUtils.toMultiValueStringMap(requestBody);
