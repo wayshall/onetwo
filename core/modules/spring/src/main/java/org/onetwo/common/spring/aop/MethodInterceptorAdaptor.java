@@ -1,4 +1,4 @@
-package ThrowableAnalyzerDelegate;
+package org.onetwo.common.spring.aop;
 
 import java.lang.reflect.Method;
 
