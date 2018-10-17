@@ -279,10 +279,13 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else{
 				String jsonstr = json.toString();
+				if(StringUtils.isBlank(jsonstr)){
+					return null;
+				}
 				obj = this.objectMapper.readValue(jsonstr, constructJavaType(objType));
 			}
 		} catch (Exception e) {
-			throw new JsonException("parse json to "+objType+" error : " + json, e);
+			throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
 		}
 		return (T)obj;
 	}
