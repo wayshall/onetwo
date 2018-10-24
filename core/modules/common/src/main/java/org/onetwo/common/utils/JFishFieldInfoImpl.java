@@ -33,7 +33,7 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 		}
 		this.field = field;
 		this.propertyClassWrapper = Intro.wrap(field.getType());
-		this.annotationInfo = new AnnotationInfo(beanClassWrapper.getClazz(), field.getAnnotations());
+		this.annotationInfo = new AnnotationInfo(beanClassWrapper.getClazz(), field);
 	}
 
 	@Override

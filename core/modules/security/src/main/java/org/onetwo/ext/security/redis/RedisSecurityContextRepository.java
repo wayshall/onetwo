@@ -14,8 +14,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.ext.security.utils.LoginUserDetails;
-import org.onetwo.ext.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -117,10 +115,10 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
 			saveSessionCookies(request, response, sid);
 		}
 		
-		LoginUserDetails loginUser = SecurityUtils.getCurrentLoginUser(context);
+		/*LoginUserDetails loginUser = SecurityUtils.getCurrentLoginUser(context);
 		if(loginUser!=null){
 			loginUser.setToken(sid);
-		}
+		}*/
 		
 		BoundValueOperations<String, SecurityContext> bondOps = getSessionBoundOps(sid);
 		//当前spring-data-redis版本不支持setex，分成两个操作

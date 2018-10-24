@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Sets;
 
-abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>> implements PermissionManager<P> {
+abstract public class AbstractPermissionManager<P extends IPermission> implements PermissionManager<P> {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
@@ -40,7 +40,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 		if(parsers==null || parsers.isEmpty()){
 			this.parsers = SpringUtils.getBeans(applicationContext, MenuInfoParser.class, new ParameterizedTypeReference<MenuInfoParser<P>>(){});
 		}
-		Assert.notEmpty(parsers);
+		checkParsers();
 	}
 
 	protected MenuInfoParser<P> getTopMenuInfoParser(){
@@ -50,10 +50,14 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	public void setParsers(List<MenuInfoParser<P>> parsers) {
 		this.parsers = parsers;
 	}
+	
+	private void checkParsers(){
+		Assert.notEmpty(parsers, "parsers can not be empty");
+	}
 
 
 	public List<P> getMemoryRootMenu() {
-		Assert.notNull(parsers);
+		checkParsers();
 //	    return this.menuInfoParser.getRootMenu();
 	    return parsers.stream()
 	    				.filter(p->p.getRootMenu().isPresent())
@@ -66,7 +70,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	 */
 	@Override
 	public void build(){
-		Assert.notNull(parsers);
+		checkParsers();
 //		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		parsers.stream().forEach(parser->{
 			Optional<P> rootMenu = parser.parseTree();
@@ -80,7 +84,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 
 	@Override
 	public P getPermission(Class<?> permClass){
-		Assert.notNull(parsers);
+		checkParsers();
 //		return menuInfoParser.getPermission(permClass);
 		for(MenuInfoParser<P> parser : parsers){
 			P perm = parser.getPermission(permClass);

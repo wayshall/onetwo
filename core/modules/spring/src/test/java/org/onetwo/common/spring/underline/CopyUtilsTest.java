@@ -466,6 +466,20 @@ public class CopyUtilsTest {
 			CopyUtils.deepClone(srcBean);
 		});
 	}
+	
+	@Test
+	public void testMapping(){
+		Date now = new Date();
+		UnderlineBean bean1 = new UnderlineBean();
+		bean1.setCreate_time(now);
+		bean1.setId(1000L);
+		
+		CapitalBean bean2 = CopyUtils.copyFrom(bean1)
+										 .propertyMapping("birthday", "create_time")
+										 .toClass(CapitalBean.class);
+		assertThat(bean1.getCreate_time()).isEqualTo(bean2.getBirthday());
+		assertThat(bean1.getId()).isEqualTo(bean2.getId());
+	}
 
 
 

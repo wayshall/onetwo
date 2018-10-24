@@ -35,6 +35,8 @@ public class RedisCacheProperties {
 	
 	Map<String, String> expires = Maps.newHashMap();
 	
+	boolean useJsonRedisTemplate = true;
+	
 	public Map<String, Long> expiresInSeconds(){
 		if(expires.isEmpty()){
 			return Collections.emptyMap();

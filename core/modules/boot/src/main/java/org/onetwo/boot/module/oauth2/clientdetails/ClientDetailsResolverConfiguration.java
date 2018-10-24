@@ -1,7 +1,9 @@
 package org.onetwo.boot.module.oauth2.clientdetails;
 
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
+import org.onetwo.boot.module.oauth2.JFishOauth2Properties.ClientDetailsResolverProps;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(JFishOauth2Properties.class)
+@ConditionalOnProperty(name=ClientDetailsResolverProps.ENABLED_KEY, matchIfMissing=true)
 public class ClientDetailsResolverConfiguration {
 	/*@Autowired
 	private TokenStore tokenStore;*/

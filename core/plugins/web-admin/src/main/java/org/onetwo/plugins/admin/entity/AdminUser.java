@@ -13,12 +13,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.onetwo.boot.utils.ImageUrlJsonSerializer;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.jpa.BaseEntity;
 import org.onetwo.plugins.admin.utils.DataUtils;
 import org.onetwo.plugins.admin.utils.Enums.UserStatus;
 import org.onetwo.plugins.admin.utils.WebConstant.DictKeys;
 import org.onetwo.plugins.admin.utils.WebConstant.ValidGroup.ValidWhenNew;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name="admin_user")
@@ -50,6 +53,9 @@ public class AdminUser extends BaseEntity {
     private Date birthday;
 
     private String appCode;
+
+	@JsonSerialize(using = ImageUrlJsonSerializer.class)
+    private String avatar;
     
     public String getGenderName(){
     	if(StringUtils.isBlank(gender))

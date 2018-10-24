@@ -7,6 +7,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.onetwo.common.encrypt.AESCoder.CipherIniter;
 import org.onetwo.common.encrypt.Crypts.AESAlgs;
 import org.onetwo.common.exception.BaseException;
 
@@ -20,6 +21,7 @@ public class AESEncryptCoder implements EncryptCoder<SecretKey> {
 	private byte[] key;
 //	private final int size;
 	private String cipher = AES_ECB_ALGORITHM;
+	private CipherIniter initer;
 	
 
 	public AESEncryptCoder(){
@@ -35,6 +37,11 @@ public class AESEncryptCoder implements EncryptCoder<SecretKey> {
 		super();
 		this.cipher = cipher;
 		this.key = key;
+	}
+	
+	public AESEncryptCoder initer(CipherIniter initer) {
+		this.initer = initer;
+		return this;
 	}
 
 	public SecretKey generatedKey(){
@@ -85,7 +92,12 @@ public class AESEncryptCoder implements EncryptCoder<SecretKey> {
 	protected void init(Cipher cipher, byte[] key, int opmode) throws Exception{
 		//构造密匙
 		SecretKeySpec skeySpec = new SecretKeySpec(key, Crypts.AES_KEY);
-		cipher.init(opmode, skeySpec);
+		if(this.initer!=null){
+			//使用自定义初始化器
+			this.initer.init(cipher, opmode, skeySpec);
+		}else{
+			cipher.init(opmode, skeySpec);
+		}
 		/*if(AES_CBC_ALGORITHM.equalsIgnoreCase(getAlgorithmCipher())){
 			IvParameterSpec iv = new IvParameterSpec(key, 0, 16);
 			cipher.init(opmode, skeySpec, iv);

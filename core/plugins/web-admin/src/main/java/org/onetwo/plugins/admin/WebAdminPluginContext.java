@@ -20,6 +20,8 @@ import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.permission.service.MenuItemRepository;
 import org.onetwo.ext.permission.service.impl.DefaultMenuItemRepository;
+import org.onetwo.ext.security.provider.CaptchaAuthenticationProvider;
+import org.onetwo.plugins.admin.controller.CaptchaController;
 import org.onetwo.plugins.admin.controller.KindeditorController;
 import org.onetwo.plugins.admin.controller.LoginController;
 import org.onetwo.plugins.admin.controller.WebAdminBaseController;
@@ -32,12 +34,15 @@ import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.AdminPermissionConfigListAdapetor;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassListProvider;
 import org.onetwo.plugins.admin.utils.WebAdminPermissionConfig.RootMenuClassProvider;
+import org.onetwo.plugins.admin.utils.WebAdminProperties;
+import org.onetwo.plugins.admin.utils.WebAdminProperties.CaptchaProps;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -57,6 +62,7 @@ import com.google.common.collect.Sets;
 @EnableDbmRepository("org.onetwo.plugins.admin.dao")
 @Order(value=Ordered.LOWEST_PRECEDENCE)
 @JFishWebPlugin(WebAdminPlugin.class)
+@EnableConfigurationProperties(WebAdminProperties.class)
 public class WebAdminPluginContext implements InitializingBean {
 	
 //	final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -71,6 +77,8 @@ public class WebAdminPluginContext implements InitializingBean {
 	private BaseEntityManager baseEntityManager;
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private WebAdminProperties webAdminProperties;
 	
 	public WebAdminPluginContext(){
 	}
@@ -95,6 +103,7 @@ public class WebAdminPluginContext implements InitializingBean {
 	public KindeditorController kindeditorController(){
 		return new KindeditorController();
 	}
+	
 	
 
 	/*@Configuration
@@ -189,6 +198,25 @@ public class WebAdminPluginContext implements InitializingBean {
 		}
 	}
 	
-	
+	@Configuration
+	@ConditionalOnProperty(name=CaptchaProps.ENABLED_KEY, matchIfMissing=true)
+	protected static class CaptchaConfiguration {
+		@Autowired
+		WebAdminProperties webAdminProperties;
+		
+		@Bean
+		public CaptchaAuthenticationProvider captchaAuthenticationProvider(){
+			CaptchaAuthenticationProvider provider = new CaptchaAuthenticationProvider();
+			provider.setCaptchaParameterName(webAdminProperties.getCaptcha().getParameterName());
+			provider.setCaptchaCookieName(webAdminProperties.getCaptcha().getCookieName());
+			provider.setCaptchaChecker(webAdminProperties.getCaptchaChecker());
+			return provider;
+		}
+		
+		@Bean
+		public CaptchaController captchaController(){
+			return new CaptchaController();
+		}
+	}
 
 }

@@ -22,8 +22,8 @@ import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
-import org.onetwo.common.spring.converter.ValueEnum;
 import org.onetwo.common.spring.rest.RestUtils;
+import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 支持  @PathVariable @RequestBody @RequestParam 注解
@@ -49,6 +50,10 @@ import org.springframework.web.client.RestClientException;
  * 没有注解的方法参数：如果为get请求，则所有参数都转为queryString参数，效果和使用了@RequestParam一样；
  * 					 如果为post请求，则自动包装为类型为Map的requestBody
  * 
+ * 如果没有指定requestBody，则根据规则查找可以作为requestBody的参数
+ * 方法多于一个参数时，使用参数名称作为参数前缀；
+ * 只有一个参数的时候，除非用@RequestParam等注解指定了参数名称前缀，否则前缀为空，直接把对象转化为map作为键值对参数
+ * 
  * 
  * get请求忽略requestBody
  * post请求会把非url参数转化为requestBody
@@ -56,17 +61,27 @@ import org.springframework.web.client.RestClientException;
  * consumes -> contentType，指定提交请求的convertor，详见：HttpEntityRequestCallback
  * produces -> acceptHeader，指定accept header，从而通过response的contentType头指定读取响应数据的convertor，详见：ResponseEntityResponseExtractor
  * 
+ * 值转换器：ValueConvertor
+ * HttpEntityRequestCallback
+ * 
  * @author wayshall
  * <br/>
  */
 public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParameter> {
-	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
+	
+	public static BeanToMapConvertor getBeanToMapConvertor() {
+		return beanToMapConvertor;
+	}
+
+	final static private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
 																	.enableFieldNameAnnotation()
+																	.valueConvertor(new ValueConvertor())
 																	.flatableObject(obj->{
 																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
 																		return  flatable &&
 																				!Resource.class.isInstance(obj) &&
-																				!ClassLoader.class.isInstance(obj);
+																				!byte[].class.isInstance(obj) &&
+																				!MultipartFile.class.isInstance(obj);
 																	})
 																	.build();
 	
@@ -167,7 +182,8 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 													return isUriVariables(p);
 												})
 												.collect(Collectors.toList());
-		
+
+//		boolean parameterNameAsPrefix = urlVariableParameters.size()>1;
 		Map<String, Object> values = toMap(urlVariableParameters, args).toSingleValueMap();
 		
 		return values;
@@ -178,11 +194,12 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			return Collections.emptyMap();
 		}
 		
-		List<ApiClientMethodParameter> urlVariableParameters = parameters.stream()
+		List<ApiClientMethodParameter> queryParameters = parameters.stream()
 												.filter(p->isQueryStringParameters(p))
 												.collect(Collectors.toList());
-		
-		Map<String, ?> values = toMap(urlVariableParameters, args).toSingleValueMap();
+
+		boolean parameterNameAsPrefix = queryParameters.size()>1;
+		Map<String, ?> values = toMap(queryParameters, args, parameterNameAsPrefix).toSingleValueMap();
 		
 		return values;
 	}
@@ -192,7 +209,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			//post方法，使用了RequestParam才转化为queryString
 			return p.hasParameterAnnotation(RequestParam.class);
 		}
-		return !isUriVariables(p);
+		return !isUriVariables(p) && !isSpecalPemerater(p);
 	}
 	
 	protected boolean isUriVariables(ApiClientMethodParameter p){
@@ -236,19 +253,36 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				return null;
 			}
 			
+			//如果没有指定requestBody，则根据规则查找可以作为requestBody的参数
+			List<ApiClientMethodParameter> bodyableParameters = parameters.stream()
+					.filter(p->!isSpecalPemerater(p) && !isQueryStringParameters(p))
+					.collect(Collectors.toList());
+//			List<ApiClientMethodParameter> bodyableParameters = parameters;
+			
+			if(LangUtils.isEmpty(bodyableParameters)){
+				return null;
+			}
+			
+			//大于一个参数时，使用参数名称作为参数前缀
+			boolean parameterNameAsPrefix = bodyableParameters.size()>1;
 			//没有requestBody注解时，根据contentType做简单的转换策略
 			if(getContentType().isPresent()){
 				String contentType = getContentType().get();
 				MediaType consumerMediaType = MediaType.parseMediaType(contentType);
-				if(MediaType.APPLICATION_FORM_URLENCODED.equals(consumerMediaType)){
+				if(MediaType.APPLICATION_FORM_URLENCODED.equals(consumerMediaType) ||
+						MediaType.MULTIPART_FORM_DATA.equals(consumerMediaType)){
 					//form的话，需要转成multipleMap
-					values = toMap(parameters, args);
+					values = toMap(bodyableParameters, args, parameterNameAsPrefix);
 				}else{
-					values = args.length==1?args[0]:toMap(parameters, args).toSingleValueMap();
+					//如contentType为json之类，则转成单值的map
+//					values = args.length==1?args[0]:toMap(parameters, args).toSingleValueMap();
+					values = args.length==1?args[0]:toMap(bodyableParameters, args, parameterNameAsPrefix).toSingleValueMap();
+//					values = args.length==1?args[0]:toMap(parameters, args);
+//					values = toMap(parameters, args);
 				}
 			}else{
 				//默认为form
-				values = toMap(parameters, args);
+				values = toMap(bodyableParameters, args, parameterNameAsPrefix);
 			}
 			return values;
 		}else if(requestBodyParameters.size()==1){
@@ -266,7 +300,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args){
 		return toMap(methodParameters, args, true);
 	}
-	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args, boolean flatable){
+	protected MultiValueMap<String, Object> toMap(List<ApiClientMethodParameter> methodParameters, Object[] args, boolean parameterNameAsPrefix){
 		MultiValueMap<String, Object> values = new LinkedMultiValueMap<>(methodParameters.size());
 		for(ApiClientMethodParameter parameter : methodParameters){
 			//忽略特殊参数
@@ -274,7 +308,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				continue;
 			}
 			Object pvalue = args[parameter.getParameterIndex()];
-			handleArg(values, parameter, pvalue, flatable);
+			handleArg(values, parameter, pvalue, parameterNameAsPrefix);
 		}
 		return values;
 	}
@@ -283,16 +317,37 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return parameter.getParameterIndex()==apiHeaderCallbackIndex || parameter.getParameterIndex()==headerParameterIndex;
 	}
 	
-	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean flatable){
+	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean parameterNameAsPrefix){
+		if(pvalue instanceof ApiArgumentTransformer){
+			Object val = ((ApiArgumentTransformer)pvalue).asApiValue();
+			values.add(mp.getParameterName(), val);
+			return ;
+		}
+		
+		String prefix = "";
 		Object paramValue = pvalue;
+		//下列情况，强制使用名称作为前缀
 		if(mp.hasParameterAnnotation(RequestParam.class)){
 			RequestParam params = mp.getParameterAnnotation(RequestParam.class);
 			if(pvalue==null && params.required() && (paramValue=params.defaultValue())==ValueConstants.DEFAULT_NONE){
 				throw new BaseException("parameter["+params.name()+"] must be required : " + mp.getParameterName());
 			}
+			parameterNameAsPrefix = true;
+		}else if(isUriVariables(mp) || mp.hasParameterAnnotation(FieldName.class)){
+			parameterNameAsPrefix = true;
+		}else if(beanToMapConvertor.isMappableValue(pvalue)){//可直接映射为值的参数
+			parameterNameAsPrefix = true;
 		}
 		
-		if(flatable){
+		if(parameterNameAsPrefix){
+			prefix = mp.getParameterName();
+		}
+		beanToMapConvertor.flatObject(prefix, paramValue, (k, v, ctx)->{
+			values.add(k, v);
+		});
+		
+		/*if(falatable){
+//			beanToMapConvertor.flatObject(mp.getParameterName(), paramValue, (k, v, ctx)->{
 			beanToMapConvertor.flatObject(mp.getParameterName(), paramValue, (k, v, ctx)->{
 				if(v instanceof Enum){
 					Enum<?> e = (Enum<?>)v;
@@ -301,18 +356,22 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 					}else{//默认使用name
 						v = e.name();
 					}
+				}else if(v instanceof Resource){
+					//ignore，忽略，不转为string
+				}else{
+					v = v.toString();
 				}
 				if(ctx!=null){
 //					System.out.println("ctx.getName():"+ctx.getName());
-					values.add(ctx.getName(), v.toString());
+					values.add(ctx.getName(), v);
 				}else{
-					values.add(k, v.toString());
+					values.add(k, v);
 				}
-	//			values.put(k, v);
+//				values.add(k, v);
 			});
 		}else{
 			values.add(mp.getParameterName(), pvalue);
-		}
+		}*/
 	}
 
 	public String getPath() {
@@ -349,7 +408,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				return pname;
 			}*/
 			String pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElseGet(()->{
-				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+//				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
+				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElseGet(()->{
+					return getOptionalParameterAnnotation(FieldName.class).map(fn->fn.value()).orElse(null);
+				});
 			});
 			if(StringUtils.isBlank(pname)){
 				/*pname = getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);

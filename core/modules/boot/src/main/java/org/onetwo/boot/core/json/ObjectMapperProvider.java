@@ -6,6 +6,7 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -36,6 +37,7 @@ public interface ObjectMapperProvider {
 			if(objectMapper==null){
 				if(builder!=null){
 					objectMapper = builder.createXmlMapper(false).build();
+					objectMapper.setSerializationInclusion(Include.NON_NULL);
 				}else{
 					objectMapper = JsonMapper.ignoreNull().getObjectMapper();
 				}

@@ -3,6 +3,7 @@ package org.onetwo.cloud.zuul;
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
 import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
+import org.onetwo.cloud.bugfix.FixFormBodyWrapperFilterPostProcessor;
 import org.onetwo.cloud.core.BootJfishCloudConfig;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.filter.SpringMultipartFilterProxy;
@@ -63,6 +64,18 @@ public class ExtZuulContextConfig {
 		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
 		return resolver;
 	}
+	
+	@Bean
+	public static FixFormBodyWrapperFilterPostProcessor formBodyWrapperFilterPostProcessor(){
+		return new FixFormBodyWrapperFilterPostProcessor();
+	}
+
+
+	/*@Bean
+	public FormBodyWrapperFilter formBodyWrapperFilter() {
+		AllEncompassingFormHttpMessageConverter converter = new AllEncompassingFormHttpMessageConverter();
+		return new FormBodyWrapperFilter(converter);
+	}*/
 	
 	/*@Bean
 	public FormBodyWrapperFilter formBodyWrapperFilter(){

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
+import org.onetwo.cloud.canary.CanaryConfiguration;
 import org.onetwo.cloud.zuul.limiter.LimiterConfiguration;
 import org.onetwo.common.spring.context.AbstractImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -25,6 +26,8 @@ public class EnableJFishZuulExtensionSelector extends AbstractImportSelector<Ena
 		classNames.add(ErrorHandleConfiguration.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
 		classNames.add(LimiterConfiguration.class.getName());
+		
+		classNames.add(CanaryConfiguration.class.getName());
 		
 		return classNames;
 	}

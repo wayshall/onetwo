@@ -34,4 +34,8 @@ public class MvcInterceptorAdapter implements MvcInterceptor {
 		
 	}
 
+	@Override
+	public void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler) {
+	}
+
 }

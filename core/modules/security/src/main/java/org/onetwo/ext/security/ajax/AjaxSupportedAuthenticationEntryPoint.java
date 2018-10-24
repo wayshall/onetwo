@@ -12,6 +12,7 @@ import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.ext.security.utils.SecurityConfig;
+import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,8 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 		if(RequestUtils.isAjaxRequest(request)){
 			DataResult<?> rs = DataResults.error(authException.getMessage())
-													.build();
+											.code(SecurityErrors.NOT_TRUSTED_USER)
+											.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);
 		}else{

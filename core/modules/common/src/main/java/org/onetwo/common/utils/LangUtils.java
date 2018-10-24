@@ -38,6 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.regex.Pattern;
+import java.util.zip.CRC32;
 
 import org.onetwo.common.annotation.BeanOrder;
 import org.onetwo.common.convert.Types;
@@ -1750,5 +1751,20 @@ public class LangUtils {
 	
 	public static String getOsName(){
 		return System.getProperties().getProperty("os.name", "");
+	}
+	
+	public static String converTo36Radix(String str){
+		Long value = getCrc32(str.getBytes());
+		return Long.toString(value, 36);
+	}
+	
+	public static long getCrc32(String str){
+		return getCrc32(str.getBytes());
+	}
+	
+	public static long getCrc32(byte[] bytes){
+		CRC32 crc = new CRC32();
+		crc.update(bytes);
+		return crc.getValue();
 	}
 }

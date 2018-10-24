@@ -3,10 +3,10 @@ package org.onetwo.ext.permission.parser;
 import java.util.Map;
 import java.util.Optional;
 
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionConfig;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
 
-public interface MenuInfoParser<P extends DefaultIPermission<P>> {
+public interface MenuInfoParser<P extends IPermission> {
 	
 	public PermissionConfig<P> getMenuInfoable();
 	

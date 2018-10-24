@@ -54,6 +54,9 @@ import feign.Util;
 public class EnhanceSpringMvcContract extends SpringMvcContract implements ApplicationContextAware, InitializingBean {
 	private static final String FEIGN_BASE_PATH_TAG = ":";
 	private static final String FEIGN_BASE_PATH_KEY = FeignProperties.PROPERTIES_PREFIX+".basePath.";
+	private static final String FEIGN_CONTEXT_PATH_KEY = FeignProperties.PROPERTIES_PREFIX+".basePath.contextPath";
+	@Deprecated
+	private static final String FEIGN_CONTEXT_PATH_KEY2 = "feignClient.basePaths.contextPath";
 
 	private ApplicationContext applicationContext;
 	private RelaxedPropertyResolver relaxedPropertyResolver;
@@ -170,7 +173,11 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 			pathValue = FEIGN_BASE_PATH_KEY + serviceName;
 			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
 			if(StringUtils.isBlank(pathValue)){
-				pathValue = this.relaxedPropertyResolver.getProperty("server.contextPath");
+				pathValue = this.relaxedPropertyResolver.getProperty(FEIGN_CONTEXT_PATH_KEY);
+				//兼容旧配置
+				if(StringUtils.isBlank(pathValue)){
+					pathValue = this.relaxedPropertyResolver.getProperty(FEIGN_CONTEXT_PATH_KEY2);
+				}
 			}
 		}else if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
 			//:serviceName -> jfish.cloud.feign.basePath.serviceName

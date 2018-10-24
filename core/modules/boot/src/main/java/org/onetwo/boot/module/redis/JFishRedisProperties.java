@@ -16,6 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JFishRedisProperties {
 
 	public static final String ENABLED_KEY = "jfish.redis.enabled";
+	public static final String SERIALIZER_KEY = "jfish.redis.serializer";
 	public static final String ENABLED_LOCK_REGISTRY = "jfish.redis.lockRegistry.key";
 
 	/*String hostName = "localhost";

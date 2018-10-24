@@ -1,0 +1,5856 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": " REST API",
+        "version": "1.0",
+        "title": "Lego Service",
+        "termsOfService": "termsOfServiceUrl",
+        "contact": {
+            "name": "way",
+            "email": "zengws@icloudsoft.com.cn"
+        },
+        "license": {
+            "name": "API License",
+            "url": "API License URL"
+        }
+    },
+    "host": "test.microcloudtech.com",
+    "basePath": "/service/lego/",
+    "tags": [
+        {
+            "name": "(内部)用户接口",
+            "description": "Uc User Controller"
+        },
+        {
+            "name": "(内部)订单接口",
+            "description": "Order Internal Controller"
+        },
+        {
+            "name": "【调试】",
+            "description": "Debug Controller"
+        },
+        {
+            "name": "订单Api",
+            "description": "Order Controller"
+        },
+        {
+            "name": "(内部)第三方调用的订单接口",
+            "description": "Third Order Controller"
+        },
+        {
+            "name": "支付成功的回调接口",
+            "description": "Order Pay Callback Controller"
+        },
+        {
+            "name": "test-controller",
+            "description": "Test Controller"
+        },
+        {
+            "name": "用户地址Api",
+            "description": "User Address Controller"
+        },
+        {
+            "name": "首页配置Api",
+            "description": "Index Controller"
+        },
+        {
+            "name": "(内部)供应商",
+            "description": "Spl Supplier Internal Controller"
+        },
+        {
+            "name": "(内部)商品接口",
+            "description": "Product Controller"
+        },
+        {
+            "name": "商品相关API",
+            "description": "Sec Kill Controller"
+        },
+        {
+            "name": "门店Api",
+            "description": "Store Controller"
+        },
+        {
+            "name": "乐高新年签到API",
+            "description": "Sign In Controller"
+        },
+        {
+            "name": "缓存更新",
+            "description": "Resouce Update Controller"
+        },
+        {
+            "name": "登录",
+            "description": "Login Controller"
+        },
+        {
+            "name": "库存接口",
+            "description": "Stock Controller"
+        },
+        {
+            "name": "行政区域Api",
+            "description": "Region Controller"
+        },
+        {
+            "name": "(内部)礼品卡接口",
+            "description": "Gift Cards Controller"
+        },
+        {
+            "name": "营销相关Api",
+            "description": "Mkt User Channel Controller"
+        },
+        {
+            "name": "微信支付成功的回调接口",
+            "description": "Wx Pay Callback Controller"
+        },
+        {
+            "name": "优惠券相关API",
+            "description": "Promo Wxcard Controller"
+        }
+    ],
+    "paths": {
+        "/api/common/consume/addUserChannelLog": {
+            "put": {
+                "tags": [
+                    "营销相关Api"
+                ],
+                "summary": "新增用户渠道记录",
+                "operationId": "addUserChannelLogUsingPUT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "channelTag",
+                        "in": "query",
+                        "description": "channelTag",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/common/home/getCmIndexImage/{id}": {
+            "get": {
+                "tags": [
+                    "首页配置Api"
+                ],
+                "summary": "根据id获取指定图片和跳转路径",
+                "operationId": "getCmIndexImageUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/HomeSliderListItemVo"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/common/home/getIndexResource": {
+            "get": {
+                "tags": [
+                    "首页配置Api"
+                ],
+                "summary": "获取首页所有图片资源",
+                "operationId": "getIndexResourceUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/首页图片结果"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/common/home/getModelBackground": {
+            "get": {
+                "tags": [
+                    "首页配置Api"
+                ],
+                "summary": "根据类型获取配置图片，数据库又多张则选取第一张。",
+                "operationId": "getSeckillBackgroundUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "positionType",
+                        "in": "query",
+                        "description": "positionType",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "INDEX_TOP_PRODUCT",
+                            "INDEX_TOP_IMAGE",
+                            "INDEX_TOP",
+                            "INDEX_TOP_URL",
+                            "RESOURCE_IMAGE",
+                            "RESOURCE_SHARE",
+                            "INDEX_SECKILL",
+                            "INDEX_GIFT",
+                            "ORDER_POPUP",
+                            "SPU_LIST_TOP",
+                            "SIGNIN_LIST_TOP",
+                            "INDEX_SHARED_IMAGE",
+                            "SIGNIN_LIST_SHARED",
+                            "GIFT_IMAGE",
+                            "GIFT_VIDEO",
+                            "GIFT_VIDEO_COVER",
+                            "GIFT_BUTTON",
+                            "GIFT_SHARED_IMAGE",
+                            "GIFT_SPU_IMAGE",
+                            "GIFT_SPU_ADD_BUTTON"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/HomeSliderListItemVo"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/common/home/getSliderList": {
+            "get": {
+                "tags": [
+                    "首页配置Api"
+                ],
+                "summary": "获取当前时间显示的轮播首页图片列表",
+                "operationId": "getCurrentIndexResourceUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/HomeSliderListItemVo"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/common/option/getOption/{optionName}": {
+            "get": {
+                "tags": [
+                    "首页配置Api"
+                ],
+                "summary": "根据参数名获取参数值",
+                "operationId": "getOptionByNameUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "optionName",
+                        "in": "path",
+                        "description": "参数名",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/CmOptionEntity"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/common/resouce/deleteIndexResource": {
+            "put": {
+                "tags": [
+                    "缓存更新"
+                ],
+                "summary": "删除首页所有图片资源缓存",
+                "operationId": "deleteIndexResourceUsingPUT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/common/resouce/updateIndexResource": {
+            "put": {
+                "tags": [
+                    "缓存更新"
+                ],
+                "summary": "更新首页所有图片资源缓存",
+                "operationId": "updateIndexResourceUsingPUT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/首页图片结果"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/order/addOrder": {
+            "post": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "新增订单",
+                "operationId": "addOrderUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "addOrderRequest",
+                        "description": "addOrderRequest",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/下单参数"
+                        }
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/预支付信息"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/addOrderToken": {
+            "get": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "新增订单前获取token",
+                "operationId": "getAddOrderTokenUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/AddOrderToken"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/beeCloudPayWebhook": {
+            "post": {
+                "tags": [
+                    "支付成功的回调接口"
+                ],
+                "summary": "支付回调",
+                "operationId": "beeCloudPayWebhookUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "request",
+                        "description": "request",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/order/cancelOrder": {
+            "post": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "取消订单",
+                "operationId": "cancelOrderUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "query",
+                        "description": "orderId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/detail/{orderId}": {
+            "get": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "获取订单详情",
+                "operationId": "detailUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "订单Id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/订单详情信息"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/list": {
+            "get": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "获取用户的订单列表",
+                "operationId": "listUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "页大小",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "pageNum",
+                        "in": "query",
+                        "description": "页数",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "orderStatus",
+                        "in": "query",
+                        "description": "订单状态",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "INSERT",
+                            "UNPAYED",
+                            "PAYED",
+                            "DELIVERED",
+                            "CLOSED",
+                            "CLOSED_CANCEL",
+                            "EXPIRED",
+                            "DELETED",
+                            "CLOSED_REFUND"
+                        ]
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/订单列表结果"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/orderStatus": {
+            "get": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "获取订单状态",
+                "operationId": "orderStatusUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "query",
+                        "description": "订单Id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/OrderStatusResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/payOrder": {
+            "post": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "支付订单",
+                "operationId": "payOrderUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "query",
+                        "description": "orderId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/预支付信息"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/test/test": {
+            "get": {
+                "tags": [
+                    "test-controller"
+                ],
+                "summary": "test",
+                "operationId": "testUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/order/unifiedAddOrder": {
+            "post": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "新增订单(新)",
+                "operationId": "unifiedAddOrderUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "addOrderRequest",
+                        "description": "addOrderRequest",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/下单参数"
+                        }
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/预支付信息"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/unifiedPayOrder": {
+            "post": {
+                "tags": [
+                    "订单Api"
+                ],
+                "summary": "支付订单(新)",
+                "operationId": "unifiedPayOrderUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "query",
+                        "description": "orderId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/预支付信息"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/wxPayCallbackController/payNotifyUrl": {
+            "post": {
+                "tags": [
+                    "微信支付成功的回调接口"
+                ],
+                "summary": "支付成功回调",
+                "operationId": "payNotifyUrlUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/product/productinfo/getProductDetail": {
+            "get": {
+                "tags": [
+                    "商品相关API"
+                ],
+                "summary": "根据spu的ID获取抢购商品详情",
+                "operationId": "getProductDetailBySpuIdUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "query",
+                        "description": "产品info的id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/产品基本详情结果"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/product/seckill/getGeneralSkuList": {
+            "get": {
+                "tags": [
+                    "商品相关API"
+                ],
+                "summary": "获取所有普通商品列表",
+                "operationId": "getGeneralSkuListUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "isTest",
+                        "in": "query",
+                        "description": "isTest",
+                        "required": false,
+                        "type": "boolean",
+                        "default": false
+                    },
+                    {
+                        "name": "categoryCode",
+                        "in": "query",
+                        "description": "categoryCode",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Callable«List«ProductGeneralSkuVo»»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/product/seckill/getProductDetail": {
+            "get": {
+                "tags": [
+                    "商品相关API"
+                ],
+                "summary": "根据sku的ID获取抢购商品详情",
+                "operationId": "getProductDetailBySkuIdUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "seckillSkuId",
+                        "in": "query",
+                        "description": "商品skuid",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/抢购商品详情结果"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/product/seckill/getSecKillSkuList": {
+            "get": {
+                "tags": [
+                    "商品相关API"
+                ],
+                "summary": "获取所有抢购商品列表",
+                "operationId": "getSecKillSkuListUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "isTest",
+                        "in": "query",
+                        "description": "isTest",
+                        "required": false,
+                        "type": "boolean",
+                        "default": false
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Callable«List«SeckillProductSkuVo»»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/product/seckill/getSeckillStatus": {
+            "get": {
+                "tags": [
+                    "商品相关API"
+                ],
+                "summary": "根据用户id和商品skuId获取秒杀状态",
+                "operationId": "getSeckillStatusUsingGET_1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "seckillSkuId",
+                        "in": "query",
+                        "description": "秒杀商品id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/SeckillStatusVo"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/product/seckill/signUp": {
+            "post": {
+                "tags": [
+                    "商品相关API"
+                ],
+                "summary": "登记报名秒杀活动",
+                "operationId": "signUpUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "query",
+                        "description": "商品id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Callable«boolean»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/product/seckill/signUpTest": {
+            "post": {
+                "tags": [
+                    "商品相关API"
+                ],
+                "summary": "测试登记报名秒杀活动",
+                "operationId": "signUpTestUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "query",
+                        "description": "商品id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Callable«boolean»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/promo/wxcard/getAddWxcardArguments": {
+            "get": {
+                "tags": [
+                    "优惠券相关API"
+                ],
+                "summary": "获取调用领取优惠券需要的参数",
+                "operationId": "getAddWxcardArgumentsUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "cardIds",
+                        "in": "query",
+                        "description": "cardIds",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/AddCardResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/promo/wxcard/getReceivedWxcardList": {
+            "get": {
+                "tags": [
+                    "优惠券相关API"
+                ],
+                "summary": "获取已经领取的优惠卷列表",
+                "operationId": "getReceivedWxcardListUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/WxcardResult"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/promo/wxcard/getWxcardList": {
+            "get": {
+                "tags": [
+                    "优惠券相关API"
+                ],
+                "summary": "获取优惠卷列表",
+                "operationId": "getWxcardListUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/WxcardResult"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/promo/wxcard/refreshGetWxcardList": {
+            "get": {
+                "tags": [
+                    "优惠券相关API"
+                ],
+                "summary": "测试清缓存",
+                "operationId": "refreshGetWxcardListUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/signIn/signIn/addDeliveryInfo": {
+            "post": {
+                "tags": [
+                    "乐高新年签到API"
+                ],
+                "summary": "中奖后填写收货地址",
+                "operationId": "addDeliveryInfoUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "luckyDrawDeliveryInfo",
+                        "description": "luckyDrawDeliveryInfo",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LuckyDrawDeliveryInfo"
+                        }
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/signIn/signIn/agreeSignInClause": {
+            "post": {
+                "tags": [
+                    "乐高新年签到API"
+                ],
+                "summary": "同意签到条款",
+                "operationId": "agreeSignInClauseUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/signIn/signIn/flushCache": {
+            "delete": {
+                "tags": [
+                    "乐高新年签到API"
+                ],
+                "summary": "情况签到缓存",
+                "operationId": "flushCacheUsingDELETE",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/signIn/signIn/getDeliveryInfo": {
+            "get": {
+                "tags": [
+                    "乐高新年签到API"
+                ],
+                "summary": "获取收货地址",
+                "operationId": "getDeliveryInfoUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "luckDrawId",
+                        "in": "query",
+                        "description": "luckDrawId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LuckyDrawDeliveryInfo"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/signIn/signIn/getLuckyDrwaInfos": {
+            "get": {
+                "tags": [
+                    "乐高新年签到API"
+                ],
+                "summary": "获取中奖信息",
+                "operationId": "getLuckyDrwaInfosUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/LuckyDrawInfo"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/signIn/signIn/getSignInList": {
+            "get": {
+                "tags": [
+                    "乐高新年签到API"
+                ],
+                "summary": "获取签到列表",
+                "operationId": "getSignInListUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/LegoSignInVo"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/signIn/signIn/signIn": {
+            "post": {
+                "tags": [
+                    "乐高新年签到API"
+                ],
+                "summary": "签到",
+                "operationId": "signInUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "configId",
+                        "in": "query",
+                        "description": "configId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/store/detail/{storeId}": {
+            "get": {
+                "tags": [
+                    "门店Api"
+                ],
+                "summary": "获取店铺详情",
+                "operationId": "getStoreDetailUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "storeId",
+                        "in": "path",
+                        "description": "门店Id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "description": "用户当前纬度",
+                        "required": false,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "用户当前经度",
+                        "required": false,
+                        "type": "number",
+                        "format": "double"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/门店详情"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/store/getAllRegularChain": {
+            "get": {
+                "tags": [
+                    "门店Api"
+                ],
+                "summary": "获取所有专卖店列表",
+                "operationId": "getAllRegularChainUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "description": "用户当前纬度",
+                        "required": false,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "用户当前经度",
+                        "required": false,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    {
+                        "name": "usePriority",
+                        "in": "query",
+                        "description": "是否使用优先级字段排序",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "页大小",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "pageNum",
+                        "in": "query",
+                        "description": "页数",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/门店列表结果"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/store/getNearbyChainStore": {
+            "get": {
+                "tags": [
+                    "门店Api"
+                ],
+                "summary": "获取附近的经销店列表",
+                "operationId": "getNearbyChainStoreUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "description": "用户当前纬度",
+                        "required": false,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "用户当前经度",
+                        "required": false,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    {
+                        "name": "usePriority",
+                        "in": "query",
+                        "description": "是否使用优先级字段排序",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "页大小",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "pageNum",
+                        "in": "query",
+                        "description": "页数",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/门店列表结果"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/store/listStore": {
+            "get": {
+                "tags": [
+                    "门店Api"
+                ],
+                "summary": "列出所有门店",
+                "operationId": "listStoreUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "description": "用户当前纬度",
+                        "required": false,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "用户当前经度",
+                        "required": false,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    {
+                        "name": "usePriority",
+                        "in": "query",
+                        "description": "是否使用优先级字段排序",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "页大小",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "pageNum",
+                        "in": "query",
+                        "description": "页数",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/门店列表结果"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/store/qrCode/{storeId}": {
+            "get": {
+                "tags": [
+                    "门店Api"
+                ],
+                "summary": "获取店铺二维码",
+                "operationId": "getStoreQrCodeUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "storeId",
+                        "in": "path",
+                        "description": "门店Id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/门店列表结果"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/store/signin/{storeId}": {
+            "post": {
+                "tags": [
+                    "门店Api"
+                ],
+                "summary": "店铺签到",
+                "operationId": "signinUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "storeId",
+                        "in": "path",
+                        "description": "门店Id",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uc/address": {
+            "post": {
+                "tags": [
+                    "用户地址Api"
+                ],
+                "summary": "添加新地址",
+                "operationId": "addAddressUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "request",
+                        "description": "request",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UserAdressRequest"
+                        }
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uc/address/listAddress": {
+            "get": {
+                "tags": [
+                    "用户地址Api"
+                ],
+                "summary": "获取用户所有地址",
+                "operationId": "listAddressUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UserAdressResult"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uc/address/{addressId}": {
+            "put": {
+                "tags": [
+                    "用户地址Api"
+                ],
+                "summary": "修改地址",
+                "operationId": "updateAddressUsingPUT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "addressId",
+                        "in": "path",
+                        "description": "addressId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "body",
+                        "name": "request",
+                        "description": "request",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UserAdressRequest"
+                        }
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "用户地址Api"
+                ],
+                "summary": "删除地址",
+                "operationId": "deleteAddressUsingDELETE",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "addressId",
+                        "in": "path",
+                        "description": "addressId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "auth",
+                        "in": "header",
+                        "description": "登录token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uc/login": {
+            "post": {
+                "tags": [
+                    "登录"
+                ],
+                "summary": "登录",
+                "operationId": "loginUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "loginRequest",
+                        "description": "loginRequest",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Callable«JwtTokenInfo»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/giftCards/saveGiftCard": {
+            "post": {
+                "tags": [
+                    "(内部)礼品卡接口"
+                ],
+                "summary": "礼品卡存入数据库",
+                "operationId": "saveGiftCardUsingPOST",
+                "consumes": [
+                    "application/json;charset=UTF-8"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "giftCardRequest",
+                        "description": "giftCardRequest",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GiftCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/internal/debug/clearCache": {
+            "get": {
+                "tags": [
+                    "【调试】"
+                ],
+                "summary": "清除缓存",
+                "operationId": "clearCacheUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "cacheName",
+                        "in": "query",
+                        "description": "cacheName",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "key",
+                        "in": "query",
+                        "description": "key",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "removeAll",
+                        "in": "query",
+                        "description": "removeAll",
+                        "required": true,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "password",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/internal/debug/getTokenTest": {
+            "get": {
+                "tags": [
+                    "【调试】"
+                ],
+                "summary": "生成token",
+                "operationId": "getTokenTestUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "userId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "userName",
+                        "in": "query",
+                        "description": "userName",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "password",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JwtTokenInfo"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/internal/order/checkCanBuy": {
+            "get": {
+                "tags": [
+                    "(内部)订单接口"
+                ],
+                "summary": "判断用户能否买某件抢购商品",
+                "operationId": "checkCanBuyUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "userId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "skuId",
+                        "in": "query",
+                        "description": "skuId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "NO_SIGNUP",
+                                "NO_QUALIFY",
+                                "ORDERED",
+                                "PURCHASED",
+                                "INVALID_TIME",
+                                "QUALIFIED"
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/internal/order/internalPayWebhook": {
+            "get": {
+                "tags": [
+                    "(内部)订单接口"
+                ],
+                "summary": "支付回调（内部调用）",
+                "operationId": "internalPayWebhookUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderPaymentId",
+                        "in": "query",
+                        "description": "orderPaymentId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "billFee",
+                        "in": "query",
+                        "description": "billFee",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "payTimeTimestamp",
+                        "in": "query",
+                        "description": "payTimeTimestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "tradeNo",
+                        "in": "query",
+                        "description": "tradeNo",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/internal/order/unifiedExpiredOrder": {
+            "post": {
+                "tags": [
+                    "(内部)订单接口"
+                ],
+                "summary": "订单过期（内部调用）",
+                "operationId": "unifiedExpiredOrderUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "query",
+                        "description": "orderId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/getProductInfo": {
+            "post": {
+                "tags": [
+                    "(内部)商品接口"
+                ],
+                "summary": "根据Id获取商品信息",
+                "operationId": "getProductInfoUsingPOST",
+                "consumes": [
+                    "application/json;charset=UTF-8"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "productIds",
+                        "description": "productIds",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/ProductInfoResult"
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/seckill/getSeckillInfoList": {
+            "post": {
+                "tags": [
+                    "(内部)商品接口"
+                ],
+                "summary": "根据skuid获取产品信息",
+                "operationId": "getSeckillInfoListUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "skuIds",
+                        "description": "skuIds",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ProductSkuInfoResult"
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/product/seckill/getSeckillStatus": {
+            "get": {
+                "tags": [
+                    "(内部)商品接口"
+                ],
+                "summary": "根据用户id和商品skuId获取秒杀状态",
+                "operationId": "getSeckillStatusUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "userId",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "seckillSkuId",
+                        "in": "query",
+                        "description": "seckillSkuId",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "isCallOrderApi",
+                        "in": "query",
+                        "description": "isCallOrderApi",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/SeckillStatusClientVo"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/product/seckill/skuList": {
+            "post": {
+                "tags": [
+                    "(内部)商品接口"
+                ],
+                "summary": "查询sku信息",
+                "operationId": "getSkuListUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "pageRequest",
+                        "description": "pageRequest",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Page«ProductSeckillSkuComboVo»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/region/getRegionByCode": {
+            "get": {
+                "tags": [
+                    "行政区域Api"
+                ],
+                "summary": "(内部)根据code获取行政区域信息",
+                "operationId": "getRegionByCodeUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "regionCodes",
+                        "in": "query",
+                        "description": "regionCodes",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/RegionResult"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/region/lowerRegions": {
+            "get": {
+                "tags": [
+                    "行政区域Api"
+                ],
+                "summary": "获取该区域的下级区域",
+                "description": "当regionCode为空获取省列表",
+                "operationId": "lowerRegionsUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "regionCode",
+                        "in": "query",
+                        "description": "regionCode",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/RegionResult"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/stock/cancel": {
+            "post": {
+                "tags": [
+                    "库存接口"
+                ],
+                "summary": "取消锁定的库存",
+                "operationId": "cancelUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "query",
+                        "description": "orderId",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/SimpleDataResult«object»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/stock/commit": {
+            "post": {
+                "tags": [
+                    "库存接口"
+                ],
+                "summary": "提交锁定的库存",
+                "operationId": "commitUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "query",
+                        "description": "orderId",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/SimpleDataResult«object»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/stock/lock": {
+            "post": {
+                "tags": [
+                    "库存接口"
+                ],
+                "summary": "根据sku和订单预扣（锁定）库存",
+                "operationId": "lockUsingPOST",
+                "consumes": [
+                    "application/json;charset=UTF-8"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "stockReduces",
+                        "description": "stockReduces",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/StockReduceRequest"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/SimpleDataResult«object»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/stock/salable": {
+            "get": {
+                "tags": [
+                    "库存接口"
+                ],
+                "summary": "获取sku可销售库存",
+                "operationId": "salableUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "skuId",
+                        "in": "query",
+                        "description": "skuId",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/supplier/getProductInfo": {
+            "get": {
+                "tags": [
+                    "(内部)供应商"
+                ],
+                "summary": "根据Id获取商品信息",
+                "operationId": "getDetailUsingGET",
+                "consumes": [
+                    "application/json;charset=UTF-8"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "supplierId",
+                        "in": "query",
+                        "description": "supplierId",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/SplSupplierInfoVo"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/thirdOrder/deliveryInfo": {
+            "post": {
+                "tags": [
+                    "(内部)第三方调用的订单接口"
+                ],
+                "summary": "物流单号推送接口",
+                "operationId": "pushDeliveryInfoUsingPOST",
+                "consumes": [
+                    "application/json;charset=UTF-8"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "request",
+                        "description": "request",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ThirdPushDeliveryInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/thirdOrder/list": {
+            "post": {
+                "tags": [
+                    "(内部)第三方调用的订单接口"
+                ],
+                "summary": "订单拉取接口",
+                "operationId": "listUsingPOST",
+                "consumes": [
+                    "application/json;charset=UTF-8"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "request",
+                        "description": "request",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ThirdGetOrdersRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ThirdOrderInfoResult"
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/thirdOrder/setOrderRefund": {
+            "post": {
+                "tags": [
+                    "(内部)第三方调用的订单接口"
+                ],
+                "summary": "标记订单已退货接口",
+                "operationId": "setOrderRefundUsingPOST",
+                "consumes": [
+                    "application/json;charset=UTF-8"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "request",
+                        "description": "request",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ThirdOrderRefundRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/checkMpOpenId": {
+            "put": {
+                "tags": [
+                    "(内部)用户接口"
+                ],
+                "summary": "根据ids检测用户是否关注了乐高公众号",
+                "operationId": "checkMpOpenIdUsingPUT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "userIds",
+                        "description": "userIds",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UserMpOpenIdResult"
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/user/getUcUser": {
+            "get": {
+                "tags": [
+                    "(内部)用户接口"
+                ],
+                "summary": "根据id获取指定用户",
+                "operationId": "getUcUserUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "userId",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UcUserVo"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/user/getUcUserList": {
+            "post": {
+                "tags": [
+                    "(内部)用户接口"
+                ],
+                "summary": "根据ids获取指定用户列表",
+                "operationId": "getUcUserListUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json;charset=UTF-8"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "userIds",
+                        "description": "userIds",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UcUserVo"
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "AddCardResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "fixed_begintimestamp": {
+                    "type": "string"
+                },
+                "nonce_str": {
+                    "type": "string"
+                },
+                "openid": {
+                    "type": "string"
+                },
+                "outer_str": {
+                    "type": "string"
+                },
+                "signature": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "AddOrderItem": {
+            "type": "object",
+            "properties": {
+                "productCount": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "抢购数量"
+                },
+                "secKillSkuId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "抢购商品Id"
+                }
+            }
+        },
+        "AddOrderToken": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "Callable«JwtTokenInfo»": {
+            "type": "object"
+        },
+        "Callable«List«ProductGeneralSkuVo»»": {
+            "type": "object"
+        },
+        "Callable«List«SeckillProductSkuVo»»": {
+            "type": "object"
+        },
+        "Callable«boolean»": {
+            "type": "object"
+        },
+        "CmOptionEntity": {
+            "type": "object",
+            "properties": {
+                "createAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "optionName": {
+                    "type": "string"
+                },
+                "optionValue": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "updateAt": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "DeliveryInfo": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "收货地址"
+                },
+                "deliveryCompany": {
+                    "type": "string",
+                    "description": "快递商"
+                },
+                "deliveryCompanyCode": {
+                    "type": "string",
+                    "description": "快递商编号"
+                },
+                "deliveryNo": {
+                    "type": "string",
+                    "description": "快递单号"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "收货人手机号码"
+                },
+                "realname": {
+                    "type": "string",
+                    "description": "收货人姓名"
+                }
+            }
+        },
+        "GiftCardRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "详细地址"
+                },
+                "area": {
+                    "type": "string",
+                    "description": "区"
+                },
+                "cardCode": {
+                    "type": "string",
+                    "description": "cardCode"
+                },
+                "cardId": {
+                    "type": "string",
+                    "description": "cardId"
+                },
+                "city": {
+                    "type": "string",
+                    "description": "城市"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "姓名"
+                },
+                "num": {
+                    "type": "string",
+                    "description": "数量（默认为1）"
+                },
+                "orderId": {
+                    "type": "string",
+                    "description": "订单id"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "手机号"
+                },
+                "postalCode": {
+                    "type": "string",
+                    "description": "邮编"
+                },
+                "price": {
+                    "type": "string",
+                    "description": "价格"
+                },
+                "productId": {
+                    "type": "string",
+                    "description": "商品id（暂无）"
+                },
+                "province": {
+                    "type": "string",
+                    "description": "省份"
+                },
+                "title": {
+                    "type": "string",
+                    "description": "商品名称（卡券名称）"
+                }
+            },
+            "description": "礼品卡信息"
+        },
+        "HomeSliderListItemVo": {
+            "type": "object",
+            "properties": {
+                "additiveUrl": {
+                    "type": "string",
+                    "description": "附加图片地址"
+                },
+                "navigateUrl": {
+                    "type": "string",
+                    "description": "跳转的page地址"
+                },
+                "pictureUrl": {
+                    "type": "string",
+                    "description": "图片地址"
+                },
+                "shareImgUrl": {
+                    "type": "string",
+                    "description": "路径携带分享图片地址"
+                },
+                "showEndTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "结束显示时间"
+                },
+                "showStartTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "开始显示时间"
+                }
+            },
+            "description": "首页图片单元"
+        },
+        "InvoiceInfo": {
+            "type": "object",
+            "properties": {
+                "invoiceAddress": {
+                    "type": "string",
+                    "description": "发票公司地址"
+                },
+                "invoiceBank": {
+                    "type": "string",
+                    "description": "发票公司开户行"
+                },
+                "invoiceCode": {
+                    "type": "string",
+                    "description": "发票纳税人识别号"
+                },
+                "invoiceTel": {
+                    "type": "string",
+                    "description": "发票公司电话"
+                },
+                "invoiceTitle": {
+                    "type": "string",
+                    "description": "发票抬头"
+                },
+                "invoiceType": {
+                    "type": "string",
+                    "description": "发票类型",
+                    "enum": [
+                        "PERSONAL",
+                        "COMPANY"
+                    ]
+                },
+                "invoice_bank_account": {
+                    "type": "string",
+                    "description": "发票公司账户"
+                }
+            }
+        },
+        "JwtTokenInfo": {
+            "type": "object",
+            "properties": {
+                "refreshToken": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "LegoSignInVo": {
+            "type": "object",
+            "properties": {
+                "agreeClause": {
+                    "type": "boolean"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "configId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "coverUrl": {
+                    "type": "string"
+                },
+                "detailUrl": {
+                    "type": "string"
+                },
+                "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "shareImgUrl": {
+                    "type": "string"
+                },
+                "signIn": {
+                    "type": "boolean"
+                },
+                "signInId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "signInStatus": {
+                    "type": "string",
+                    "enum": [
+                        "SIGN_IN_NOW",
+                        "HAS_SIGN_IN",
+                        "UNSTART",
+                        "HAS_END"
+                    ]
+                },
+                "signInTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "签到时间，为空表示没签到"
+                },
+                "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "userHeadUrl": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "LoginRequest": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "encryptedData": {
+                    "type": "string"
+                },
+                "iv": {
+                    "type": "string"
+                },
+                "user_raw": {
+                    "$ref": "#/definitions/UserRaw"
+                }
+            }
+        },
+        "LuckyDrawDeliveryInfo": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "收货地址-详细地址"
+                },
+                "luckDrawId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "mobile": {
+                    "type": "string",
+                    "description": "收货人电话"
+                },
+                "realname": {
+                    "type": "string",
+                    "description": "收货人姓名"
+                }
+            }
+        },
+        "LuckyDrawInfo": {
+            "type": "object",
+            "properties": {
+                "consigneeAddress": {
+                    "type": "string"
+                },
+                "consigneeMobile": {
+                    "type": "string"
+                },
+                "consigneeName": {
+                    "type": "string"
+                },
+                "createAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "deliveryCompany": {
+                    "type": "string"
+                },
+                "deliveryCompanyCode": {
+                    "type": "string"
+                },
+                "deliveryNo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "productName": {
+                    "type": "string"
+                },
+                "productNo": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "SIGN_IN_COUNT",
+                        "SINGLE_DAY_SIGN_IN"
+                    ]
+                }
+            }
+        },
+        "OrderInfo": {
+            "type": "object",
+            "properties": {
+                "orderId": {
+                    "type": "string",
+                    "description": "订单Id"
+                },
+                "orderItems": {
+                    "type": "array",
+                    "description": "订单商品信息",
+                    "items": {
+                        "$ref": "#/definitions/OrderItemInfo"
+                    }
+                },
+                "orderStatus": {
+                    "type": "string",
+                    "description": "订单状态",
+                    "enum": [
+                        "INSERT",
+                        "UNPAYED",
+                        "PAYED",
+                        "DELIVERED",
+                        "CLOSED",
+                        "CLOSED_CANCEL",
+                        "EXPIRED",
+                        "DELETED",
+                        "CLOSED_REFUND"
+                    ]
+                },
+                "orderTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "下单时间"
+                },
+                "realPayAmount": {
+                    "type": "number",
+                    "description": "订单实付总价"
+                }
+            }
+        },
+        "OrderItemInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "订单项Id"
+                },
+                "pictureUrl": {
+                    "type": "string",
+                    "description": "商品图片地址"
+                },
+                "realPayAmount": {
+                    "type": "number",
+                    "description": "订单项实付总价"
+                },
+                "skuCount": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "数量"
+                },
+                "skuId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "商品id"
+                },
+                "skuName": {
+                    "type": "string",
+                    "description": "商品名称"
+                },
+                "skuPrice": {
+                    "type": "number",
+                    "description": "商品单价原价"
+                },
+                "slidePictures": {
+                    "type": "array",
+                    "description": "商品轮播图图片地址",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "OrderStatusResult": {
+            "type": "object",
+            "properties": {
+                "orderStatus": {
+                    "type": "string",
+                    "description": "订单状态",
+                    "enum": [
+                        "INSERT",
+                        "UNPAYED",
+                        "PAYED",
+                        "DELIVERED",
+                        "CLOSED",
+                        "CLOSED_CANCEL",
+                        "EXPIRED",
+                        "DELETED",
+                        "CLOSED_REFUND"
+                    ]
+                }
+            }
+        },
+        "PageRequest": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "pageSize": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "Page«ProductSeckillSkuComboVo»": {
+            "type": "object",
+            "properties": {
+                "first": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "hasNext": {
+                    "type": "boolean"
+                },
+                "hasPre": {
+                    "type": "boolean"
+                },
+                "nextPage": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "orderBy": {
+                    "type": "string"
+                },
+                "pageNo": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "pageSize": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "prePage": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ProductSeckillSkuComboVo"
+                    }
+                },
+                "size": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "totalCount": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "totalPages": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "ProductGeneralSkuVo": {
+            "type": "object",
+            "properties": {
+                "categoryCode": {
+                    "type": "string",
+                    "description": "商品分类code"
+                },
+                "categoryName": {
+                    "type": "string",
+                    "description": "商品分类名称"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "商品skuId"
+                },
+                "isCheckStock": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否需要检查库存"
+                },
+                "isStockZero": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "当前是否已经售完"
+                },
+                "listImgOkPath": {
+                    "type": "string",
+                    "description": "商品列表已选状态图"
+                },
+                "listImgPath": {
+                    "type": "string",
+                    "description": "商品列表未选状态图"
+                },
+                "pictureUrls": {
+                    "type": "array",
+                    "description": "轮播图",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "productFormat": {
+                    "type": "string",
+                    "description": "规格"
+                },
+                "productId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "商品Id"
+                },
+                "productName": {
+                    "type": "string",
+                    "description": "商品名称"
+                },
+                "productNo": {
+                    "type": "string",
+                    "description": "商品编号"
+                },
+                "productSet": {
+                    "type": "string",
+                    "description": "商品系列名"
+                },
+                "seckillPrice": {
+                    "type": "number",
+                    "description": "价格"
+                },
+                "shareImgPath": {
+                    "type": "string",
+                    "description": "商品分享图"
+                },
+                "skuTitle": {
+                    "type": "string",
+                    "description": "商品sku标题"
+                },
+                "stock": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "库存数量"
+                }
+            }
+        },
+        "ProductInfo": {
+            "type": "object",
+            "properties": {
+                "product_count": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "product_name": {
+                    "type": "string"
+                },
+                "product_no": {
+                    "type": "string"
+                },
+                "product_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "ProductInfoResult": {
+            "type": "object",
+            "properties": {
+                "headimgPath": {
+                    "type": "string"
+                },
+                "productId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "productName": {
+                    "type": "string"
+                },
+                "productNo": {
+                    "type": "string"
+                },
+                "productStatus": {
+                    "type": "string",
+                    "enum": [
+                        "UP",
+                        "DOWN"
+                    ]
+                },
+                "slidePictures": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "storeId": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "ProductSeckillSkuComboVo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "productName": {
+                    "type": "string"
+                },
+                "seckillTitle": {
+                    "type": "string"
+                }
+            }
+        },
+        "ProductSkuInfoResult": {
+            "type": "object",
+            "properties": {
+                "endTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "抢购结束时间"
+                },
+                "isCheckStock": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否配置库存：1：需要检查库存0：无需检查库存默认为：1"
+                },
+                "isMystery": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否神秘产品"
+                },
+                "isShow": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否显示"
+                },
+                "productFormat": {
+                    "type": "string",
+                    "description": "产品规格"
+                },
+                "productId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "productId"
+                },
+                "productName": {
+                    "type": "string",
+                    "description": "产品名称"
+                },
+                "saleType": {
+                    "type": "string",
+                    "description": "产品销售类别：秒杀产品：SECKILL普通产品：GENERAL",
+                    "enum": [
+                        "SECKILL",
+                        "GENERAL"
+                    ]
+                },
+                "seckillPrice": {
+                    "type": "number",
+                    "description": "价格"
+                },
+                "signupCount": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "预定人数"
+                },
+                "signupEndTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "登记结束时间"
+                },
+                "signupStartTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "登记开始时间"
+                },
+                "skuId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "skuId"
+                },
+                "skuTitle": {
+                    "type": "string",
+                    "description": "产品sku名称"
+                },
+                "startTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "抢购开始时间"
+                },
+                "supplierId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "供应商id"
+                }
+            }
+        },
+        "RegionResult": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "parentId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "regionCode": {
+                    "type": "string"
+                },
+                "regionLevel": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "regionName": {
+                    "type": "string"
+                }
+            }
+        },
+        "Result": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "SeckillProductSkuVo": {
+            "type": "object",
+            "properties": {
+                "atlatestPayTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "最后付款时间"
+                },
+                "endTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "抢购结束时间"
+                },
+                "headimgPath": {
+                    "type": "string",
+                    "description": "商品题图"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "商品skuId"
+                },
+                "isCurrentMystery": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "当前是否神秘商品"
+                },
+                "isMystery": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否神秘商品"
+                },
+                "isStockZero": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "当前是否已经售完"
+                },
+                "listImgPath": {
+                    "type": "string",
+                    "description": "商品列表图"
+                },
+                "productFormat": {
+                    "type": "string",
+                    "description": "规格"
+                },
+                "productId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "商品Id"
+                },
+                "productName": {
+                    "type": "string",
+                    "description": "商品名称"
+                },
+                "productNo": {
+                    "type": "string",
+                    "description": "商品编号"
+                },
+                "productSet": {
+                    "type": "string",
+                    "description": "商品系列名"
+                },
+                "seckillPrice": {
+                    "type": "number",
+                    "description": "秒杀价格"
+                },
+                "seckillStatus": {
+                    "type": "string",
+                    "description": "秒杀状态",
+                    "enum": [
+                        "UP",
+                        "DOWN"
+                    ]
+                },
+                "signupCount": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "预定人数"
+                },
+                "signupEndTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "登记结束时间"
+                },
+                "signupStartTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "登记开始时间"
+                },
+                "signupStatus": {
+                    "type": "string",
+                    "description": "登记状态",
+                    "enum": [
+                        "NOT_STARTED",
+                        "STARTED",
+                        "SIGNUPED",
+                        "END"
+                    ]
+                },
+                "startTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "抢购开始时间"
+                },
+                "stock": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "库存数量"
+                }
+            }
+        },
+        "SeckillStatusClientVo": {
+            "type": "object",
+            "properties": {
+                "productName": {
+                    "type": "string"
+                },
+                "productPrice": {
+                    "type": "number"
+                },
+                "secKillSkuId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "商品skuId"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "秒杀状态",
+                    "enum": [
+                        "NO_SIGNUP",
+                        "NO_QUALIFY",
+                        "ORDERED",
+                        "PURCHASED",
+                        "INVALID_TIME",
+                        "QUALIFIED"
+                    ]
+                },
+                "storeId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "门店id"
+                },
+                "supplierId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "供应商id"
+                }
+            }
+        },
+        "SeckillStatusVo": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "秒杀状态",
+                    "enum": [
+                        "NO_SIGNUP",
+                        "NO_QUALIFY",
+                        "ORDERED",
+                        "PURCHASED",
+                        "INVALID_TIME",
+                        "QUALIFIED"
+                    ]
+                }
+            }
+        },
+        "SimpleDataResult«object»": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "error": {
+                    "type": "boolean"
+                },
+                "extractableData": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "messageOnly": {
+                    "type": "boolean"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "SplSupplierInfoVo": {
+            "type": "object",
+            "properties": {
+                "apiSignkey": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "supplierName": {
+                    "type": "string"
+                }
+            }
+        },
+        "StockReduceRequest": {
+            "type": "object",
+            "properties": {
+                "orderId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "订单id"
+                },
+                "skuId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "skuId"
+                },
+                "stock_count": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "数量"
+                }
+            },
+            "description": "库存扣减请求对象"
+        },
+        "StoreInfo": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "门店地址"
+                },
+                "distance": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "当前离门店的距离"
+                },
+                "isNew": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否为新开的店"
+                },
+                "latitude": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "门店纬度"
+                },
+                "longitude": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "门店经度"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "门店名称"
+                },
+                "pictureUrl": {
+                    "type": "string",
+                    "description": "门店图片"
+                },
+                "storeId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "门店Id"
+                }
+            }
+        },
+        "ThirdGetOrdersRequest": {
+            "type": "object",
+            "properties": {
+                "order_status": {
+                    "type": "string",
+                    "description": "订单状态",
+                    "enum": [
+                        "PAYED"
+                    ]
+                },
+                "pay_time_end": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "订单支付时间段-结束，精度为毫秒"
+                },
+                "pay_time_start": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "订单支付时间段-开始，精度为毫秒"
+                },
+                "supplier_id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "供应商id"
+                }
+            }
+        },
+        "ThirdOrderInfoResult": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "收货地址"
+                },
+                "create_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "订单创建时间"
+                },
+                "delivery_type": {
+                    "type": "string",
+                    "description": "供货方式",
+                    "enum": [
+                        "SELF",
+                        "POST"
+                    ]
+                },
+                "invoice_address": {
+                    "type": "string",
+                    "description": "发票公司地址"
+                },
+                "invoice_bank": {
+                    "type": "string",
+                    "description": "发票公司开户行"
+                },
+                "invoice_bank_account": {
+                    "type": "string",
+                    "description": "发票公司账户"
+                },
+                "invoice_code": {
+                    "type": "string",
+                    "description": "发票纳税人识别号"
+                },
+                "invoice_tel": {
+                    "type": "string",
+                    "description": "发票公司电话"
+                },
+                "invoice_title": {
+                    "type": "string",
+                    "description": "发票抬头"
+                },
+                "invoice_type": {
+                    "type": "string",
+                    "description": "发票类型",
+                    "enum": [
+                        "PERSONAL",
+                        "COMPANY"
+                    ]
+                },
+                "order_id": {
+                    "type": "string",
+                    "description": "订单Id"
+                },
+                "pay_amount": {
+                    "type": "number",
+                    "description": "订单实付总价"
+                },
+                "pay_id": {
+                    "type": "string",
+                    "description": "BeeCloud的支付号"
+                },
+                "pay_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "支付时间"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "下单用户手机号码"
+                },
+                "products": {
+                    "type": "array",
+                    "description": "商品对象",
+                    "items": {
+                        "$ref": "#/definitions/ProductInfo"
+                    }
+                },
+                "realname": {
+                    "type": "string",
+                    "description": "下单用户姓名"
+                },
+                "remark": {
+                    "type": "string",
+                    "description": "订单备注"
+                },
+                "wx_transaction_id": {
+                    "type": "string",
+                    "description": "微信的交易号"
+                }
+            }
+        },
+        "ThirdOrderRefundRequest": {
+            "type": "object",
+            "properties": {
+                "order_id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "订单Id"
+                },
+                "supplier_id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "供应商id"
+                }
+            }
+        },
+        "ThirdPushDeliveryInfoRequest": {
+            "type": "object",
+            "properties": {
+                "delivery_company": {
+                    "type": "string",
+                    "description": "货运商，参考快递100"
+                },
+                "delivery_company_code": {
+                    "type": "string",
+                    "description": "货运商编码，参考快递100"
+                },
+                "delivery_no": {
+                    "type": "string",
+                    "description": "货运单号"
+                },
+                "order_id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "订单Id"
+                },
+                "supplier_id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "供应商id"
+                }
+            }
+        },
+        "UcUserVo": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "county": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string",
+                    "format": "byte"
+                },
+                "headimgurl": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "mpOpenid": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "openid": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "province": {
+                    "type": "string"
+                },
+                "realname": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "NORMAL",
+                        "DISABLED"
+                    ]
+                },
+                "unionid": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "UserAdressRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "地址"
+                },
+                "cityCode": {
+                    "type": "string",
+                    "description": "市code"
+                },
+                "countyCode": {
+                    "type": "string",
+                    "description": "区code"
+                },
+                "mobile": {
+                    "type": "string",
+                    "description": "收货人手机号"
+                },
+                "postcode": {
+                    "type": "string",
+                    "description": "邮编号"
+                },
+                "provinceCode": {
+                    "type": "string",
+                    "description": "省code"
+                },
+                "realName": {
+                    "type": "string",
+                    "description": "收货人姓名"
+                },
+                "streetCode": {
+                    "type": "string",
+                    "description": "街道code"
+                }
+            }
+        },
+        "UserAdressResult": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "地址"
+                },
+                "addressId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "地址Id"
+                },
+                "city": {
+                    "type": "string",
+                    "description": "市"
+                },
+                "cityCode": {
+                    "type": "string",
+                    "description": "市code"
+                },
+                "county": {
+                    "type": "string",
+                    "description": "区"
+                },
+                "countyCode": {
+                    "type": "string",
+                    "description": "区code"
+                },
+                "mobile": {
+                    "type": "string",
+                    "description": "收货人手机号"
+                },
+                "postcode": {
+                    "type": "string",
+                    "description": "邮编号"
+                },
+                "province": {
+                    "type": "string",
+                    "description": "省"
+                },
+                "provinceCode": {
+                    "type": "string",
+                    "description": "省code"
+                },
+                "realName": {
+                    "type": "string",
+                    "description": "收货人姓名"
+                },
+                "street": {
+                    "type": "string",
+                    "description": "街道"
+                },
+                "streetCode": {
+                    "type": "string",
+                    "description": "街道code"
+                },
+                "userId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "用户Id"
+                }
+            }
+        },
+        "UserMpOpenIdResult": {
+            "type": "object",
+            "properties": {
+                "mpOpenId": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "UserRaw": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "nickName": {
+                    "type": "string"
+                }
+            }
+        },
+        "WxcardResult": {
+            "type": "object",
+            "properties": {
+                "cardId": {
+                    "type": "string",
+                    "description": "微信卡券Id"
+                },
+                "code": {
+                    "type": "string",
+                    "description": "解密后的卡券code"
+                },
+                "detailData": {
+                    "type": "object",
+                    "description": "优惠卷详情",
+                    "additionalProperties": {
+                        "type": "object"
+                    }
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "优惠卷Id"
+                }
+            }
+        },
+        "下单参数": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "收货地址-详细地址"
+                },
+                "city": {
+                    "type": "string",
+                    "description": "收货地址-市"
+                },
+                "county": {
+                    "type": "string",
+                    "description": "收货地址-区"
+                },
+                "invoiceAddress": {
+                    "type": "string",
+                    "description": "发票公司地址"
+                },
+                "invoiceBank": {
+                    "type": "string",
+                    "description": "发票公司开户行"
+                },
+                "invoiceBankAccount": {
+                    "type": "string",
+                    "description": "发票公司账户"
+                },
+                "invoiceCode": {
+                    "type": "string",
+                    "description": "发票纳税人识别号"
+                },
+                "invoiceTel": {
+                    "type": "string",
+                    "description": "发票公司电话"
+                },
+                "invoiceTitle": {
+                    "type": "string",
+                    "description": "发票抬头"
+                },
+                "invoiceType": {
+                    "type": "string",
+                    "description": "发票类型",
+                    "enum": [
+                        "PERSONAL",
+                        "COMPANY"
+                    ]
+                },
+                "isNeedInvoice": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否需要发票"
+                },
+                "orderItems": {
+                    "type": "array",
+                    "description": "订单商品",
+                    "items": {
+                        "$ref": "#/definitions/AddOrderItem"
+                    }
+                },
+                "payType": {
+                    "type": "string",
+                    "description": "支付方式",
+                    "enum": [
+                        "WXPAY",
+                        "WEBANK",
+                        "FREE",
+                        "WXPAY_RAW"
+                    ]
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "收货人电话"
+                },
+                "province": {
+                    "type": "string",
+                    "description": "收货地址-省"
+                },
+                "realname": {
+                    "type": "string",
+                    "description": "收货人姓名"
+                },
+                "remark": {
+                    "type": "string",
+                    "description": "订单备注"
+                },
+                "street": {
+                    "type": "string",
+                    "description": "收货地址-街道"
+                },
+                "token": {
+                    "type": "string",
+                    "description": "防止重复提交的token"
+                }
+            }
+        },
+        "产品基本详情结果": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "商品描述"
+                },
+                "headimgPath": {
+                    "type": "string",
+                    "description": "产品大图"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "商品名称"
+                },
+                "pictureUrls": {
+                    "type": "array",
+                    "description": "轮播图片路径",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sharedImgPath": {
+                    "type": "string",
+                    "description": "分享图"
+                },
+                "signupStatus": {
+                    "type": "string",
+                    "description": "登记状态",
+                    "enum": [
+                        "NOT_STARTED",
+                        "STARTED",
+                        "SIGNUPED",
+                        "END"
+                    ]
+                }
+            }
+        },
+        "抢购商品详情结果": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "商品描述"
+                },
+                "format": {
+                    "type": "string",
+                    "description": "规格"
+                },
+                "headimgPath": {
+                    "type": "string",
+                    "description": "题图"
+                },
+                "isMystery": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否神秘商品"
+                },
+                "leftStock": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "剩余库存量"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "商品名称"
+                },
+                "pictureUrls": {
+                    "type": "array",
+                    "description": "轮播图片路径",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "number",
+                    "description": "价格"
+                },
+                "seckillEndTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "抢购结束时间"
+                },
+                "seckillId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "商品skuid"
+                },
+                "seckillSignupEndTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "登记结束时间"
+                },
+                "seckillSignupStartTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "登记开始时间"
+                },
+                "seckillSkuStatus": {
+                    "type": "string",
+                    "description": "秒杀状态",
+                    "enum": [
+                        "NO_SIGNUP",
+                        "NO_QUALIFY",
+                        "ORDERED",
+                        "PURCHASED",
+                        "INVALID_TIME",
+                        "QUALIFIED"
+                    ]
+                },
+                "seckillStartTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "抢购开始时间"
+                },
+                "seckillTitle": {
+                    "type": "string",
+                    "description": "秒杀商品标题"
+                },
+                "sharedImgPath": {
+                    "type": "string",
+                    "description": "分享图"
+                },
+                "signupCount": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "预定人数"
+                },
+                "signupStatus": {
+                    "type": "string",
+                    "description": "登记状态",
+                    "enum": [
+                        "NOT_STARTED",
+                        "STARTED",
+                        "SIGNUPED",
+                        "END"
+                    ]
+                },
+                "skuStatus": {
+                    "type": "string",
+                    "description": "产品销售状态",
+                    "enum": [
+                        "UP",
+                        "DOWN"
+                    ]
+                }
+            }
+        },
+        "订单列表结果": {
+            "type": "object",
+            "properties": {
+                "hasMore": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否还有分页数据"
+                },
+                "list": {
+                    "type": "array",
+                    "description": "订单列表",
+                    "items": {
+                        "$ref": "#/definitions/OrderInfo"
+                    }
+                }
+            }
+        },
+        "订单详情信息": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "下单时间"
+                },
+                "deliveryInfo": {
+                    "description": "收货信息",
+                    "$ref": "#/definitions/DeliveryInfo"
+                },
+                "deliveryType": {
+                    "type": "string",
+                    "description": "收货方式",
+                    "enum": [
+                        "SELF",
+                        "POST"
+                    ]
+                },
+                "discountAmount": {
+                    "type": "number",
+                    "description": "订单实际优惠金额"
+                },
+                "invoiceInfo": {
+                    "description": "发票信息",
+                    "$ref": "#/definitions/InvoiceInfo"
+                },
+                "isNeedInvoice": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否需要发票"
+                },
+                "orderItems": {
+                    "type": "array",
+                    "description": "订单商品信息",
+                    "items": {
+                        "$ref": "#/definitions/OrderItemInfo"
+                    }
+                },
+                "orderStatus": {
+                    "type": "string",
+                    "description": "订单状态",
+                    "enum": [
+                        "INSERT",
+                        "UNPAYED",
+                        "PAYED",
+                        "DELIVERED",
+                        "CLOSED",
+                        "CLOSED_CANCEL",
+                        "EXPIRED",
+                        "DELETED",
+                        "CLOSED_REFUND"
+                    ]
+                },
+                "payType": {
+                    "type": "string",
+                    "description": "支付方式",
+                    "enum": [
+                        "WXPAY",
+                        "WEBANK",
+                        "FREE",
+                        "WXPAY_RAW"
+                    ]
+                },
+                "realPayAmount": {
+                    "type": "number",
+                    "description": "订单实付总价"
+                },
+                "totalProductDiscountPrice": {
+                    "type": "number",
+                    "description": "商品实付价总价"
+                },
+                "totalProductPrice": {
+                    "type": "number",
+                    "description": "商品原价总价"
+                }
+            }
+        },
+        "门店列表结果": {
+            "type": "object",
+            "properties": {
+                "hasMore": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "是否还有分页数据"
+                },
+                "list": {
+                    "type": "array",
+                    "description": "门店列表",
+                    "items": {
+                        "$ref": "#/definitions/StoreInfo"
+                    }
+                },
+                "qrCodeUrl": {
+                    "type": "string",
+                    "description": "门店二维码图片地址"
+                }
+            }
+        },
+        "门店详情": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "门店地址"
+                },
+                "businessHours": {
+                    "type": "string",
+                    "description": "营业时间"
+                },
+                "content": {
+                    "type": "string",
+                    "description": "门店详情"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "门店描述"
+                },
+                "detailPictureUrls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "distance": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "当前离门店的距离"
+                },
+                "latitude": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "门店纬度"
+                },
+                "longitude": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "门店经度"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "门店名称"
+                },
+                "slidePictureUrls": {
+                    "type": "array",
+                    "description": "门店图片",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "storeId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "门店Id"
+                }
+            }
+        },
+        "预支付信息": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "type": "string"
+                },
+                "nonce_str": {
+                    "type": "string"
+                },
+                "orderId": {
+                    "type": "string"
+                },
+                "package": {
+                    "type": "string"
+                },
+                "pay_sign": {
+                    "type": "string"
+                },
+                "sign_type": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "首页图片结果": {
+            "type": "object",
+            "properties": {
+                "giftButton": {
+                    "description": "精彩好礼-首页按钮",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "giftImg": {
+                    "description": "精彩好礼-首页背景图",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "giftSharedImage": {
+                    "description": "精彩好礼-首页分享图",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "giftSpuAddButton": {
+                    "description": "精彩好礼-商品页按钮",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "giftSpuImage": {
+                    "description": "精彩好礼-商品页背景图",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "giftVedio": {
+                    "description": "精彩好礼-首页视频",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "indexGift": {
+                    "description": "首页-精彩好礼按钮",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "indexSeckill": {
+                    "description": "首页-限量预订按钮",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "indexSharedImage": {
+                    "description": "首页-分享图",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "indexTop": {
+                    "type": "array",
+                    "description": "首页-轮播图",
+                    "items": {
+                        "$ref": "#/definitions/HomeSliderListItemVo"
+                    }
+                },
+                "orderPopup": {
+                    "description": "订单详情-弹窗内容图",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "signinListTop": {
+                    "description": "签到列表-顶部图",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                },
+                "spuListTop": {
+                    "description": "限量预订页面-顶部图",
+                    "$ref": "#/definitions/HomeSliderListItemVo"
+                }
+            }
+        }
+    }
+}

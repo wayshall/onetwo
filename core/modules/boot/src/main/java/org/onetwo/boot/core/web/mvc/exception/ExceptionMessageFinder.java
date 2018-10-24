@@ -14,6 +14,7 @@ import javax.validation.ConstraintViolationException;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.boot.core.web.utils.RemoteClientUtils;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
@@ -46,6 +47,9 @@ import org.springframework.web.method.HandlerMethod;
  */
 public interface ExceptionMessageFinder {
 	public String ERROR_RESPONSE_HEADER = "X-RESPONSE-JFISH-ERROR";
+	//TODO: 必要时加上serviceName头，一边追踪，待实现
+	public String ERROR_JSERVICE_HEADER = "X-Response-JService";
+	
 
 	default ErrorMessage getErrorMessage(Exception throwable, boolean alwaysLogErrorDetail){
 		String errorCode = "";
@@ -158,7 +162,7 @@ public interface ExceptionMessageFinder {
 		//防止远程调用时，方法返回null，且异常定义的httpstatus也为200时，尽管在responsebody里返回error相关数据，
 		//但feign客户端判断200且返回类型为null时，不解释response boyd，从而忽略了错误
 		//即使不是feign调用，而是普通请求，如果不返回任何数据，http status又是200，实际上调用方（浏览器）也无法判断这个调用是否成功，除非它总是解释response body
-		if(error.getHttpStatus()==HttpStatus.OK){
+		if(error.getHttpStatus()==HttpStatus.OK && RemoteClientUtils.isFeign()){
 			HandlerMethod hm = BootWebUtils.currentHandlerMethod();
 			if(hm!=null && hm.isVoid()){
 				error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -197,8 +201,10 @@ public interface ExceptionMessageFinder {
 		Exception ex = error.getException();
 //			errorMsg = getMessage(errorCode, errorArgs, "", getLocale());
 		if(isInternalError(ex)){
-			//内部调用失败
-			errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
+			// 内部调用失败
+			// 去掉内部调用失败的前缀提示
+//			errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
+			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}else if(SystemErrorCode.UNKNOWN.equals(errorCode)){
 			errorMsg = findMessageByThrowable(ex, errorArgs);
 		}else{

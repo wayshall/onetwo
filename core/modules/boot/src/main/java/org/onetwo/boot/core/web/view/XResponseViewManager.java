@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 
@@ -58,6 +59,8 @@ public class XResponseViewManager implements HandlerMappingListener {
 				viewDataCaces.put(hm.getMethod().getName(), viewDatas);
 			}
 		}
+		Map<String, XResponseViewData> def = ImmutableMap.of(XResponseView.DEFAULT_VIEW, new XResponseViewData(XResponseView.DEFAULT_VIEW, dataResultWrapper));
+		this.viewDataCaces.put(XResponseView.DEFAULT_VIEW, def);
 	}
 
 
@@ -159,14 +162,22 @@ public class XResponseViewManager implements HandlerMappingListener {
 	protected Optional<XResponseViewData> getCurrentHandlerMatchResponseView(Optional<String> responseView, HandlerMethod hm){
 		Map<String, XResponseViewData> viewDataMap;
 		try {
+			// local search, 优先匹配方法注解上的
 			viewDataMap = viewDataCaces.get(hm.getMethod().toGenericString(), ()->findXResponseViewData(hm));
 		} catch (ExecutionException e) {
 			throw new BaseException("getCurrentHandlerMatchResponseView error", e);
 		}
-		if(viewDataMap==null){
+		XResponseViewData viewData = null;
+		if(LangUtils.isEmpty(viewDataMap)){
+			// global search， 如果找不到，全局缓存里查找
+			if(responseView.isPresent()){
+				viewDataMap = viewDataCaces.getIfPresent(responseView.get());
+			}
+		}
+		if(LangUtils.isEmpty(viewDataMap)){
+//			return Optional.of(new XResponseViewData(XResponseView.DEFAULT_VIEW, dataResultWrapper));
 			return Optional.empty();
 		}
-		XResponseViewData viewData = null;
 		if(!responseView.isPresent()){
 			viewData = viewDataMap.get(XResponseView.DEFAULT_VIEW);
 		}else{
@@ -211,11 +222,16 @@ public class XResponseViewManager implements HandlerMappingListener {
 	public static class XResponseViewData {
 		final String viewName;
 		final DataResultWrapper wrapper;
-		public XResponseViewData(String viewName,
-				Class<? extends DataResultWrapper> wrapperClass) {
+		
+		public XResponseViewData(String viewName, Class<? extends DataResultWrapper> wrapperClass) {
 			super();
 			this.viewName = viewName;
 			this.wrapper = wrapperClass==NoWrapper.class?NoWrapper.INSTANCE:ReflectUtils.newInstance(wrapperClass);
+		}
+		public XResponseViewData(String viewName, DataResultWrapper wrapper) {
+			super();
+			this.viewName = viewName;
+			this.wrapper = wrapper;
 		}
 		public Optional<DataResultWrapper> getWrapper() {
 			return Optional.ofNullable(wrapper);

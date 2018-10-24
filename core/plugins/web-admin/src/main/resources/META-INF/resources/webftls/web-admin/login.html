@@ -1,7 +1,26 @@
-<@extends parent="easyui-js.html">
+<@extends parent="application.html">
      
     <@override name="charset">
         <meta charset="UTF-8">
+        
+<style>
+.bg_box{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: url(./webjars/static/images/admin_bg.jpg) no-repeat 50% 50%;
+    background-size: 100%;
+}
+
+.absoluteCenter {  
+  width: 40%;  
+  height: 40%;  
+  overflow: auto;  
+  margin: auto;  
+  position: absolute;  
+  top: 0; left: 0; bottom: 0; right: 0; 
+} 
+</style>
     </@override>
     
     <@override name="title">
@@ -12,7 +31,7 @@
         <#if RequestParameters.error??>
             <div><font color="red">${SPRING_SECURITY_LAST_EXCEPTION.message}</font></div>
         </#if>
-		    <div class="easyui-panel" title="请先登录 ->" style="width:400px">
+		    <div class="easyui-panel" title="请先登录 ->" style="width:400px;">
 		        <div style="padding:10px 60px 20px 60px">
 		        <form id="loginForm" class="easyui-form" action="${siteConfig.baseURL}/dologin?ajaxRequest=true" method="post" data-options="novalidate:true">
 		            <table cellpadding="5">
@@ -24,10 +43,18 @@
 		                    <td>密码:</td>
 		                    <td><input class="easyui-textbox" type="password" name="password" data-options="required:true"></input></td>
 		                </tr>
+		              <#if isCaptcha==true>
 		                <tr>
-		                  <td>记住我</td>
-		                  <td>  <input class="easyui-checkbox" type="checkbox" name="remember-me" ></td>
+		                  <td>验证码</td>
+		                  <td><input class="easyui-textbox" type="text" name="verifyCode" data-options="required:true" width="100"></input><br/>
+		                      <img alt="" src="" id="verifyCodeImage" width="80" height="20">
+		                  </td>
 		                </tr>
+		              </#if>
+                        <tr>
+                          <td>记住我</td>
+                          <td>  <input class="easyui-checkbox" type="checkbox" name="remember-me" ></td>
+                        </tr>
 		            </table>
 		            <@security.csrfInput/>
 		        </form>
@@ -58,6 +85,17 @@
 		        
 		        $(function(){
 		        	helper.gotoTopPage();
+		        	
+		        	var verifyCodeImage = $('#verifyCodeImage');
+		        	if(verifyCodeImage.length>0){
+	                    var getCaptchar = function(){
+	                        $.getJSON('${pluginHelper.baseURL}/captcha', function(data){
+	                            $('#verifyCodeImage').attr('src', 'data:image/png;base64,'+data.data);
+	                        });
+	                    }
+	                    $('#verifyCodeImage').click(getCaptchar);
+	                    getCaptchar();
+		        	}
 		        })
 		        
 		    </script>

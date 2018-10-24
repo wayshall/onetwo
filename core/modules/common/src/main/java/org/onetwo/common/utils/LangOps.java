@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +50,11 @@ final public class LangOps {
 				 .limit(keys.length)
 				 .map(i->new Object[]{keys[i], values[i]})
 				 .collect(Collectors.toMap(array->(K)array[0], array->(V)array[1]));
+	}
+	
+	public static <K, V> Map<K, V> toMap(List<V> data, Function<V, K> keyExtractor){
+		 return data.stream()
+				 	.collect(Collectors.toMap(item->keyExtractor.apply(item), item->item));
 	}
 	
 	public static Object[] toArray(Map<?, ?> map){
@@ -170,12 +176,20 @@ final public class LangOps {
 		size = size.toLowerCase();
 		if (size.endsWith("kb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
-		}
-		if (size.endsWith("mb")) {
+		}else if (size.endsWith("mb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
-		}
-		if (size.endsWith("gb")) {
+		}else if (size.endsWith("gb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024* 1024;
+		}else {
+			//fix: 补充兼容不写b的写法
+			int strimCount = 1;
+			if (size.endsWith("k")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024;
+			}else if (size.endsWith("m")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024 * 1024;
+			}else if (size.endsWith("g")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024 * 1024* 1024;
+			}
 		}
 		return Integer.valueOf(size);
 	}
@@ -253,6 +267,12 @@ final public class LangOps {
 		}
 		int duration = Integer.valueOf(time.substring(0, time.length() - unitLength)) * times;
 		return Pair.of(duration, timeUnit);
+	}
+	
+
+	static public Color parseColor(String color){
+		String[] strs = GuavaUtils.split(color, ",");
+		return new Color(Integer.parseInt(strs[0]), Integer.parseInt(strs[1]), Integer.parseInt(strs[2]));
 	}
 	
 	private LangOps(){}

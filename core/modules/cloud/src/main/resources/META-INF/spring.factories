@@ -4,3 +4,6 @@ org.onetwo.cloud.feign.local.LocalFeignContextInitializer
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.onetwo.cloud.eureka.EurekaClientContextConfig
+
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+org.onetwo.cloud.config.ConfigClientConfiguration

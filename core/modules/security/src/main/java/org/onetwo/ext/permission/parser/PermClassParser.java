@@ -22,6 +22,7 @@ public class PermClassParser {
 	public static final String PARAMS = "params";
 	public static final String NAME = "name";
 	public static final String CHILDREN = "children";
+	public static final String META = "meta";
 	
 	//menu option
 	public static final String MENU_CSS_CLASS = "cssClass";
@@ -142,6 +143,11 @@ public class PermClassParser {
 	public Boolean isHidden(){
 		return getFieldValue(HIDDEN, Boolean.class, false);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getMeta(){
+		return (Map<String, Object>)getFieldValue(META, Map.class, null);
+	}
 	public String getUrl(){
 		return getFieldValue(URL, String.class, null);
 	}
@@ -165,6 +171,7 @@ public class PermClassParser {
 		return getFieldValue(fieldName, fieldType, null);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T getFieldValue(String fieldName, Class<T> fieldType, T def) {
 		Field pageElementField = ReflectUtils.findField(permissionClass, fieldName);
 		T fieldValue = def;

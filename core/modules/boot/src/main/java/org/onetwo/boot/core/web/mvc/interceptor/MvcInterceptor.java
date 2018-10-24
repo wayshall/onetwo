@@ -27,4 +27,13 @@ public interface MvcInterceptor {
 	
 	void afterCompletion(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, Exception ex) ;
 	
+	/****
+	 * async controller will invoke
+	 * @author wayshall
+	 * @param request
+	 * @param response
+	 * @param handler
+	 */
+	void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler);
+	
 }

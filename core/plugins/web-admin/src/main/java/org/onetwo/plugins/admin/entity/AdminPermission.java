@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
@@ -14,16 +15,17 @@ import javax.persistence.Transient;
 import lombok.Data;
 
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.annotation.DbmJsonField;
 import org.onetwo.ext.permission.api.DataFrom;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name="admin_permission")
 @Data
-public class AdminPermission implements Serializable, DefaultIPermission<AdminPermission> {
+public class AdminPermission implements Serializable, IPermission {
 	
 	@Id
 	private String code;
@@ -50,8 +52,11 @@ public class AdminPermission implements Serializable, DefaultIPermission<AdminPe
 
     private String resourcesPattern;
     
+    @DbmJsonField
+    private Map<String, Object> meta;
+    
     @Transient
-	private List<AdminPermission> childrenPermissions = LangUtils.newArrayList();
+	private List<IPermission> childrenPermissions = LangUtils.newArrayList();
 
 
 	public PermissionType getPermissionType(){
@@ -63,22 +68,22 @@ public class AdminPermission implements Serializable, DefaultIPermission<AdminPe
 	}
 
 	@Override
-	public List<AdminPermission> getChildrenPermissions() {
+	public List<IPermission> getChildrenPermissions() {
 		return childrenPermissions;
 	}
 
 	@Override
-	public void addChild(AdminPermission permission) {
+	public void addChild(IPermission permission) {
 		childrenPermissions.add(permission);
 	}
 
 	@Override
-	public void addChildren(AdminPermission... permissions) {
+	public void addChildren(IPermission... permissions) {
 		childrenPermissions.addAll(Arrays.asList(permissions));
 	}
 
 	@Override
-	public List<AdminPermission> getChildrenMenu() {
+	public List<IPermission> getChildrenMenu() {
 		if(childrenPermissions==null)
 			return Collections.emptyList();
 		return childrenPermissions.stream()
@@ -87,7 +92,7 @@ public class AdminPermission implements Serializable, DefaultIPermission<AdminPe
 	}
 
 	@Override
-	public List<AdminPermission> getChildrenWithouMenu() {
+	public List<IPermission> getChildrenWithouMenu() {
 		if(childrenPermissions==null)
 			return Collections.emptyList();
 		return childrenPermissions.stream()

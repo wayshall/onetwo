@@ -80,6 +80,12 @@ public class SecurityConfig {
 	
 	private Map<String, MemoryUser> memoryUsers = Maps.newHashMap();
 	
+	private boolean debug;
+	
+	public boolean isDebug(){
+		return debug;
+	}
+	
 	public String[] getIgnoringUrls(){
 		return ignoringUrls;
 	}
@@ -169,6 +175,9 @@ public class SecurityConfig {
 		return this.memoryUsers;
 	}
 	
+	public boolean isIgnoringDefautStaticPaths(){
+		return ignoringDefautStaticPaths;
+	}
 	@Data
 	public class RememberMeConfig {
 		private String key;

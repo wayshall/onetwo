@@ -11,11 +11,14 @@ public class DirsFreemarkerTemplateConfigurer extends AbstractFreemarkerTemplate
 
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
+	/***
+	 * 可设置多个目录
+	 */
 	private String[] templatePaths;
 
 
 	protected TemplateLoader getTempateLoader(){
-		Assert.notEmpty(templatePaths);
+		Assert.notEmpty(templatePaths, "templatePaths can not be empty");
 		TemplateLoader loader = FtlUtils.getTemplateLoader(resourceLoader, templatePaths);
 		return loader;
 	}
@@ -26,5 +29,9 @@ public class DirsFreemarkerTemplateConfigurer extends AbstractFreemarkerTemplate
 
 	public void setTemplatePaths(String... templatePaths) {
 		this.templatePaths = templatePaths;
+	}
+
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
 	}
 }

@@ -5,33 +5,13 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.utils.ConfigableBeanMapper.BeanAccessors;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.ConfigurablePropertyAccessor;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class BeanPropertiesMapper {
 	
-	public static enum BeanAccessors {
-		PROPERTY {
-			@Override
-			public ConfigurablePropertyAccessor createAccessor(Object obj) {
-				ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(obj);
-				accessor.setAutoGrowNestedPaths(true);
-				return accessor;
-			}
-		},
-		FIELD{
-			@Override
-			public ConfigurablePropertyAccessor createAccessor(Object obj) {
-				ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forDirectFieldAccess(obj);
-				accessor.setAutoGrowNestedPaths(true);
-				return accessor;
-			}
-		};
-		
-		abstract public ConfigurablePropertyAccessor createAccessor(Object obj);
-	}
 	
 	public static BeanPropertiesMapper props(Properties config, String prefix, boolean ignoreFoundProperty){
 		return new BeanPropertiesMapper(config, prefix, ignoreFoundProperty);

@@ -30,13 +30,13 @@ public class LimiterCreator extends MapRegisterManager<String, Function<LimiterC
 	public LimiterCreator() {
 		super();
 		register(LocalRateLimiter.class.getSimpleName(), (config)->{
-			Matcher matcher = matcherRegister.createMatcher(config.getMatcher(), config.getPatterns());
+			Matcher<InvokeContext> matcher = matcherRegister.createMatcher(config.getMatcher(), config.getPatterns());
 			LocalRateLimiter limiter = new LocalRateLimiter(config.getKey(), matcher);
 			limiter.setLimitTimes(config.getLimitTimes());
 			return limiter;
 		})
 		.register(LocalIntervalLimiter.class.getSimpleName(), (config)->{
-			Matcher matcher = matcherRegister.createMatcher(config.getMatcher(), config.getPatterns());
+			Matcher<InvokeContext> matcher = matcherRegister.createMatcher(config.getMatcher(), config.getPatterns());
 			LocalIntervalLimiter limiter = new LocalIntervalLimiter(config.getKey(), matcher);
 			limiter.setLimitTimes(config.getLimitTimes());
 			Pair<Integer, TimeUnit> interval = LangOps.parseTimeUnit(config.getInterval());

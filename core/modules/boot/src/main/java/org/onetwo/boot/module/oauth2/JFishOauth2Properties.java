@@ -26,6 +26,7 @@ public class JFishOauth2Properties {
 	public static final String KEYS_REDIS = "redis";
 	public static final String KEYS_JDBC = "jdbc";
 	public static final String KEYS_JWT = "jwt";
+	public static final String KEYS_JWT_REDIS = "jwt-redis";
 	public static final String KEYS_IN_MEMORY = "in_memory";
 	
 	
@@ -95,6 +96,12 @@ public class JFishOauth2Properties {
 			return requestMatchers;
 		}
 		
+	}
+	
+
+	@Data
+	public static class ClientDetailsResolverProps {
+		public static final String ENABLED_KEY = CONFIG_PREFIX + ".clientDetailsResolver.enabled";
 	}
 
 

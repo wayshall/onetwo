@@ -158,7 +158,7 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 			return true;
 		if(!(o instanceof AbstractTreeModel))
 			return false;
-		AbstractTreeModel obj = (AbstractTreeModel) o;
+		AbstractTreeModel<T> obj = (AbstractTreeModel<T>) o;
 		return new EqualsBuilder().append(this.getId(), obj.getId()).isEquals();
 	}
 

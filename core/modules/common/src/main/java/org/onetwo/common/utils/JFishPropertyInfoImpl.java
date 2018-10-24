@@ -49,8 +49,8 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 			readMethod = property.getReadMethod();
 			writeMethod = property.getWriteMethod();
 		}
-		Annotation[] annotations = getReadMethod().getAnnotations();
-		annotationInfo = new AnnotationInfo(beanClass, annotations);
+//		Annotation[] annotations = getReadMethod().getAnnotations();
+		annotationInfo = new AnnotationInfo(beanClass, getReadMethod());
 		this.propertyClassWrapper = Intro.wrap(propertyType);
 	}
 

@@ -20,13 +20,17 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -88,6 +92,7 @@ public class JsonMapper {
 	public JsonMapper(ObjectMapper objectMapper, Include include){
 		this(objectMapper, include, false);
 	}
+	@SuppressWarnings("deprecation")
 	public JsonMapper(ObjectMapper objectMapper, Include include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -105,6 +110,23 @@ public class JsonMapper {
 		this.typeFactory = this.objectMapper.getTypeFactory();
 	}
 	
+	public JsonMapper prettyPrint() {
+		this.objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		return this;
+	}
+	
+	public JsonMapper singleQuotes() {
+		this.objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+		this.objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		return this;
+	}
+	
+	public JsonMapper unquotedFieldNames() {
+		this.objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+		this.objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		return this;
+	}
+	
 	public JsonMapper disable(SerializationFeature features){
 //		this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		this.objectMapper.disable(features);
@@ -112,6 +134,10 @@ public class JsonMapper {
 	}
 	public JsonMapper disable(DeserializationFeature features){
 		this.objectMapper.disable(features);
+		return this;
+	}
+	public JsonMapper enableTyping(){
+		objectMapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
 		return this;
 	}
 	
@@ -146,6 +172,9 @@ public class JsonMapper {
 	}
 	
 	public String toJson(Object object, boolean throwIfError){
+		if(object==null){
+			return null;
+		}
 		String json = "";
 		try {
 			json = this.objectMapper.writeValueAsString(object);
@@ -250,10 +279,13 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else{
 				String jsonstr = json.toString();
+				if(StringUtils.isBlank(jsonstr)){
+					return null;
+				}
 				obj = this.objectMapper.readValue(jsonstr, constructJavaType(objType));
 			}
 		} catch (Exception e) {
-			throw new JsonException("parse json to "+objType+" error : " + json, e);
+			throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
 		}
 		return (T)obj;
 	}

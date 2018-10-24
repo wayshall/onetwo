@@ -8,8 +8,14 @@ spring-boot技术交流群：  604158262
 
 ## 配置
 jfish: 
+    security: 
+        cookie: 
+            path: ${server.contextPath} #设置cookies path
     plugin: 
         web-admin: 
             viewMapping: 
                 /login: ~/login
                 /admin: ~/admin
+            captcha: 
+                salt: ASDFA@GUythsdgasdf37890fghjkltyhj #验证码盐值，单实例部署时可不用配置，随机生成
+                expireInSeconds: 180 #验证码有效期，默认大约三分钟

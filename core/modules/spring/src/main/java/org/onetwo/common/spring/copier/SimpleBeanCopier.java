@@ -7,6 +7,7 @@ import java.util.Map;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 public class SimpleBeanCopier {
@@ -62,6 +63,8 @@ public class SimpleBeanCopier {
 	 * @return
 	 */
 	public <T> T fromObject(Object src, T target){
+		Assert.notNull(src, "src can not be null");
+		Assert.notNull(target, "target can not be null");
 		if(Class.class.isInstance(target)){
 			Class<T> targetClass = ReflectUtils.getObjectClass(target);
 			target = ReflectUtils.newInstance(targetClass);
@@ -70,33 +73,49 @@ public class SimpleBeanCopier {
 		
     	BeanWrapper srcBean = CopyUtils.newBeanWrapper(src);
     	PropertyDescriptor[] properties = targetBeanWrapper.getPropertyDescriptors();
-		for(PropertyDescriptor property : properties){
+		for(PropertyDescriptor targetProperty : properties){
 			/*if(property.getWriteMethod()==null)
 				continue ;*/
-			String targetPropertyName = property.getName();
 			//if target no writable
-			if(!targetBeanWrapper.isWritableProperty(targetPropertyName)){
+			if(!targetBeanWrapper.isWritableProperty(targetProperty.getName())){
 				continue;
 			}
 			
+			final String srcPropertyName = targetProperty.getName();
 			//if src no property
-			if(!isSrcHasProperty(srcBean, targetPropertyName)){
+			/*if(!isSrcHasProperty(srcBean, srcPropertyName)){
 				if(propertyNameConvertor!=null){
-					targetPropertyName = propertyNameConvertor.convert(targetPropertyName);
+					srcPropertyName = propertyNameConvertor.convert(targetProperty.getName());
 				}
-				if(!isSrcHasProperty(srcBean, targetPropertyName)){
+				if(!isSrcHasProperty(srcBean, srcPropertyName)){
+					continue;
+				}
+			}*/
+			// 优先使用转换器转换后的属性名称
+			if(propertyNameConvertor!=null){
+				String convertedPropertyName = propertyNameConvertor.convert(targetProperty.getName());
+				// 如果转换后的属性存在，直接使用；如果不存在，则使用原来的属性名称进行复制
+				if(isSrcHasProperty(srcBean, convertedPropertyName)){
+					Object srcValue = getPropertyValue(srcBean, convertedPropertyName);
+					this.copyPropertyValue(targetBeanWrapper, targetProperty, srcValue);;
 					continue;
 				}
 			}
-			
-			Object srcValue = getPropertyValue(srcBean, targetPropertyName);
-			if(propertyFilter!=null && !propertyFilter.isCopiable(property, srcValue)){
+			if(!isSrcHasProperty(srcBean, srcPropertyName)){
 				continue;
 			}
-//			setPropertyValue(targetBeanWrapper, property, srcValue);
-			this.propertyValueCopier.copyPropertyValue(this, targetBeanWrapper, property, srcValue);
+			
+			Object srcValue = getPropertyValue(srcBean, srcPropertyName);
+			this.copyPropertyValue(targetBeanWrapper, targetProperty, srcValue);
     	}
 		return target;
+	}
+
+	protected void copyPropertyValue(BeanWrapper targetBeanWrapper, PropertyDescriptor targetProperty, Object srcValue) {
+		if(propertyFilter!=null && !propertyFilter.isCopiable(targetProperty, srcValue)){
+			return;
+		}
+		this.propertyValueCopier.copyPropertyValue(this, targetBeanWrapper, targetProperty, srcValue);
 	}
 	
 	private boolean isSrcHasProperty(BeanWrapper srcBean, String targetPropertyName){
@@ -108,9 +127,9 @@ public class SimpleBeanCopier {
 		}
 	}
 
-	protected void setPropertyValue0(BeanWrapper targetBeanWrapper, String propertyName, Object value) {
+	/*protected void setPropertyValue0(BeanWrapper targetBeanWrapper, String propertyName, Object value) {
 		targetBeanWrapper.setPropertyValue(propertyName, value);
-	}
+	}*/
 	
 	protected void setPropertyFilter(PropertyFilter propertyFilter) {
 		this.propertyFilter = propertyFilter;

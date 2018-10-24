@@ -13,7 +13,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
 
-public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
+public class SimpleFileStorer implements FileStorer {
 	
 	
 	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = new SimpleStoreFilePathStrategy();
@@ -128,7 +128,7 @@ public class SimpleFileStorer implements FileStorer<SimpleFileStoredMeta>{
 			meta.setSotredFileName(newfn);
 			meta.setAccessablePath(accessablePath);
 			meta.setBizModule(ctx.getModule());
-//			meta.setFullAccessablePath(fullAccessablePath);
+			meta.setFullAccessablePath(accessablePath);
 			return meta;
 		}
 	}

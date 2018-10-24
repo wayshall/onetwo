@@ -223,22 +223,24 @@ public final class RequestUtils {
 
 	/**
 	 * 获取cookie的值
-	 * 
+	 * 匹配名称相等的最后一个cookie，避免某些情况下（登录redirect）带有同一个名称的两个cookies时，匹配了旧的而忽略了新的
 	 * @param request
 	 * @param cookieName
 	 * @return
 	 */
 	public static String getCookieValue(HttpServletRequest request, String cookieName) {
 		Cookie[] cookies = request.getCookies();
+		Cookie cookie = null;
 		if (cookies != null) {
 			for (int i = 0; i < cookies.length; i++) {
-				Cookie cookie = cookies[i];
-				if (cookieName.equals(cookie.getName())) {
-					return (cookie.getValue());
+				if (cookieName.equals(cookies[i].getName())) {
+					cookie = cookies[i];
+					// 匹配了也不返回，匹配名称相等的最后一个cookie
+//					return cookie.getValue();
 				}
 			}
 		}
-		return null;
+		return cookie!=null?cookie.getValue():null;
 	}
 	
 	public static String getUnescapeCookieValue(HttpServletRequest request, String cookieName) {

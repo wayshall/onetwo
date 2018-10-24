@@ -1,38 +1,42 @@
 package org.onetwo.ext.permission.utils;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.tree.TreeBuilder;
+import org.onetwo.common.tree.TreeModel;
 import org.onetwo.common.utils.func.Closure1;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
+
 
 final public class PermissionUtils {
 	public static interface BuildBlock {
-		public void execute(StringBuilder str, DefaultIPermission<?> perm);
+		public void execute(StringBuilder str, IPermission perm);
 	}
 
-	public static <T extends DefaultIPermission<T>> void buildString(StringBuilder str, T node, String sp){
+	public static void buildString(StringBuilder str, IPermission node, String sp){
 		buildString(str, node, sp, null);
 	}
 	
-	public static boolean isFunction(DefaultIPermission<?> node){
+	public static boolean isFunction(IPermission node){
 		return getPermissionType(node)==PermissionType.FUNCTION;
 	}
 	
-	public static boolean isMenu(DefaultIPermission<?> node){
+	public static boolean isMenu(IPermission node){
 		return getPermissionType(node)==PermissionType.MENU;
 	}
 	
-	public static PermissionType getPermissionType(DefaultIPermission<?> node){
+	public static PermissionType getPermissionType(IPermission node){
 		/*if(node==null)
 			return PermissionType.RESOURCE;
 		return PermissionType.of(node.getPtype());*/
 		return node.getPermissionType();
 	}
-	public static <T extends DefaultIPermission<T>> void buildString(StringBuilder str, T node, String sp, Closure1<T> block){
+	
+	public static void buildString(StringBuilder str, IPermission node, String sp, Closure1<IPermission> block){
 		if(block!=null){
 			block.execute(node);
 		}else{
@@ -40,10 +44,10 @@ final public class PermissionUtils {
 		}
 		if(!isMenu(node))
 			return ;
-		T menu = node;
-		List<T> permlist = menu.getChildrenMenu();
+		IPermission menu = node;
+		List<IPermission> permlist = menu.getChildrenMenu();
 		if(permlist!=null){
-			for(T cnode : permlist){
+			for(IPermission cnode : permlist){
 				str.append(sp);
 				String newsp = sp + sp;
 				buildString(str, cnode, newsp, block);
@@ -51,7 +55,7 @@ final public class PermissionUtils {
 		}
 		permlist = menu.getChildrenWithouMenu();
 		if(permlist!=null){
-			for(T cnode : permlist){
+			for(IPermission cnode : permlist){
 				str.append(sp);
 				String newsp = sp + sp;
 				buildString(str, cnode, newsp, block);
@@ -59,15 +63,40 @@ final public class PermissionUtils {
 		}
 	}
 	
-	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends DefaultIPermission<?>> permissions){
-		List<PermisstionTreeModel> pmlist = permissions.stream().map(p->{
+	public static void buildString(StringBuilder str, PermisstionTreeModel node, String sp, Closure1<PermisstionTreeModel> block){
+		if(block!=null){
+			block.execute(node);
+		}else{
+			str.append(node.getName()).append(sp);
+		}
+		PermisstionTreeModel menu = node;
+		List<PermisstionTreeModel> permlist = menu.getChildren();
+		if(permlist!=null){
+			for(PermisstionTreeModel cnode : permlist){
+				str.append(sp);
+				String newsp = sp + sp;
+				buildString(str, cnode, newsp, block);
+			}
+		}
+	}
+	
+	public static TreeBuilder<PermisstionTreeModel> createMenuTreeBuilder(List<? extends IPermission> permissions){
+		return createMenuTreeBuilder(permissions, p->{
 			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
 			pm.setSort(p.getSort());
 			pm.setUrl(p.getUrl());
 			return pm;
+		});
+	}
+	
+	public static <T extends TreeModel<T>> TreeBuilder<T> createMenuTreeBuilder(List<? extends IPermission> permissions, Function<IPermission, T> treeModelCreator){
+		List<T> pmlist = permissions.stream().map(p->{
+//			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
+			T pm = treeModelCreator.apply(p);
+			return pm;
 		}).collect(Collectors.toList());
 		
-		TreeBuilder<PermisstionTreeModel> builder = new TreeBuilder<>(pmlist);
+		TreeBuilder<T> builder = new TreeBuilder<>(pmlist);
 	    return builder;
 	}
 	

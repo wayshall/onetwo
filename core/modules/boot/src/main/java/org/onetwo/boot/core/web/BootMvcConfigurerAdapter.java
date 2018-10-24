@@ -6,8 +6,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootJFishConfig;
-import org.onetwo.boot.core.config.BootJFishConfig.MvcConfig.ResourceHandlerConfig;
+import org.onetwo.boot.core.config.BootJFishConfig.ResourceHandlerConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
 import org.onetwo.boot.core.web.async.MvcAsyncProperties;
@@ -172,8 +173,9 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 		/*registry.addResourceHandler(UploadViewController.CONTROLLER_PATH+"/**")
 				.setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS));*/
 		//默认把上传目录映射
-		if(siteConfig.getUpload().isFileStorePathToResourceHandler()){
-			registry.addResourceHandler(BootWebUtils.CONTROLLER_PREFIX+"/upload/**")
+		String patterns = siteConfig.getUpload().getAccessPathPatterns();
+		if(StringUtils.isNotBlank(patterns)){
+			registry.addResourceHandler(patterns)
 					.addResourceLocations("file:"+FileUtils.convertDir(siteConfig.getUpload().getFileStorePath()))
 					.setCacheControl(CacheControl.maxAge(siteConfig.getUpload().getResourceCacheInDays(), TimeUnit.DAYS));
 		}

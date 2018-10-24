@@ -2,7 +2,6 @@ package org.onetwo.boot.module.oauth2.authorize;
 
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
@@ -29,6 +28,8 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * 因为ClientCredentialsTokenEndpointFilter只支持键值参数里读取clientId和clientSecret；
+ * 有时候需要通过json从body传进来时，filter会无法读取，此拦截器可以拦截request，并把request.getParameter("client_id")方法转换到读取json body
  * @author wayshall
  * <br/>
  */
@@ -93,13 +94,13 @@ public class DefaultClientDetailFilterInterceptor implements TokenEndpointFilter
 	
 	protected HttpServletRequest createHttpServletRequestWrapper(HttpServletRequest request, ClientDetailRequest messageBody){
 		Map<String, Object> params = mapConverter.toFlatMap(messageBody);
-		Map<String, String[]> paramMap = params.entrySet()
+		/*Map<String, String[]> paramMap = params.entrySet()
 												.stream()
 												.collect(Collectors.toMap(
 															entry->entry.getKey(), 
 															entry->new String[]{entry.getValue().toString()}
 															)
-												);
+												);*/
 		return new HttpServletRequestWrapper(request){
 			@Override
 			public String getParameter(String name) {

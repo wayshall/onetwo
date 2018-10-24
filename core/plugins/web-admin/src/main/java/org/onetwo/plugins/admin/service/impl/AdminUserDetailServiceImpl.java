@@ -74,7 +74,9 @@ public class AdminUserDetailServiceImpl<T extends AdminUser> implements UserDeta
 	}
 	
 	protected UserDetails buildUserDetail(T user, List<GrantedAuthority> authes){
-		UserDetails userDetail = new LoginUserDetails(user.getId(), user.getUserName(), user.getPassword(), authes);
+		LoginUserDetails userDetail = new LoginUserDetails(user.getId(), user.getUserName(), user.getPassword(), authes);
+		userDetail.setNickname(user.getNickName());
+		userDetail.setAvatar(user.getAvatar());
 		return userDetail;
 	}
 	

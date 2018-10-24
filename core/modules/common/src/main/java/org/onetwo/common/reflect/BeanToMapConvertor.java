@@ -26,7 +26,7 @@ import org.onetwo.common.utils.StringUtils;
  * @author way
  *
  */
-public class BeanToMapConvertor {
+public class BeanToMapConvertor implements Cloneable {
 	private static final String GROOVY_META = "groovy.lang.MetaClass";
 	static public class DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
 
@@ -59,9 +59,13 @@ public class BeanToMapConvertor {
 		
 	}
 
+	/***
+	 * 不可扁平化的类型，即可直接映射为值的类型
+	 */
 	@SuppressWarnings("serial")
-	private final static Collection<Class<?>> mapableValueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass()){
+	private final static Collection<Class<?>> NOT_FLATABLE_VALUE_TYPES = new HashSet<Class<?>>(LangUtils.getSimpleClass()){
 		{
+//			add(Enum.class);
 			add(URL.class);
 			add(URI.class);
 			add(Class.class);
@@ -70,7 +74,14 @@ public class BeanToMapConvertor {
 	};
 
 	public final static Function<Object, Boolean> DEFAULT_FLATABLE = obj->{
-		return !mapableValueTypes.contains(obj.getClass());
+		Class<?> valueType = obj.getClass();
+		if(NOT_FLATABLE_VALUE_TYPES.contains(valueType)){
+			return false;
+		}else if(Enum.class.isAssignableFrom(valueType)){
+			//枚举类也不再扁平
+			return false;
+		}
+		return true;
 	};
 	
 	private String listOpener = "[";
@@ -104,10 +115,27 @@ public class BeanToMapConvertor {
 		}
 	}*/
 	
+	
 	public void setPropertyAccesor(String propertyAccesor) {
 //		this.checkFreezed();
 		this.propertyAccesor = propertyAccesor;
 	}
+	
+	@Override
+	public BeanToMapConvertor clone() /*throws CloneNotSupportedException */{
+		BeanToMapConvertor convertor = new BeanToMapConvertor();
+		convertor.listOpener = this.listOpener;
+		convertor.listCloser = this.listCloser;
+		convertor.propertyAccesor = this.propertyAccesor;
+		convertor.prefix = this.prefix;
+		convertor.propertyAcceptor = this.propertyAcceptor;
+		convertor.valueConvertor = this.valueConvertor;
+		convertor.flatableObject = this.flatableObject;
+		convertor.enableFieldNameAnnotation = this.enableFieldNameAnnotation;
+		convertor.enableUnderLineStyle = this.enableUnderLineStyle;
+		return convertor;
+	}
+
 	public void setPrefix(String prefix) {
 //		this.checkFreezed();
 		this.prefix = prefix;
@@ -217,30 +245,42 @@ public class BeanToMapConvertor {
 //		PropertyContext ctx = new PropertyContext(obj, null, prefixName);
 		flatObject(prefixName==null?"":prefixName, obj, valuePutter, null);
 	}
+	
+	private boolean isMapObject(Object obj){
+		return Map.class.isInstance(obj);
+	}
+	
+	private boolean isMultiple(Object obj){
+		return LangUtils.isMultiple(obj);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter, PropertyContext keyContext){
 		Objects.requireNonNull(prefixName);
 		if(isMappableValue(obj)){
-			valuePutter.put(prefixName, obj, keyContext);
-		}else if(Map.class.isInstance(obj)){
+			Object convertedValue = convertValue(null, obj);
+			valuePutter.put(prefixName, convertedValue, keyContext);
+		}else if(isMapObject(obj)){
 			String mapPrefixName = prefixName;
 			if(StringUtils.isNotBlank(prefixName)){
 				mapPrefixName = prefixName+this.propertyAccesor;
 			}
 			for(Entry<String, Object> entry : ((Map<String, Object>)obj).entrySet()){
 				if(isMappableValue(entry.getValue())){
-					valuePutter.put(mapPrefixName+entry.getKey(), entry.getValue(), null);
+					Object convertedValue = convertValue(null, entry.getValue());
+					valuePutter.put(mapPrefixName+entry.getKey(), convertedValue, null);
 				}else{
 					flatObject(mapPrefixName+entry.getKey(), entry.getValue(), valuePutter);
 				}
 			}
-		}else if(LangUtils.isMultiple(obj)){
+		}else if(isMultiple(obj)){
 			List<Object> list = LangUtils.asList(obj);
 			int index = 0;
 			for(Object o : list){
 				String listIndexName = prefixName + this.listOpener+index+this.listCloser;
 				if(isMappableValue(o)){
-					valuePutter.put(listIndexName, o, null);
+					Object convertedValue = convertValue(null, o);
+					valuePutter.put(listIndexName, convertedValue, null);
 				}else{
 					flatObject(listIndexName, o, valuePutter);
 				}
@@ -255,21 +295,37 @@ public class BeanToMapConvertor {
 				Object val = ReflectUtils.getProperty(obj, prop);
 //				System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
 				if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
-					if(valueConvertor!=null){
+					/*if(isMapObject(val) || isMultiple(val)){
+						//no convert
+					}else if(valueConvertor!=null){
 						Object newVal = valueConvertor.apply(prop, val);
 						val = (newVal!=null?newVal:val);
 					}else if(val instanceof Enum){
 						val = ((Enum<?>)val).name();
-					}
+					}*/
+					
 					PropertyContext propContext = createPropertyContext(obj, prop);
 					if(StringUtils.isBlank(prefixName)){
 						flatObject(propContext.getName(), val, valuePutter, propContext);
 					}else{
-						flatObject(prefixName+propertyAccesor+propContext.getName(), val, valuePutter, propContext);
+						String prefix = prefixName+propertyAccesor;
+						propContext.setPrefix(prefix);
+						flatObject(prefix+propContext.getName(), val, valuePutter, propContext);
 					}
 				}
 			});
 		}
+	}
+	
+	private Object convertValue(PropertyDescriptor prop, Object val){
+		if(val instanceof Enum){
+			val = ((Enum<?>)val).name();
+		}
+		if(valueConvertor!=null){
+			Object newVal = valueConvertor.apply(prop, val);
+			val = (newVal!=null?newVal:val);
+		}
+		return val;
 	}
 
 	public static interface ValuePutter {
@@ -280,6 +336,7 @@ public class BeanToMapConvertor {
 		final protected Object source;
 		final protected PropertyDescriptor property;
 		final protected String name;
+		protected String prefix;
 		public PropertyContext(Object source, PropertyDescriptor property,
 				String originName) {
 			super();
@@ -309,6 +366,13 @@ public class BeanToMapConvertor {
 			}
 			return name;
 		}
+		public String getPrefix() {
+			return prefix;
+		}
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+		
 	}
 
 
@@ -327,7 +391,15 @@ public class BeanToMapConvertor {
 		protected boolean enableUnderLineStyle = false;
 		protected String prefix = "";
 
-
+		public void copyTo(BaseBeanToMapBuilder<?> builder){
+			builder.prefix = this.prefix;
+			builder.propertyAcceptor = this.propertyAcceptor;
+			builder.valueConvertor = this.valueConvertor;
+			builder.flatableObject = this.flatableObject;
+			builder.enableFieldNameAnnotation = this.enableFieldNameAnnotation;
+			builder.enableUnderLineStyle = this.enableUnderLineStyle;
+		}
+		
 		public T propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
 			this.propertyAcceptor = propertyAcceptor;
 			return self();
