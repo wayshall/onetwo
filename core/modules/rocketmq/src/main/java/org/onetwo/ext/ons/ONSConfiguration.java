@@ -1,10 +1,10 @@
 package org.onetwo.ext.ons;
 
-import org.onetwo.boot.mq.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.MQProperties;
 import org.onetwo.boot.mq.MQProperties.SendMode;
+import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
+import org.onetwo.boot.mq.repository.SendMessageRepository;
 import org.onetwo.boot.mq.MQTransactionalConfiguration;
-import org.onetwo.boot.mq.SendMessageRepository;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.consumer.DelegateMessageService;

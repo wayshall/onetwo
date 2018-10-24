@@ -1,5 +1,6 @@
 package org.onetwo.boot.mq;
 
+import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.exception.BaseException;

@@ -1,4 +1,4 @@
-package org.onetwo.boot.mq;
+package org.onetwo.boot.mq.repository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.onetwo.boot.mq.SendMessageContext;
 import org.onetwo.boot.mq.entity.SendMessageEntity;
 import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
 import org.onetwo.common.db.builder.Querys;
