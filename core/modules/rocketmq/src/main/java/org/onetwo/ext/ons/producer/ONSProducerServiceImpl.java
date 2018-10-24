@@ -7,9 +7,9 @@ import java.util.Properties;
 import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageFlags;
-import org.onetwo.boot.mq.SendMessageInterceptor;
-import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
-import org.onetwo.boot.mq.SendMessageInterceptorChain;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
@@ -71,9 +71,9 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.hasText(producerId);
-		Assert.notNull(onsProperties);
-		Assert.notNull(messageSerializer);
+		Assert.hasText(producerId, "produerId must has text");
+		Assert.notNull(onsProperties, "onsProperties can not be null");
+		Assert.notNull(messageSerializer, "messageSerializer can not be null");
 		
 
 		this.interceptableMessageSender = new InterceptableMessageSender<SendResult>(sendMessageInterceptors);

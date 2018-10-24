@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.onetwo.boot.mq.SendMessageEntity.SendStates;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.log.JFishLoggerFactory;

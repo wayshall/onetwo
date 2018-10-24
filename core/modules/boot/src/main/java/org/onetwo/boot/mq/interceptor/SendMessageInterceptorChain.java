@@ -1,10 +1,11 @@
-package org.onetwo.boot.mq;
+package org.onetwo.boot.mq.interceptor;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.boot.mq.SendMessageContext;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;

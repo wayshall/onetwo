@@ -3,8 +3,8 @@ package org.onetwo.ext.ons.producer;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.onetwo.boot.mq.SendMessageEntity;
-import org.onetwo.boot.mq.SimpleDatabaseTransactionMessageInterceptor;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.interceptor.SimpleDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.MqServerTypes;
 import org.slf4j.Logger;

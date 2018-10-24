@@ -1,4 +1,4 @@
-package org.onetwo.boot.mq;
+package org.onetwo.boot.mq.entity;
 
 import java.util.Date;
 

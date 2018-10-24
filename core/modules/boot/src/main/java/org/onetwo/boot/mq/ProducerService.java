@@ -2,7 +2,7 @@ package org.onetwo.boot.mq;
 
 import java.io.Serializable;
 
-import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 
 /**
  * @author wayshall

@@ -1,10 +1,17 @@
-package org.onetwo.boot.mq;
+package org.onetwo.boot.mq.interceptor;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
 import org.onetwo.boot.core.web.async.AsyncTaskDelegateService;
-import org.onetwo.boot.mq.SendMessageEntity.SendStates;
+import org.onetwo.boot.mq.DatabaseTransactionMessageInterceptor;
+import org.onetwo.boot.mq.MQUtils;
+import org.onetwo.boot.mq.MessageBodyStoreSerializer;
+import org.onetwo.boot.mq.SendMessageContext;
+import org.onetwo.boot.mq.SendMessageRepository;
+import org.onetwo.boot.mq.DatabaseTransactionMessageInterceptor.SendMessageEvent;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
@@ -48,7 +55,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	}
 
 	@Override
-	public Object intercept(org.onetwo.boot.mq.SendMessageInterceptorChain chain) {
+	public Object intercept(org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain chain) {
 		SendMessageContext<?> ctx = chain.getSendMessageContext();
 		//如果是事务producer，则忽略
 		if(ctx.isTransactional()){

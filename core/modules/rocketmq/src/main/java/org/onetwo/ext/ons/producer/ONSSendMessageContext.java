@@ -4,8 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import org.onetwo.boot.mq.SendMessageEntity;
-import org.onetwo.boot.mq.SendMessageInterceptorChain;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.bean.ProducerBean;

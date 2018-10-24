@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import org.onetwo.boot.module.redis.RedisLockRunner;
 import org.onetwo.boot.mq.MQProperties;
-import org.onetwo.boot.mq.SendMessageEntity;
-import org.onetwo.boot.mq.SendMessageEntity.SendStates;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.exception.BaseException;

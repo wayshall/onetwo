@@ -1,6 +1,7 @@
 package org.onetwo.boot.mq;
 
-import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.Springs;
 
@@ -20,12 +21,18 @@ public enum SendMessageFlags implements InterceptorPredicate {
 		}
 	},
 	DisableDatabaseTransactional(){
+		/***
+		 * 过滤掉DatabaseTransactionMessageInterceptor拦截器，使之不执行
+		 */
 		@Override
 		public boolean isApply(SendMessageInterceptor inter) {
 			return !DatabaseTransactionMessageInterceptor.class.isInstance(inter);
 		}
 	},
 	EnableDatabaseTransactional(){
+		/***
+		 * 显示启用事务时，强制检测是否有DatabaseTransactionMessageInterceptor拦截器
+		 */
 		@Override
 		public boolean isApply(SendMessageInterceptor inter) {
 			if(Springs.getInstance().isInitialized()){

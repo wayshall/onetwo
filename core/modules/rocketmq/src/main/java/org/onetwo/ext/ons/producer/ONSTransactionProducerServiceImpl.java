@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 
-import org.onetwo.boot.mq.SendMessageInterceptor;
-import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
-import org.onetwo.boot.mq.SendMessageInterceptorChain;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;

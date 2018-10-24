@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+
 /**
  * @author wayshall
  * <br/>

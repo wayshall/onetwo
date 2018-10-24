@@ -3,6 +3,7 @@ package org.onetwo.boot.mq;
 import org.onetwo.boot.mq.MQProperties.DeleteTaskProps;
 import org.onetwo.boot.mq.MQProperties.SendMode;
 import org.onetwo.boot.mq.MQProperties.TaskLocks;
+import org.onetwo.boot.mq.interceptor.SimpleDatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.task.CompensationSendMessageTask;
 import org.onetwo.boot.mq.task.DeleteSentMessageTask;
 import org.springframework.beans.factory.annotation.Autowired;
