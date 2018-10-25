@@ -20,7 +20,7 @@ spring rocketmq的集成模块
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-rocketmq</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.7.2-SNAPSHOT</version>
 </dependency>
 
 ```
@@ -109,6 +109,9 @@ public class ProductTestAppMQConsumer{
 
 
 启动spring容器后将会自动启动消费组。
+
+## 消费者幂等
+@ONSSubscribe注解的idempotent属性支持数据库幂等
 
 
 ## 事务消息
