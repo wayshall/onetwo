@@ -53,7 +53,7 @@ public class DelegateMessageService implements InitializingBean {
 		ConsumContext currentConetxt = null;
 		for(MessageExt message : msgs){
 			String msgId = ONSUtils.getMessageId(message);
-			logger.info("rmq-consumer[{}] received id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
+			logger.info("rmq-consumer[{}] received id: {}, key: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId, message.getKeys(), message.getTopic(), message.getTags());
 			
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
@@ -76,12 +76,17 @@ public class DelegateMessageService implements InitializingBean {
 												.build();
 			}
 			
-			consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
-			consumer.doConsume(currentConetxt);
-			consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
+			consumeMessage(consumer, meta, currentConetxt);
 			logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), body);
 		}
 		return currentConetxt;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void consumeMessage(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
+		consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
+		consumer.doConsume(currentConetxt);
+		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
 	}
 
 }

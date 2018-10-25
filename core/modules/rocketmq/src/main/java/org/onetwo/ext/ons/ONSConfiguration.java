@@ -2,15 +2,19 @@ package org.onetwo.ext.ons;
 
 import org.onetwo.boot.mq.MQProperties;
 import org.onetwo.boot.mq.MQProperties.SendMode;
+import org.onetwo.boot.mq.MQTransactionalConfiguration;
 import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.repository.SendMessageRepository;
-import org.onetwo.boot.mq.MQTransactionalConfiguration;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.MessageSerializer;
+import org.onetwo.ext.ons.consumer.DbmReceiveMessageRepository;
 import org.onetwo.ext.ons.consumer.DelegateMessageService;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
+import org.onetwo.ext.ons.consumer.ReceiveMessageRepository;
+import org.onetwo.ext.ons.consumer.StoreConsumerListener;
 import org.onetwo.ext.ons.producer.OnsDatabaseTransactionMessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,6 +41,19 @@ public class ONSConfiguration {
 		starter.setOnsProperties(onsProperties);
 		starter.setDelegateMessageService(delegateMessageService);
 		return starter;
+	}
+	
+	@Bean
+	public StoreConsumerListener storeConsumerListener() {
+		StoreConsumerListener listener = new StoreConsumerListener();
+		return listener;
+	}
+	
+	@Bean
+	@ConditionalOnClass(name="org.onetwo.common.db.spi.BaseEntityManager")
+	@ConditionalOnMissingBean(ReceiveMessageRepository.class)
+	public ReceiveMessageRepository receiveMessageRepository() {
+		return new DbmReceiveMessageRepository();
 	}
 	
 	@Bean

@@ -20,6 +20,7 @@ import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
+import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -162,6 +163,9 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				ConsumContext currentConetxt = null;
 				try {
 					currentConetxt = delegateMessageService.processMessages(meta, msgs, context);
+				} catch(MessageConsumedException e) {
+					// 忽略已消费异常
+					logger.warn("message has been consumed and will skip: {}", e.getMessage());
 				} catch (Exception e) {
 					String errorMsg = "consume message error.";
 					if(currentConetxt!=null){
@@ -282,6 +286,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					.consumerAction(listener)
 					.consumerBeanName(listernName)
 					.autoDeserialize(subscribe.autoDeserialize())
+					.idempotentType(subscribe.idempotent())
 					.build();
 			return meta;
 		}

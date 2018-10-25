@@ -28,4 +28,10 @@ public @interface ONSSubscribe {
 	long ignoreOffSetThreshold() default -1;
 	int maxReconsumeTimes() default -1;
 	boolean autoDeserialize() default true;
+	IdempotentType idempotent() default IdempotentType.NONE;
+	
+	public enum IdempotentType {
+		NONE,
+		DATABASE;
+	}
 }
