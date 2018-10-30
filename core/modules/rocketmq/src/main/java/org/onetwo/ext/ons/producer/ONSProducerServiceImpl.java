@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageFlags;
@@ -12,6 +13,7 @@ import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicat
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.ext.alimq.BaseDomainEvent;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
@@ -143,6 +145,11 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		
 		if(needSerialize(body)){
 			message.setBody(this.messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
+			if(StringUtils.isBlank(message.getKey()) && onsMessage.getBody() instanceof BaseDomainEvent) {
+				//自动生成key
+				BaseDomainEvent domainEvent = (BaseDomainEvent) onsMessage.getBody();
+				message.setKey(domainEvent.toKey());
+			}
 		}else{
 			message.setBody((byte[])body);
 		}

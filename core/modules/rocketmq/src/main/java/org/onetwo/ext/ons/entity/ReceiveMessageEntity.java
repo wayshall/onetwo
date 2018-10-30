@@ -30,6 +30,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=true)
 public class ReceiveMessageEntity extends BaseEntity {
 	
+	/***
+	 * 自动生成id，消费端不能用msgkey作为唯一键，因为rmq不同的消费组可以接受同一个消息
+	 */
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "snowflake")
     @DbmIdGenerator(name = "snowflake", generatorClass = SnowflakeGenerator.class)
