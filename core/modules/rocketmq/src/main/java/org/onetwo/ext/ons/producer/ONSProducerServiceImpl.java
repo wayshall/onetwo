@@ -1,6 +1,7 @@
 package org.onetwo.ext.ons.producer;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -148,6 +149,10 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 			if(StringUtils.isBlank(message.getKey()) && onsMessage.getBody() instanceof BaseDomainEvent) {
 				//自动生成key
 				BaseDomainEvent domainEvent = (BaseDomainEvent) onsMessage.getBody();
+				//如果是延迟消息，用实际延迟发送的时间替换已存在的发生时间
+				if(message.getStartDeliverTime()>0) {
+					domainEvent.setOccurOn(new Date(message.getStartDeliverTime()));
+				}
 				message.setKey(domainEvent.toKey());
 			}
 		}else{

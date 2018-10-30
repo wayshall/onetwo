@@ -20,7 +20,7 @@ public class BaseDomainEventTest {
 		BaseDomainEvent event = new BaseDomainEvent();
 		event.setEvent(TestDomainEventTypes.ORDER_CREATED);
 		event.setDataId(""+idGenerator.nextId());
-		event.setUserId(""+idGenerator.nextId());
+//		event.setUserId(""+idGenerator.nextId());
 		event.setOccurOn(new Date());
 		String key = event.toKey();
 		System.out.println("keyp["+key.length()+"]:"+key);
