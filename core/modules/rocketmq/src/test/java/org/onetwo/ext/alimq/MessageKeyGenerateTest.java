@@ -9,21 +9,21 @@ import java.util.Date;
 import org.junit.Test;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.dbm.id.SnowflakeIdGenerator;
-import org.onetwo.ext.alimq.BaseDomainEvent.DomainEvent;
+import org.onetwo.ext.ons.ONSUtils;
 
-public class BaseDomainEventTest {
+public class MessageKeyGenerateTest {
 
 	SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(1);
 	
 	@Test
 	public void testKey() {
-		BaseDomainEvent event = new BaseDomainEvent();
-		event.setEvent(TestDomainEventTypes.ORDER_CREATED);
+		SimpleMessage event = new SimpleMessage();
 		event.setDataId(""+idGenerator.nextId());
-//		event.setUserId(""+idGenerator.nextId());
+		event.setUserId(""+idGenerator.nextId());
 		event.setOccurOn(new Date());
-		String key = event.toKey();
+		String key = ONSUtils.toKey("EVENT", "act_published", event);
 		System.out.println("keyp["+key.length()+"]:"+key);
+//		System.out.println(Long.parseLong("1xodpywl2s5h", 36));
 	}
 	
 
@@ -34,16 +34,6 @@ public class BaseDomainEventTest {
 		});
 	}
 	
-	public static enum TestDomainEventTypes implements DomainEvent {
-		ORDER_CREATED,
-		ORDER_UPDATED;
-
-		@Override
-		public String getName() {
-			return name();
-		}
-		
-	}
 
 }
 

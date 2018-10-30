@@ -14,10 +14,10 @@ import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicat
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.ext.alimq.BaseDomainEvent;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
+import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
@@ -146,14 +146,15 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		
 		if(needSerialize(body)){
 			message.setBody(this.messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
-			if(StringUtils.isBlank(message.getKey()) && onsMessage.getBody() instanceof BaseDomainEvent) {
+			if(StringUtils.isBlank(message.getKey()) && onsMessage instanceof TracableMessage) {
 				//自动生成key
-				BaseDomainEvent domainEvent = (BaseDomainEvent) onsMessage.getBody();
 				//如果是延迟消息，用实际延迟发送的时间替换已存在的发生时间
+				TracableMessage tracableMessage = (TracableMessage) onsMessage;
 				if(message.getStartDeliverTime()>0) {
-					domainEvent.setOccurOn(new Date(message.getStartDeliverTime()));
+					tracableMessage.setOccurOn(new Date(message.getStartDeliverTime()));
 				}
-				message.setKey(domainEvent.toKey());
+				String key = ONSUtils.toKey(topic, tag, tracableMessage);
+				message.setKey(key);
 			}
 		}else{
 			message.setBody((byte[])body);
@@ -161,7 +162,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		
 		return sendRawMessage(message, interceptorPredicate);
 	}
-
+	
 	protected String resolvePlaceholders(String value){
 		return SpringUtils.resolvePlaceholders(applicationContext, value);
 	}

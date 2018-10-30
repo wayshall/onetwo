@@ -1,10 +1,6 @@
 package org.onetwo.ext.rmqwithonsclient.producer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -32,6 +28,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author wayshall
@@ -145,11 +146,13 @@ public class RmqONSProducerTest {
 	}
 	
 	@Data
+	@NoArgsConstructor
 	@Builder
 	@AllArgsConstructor
-	@NoArgsConstructor
 	public static class OrderTestMessage {
 		Long orderId;
 		String title;
+		
+		
 	}
 }

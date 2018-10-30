@@ -1,6 +1,11 @@
 package org.onetwo.ext.ons;
 
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.slf4j.Logger;
 
 import com.aliyun.openservices.ons.api.SendResult;
@@ -39,5 +44,33 @@ final public class ONSUtils {
 			return 0;
 		}
 	}
-
+	
+	/***
+	 * key代表消息的唯一标识，一般为64位，规则为:事件名称(topic>tag).操作的用户id(36进制).产生事件的领域模型（或者实体）标识.时间戳(36进制毫秒)
+	 * 注意，事件名称后面的属性加起来的长度一般为41，所以主要topic和tag的长度
+	 * @author weishao zeng
+	 * @param topic
+	 * @param tag
+	 * @param domainEvent
+	 * @return
+	 */
+	public static String toKey(String topic, String tag, TracableMessage tracableMessage) {
+		Date occurOn = tracableMessage.getOccurOn()==null?new Date():tracableMessage.getOccurOn();
+		String eventName = topic;
+		if(StringUtils.isNotBlank(tag) && !tag.contains("*")) {
+			eventName = eventName + ">" + tag;
+		}
+		String userId = tracableMessage.getUserId();
+		try {
+			// 如果是数字，则压缩userId，避免key太长
+			userId = Long.toString(Long.parseLong(userId), 36);
+		} catch (Exception e) {
+			// ignore
+		}
+		String key = eventName + "." + userId + "." + tracableMessage.getDataId() + "." + Long.toString(occurOn.getTime(), 36);
+		if(key.length()>64) {
+			throw new BaseException("message key is too long, can not more than 64 : " + key);
+		}
+		return key;
+	}
 }

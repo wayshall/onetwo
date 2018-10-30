@@ -1,5 +1,7 @@
 package org.onetwo.ext.rmqwithonsclient.producer;
 
+import java.util.Date;
+
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.dbm.id.SnowflakeIdGenerator;
@@ -49,15 +51,20 @@ public class DataBaseProducerServiceImpl {
 																	  .build());
 		System.out.println("res: " + res);
 		
-		res = onsProducerService.sendMessage(SimpleMessage.builder()
+		res = onsProducerService.sendMessage(
+				SimpleMessage.builder()
 				  .topic(RmqONSProducerTest.TOPIC)
 				  .tags(RmqONSProducerTest.ORDER_CANCEL)
-				  .key("test_"+idGenerator.nextId())
-				  .body(OrderTestMessage.builder()
+//				  .key("test_"+idGenerator.nextId())
+				  .dataId("2")
+				  .userId("100")
+				  .occurOn(new Date())
+				  .body(
+						  OrderTestMessage.builder()
 			  				.orderId(2L)
 			  				.title("取消")
-			  				.build())
-				  .build(), SendMessageFlags.EnableDatabaseTransactional);
+			  				.build()
+				  ).build(), SendMessageFlags.EnableDatabaseTransactional);
 		System.out.println("res: " + res);
 	}
 
