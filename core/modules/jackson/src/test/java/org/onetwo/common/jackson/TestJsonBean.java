@@ -2,6 +2,7 @@ package org.onetwo.common.jackson;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 //@JsonIgnoreProperties({"name"})
@@ -10,6 +11,8 @@ public class TestJsonBean {
 	@JsonIgnore
 	private String name;
 	private String email;
+
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone=JsonMapper.TIME_ZONE_CHINESE)
 	private Date birthday;
 	public String getName() {
 		return name;

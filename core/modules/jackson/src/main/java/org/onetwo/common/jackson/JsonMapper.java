@@ -40,6 +40,8 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 
 
 /********
+ * 使用JsonFormat注解时，注意时区问题
+ * 推荐 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
  * http://wiki.fasterxml.com/JacksonHowToCustomSerializers
  * 
  * @author way
@@ -47,6 +49,7 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
  */
 public class JsonMapper {
 	
+	final public static String TIME_ZONE_CHINESE = "GMT+8";
 	public static String DEFAULT_JSONP_NAME = "callback";
 
 	public static final JsonMapper DEFAULT_MAPPER = defaultMapper();
@@ -398,7 +401,7 @@ public class JsonMapper {
 		try {
 			obj = objectMapper.readerForUpdating(object).readValue(jsonString);
 		}catch (Exception e) {
-			logger.warn("update json string:" + jsonString + " to object:" + object + " error.", e);
+			throw new JsonException("update json string:" + jsonString + " to object:" + object + " error.", e);
 		}
 		return obj;
 	}
