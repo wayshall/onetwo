@@ -1,15 +1,15 @@
 package org.onetwo.common.apiclient;
 
-import net.jodah.typetools.TypeResolver;
-
 import org.springframework.http.ResponseEntity;
+
+import net.jodah.typetools.TypeResolver;
 
 /**
  * 自定义响应处理器
  * @author wayshall
  * <br/>
  */
-public interface CustomResponseHandler<T> {
+public interface CustomResponseHandler<T> extends ApiErrorHandler {
 	
 	/***
 	 * 指定restRemplate 抽取数据时的类型

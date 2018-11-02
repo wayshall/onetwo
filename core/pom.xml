@@ -40,7 +40,7 @@
            <id>microcloud</id>
 			<modules>
                 <module>../../dbm</module>
-                <module>modules/rocketmq</module>
+                <module>modules/jackson</module>
 			</modules>
            <build>
               <plugins>

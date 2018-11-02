@@ -8,11 +8,10 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
+import org.onetwo.common.apiclient.ApiErrorHandler;
 import org.onetwo.common.apiclient.CustomResponseHandler;
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
-import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
-import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
 import org.onetwo.common.spring.SpringUtils;
@@ -175,9 +174,11 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			RequestContextData context = createRequestContextData(args, invokeMethod);
 			Object response = null;
 			CustomResponseHandler<?> customHandler = invokeMethod.getCustomResponseHandler();
+			ApiErrorHandler errorHanlder = responseHandler;
 			
 			try {
 				if(customHandler!=null){
+					errorHanlder = customHandler;
 					context.setResponseType(customHandler.getResponseType());
 					ResponseEntity responseEntity = invokeRestExector(context);
 					response = customHandler.handleResponse(invokeMethod, responseEntity);
@@ -186,10 +187,13 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 					response = responseHandler.handleResponse(invokeMethod, responseEntity, context.getResponseType());
 				}
 				return response;
-			} catch (ApiClientException e) {
+			}/* catch (ApiClientException e) {
 				throw e;
 			} catch (Exception e) {
 				throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
+			}*/
+			catch (Exception e) {
+				return errorHanlder.handleError(invokeMethod, e);
 			}
 		}
 
