@@ -369,12 +369,17 @@ final public class SpringUtils {
 
 	public static <T> void injectAndInitialize(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
 		acb.autowireBeanProperties(bean, autowireMode, false);
-		initializeBean(acb, bean, autowireMode);
+		initializeBean(acb, bean);
 	}
 
-	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
+	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean) {
 		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
 		acb.initializeBean(bean, beanName);
+	}
+
+	public static <T> void initializeBean(ApplicationContext appContext, T bean) {
+		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
+		appContext.getAutowireCapableBeanFactory().initializeBean(bean, beanName);
 	}
 	
 
