@@ -37,7 +37,9 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 	}
 	
 	
-	
+	/****
+	 * 序列化需要类型形式时，即objectMapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY)，必须实现此方法
+	 */
 	@Override
 	public void serializeWithType(Object value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
 		typeSer.writeTypePrefixForScalar(value, gen);
