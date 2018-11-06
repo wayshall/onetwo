@@ -437,6 +437,7 @@ public class BeanToMapConvertor implements Cloneable {
 			return self();
 		}
 		
+		@SuppressWarnings("unchecked")
 		protected T self(){
 			return (T)this;
 		}

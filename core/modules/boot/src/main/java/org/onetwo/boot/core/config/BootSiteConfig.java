@@ -6,12 +6,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.ServletContext;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.filter.DefaultSiteConfig;
@@ -20,6 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
 /***
@@ -74,7 +74,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	
 	//uploaded file access path
 
-	@Autowired
+	@Autowired(required=false)
 	private BootSpringConfig bootSpringConfig;
 	
 	@Getter
