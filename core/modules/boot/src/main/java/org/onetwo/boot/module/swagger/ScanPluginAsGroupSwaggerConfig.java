@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 
+import com.google.common.base.Predicate;
+
 import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spring.web.plugins.Docket;
-
-import com.google.common.base.Predicate;
 
 /****
  * 自动扫描插件，注册Docket
@@ -31,18 +31,35 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		int index = 0;
+		int registedCount = this.registerDockets();
+		int index = registedCount;
 		for(WebPlugin plugin : pluginManager.getPlugins()){
-			Predicate<RequestHandler> predicate = RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(plugin.getRootClass()));
+			/*Predicate<RequestHandler> predicate = RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(plugin.getRootClass()));
 			Collection<Predicate<RequestHandler>> predicates = Arrays.asList(predicate);
 			String appName = plugin.getPluginMeta().getName();
 			
 			Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
 			SpringUtils.registerAndInitSingleton(applicationContext, appName+"Docket", docket);
 			Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
-			SpringUtils.registerAndInitSingleton(applicationContext, appName+"InnerDocket", innerDocket);
+			SpringUtils.registerAndInitSingleton(applicationContext, appName+"InnerDocket", innerDocket);*/
+			String appName = plugin.getPluginMeta().getName();
+			registerDocketsByWebApiAnnotation(index, appName, plugin.getRootClass());
 			index++;
 		}
+	}
+	
+	final protected void registerDocketsByWebApiAnnotation(int index, String appName, Class<?> rootClass) {
+		Predicate<RequestHandler> predicate = RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(rootClass));
+		Collection<Predicate<RequestHandler>> predicates = Arrays.asList(predicate);
+		
+		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
+		SpringUtils.registerAndInitSingleton(applicationContext, appName+"Docket", docket);
+		Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
+		SpringUtils.registerAndInitSingleton(applicationContext, appName+"InnerDocket", innerDocket);
+	}
+	
+	protected int registerDockets() {
+		return 0;
 	}
 
 }
