@@ -28,6 +28,11 @@ import org.onetwo.common.utils.StringUtils;
  */
 public class BeanToMapConvertor implements Cloneable {
 	private static final String GROOVY_META = "groovy.lang.MetaClass";
+	/****
+	 * 默认忽略值为null的属性
+	 * @author way
+	 *
+	 */
 	static public class DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
 
 		@Override

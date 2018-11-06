@@ -5,7 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.onetwo.common.apiclient.RestExecutorFactory;
 import org.onetwo.common.apiclient.impl.RestApiClentRegistrar;
 import org.onetwo.common.apiclient.impl.RestExecutorConfiguration;
 import org.springframework.context.annotation.Import;
@@ -58,6 +57,6 @@ public @interface EnableRestApiClient {
 	
 	String baseUrl() default "";
 	
-	Class<? extends RestExecutorFactory> restExecutorFactory() default RestExecutorFactory.class;
+//	Class<? extends RestExecutorFactory> restExecutorFactory() default RestExecutorFactory.class;
 
 }
