@@ -17,6 +17,8 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message
  * <br/>
  */
 final public class ONSUtils {
+	private final static int MAX_KEY_LENGTH = 128;
+	
 	public static final SendResult ONS_SUSPEND;
 	static {
 		SendResult res = new SendResult();
@@ -46,8 +48,8 @@ final public class ONSUtils {
 	}
 	
 	/***
-	 * key代表消息的唯一标识，一般为64位，规则为:事件名称(topic>tag).操作的用户id(36进制).产生事件的领域模型（或者实体）标识.时间戳(36进制毫秒)
-	 * 注意，事件名称后面的属性加起来的长度一般为41，所以主要topic和tag的长度
+	 * key代表消息的唯一标识，长度为 {@value ONSUtils#MAX_KEY_LENGTH} ，规则为:事件名称(topic>tag).操作的用户id(36进制).产生事件的领域模型（或者实体）标识.时间戳(36进制毫秒)
+	 * 注意，事件名称后面的属性加起来的长度一般为41，所以注意topic和tag的长度
 	 * @author weishao zeng
 	 * @param topic
 	 * @param tag
@@ -57,7 +59,7 @@ final public class ONSUtils {
 	public static String toKey(String topic, String tag, TracableMessage tracableMessage) {
 		Date occurOn = tracableMessage.getOccurOn()==null?new Date():tracableMessage.getOccurOn();
 		String eventName = topic;
-		if(StringUtils.isNotBlank(tag) && !tag.contains("*")) {
+		if(StringUtils.isNotBlank(tag)) {
 			eventName = eventName + ">" + tag;
 		}
 		String userId = tracableMessage.getUserId();
@@ -68,8 +70,8 @@ final public class ONSUtils {
 			// ignore
 		}
 		String key = eventName + "." + userId + "." + tracableMessage.getDataId() + "." + Long.toString(occurOn.getTime(), 36);
-		if(key.length()>64) {
-			throw new BaseException("message key is too long, can not more than 64 : " + key);
+		if(key.length()>MAX_KEY_LENGTH) {
+			throw new BaseException("message key is too long, can not more than " + MAX_KEY_LENGTH + " : " + key);
 		}
 		return key;
 	}
