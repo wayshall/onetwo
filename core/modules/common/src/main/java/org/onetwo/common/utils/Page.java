@@ -32,6 +32,7 @@ public class Page<T> implements Serializable {
 		page.first = p.first;
 		page.autoCount = p.autoCount;
 		page.pagination = p.pagination;
+		page.totalCount = p.totalCount;
 		if(mapper!=null){
 			List<E2> rs = p.result.stream().map(mapper).collect(Collectors.toList());
 			page.setResult(rs);
@@ -163,6 +164,7 @@ public class Page<T> implements Serializable {
 		this.first = first;
 	}
 
+	@JsonIgnore
 	public String getOrderBy() {
 		return orderBy;
 	}
