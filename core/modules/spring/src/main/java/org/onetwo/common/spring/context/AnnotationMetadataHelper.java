@@ -90,9 +90,8 @@ public class AnnotationMetadataHelper {
 		Stream.of((Class[]) attributes.get("basePackageClasses"))
 										.map(ClassUtils::getPackageName)
 										.forEach(basePackages::add);
-		if (basePackages.isEmpty()) {
-			basePackages.add(ClassUtils.getPackageName(importingClassMetadata.getClassName()));
-		}
+
+		basePackages.add(ClassUtils.getPackageName(importingClassMetadata.getClassName()));
 		return basePackages;
 	}
 
