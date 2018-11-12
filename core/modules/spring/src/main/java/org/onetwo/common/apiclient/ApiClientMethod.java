@@ -27,7 +27,6 @@ import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -156,6 +155,8 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			} else {
 				this.apiErrorHandler = createAndInitComponent(errorHandlerClass);
 			}
+		} else {
+			this.apiErrorHandler = ApiErrorHandler.DEFAULT;
 		}
 	}
 	
@@ -295,8 +296,8 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 				return null;
 			}
 			
-			//大于一个参数时，使用参数名称作为参数前缀
-			boolean parameterNameAsPrefix = bodyableParameters.size()>1;
+//			boolean parameterNameAsPrefix = bodyableParameters.size()>1; //大于一个参数时，使用参数名称作为参数前缀
+			boolean parameterNameAsPrefix = false; //修改为默认不使用前缀 
 			//没有requestBody注解时，根据contentType做简单的转换策略
 			if(getContentType().isPresent()){
 				String contentType = getContentType().get();
@@ -442,10 +443,11 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			String pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElseGet(()->{
 //				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
 				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElseGet(()->{
-					return getOptionalParameterAnnotation(FieldName.class).map(fn->fn.value()).orElse(null);
+					return getOptionalParameterAnnotation(FieldName.class).map(fn->fn.value()).orElse(ValueConstants.DEFAULT_NONE);
 				});
 			});
-			if(StringUtils.isBlank(pname)){
+			// 如果没有找到命名的注解	
+			if(ValueConstants.DEFAULT_NONE.equals(pname)){
 				/*pname = getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
 				
 				if(StringUtils.isNotBlank(pname)){
