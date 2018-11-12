@@ -52,7 +52,8 @@ public abstract class ParamUtils {
 		return toParamString(map, toStringFunc, joiner);
 	}
 
-	public static <K> String toParamString(Map<K, Object> params){
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <K> String toParamString(Map params){
 		return toParamString(params, (BiFunction<K, Object, String>)null);
 	}
 
