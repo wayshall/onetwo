@@ -34,6 +34,10 @@ import org.springframework.context.annotation.Import;
  * 详见：ApiClientMethod
  * 
  * <br/><br/>
+ * 自定义错误处理器，见接口：{@linkplain org.onetwo.common.apiclient.ApiErrorHandler ApiErrorHandler}
+ * 
+ * <br/><br/>
+ * 自定义响应处理器，见接口：{@linkplain org.onetwo.common.apiclient.CustomResponseHandler CustomResponseHandler}
  * 
  * 扩展：<br/>
  * &#064;EnableRestApiClient<br/>

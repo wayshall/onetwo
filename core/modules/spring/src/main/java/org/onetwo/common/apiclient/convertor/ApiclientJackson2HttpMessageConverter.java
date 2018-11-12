@@ -50,7 +50,7 @@ public class ApiclientJackson2HttpMessageConverter extends MappingJackson2HttpMe
 	private Set<MediaType> supportedMediaTypeSet = Sets.newHashSet();
 	
 	public ApiclientJackson2HttpMessageConverter() {
-		super(JsonMapper.IGNORE_NULL.getObjectMapper());
+		super(JsonMapper.ignoreNull().getObjectMapper());
 		setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, 
 														MediaType.APPLICATION_JSON_UTF8,
 														MediaType.TEXT_PLAIN,//for wechat api

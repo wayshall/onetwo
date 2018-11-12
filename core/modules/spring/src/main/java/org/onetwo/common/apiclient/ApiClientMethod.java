@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
+import org.onetwo.common.apiclient.ApiErrorHandler.DefaultErrorHandler;
+import org.onetwo.common.apiclient.CustomResponseHandler.NullHandler;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
 import org.onetwo.common.apiclient.annotation.ResponseHandler;
 import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
@@ -26,6 +28,7 @@ import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.Resource;
@@ -101,6 +104,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private int headerParameterIndex = -1;
 	
 	private CustomResponseHandler<?> customResponseHandler;
+	private ApiErrorHandler apiErrorHandler;
 	
 	public ApiClientMethod(Method method) {
 		super(method);
@@ -136,20 +140,48 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		
 
 		ResponseHandler resHandler = AnnotatedElementUtils.getMergedAnnotation(getMethod(), ResponseHandler.class);
-		if(resHandler==null){
+		if (resHandler==null){
 			resHandler = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), ResponseHandler.class);
 		}
-		if(resHandler!=null){
-			CustomResponseHandler<?> customHandler = ReflectUtils.newInstance(resHandler.value());
-			if(Springs.getInstance().isInitialized()){
-				SpringUtils.injectAndInitialize(Springs.getInstance().getAppContext(), customHandler);
+		if (resHandler!=null){
+			Class<? extends CustomResponseHandler<?>> handlerClass = resHandler.value();
+			if (handlerClass!=NullHandler.class) {
+				CustomResponseHandler<?> customHandler = createAndInitComponent(resHandler.value());
+				this.customResponseHandler = customHandler;
 			}
-			this.customResponseHandler = customHandler;
+			
+			Class<? extends ApiErrorHandler> errorHandlerClass = resHandler.errorHandler();
+			if (errorHandlerClass==DefaultErrorHandler.class) {
+				this.apiErrorHandler = ApiErrorHandler.DEFAULT;
+			} else {
+				this.apiErrorHandler = createAndInitComponent(errorHandlerClass);
+			}
 		}
+	}
+	
+	private <T> T createAndInitComponent(Class<T> clazz) {
+		T component = null;
+		if (Springs.getInstance().isInitialized()){
+			component = Springs.getInstance().getBean(clazz);
+			if (component==null) {
+				component = ReflectUtils.newInstance(clazz);
+				SpringUtils.injectAndInitialize(Springs.getInstance().getAppContext(), component);
+			}
+		} else {
+			Logger logger = ApiClientUtils.getApiclientlogger();
+			if (logger.isWarnEnabled()) {
+				logger.warn("spring application not initialized, use reflection to create component: {}", clazz);
+			}
+			component = ReflectUtils.newInstance(clazz);
+		}
+		return component;
 	}
 	
 	public CustomResponseHandler<?> getCustomResponseHandler() {
 		return customResponseHandler;
+	}
+	public ApiErrorHandler getApiErrorHandler() {
+		return apiErrorHandler;
 	}
 
 	public Optional<ApiHeaderCallback> getApiHeaderCallback(Object[] args){

@@ -8,7 +8,6 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
-import org.onetwo.common.apiclient.ApiErrorHandler;
 import org.onetwo.common.apiclient.CustomResponseHandler;
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
@@ -174,11 +173,11 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			RequestContextData context = createRequestContextData(args, invokeMethod);
 			Object response = null;
 			CustomResponseHandler<?> customHandler = invokeMethod.getCustomResponseHandler();
-			ApiErrorHandler errorHanlder = responseHandler;
+//			ApiErrorHandler errorHanlder = invokeMethod.getApiErrorHandler();
 			
 			try {
 				if(customHandler!=null){
-					errorHanlder = customHandler;
+//					errorHanlder = customHandler;
 					context.setResponseType(customHandler.getResponseType());
 					ResponseEntity responseEntity = invokeRestExector(context);
 					response = customHandler.handleResponse(invokeMethod, responseEntity);
@@ -193,7 +192,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
 			}*/
 			catch (Exception e) {
-				return errorHanlder.handleError(invokeMethod, e);
+				return invokeMethod.getApiErrorHandler().handleError(invokeMethod, e);
 			}
 		}
 

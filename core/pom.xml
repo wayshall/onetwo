@@ -40,7 +40,6 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/spring</module>
-                <module>modules/boot</module>
 			</modules>
            <build>
               <plugins>
