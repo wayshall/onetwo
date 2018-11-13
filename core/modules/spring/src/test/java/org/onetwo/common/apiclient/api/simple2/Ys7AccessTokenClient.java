@@ -1,4 +1,9 @@
-package org.onetwo.common.apiclient.api;
+package org.onetwo.common.apiclient.api.simple2;
+
+import org.onetwo.common.apiclient.annotation.RestApiClient;
+import org.onetwo.common.apiclient.api.simple2.Ys7AccessTokenClient.GetAccessTokenResponse.AccessTokenInfo;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,14 +11,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import org.onetwo.common.apiclient.annotation.RestApiClient;
-import org.onetwo.common.apiclient.api.Ys7AccessTokenClient.GetAccessTokenResponse.AccessTokenInfo;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-
-@RestApiClient(url = "https://open.ys7.com/api/lapp")
+@RestApiClient
 public interface Ys7AccessTokenClient {
+	
+	String BASE_URL = "https://open.ys7.com/api/lapp";
+	
 
     @RequestMapping(value = "/token/get", method = RequestMethod.POST)
     GetAccessTokenResponse getAccessToken(String appKey, String appSecret);

@@ -3,9 +3,9 @@ package org.onetwo.common.apiclient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.onetwo.common.apiclient.api.Ys7AccessTokenClient;
-import org.onetwo.common.apiclient.api.Ys7AccessTokenClient.GetAccessTokenRequst;
-import org.onetwo.common.apiclient.api.Ys7AccessTokenClient.GetAccessTokenResponse;
+import org.onetwo.common.apiclient.api.simple2.Ys7AccessTokenClient;
+import org.onetwo.common.apiclient.api.simple2.Ys7AccessTokenClient.GetAccessTokenRequst;
+import org.onetwo.common.apiclient.api.simple2.Ys7AccessTokenClient.GetAccessTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 

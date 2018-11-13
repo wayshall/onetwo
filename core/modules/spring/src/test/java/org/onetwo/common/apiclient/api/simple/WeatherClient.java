@@ -1,4 +1,4 @@
-package org.onetwo.common.apiclient.api;
+package org.onetwo.common.apiclient.api.simple;
 
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiHeaderCallback;
@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @author wayshall
  * <br/>
  */
-@RestApiClient(url="http://www.weather.com.cn/data")
+@RestApiClient
 public interface WeatherClient {
+	
+	String BASE_URL = "http://www.weather.com.cn/data";
 	
 	@GetMapping(value="/sk/{cityid}.html")
 	WeatherResponse getWeather(@PathVariable String cityid, HttpHeaders header, ApiHeaderCallback callback);

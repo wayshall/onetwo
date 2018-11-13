@@ -3,7 +3,7 @@ package org.onetwo.common.apiclient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.onetwo.common.apiclient.api.WeatherClient;
+import org.onetwo.common.apiclient.api.simple.WeatherClient;
 import org.onetwo.common.apiclient.response.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

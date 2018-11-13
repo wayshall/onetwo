@@ -91,7 +91,10 @@ public class AnnotationMetadataHelper {
 										.map(ClassUtils::getPackageName)
 										.forEach(basePackages::add);
 
-		basePackages.add(ClassUtils.getPackageName(importingClassMetadata.getClassName()));
+		// 如果注解没有设置属性，则默认使用启用了这个注解的类所在的包
+		if(LangUtils.isEmpty(basePackages)) {
+			basePackages.add(ClassUtils.getPackageName(importingClassMetadata.getClassName()));
+		}
 		return basePackages;
 	}
 

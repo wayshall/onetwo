@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiErrorHandler.DefaultErrorHandler;
 import org.onetwo.common.apiclient.CustomResponseHandler.NullHandler;
@@ -443,11 +444,11 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			String pname = getOptionalParameterAnnotation(RequestParam.class).map(rp->rp.value()).orElseGet(()->{
 //				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
 				return getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElseGet(()->{
-					return getOptionalParameterAnnotation(FieldName.class).map(fn->fn.value()).orElse(ValueConstants.DEFAULT_NONE);
+					return getOptionalParameterAnnotation(FieldName.class).map(fn->fn.value()).orElse(null);
 				});
 			});
 			// 如果没有找到命名的注解	
-			if(ValueConstants.DEFAULT_NONE.equals(pname)){
+			if(StringUtils.isBlank(pname)){
 				/*pname = getOptionalParameterAnnotation(PathVariable.class).map(pv->pv.value()).orElse(null);
 				
 				if(StringUtils.isNotBlank(pname)){
