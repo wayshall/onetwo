@@ -267,8 +267,12 @@ public class JsonMapper {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T fromJson(final Object json, Type objType){
+		return fromJson(json, objType, true);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T fromJson(final Object json, Type objType, boolean parseAsStringIfError){
 		if(json==null)
 			return null;
 		Assert.notNull(objType);
@@ -288,7 +292,12 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue(jsonstr, constructJavaType(objType));
 			}
 		} catch (Exception e) {
-			throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
+			if (parseAsStringIfError) {
+				String jsonstr = fromJson(json, String.class, false);
+				throw new JsonException("parse json to ["+objType+"] error, json: " + jsonstr, e);
+			} else {
+				throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
+			}
 		}
 		return (T)obj;
 	}
