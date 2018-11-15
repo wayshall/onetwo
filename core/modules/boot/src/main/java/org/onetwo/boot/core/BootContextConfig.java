@@ -30,7 +30,7 @@ public class BootContextConfig {
 	
 	@Configuration
 	@ConditionalOnClass(name={"javax.el.ExpressionFactory", ValidatorConfiguration.LOCAL_VALIDATOR_CLASS})
-	protected static class ValidatorConfiguration {
+	public static class ValidatorConfiguration {
 		public static final String LOCAL_VALIDATOR_CLASS = "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean";
 
 		@Bean
