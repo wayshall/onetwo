@@ -1,9 +1,12 @@
 package org.onetwo.boot.plugin.core;
 
-import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
+import org.springframework.context.ApplicationContext;
 
 
 public interface PluginMeta {
+	
 	String PLUGIN_POSTFIX = "Plugin";
 	
 	String getName();
@@ -21,5 +24,13 @@ public interface PluginMeta {
 		}
 		clsName = StringUtils.uncapitalize(clsName);
 		return new SimplePluginMeta(clsName, version);
+	}
+
+	public static String resolvePluginContextPath(ApplicationContext applicationContext, final String pluginContextPath){
+		String path = SpringUtils.resolvePlaceholders(applicationContext, pluginContextPath);
+		if(StringUtils.isNotBlank(path)){
+			path = StringUtils.appendStartWithSlash(path);
+		}
+		return path;
 	}
 }

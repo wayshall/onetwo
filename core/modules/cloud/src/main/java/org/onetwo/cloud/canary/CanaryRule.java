@@ -50,7 +50,7 @@ public class CanaryRule extends ZoneAvoidanceRule {
     	}
     	
     	CanaryErrors canaryErrors = null;
-    	if(canaryMode==CanaryMode.FORCE){
+    	if (canaryMode==CanaryMode.FORCE){
     		ILoadBalancer lb = getLoadBalancer();
     		Optional<Server> server = canaryPredicate.chooseRoundRobinAfterFiltering(lb.getAllServers(), key);
     		if(server.isPresent()) {
@@ -61,13 +61,13 @@ public class CanaryRule extends ZoneAvoidanceRule {
 //    		throw new BaseException(CanaryErrors.CANARY_SERVER_NOT_MATCH);
     		canaryErrors = CanaryErrors.CANARY_SERVER_NOT_MATCH;
     		
-    	}else if(canaryMode==CanaryMode.SMOOTHNESS){
+    	} else if (canaryMode==CanaryMode.SMOOTHNESS){
     		ILoadBalancer lb = getLoadBalancer();
             Optional<Server> server = canaryPredicate.chooseRoundRobinAfterFiltering(lb.getAllServers(), key);
             if (server.isPresent()) {
                 return server.get();
             }
-    	}else if(canaryMode==CanaryMode.CANARY_NONE){
+    	} else if (canaryMode==CanaryMode.CANARY_NONE){
     		ILoadBalancer lb = getLoadBalancer();
             Optional<Server> server = noCanaryFilterMetaPredicate.chooseRoundRobinAfterFiltering(lb.getAllServers(), key);
             if (server.isPresent()) {
@@ -76,7 +76,8 @@ public class CanaryRule extends ZoneAvoidanceRule {
 //    		throw new BaseException(CanaryErrors.CANARY_NONE_SERVER_NOT_MATCH);
     		canaryErrors = CanaryErrors.CANARY_NONE_SERVER_NOT_MATCH;
     	}
-    	if(canaryErrors!=null){
+    	
+    	if (canaryErrors!=null) {
     		CanaryServerNotFoundActions action = this.canaryProperties.getServerNotFoundAction();
     		if(action==CanaryServerNotFoundActions.THROW){
         		throw new BaseException(canaryErrors);
