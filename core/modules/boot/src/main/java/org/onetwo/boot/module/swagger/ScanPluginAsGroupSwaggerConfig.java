@@ -58,6 +58,11 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		SpringUtils.registerAndInitSingleton(applicationContext, appName+"InnerDocket", innerDocket);
 	}
 	
+	/****
+	 * 在注册插件的swagger前，注册其它（比如主项目）swagger
+	 * @author weishao zeng
+	 * @return
+	 */
 	protected int registerDockets() {
 		return 0;
 	}
