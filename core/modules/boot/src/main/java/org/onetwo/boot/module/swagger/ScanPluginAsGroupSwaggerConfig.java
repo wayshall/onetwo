@@ -18,7 +18,7 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spring.web.plugins.Docket;
 
 /****
- * 自动扫描插件，注册Docket
+ * 自动扫描插件，并根据webApi分开外部和内部接口，每个插件注册两个docket，一个外部接口，一个内部接口
  * @author wayshall
  *
  */
@@ -53,9 +53,16 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		Collection<Predicate<RequestHandler>> predicates = Arrays.asList(predicate);
 		
 		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
-		SpringUtils.registerAndInitSingleton(applicationContext, appName+"Docket", docket);
+		String docketBeanName = appName+"Docket";
+		if (!applicationContext.containsBeanDefinition(docketBeanName)) {
+			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, docket);
+		}
+		
+		docketBeanName = appName+"InnerDocket";
 		Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
-		SpringUtils.registerAndInitSingleton(applicationContext, appName+"InnerDocket", innerDocket);
+		if (!applicationContext.containsBeanDefinition(docketBeanName)) {
+			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, innerDocket);
+		}
 	}
 	
 	/****
