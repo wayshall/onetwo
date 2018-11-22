@@ -95,6 +95,7 @@ public class ConcurrentRunnable {
 		if(!started)
 			throw new RuntimeException("ConcurrentRunnable has not started!");
 		try {
+			// 调用CountDownLatch的await方法等待，CyclicBarrier没有类似方法，CyclicBarrier的await方法会减少计数
 			this.latch.await();
 		} catch (InterruptedException e) {
 			throw new RuntimeException("CountDownLatch await error!", e);
