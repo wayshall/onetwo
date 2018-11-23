@@ -22,7 +22,6 @@ import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -48,7 +47,7 @@ import com.google.common.collect.Maps;
 
 public class ONSPushConsumerStarter implements InitializingBean, DisposableBean {
 
-	private final Logger logger = LoggerFactory.getLogger(ONSPushConsumerStarter.class);
+	private final Logger logger = ONSUtils.getONSLogger(); //LoggerFactory.getLogger(ONSPushConsumerStarter.class);
 
 	@Autowired
 	private ApplicationContext applicationContext;
