@@ -36,7 +36,11 @@ public class StoreConsumerListener implements ConsumerListener {
 		try {
 			this.receiveMessageRepository.save(consumerMeta, context);
 		} catch (DuplicateKeyException e) {
-			throw new MessageConsumedException("msgId: " + msgId + ", msgkey: " + message.getKeys() + ", consume group: " + consumerMeta.getConsumerId());
+			throw new MessageConsumedException("msgId: " + msgId + 
+					", msgkey: " + message.getKeys() + 
+					", consume group: " + consumerMeta.getConsumerId() +
+					", store error: " + e.getMessage(), 
+					e);
 		}
 	}
 	
