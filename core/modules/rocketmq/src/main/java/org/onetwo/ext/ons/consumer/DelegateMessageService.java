@@ -53,7 +53,9 @@ public class DelegateMessageService implements InitializingBean {
 		ConsumContext currentConetxt = null;
 		for(MessageExt message : msgs){
 			String msgId = ONSUtils.getMessageId(message);
-			logger.info("rmq-consumer[{}] received id: {}, key: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId, message.getKeys(), message.getTopic(), message.getTags());
+			if (logger.isInfoEnabled()) {
+				logger.info("rmq-consumer[{}] received id: {}, key: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId, message.getKeys(), message.getTopic(), message.getTags());
+			}
 			
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
@@ -77,7 +79,11 @@ public class DelegateMessageService implements InitializingBean {
 			}
 			
 			consumeMessage(consumer, meta, currentConetxt);
-			logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), body);
+			if (logger.isDebugEnabled()) {
+				logger.debug("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), currentConetxt.getDeserializedBody());
+			} else if(logger.isInfoEnabled()) {
+				logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
+			}
 		}
 		return currentConetxt;
 	}

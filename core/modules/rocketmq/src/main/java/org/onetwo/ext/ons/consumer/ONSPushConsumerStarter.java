@@ -164,7 +164,11 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					currentConetxt = delegateMessageService.processMessages(meta, msgs, context);
 				} catch(MessageConsumedException e) {
 					// 忽略已消费异常
-					logger.warn("message has been consumed and will skip: {}", e.getMessage());
+					if (logger.isDebugEnabled()) {
+						logger.debug("message has been consumed and will skip: " + e.getMessage(), e);
+					} else {
+						logger.warn("message has been consumed and will skip: " + e.getMessage());
+					}
 				} catch (Exception e) {
 					String errorMsg = "consume message error.";
 					if(currentConetxt!=null){

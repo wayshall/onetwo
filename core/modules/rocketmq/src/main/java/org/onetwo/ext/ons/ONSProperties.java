@@ -3,8 +3,6 @@ package org.onetwo.ext.ons;
 import java.util.Map;
 import java.util.Properties;
 
-import lombok.Data;
-
 import org.onetwo.ext.alimq.JsonMessageDeserializer;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
@@ -15,6 +13,8 @@ import org.springframework.util.Assert;
 
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.google.common.collect.Maps;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -38,7 +38,7 @@ public class ONSProperties implements InitializingBean {
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
-
+	
 //	Map<String, String> jsonDeserializerCompatibilityTypeMappings = Maps.newHashMap();	
 
 	public Map<String, Properties> getProducers() {
