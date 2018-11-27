@@ -17,7 +17,7 @@ import org.springframework.util.Assert;
 public class SwaggerUtils {
 	private static final String REF_PREFIX = "#/definitions/";
 	public static final String API_ID_PREFIX = "api";
-	private static final String EXTENSION_PREFIX = "x-field-";
+	public static final String EXTENSION_PREFIX = "x-field-";
 	
 	private static final JsonMapper JSON_MAPPER = JsonMapper.ignoreEmpty().enableTyping();
 	
