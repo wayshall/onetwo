@@ -14,6 +14,11 @@ public interface OnsMessage extends Serializable {
 	Message toMessage();
 	
 	public interface TracableMessage {
+		String PREFIX = "__jfish_";
+
+		String USER_ID_KEY = PREFIX + "user_id";
+		String DATA_ID_KEY = PREFIX + "data_id";
+		String OCCUR_ON_KEY = PREFIX + "occur_on";
 		
 		String getUserId();
 		void setUserId(String userId);
