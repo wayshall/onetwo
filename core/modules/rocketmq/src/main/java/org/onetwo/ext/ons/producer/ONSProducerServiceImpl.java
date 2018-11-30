@@ -146,21 +146,38 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		
 		if(needSerialize(body)){
 			message.setBody(this.messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
-			if(StringUtils.isBlank(message.getKey()) && onsMessage instanceof TracableMessage) {
-				//自动生成key
-				//如果是延迟消息，用实际延迟发送的时间替换已存在的发生时间
-				TracableMessage tracableMessage = (TracableMessage) onsMessage;
-				if(message.getStartDeliverTime()>0) {
-					tracableMessage.setOccurOn(new Date(message.getStartDeliverTime()));
-				}
-				String key = ONSUtils.toKey(topic, tag, tracableMessage);
-				message.setKey(key);
-			}
 		}else{
 			message.setBody((byte[])body);
 		}
+		configMessage(message, onsMessage);
 		
 		return sendRawMessage(message, interceptorPredicate);
+	}
+	
+	private void configMessage(Message message, OnsMessage onsMessage) {
+		if(onsMessage instanceof TracableMessage) {
+			//自动生成key
+			//如果是延迟消息，用实际延迟发送的时间替换已存在的发生时间
+			TracableMessage tracableMessage = (TracableMessage) onsMessage;
+			if (message.getStartDeliverTime()>0) {
+				tracableMessage.setOccurOn(new Date(message.getStartDeliverTime()));
+			}
+
+			if (StringUtils.isNotBlank(tracableMessage.getUserId())) {
+				message.putUserProperties(TracableMessage.USER_ID_KEY, tracableMessage.getUserId());
+			}
+			if (StringUtils.isNotBlank(tracableMessage.getDataId())) {
+				message.putUserProperties(TracableMessage.DATA_ID_KEY, tracableMessage.getDataId());
+			}
+			if (tracableMessage.getOccurOn()!=null) {
+				message.putUserProperties(TracableMessage.OCCUR_ON_KEY, String.valueOf(tracableMessage.getOccurOn().getTime()));
+			}
+			
+			if (StringUtils.isBlank(message.getKey())) {
+				String key = ONSUtils.toKey(message.getTopic(), message.getTag(), tracableMessage);
+				message.setKey(key);
+			}
+		}
 	}
 	
 	protected String resolvePlaceholders(String value){
