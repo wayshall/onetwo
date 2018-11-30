@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.onetwo.dbm.annotation.DbmIdGenerator;
+import org.onetwo.dbm.id.SnowflakeGenerator;
 import org.onetwo.dbm.jpa.BaseEntity;
 import org.onetwo.dbm.mapping.DbmEnumValueMapping;
 
@@ -31,10 +33,9 @@ public class ReceiveMessageEntity extends BaseEntity {
 	/***
 	 * 自动生成id，消费端不能用msgkey作为唯一键，因为rmq不同的消费组可以接受同一个消息
 	 */
-//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "snowflake")
-//    @DbmIdGenerator(name = "snowflake", generatorClass = SnowflakeGenerator.class)
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "snowflake")
+    @DbmIdGenerator(name = "snowflake", generatorClass = SnowflakeGenerator.class)
 	Long id;
 	private String msgkey;
 	@Column(name="raw_msgid")
