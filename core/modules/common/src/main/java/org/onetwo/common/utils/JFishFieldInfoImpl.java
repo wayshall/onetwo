@@ -35,6 +35,11 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 		this.propertyClassWrapper = Intro.wrap(field.getType());
 		this.annotationInfo = new AnnotationInfo(beanClassWrapper.getClazz(), field);
 	}
+	
+	@Override
+	public boolean isBeanProperty() {
+		return false;
+	}
 
 	@Override
 	public void setValue(Object entity, Object value){
