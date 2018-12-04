@@ -19,6 +19,7 @@ public interface SystemErrorCode {
 	interface UplaodErrorCode {
 		String BASE_CODE = "UPLOAD_";//前缀
 		String NOT_ALLOW_FILE = BASE_CODE+"NOT_ALLOW_FILE";//不允许的上传此类文件
+		String MAX_UPLOAD_SIZE_EXCEEDED = BASE_CODE+"MAX_UPLOAD_SIZE_EXCEEDED";//超过了最大上传限制
 	}
 	
 	interface CommandLineErrorCode {

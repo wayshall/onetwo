@@ -34,6 +34,10 @@ final public class DataResults {
 		return SimpleResultBuilder.<T>builder().error(errorType);
 	}
 
+	public static <T> SimpleResultBuilder<T> code(String code){
+		return SimpleResultBuilder.<T>builder().code(code);
+	}
+
 	public static <T> SimpleResultBuilder<T> error(BindingResult bindingResult){
 		String message = ValidatorUtils.asString(bindingResult);
 		return error(message);
