@@ -1,8 +1,6 @@
 package org.onetwo.boot.mq;
 
-import org.onetwo.boot.mq.MQProperties.DeleteTaskProps;
 import org.onetwo.boot.mq.MQProperties.SendMode;
-import org.onetwo.boot.mq.MQProperties.TaskLocks;
 import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.interceptor.SimpleDatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.repository.DbmSendMessageRepository;
@@ -24,7 +22,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @Configuration
 @ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
-@EnableScheduling
 @EnableConfigurationProperties(MQProperties.class)
 public class MQTransactionalConfiguration {
 
@@ -57,26 +54,27 @@ public class MQTransactionalConfiguration {
 		return MessageBodyStoreSerializer.DEFAULT;
 	}
 	
-	@Bean
-	@ConditionalOnProperty(value=MQProperties.TRANSACTIONAL_SEND_TASK_ENABLED_KEY, matchIfMissing=false)
-	public CompensationSendMessageTask compensationSendMessageTask(){
-		CompensationSendMessageTask task = new CompensationSendMessageTask();
-		TaskLocks taskLock = mqProperties.getTransactional().getSendTask().getLock();
-		if(taskLock==TaskLocks.REDIS){
-			task.setUseReidsLock(true);
+	@Configuration
+	@EnableScheduling
+	static class InnerTaskConfiguration extends MQTaskConfiguration {
+
+		public InnerTaskConfiguration(MQProperties mqProperties) {
+			super(mqProperties);
 		}
-		return task;
+		
+		@Bean
+		@ConditionalOnProperty(value=MQProperties.TRANSACTIONAL_SEND_TASK_ENABLED_KEY, matchIfMissing=false)
+		@ConditionalOnMissingBean(CompensationSendMessageTask.class)
+		public CompensationSendMessageTask compensationSendMessageTask(){
+			return super.createCompensationSendMessageTask();
+		}
+		
+		@Bean
+		@ConditionalOnProperty(value=MQProperties.TRANSACTIONAL_DELETE_TASK_ENABLED_KEY, matchIfMissing=false)
+		@ConditionalOnMissingBean(DeleteSentMessageTask.class)
+		public DeleteSentMessageTask deleteSentMessageTask(){
+			return super.createDeleteSentMessageTask();
+		}
 	}
 	
-	@Bean
-	@ConditionalOnProperty(value=MQProperties.TRANSACTIONAL_DELETE_TASK_ENABLED_KEY, matchIfMissing=false)
-	public DeleteSentMessageTask deleteSentMessageTask(){
-		DeleteSentMessageTask task = new DeleteSentMessageTask();
-		DeleteTaskProps deleteProps = mqProperties.getTransactional().getDeleteTask();
-		if(deleteProps.getLock()==TaskLocks.REDIS){
-			task.setUseReidsLock(true);
-		}
-		task.setDeleteBeforeAt(deleteProps.getDeleteBeforeAt());
-		return task;
-	}
 }

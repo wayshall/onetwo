@@ -38,8 +38,8 @@ public class DeleteSentMessageTask implements InitializingBean {
 	
 	private boolean useReidsLock;
 	
-	private final int defaultDeleteBeforeAt = 60*60*24*3;//默认删除当前时间3天前的已发送消息
-	private String deleteBeforeAt;
+	private final int defaultDeleteBeforeAt = 60*60*24*15;//默认删除当前时间15天前的已发送消息
+	private String deleteBeforeAt;// example: 15d
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
