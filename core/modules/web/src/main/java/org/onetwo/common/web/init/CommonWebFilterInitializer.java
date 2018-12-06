@@ -38,8 +38,8 @@ public class CommonWebFilterInitializer {
 		//encodingFilter
 		registeredEncodingFilter(servletContext, CharacterEncodingFilter.class);
 		
-		//multipartFilter
-//		registeredMultipartFilter(servletContext, SpringMultipartFilterProxy.class);
+//		multipartFilter
+		registeredMultipartFilter(servletContext);
 		
 		//hiddenHttpMethodFilter 
 		registeredHiddenMethodFilter(servletContext, HiddenHttpMethodFilter.class);
@@ -53,6 +53,9 @@ public class CommonWebFilterInitializer {
 		//ajaxAnywhere 
 //		registeredAjaxAnywhere(servletContext, AAFilter.class);
 		
+	}
+	
+	protected void registeredMultipartFilter(ServletContext servletContext){
 	}
 	
 	protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
