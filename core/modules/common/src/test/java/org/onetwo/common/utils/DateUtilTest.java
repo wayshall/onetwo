@@ -2,6 +2,7 @@ package org.onetwo.common.utils;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import org.onetwo.common.date.DateRange;
 import org.onetwo.common.date.DateRangeStaticFacotry;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.date.DateUtils.DateType;
+import org.onetwo.common.date.Dates;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.log.JFishLoggerFactory;
 
@@ -140,6 +142,13 @@ public class DateUtilTest {
 		} catch (Exception e) {
 			Assert.assertNotNull(e);;
 		}
+		
+
+    	LocalDateTime deliverAt = LocalDateTime.now().plusDays(1)
+    										.withHour(12)
+    										.withMinute(0)
+    										.withSecond(0);
+    	System.out.println("deliverAt: " + deliverAt.format(Dates.DATE_TIME));
 	}
 	
 	@Test

@@ -18,6 +18,7 @@ public class StoringFileContext {
 	private String module;
 	private StoreFilePathStrategy storeFilePathStrategy;// = SimpleFileStorer.SIMPLE_STORE_STRATEGY;
 	private String key;
+	private boolean keepOriginFileName = true;
 	
 	
 	public StoringFileContext(String module, InputStream inputStream, String fileName) {
@@ -69,6 +70,14 @@ public class StoringFileContext {
 
 	public void setStoreFilePathStrategy(StoreFilePathStrategy storeFilePathStrategy) {
 		this.storeFilePathStrategy = storeFilePathStrategy;
+	}
+
+	public boolean isKeepOriginFileName() {
+		return keepOriginFileName;
+	}
+
+	public void setKeepOriginFileName(boolean keepOriginFileName) {
+		this.keepOriginFileName = keepOriginFileName;
 	}
 
 }

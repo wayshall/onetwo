@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -605,6 +606,16 @@ public class FileUtils {
 
 	public static String getExtendName(String fileName) {
 		return getExtendName(fileName, false);
+	}
+
+	public static String randomUUIDFileName(String fileName, boolean keepFilename) {
+		String newfn = UUID.randomUUID().toString();
+		if (keepFilename) {
+			newfn = newfn + "." + fileName;
+		} else {
+			newfn = newfn + FileUtils.getExtendName(fileName, true);
+		}
+		return newfn;
 	}
 	
 

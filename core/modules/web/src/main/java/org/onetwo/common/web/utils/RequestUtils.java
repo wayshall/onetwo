@@ -312,6 +312,12 @@ public final class RequestUtils {
 
 	public static ResponseType getResponseType(HttpServletRequest request){
 		String ext = getRequestExtension(request);
+		if (StringUtils.isBlank(ext)) {
+			MediaType  mtype = getAcceptAsMediaType(request);
+			if (MediaType.APPLICATION_JSON.isCompatibleWith(mtype)) {
+				return ResponseType.JSON;
+			}
+		}
 		return ResponseType.of(ext);
 	}
 

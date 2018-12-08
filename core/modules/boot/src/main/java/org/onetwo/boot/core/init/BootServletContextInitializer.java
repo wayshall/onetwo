@@ -19,6 +19,10 @@ public class BootServletContextInitializer extends CommonWebFilterInitializer im
 		this.onServletContextStartup(servletContext);
     }
 
+	@Override
+	protected void registeredMultipartFilter(ServletContext servletContext){
+//		this.registeredMultipartFilter(servletContext, SpringMultipartFilterProxy.class);
+	}
 
 	/*protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
 		//boot会自动注册

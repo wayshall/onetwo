@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
@@ -112,9 +111,9 @@ public class SimpleFileStorer implements FileStorer {
 		public FileStoredMeta getStoreFilePath(String storeBaseDir, String appContextDir, StoringFileContext ctx) {
 			String newfn = ctx.getKey();
 			String accessablePath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
-			if(StringUtils.isBlank(newfn)){
+			if (StringUtils.isBlank(newfn)){
 				String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(ctx.getModule())).replace("/", "-");
-				newfn = prefix+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(ctx.getFileName(), true);
+				newfn = prefix+"-"+ FileUtils.randomUUIDFileName(ctx.getFileName(), ctx.isKeepOriginFileName());
 			}
 //			newfn += FileUtils.getExtendName(ctx.getFileName(), true);
 			// /appContextDir/moduleDir/yyyy-MM-dd//uuid.ext
