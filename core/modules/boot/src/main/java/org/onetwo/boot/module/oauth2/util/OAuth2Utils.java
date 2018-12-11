@@ -82,7 +82,7 @@ public abstract class OAuth2Utils {
 			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
 			runInContext(clientDetail, runnalbe);
 		} finally {
-			CURRENT_CLIENTS.remove();
+			CURRENT_TOKENS.remove();
 		}
 	}
 	
