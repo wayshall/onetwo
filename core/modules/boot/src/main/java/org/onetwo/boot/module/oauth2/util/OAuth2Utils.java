@@ -6,7 +6,9 @@ import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.module.oauth2.clientdetails.ClientDetails;
+import org.onetwo.boot.module.oauth2.clientdetails.ClientDetailsObtainService;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.security.core.Authentication;
@@ -19,11 +21,18 @@ import org.springframework.util.Assert;
  * <br/>
  */
 public abstract class OAuth2Utils {
+	public static final String OAUTH2_AUTHORIZATION_HEADER = "Authorization";
 	public static final String OAUTH2_CLIENT_DETAILS_SERVICE = "oauth2ClientDetailsService";
 	
 	private static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
-	
+
 	private static final NamedThreadLocal<ClientDetails> CURRENT_CLIENTS = new NamedThreadLocal<>("oauth2 context");
+	private static final NamedThreadLocal<String> CURRENT_TOKENS = new NamedThreadLocal<>("oauth2 token");
+	
+
+	private static ClientDetailsObtainService getClientDetailsObtainService() {
+		return Springs.getInstance().getBean(ClientDetailsObtainService.class);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T extends ClientDetails> Optional<T> getCurrentClientDetails() {
@@ -55,6 +64,29 @@ public abstract class OAuth2Utils {
 		} finally {
 			CURRENT_CLIENTS.remove();
 		}
+	}
+	
+	public static void runInToken(String token, Runnable runnalbe) {
+		try {
+			CURRENT_TOKENS.set(token);
+			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
+			runInContext(clientDetail, runnalbe);
+		} finally {
+			CURRENT_CLIENTS.remove();
+		}
+	}
+	
+	public static <T> T runInToken(String token, Supplier<T> supplier) {
+		try {
+			CURRENT_TOKENS.set(token);
+			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
+			return runInContext(clientDetail, supplier);
+		} finally {
+			CURRENT_TOKENS.remove();
+		}
+	}
+	public static Optional<String> getCurrentToken() {
+		return Optional.ofNullable(CURRENT_TOKENS.get());
 	}
 	
 	public static Runnable runInThread(final Runnable runnable){
