@@ -6,6 +6,7 @@ import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.exception.ConsumeException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,7 +92,15 @@ public class DelegateMessageService implements InitializingBean {
 	@SuppressWarnings("rawtypes")
 	private void consumeMessage(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
 		consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
-		consumer.doConsume(currentConetxt);
+		try {
+			consumer.doConsume(currentConetxt);
+		} catch (Exception e) {
+			String msgId = ONSUtils.getMessageId(currentConetxt.getMessage());
+			String msg = "rmq-consumer["+meta.getConsumerId()+"] consumed message error. " + 
+						"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys();
+			logger.error(msg, e);
+			throw new ConsumeException(msg, e);
+		}
 		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
 	}
 
