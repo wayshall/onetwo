@@ -27,6 +27,14 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 
 	@Override
 	public void apply(RequestTemplate template) {
+		OAuth2Utils.getCurrentToken().ifPresent(token -> {
+			if(log.isInfoEnabled()){
+				log.info("set current context header[{}] to feign ...", token);
+			}
+			if (StringUtils.isNotBlank(token)) {
+				template.header(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, OAuth2Utils.BEARER_TYPE + " " + token);
+			}
+		});
 		// always add feign client type header
 		template.header(RemoteClientUtils.HEADER_CLIENT_TYPE, ClientTypes.FEIGN.name());
 		WebHolder.getRequest().ifPresent(request->{
@@ -39,14 +47,6 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 					template.header(header, value);
 				}
 			});
-		});
-		OAuth2Utils.getCurrentToken().ifPresent(token -> {
-			if(log.isInfoEnabled()){
-				log.info("set current context header[{}] to feign ...", token);
-			}
-			if (StringUtils.isNotBlank(token)) {
-				template.header(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, token);
-			}
 		});
 	}
 
