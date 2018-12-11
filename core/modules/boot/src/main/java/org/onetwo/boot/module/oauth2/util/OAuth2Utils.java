@@ -78,22 +78,29 @@ public abstract class OAuth2Utils {
 	
 	public static void runInToken(String token, Runnable runnalbe) {
 		try {
-			CURRENT_TOKENS.set(token);
+			setCurrentToken(token);
 			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
 			runInContext(clientDetail, runnalbe);
 		} finally {
-			CURRENT_TOKENS.remove();
+			removeCurrentToken();
 		}
 	}
 	
 	public static <T> T runInToken(String token, Supplier<T> supplier) {
 		try {
-			CURRENT_TOKENS.set(token);
+			setCurrentToken(token);
 			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
 			return runInContext(clientDetail, supplier);
 		} finally {
-			CURRENT_TOKENS.remove();
+			removeCurrentToken();
 		}
+	}
+
+	public static void setCurrentToken(String token) {
+		CURRENT_TOKENS.set(token);
+	}
+	public static void removeCurrentToken() {
+		CURRENT_TOKENS.remove();
 	}
 	/*public static Optional<String> getCurrentToken() {
 		return Optional.ofNullable(CURRENT_TOKENS.get());

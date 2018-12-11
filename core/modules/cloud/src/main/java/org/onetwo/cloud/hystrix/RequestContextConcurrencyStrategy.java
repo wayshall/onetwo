@@ -2,6 +2,7 @@ package org.onetwo.cloud.hystrix;
 
 import java.util.concurrent.Callable;
 
+import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -22,11 +23,15 @@ public class RequestContextConcurrencyStrategy extends AbstractContextConcurrenc
 	class RequestContextCallable<T> implements Callable<T> {
 		private Callable<T> delegate;
 		private final RequestAttributes delegateRequestAttributes;
+		private String authorizationToken;
 		
 		public RequestContextCallable(Callable<T> callable) {
 			super();
 			this.delegate = callable;
 			this.delegateRequestAttributes = RequestContextHolder.getRequestAttributes();
+			OAuth2Utils.getCurrentToken().ifPresent(token -> {
+				this.authorizationToken = token;
+			});
 		}
 
 		@Override
@@ -36,8 +41,10 @@ public class RequestContextConcurrencyStrategy extends AbstractContextConcurrenc
 			boolean reset = delegateRequestAttributes!=null && !delegateRequestAttributes.equals(existRequestAttributes);
 			try {
 				RequestContextHolder.setRequestAttributes(delegateRequestAttributes);
+				OAuth2Utils.setCurrentToken(authorizationToken);
 				return this.delegate.call();
 			} finally {
+				OAuth2Utils.removeCurrentToken();
 				if(reset){
 					RequestContextHolder.resetRequestAttributes();
 				}
