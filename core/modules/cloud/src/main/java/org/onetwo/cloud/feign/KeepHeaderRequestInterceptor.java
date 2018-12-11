@@ -44,7 +44,9 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 			if(log.isInfoEnabled()){
 				log.info("set current context header[{}] to feign ...", token);
 			}
-			template.header(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, token);
+			if (StringUtils.isNotBlank(token)) {
+				template.header(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, token);
+			}
 		});
 	}
 

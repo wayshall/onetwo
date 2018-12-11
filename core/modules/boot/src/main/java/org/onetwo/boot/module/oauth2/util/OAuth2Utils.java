@@ -33,6 +33,14 @@ public abstract class OAuth2Utils {
 	private static ClientDetailsObtainService getClientDetailsObtainService() {
 		return Springs.getInstance().getBean(ClientDetailsObtainService.class);
 	}
+	
+	public static Optional<String> getCurrentToken() {
+		Optional<HttpServletRequest> req = WebHolder.getRequest();
+		if(req.isPresent()){
+			return getClientDetailsObtainService().getTokenValue(req.get());
+		}
+		return Optional.ofNullable(CURRENT_TOKENS.get());
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T extends ClientDetails> Optional<T> getCurrentClientDetails() {
@@ -85,9 +93,9 @@ public abstract class OAuth2Utils {
 			CURRENT_TOKENS.remove();
 		}
 	}
-	public static Optional<String> getCurrentToken() {
+	/*public static Optional<String> getCurrentToken() {
 		return Optional.ofNullable(CURRENT_TOKENS.get());
-	}
+	}*/
 	
 	public static Runnable runInThread(final Runnable runnable){
 		Optional<ClientDetails> clientDetail = getCurrentClientDetails();
