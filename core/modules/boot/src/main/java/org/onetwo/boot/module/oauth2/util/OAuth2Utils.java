@@ -9,6 +9,7 @@ import org.onetwo.boot.module.oauth2.clientdetails.ClientDetails;
 import org.onetwo.boot.module.oauth2.clientdetails.ClientDetailsObtainService;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.security.core.Authentication;
@@ -68,6 +69,9 @@ public abstract class OAuth2Utils {
 	}
 	
 	public static <T> T runInContext(ClientDetails clientDetail, Supplier<T> supplier) {
+		if (clientDetail==null) {
+			throw new IllegalArgumentException("clientDetail cant not be null");
+		}
 		try {
 			CURRENT_CLIENTS.set(clientDetail);
 			return supplier.get();
@@ -77,6 +81,9 @@ public abstract class OAuth2Utils {
 	}
 	
 	public static void runInToken(String token, Runnable runnalbe) {
+		if (StringUtils.isBlank(token)) {
+			throw new IllegalArgumentException("token cant not be blank");
+		}
 		try {
 			setCurrentToken(token);
 			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
