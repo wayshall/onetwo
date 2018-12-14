@@ -19,7 +19,6 @@ import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvide
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
-import org.onetwo.boot.core.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
@@ -101,10 +100,10 @@ public class BootWebCommonAutoConfig {
 		return new MvcViewRender();
 	}
 	
-	@Bean
+	/*@Bean
 	public SpringMultipartFilterProxy springMultipartFilterProxy() {
 		return new SpringMultipartFilterProxy();
-	}
+	}*/
 	
 	/***
 	 * 异常解释

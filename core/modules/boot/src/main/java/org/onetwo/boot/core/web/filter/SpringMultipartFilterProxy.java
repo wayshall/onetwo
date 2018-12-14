@@ -16,12 +16,10 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.slf4j.Logger;
-import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MultipartFilter;
 
-@Order(OrderedHttpPutFormContentFilter.DEFAULT_ORDER-100)
+//@Order(OrderedHttpPutFormContentFilter.DEFAULT_ORDER-100)
 public class SpringMultipartFilterProxy extends MultipartFilter {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(SpringMultipartFilterProxy.class);
