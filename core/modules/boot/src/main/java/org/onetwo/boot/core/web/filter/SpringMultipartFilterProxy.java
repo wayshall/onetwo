@@ -32,7 +32,7 @@ public class SpringMultipartFilterProxy extends MultipartFilter {
 		} catch (MaxUploadSizeExceededException e) {
 			response.setHeader(ResponseUtils.ERROR_RESPONSE_HEADER, UplaodErrorCode.MAX_UPLOAD_SIZE_EXCEEDED);
 			String msg = "文件超过限制："+LangUtils.getCauseServiceException(e).getMessage();
-			logger.error(msg);
+			logger.error(msg, e);
 			if(RequestUtils.getResponseType(request)==ResponseType.JSON){
 				DataResult<?> dataResult = DataResults.code(UplaodErrorCode.MAX_UPLOAD_SIZE_EXCEEDED)
 															.message(msg).build();
