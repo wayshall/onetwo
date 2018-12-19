@@ -129,13 +129,6 @@ public class BootJFishConfig {
 					 return prettyPrint;
 			}
 		}
-		
-		@Data
-		public class ResourceHandlerConfig {
-			String[] pathPatterns;
-			String[] locations;
-			Integer cacheInDays = 30;
-		}
 
 		/*@Data
 		public class AutoWrapResultConfig {
@@ -143,6 +136,13 @@ public class BootJFishConfig {
 			List<String> packages;
 		}*/
 		
+	}
+	
+	@Data
+	static public class ResourceHandlerConfig {
+		String[] pathPatterns;
+		String[] locations;
+		Integer cacheInDays = 30;
 	}
 	
 	@Data
