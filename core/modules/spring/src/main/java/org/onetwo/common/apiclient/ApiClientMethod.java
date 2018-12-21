@@ -121,12 +121,13 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		}
 		
 		AnnotationAttributes reqestMappingAttrs = requestMapping.get();
-		String[] paths = reqestMappingAttrs.getStringArray("value");
-		path = LangUtils.isEmpty(paths)?"":paths[0];
 		//SpringMvcContract#parseAndValidateMetadata
 		this.acceptHeader = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("produces"));
 		this.contentType = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("consumes"));
 		this.headers = reqestMappingAttrs.getStringArray("headers");
+		
+		String[] paths = reqestMappingAttrs.getStringArray("value");
+		path = LangUtils.isEmpty(paths)?"":paths[0];
 		
 		RequestMethod[] methods = (RequestMethod[])reqestMappingAttrs.get("method");
 		requestMethod = LangUtils.isEmpty(methods)?RequestMethod.GET:methods[0];
