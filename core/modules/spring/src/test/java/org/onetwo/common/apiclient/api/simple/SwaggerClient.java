@@ -12,10 +12,10 @@ import lombok.Data;
  * @author weishao zeng
  * <br/>
  */
-@RestApiClient(url="https://test.micro-cloud-tech.cn")
+@RestApiClient(url="")
 public interface SwaggerClient {
 	
-	@RequestMapping(value="/service/neo/swagger-resources.json", method=RequestMethod.GET)
+	@RequestMapping(value="swagger-resources.json", method=RequestMethod.GET)
 	List<SwaggerResponse> getGroups();
 
 	@Data

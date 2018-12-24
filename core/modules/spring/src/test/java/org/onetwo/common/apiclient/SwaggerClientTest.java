@@ -22,8 +22,11 @@ public class SwaggerClientTest extends ApicientBaseTests {
 	public void testGetGroups(){
 		List<SwaggerResponse> res = swaggerClient.getGroups();
 		assertThat(res).isNotNull();
-		
+
 		System.out.println("res： " + res);
+		res.forEach(sw->{
+			System.out.println("name： " + sw.getName());
+		});
 	}
 
 }
