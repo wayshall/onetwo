@@ -51,7 +51,8 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 		if (LangUtils.isEmpty(dataList) || !Map.class.isAssignableFrom(dataList.get(0).getClass())) {
 			return responseEntity.getBody();
 		}
-		List<Map<String, ?>> mapList = (List<Map<String,?>>) Lists.newArrayList(dataList);
+		
+		List<Map<String, ?>> mapList = (List<Map<String,?>>) Lists.newArrayList((List<Map<String,?>>) responseEntity.getBody());
 		List<Object> datas = (List<Object>) responseEntity.getBody();
 		datas.clear();
 		for(Map<String, ?> data : mapList) {
