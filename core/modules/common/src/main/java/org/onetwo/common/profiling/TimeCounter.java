@@ -122,5 +122,8 @@ public class TimeCounter {
 		LangUtils.printMemory();
 		System.out.println();
 	}
+	public long getCostTime() {
+		return costTime;
+	}
 
 }

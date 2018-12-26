@@ -8,11 +8,21 @@ import java.util.Map;
 
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.async.DeferredResult;
+
+import com.fasterxml.classmate.TypeResolver;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
 
 import springfox.documentation.RequestHandler;
 import springfox.documentation.annotations.ApiIgnore;
 import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.schema.AlternateTypeRules;
+import springfox.documentation.schema.WildcardType;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.Parameter;
@@ -21,16 +31,14 @@ import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Lists;
-
 /****
  * @author wayshall
  *
  */
 public class AbstractSwaggerConfig {
-
+	@Autowired
+    private TypeResolver typeResolver;
+	
     protected List<Parameter> createGlobalParameters(){
 		List<Parameter> parameters = Lists.newArrayList();
 		return parameters;
@@ -63,6 +71,12 @@ public class AbstractSwaggerConfig {
     	Docket docket = new Docket(DocumentationType.SWAGGER_2)
 								.ignoredParameterTypes(ApiIgnore.class)
 								.groupName(groupName)
+								.alternateTypeRules(
+										AlternateTypeRules.newRule(
+												typeResolver.resolve(DeferredResult.class, typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
+												typeResolver.resolve(WildcardType.class)
+		                                )
+								)
 						//		.pathProvider(pathProvider)
 						        .select()
 						            .apis(Predicates.or(packages))
