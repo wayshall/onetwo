@@ -4,21 +4,18 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.boot.plugins.swagger.service.impl.DatabaseSwaggerResourceService;
-import org.onetwo.common.db.spi.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Maps;
 
 import springfox.documentation.service.Documentation;
 import springfox.documentation.spring.web.DocumentationCache;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author wayshall <br/>
  */
 public class DatabaseDocumentationCache extends DocumentationCache {
 	
-	@Autowired
-	private BaseEntityManager baseEntityManager;
 	@Autowired
 	private DatabaseSwaggerResourceService databaseSwaggerResourceService;
 

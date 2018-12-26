@@ -10,7 +10,7 @@ JDK8+
 
 
 ## maven   
-当前snapshot版本：**4.6.1-SNAPSHOT**   
+当前snapshot版本：**4.7.2-SNAPSHOT**   
 
 若使用snapshot版本，请添加snapshotRepository仓储：   
 ```xml   
