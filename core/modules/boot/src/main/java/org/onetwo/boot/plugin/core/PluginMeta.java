@@ -17,12 +17,30 @@ public interface PluginMeta {
 		return by(webPluginClass, "1.0.0");
 	}
 	
+	/***
+	 * 使用短横杠命名方法
+	 * @author weishao zeng
+	 * @param webPluginClass
+	 * @return
+	 */
+	static PluginMeta useKebabCaseBy(Class<? extends WebPlugin> webPluginClass){
+		return by(webPluginClass, "1.0.0", "-");
+	}
+	
 	static PluginMeta by(Class<? extends WebPlugin> webPluginClass, String version){
+		return by(webPluginClass, version, null);
+	}
+	
+	static PluginMeta by(Class<? extends WebPlugin> webPluginClass, String version, String sperator){
 		String clsName = webPluginClass.getSimpleName();
 		if(clsName.endsWith(PLUGIN_POSTFIX)){
 			clsName = StringUtils.substringBefore(clsName, PLUGIN_POSTFIX);
 		}
-		clsName = StringUtils.uncapitalize(clsName);
+		if (StringUtils.isNotBlank(sperator)) {
+			clsName = StringUtils.convertWithSeperator(clsName, sperator);
+		} else {
+			clsName = StringUtils.uncapitalize(clsName);
+		}
 		return new SimplePluginMeta(clsName, version);
 	}
 

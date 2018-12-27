@@ -1,12 +1,5 @@
 package org.onetwo.boot.plugins.swagger.mapper;
 
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +16,13 @@ import org.onetwo.boot.plugins.swagger.model.OperationListModel.OperationDetailM
 import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.copier.CopyUtils;
+
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
+import io.swagger.models.Response;
+import io.swagger.models.Swagger;
+import io.swagger.models.parameters.Parameter;
 
 /**
  * @author wayshall
@@ -51,6 +51,10 @@ public class SwaggerModelMapper {
 		Operation swgOp = new Operation();
 		CopyUtils.copy(swgOp, op);
 		swgOp.setVendorExtension(SwaggerOperationEntity.KEY_API_ID, op.getId());
+		swgOp.setVendorExtension(SwaggerOperationEntity.KEY_AUTHOR, op.getAuthor());
+		swgOp.setVendorExtension(SwaggerOperationEntity.KEY_VINDICATOR, op.getVindicator());
+		swgOp.setVendorExtension(SwaggerOperationEntity.KEY_VERSION, op.getApiVersion());
+		swgOp.setVendorExtension(SwaggerOperationEntity.KEY_MODULE_ID, op.getModuleId().toString());
 		onMapOperation.accept(op, swgOp);
 		return swgOp;
 	}

@@ -43,6 +43,7 @@ public class SwaggerOperationEntity extends BaseEntity  {
 	 * 作者
 	 */
 	public static final String KEY_AUTHOR = SwaggerUtils.EXTENSION_PREFIX + "author";
+	public static final String KEY_MODULE_ID = SwaggerUtils.EXTENSION_PREFIX + "module-id";
 	/***
 	 * 维护者
 	 */

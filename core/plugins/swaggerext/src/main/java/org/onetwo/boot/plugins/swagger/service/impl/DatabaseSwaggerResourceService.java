@@ -1,25 +1,29 @@
 package org.onetwo.boot.plugins.swagger.service.impl;
 
-import io.swagger.models.Swagger;
-import io.swagger.parser.SwaggerParser;
-
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.onetwo.boot.plugins.swagger.entity.SwaggerEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerModuleEntity;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerModuleEntity.Status;
 import org.onetwo.boot.plugins.swagger.entity.SwaggerModuleEntity.StoreTypes;
+import org.onetwo.boot.plugins.swagger.vo.ModuleListResponse;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.models.Swagger;
+import io.swagger.parser.SwaggerParser;
 import springfox.documentation.spring.web.json.Json;
 import springfox.documentation.spring.web.json.JsonSerializer;
+import springfox.documentation.swagger.web.SwaggerResourcesProvider;
 
 /**
  * @author wayshall
@@ -34,35 +38,50 @@ public class DatabaseSwaggerResourceService {
 	@Autowired
 	private SwaggerServiceImpl swaggerService;
 	@Autowired
-	private SwaggerModelServiceImpl swaggerModelService;
-	@Autowired
-	private SwaggerParameterServiceImpl swaggerParameterService;
-	@Autowired
 	private JsonSerializer jsonSerializer;
+	@Autowired
+	private SwaggerResourcesProvider swaggerResources;
 	
+	/***
+	 * 通过moduleName查找swagger，并转为Json对象
+	 * @author weishao zeng
+	 * @param groupName
+	 * @return
+	 */
 	public Optional<Json> findJsonByGroupName(String groupName){
-		/*SwaggerFileEntity fileEntity = findByGroupName(groupName);
-		if(fileEntity==null){
-			return Optional.empty();
-		}
-		Optional<Json> json = Optional.of(new Json(fileEntity.getContent()));*/
-		Optional<Json> json = convertByGroupName(groupName).map(s->jsonSerializer.toJson(s));
+		Optional<Json> json = findSwaggerByGroupName(groupName).map(s->jsonSerializer.toJson(s));
 		return json;
 	}
-	
 
-	public Optional<Swagger> convertByGroupName(String applicationName){
+	/****
+	 * 通过moduleId查找swagger，并转为Json对象
+	 * @author weishao zeng
+	 * @param moduleId
+	 * @return
+	 */
+	public Optional<Json> findJsonByModuleId(Long moduleId){
+		Optional<Json> json = findSwaggerByModuleId(moduleId).map(s->jsonSerializer.toJson(s));
+		return json;
+	}
+
+	public Optional<Swagger> findSwaggerByGroupName(String applicationName){
 		SwaggerModuleEntity file = findByModuleName(applicationName);
 		if(file==null){
 //			throw new BaseException("swagger module not found for: " + groupName);
 			return Optional.empty();
 		}
-		SwaggerEntity swaggerEntity = swaggerService.findByModuleId(file.getId());
+		Optional<Swagger> swagger = findSwaggerByModuleId(file.getId());
+		return swagger;
+	}
+	
+
+	public Optional<Swagger> findSwaggerByModuleId(Long moduleId){
+		SwaggerEntity swaggerEntity = swaggerService.findByModuleId(moduleId);
 		if(swaggerEntity==null){
 //			throw new BaseException("swagger not found for swaggerFileId: " + file.getId());
 			return Optional.empty();
 		}
-		Swagger swagger = this.swaggerService.convertBySwagger(swaggerEntity);
+		Swagger swagger = swaggerService.convertBySwagger(swaggerEntity);
 		return Optional.ofNullable(swagger);
 	}
 	
@@ -80,6 +99,37 @@ public class DatabaseSwaggerResourceService {
 
 	public List<SwaggerModuleEntity> findAllEnabled(){
 		return findListByStatus(SwaggerModuleEntity.Status.ENABLED);
+	}
+
+	/****
+	 * 查找所有module的swagger resouce
+	 * @author weishao zeng
+	 * @return
+	 */
+	public List<ModuleListResponse> findModuleSwaggerResource(boolean includeDefault) {
+		List<ModuleListResponse> resources = findAllEnabled().stream().map(se->{
+			ModuleListResponse swaggerResource = resource(se);
+			return swaggerResource;
+		})
+		.collect(Collectors.toList());
+		Collections.sort(resources);
+		
+		if (includeDefault) {
+			swaggerResources.get().stream().filter(sr -> sr.getName().equals("default")).findFirst().ifPresent(sr -> {
+				ModuleListResponse mr = CopyUtils.copy(ModuleListResponse.class, sr);
+				resources.add(0, mr);
+			});
+		}
+		return resources;
+	}
+
+	private ModuleListResponse resource(SwaggerModuleEntity sfe) {
+		ModuleListResponse swaggerResource = new ModuleListResponse();
+		swaggerResource.setName(sfe.getModuleName());
+		swaggerResource.setSwaggerVersion("2.0");
+		swaggerResource.setModuleId(sfe.getId().toString());
+		swaggerResource.setLocation("/v2/api-docs?group="+sfe.getModuleName());
+		return swaggerResource;
 	}
 	
 	public List<SwaggerModuleEntity> findListByStatus(Status status){

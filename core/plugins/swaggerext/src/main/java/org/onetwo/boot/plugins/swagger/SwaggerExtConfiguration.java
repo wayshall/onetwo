@@ -3,6 +3,7 @@ package org.onetwo.boot.plugins.swagger;
 import java.util.Map;
 
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
+import org.onetwo.boot.plugins.swagger.controller.ExtApiResourceController;
 import org.onetwo.boot.plugins.swagger.controller.ExtSwagger2Controller;
 import org.onetwo.boot.plugins.swagger.mapper.SwaggerModelMapper;
 import org.onetwo.boot.plugins.swagger.service.impl.DatabaseSwaggerResourceService;
@@ -68,5 +69,10 @@ public class SwaggerExtConfiguration {
 	@Bean
 	public SwaggerModelMapper swaggerModelMapper(){
 		return new SwaggerModelMapper();
+	}
+	
+	@Bean
+	public ExtApiResourceController ExtApiResourceController() {
+		return new ExtApiResourceController();
 	}
 }
