@@ -21,6 +21,7 @@ import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.TracableMessageKey;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -169,13 +170,18 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 			if (StringUtils.isNotBlank(tracableMessage.getDataId())) {
 				message.putUserProperties(TracableMessage.DATA_ID_KEY, tracableMessage.getDataId());
 			}
-			if (tracableMessage.getOccurOn()!=null) {
-				message.putUserProperties(TracableMessage.OCCUR_ON_KEY, String.valueOf(tracableMessage.getOccurOn().getTime()));
+			if (tracableMessage.getOccurOn()==null) {
+				tracableMessage.setOccurOn(new Date());
 			}
-			
+			message.putUserProperties(TracableMessage.OCCUR_ON_KEY, String.valueOf(tracableMessage.getOccurOn().getTime()));
+
+			TracableMessageKey key = ONSUtils.toKey(message.getTopic(), message.getTag(), tracableMessage);
 			if (StringUtils.isBlank(message.getKey())) {
-				String key = ONSUtils.toKey(message.getTopic(), message.getTag(), tracableMessage);
-				message.setKey(key);
+				message.setKey(key.getKey());
+			}
+			if (StringUtils.isBlank(tracableMessage.getIdentityKey())) {
+				tracableMessage.setIdentityKey(key.getIdentityKey());
+//				message.putUserProperties(TracableMessage.IDENTITY_KEY, key.getIdentityKey());
 			}
 		}
 	}

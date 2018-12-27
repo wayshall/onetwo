@@ -99,6 +99,7 @@ public class DelegateMessageService implements InitializingBean {
 			String msg = "rmq-consumer["+meta.getConsumerId()+"] consumed message error. " + 
 						"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys();
 			logger.error(msg, e);
+			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
 			throw new ConsumeException(msg, e);
 		}
 		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);

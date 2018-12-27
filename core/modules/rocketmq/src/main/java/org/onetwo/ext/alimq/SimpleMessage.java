@@ -29,6 +29,7 @@ public class SimpleMessage implements OnsMessage, TracableMessage {
 	 * 注意，事件名称后面的属性加起来的长度一般为41，所以主要topic和tag的长度
 	 */
 	private String key;
+	private String identityKey;
 	private String topic;
 	private String tags;
 	private Object body;

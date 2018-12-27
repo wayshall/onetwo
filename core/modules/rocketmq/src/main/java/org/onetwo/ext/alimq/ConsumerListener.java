@@ -12,6 +12,6 @@ public interface ConsumerListener {
 
 	void beforeConsumeMessage(ConsumerMeta consumerMeta, ConsumContext context);
 	void afterConsumeMessage(ConsumerMeta consumerMeta, ConsumContext context);
-//	void onConsumeMessageError(ConsumContext context, Throwable e);
+	void onConsumeMessageError(ConsumContext context, Throwable e);
 
 }

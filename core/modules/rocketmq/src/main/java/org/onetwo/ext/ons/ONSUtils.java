@@ -50,13 +50,16 @@ final public class ONSUtils {
 	/***
 	 * key代表消息的唯一标识，长度为 {@value ONSUtils#MAX_KEY_LENGTH} ，规则为:事件名称(topic>tag).操作的用户id(36进制).产生事件的领域模型（或者实体）标识.时间戳(36进制毫秒)
 	 * 注意，事件名称后面的属性加起来的长度一般为41，所以注意topic和tag的长度
+	 * 
+	 * identityKey 标识某用户某操作的身份key，不带时间戳，结合时间戳，可给客户端用于判断某类操作由于消息无序而带来的问题，
+	 * 比如同一类操作，a先发生，b后发生，但是b先到达，理论上后到达的a不应该执行
 	 * @author weishao zeng
 	 * @param topic
 	 * @param tag
 	 * @param domainEvent
 	 * @return
 	 */
-	public static String toKey(String topic, String tag, TracableMessage tracableMessage) {
+	public static TracableMessageKey toKey(String topic, String tag, TracableMessage tracableMessage) {
 		Date occurOn = tracableMessage.getOccurOn()==null?new Date():tracableMessage.getOccurOn();
 		String eventName = topic;
 		if(StringUtils.isNotBlank(tag)) {
@@ -69,10 +72,15 @@ final public class ONSUtils {
 		} catch (Exception e) {
 			// ignore
 		}
-		String key = eventName + "." + userId + "." + tracableMessage.getDataId() + "." + Long.toString(occurOn.getTime(), 36);
+		String identityKey = eventName + "." + userId + "." + tracableMessage.getDataId();
+		String key = identityKey + "." + Long.toString(occurOn.getTime(), 36);
 		if(key.length()>MAX_KEY_LENGTH) {
 			throw new BaseException("message key is too long, can not more than " + MAX_KEY_LENGTH + " : " + key);
 		}
-		return key;
+		return TracableMessageKey.builder()
+								.identityKey(identityKey)
+								.key(key)
+								.build();
 	}
+	
 }

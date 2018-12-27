@@ -21,7 +21,7 @@ public class MessageKeyGenerateTest {
 		event.setDataId(""+idGenerator.nextId());
 		event.setUserId(""+idGenerator.nextId());
 		event.setOccurOn(new Date());
-		String key = ONSUtils.toKey("EVENT", "act_published", event);
+		String key = ONSUtils.toKey("EVENT", "act_published", event).getKey();
 		System.out.println("keyp["+key.length()+"]:"+key);
 //		System.out.println(Long.parseLong("1xodpywl2s5h", 36));
 	}

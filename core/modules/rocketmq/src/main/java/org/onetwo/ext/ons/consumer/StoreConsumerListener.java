@@ -48,5 +48,9 @@ public class StoreConsumerListener implements ConsumerListener {
 	public void afterConsumeMessage(ConsumerMeta consumerMeta, ConsumContext context) {
 	}
 
+	@Override
+	public void onConsumeMessageError(ConsumContext context, Throwable e) {
+	}
+
 }
 
