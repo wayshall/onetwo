@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.oauth2.util;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
@@ -93,7 +94,23 @@ public abstract class OAuth2Utils {
 		}
 	}
 	
+	public static <T> T runInToken(String token, Function<ClientDetails, T> func) {
+		if (StringUtils.isBlank(token)) {
+			throw new IllegalArgumentException("token cant not be blank");
+		}
+		try {
+			setCurrentToken(token);
+			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
+			return runInContext(clientDetail, ()->func.apply(clientDetail));
+		} finally {
+			removeCurrentToken();
+		}
+	}
+	
 	public static <T> T runInToken(String token, Supplier<T> supplier) {
+		if (StringUtils.isBlank(token)) {
+			throw new IllegalArgumentException("token cant not be blank");
+		}
 		try {
 			setCurrentToken(token);
 			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);

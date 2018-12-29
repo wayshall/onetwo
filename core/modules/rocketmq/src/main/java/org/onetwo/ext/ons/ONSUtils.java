@@ -60,6 +60,7 @@ final public class ONSUtils {
 	 * @return
 	 */
 	public static TracableMessageKey toKey(String topic, String tag, TracableMessage tracableMessage) {
+		String defaultId = "0";
 		Date occurOn = tracableMessage.getOccurOn()==null?new Date():tracableMessage.getOccurOn();
 		String eventName = topic;
 		if(StringUtils.isNotBlank(tag)) {
@@ -68,11 +69,15 @@ final public class ONSUtils {
 		String userId = tracableMessage.getUserId();
 		try {
 			// 如果是数字，则压缩userId，避免key太长
-			userId = Long.toString(Long.parseLong(userId), 36);
+			if (userId!=null) {
+				userId = Long.toString(Long.parseLong(userId), 36);
+			} else {
+				userId = defaultId;
+			}
 		} catch (Exception e) {
 			// ignore
 		}
-		String identityKey = eventName + "." + userId + "." + tracableMessage.getDataId();
+		String identityKey = eventName + "." + userId + "." + tracableMessage.getDataId()!=null?tracableMessage.getDataId():defaultId;
 		String key = identityKey + "." + Long.toString(occurOn.getTime(), 36);
 		if(key.length()>MAX_KEY_LENGTH) {
 			throw new BaseException("message key is too long, can not more than " + MAX_KEY_LENGTH + " : " + key);
