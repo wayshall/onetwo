@@ -77,7 +77,7 @@ final public class ONSUtils {
 		} catch (Exception e) {
 			// ignore
 		}
-		String identityKey = eventName + "." + userId + "." + tracableMessage.getDataId()!=null?tracableMessage.getDataId():defaultId;
+		String identityKey = eventName + "." + userId + "." + (tracableMessage.getDataId()!=null?tracableMessage.getDataId():defaultId);
 		String key = identityKey + "." + Long.toString(occurOn.getTime(), 36);
 		if(key.length()>MAX_KEY_LENGTH) {
 			throw new BaseException("message key is too long, can not more than " + MAX_KEY_LENGTH + " : " + key);
