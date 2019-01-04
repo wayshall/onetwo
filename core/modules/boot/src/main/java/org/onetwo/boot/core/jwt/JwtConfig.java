@@ -23,7 +23,8 @@ jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重
 @Data
 public class JwtConfig {
 	
-	public static final String ENABLE_KEY = "jfish.jwt.enable";
+	public static final String PREFIX = "jfish.jwt";
+	public static final String ENABLE_KEY = PREFIX + ".enable";
 
 	String authHeader = JwtUtils.DEFAULT_HEADER_KEY;
 	String signingKey;

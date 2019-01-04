@@ -9,6 +9,7 @@ import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.cloud.canary.CanaryConfiguration;
 import org.onetwo.cloud.config.ConfigClientConfiguration;
 import org.onetwo.cloud.core.BootCloudConfigration;
+import org.onetwo.cloud.env.AuthEnvsConfiguration;
 import org.onetwo.cloud.feign.CornerFeignConfiguration;
 import org.onetwo.cloud.sleuth.SleuthConfiguration;
 import org.onetwo.common.spring.context.AbstractImportSelector;
@@ -27,6 +28,7 @@ public class EnableJFishCloudExtensionSelector extends AbstractImportSelector<En
 		List<String> classNames = new ArrayList<String>();
 		
 		classNames.add(BootCloudConfigration.class.getName());
+		classNames.add(AuthEnvsConfiguration.class.getName());
 		classNames.add(ErrorHandleConfiguration.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
 		classNames.add(GraceKillConfiguration.class.getName());
