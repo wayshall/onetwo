@@ -88,6 +88,9 @@ public class CommonPropertyValueSetter implements PropertyValueCopier {
 	}
 	
 	protected Cloneable getCloneableAnnotation(Object target, PropertyDescriptor property){
+		if (property.getReadMethod()==null) {
+			return null;
+		}
 		Cloneable cloneable = property.getReadMethod().getAnnotation(Cloneable.class);
 		if(cloneable==null){
 			Field field = ReflectionUtils.findField(target.getClass(), property.getName());
@@ -99,7 +102,7 @@ public class CommonPropertyValueSetter implements PropertyValueCopier {
 	}
 
 	protected void copyArray(SimpleBeanCopier beanCopier, BeanWrapper targetBeanWrapper, Class<?> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Object srcValue){
-		Assert.isTrue(propertyType==srcValue.getClass());
+		Assert.isTrue(propertyType==srcValue.getClass(), "property type is not equals srcValue type");
 		int length = Array.getLength(srcValue);
 		Object array = Array.newInstance(propertyType.getComponentType(), length);
 		
