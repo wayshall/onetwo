@@ -30,6 +30,9 @@ public @interface ONSSubscribe {
 	boolean autoDeserialize() default true;
 	IdempotentType idempotent() default IdempotentType.NONE;
 	
+	//consumeTimeoutInMinutes
+	//properties: field=vlaue
+	
 	public enum IdempotentType {
 		NONE,
 		DATABASE;

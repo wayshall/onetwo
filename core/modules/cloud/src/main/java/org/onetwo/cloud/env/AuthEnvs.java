@@ -1,6 +1,7 @@
 package org.onetwo.cloud.env;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -64,13 +65,60 @@ final public class AuthEnvs {
 		}
 	}
 	
+	/****
+	 * 从当前的web上下文（request）中获取所需要的header（keepHeaders配置）
+	 * @author weishao zeng
+	 * @param func
+	 * @return
+	 */
 	public <T> T runInCurrentWebEnvs(Function<AuthEnv, T> func) {
 		return runInCurrentWebEnvs(func, true);
+	}
+	
+	/***
+	 * 从给定的context上下文中获取所需要的header（keepHeaders配置）
+	 * @author weishao zeng
+	 * @param context
+	 * @param action
+	 * @return
+	 */
+	public <T> T runInContextEnvs(Map<String, String> context, Function<AuthEnv, T> action) {
+		AuthEnv authEnv = createAuthEnv(header -> {
+			return context.get(header);
+		});
+		return runInCurrentEnvs(authEnv, ()->action.apply(authEnv));
+	}
+	
+	/****
+	 * 
+	 * @author weishao zeng
+	 * @param contextExtractor header提取
+	 * @param action 业务逻辑回调
+	 * @return
+	 */
+	public <T> T runInContextEnvs(Function<String, String> contextExtractor, Function<AuthEnv, T> action) {
+		AuthEnv authEnv = createAuthEnv(contextExtractor);
+		return runInCurrentEnvs(authEnv, ()->action.apply(authEnv));
 	}
 	
 	private <T> T runInCurrentWebEnvs(Function<AuthEnv, T> func, boolean throwIfWebEnvNotFound) {
 		AuthEnv authEnv = createWebAuthEnv(throwIfWebEnvNotFound);
 		return runInCurrentEnvs(authEnv, ()->func.apply(authEnv));
+	}
+	
+	private AuthEnv createAuthEnv(Function<String, String> contextExtractor) {
+		AuthEnv authEnv = createAuthEnv();
+		keepHeaders.forEach(header -> {
+			if(log.isDebugEnabled()){
+				log.debug("set current request header[{}] to feign request...", header);
+			}
+			String value = contextExtractor.apply(header);
+			if(StringUtils.isNotBlank(value)){
+				authEnv.getHeaders().add(new AuthEnvHeader(header, value));
+			}
+		});
+		
+		return authEnv;
 	}
 	
 	public AuthEnv createWebAuthEnv(boolean throwIfWebEnvNotFound) {
