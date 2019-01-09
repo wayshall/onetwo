@@ -92,12 +92,14 @@ public class JFishOauth2Properties {
 		 * resource server
 		 */
 		String[] requestMatchers;
-		Map<String[], String> intercepterUrls = Maps.newHashMap();
+		Map<String[], String> intercepterUrls = Maps.newLinkedHashMap();
 		String anyRequest;
 		public String[] getRequestMatchers() {
 			return requestMatchers;
 		}
-		
+		public Map<String[], String> getIntercepterUrls() {
+			return intercepterUrls;
+		}
 	}
 	
 
