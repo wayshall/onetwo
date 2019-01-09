@@ -26,11 +26,11 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 	@Override
 	public void apply(RequestTemplate template) {
 		OAuth2Utils.getCurrentToken().ifPresent(token -> {
-			if(log.isInfoEnabled()){
-				log.info("set current context header[{}] to feign ...", token);
+			if(log.isDebugEnabled()){
+				log.debug("set current context header[{}] to feign ...", token);
 			}
 			if (StringUtils.isNotBlank(token)) {
-				template.header(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, OAuth2Utils.BEARER_TYPE + " " + token);
+				template.header(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, StringUtils.appendStartWith(token, OAuth2Utils.BEARER_TYPE + " "));
 			}
 		});
 		// always add feign client type header
@@ -52,7 +52,10 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 		AuthEnvs.getCurrentOptional().ifPresent(authEnv -> {
 			authEnv.getHeaders().forEach(header -> {
 				String value = header.getValue();
-				if(StringUtils.isNotBlank(value)){
+				if (StringUtils.isNotBlank(value)){
+					if (OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER.equals(header.getName())) {
+						value = StringUtils.appendStartWith(value, OAuth2Utils.BEARER_TYPE + " ");
+					}
 					template.header(header.getName(), value);
 					if(log.isDebugEnabled()){
 						log.debug("set current env header[{}] to feign request...", header);

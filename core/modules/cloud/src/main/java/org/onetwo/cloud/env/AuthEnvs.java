@@ -106,6 +106,18 @@ final public class AuthEnvs {
 		return runInCurrentEnvs(authEnv, ()->func.apply(authEnv));
 	}
 	
+	public <T> T runInCurrentEnvs(AuthEnv authEnv, Supplier<T> supplier) {
+		if (authEnv==null) {
+			throw new IllegalArgumentException("authEnv can not be null");
+		}
+		setCurrent(authEnv);
+		try {
+			return supplier.get();
+		} finally {
+			removeCurrent();
+		}
+	}
+	
 	private AuthEnv createAuthEnv(Function<String, String> contextExtractor) {
 		AuthEnv authEnv = createAuthEnv();
 		keepHeaders.forEach(header -> {
@@ -144,18 +156,6 @@ final public class AuthEnvs {
 		});
 		
 		return authEnv;
-	}
-	
-	public <T> T runInCurrentEnvs(AuthEnv authEnv, Supplier<T> supplier) {
-		if (authEnv==null) {
-			throw new IllegalArgumentException("authEnv can not be null");
-		}
-		setCurrent(authEnv);
-		try {
-			return supplier.get();
-		} finally {
-			removeCurrent();
-		}
 	}
 	
 	private AuthEnv createAuthEnv() {
