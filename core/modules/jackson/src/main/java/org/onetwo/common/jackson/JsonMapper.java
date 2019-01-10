@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -162,9 +163,15 @@ public class JsonMapper {
 	}
 	
 	public JsonMapper setDateFormat(String format){
+		return setDateFormat(format, TIME_ZONE_CHINESE);
+	}
+	
+	public JsonMapper setDateFormat(String format, String timezone){
 		if(StringUtils.isBlank(format))
 			return this;
-		objectMapper.setDateFormat(new SimpleDateFormat(format));
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		sdf.setTimeZone(TimeZone.getTimeZone(timezone));
+		objectMapper.setDateFormat(sdf);
 //		objectMapper.getSerializationConfig().withDateFormat(df);
 //		objectMapper.getDeserializationConfig().withDateFormat(df);
 		return this;

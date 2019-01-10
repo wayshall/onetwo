@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.FieldName;
@@ -176,13 +177,14 @@ public class BeanToMapConvertor implements Cloneable {
 		if(obj instanceof Map)
 			return (Map<String, Object>)obj;
 		
-		PropertyDescriptor[] props = ReflectUtils.desribProperties(obj.getClass());
+		ObjectWrapper objWrapper = objectWrapper(obj);
+		PropertyDescriptor[] props = objWrapper.desribProperties();
 		if (props == null || props.length == 0)
 			return Collections.emptyMap();
 		Map<String, Object> rsMap = new HashMap<>();
 		Object val = null;
 		for (PropertyDescriptor prop : props) {
-			val = ReflectUtils.getProperty(obj, prop);
+			val = objWrapper.getPropertyValue(prop);
 			if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
 				if(valueConvertor!=null){
 					Object newVal = valueConvertor.apply(prop, val);
@@ -193,6 +195,10 @@ public class BeanToMapConvertor implements Cloneable {
 			}
 		}
 		return rsMap;
+	}
+	
+	protected ObjectWrapper objectWrapper(Object obj) {
+		return new DefaultObjectWrapper(obj);
 	}
 	
 	protected PropertyContext createPropertyContext(final Object obj, PropertyDescriptor prop){
@@ -296,8 +302,11 @@ public class BeanToMapConvertor implements Cloneable {
 				valuePutter.put(prefixName, obj);
 				return ;
 			}*/
-			ReflectUtils.listProperties(obj.getClass(), prop-> {
-				Object val = ReflectUtils.getProperty(obj, prop);
+			ObjectWrapper ow = objectWrapper(obj);
+			Stream.of(ow.desribProperties()).forEach(prop -> {
+//			ReflectUtils.listProperties(obj.getClass(), prop-> {
+//				Object val = ReflectUtils.getProperty(obj, prop);
+				Object val = ow.getPropertyValue(prop);
 //				System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
 				if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
 					/*if(isMapObject(val) || isMultiple(val)){
@@ -333,6 +342,27 @@ public class BeanToMapConvertor implements Cloneable {
 		return val;
 	}
 
+	protected static interface ObjectWrapper {
+		PropertyDescriptor[] desribProperties();
+		Object getPropertyValue(PropertyDescriptor prop);
+	}
+	
+	protected static class DefaultObjectWrapper implements ObjectWrapper {
+		final private Object object;
+
+		public DefaultObjectWrapper(Object object) {
+			super();
+			this.object = object;
+		}
+		public PropertyDescriptor[] desribProperties() {
+			return ReflectUtils.desribProperties(object.getClass());
+		}
+		public Object getPropertyValue(PropertyDescriptor prop) {
+			return ReflectUtils.getProperty(object, prop);
+		}
+	}
+	
+	
 	public static interface ValuePutter {
 		void put(String key, Object value, PropertyContext keyContext);
 	}

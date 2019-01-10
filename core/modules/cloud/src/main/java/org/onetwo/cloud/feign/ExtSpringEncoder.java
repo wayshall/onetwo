@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.reflect.BeanToMapConvertor;
+import org.onetwo.common.spring.SpringUtils.ConsumableValuePutter;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cloud.netflix.feign.support.SpringEncoder;
@@ -48,9 +49,14 @@ public class ExtSpringEncoder extends SpringEncoder {
 //			Map<String, Object> map = beanToMapConvertor.toFlatMap(requestBody);
 //			MultiValueMap<String, String> map = RestUtils.toMultiValueStringMap(requestBody);
 			MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-			getParamsConvertor.flatObject("", requestBody, (k, v, ctx)->{
+			
+			// 使用ConsumableValuePutter增强对注解处理
+			/*getParamsConvertor.flatObject("", requestBody, (k, v, ctx)->{
 				map.add(k, v);
-			});
+			});*/
+			getParamsConvertor.flatObject("", requestBody, new ConsumableValuePutter((k, v) -> {
+				map.add(k, v);
+			}));
 			map.forEach((name, value)->{
 				if(value!=null){
 					request.query(name, value.toArray(new String[0]));
