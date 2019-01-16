@@ -54,6 +54,11 @@ public class MQTransactionalConfiguration {
 		return MessageBodyStoreSerializer.DEFAULT;
 	}
 	
+	/***
+	 * 默认通过配置控制，可扩展MQTaskConfiguration通过代码控制
+	 * @author way
+	 *
+	 */
 	@Configuration
 	@EnableScheduling
 	static class InnerTaskConfiguration extends MQTaskConfiguration {

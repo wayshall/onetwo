@@ -24,6 +24,7 @@ public class MQTaskConfiguration {
 		if(taskLock==TaskLocks.REDIS){
 			task.setUseReidsLock(true);
 		}
+		task.setRedisLockTimeout(mqProperties.getTransactional().getSendTask().getRedisLockTimeout());
 		return task;
 	}
 	
@@ -34,6 +35,7 @@ public class MQTaskConfiguration {
 			task.setUseReidsLock(true);
 		}
 		task.setDeleteBeforeAt(deleteProps.getDeleteBeforeAt());
+		task.setRedisLockTimeout(deleteProps.getRedisLockTimeout());
 		return task;
 	}
 }

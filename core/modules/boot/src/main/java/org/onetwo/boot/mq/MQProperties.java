@@ -28,8 +28,8 @@ public class MQProperties {
 	/***
 	 * 默认半夜两点触发
 	 */
-	public static final String TRANSACTIONAL_DELETE_TASK_CRON = "${jfish.mq.transactional.deleteTask.cron:0 0 2 * * ?}";
-//	public static final String TRANSACTIONAL_DELETE_TASK_CRON = "${jfish.mq.transactional.deleteTask.cron:0 11 16 * * ?}"; //for test
+	public static final String TRANSACTIONAL_DELETE_TASK_CRON = "${jfish.mq.transactional.deleteTask.cron: 0 0 2 * * ?}";
+//	public static final String TRANSACTIONAL_DELETE_TASK_CRON = "${jfish.mq.transactional.deleteTask.cron: 0 11 16 * * ?}"; //for test
 
 	TransactionalProps transactional = new TransactionalProps();
 	
@@ -52,6 +52,7 @@ public class MQProperties {
 		String ignoreCreateAtRecently = "1m";
 		//锁定的key
 		String locker;
+		private String redisLockTimeout;
 		
 		public String getLocker(){
 			String locker = this.locker;
@@ -68,6 +69,7 @@ public class MQProperties {
 	public static class DeleteTaskProps {
 		TaskLocks lock = TaskLocks.DB;
 		String deleteBeforeAt;
+		private String redisLockTimeout;
 	}
 
 	public static enum TaskLocks {

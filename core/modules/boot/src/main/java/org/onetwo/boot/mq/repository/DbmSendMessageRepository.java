@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public class DbmSendMessageRepository implements SendMessageRepository {
-	private static final String LOCK_MESSAGE_SQL = "update data_mq_send set locker=:locker where state = :state and locker='' and deliver_at < :now ";
+	private static final String LOCK_MESSAGE_SQL = "update data_mq_send set locker=:locker where state = :state and deliver_at < :now and locker='' ";
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
@@ -90,9 +90,9 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Override
-	public int lockToBeSendMessage(String locker, Date now) {
-		int count = baseEntityManager.createQuery(LOCK_MESSAGE_SQL, CUtils.asMap("locker", locker, 
-																				"state", SendStates.UNSEND.ordinal(), 
+	public int lockSendMessage(String locker, Date now, SendStates sendState) {
+		int count = baseEntityManager.createQuery(LOCK_MESSAGE_SQL, CUtils.asLinkedMap("locker", locker, 
+																				"state", sendState.ordinal(), 
 																				"now", now
 																				)
 												).executeUpdate();
@@ -101,12 +101,12 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 
 	@Transactional(readOnly=true)
 	@Override
-	public List<SendMessageEntity> findLockerMessage(String locker, Date now, int sendCountPerTask) {
+	public List<SendMessageEntity> findLockerMessage(String locker, Date now, SendStates sendState, int sendCountPerTask) {
 		List<SendMessageEntity> messages = Querys.from(baseEntityManager, SendMessageEntity.class)
 				.where()
-					.field("state").equalTo(SendStates.UNSEND.ordinal())
-					.field("locker").equalTo(locker)
+					.field("state").equalTo(sendState.ordinal())
 					.field("deliverAt").lessThan(now)
+					.field("locker").equalTo(locker)
 				.end()
 				.asc("createAt")
 				.limit(0, sendCountPerTask)

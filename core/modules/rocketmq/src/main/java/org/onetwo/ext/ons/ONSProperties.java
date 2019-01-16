@@ -28,6 +28,7 @@ public class ONSProperties implements InitializingBean {
 //	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
 //	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
 
+
 	MqServerTypes serverType = MqServerTypes.ONS;
 	
 	String accessKey;
@@ -38,6 +39,8 @@ public class ONSProperties implements InitializingBean {
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
+	
+	DeleteReceiveTask deleteReceiveTask = new DeleteReceiveTask();
 	
 //	Map<String, String> jsonDeserializerCompatibilityTypeMappings = Maps.newHashMap();	
 
@@ -72,6 +75,16 @@ public class ONSProperties implements InitializingBean {
 		
 	}
 
+	@Data
+	public static class DeleteReceiveTask {
+		/***
+		 * 默认半夜3点触发
+		 */
+		public static final String DELETE_RECEIVE_TASK_CRON = "${jfish.ons.deleteReceiveTask.cron: 0 0 3 * * ?}";
+		private String deleteBeforeAt;
+		private String redisLockTimeout;
+		
+	}
 
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
