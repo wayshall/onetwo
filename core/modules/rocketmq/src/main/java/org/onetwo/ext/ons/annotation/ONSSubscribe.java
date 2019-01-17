@@ -35,7 +35,7 @@ public @interface ONSSubscribe {
 	//consumeTimeoutInMinutes
 	//properties: field=vlaue
 	
-	ONSSubscribeProperty[] properties() default {};
+	ConsumerProperty[] properties() default {};
 	
 	public enum IdempotentType {
 		NONE,
@@ -44,7 +44,7 @@ public @interface ONSSubscribe {
 	
 	@Target({ElementType.METHOD})
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface ONSSubscribeProperty {
+	public @interface ConsumerProperty {
 		String name();
 		String value();
 	}

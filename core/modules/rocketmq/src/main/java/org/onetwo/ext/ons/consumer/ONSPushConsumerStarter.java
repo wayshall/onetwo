@@ -20,7 +20,7 @@ import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
-import org.onetwo.ext.ons.annotation.ONSSubscribe.ONSSubscribeProperty;
+import org.onetwo.ext.ons.annotation.ONSSubscribe.ConsumerProperty;
 import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
 import org.springframework.aop.support.AopUtils;
@@ -283,7 +283,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			String topic = resloveValue(subscribe.topic());
 			String consumerId = resloveValue(subscribe.consumerId());
 			
-			ONSSubscribeProperty[] onsProperties = subscribe.properties();
+			ConsumerProperty[] onsProperties = subscribe.properties();
 			Map<String, String> props = Stream.of(onsProperties).collect(Collectors.toMap(prop->prop.name(), prop->resloveValue(prop.value())));
 			Properties properties = new Properties();
 			properties.putAll(props);
