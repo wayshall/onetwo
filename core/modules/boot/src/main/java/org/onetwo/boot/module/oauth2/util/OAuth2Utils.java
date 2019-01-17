@@ -14,6 +14,8 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
 import org.springframework.util.Assert;
@@ -23,15 +25,16 @@ import org.springframework.util.Assert;
  * <br/>
  */
 public abstract class OAuth2Utils {
-	public static String BEARER_TYPE = "Bearer";
-	
+	public static String BEARER_TYPE = OAuth2AccessToken.BEARER_TYPE; //"Bearer";
 	public static final String OAUTH2_AUTHORIZATION_HEADER = "Authorization";
+	
 	public static final String OAUTH2_CLIENT_DETAILS_SERVICE = "oauth2ClientDetailsService";
 	
 	private static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 
 	private static final NamedThreadLocal<ClientDetails> CURRENT_CLIENTS = new NamedThreadLocal<>("oauth2 context");
 	private static final NamedThreadLocal<String> CURRENT_TOKENS = new NamedThreadLocal<>("oauth2 token");
+	private TokenExtractor tokenExtractor = new BearerTokenExtractor();
 	
 
 	private static ClientDetailsObtainService getClientDetailsObtainService() {

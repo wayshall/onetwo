@@ -40,9 +40,6 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/boot</module>
-                <module>modules/common</module>
-                <module>modules/jackson</module>
-                <module>modules/spring</module>
                 <module>modules/cloud</module>
 			</modules>
            <build>

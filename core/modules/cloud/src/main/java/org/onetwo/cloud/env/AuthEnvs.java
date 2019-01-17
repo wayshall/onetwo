@@ -112,7 +112,12 @@ final public class AuthEnvs {
 		}
 		setCurrent(authEnv);
 		try {
-			return supplier.get();
+			Optional<AuthEnvHeader> oauth2 = authEnv.findAuthorization();
+			if (oauth2.isPresent()) {
+				return OAuth2Utils.runInToken(oauth2.get().getValue(), supplier);
+			} else {
+				return supplier.get();
+			}
 		} finally {
 			removeCurrent();
 		}
@@ -173,12 +178,25 @@ final public class AuthEnvs {
 	}
 
 
-
-	@Data
 	public static class AuthEnv {
 		final private List<AuthEnvHeader> headers = Lists.newArrayList();
 		public AuthEnv() {
 		}
+		public void addAuthEnvHeader(AuthEnvHeader header) {
+			this.headers.add(header);
+		}
+		public List<AuthEnvHeader> getHeaders() {
+			return headers;
+		}
+		public Optional<AuthEnvHeader> findAuthEnvHeader(String name) {
+			return this.headers.stream().filter(header -> {
+				return header.getName().equals(name);
+			}).findFirst();
+		}
+		public Optional<AuthEnvHeader> findAuthorization() {
+			return findAuthEnvHeader(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER);
+		}
+		
 	}
 	
 	@Data
