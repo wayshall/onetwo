@@ -65,6 +65,10 @@ final public class Dates {
 	public static ZonedDateTime toZonedDateTime(Date date) {
 		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault());
 	}
+
+	public static ZonedDateTime toZonedDateTime(Long millis) {
+		return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault());
+	}
   
 //	public static long sum(Iterable<T>)
 	

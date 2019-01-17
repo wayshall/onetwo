@@ -16,4 +16,5 @@ public class BootCloudConfigration {
 	public CloudWebMvcRegistrations bootWebMvcRegistrations(){
 		return new CloudWebMvcRegistrations();
 	}
+	
 }

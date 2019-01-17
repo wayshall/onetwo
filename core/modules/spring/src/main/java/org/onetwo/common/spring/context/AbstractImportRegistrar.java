@@ -3,8 +3,6 @@ package org.onetwo.common.spring.context;
 import java.lang.annotation.Annotation;
 import java.util.stream.Stream;
 
-import net.jodah.typetools.TypeResolver;
-
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
@@ -25,6 +23,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import net.jodah.typetools.TypeResolver;
 
 /**
  * @author wayshall
@@ -126,17 +126,17 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 
 	protected void registerComponent(BeanDefinitionRegistry registry, AnnotationMetadata annotationMetadata, AnnotationAttributes tagAttributes) {
 		String className = annotationMetadata.getClassName();
+		String beanName = resolveName(tagAttributes, className);
 		if(logger.isInfoEnabled()){
-			logger.info("register api client: {}", className);
+			logger.info("register api client beanName: {}, class: {}", beanName, className);
 		}
-		String name = resolveName(tagAttributes, className);
 		
 		BeanDefinitionBuilder definition = createComponentFactoryBeanBuilder(annotationMetadata, tagAttributes);
 		
-		String alias = name + getComponentAnnotationClass().getSimpleName();
+		String alias = beanName + "-" + getComponentAnnotationClass().getSimpleName();
 		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
 		beanDefinition.setPrimary(true);
-		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, new String[] { alias });
+		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, beanName, new String[] { alias });
 		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
 	}
 	

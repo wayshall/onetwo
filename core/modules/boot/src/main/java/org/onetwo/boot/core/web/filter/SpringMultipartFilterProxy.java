@@ -1,4 +1,4 @@
-package org.onetwo.common.spring.filter;
+package org.onetwo.boot.core.web.filter;
 
 import java.io.IOException;
 
@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.data.DataResult;
+import org.onetwo.common.exception.SystemErrorCode.UplaodErrorCode;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MultipartFilter;
 
+//@Order(OrderedHttpPutFormContentFilter.DEFAULT_ORDER-100)
 public class SpringMultipartFilterProxy extends MultipartFilter {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(SpringMultipartFilterProxy.class);
@@ -28,13 +30,16 @@ public class SpringMultipartFilterProxy extends MultipartFilter {
 		try {
 			super.doFilterInternal(request, response, filterChain);
 		} catch (MaxUploadSizeExceededException e) {
+			response.setHeader(ResponseUtils.ERROR_RESPONSE_HEADER, UplaodErrorCode.MAX_UPLOAD_SIZE_EXCEEDED);
 			String msg = "文件超过限制："+LangUtils.getCauseServiceException(e).getMessage();
-			logger.error(msg);
+			logger.error(msg, e);
 			if(RequestUtils.getResponseType(request)==ResponseType.JSON){
-				DataResult<?> dataResult = DataResults.error(msg).build();
+				DataResult<?> dataResult = DataResults.code(UplaodErrorCode.MAX_UPLOAD_SIZE_EXCEEDED)
+															.message(msg).build();
 				ResponseUtils.renderObjectAsJson(response, dataResult);
 			}else{
-				response.getWriter().print(msg);
+//				response.getWriter().print(msg);
+				throw new IOException(msg);
 			}
 		}
 	}

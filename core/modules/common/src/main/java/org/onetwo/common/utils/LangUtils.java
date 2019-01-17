@@ -460,7 +460,7 @@ public class LangUtils {
 	
 	public static Throwable getCauseServiceException(Throwable e){
 		Throwable se ;
-		if(!(e instanceof BaseException) && e.getCause()!=null){
+		if(!(e instanceof BaseException) && e!=null && e.getCause()!=null){
 			se = getCauseServiceException(e.getCause());
 		}else{
 			se = e;

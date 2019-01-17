@@ -30,7 +30,7 @@ public class CompletableProgressAsyncWebProcessor extends DefaultProgressAsyncWe
 
 	@Override
 	protected void handleTask(boolean closeWriter, AsyncTask task){
-		Assert.notNull(task);
+		Assert.notNull(task, "task can not be null");
 		CompletableFuture<Void> future = CompletableFuture.runAsync(task, this.asyncTaskExecutor)
 						.thenAccept(f->{
 							flushAndClearTunnelMessage();

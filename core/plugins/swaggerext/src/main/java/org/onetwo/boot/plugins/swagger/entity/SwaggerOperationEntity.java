@@ -1,9 +1,6 @@
 
 package org.onetwo.boot.plugins.swagger.entity;
 
-import io.swagger.models.ExternalDocs;
-import io.swagger.models.Scheme;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.onetwo.boot.plugins.swagger.util.SwaggerUtils;
@@ -24,6 +18,11 @@ import org.onetwo.dbm.jpa.BaseEntity;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+
+import io.swagger.models.ExternalDocs;
+import io.swagger.models.Scheme;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /***
  * swagger操作表
@@ -43,15 +42,16 @@ public class SwaggerOperationEntity extends BaseEntity  {
 	/***
 	 * 作者
 	 */
-	public static final String KEY_AUTHOR = SwaggerUtils.API_ID_PREFIX + "author";
+	public static final String KEY_AUTHOR = SwaggerUtils.EXTENSION_PREFIX + "author";
+	public static final String KEY_MODULE_ID = SwaggerUtils.EXTENSION_PREFIX + "module-id";
 	/***
 	 * 维护者
 	 */
-	public static final String KEY_VINDICATOR = SwaggerUtils.API_ID_PREFIX + "vindicator";
+	public static final String KEY_VINDICATOR = SwaggerUtils.EXTENSION_PREFIX + "vindicator";
 	/***
 	 * api版本
 	 */
-	public static final String KEY_VERSION = SwaggerUtils.API_ID_PREFIX + "api-version";
+	public static final String KEY_VERSION = SwaggerUtils.EXTENSION_PREFIX + "api-version";
 
     @Id
     //@GeneratedValue(strategy=GenerationType.IDENTITY)

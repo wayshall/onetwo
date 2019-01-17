@@ -19,10 +19,8 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.map.ParamMap;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -68,9 +66,9 @@ public class JsonMapperTest {
 	
 	@Test
 	public void testSerialWithType(){
-		JsonMapper json = JsonMapper.ignoreNull();
-		ObjectMapper objectMapper = json.getObjectMapper();
-		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, As.PROPERTY);
+		JsonMapper json = JsonMapper.ignoreNull().enableTyping();
+//		ObjectMapper objectMapper = json.getObjectMapper();
+//		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, As.PROPERTY);
 //		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 
 		TestJsonData u1 = new TestJsonData();
@@ -97,6 +95,13 @@ public class JsonMapperTest {
 		System.out.println("data:"+data);
 		TestJsonData2 dd = JsonMapper.ignoreNull().fromJson(data, TestJsonData2.class);
 		assertThat(dd.getUser_name()).isEqualTo(d.getUser_name());
+		
+		Map<String, TestJsonData> maps = new HashMap<>();
+		maps.put("key1", u1);
+		maps.put("key2", d);
+		Object mapdata = maps;
+		String jsondata = json.toJson(mapdata);
+		System.out.println("json: " + jsondata);
 	}
 	
 	@Test

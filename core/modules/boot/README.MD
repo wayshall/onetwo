@@ -291,6 +291,16 @@ jfish:
                 enabled: true
 ```
 
+### cors配置
+```yaml
+jfish: 
+	cors: 
+        - mapping: /v2/api-doc
+          allowedOrigins: *
+		  allowedMethods: GET, OPTION
+		  allowedHeaders: Content-Type
+```
+
 ### 其它一些简化使用的扩展
 
 - @BootMvcArgumentResolver 注解   

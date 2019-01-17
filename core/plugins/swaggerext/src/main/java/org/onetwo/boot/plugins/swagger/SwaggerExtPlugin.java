@@ -8,7 +8,7 @@ import org.onetwo.boot.plugin.core.WebPluginAdapter;
  * <br/>
  */
 public class SwaggerExtPlugin extends WebPluginAdapter {
-    private final PluginMeta meta = PluginMeta.by(this.getClass());
+    private final PluginMeta meta = PluginMeta.useKebabCaseBy(this.getClass());
 
     @Override
     public PluginMeta getPluginMeta() {

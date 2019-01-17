@@ -24,6 +24,9 @@ abstract public class ResponseUtils {
 
 	private static final Logger logger = JFishLoggerFactory.getLogger(ResponseUtils.class);
 
+
+	public static final String ERROR_RESPONSE_HEADER = "X-RESPONSE-JFISH-ERROR";
+	
 	public static final String TEXT_TYPE = "text/plain; charset=UTF-8";
 	public static final String JSON_TYPE = "application/json; charset=UTF-8";
 	public static final String XML_TYPE = "text/xml; charset=UTF-8";
@@ -234,7 +237,7 @@ abstract public class ResponseUtils {
 
 			if (noCache) {
 				response.setHeader("Pragma", "No-cache");
-				response.setHeader("Cache-Control", "no-cache");
+				response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 				response.setDateHeader("Expires", 0);
 			}
 			PrintWriter pr = response.getWriter();

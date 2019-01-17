@@ -2,11 +2,11 @@ package org.onetwo.cloud.zuul;
 
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
 import org.onetwo.boot.core.embedded.TomcatProperties;
+import org.onetwo.boot.core.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.cloud.bugfix.FixFormBodyWrapperFilterPostProcessor;
 import org.onetwo.cloud.core.BootJfishCloudConfig;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.spring.filter.SpringMultipartFilterProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

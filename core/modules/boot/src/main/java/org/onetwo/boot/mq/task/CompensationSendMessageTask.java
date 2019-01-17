@@ -7,12 +7,12 @@ import org.joda.time.LocalDateTime;
 import org.onetwo.boot.module.redis.RedisLockRunner;
 import org.onetwo.boot.mq.MQProperties;
 import org.onetwo.boot.mq.MQProperties.SendTaskProps;
-import org.onetwo.boot.mq.MessageBodyStoreSerializer;
 import org.onetwo.boot.mq.ProducerService;
-import org.onetwo.boot.mq.SendMessageEntity;
 import org.onetwo.boot.mq.SendMessageFlags;
-import org.onetwo.boot.mq.SendMessageRepository;
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
+import org.onetwo.boot.mq.repository.SendMessageRepository;
+import org.onetwo.boot.mq.serializer.MessageBodyStoreSerializer;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  */
 //@Transactional
 public class CompensationSendMessageTask implements InitializingBean {
-	public static final String LOCK_KEY = "lock_ons_send_message_task";
+	public static final String LOCK_KEY = "locker:ons:send_message_task";
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
@@ -44,6 +44,8 @@ public class CompensationSendMessageTask implements InitializingBean {
 	private ProducerService<?, ?> producerService;
 	
 	private boolean useReidsLock;
+	private String redisLockTimeout;
+	
 	@Autowired
 	private MQProperties mqProperties;
 
@@ -94,13 +96,13 @@ public class CompensationSendMessageTask implements InitializingBean {
 		
 		//先上锁，避免发送的时候尝试锁住数据库
 		String locker = mqProperties.getTransactional().getSendTask().getLocker();
-		int lockCount = this.sendMessageRepository.lockToBeSendMessage(locker, createAt.toDate());
+		int lockCount = this.sendMessageRepository.lockSendMessage(locker, createAt.toDate(), SendStates.UNSEND);
 		if(log.isInfoEnabled()){
 			log.info("lock [{}] mesage from database", lockCount);
 		}
 		
 		//再扫描发送
-		List<SendMessageEntity> messages = this.sendMessageRepository.findLockerMessage(locker, createAt.toDate(), sendCountPerTask);
+		List<SendMessageEntity> messages = this.sendMessageRepository.findLockerMessage(locker, createAt.toDate(), SendStates.UNSEND, sendCountPerTask);
 		if(LangUtils.isEmpty(messages)){
 			if(log.isInfoEnabled()){
 				log.info("no unsend mesage found from database");
@@ -126,11 +128,13 @@ public class CompensationSendMessageTask implements InitializingBean {
 	
 
 	private RedisLockRunner getRedisLockRunner(){
-		RedisLockRunner redisLockRunner = RedisLockRunner.builder()
-														 .lockKey(LOCK_KEY)
-														 .errorHandler(e->new BaseException("refresh token error!", e))
-														 .redisLockRegistry(redisLockRegistry)
-														 .build();
+		RedisLockRunner redisLockRunner = RedisLockRunner.createLoker(redisLockRegistry, LOCK_KEY, redisLockTimeout);
 		return redisLockRunner;
 	}
+
+	public void setRedisLockTimeout(String redisLockTimeout) {
+		this.redisLockTimeout = redisLockTimeout;
+	}
+
+	
 }

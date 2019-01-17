@@ -20,8 +20,8 @@ import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
+import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,7 +47,7 @@ import com.google.common.collect.Maps;
 
 public class ONSPushConsumerStarter implements InitializingBean, DisposableBean {
 
-	private final Logger logger = LoggerFactory.getLogger(ONSPushConsumerStarter.class);
+	private final Logger logger = ONSUtils.getONSLogger(); //LoggerFactory.getLogger(ONSPushConsumerStarter.class);
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -162,6 +162,13 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				ConsumContext currentConetxt = null;
 				try {
 					currentConetxt = delegateMessageService.processMessages(meta, msgs, context);
+				} catch(MessageConsumedException e) {
+					// 忽略已消费异常
+					if (logger.isDebugEnabled()) {
+						logger.debug("message has been consumed and will skip: " + e.getMessage(), e);
+					} else {
+						logger.warn("message has been consumed and will skip: " + e.getMessage());
+					}
 				} catch (Exception e) {
 					String errorMsg = "consume message error.";
 					if(currentConetxt!=null){
@@ -282,6 +289,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					.consumerAction(listener)
 					.consumerBeanName(listernName)
 					.autoDeserialize(subscribe.autoDeserialize())
+					.idempotentType(subscribe.idempotent())
 					.build();
 			return meta;
 		}

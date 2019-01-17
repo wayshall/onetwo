@@ -16,6 +16,8 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -27,6 +29,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
  * @author wayshall
  * <br/>
  */
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageConverter implements InitializingBean {
 	private Set<String> jsonpParameterNames = new LinkedHashSet<String>(Arrays.asList("jsonp", "callback"));
 	private static final Pattern CALLBACK_PARAM_PATTERN = Pattern.compile("[0-9A-Za-z_\\.]*");

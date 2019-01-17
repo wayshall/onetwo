@@ -10,47 +10,53 @@ import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.reflect.Intro;
 
 public interface JFishProperty {
+	/***
+	 * 是否java bean属性，如果是property则返回是，如果是field则返回false	
+	 * @author weishao zeng
+	 * @return
+	 */
+	boolean isBeanProperty();
 
-	public void setValue(Object entity, Object value);
+	void setValue(Object entity, Object value);
 
-	public Class<?> getBeanClass();
-	public Intro<?> getBeanClassWrapper();
+	Class<?> getBeanClass();
+	Intro<?> getBeanClassWrapper();
 
-	public String getName();
+	String getName();
 
-	public boolean isTransientModifier();
+	boolean isTransientModifier();
 	
-	public int getModifiers();
+	int getModifiers();
 
-	public Object getValue(Object entity);
+	Object getValue(Object entity);
 
-	public Class<?> getType();
+	Class<?> getType();
 	
-	public Intro<?> getTypeClassWrapper();
+	Intro<?> getTypeClassWrapper();
 	
-//	public void addAnnotations(Annotation...annotations);
+//	void addAnnotations(Annotation...annotations);
 	
-	public boolean hasAnnotation(Class<? extends Annotation> annoClass);
+	boolean hasAnnotation(Class<? extends Annotation> annoClass);
 	
-	public <T extends Annotation> T getAnnotation(Class<T> annoClass);
+	<T extends Annotation> T getAnnotation(Class<T> annoClass);
 	
-	public AnnotationInfo getAnnotationInfo();
+	AnnotationInfo getAnnotationInfo();
 
-	public PropertyDescriptor getPropertyDescriptor();
-	public Field getField();
-	public Type getGenericType();
-	public Type[] getParameterTypes();
-	public Type getParameterType(int index);
-	public Type getFirstParameterType();
-	public Intro<?> getFirstParameterTypeClassWrapper();
+	PropertyDescriptor getPropertyDescriptor();
+	Field getField();
+	Type getGenericType();
+	Type[] getParameterTypes();
+	Type getParameterType(int index);
+	Type getFirstParameterType();
+	Intro<?> getFirstParameterTypeClassWrapper();
 
-	public boolean isCollectionType();
-	public boolean isMapType();
+	boolean isCollectionType();
+	boolean isMapType();
 	
 	/****
 	 * field对应的property，或property对应的field
 	 * @return
 	 */
-	public Optional<JFishProperty> getCorrespondingJFishProperty();
+	Optional<JFishProperty> getCorrespondingJFishProperty();
 
 }

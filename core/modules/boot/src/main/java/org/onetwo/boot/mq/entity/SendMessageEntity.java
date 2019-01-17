@@ -1,4 +1,4 @@
-package org.onetwo.boot.mq;
+package org.onetwo.boot.mq.entity;
 
 import java.util.Date;
 
@@ -32,7 +32,7 @@ public class SendMessageEntity extends BaseEntity {
 	@Enumerated(EnumType.ORDINAL)
 	private SendStates state;
 	private String locker;
-	private Date deliverAt = new Date();
+	private Date deliverAt;
 	
 	public static enum SendStates {
 		UNSEND,

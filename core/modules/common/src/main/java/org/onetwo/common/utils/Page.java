@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @XmlRootElement
+@JsonIgnoreProperties({"orderBy", "order", "autoCount", "pagination", "first", "prePage", "orderString", "nextPage"})
 public class Page<T> implements Serializable {
 	/**
 	 *  
@@ -30,6 +32,7 @@ public class Page<T> implements Serializable {
 		page.first = p.first;
 		page.autoCount = p.autoCount;
 		page.pagination = p.pagination;
+		page.totalCount = p.totalCount;
 		if(mapper!=null){
 			List<E2> rs = p.result.stream().map(mapper).collect(Collectors.toList());
 			page.setResult(rs);
@@ -161,6 +164,7 @@ public class Page<T> implements Serializable {
 		this.first = first;
 	}
 
+	@JsonIgnore
 	public String getOrderBy() {
 		return orderBy;
 	}

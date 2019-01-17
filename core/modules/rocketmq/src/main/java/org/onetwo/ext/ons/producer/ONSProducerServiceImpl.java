@@ -1,23 +1,27 @@
 package org.onetwo.ext.ons.producer;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageFlags;
-import org.onetwo.boot.mq.SendMessageInterceptor;
-import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
-import org.onetwo.boot.mq.SendMessageInterceptorChain;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
+import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.TracableMessageKey;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -71,9 +75,9 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.hasText(producerId);
-		Assert.notNull(onsProperties);
-		Assert.notNull(messageSerializer);
+		Assert.hasText(producerId, "produerId must has text");
+		Assert.notNull(onsProperties, "onsProperties can not be null");
+		Assert.notNull(messageSerializer, "messageSerializer can not be null");
 		
 
 		this.interceptableMessageSender = new InterceptableMessageSender<SendResult>(sendMessageInterceptors);
@@ -146,10 +150,42 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		}else{
 			message.setBody((byte[])body);
 		}
+		configMessage(message, onsMessage);
 		
 		return sendRawMessage(message, interceptorPredicate);
 	}
+	
+	private void configMessage(Message message, OnsMessage onsMessage) {
+		if(onsMessage instanceof TracableMessage) {
+			//自动生成key
+			//如果是延迟消息，用实际延迟发送的时间替换已存在的发生时间
+			TracableMessage tracableMessage = (TracableMessage) onsMessage;
+			if (message.getStartDeliverTime()>0) {
+				tracableMessage.setOccurOn(new Date(message.getStartDeliverTime()));
+			}
 
+			if (StringUtils.isNotBlank(tracableMessage.getUserId())) {
+				message.putUserProperties(TracableMessage.USER_ID_KEY, tracableMessage.getUserId());
+			}
+			if (StringUtils.isNotBlank(tracableMessage.getDataId())) {
+				message.putUserProperties(TracableMessage.DATA_ID_KEY, tracableMessage.getDataId());
+			}
+			if (tracableMessage.getOccurOn()==null) {
+				tracableMessage.setOccurOn(new Date());
+			}
+			message.putUserProperties(TracableMessage.OCCUR_ON_KEY, String.valueOf(tracableMessage.getOccurOn().getTime()));
+
+			TracableMessageKey key = ONSUtils.toKey(message.getTopic(), message.getTag(), tracableMessage);
+			if (StringUtils.isBlank(message.getKey())) {
+				message.setKey(key.getKey());
+			}
+			if (StringUtils.isBlank(tracableMessage.getIdentityKey())) {
+				tracableMessage.setIdentityKey(key.getIdentityKey());
+//				message.putUserProperties(TracableMessage.IDENTITY_KEY, key.getIdentityKey());
+			}
+		}
+	}
+	
 	protected String resolvePlaceholders(String value){
 		return SpringUtils.resolvePlaceholders(applicationContext, value);
 	}

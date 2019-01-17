@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +41,8 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 
 
 /********
+ * 使用JsonFormat注解时，注意时区问题
+ * 推荐 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
  * http://wiki.fasterxml.com/JacksonHowToCustomSerializers
  * 
  * @author way
@@ -47,6 +50,7 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
  */
 public class JsonMapper {
 	
+	final public static String TIME_ZONE_CHINESE = "GMT+8";
 	public static String DEFAULT_JSONP_NAME = "callback";
 
 	public static final JsonMapper DEFAULT_MAPPER = defaultMapper();
@@ -159,9 +163,15 @@ public class JsonMapper {
 	}
 	
 	public JsonMapper setDateFormat(String format){
+		return setDateFormat(format, TIME_ZONE_CHINESE);
+	}
+	
+	public JsonMapper setDateFormat(String format, String timezone){
 		if(StringUtils.isBlank(format))
 			return this;
-		objectMapper.setDateFormat(new SimpleDateFormat(format));
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		sdf.setTimeZone(TimeZone.getTimeZone(timezone));
+		objectMapper.setDateFormat(sdf);
 //		objectMapper.getSerializationConfig().withDateFormat(df);
 //		objectMapper.getDeserializationConfig().withDateFormat(df);
 		return this;
@@ -264,8 +274,12 @@ public class JsonMapper {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T fromJson(final Object json, Type objType){
+		return fromJson(json, objType, true);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T fromJson(final Object json, Type objType, boolean parseAsStringIfError){
 		if(json==null)
 			return null;
 		Assert.notNull(objType);
@@ -285,7 +299,12 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue(jsonstr, constructJavaType(objType));
 			}
 		} catch (Exception e) {
-			throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
+			if (parseAsStringIfError) {
+				String jsonstr = fromJson(json, String.class, false);
+				throw new JsonException("parse json to ["+objType+"] error, json: " + jsonstr, e);
+			} else {
+				throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
+			}
 		}
 		return (T)obj;
 	}
@@ -398,7 +417,7 @@ public class JsonMapper {
 		try {
 			obj = objectMapper.readerForUpdating(object).readValue(jsonString);
 		}catch (Exception e) {
-			logger.warn("update json string:" + jsonString + " to object:" + object + " error.", e);
+			throw new JsonException("update json string:" + jsonString + " to object:" + object + " error.", e);
 		}
 		return obj;
 	}

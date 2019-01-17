@@ -20,11 +20,14 @@ import org.slf4j.LoggerFactory;
 /****
  * 对bean进行操作的实用类
  * 和beanUtils类似
+ * 部分代码copy自apache的BeanUtils
+ * 已废弃，建议使用copyUtils
  * 
  * @author weishao
  *
  */
-@SuppressWarnings({"hiding", "unchecked"})
+@Deprecated
+@SuppressWarnings({ "unchecked"})
 public class MyBeanUtils {
 
 	private static MyBeanUtilsBean BeanUtils = new MyBeanUtilsBean();
@@ -221,7 +224,6 @@ class MyBeanUtilsBean extends BeanUtilsBean {
 		} else if (key != null) { // Destination must be mapped
 			// Maps do not know what the preferred data type is,
 			// so perform no conversions at all
-			// FIXME - should we create or support a TypedMap?
 			try {
 				getPropertyUtils().setMappedProperty(target, propName, key, value);
 			} catch (NoSuchMethodException e) {

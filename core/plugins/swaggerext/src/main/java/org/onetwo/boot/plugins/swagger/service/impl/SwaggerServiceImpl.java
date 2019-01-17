@@ -1,11 +1,6 @@
 
 package org.onetwo.boot.plugins.swagger.service.impl;
 
-import io.swagger.models.Model;
-import io.swagger.models.Path;
-import io.swagger.models.Swagger;
-import io.swagger.models.Tag;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
+
+import io.swagger.models.Model;
+import io.swagger.models.Path;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
 
 @Service
 @Transactional
@@ -112,6 +112,5 @@ public class SwaggerServiceImpl {
     	SwaggerEntity swaggerEntity = this.baseEntityManager.findOne(SwaggerEntity.class, "moduleId", moduleId);
     	return swaggerEntity;
     }
-    
 
 }

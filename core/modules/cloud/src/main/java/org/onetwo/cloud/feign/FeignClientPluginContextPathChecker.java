@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
  */
 public class FeignClientPluginContextPathChecker implements PluginContextPathChecker {
 
-	@Value("${jfish.cloud.feign.rejectPluginContextPath:true}")
+	@Value("${"+CornerFeignConfiguration.KEY_REJECT_PLUGIN_CONTEXT_PATH+":true}")
 	private boolean rejectPluginContextPath = true;
 	
 	@Override
@@ -27,7 +27,5 @@ public class FeignClientPluginContextPathChecker implements PluginContextPathChe
 		EnhanceFeignClient classAnnotation = findMergedAnnotation(handlerType, EnhanceFeignClient.class);
 		return classAnnotation==null;
 	}
-	
-	
 
 }

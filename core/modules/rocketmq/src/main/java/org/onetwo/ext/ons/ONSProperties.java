@@ -3,8 +3,6 @@ package org.onetwo.ext.ons;
 import java.util.Map;
 import java.util.Properties;
 
-import lombok.Data;
-
 import org.onetwo.ext.alimq.JsonMessageDeserializer;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
@@ -15,6 +13,8 @@ import org.springframework.util.Assert;
 
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.google.common.collect.Maps;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -28,6 +28,7 @@ public class ONSProperties implements InitializingBean {
 //	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
 //	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
 
+
 	MqServerTypes serverType = MqServerTypes.ONS;
 	
 	String accessKey;
@@ -38,7 +39,9 @@ public class ONSProperties implements InitializingBean {
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
-
+	
+	DeleteReceiveTask deleteReceiveTask = new DeleteReceiveTask();
+	
 //	Map<String, String> jsonDeserializerCompatibilityTypeMappings = Maps.newHashMap();	
 
 	public Map<String, Properties> getProducers() {
@@ -72,6 +75,16 @@ public class ONSProperties implements InitializingBean {
 		
 	}
 
+	@Data
+	public static class DeleteReceiveTask {
+		/***
+		 * 默认半夜3点触发
+		 */
+		public static final String DELETE_RECEIVE_TASK_CRON = "${jfish.ons.deleteReceiveTask.cron: 0 0 3 * * ?}";
+		private String deleteBeforeAt;
+		private String redisLockTimeout;
+		
+	}
 
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),

@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import lombok.Data;
-
 import org.onetwo.boot.core.jwt.JwtConfig;
+import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Maps;
+
+import lombok.Data;
 
 
 /***
@@ -111,6 +112,7 @@ public class BootJFishConfig {
 		Properties mediaTypes;
 		JsonConfig json = new JsonConfig();
 		List<ResourceHandlerConfig> resourceHandlers = new ArrayList<>();
+		List<CorsConfig> cors = new ArrayList<>();
 //		MvcAsyncProperties async = new MvcAsyncProperties();
 		
 		/*@Deprecated
@@ -142,7 +144,21 @@ public class BootJFishConfig {
 			boolean enable;
 			List<String> packages;
 		}*/
+	}
+	
+	@Data
+	static public class CorsConfig {
+		String mapping;
+		String[] allowedOrigins = new String[] {"*"}; //规范支持*
+		String[] allowedMethods = new String[] {"*"};//{"POST", "PUT", "GET", "OPTIONS", "DELETE", "HEAD"}; // spring mvc 支持*
+		String[] allowedHeaders = new String[] {"*"}; //{"Content-Type", "Accept", "x-requested-with"}; // // spring mvc 支持*
+		String[] exposedHeaders = new String[] {}; // 不支持 *
+		boolean allowCredentials = false;
+		String maxAge;
 		
+		public long getMaxAgeInMillis() {
+			return LangOps.timeToMills(maxAge, 1800);
+		}
 	}
 	
 	@Data

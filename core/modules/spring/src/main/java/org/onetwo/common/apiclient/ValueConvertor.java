@@ -50,7 +50,11 @@ public class ValueConvertor implements BiFunction<PropertyDescriptor, Object, Ob
 			}
 		}else if(v instanceof ApiArgumentTransformer){
 			v = ((ApiArgumentTransformer)v).asApiValue();
-		}else{
+		}/*else if(v instanceof Date){
+			Date d = (Date) v;
+			prop
+			v = d.getTime();
+		}*/else{
 			v = v==null?v:v.toString();
 		}
 		return v;

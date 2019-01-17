@@ -15,6 +15,7 @@ import org.springframework.web.method.HandlerMethod;
  * @author wayshall
  * <br/>
  */
+
 public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 	private String authHeaderName = JwtUtils.DEFAULT_HEADER_KEY;
 	@Autowired
@@ -53,6 +54,11 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 
 	public void setCanBeAnonymous(boolean canBeAnonymous) {
 		this.canBeAnonymous = canBeAnonymous;
+	}
+
+	@Override
+	public int getOrder() {
+		return afterFirst(ORDER_STEP*2);
 	}
 
 	@Override

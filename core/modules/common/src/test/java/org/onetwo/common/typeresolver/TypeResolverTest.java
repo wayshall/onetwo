@@ -3,10 +3,9 @@ package org.onetwo.common.typeresolver;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.jodah.typetools.TypeResolver;
-
-import org.assertj.core.util.Lists;
 import org.junit.Test;
+
+import net.jodah.typetools.TypeResolver;
 
 /**
  * @author wayshall

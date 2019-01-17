@@ -3,7 +3,6 @@ package org.onetwo.boot.module.alioss;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
@@ -43,7 +42,7 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		String key = context.getKey();
 		if(StringUtils.isBlank(key)){
 			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule())).replace("/", "-");
-			key = prefix+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
+			key = prefix+"-" + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
 //			key = StringUtils.emptyIfNull(context.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
 		}
 		wrapper.objectOperation(bucketName, key)

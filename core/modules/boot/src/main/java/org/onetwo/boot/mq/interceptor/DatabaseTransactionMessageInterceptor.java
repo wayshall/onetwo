@@ -1,8 +1,9 @@
-package org.onetwo.boot.mq;
+package org.onetwo.boot.mq.interceptor;
 
 import lombok.Builder;
 import lombok.Data;
 
+import org.onetwo.boot.mq.SendMessageContext;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 

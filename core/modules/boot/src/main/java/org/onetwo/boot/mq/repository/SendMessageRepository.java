@@ -1,8 +1,12 @@
-package org.onetwo.boot.mq;
+package org.onetwo.boot.mq.repository;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import org.onetwo.boot.mq.SendMessageContext;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
 
 /**
  * @author wayshall
@@ -18,8 +22,8 @@ public interface SendMessageRepository {
 	void remove(Collection<SendMessageContext<?>> msgCtxs);
 	
 	
-	int lockToBeSendMessage(String locker, Date now);
-	List<SendMessageEntity> findLockerMessage(String locker, Date now, int sendCountPerTask);
+	int lockSendMessage(String locker, Date now, SendStates sendState);
+	List<SendMessageEntity> findLockerMessage(String locker, Date now, SendStates sendState, int sendCountPerTask);
 
 	/***
 	 * 查找当前上下文的所有发送消息

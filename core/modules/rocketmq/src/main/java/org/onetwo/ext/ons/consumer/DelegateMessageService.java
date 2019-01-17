@@ -6,6 +6,7 @@ import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.exception.ConsumeException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +54,9 @@ public class DelegateMessageService implements InitializingBean {
 		ConsumContext currentConetxt = null;
 		for(MessageExt message : msgs){
 			String msgId = ONSUtils.getMessageId(message);
-			logger.info("rmq-consumer[{}] received id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
+			if (logger.isInfoEnabled()) {
+				logger.info("rmq-consumer[{}] received id: {}, key: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId, message.getKeys(), message.getTopic(), message.getTags());
+			}
 			
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
@@ -76,12 +79,30 @@ public class DelegateMessageService implements InitializingBean {
 												.build();
 			}
 			
-			consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
-			consumer.doConsume(currentConetxt);
-			consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
-			logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), body);
+			consumeMessage(consumer, meta, currentConetxt);
+			if (logger.isDebugEnabled()) {
+				logger.debug("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), currentConetxt.getDeserializedBody());
+			} else if(logger.isInfoEnabled()) {
+				logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
+			}
 		}
 		return currentConetxt;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void consumeMessage(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
+		consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
+		try {
+			consumer.doConsume(currentConetxt);
+		} catch (Exception e) {
+			String msgId = ONSUtils.getMessageId(currentConetxt.getMessage());
+			String msg = "rmq-consumer["+meta.getConsumerId()+"] consumed message error. " + 
+						"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys();
+			logger.error(msg, e);
+			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+			throw new ConsumeException(msg, e);
+		}
+		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
 	}
 
 }

@@ -28,6 +28,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.dbm.exception.DbmException;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ import org.springframework.web.method.HandlerMethod;
  *
  */
 public interface ExceptionMessageFinder {
-	public String ERROR_RESPONSE_HEADER = "X-RESPONSE-JFISH-ERROR";
+	public String ERROR_RESPONSE_HEADER = ResponseUtils.ERROR_RESPONSE_HEADER;
 	//TODO: 必要时加上serviceName头，一边追踪，待实现
 	public String ERROR_JSERVICE_HEADER = "X-Response-JService";
 	

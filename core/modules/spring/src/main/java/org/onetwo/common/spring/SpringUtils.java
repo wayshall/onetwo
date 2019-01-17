@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -30,6 +29,8 @@ import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.PropUtils;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
+import org.onetwo.common.reflect.BeanToMapConvertor.PropertyContext;
+import org.onetwo.common.reflect.BeanToMapConvertor.ValuePutter;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
@@ -120,13 +121,17 @@ final public class SpringUtils {
     	return res;
 	}
 	
-	public static Map<String, Object> toFlatMap(Object obj) {
+	/*public static Map<String, Object> toFlatMap(Object obj) {
 		return toFlatMap(obj, o->!LangUtils.isSimpleTypeObject(o));
-	}
+	}*/
 	
-	public static Map<String, Object> toFlatMap(Object obj, Function<Object, Boolean> isNestedObject) {
+	public static Map<String, Object> toFlatMap(Object obj) {
 		Map<String, Object> map = Maps.newHashMap();
-		BEAN_TO_MAP_CONVERTOR.flatObject("", obj, (k, v, ctx)->{
+		
+		ConsumableValuePutter putter = new ConsumableValuePutter((k, v) -> {
+			map.put(k, v);
+		});
+		/*BEAN_TO_MAP_CONVERTOR.flatObject("", obj, (k, v, ctx)->{
 			Object value = v;
 			TypeDescriptor sourceType = null;
 			if(v.getClass()!=String.class){
@@ -140,8 +145,38 @@ final public class SpringUtils {
             	value = getFormattingConversionService().convert(v, sourceType, TypeDescriptor.valueOf(String.class));
             }
         	map.put(k, value);
-		});
+		});*/
+		BEAN_TO_MAP_CONVERTOR.flatObject("", obj, putter);
 		return map;
+	}
+	
+	public static class ConsumableValuePutter implements ValuePutter {
+		private final BiConsumer<String, Object> consumer;
+		
+		public ConsumableValuePutter(BiConsumer<String, Object> consumer) {
+			super();
+			this.consumer = consumer;
+		}
+
+		@Override
+		public void put(String k, Object v, PropertyContext ctx) {
+			Object value = v;
+			TypeDescriptor sourceType = null;
+			if(v.getClass()!=String.class){
+            	Field field = ctx.getField();
+            	if(field!=null && (field.getAnnotation(DateTimeFormat.class)!=null || field.getAnnotation(NumberFormat.class)!=null) ){
+    	            sourceType = new TypeDescriptor(field);
+            	}
+            	if(sourceType==null){
+    	            sourceType = new TypeDescriptor(new Property(ctx.getSource().getClass(), ctx.getProperty().getReadMethod(), ctx.getProperty().getWriteMethod()));
+            	}
+            	value = getFormattingConversionService().convert(v, sourceType, TypeDescriptor.valueOf(String.class));
+            }
+//        	map.put(k, value);
+			this.consumer.accept(k, value);
+		
+		}
+		
 	}
 	
 	public static TypeDescriptor typeDescriptorForPerperty(Class<?> clazz, String propertyName){
@@ -369,12 +404,17 @@ final public class SpringUtils {
 
 	public static <T> void injectAndInitialize(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
 		acb.autowireBeanProperties(bean, autowireMode, false);
-		initializeBean(acb, bean, autowireMode);
+		initializeBean(acb, bean);
 	}
 
-	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
+	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean) {
 		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
 		acb.initializeBean(bean, beanName);
+	}
+
+	public static <T> void initializeBean(ApplicationContext appContext, T bean) {
+		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
+		appContext.getAutowireCapableBeanFactory().initializeBean(bean, beanName);
 	}
 	
 

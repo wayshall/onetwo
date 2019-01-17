@@ -6,21 +6,44 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.utils.LangOps;
+import org.springframework.integration.redis.util.RedisLockRegistry;
+
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
-import org.onetwo.common.exception.BaseException;
-import org.springframework.integration.redis.util.RedisLockRegistry;
-
 /**
+ * 默认超时一分钟
+ * 
  * @author wayshall
  * <br/>
  */
 @Slf4j
 public class RedisLockRunner {
 	
+	public static RedisLockRunner createLoker(RedisLockRegistry redisLockRegistry, String lockkey, String lockerTimeout) {
+		Pair<Integer, TimeUnit> timeout = null;
+		if (StringUtils.isNotBlank(lockerTimeout)) {
+			timeout = LangOps.parseTimeUnit(lockerTimeout);
+		}
+		RedisLockRunner redisLockRunner = RedisLockRunner.builder()
+														 .lockKey(lockkey)
+														 .time(timeout==null?null:timeout.getKey().longValue())
+														 .unit(timeout==null?null:timeout.getValue())
+														 .errorHandler(e->new BaseException("no error hanlder!", e))
+														 .redisLockRegistry(redisLockRegistry)
+														 .build();
+		return redisLockRunner;
+	}
+	
 	final private RedisLockRegistry redisLockRegistry;
 	private String lockKey;
+	/***
+	 * 默认超时一分钟
+	 */
 	private Long time;
 	private TimeUnit unit;
 	private Consumer<Exception> errorHandler;

@@ -127,8 +127,9 @@ public final class RestUtils {
 		return keysToParamString(toMultiValueMap(request));
 	}
 	
-	public static String keysToParamString(Map<String, ?> params){
-		return ParamUtils.toParamString(params, (BiFunction<Object, Object, String>)(k, v)->{
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static String keysToParamString(Map params){
+		return ParamUtils.toParamString(params, (BiFunction<String, Object, String>)(k, v)->{
 			return k+"={"+k+"}";
 		});
 	}

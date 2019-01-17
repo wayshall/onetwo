@@ -8,10 +8,10 @@ import org.onetwo.boot.core.config.PluginContextPathModes.PathContext;
 import org.onetwo.boot.core.config.PluginProperties;
 import org.onetwo.boot.core.web.mvc.ExtRequestMappingHandlerMapping.RequestMappingCombiner;
 import org.onetwo.boot.plugin.core.PluginManager;
+import org.onetwo.boot.plugin.core.PluginMeta;
 import org.onetwo.boot.plugin.core.WebPlugin;
 import org.onetwo.boot.plugin.mvc.annotation.WebPluginContext;
 import org.onetwo.common.annotation.AnnotationUtils;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -86,11 +86,7 @@ public class BootPluginRequestMappingCombiner implements RequestMappingCombiner 
 
 	
 	private String resolvePluginContextPath(final String pluginContextPath){
-		String path = SpringUtils.resolvePlaceholders(applicationContext, pluginContextPath);
-		if(StringUtils.isNotBlank(path)){
-			path = StringUtils.appendStartWithSlash(path);
-		}
-		return path;
+		return PluginMeta.resolvePluginContextPath(applicationContext, pluginContextPath);
 	}
 
 }

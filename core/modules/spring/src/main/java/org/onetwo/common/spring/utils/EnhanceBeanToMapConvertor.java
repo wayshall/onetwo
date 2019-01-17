@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.beans.BeanWrapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,9 +18,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <br/>
  */
 public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
+	protected static class SpringObjectWrapper implements ObjectWrapper {
+		final private BeanWrapper bw;
+
+		public SpringObjectWrapper(Object object) {
+			super();
+			this.bw = SpringUtils.newBeanWrapper(object);
+		}
+		public PropertyDescriptor[] desribProperties() {
+			return bw.getPropertyDescriptors();
+		}
+		public Object getPropertyValue(PropertyDescriptor prop) {
+			return bw.getPropertyValue(prop.getName());
+		}
+	}
+	
 	private boolean enableJsonPropertyAnnotation = false;
-	
-	
+
+	@Override
+	protected ObjectWrapper objectWrapper(Object obj) {
+		return new DefaultObjectWrapper(obj);
+	}
 	
 	@Override
 	protected PropertyContext createPropertyContext(Object obj, PropertyDescriptor prop) {

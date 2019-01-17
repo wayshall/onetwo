@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 
 import org.onetwo.boot.module.redis.RedisLockRunner;
 import org.onetwo.boot.mq.MQProperties;
-import org.onetwo.boot.mq.SendMessageEntity;
-import org.onetwo.boot.mq.SendMessageEntity.SendStates;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangOps;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ import org.springframework.util.Assert;
  */
 @Transactional
 public class DeleteSentMessageTask implements InitializingBean {
-	public static final String LOCK_KEY = "lock_ons_delete_message_task";
+	public static final String LOCK_KEY = "locker:ons:delete_send_message_task";
 //	public static final long DEFAULT_RUN_FIXEDRATE = 1000*60*60*1;//每小时运行一次
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
@@ -36,10 +35,11 @@ public class DeleteSentMessageTask implements InitializingBean {
 	@Autowired(required=false)
 	private RedisLockRegistry redisLockRegistry;
 	
-	private boolean useReidsLock;
+	private boolean useReidsLock = true;
+	private String redisLockTimeout;
 	
-	private final int defaultDeleteBeforeAt = 60*60*24*3;//默认删除当前时间3天前的已发送消息
-	private String deleteBeforeAt;
+	private final int defaultDeleteBeforeAt = 60*60*24*15;//默认删除当前时间15天前的已发送消息
+	private String deleteBeforeAt;// example: 15d
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -62,7 +62,7 @@ public class DeleteSentMessageTask implements InitializingBean {
 //	@Scheduled(fixedRate=DeleteSentMessageTask.DEFAULT_RUN_FIXEDRATE)
 	@Scheduled(cron=MQProperties.TRANSACTIONAL_DELETE_TASK_CRON)
 	public void doDeleteSentMessage(){
-		log.info("start to check unsend message...");
+		log.info("start to check sent message...");
 		int deleteCount = 0;
 		if(useReidsLock){
 			deleteCount = getRedisLockRunner().tryLock(()->{
@@ -74,7 +74,7 @@ public class DeleteSentMessageTask implements InitializingBean {
 		if(log.isInfoEnabled()){
 			log.info("delete [{}] sent message", deleteCount);
 		}
-		log.info("finish check unsend message...");
+		log.info("finish check sent message...");
 	}
 	
 	
@@ -84,18 +84,19 @@ public class DeleteSentMessageTask implements InitializingBean {
 		int deleteCount = Querys.from(baseEntityManager, SendMessageEntity.class)
 				.where()
 					.field("state").equalTo(SendStates.SENT.ordinal())
-					.field("createAt").lessThan(createAt)
+					.field("deliverAt").lessThan(createAt)
 				.end()
 				.delete();
 		return deleteCount;
 	}
 	
 	private RedisLockRunner getRedisLockRunner(){
-		RedisLockRunner redisLockRunner = RedisLockRunner.builder()
-														 .lockKey(LOCK_KEY)
-														 .errorHandler(e->new BaseException("refresh token error!", e))
-														 .redisLockRegistry(redisLockRegistry)
-														 .build();
+		RedisLockRunner redisLockRunner = RedisLockRunner.createLoker(redisLockRegistry, LOCK_KEY, redisLockTimeout);
 		return redisLockRunner;
 	}
+
+	public void setRedisLockTimeout(String redisLockTimeout) {
+		this.redisLockTimeout = redisLockTimeout;
+	}
+
 }

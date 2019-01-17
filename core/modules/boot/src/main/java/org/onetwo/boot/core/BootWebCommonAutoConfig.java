@@ -1,5 +1,7 @@
 package org.onetwo.boot.core;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.onetwo.boot.apiclient.ApiClientConfiguration;
@@ -49,8 +51,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -95,6 +99,11 @@ public class BootWebCommonAutoConfig {
 	public MvcViewRender mvcViewRender(){
 		return new MvcViewRender();
 	}
+	
+	/*@Bean
+	public SpringMultipartFilterProxy springMultipartFilterProxy() {
+		return new SpringMultipartFilterProxy();
+	}*/
 	
 	/***
 	 * 异常解释
@@ -287,6 +296,22 @@ public class BootWebCommonAutoConfig {
 		@Bean
 		public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
 			return new BootJackson2ObjectMapperBuilder();
+		}
+	}
+	
+	@Configuration
+	protected static class ConfigureMessageConvertor {
+		private List<RequestMappingHandlerAdapter> handlerAdapters;
+		
+		public ConfigureMessageConvertor(List<RequestMappingHandlerAdapter> handlerAdapters) {
+			this.handlerAdapters = handlerAdapters;
+		}
+
+		@PostConstruct
+		public void configureHttpMessageConverters() {
+			for (RequestMappingHandlerAdapter handlerAdapter : this.handlerAdapters) {
+				AnnotationAwareOrderComparator.sort(handlerAdapter.getMessageConverters());
+			}
 		}
 	}
 }

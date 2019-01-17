@@ -1,7 +1,5 @@
 package org.onetwo.ext.security.method;
 
-import lombok.Getter;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -33,6 +31,8 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import lombok.Getter;
 
 
 
@@ -80,6 +80,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
     	if(!LangUtils.isEmpty(securityConfig.getIgnoringUrls())){
     		web.ignoring().antMatchers(securityConfig.getIgnoringUrls());
     	}
+    	web.debug(securityConfig.isDebug()); 
     }
     
 	@SuppressWarnings("rawtypes")

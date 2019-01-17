@@ -2,6 +2,7 @@ package org.onetwo.common.jackson;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -17,6 +18,7 @@ public class UserEntity {
 	
 	private Integer age;
 
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	protected Date birthDay;
 
 	private Float height;

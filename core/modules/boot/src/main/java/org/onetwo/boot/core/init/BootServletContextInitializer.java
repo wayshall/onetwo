@@ -4,6 +4,7 @@ import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.onetwo.boot.core.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.common.web.init.CommonWebFilterInitializer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
@@ -19,6 +20,10 @@ public class BootServletContextInitializer extends CommonWebFilterInitializer im
 		this.onServletContextStartup(servletContext);
     }
 
+	@Override
+	protected void registeredMultipartFilter(ServletContext servletContext){
+		this.registeredMultipartFilter(servletContext, SpringMultipartFilterProxy.class);
+	}
 
 	/*protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
 		//boot会自动注册

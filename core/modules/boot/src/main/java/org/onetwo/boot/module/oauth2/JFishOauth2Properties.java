@@ -2,12 +2,12 @@ package org.onetwo.boot.module.oauth2;
 
 import java.util.Map;
 
-import lombok.Data;
-
 import org.onetwo.boot.module.oauth2.util.PasswordEncoders;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Maps;
+
+import lombok.Data;
 
 /**
  * 统一在网关验证授权，因此后端的api项目除了需要获取auth2而配置tokenStore外，
@@ -78,6 +78,8 @@ public class JFishOauth2Properties {
 		Map<String[], String> intercepterUrls = Maps.newHashMap();
 		String anyRequest;
 		
+		Map<String, String> pathMappings = Maps.newHashMap();
+		
 	}
 	
 
@@ -90,12 +92,14 @@ public class JFishOauth2Properties {
 		 * resource server
 		 */
 		String[] requestMatchers;
-		Map<String[], String> intercepterUrls = Maps.newHashMap();
+		Map<String[], String> intercepterUrls = Maps.newLinkedHashMap();
 		String anyRequest;
 		public String[] getRequestMatchers() {
 			return requestMatchers;
 		}
-		
+		public Map<String[], String> getIntercepterUrls() {
+			return intercepterUrls;
+		}
 	}
 	
 

@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,6 +60,23 @@ public class ExtSwagger2Controller extends Swagger2Controller {
 		}
 		Optional<Json> json = swaggerResourceService.findJsonByGroupName(swaggerGroup);
 		if(!json.isPresent()){
+			return res;
+		}
+		res = new ResponseEntity<Json>(json.get(), HttpStatus.OK);
+		return res;
+	}
+    
+
+    @RequestMapping(
+      value = "/v2/api-docs/{moduleId}",
+      method = RequestMethod.GET,
+      produces = { APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE })
+    @ResponseBody
+	public ResponseEntity<Json> getDocumentationByModuleId(@PathVariable("moduleId") Long moduleId, HttpServletRequest servletRequest) {
+    	ResponseEntity<Json> res = null;
+		Optional<Json> json = swaggerResourceService.findJsonByModuleId(moduleId);
+		if(!json.isPresent()){
+			res = new ResponseEntity<Json>(HttpStatus.NOT_FOUND);
 			return res;
 		}
 		res = new ResponseEntity<Json>(json.get(), HttpStatus.OK);

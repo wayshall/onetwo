@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 public class UrlJsonSerializer extends JsonSerializer<Object> {
 	
@@ -35,6 +36,19 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 		}
 	}
 	
+	
+	/****
+	 * 序列化需要类型形式时，即objectMapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY)，必须实现此方法
+	 */
+	@Override
+	public void serializeWithType(Object value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+		typeSer.writeTypePrefixForScalar(value, gen);
+		serialize(value, gen, serializers);
+		typeSer.writeTypePrefixForScalar(value, gen);
+	}
+
+
+
 	protected String getServerFullPath(String subPath){
 		if(isHttpPath(subPath)){
 			return subPath;
@@ -43,6 +57,9 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 	}
 	
 	protected final boolean isHttpPath(String subPath){
+		if(subPath==null) {
+			return false;
+		}
 		subPath = subPath.toLowerCase();
 		return subPath.startsWith("http://") || subPath.startsWith("https://");
 	}
