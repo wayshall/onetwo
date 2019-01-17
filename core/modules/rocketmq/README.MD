@@ -70,6 +70,18 @@ jfish:
         onsAddr: broker地址
 ```
 
+## 消费者属性配置
+```yaml
+jfish:
+	ons:
+		commons:
+			属性名称: 属性值 #这里可以配置consumer和producer都有的属性配置
+			consumers:
+				testconsumer:
+					consumeTimeout: 10 #消费者超时10分钟
+					# 其它配置项
+```
+
 ## 生产者使用
 使用注解@EnableONSClient 启用rocketmq模块后，直接注入org.onetwo.ext.ons.producer.ProducerService服务发送消息即可：
 ```Java
