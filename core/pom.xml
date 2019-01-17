@@ -106,7 +106,6 @@
                 <module>modules/cloud</module>
                 
                 <module>plugins/parent</module>
-                <module>plugins/web-admin</module>
                 <module>plugins/swaggerext</module>
                 
                 <module>modules/poi</module>
