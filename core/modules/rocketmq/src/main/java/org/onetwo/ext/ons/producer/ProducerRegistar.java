@@ -26,7 +26,7 @@ public class ProducerRegistar extends BaseImportRegistrar<EnableONSClient> {
 		}
 		for(AnnotationAttributes producer : producers){
 			String producerId = resolveAttribute(producer, "producerId", null);
-			String beanName = "ONSProduers-"+producerId;
+			String beanName = "ONS-"+producerId;
 			
 			if(registry.containsBeanDefinition(beanName)){
 				logger.info("produer[{}] has been registered, ignored...", beanName);
@@ -48,11 +48,11 @@ public class ProducerRegistar extends BaseImportRegistrar<EnableONSClient> {
 			if(transactional){
 				BeanDefinitionBuilder noTransactionalBean = BeanDefinitionBuilder.genericBeanDefinition(FakeProducerService.class);
 //				definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-				String noTransactionalBeanName = "ONSProduers"+producerId+":notTransactional";
-				BeanDefinitionHolder notTransactionalHolder = new BeanDefinitionHolder(noTransactionalBean.getBeanDefinition(), noTransactionalBeanName);
+				String fakeProducerService = beanName + "-fake";
+				BeanDefinitionHolder notTransactionalHolder = new BeanDefinitionHolder(noTransactionalBean.getBeanDefinition(), fakeProducerService);
 				BeanDefinitionReaderUtils.registerBeanDefinition(notTransactionalHolder, registry);
 				if(logger.isInfoEnabled()){
-					logger.info("register producer {}: {}", ProducerService.class.getSimpleName(), noTransactionalBeanName);
+					logger.info("register producer {}: {}", FakeProducerService.class.getSimpleName(), fakeProducerService);
 				}
 			}
 		}

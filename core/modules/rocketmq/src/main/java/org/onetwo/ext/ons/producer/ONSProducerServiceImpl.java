@@ -1,27 +1,21 @@
 package org.onetwo.ext.ons.producer;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.mq.InterceptableMessageSender;
-import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
-import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
-import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.TracableMessageKey;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,7 +33,7 @@ import com.aliyun.openservices.ons.api.exception.ONSClientException;
  * @author wayshall
  * <br/>
  */
-public class ONSProducerServiceImpl extends ProducerBean implements InitializingBean, DisposableBean, ProducerService {
+public class ONSProducerServiceImpl extends ProducerBean implements InitializingBean, DisposableBean, DefaultProducerService, ProducerService {
 
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -155,7 +149,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		return sendRawMessage(message, interceptorPredicate);
 	}
 	
-	private void configMessage(Message message, OnsMessage onsMessage) {
+	/*private void configMessage(Message message, OnsMessage onsMessage) {
 		if(onsMessage instanceof TracableMessage) {
 			//自动生成key
 			//如果是延迟消息，用实际延迟发送的时间替换已存在的发生时间
@@ -184,45 +178,26 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 //				message.putUserProperties(TracableMessage.IDENTITY_KEY, key.getIdentityKey());
 			}
 		}
-	}
+	}*/
 	
 	protected String resolvePlaceholders(String value){
 		return SpringUtils.resolvePlaceholders(applicationContext, value);
 	}
 	
-	protected boolean needSerialize(Object body){
+/*	protected boolean needSerialize(Object body){
 		if(body==null){
 			return false;
 		}
 		return !byte[].class.isInstance(body);
 	}
+*/	
+	public SendResult sendRawMessage(Message message, final InterceptorPredicate interPredicate) {
+		return this.sendRawMessage(message, interPredicate, ()->this.doSendRawMessage(message));
+	}
 	
-	
-	protected SendResult sendRawMessage(Message message, final InterceptorPredicate interPredicate){
+	/*protected SendResult sendRawMessage(Message message, final InterceptorPredicate interPredicate){
 		final InterceptorPredicate interceptorPredicate = interPredicate==null?SendMessageFlags.Default:interPredicate;
 		
-		/*List<SendMessageInterceptor> messageInterceptors = Lists.newArrayList(sendMessageInterceptors);
-		List<SendMessageInterceptor> increasingInters = interceptorPredicate.getIncreasingInterceptors();
-		if(!increasingInters.isEmpty()){
-			messageInterceptors.addAll(interceptorPredicate.getIncreasingInterceptors());
-			AnnotationAwareOrderComparator.sort(messageInterceptors);
-		}
-		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
-																			()->this.send(message), 
-																			interceptorPredicate);
-		
-		ONSSendMessageContext ctx = ONSSendMessageContext.builder()
-													.message(message)
-													.source(this)
-													.producer(this)
-													.chain(chain)
-													.debug(true)
-													.threadId(Thread.currentThread().getId())
-													.build();
-		chain.setSendMessageContext(ctx);
-		chain.setDebug(ctx.isDebug());
-		
-		return (SendResult)chain.invoke();*/
 		return interceptableMessageSender.sendIntercetableMessage(interPredicate, messageInterceptors->{
 			SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
 					interceptorPredicate,
@@ -231,7 +206,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 			ONSSendMessageContext ctx = ONSSendMessageContext.builder()
 															.message(message)
 															.source(this)
-															.producer(this)
+//															.producer(this)
 															.chain(chain)
 															.debug(true)
 															.threadId(Thread.currentThread().getId())
@@ -245,10 +220,10 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 			}
 			return (SendResult)res;
 		});
-	}
+	}*/
 	
 
-	protected SendResult doSendRawMessage(Message message){
+	public SendResult doSendRawMessage(Message message){
 		try {
 			return send(message);
 		} catch (ONSClientException e) {
@@ -258,20 +233,6 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		}
 		return null;
 	}
-
-	protected void handleException(Throwable e, Message message){
-		final Logger logger = ONSUtils.getONSLogger();
-		if(logger.isErrorEnabled()){
-			logger.error("send message topic: {}, tags: {}, key: {}, msgId: {}", message.getTopic(), message.getTag(), message.getKey(), message.getMsgID());
-		}
-		
-		if(e instanceof ONSClientException){
-			throw (ONSClientException)e;
-		}else{
-			throw new BaseException("发送消息失败", e);
-		}
-	}
-
 	
 	@Override
 	public <T> T getRawProducer(Class<T> targetClass) {
@@ -281,6 +242,11 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	@Override
 	public boolean isTransactional() {
 		return false;
+	}
+
+	@Override
+	public InterceptableMessageSender<SendResult> getInterceptableMessageSender() {
+		return interceptableMessageSender;
 	}
 	
 	

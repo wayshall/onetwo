@@ -21,8 +21,8 @@ public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext
 	
 //	final private Message message;
 	final private TraceableProducer source;
-	final private ProducerBean producer;
-	final private TransactionProducerBean transactionProducer;
+//	final private ProducerBean producer;
+//	final private TransactionProducerBean transactionProducer;
 //	final private SendMessageInterceptorChain chain;
 //	private SendMessageEntity messageEntity;
 	/*
@@ -32,13 +32,14 @@ public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext
 	@Builder
 	public ONSSendMessageContext(Message message,
 			SendMessageEntity messageEntity, long threadId,
-			boolean debug, TraceableProducer source, ProducerBean producer,
-			TransactionProducerBean transactionProducer,
+			boolean debug, TraceableProducer source, 
+			/*ProducerBean producer,
+			TransactionProducerBean transactionProducer,*/
 			SendMessageInterceptorChain chain) {
 		super(message, chain, messageEntity, threadId, debug);
 		this.source = source;
-		this.producer = producer;
-		this.transactionProducer = transactionProducer;
+//		this.producer = producer;
+//		this.transactionProducer = transactionProducer;
 		this.setKey(message.getKey());
 //		this.chain = chain;
 //		this.messageEntity = messageEntity;

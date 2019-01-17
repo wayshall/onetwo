@@ -40,7 +40,7 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/boot</module>
-                <module>modules/cloud</module>
+                <module>modules/rocketmq</module>
 			</modules>
            <build>
               <plugins>
