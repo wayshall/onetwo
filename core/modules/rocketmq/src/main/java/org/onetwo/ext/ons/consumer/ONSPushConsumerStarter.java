@@ -20,6 +20,7 @@ import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
+import org.onetwo.ext.ons.annotation.ONSSubscribe.ONSSubscribeProperty;
 import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
 import org.springframework.aop.support.AopUtils;
@@ -114,12 +115,16 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		Properties comsumerProperties = onsProperties.baseProperties();
 		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
 		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
-		if(meta.getMaxReconsumeTimes()>0){
+		if (meta.getMaxReconsumeTimes()>0){
 			comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
 		}
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
-		if(customProps!=null){
+		if (customProps!=null){
 			comsumerProperties.putAll(customProps);
+		}
+		// 注解覆盖配置
+		if (meta.getComsumerProperties()!=null) {
+			comsumerProperties.putAll(meta.getComsumerProperties());
 		}
 //		rawConsumer.setMessageModel(meta.getMessageModel());
 		
@@ -277,6 +282,12 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			}
 			String topic = resloveValue(subscribe.topic());
 			String consumerId = resloveValue(subscribe.consumerId());
+			
+			ONSSubscribeProperty[] onsProperties = subscribe.properties();
+			Map<String, String> props = Stream.of(onsProperties).collect(Collectors.toMap(prop->prop.name(), prop->resloveValue(prop.value())));
+			Properties properties = new Properties();
+			properties.putAll(props);
+			
 			ConsumerMeta meta = ConsumerMeta.builder()
 					.consumerId(consumerId)
 					.topic(topic)
@@ -290,6 +301,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					.consumerBeanName(listernName)
 					.autoDeserialize(subscribe.autoDeserialize())
 					.idempotentType(subscribe.idempotent())
+					.comsumerProperties(properties)
 					.build();
 			return meta;
 		}
