@@ -48,7 +48,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource implements Init
 		if(StringUtils.isBlank(lookupStrategy)){
 			this.lookupStrategy = datasourceRouterProperties.getLookupStrategy();
 		}
-		Assert.hasText(lookupStrategy);
+		Assert.hasText(lookupStrategy, "lookupStrategy must has text!");
 		this.scanDatasources();
 		List<LookupKeyStrategy> strategys = SpringUtils.getBeans(applicationContext, LookupKeyStrategy.class);
 		strategys.forEach(strategy->{
