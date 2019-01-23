@@ -2,6 +2,7 @@ package org.onetwo.boot.mq.task;
 
 import java.time.LocalDateTime;
 
+import org.onetwo.boot.module.redis.JFishRedisProperties;
 import org.onetwo.boot.module.redis.RedisLockRunner;
 import org.onetwo.boot.mq.MQProperties;
 import org.onetwo.boot.mq.entity.SendMessageEntity;
@@ -44,7 +45,8 @@ public class DeleteSentMessageTask implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(useReidsLock){
-			Assert.notNull(redisLockRegistry, "redisLockRegistry not found!");
+			Assert.notNull(redisLockRegistry, "redisLockRegistry not found! "
+					+ "you should config the key[" + JFishRedisProperties.ENABLED_LOCK_REGISTRY + "] to enabled redisLockRegistry!");
 		}
 	}
 
