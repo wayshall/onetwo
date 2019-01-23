@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<included>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
+    
+    <appender name="logFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Support multiple-JVM writing to the same log file -->
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 45 days' worth of history -->
+            <maxHistory>45</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} %L - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="asyncLogFile" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>1</discardingThreshold>
+        <queueSize>30000</queueSize>
+        <appender-ref ref="logFile"/>
+    </appender>
+</included>
+

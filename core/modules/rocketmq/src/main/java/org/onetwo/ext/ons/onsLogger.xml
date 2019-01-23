@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<included>
+    <!-- 注意配置顺序，否则不起作用 -->
+    <appender name="onsAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Support multiple-JVM writing to the same log file -->
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/ons.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="asyncOnsFile" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>1</discardingThreshold>
+        <queueSize>3000</queueSize>
+        <appender-ref ref="onsAppender"/>
+    </appender>
+
+    <logger name="org.onetwo.ext.ons.ONSMessageLog" level="INFO">
+        <appender-ref ref="asyncOnsFile"/>
+    </logger>
+    
+</included>
+

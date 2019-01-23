@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLogger;
 
 import ch.qos.logback.classic.LoggerContext;
 
@@ -19,6 +19,8 @@ public class JFishLoggerFactory {
 	private static final String MAIL_LOGGER = "mailLogger";
 	
 	public static final String COMMON_LOGGER_NAME = "org.onetwo.common.log.CommonLog";
+	
+	private static Logger mailLogger = null;
 	
 	public static Logger getCommonLogger(){
 		return getLogger(COMMON_LOGGER_NAME);
@@ -45,7 +47,15 @@ public class JFishLoggerFactory {
 	}
 	
 	public static Logger findMailLogger(){
-		return findLogger(MAIL_LOGGER);
+		Logger logger = mailLogger;
+		if (logger == null) {
+			logger = findLogger(MAIL_LOGGER);
+			if (logger == null) {
+				logger = NOPLogger.NOP_LOGGER;
+			}
+			mailLogger = logger;
+		}
+		return logger;
 	}
 	
 	public static boolean mailLog(Collection<String> notifyThrowables, Throwable ex, String msg){
@@ -73,7 +83,7 @@ public class JFishLoggerFactory {
 		return findLogger(name)!=null;
 	}
 	protected Logger findLoggerInst(String name){
-		JFishList<? extends Logger> loggers = JFishList.wrap(getLoggerInsts());
+		List<? extends Logger> loggers = getLoggerInsts();
 		for(Logger logger : loggers){
 			if(logger.getName().equals(name))
 				return proxyLogger(logger);
