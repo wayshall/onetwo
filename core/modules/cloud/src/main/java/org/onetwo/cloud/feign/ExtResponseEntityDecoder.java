@@ -6,13 +6,12 @@ import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
@@ -32,6 +31,7 @@ import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
 import feign.FeignException;
 import feign.Response;
 import feign.codec.Decoder;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author wayshall
@@ -58,7 +58,9 @@ public class ExtResponseEntityDecoder implements Decoder {
 				SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 				if(isCutoutError(response, dr)){
 					ServiceException cause = new ServiceException(dr.getMessage(), dr.getCode());
-					String message = "remote service error:"+dr.getMessage();
+					String message = "cutoutError, remote service error:"+dr.getMessage();
+					JFishLoggerFactory.findMailLogger().error(message);
+					
 					throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
 				}else if(dr.isError()){
 					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
@@ -67,7 +69,9 @@ public class ExtResponseEntityDecoder implements Decoder {
 			}
 		} catch (HttpMessageNotReadableException e) {
 			if(log.isErrorEnabled()){
-				log.error("decode error, try to use[{}] to decode again, error message: {}", SimpleDataResult.class.getSimpleName(), e.getMessage());
+				String msg = String.format("decode error, try to use[%s] to decode again, error message: %s", SimpleDataResult.class.getSimpleName(), e.getMessage());
+				log.error(msg);
+				JFishLoggerFactory.findMailLogger().error(msg, e);
 			}
 			//兼容。。。。。。。。正常解码失败后尝试用SimpleDataResult解码
 			response.getBody().reset();

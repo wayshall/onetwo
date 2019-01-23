@@ -202,10 +202,10 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		if(errorMessage.isDetail()){
 			msg += " ["+helper.getControllerHandler()+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
-			JFishLoggerFactory.mailLog(bootJFishConfig.getNotifyThrowables(), ex, msg);
 		}else{
 			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
+		JFishLoggerFactory.mailLog(bootJFishConfig.getNotifyThrowables(), ex, msg);
 	}
 
 	@Override

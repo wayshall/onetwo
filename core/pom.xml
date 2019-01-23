@@ -41,6 +41,7 @@
 			<modules>
                 <module>modules/boot</module>
                 <module>modules/rocketmq</module>
+                <module>modules/cloud</module>
 			</modules>
            <build>
               <plugins>

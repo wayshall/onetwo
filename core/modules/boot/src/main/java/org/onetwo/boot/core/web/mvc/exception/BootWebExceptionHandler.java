@@ -111,10 +111,10 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		if(printDetail){
 			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
 			logger.error(msg, ex);
-			JFishLoggerFactory.mailLog(this.bootJFishConfig.getNotifyThrowables(), ex, msg);
 		}else{
 			logger.error(msg + "[{}] error: code[{}], message[{}]", handlerMethod, LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
+		JFishLoggerFactory.mailLog(this.bootJFishConfig.getNotifyThrowables(), ex, msg);
 	}
 
 	@Override

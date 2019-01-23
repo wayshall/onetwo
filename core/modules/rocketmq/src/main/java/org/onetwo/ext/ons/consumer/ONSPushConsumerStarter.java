@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -182,6 +183,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 										", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
 					}
 					logger.error(errorMsg, e);
+					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
 					return ConsumeConcurrentlyStatus.RECONSUME_LATER;
 //					throw new BaseException(e);
 				}
