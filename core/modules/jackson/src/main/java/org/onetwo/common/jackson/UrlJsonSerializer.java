@@ -44,7 +44,8 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 	public void serializeWithType(Object value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
 		typeSer.writeTypePrefixForScalar(value, gen);
 		serialize(value, gen, serializers);
-		typeSer.writeTypePrefixForScalar(value, gen);
+//		typeSer.writeTypePrefixForScalar(value, gen);
+		typeSer.writeTypeSuffixForScalar(value, gen);
 	}
 
 

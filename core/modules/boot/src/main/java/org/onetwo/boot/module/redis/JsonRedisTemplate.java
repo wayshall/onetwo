@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 
@@ -24,8 +25,8 @@ public class JsonRedisTemplate extends RedisTemplate<String, Object>{
 	public JsonRedisTemplate() {
 		JsonMapper jsonMapper = JsonMapper.ignoreNull();
 		ObjectMapper mapper = jsonMapper.getObjectMapper();
-//		mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);//用这个配置，如果写入的对象是list，并且元素是复合对象时，会抛错：Current context not Object but Array
-		mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
+		mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);//用这个配置，如果写入的对象是list，并且元素是复合对象时，会抛错：Current context not Object but Array
+//		mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
 		
 //		RedisSerializer<String> keySerializer = new StringRedisSerializer();
 		RedisSerializer<Object> keySerializer = new GenericJackson2JsonRedisSerializer(mapper);

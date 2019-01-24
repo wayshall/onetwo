@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.google.common.collect.Lists;
 
 public class JsonMapperTest {
 
@@ -62,6 +64,21 @@ public class JsonMapperTest {
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 //		objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
+	
+
+	@Test
+	public void testSerialWithTypeList() throws Exception{
+		JsonMapper jsonMapper = JsonMapper.ignoreNull();
+		ObjectMapper mapper = jsonMapper.getObjectMapper();
+		mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+		
+		List<StoreDetailVo> list = Lists.newArrayList();
+		StoreDetailVo storeDetailVo = new StoreDetailVo();
+		storeDetailVo.setStoreId(1L);
+		list.add(storeDetailVo);
+		String s = mapper.writeValueAsString(list);
+		System.out.println(s);
 	}
 	
 	@Test

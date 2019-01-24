@@ -54,3 +54,4 @@ application-product.yaml
 .DS_Store
 core/deploy-all.sh
 core/deploy-microcloud.sh
+rebel.xml

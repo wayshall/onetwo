@@ -40,6 +40,7 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/boot</module>
+                <module>modules/jackson</module>
 			</modules>
            <build>
               <plugins>
