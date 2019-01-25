@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.onetwo.common.web.userdetails.UserDetail;
 
+import io.jsonwebtoken.Claims;
+
 /**
  * @author wayshall
  * <br/>
@@ -12,8 +14,16 @@ import org.onetwo.common.web.userdetails.UserDetail;
 public class JwtUserDetail implements UserDetail {
 	private long userId;
 	private String userName;
-	
+	/***
+	 * 把userdetail对象解释为token时，扩展属性properties会存储到claim，然后解释为token
+	 */
 	private Map<String, Object> properties;
+	
+	/***
+	 * 从token解释为Claims对象
+	 */
+	private Claims claims;
+	private JwtTokenInfo newToken;
 	
 	public JwtUserDetail(long userId, String userName) {
 		super();
@@ -50,6 +60,22 @@ public class JwtUserDetail implements UserDetail {
 	@Override
 	public long getUserId() {
 		return userId;
+	}
+
+	public Claims getClaims() {
+		return claims;
+	}
+
+	public void setClaims(Claims claims) {
+		this.claims = claims;
+	}
+
+	public JwtTokenInfo getNewToken() {
+		return newToken;
+	}
+
+	public void setNewToken(JwtTokenInfo newToken) {
+		this.newToken = newToken;
 	}
 
 }

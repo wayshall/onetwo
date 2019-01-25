@@ -32,6 +32,7 @@ public class JwtConfig {
 	String expiration;
 	String issuer = "jfish";
 	String audience = "webclient";
+	String refreshTokenIfRemainingTime = "30s";
 	
 	public String getSigningKey(){
 		String key = this.signingKey;

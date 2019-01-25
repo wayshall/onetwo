@@ -1,11 +1,5 @@
 package org.onetwo.boot.core.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultClaims;
-
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
@@ -16,15 +10,24 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClaims;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author wayshall
  * <br/>
  */
+@Slf4j
 public class SimpleJwtTokenService implements JwtTokenService, InitializingBean {
 
 	private final BeanToMapConvertor beanToMap = BeanToMapBuilder.newBuilder()
@@ -35,6 +38,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 	/*private BeanToMapConvertor beanToMap = BeanToMapBuilder.newBuilder()
 													.excludeProperties("userName", "userId")
 													.build();*/
+	private long refreshTokenIfRemainingSeconds;
 	
 	protected Long getExpirationInSeconds(){
 		return jwtConfig.getExpirationInSeconds();
@@ -46,6 +50,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		if(StringUtils.isBlank(jwtConfig.getSigningKey())){
 			throw new BaseException("jwt signingKey not found!");
 		}
+		refreshTokenIfRemainingSeconds = LangOps.timeToSeconds(jwtConfig.getRefreshTokenIfRemainingTime(), 30);
 	}
 	
 
@@ -106,8 +111,13 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 	@Override
 	public <T extends UserDetail> T createUserDetail(String token, Class<T> parameterType) {
 		JwtUserDetail jwtUserDetail = this.createUserDetail(token);
-		T userDetail = JwtUtils.createUserDetail(jwtUserDetail, parameterType);
+		T userDetail = createUserDetail(jwtUserDetail, parameterType);
 		return userDetail;
+	}
+	
+
+	public <T extends UserDetail> T createUserDetail(JwtUserDetail jwtUserDetail, Class<T> parameterType) {
+		return JwtUtils.createUserDetail(jwtUserDetail, parameterType);
 	}
 	
 	@Override
@@ -124,6 +134,17 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 												.collect(Collectors.toMap(entry->getProperty(entry.getKey()), entry->entry.getValue()));
 		Long userId = Long.parseLong(claims.get(JwtSecurityUtils.CLAIM_USER_ID).toString());
 		JwtUserDetail userDetail = buildJwtUserDetail(userId, claims.getSubject(), properties);
+		userDetail.setClaims(claims);
+
+		long remainingSeconds = (claims.getExpiration().getTime() - System.currentTimeMillis())/1000;
+		if (remainingSeconds <= this.refreshTokenIfRemainingSeconds) {
+			if (log.isInfoEnabled()) {
+				log.info("token remaining in seconds: {}, generate new token...");
+			}
+			JwtTokenInfo newToken = generateToken(userDetail);
+			userDetail.setNewToken(newToken);
+		}
+		
 		return userDetail;
 	}
 

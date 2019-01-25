@@ -1,17 +1,12 @@
 package org.onetwo.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
-
+import java.util.Date;
 
 public class SimpleTest {
 
 	
 	public static void main(String[] args) {
-
-		List<Integer> list = new ArrayList<Integer>();
+		System.out.println(new Date(1480166465631L).toLocaleString());
     }
 	
 
