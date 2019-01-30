@@ -2,6 +2,7 @@ package org.onetwo.cloud.hystrix;
 
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.cloud.env.AuthEnvs;
 import org.onetwo.cloud.env.AuthEnvs.AuthEnv;
@@ -43,13 +44,18 @@ public class RequestContextConcurrencyStrategy extends AbstractContextConcurrenc
 			RequestAttributes existRequestAttributes = RequestContextHolder.getRequestAttributes();
 			//当前线程的attrs和代理的不一致，则需要重置
 			boolean reset = delegateRequestAttributes!=null && !delegateRequestAttributes.equals(existRequestAttributes);
+			boolean hasOauth2Ctx = StringUtils.isNotBlank(authorizationToken);
 			try {
 				RequestContextHolder.setRequestAttributes(delegateRequestAttributes);
-				OAuth2Utils.setCurrentToken(authorizationToken);
+				if (hasOauth2Ctx) {
+					OAuth2Utils.setCurrentToken(authorizationToken);
+				}
 				AuthEnvs.setCurrent(authEnv);
 				return this.delegate.call();
 			} finally {
-				OAuth2Utils.removeCurrentToken();
+				if (hasOauth2Ctx) {
+					OAuth2Utils.removeCurrentToken();
+				}
 				AuthEnvs.removeCurrent();
 				if(reset){
 					RequestContextHolder.resetRequestAttributes();

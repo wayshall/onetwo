@@ -15,7 +15,6 @@ import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
 import org.springframework.util.Assert;
@@ -34,17 +33,28 @@ public abstract class OAuth2Utils {
 
 	private static final NamedThreadLocal<ClientDetails> CURRENT_CLIENTS = new NamedThreadLocal<>("oauth2 context");
 	private static final NamedThreadLocal<String> CURRENT_TOKENS = new NamedThreadLocal<>("oauth2 token");
-	private TokenExtractor tokenExtractor = new BearerTokenExtractor();
+//	private TokenExtractor tokenExtractor = new BearerTokenExtractor();
 	
 
-	private static ClientDetailsObtainService getClientDetailsObtainService() {
-		return Springs.getInstance().getBean(ClientDetailsObtainService.class);
+	private static Optional<ClientDetailsObtainService> getClientDetailsObtainService() {
+		ClientDetailsObtainService service = Springs.getInstance().getBean(ClientDetailsObtainService.class);
+		return Optional.ofNullable(service);
+	}
+	
+	/***
+	 * 当前应用是否启用了oauth2 client type
+	 * @author weishao zeng
+	 * @return
+	 */
+	public static boolean isOauth2ClientTypePresent() {
+		return getClientDetailsObtainService().isPresent();
 	}
 	
 	public static Optional<String> getCurrentToken() {
 		Optional<HttpServletRequest> req = WebHolder.getRequest();
-		if(req.isPresent()){
-			return getClientDetailsObtainService().getTokenValue(req.get());
+		Optional<ClientDetailsObtainService> service = getClientDetailsObtainService();
+		if(req.isPresent() && service.isPresent()){
+			return service.get().getTokenValue(req.get());
 		}
 		return Optional.ofNullable(CURRENT_TOKENS.get());
 	}
@@ -85,12 +95,16 @@ public abstract class OAuth2Utils {
 	}
 	
 	public static void runInToken(String token, Runnable runnalbe) {
+		Optional<ClientDetailsObtainService> service = getClientDetailsObtainService();
+		if (!service.isPresent()) {
+			return ;
+		}
 		if (StringUtils.isBlank(token)) {
 			throw new IllegalArgumentException("token cant not be blank");
 		}
 		try {
 			setCurrentToken(token);
-			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
+			ClientDetails clientDetail = service.get().resolveClientDetails(token);
 			runInContext(clientDetail, runnalbe);
 		} finally {
 			removeCurrentToken();
@@ -98,12 +112,16 @@ public abstract class OAuth2Utils {
 	}
 	
 	public static <T> T runInToken(String token, Function<ClientDetails, T> func) {
+		Optional<ClientDetailsObtainService> service = getClientDetailsObtainService();
+		if (!service.isPresent()) {
+			return null;
+		}
 		if (StringUtils.isBlank(token)) {
 			throw new IllegalArgumentException("token cant not be blank");
 		}
 		try {
 			setCurrentToken(token);
-			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
+			ClientDetails clientDetail = service.get().resolveClientDetails(token);
 			return runInContext(clientDetail, ()->func.apply(clientDetail));
 		} finally {
 			removeCurrentToken();
@@ -111,12 +129,13 @@ public abstract class OAuth2Utils {
 	}
 	
 	public static <T> T runInToken(String token, Supplier<T> supplier) {
+		Optional<ClientDetailsObtainService> service = getClientDetailsObtainService();
 		if (StringUtils.isBlank(token)) {
 			throw new IllegalArgumentException("token cant not be blank");
 		}
 		try {
 			setCurrentToken(token);
-			ClientDetails clientDetail = getClientDetailsObtainService().resolveClientDetails(token);
+			ClientDetails clientDetail = service.get().resolveClientDetails(token);
 			return runInContext(clientDetail, supplier);
 		} finally {
 			removeCurrentToken();

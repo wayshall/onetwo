@@ -41,8 +41,10 @@ public class CosFileStore implements FileStorer, InitializingBean {
 	public FileStoredMeta write(StoringFileContext context) {
 		String key = context.getKey();
 		if(StringUtils.isBlank(key)){
-			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule())).replace("/", "-");
-			key = prefix + "-" + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
+//			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule())).replace("/", "-");
+//			key = prefix + "-" + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
+			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule()));
+			key = prefix + "/" + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
 //			key = StringUtils.emptyIfNull(context.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
 		}
 		wrapper.objectOperation(bucketName, key)
