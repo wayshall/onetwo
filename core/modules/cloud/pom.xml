@@ -22,6 +22,7 @@
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
         <spring-cloud.version>Edgware.SR2</spring-cloud.version>
+        <brave.version>5.6.1</brave.version>
     </properties>
 
     <dependencies>
@@ -150,6 +151,23 @@
  			<artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         
+        
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
+            <optional>true</optional>
+        </dependency>
+		<dependency>
+		    <groupId>io.zipkin.reporter2</groupId>
+		    <artifactId>zipkin-sender-okhttp3</artifactId>
+            <optional>true</optional>
+		</dependency>
+        <dependency>
+          <groupId>io.zipkin.brave</groupId>
+          <artifactId>brave-instrumentation-mysql</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
         <!-- for logback jmx -->
         <dependency>
            <groupId>org.jolokia</groupId>
@@ -190,6 +208,13 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
+	    <dependency>
+	        <groupId>io.zipkin.brave</groupId>
+	        <artifactId>brave-bom</artifactId>
+	        <version>${brave.version}</version>
+	        <type>pom</type>
+	        <scope>import</scope>
+	    </dependency>
       </dependencies>
     </dependencyManagement>
     
