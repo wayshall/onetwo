@@ -173,7 +173,7 @@ public class Springs {
 		checkInitialized();
 		try {
 			return instance.appContext.getBean(clazz);
-		} catch (BeansException e) {
+		} catch (IllegalStateException | BeansException e) {
 			if(throwIfError){
 				throw e;
 			}
