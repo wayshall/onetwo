@@ -98,6 +98,19 @@ public class TokenValidator {
      * @param supplier
      */
     public <T> T check(String key, String value, Supplier<T> supplier){
+    	return check(key, value, supplier, false);
+    }
+    
+    /****
+     * 
+     * @author weishao zeng
+     * @param key
+     * @param value
+     * @param supplier
+     * @param deleteCode 如果supplier不为null，supplier验证成功后，是否删除code，false为不删除，任其过时。supplier为null时，没有任何作用
+     * @return
+     */
+    public <T> T check(String key, String value, Supplier<T> supplier, boolean deleteCode){
     	this.checkValue(key);
     	this.checkValue(value);
     	String storeKey = getStoreKey(key);
@@ -106,8 +119,13 @@ public class TokenValidator {
     	if(storeValue==null || !storeValue.equals(value)){
     		throw new ServiceException(TokenValidatorErrors.TOKEN_INVALID);
     	}
-    	T res = supplier.get();
-    	stringRedisTemplate.delete(storeKey);
+    	T res = null;
+    	if (supplier!=null) {
+    		res = supplier.get();
+        	if (deleteCode) {
+        		stringRedisTemplate.delete(storeKey);
+        	}
+    	}
     	return res;
     }
     
