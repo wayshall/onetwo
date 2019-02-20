@@ -33,7 +33,7 @@ public class ApicientBaseTests {
 	
 	@Configuration
 	@JFishProfile
-	@EnableRestApiClient(baseUrl=WeatherClient.BASE_URL, basePackageClasses=WeatherClient.class)
+	@EnableRestApiClient(baseUrl=WeatherClient.BASE_URL, basePackageClasses= {WeatherClient.class})
 	@ComponentScan(basePackageClasses=RestExecutorSimpleLogInterceptor.class)
 	public static class ApiclientBaseTestInnerContextConfig {
 		

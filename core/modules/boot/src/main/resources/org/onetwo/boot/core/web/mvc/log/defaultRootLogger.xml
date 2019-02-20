@@ -9,7 +9,7 @@
         </then>
     </if>
     <include resource="org/onetwo/boot/core/web/mvc/log/fileLogger.xml"/>
-    <include resource="org/onetwo/ext/ons/onsLogger.xml"/>
+    
     <jmxConfigurator/>
     
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
