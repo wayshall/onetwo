@@ -1,13 +1,16 @@
-# onetwo（zifish）
+# zifish
 ------
 基于spring boot的快速开发框架   
+
 spring-boot技术交流群：  604158262
 
 
 
-## 环境要求
-JDK8+
-
+## 环境要求和主要框架依赖版本
+- JDK 8+
+- Spring 4.x+
+- Spring Boot 1.5.16.RELEASE (boot模块要求）
+- Spring Cloud Edgware (cloud模块要求)
 
 ## maven   
 当前snapshot版本：**4.7.2-SNAPSHOT**   
