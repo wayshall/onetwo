@@ -80,6 +80,10 @@
                 <module>modules/poi</module>
                 <module>modules/rocketmq</module>
                 <module>modules/tomcat</module>
+                
+                <module>../../zifish-plugins/parent</module>
+                <module>../../zifish-plugins/web-admin</module>
+                <module>../../zifish-plugins/swaggerext</module>
         </modules>
       </profile>
      
@@ -103,6 +107,10 @@
                 <module>modules/poi</module>
                 <module>modules/rocketmq</module>
                 <module>modules/tomcat</module>
+                
+                <module>../../zifish-plugins/parent</module>
+                <module>../../zifish-plugins/web-admin</module>
+                <module>../../zifish-plugins/swaggerext</module>
 	  	</modules>
         <build>
             <plugins>
