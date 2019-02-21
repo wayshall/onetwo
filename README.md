@@ -51,15 +51,20 @@ JDK8+
 [boot-dbm-sample](https://github.com/wayshall/boot-dbm-sample)
 
 ## [security模块](https://github.com/wayshall/onetwo/tree/master/core/modules/security)
-基于spring security实现的动态rbac和基于Java代码的权限管理  
+基于spring security实现的动态 RBAC 权限管理  
    
 
 ## [boot模块](https://github.com/wayshall/onetwo/tree/master/core/modules/boot)
-boot模块，基于boot和freemarker上封装了一点点的插件机制。
+boot模块：
+- 基于boot之上封装插件机制
+- freemarker增加插件路径分派支持
+- 封装第三方库使用
    
 
-## [web-admin插件](https://github.com/wayshall/onetwo/tree/master/core/plugins/web-admin)
-基于boot模块的插件机制，使用jquery-easyui编写的简单后台管理，包含了基本的权限管理和菜单功能。
+## [zifish-plugins插件项目](https://github.com/wayshall/zifish-plugins)
+包含了基于本框架开发的插件。
+- web-admin插件：使用jquery-easyui编写的简单后台管理，包含了基本的权限管理和菜单功能。
+- swaggerext插件
 
 
 ## 捐赠
