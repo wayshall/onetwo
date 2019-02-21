@@ -3,7 +3,7 @@
 
   <groupId>org.onetwo4j</groupId>
   <artifactId>onetwo-modules</artifactId>
-  <version>4.7.2-SNAPSHOT</version>
+  <version>4.7.2</version>
   <packaging>pom</packaging>
 
   <name>onetwo-modules</name>
@@ -80,6 +80,10 @@
                 <module>modules/poi</module>
                 <module>modules/rocketmq</module>
                 <module>modules/tomcat</module>
+                
+                <module>../../zifish-plugins/parent</module>
+                <module>../../zifish-plugins/web-admin</module>
+                <module>../../zifish-plugins/swaggerext</module>
         </modules>
       </profile>
      
@@ -103,9 +107,28 @@
                 <module>modules/poi</module>
                 <module>modules/rocketmq</module>
                 <module>modules/tomcat</module>
+                
+                <module>../../zifish-plugins/parent</module>
+                <module>../../zifish-plugins/web-admin</module>
+                <module>../../zifish-plugins/swaggerext</module>
 	  	</modules>
         <build>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.6.1</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <compilerVersion>${java.version}</compilerVersion>
+                        <showWarnings>true</showWarnings>
+                        <encoding>utf-8</encoding>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-source-plugin</artifactId>
