@@ -18,7 +18,7 @@
        <url>https://github.com/wayshall/onetwo</url>
        <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
        <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-       <tag>onetwo-modules-4.3.6</tag>
+       <tag>onetwo-modules-4.7.2</tag>
    </scm>
   <licenses>
     <license>
@@ -77,10 +77,6 @@
                 <module>../../onetwo-wechat</module>
                 <module>modules/cloud</module>
                 
-                <module>plugins/parent</module>
-                <module>plugins/web-admin</module>
-                <module>plugins/swaggerext</module>
-                
                 <module>modules/poi</module>
                 <module>modules/rocketmq</module>
                 <module>modules/tomcat</module>
@@ -103,9 +99,6 @@
                 <module>modules/test</module>
                 <module>../../onetwo-wechat</module>
                 <module>modules/cloud</module>
-                
-                <module>plugins/parent</module>
-                <module>plugins/swaggerext</module>
                 
                 <module>modules/poi</module>
                 <module>modules/rocketmq</module>

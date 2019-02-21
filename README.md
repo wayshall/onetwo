@@ -1,4 +1,4 @@
-# onetwo（jfish）
+# onetwo（zifish）
 ------
 基于spring boot的快速开发框架   
 spring-boot技术交流群：  604158262
@@ -24,9 +24,9 @@ JDK8+
 ```   
 
 ## 示例项目   
-基于jfish的web示例项目：
+基于zifish的web示例项目：
 [web-sample](https://github.com/wayshall/onetwo-web-sample)  
-基于jfish的后台管理示例项目：
+基于zifish的后台管理示例项目：
 [web-manager](https://github.com/wayshall/onetwo-web-manager)   
 
 
