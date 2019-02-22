@@ -3,7 +3,7 @@
 
   	<groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-parent</artifactId>
-	<version>4.7.2</version>
+	<version>4.7.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-parent</name>
@@ -60,7 +60,7 @@
 		<dependency>
 	         <groupId>org.onetwo4j</groupId>
 	         <artifactId>onetwo-bom</artifactId>
-	         <version>4.7.2</version>
+	         <version>4.7.3-SNAPSHOT</version>
 	         <type>pom</type>
 	         <scope>import</scope>
 	     </dependency>

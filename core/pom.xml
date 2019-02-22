@@ -3,7 +3,7 @@
 
   <groupId>org.onetwo4j</groupId>
   <artifactId>onetwo-modules</artifactId>
-  <version>4.7.2</version>
+  <version>4.7.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>onetwo-modules</name>
@@ -39,7 +39,27 @@
        <profile>
            <id>microcloud</id>
 			<modules>
+                <module>modules/bom</module>
+                
+                <module>modules/parent</module>
+                <module>modules/common</module>
+                <module>modules/jackson</module>
+                <module>modules/spring</module>
+                <module>../../dbm</module>
+                <module>modules/web</module>
+                <module>modules/security</module>
+                <module>modules/boot</module>
+                <module>modules/test</module>
                 <module>../../onetwo-wechat</module>
+                <module>modules/cloud</module>
+                
+                <module>modules/poi</module>
+                <module>modules/rocketmq</module>
+                <module>modules/tomcat</module>
+                
+                <module>../../zifish-plugins/parent</module>
+                <module>../../zifish-plugins/web-admin</module>
+                <module>../../zifish-plugins/swaggerext</module>
 			</modules>
            <build>
               <plugins>
