@@ -15,7 +15,7 @@
 	<java.version>1.8</java.version>
 	
 	<onetwo.version>5.0.0-SNAPSHOT</onetwo.version>
-	<spring-boot.version>1.5.10.RELEASE</spring-boot.version>
+	<spring-boot.version>2.0.6.RELEASE</spring-boot.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
 	<common-codec.version>1.10</common-codec.version>
@@ -434,6 +434,12 @@
 	  <artifactId>validation-api</artifactId>
 	  <version>${validation.version}</version>
 	</dependency>
+        
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>6.0.15.Final</version>
+    </dependency>
 	
 	<!-- spring end -->
 	
