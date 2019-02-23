@@ -83,7 +83,9 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		addCorsMappings(registry, this.jfishBootConfig.getMvc().getCors());
+		if (!jfishBootConfig.getMvc().isCorsFilter()) {
+			addCorsMappings(registry, this.jfishBootConfig.getMvc().getCors());
+		}
 	}
 
 	static public void addCorsMappings(CorsRegistry registry, List<CorsConfig> corsConfigs) {

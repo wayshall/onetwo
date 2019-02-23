@@ -29,6 +29,7 @@ public class BootJFishConfig {
 	public static final String ENABLE_SWAGGER = "jfish.swagger.enabled";
 	
 	public static final String ENABLE_CORSFILTER = "jfish.corsfilter.enabled";
+	public static final String ENABLE_MVC_CORSFILTER = "jfish.mvc.corsFilter";
 	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = "jfish.dynamic.loggerLevel";
 	public static final String ENABLE_DYNAMIC_SETTING = "jfish.dynamic.setting";
 //	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = "jfish.mvc.loggerInterceptor";
@@ -112,6 +113,8 @@ public class BootJFishConfig {
 		Properties mediaTypes;
 		JsonConfig json = new JsonConfig();
 		List<ResourceHandlerConfig> resourceHandlers = new ArrayList<>();
+		
+		boolean corsFilter;
 		List<CorsConfig> cors = new ArrayList<>();
 //		MvcAsyncProperties async = new MvcAsyncProperties();
 		
