@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.onetwo.boot.core.EnableJFishBootExtension.AppcationType;
+import org.onetwo.boot.core.cors.CorsFilterConfiguration;
 import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.shutdown.GraceKillConfiguration;
@@ -59,6 +60,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		}
 		
 		classNames.add(ExcelViewConfiguration.class.getName());
+		classNames.add(CorsFilterConfiguration.class.getName());
 		
 		classNames.add(BootDbmConfiguration.class.getName());
 		classNames.add(ErrorHandleConfiguration.class.getName());
