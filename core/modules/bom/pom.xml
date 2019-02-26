@@ -31,7 +31,7 @@
 	<javatuples.version>1.2</javatuples.version>
 	<jackson.version>2.8.5</jackson.version>
 	
-	<validation.version>1.1.0.Final</validation.version>
+	<validation.version>2.0.1.Final</validation.version>
 	<dozer.version>5.4.0</dozer.version>
 	<lombok.version>1.16.8</lombok.version>
 	<mail.version>1.4.5</mail.version>
@@ -110,12 +110,27 @@
         <version>${spring-boot.version}</version>
         <type>pom</type>
         <scope>import</scope>
+        <exclusions>
+            <exclusion>
+			    <dependency>
+			        <groupId>mysql</groupId>
+			        <artifactId>mysql-connector-java</artifactId>
+			    </dependency> 
+            </exclusion>
+        </exclusions>
     </dependency>
+    <!-- spring boot 2.0.x的mysql jdbc driver版本有bug -->
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>5.1.45</version>
+	</dependency>
     <dependency>
         <groupId>org.springframework.security.oauth.boot</groupId>
         <artifactId>spring-security-oauth2-autoconfigure</artifactId>
         <version>${spring-boot.version}</version>
     </dependency>
+    
 	    
     
     <!-- boot plugin -->
