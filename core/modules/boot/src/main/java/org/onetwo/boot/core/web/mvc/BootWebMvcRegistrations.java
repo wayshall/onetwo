@@ -1,8 +1,13 @@
 package org.onetwo.boot.core.web.mvc;
 
-import org.springframework.boot.autoconfigure.web.WebMvcRegistrationsAdapter;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 
-public class BootWebMvcRegistrations extends WebMvcRegistrationsAdapter {
+/***
+ * 
+ * @author wayshall
+ *
+ */
+public class BootWebMvcRegistrations  /* extends WebMvcRegistrationsAdapter*/ implements WebMvcRegistrations {
 
 	@Override
 	public ExtRequestMappingHandlerMapping getRequestMappingHandlerMapping() {

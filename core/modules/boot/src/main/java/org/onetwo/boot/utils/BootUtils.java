@@ -1,6 +1,7 @@
 package org.onetwo.boot.utils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 import org.onetwo.common.exception.BaseException;
@@ -50,10 +51,10 @@ final public class BootUtils {
 		return "";//SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE;
 	}
 	
-	public static PropertySource<?> loadYaml(String classpath){
+	public static List<PropertySource<?>> loadYaml(String classpath){
 		YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 		try {
-	        PropertySource<?> props = loader.load(classpath, SpringUtils.newClassPathResource(classpath), null);
+			List<PropertySource<?>> props = loader.load(classpath, SpringUtils.newClassPathResource(classpath));
 	        return props;
         } catch (IOException e) {
 	        throw new BaseException("load yaml file error: " + classpath);

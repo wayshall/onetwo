@@ -18,6 +18,8 @@ import org.onetwo.common.web.utils.ResponseType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.RequestAttributes;
@@ -26,6 +28,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.util.WebUtils;
 
 /************
  * 异常处理
@@ -188,10 +191,51 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	protected Integer determineStatusCode(Exception ex, HttpServletRequest request, String viewName) {
 		Integer statusCode = super.determineStatusCode(request, viewName);
 		if(statusCode==null){
-			ResponseEntity<Object> reponse = responseEntityExceptionHandler.handleException(ex, webRequest);
-			statusCode = reponse.getStatusCodeValue();
+			ResponseEntity<Object> response;
+			try {
+				response = responseEntityExceptionHandler.handleException(ex, webRequest);
+			} catch (Exception e) {
+				// upgrade-sb2: 
+				response = handleExceptionInternal(e);
+			}
+			statusCode = response.getStatusCodeValue();
 		}
 		return statusCode;
+	}
+	
+	/***
+	 * upgrade-sb2: 
+	 * @author weishao zeng
+	 * @param ex
+	 * @return
+	 */
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex) {
+		HttpHeaders headers = new HttpHeaders();
+		if (logger.isWarnEnabled()) {
+			logger.warn("Unknown exception type: " + ex.getClass().getName());
+		}
+		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+		return handleExceptionInternal(ex, null, headers, status, webRequest);
+	}
+	
+	/***
+	 * upgrade-sb2: 
+	 * copy from spring 4.x
+	 * spring 5后去掉了此方法，copy过来兼容
+	 *  
+	 * @param ex
+	 * @param body
+	 * @param headers
+	 * @param status
+	 * @param request
+	 * @return
+	 */
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+		if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
+			request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
+		}
+		return new ResponseEntity<Object>(body, headers, status);
 	}
 
 	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){

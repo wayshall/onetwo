@@ -5,7 +5,6 @@ import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
@@ -38,7 +37,9 @@ abstract public class EnabledKeyCondition extends SpringBootCondition implements
 	abstract protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes);
 	
 	protected boolean isEnabled(Environment environment, String key){
-		return new RelaxedPropertyResolver(environment).getProperty(key, Boolean.class, defaultEnabledValue);
+//		return new RelaxedPropertyResolver(environment).getProperty(key, Boolean.class, defaultEnabledValue);
+		// upgrade-sb2: 
+		return environment.getProperty(key, Boolean.class, defaultEnabledValue);
 	}
 	
 	protected AnnotationAttributes getAnnotationAttributes(AnnotatedTypeMetadata metadata){

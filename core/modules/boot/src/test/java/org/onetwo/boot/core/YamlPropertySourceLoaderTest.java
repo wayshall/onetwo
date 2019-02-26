@@ -1,6 +1,8 @@
 package org.onetwo.boot.core;
 
 
+import java.util.List;
+
 import org.junit.Test;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.boot.env.YamlPropertySourceLoader;
@@ -11,10 +13,10 @@ public class YamlPropertySourceLoaderTest {
 	@Test
 	public void test() throws Exception{
 		YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
-		PropertySource<?> props = loader.load("application", SpringUtils.newClassPathResource("application.yaml"), null);
-		Object env = props.getProperty("spring.profiles.active");
+		List<PropertySource<?>> props = loader.load("application", SpringUtils.newClassPathResource("application.yaml"));
+		Object env = props.get(0).getProperty("spring.profiles.active");
 		System.out.println("env: " + env);
-		env = props.getProperty("server.port");
+		env = props.get(0).getProperty("server.port");
 		System.out.println("port: " + env);
 	}
 }

@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.springframework.boot.autoconfigure.web.MultipartProperties;
+import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
