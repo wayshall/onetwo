@@ -116,8 +116,11 @@ public class TokenValidator {
     	String storeKey = getStoreKey(key);
     	StringRedisTemplate stringRedisTemplate = redisOperationService.getStringRedisTemplate();
     	String storeValue = stringRedisTemplate.boundValueOps(storeKey).get();
-    	if(storeValue==null || !storeValue.equals(value)){
-    		throw new ServiceException(TokenValidatorErrors.TOKEN_INVALID);
+    	if(storeValue==null || !storeValue.equals(value)) {
+    		throw new ServiceException(TokenValidatorErrors.TOKEN_INVALID_OR_EXPIRED)
+										.put("storeKey", storeKey)
+    									.put("storeValue", storeValue)
+										.put("codeValue", value);
     	}
     	T res = null;
     	if (supplier!=null) {
@@ -148,7 +151,7 @@ public class TokenValidator {
     	String storeKey = getStoreKey(key);
     	String storeValue = redisOperationService.getAndDel(storeKey);
     	if(storeValue==null || !storeValue.equals(value)){
-    		throw new ServiceException(TokenValidatorErrors.TOKEN_INVALID);
+    		throw new ServiceException(TokenValidatorErrors.TOKEN_INVALID_OR_EXPIRED);
     	}
     	return supplier.get();
     }
