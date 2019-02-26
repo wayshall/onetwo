@@ -116,6 +116,7 @@
         <artifactId>spring-security-oauth2-autoconfigure</artifactId>
         <version>${spring-boot.version}</version>
     </dependency>
+	    
     
     <!-- boot plugin -->
     <dependency>
