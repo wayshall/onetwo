@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
  * @author way
  *
  */
-//@ConfigurationProperties(prefix="jfish.siteConfig")
+//@ConfigurationProperties(prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".siteConfig")
 @ConfigurationProperties(prefix="site")
 //@Data
 public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvider<BootSiteConfig> {

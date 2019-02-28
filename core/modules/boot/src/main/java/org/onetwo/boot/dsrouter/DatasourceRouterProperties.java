@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties(prefix="jfish.dsRouter")
+@ConfigurationProperties(prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dsRouter")
 @Data
 public class DatasourceRouterProperties {
 	

@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix=PoiProperties.PREFIX)
 public class PoiProperties {
-	public static final String PREFIX = "jfish.poi";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".poi";
 	public static final String EXPORT_VIEW_ENABLE_KEY = PREFIX + ".exportView.enabled";
 	
 	boolean writeToLocal;

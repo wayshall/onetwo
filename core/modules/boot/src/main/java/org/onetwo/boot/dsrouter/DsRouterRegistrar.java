@@ -23,7 +23,7 @@ public class DsRouterRegistrar implements BeanFactoryPostProcessor /*ImportBeanD
 	
 	/*@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment, "jfish.dsRouter");
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment, org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dsRouter");
 		Map<String, Object> datasource = resolver.getSubProperties("datasources");
 		System.out.println("test:"+datasource);
 	}

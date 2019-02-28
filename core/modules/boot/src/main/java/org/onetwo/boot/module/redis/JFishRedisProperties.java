@@ -10,14 +10,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties("jfish.redis")
+@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis")
 @EqualsAndHashCode(callSuper=false)
 @Data
 public class JFishRedisProperties {
 
-	public static final String ENABLED_KEY = "jfish.redis.enabled";
-	public static final String SERIALIZER_KEY = "jfish.redis.serializer";
-	public static final String ENABLED_LOCK_REGISTRY = "jfish.redis.lockRegistry.key";
+	public static final String ENABLED_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.enabled";
+	public static final String SERIALIZER_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.serializer";
+	public static final String ENABLED_LOCK_REGISTRY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.lockRegistry.key";
 
 	/*String hostName = "localhost";
 	int port = Protocol.DEFAULT_PORT;

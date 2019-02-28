@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(AsyncTaskProperties.PREFIX)
 public class AsyncTaskProperties {
-	public static final String PREFIX = "jfish.async";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".async";
 	public static final String ENABLE_KEY = PREFIX+".enabled";
 
 //	private int timeout = 60000;

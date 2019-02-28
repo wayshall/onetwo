@@ -16,6 +16,7 @@
 	
 	<onetwo.version>5.0.0-SNAPSHOT</onetwo.version>
 	<spring-boot.version>2.0.6.RELEASE</spring-boot.version>
+	<boot-admin.version>2.1.3</boot-admin.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
 	<common-codec.version>1.10</common-codec.version>
@@ -29,7 +30,7 @@
 	<jcifs.version>1.2.19</jcifs.version>
 	
 	<javatuples.version>1.2</javatuples.version>
-	<jackson.version>2.8.5</jackson.version>
+	<jackson.version>2.9.4</jackson.version>
 	
 	<validation.version>2.0.1.Final</validation.version>
 	<dozer.version>5.4.0</dozer.version>
@@ -135,17 +136,17 @@
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-server</artifactId>
-        <version>1.4.3</version>
+        <version>${boot-admin.version}</version>
     </dependency>
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-server-ui</artifactId>
-        <version>1.4.3</version>
+        <version>${boot-admin.version}</version>
     </dependency>
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-starter-client</artifactId>
-        <version>1.4.3</version>
+        <version>${boot-admin.version}</version>
     </dependency>
     
     <!-- spring session -->
@@ -199,19 +200,19 @@
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
-      <artifactId>onetwo-plugin-parent</artifactId>
+      <artifactId>zifish-plugin-parent</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
-      <artifactId>onetwo-plugin-web-admin</artifactId>
+      <artifactId>zifish-plugin-web-admin</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
-      <artifactId>onetwo-plugin-swaggerext</artifactId>
+      <artifactId>zifish-plugin-swaggerext</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
     
@@ -469,7 +470,7 @@
 	</dependency>
 	
 	
-	<!-- jackson -->
+	<!-- jackson 
 	
 	<dependency>
 		<groupId>com.fasterxml.jackson.core</groupId>
@@ -488,7 +489,7 @@
 		<artifactId>jackson-annotations</artifactId>
 		<version>${jackson.version}</version>
 	</dependency>
-	
+	-->
 	
     <dependency>
         <groupId>org.projectlombok</groupId>
@@ -666,7 +667,7 @@
     </dependency> -->
     
     <!-- redis -->
-    <dependency>
+    <!-- <dependency>
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-redis</artifactId>
         <version>1.7.2.RELEASE</version>
@@ -675,7 +676,7 @@
         <groupId>redis.clients</groupId>
         <artifactId>jedis</artifactId>
         <version>2.9.0</version>
-    </dependency>
+    </dependency> -->
     <dependency>
        <groupId>org.redisson</groupId>
        <artifactId>redisson</artifactId>

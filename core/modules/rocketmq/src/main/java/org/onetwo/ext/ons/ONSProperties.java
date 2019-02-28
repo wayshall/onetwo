@@ -21,12 +21,12 @@ import lombok.Data;
  * <br/>
  */
 @Data
-@ConfigurationProperties("jfish.ons")
+@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".ons")
 public class ONSProperties implements InitializingBean {
 
-//	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
-//	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
-//	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
+//	public static final String TRANSACTIONAL_ENABLED_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".ons.transactional.enabled";
+//	public static final String TRANSACTIONAL_TASK_CRON_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".ons.transactional.task.cron";
+//	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".ons.transactional.deleteTask.cron";
 
 
 	MqServerTypes serverType = MqServerTypes.ONS;

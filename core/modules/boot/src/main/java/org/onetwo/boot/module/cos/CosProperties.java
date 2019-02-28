@@ -13,7 +13,7 @@ import com.qcloud.cos.region.Region;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties("jfish.cos")
+@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cos")
 @Data
 public class CosProperties {
 	String downloadEndPoint;

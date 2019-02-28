@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties("jfish.tomcat")
+@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".tomcat")
 @Data
 public class TomcatProperties {
 	public static final String ENABLED_CUSTOMIZER_TOMCAT = "enabled";

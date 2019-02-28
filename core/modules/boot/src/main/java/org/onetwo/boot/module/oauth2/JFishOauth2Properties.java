@@ -20,7 +20,7 @@ import lombok.Data;
 @Data
 @ConfigurationProperties(prefix=JFishOauth2Properties.CONFIG_PREFIX)
 public class JFishOauth2Properties {
-	public static final String CONFIG_PREFIX = "jfish.oauth2";
+	public static final String CONFIG_PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".oauth2";
 	public static final String TOKEN_STORE_ENABLED_KEY = CONFIG_PREFIX + ".tokenStore";
 	
 	public static final String KEYS_REDIS = "redis";

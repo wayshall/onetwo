@@ -12,12 +12,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(value=ActivemqProperties.PREFIX_KEY)
 @Data
 public class ActivemqProperties {
-	public static final String PREFIX_KEY = "jfish.activemq";
+	public static final String PREFIX_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq";
 	public static final String ENABLE_KEY = PREFIX_KEY+".enabled";
 	public static final String EMBEDDED_ENABLE_KEY = PREFIX_KEY+".embedded.enabled";
 	
 
-	public static final String MESSAGE_CONVERTER_KEY = "jfish.activemq.messageConverter";
+	public static final String MESSAGE_CONVERTER_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.messageConverter";
 	
 //	Properties connectionFactory = new Properties();
 	KahaDBStoreProps kahadbStore = new KahaDBStoreProps();
@@ -27,13 +27,13 @@ public class ActivemqProperties {
 	
 	@Data
 	static public class KahaDBStoreProps {
-		public static final String ENABLE_KEY = "jfish.activemq.kahadbStore.enabled";
+		public static final String ENABLE_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.kahadbStore.enabled";
 		String dataDir;
 	}
 	
 	@Data
 	static public class JdbcStoreProps {
-		public static final String ENABLE_KEY = "jfish.activemq.jdbcStore.enabled";
+		public static final String ENABLE_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.jdbcStore.enabled";
 		boolean createTablesOnStartup = true;
 	}
 	

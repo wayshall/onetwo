@@ -14,7 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class CanaryProperties {
 	
-	public static final String PREFIX = "jfish.cloud.cannary";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud.cannary";
 	
 	CanaryMode defaultMode = CanaryMode.DISABLED;
 	CanaryServerNotFoundActions serverNotFoundAction = CanaryServerNotFoundActions.SMOOTHNESS;

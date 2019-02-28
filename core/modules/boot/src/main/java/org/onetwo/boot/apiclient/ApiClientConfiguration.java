@@ -23,7 +23,7 @@ public class ApiClientConfiguration {
 		return apiClientProperties;
 	}
 	
-	@ConfigurationProperties("jfish.apiclient")
+	@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".apiclient")
 	public static class ApiClientProperties extends RestExecutorConfig {
 	}
 }

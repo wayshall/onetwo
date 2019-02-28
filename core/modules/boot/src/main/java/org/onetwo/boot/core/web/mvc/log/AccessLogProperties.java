@@ -9,10 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <br/>
  */
 
-@ConfigurationProperties("jfish.mvc.accessLog")
+@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.accessLog")
 @Data
 public class AccessLogProperties {
-	public static final String PREFIX = "jfish.mvc.accessLog";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.accessLog";
 	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = PREFIX+".enabled";
 	
 	String loggerName;

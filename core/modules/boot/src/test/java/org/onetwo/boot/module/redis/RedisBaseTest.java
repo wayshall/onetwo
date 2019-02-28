@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 				properties={
 							"spring.redis.host=localhost",
 							"spring.redis.port=6379",
-							"jfish.redis.enabled=true"
+							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.enabled=true"
 							}
 )
 public class RedisBaseTest {

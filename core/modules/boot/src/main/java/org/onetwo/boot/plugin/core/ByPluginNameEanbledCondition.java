@@ -14,7 +14,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class ByPluginNameEanbledCondition extends EnabledKeyCondition {
 
 	private WebPlugin webPlugin;
-	final private String prefix = "";// "jfish.";
+	final private String prefix = "";// org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".";
 	
 	public ByPluginNameEanbledCondition() {
 		super();

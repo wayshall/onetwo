@@ -11,7 +11,7 @@ import com.aliyun.oss.ClientConfiguration;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties("jfish.alioss")
+@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".alioss")
 @Data
 public class OssProperties {
 	String endpoint;

@@ -19,11 +19,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 				properties={
 //							"spring.activemq.in-memory=true", "spring.activemq.pool.enabled=false", 
 							"spring.activemq.in-memory=false", "spring.activemq.pool.enabled=false", "spring.activemq.broker-url=tcp://localhost:61616", 
-//							"jfish.activemq.embedded.enabled=true", "jfish.activemq.jdbcStore.enabled=true"
-							"jfish.mq.transactional.enabled=true",
-							"jfish.mq.transactional.sendTask.enabled=true",
-							"jfish.mq.transactional.deleteTask.enabled=true",
-							"jfish.activemq.enabled=true"
+//							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.embedded.enabled=true", org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.jdbcStore.enabled=true"
+							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mq.transactional.enabled=true",
+							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mq.transactional.sendTask.enabled=true",
+							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mq.transactional.deleteTask.enabled=true",
+							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.enabled=true"
 							}
 )
 public class ActivemqProducerTest {

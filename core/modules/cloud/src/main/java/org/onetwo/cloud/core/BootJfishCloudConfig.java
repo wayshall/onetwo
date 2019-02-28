@@ -18,7 +18,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class BootJfishCloudConfig {
 	
-	public static final String CONFIG_PREFIX = "jfish.cloud"; 
+	public static final String CONFIG_PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud"; 
 	public static final String ZUUL_FIXHEADERS_ENABLED = CONFIG_PREFIX + ".zuul.endabledFixHeader"; 
 	
 	ZuulConfig zuul = new ZuulConfig();

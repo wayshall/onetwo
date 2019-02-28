@@ -18,7 +18,7 @@ import feign.Logger;
 @Data
 public class FeignProperties {
 
-	public static final String PROPERTIES_PREFIX = "jfish.cloud.feign";
+	public static final String PROPERTIES_PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud.feign";
 	public static final String ENABLE_KEY = PROPERTIES_PREFIX + ".enabled";
 	
 	public static final String LOCAL_ENABLE_KEY = PROPERTIES_PREFIX + ".local.enabled";

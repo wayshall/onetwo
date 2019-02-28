@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 //@AutoConfigureBefore(FeignAutoConfiguration.classS)
 public class CornerFeignConfiguration {
 	
-	public static final String KEY_REJECT_PLUGIN_CONTEXT_PATH = "jfish.cloud.feign.rejectPluginContextPath";
+	public static final String KEY_REJECT_PLUGIN_CONTEXT_PATH = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud.feign.rejectPluginContextPath";
 
 	@Bean
 	public FeignClientPluginContextPathChecker feignClientPluginContextPathChecker(){
