@@ -29,7 +29,7 @@ public class TokenValidatorTest extends RedisBaseTest {
 							Assert.fail("will not run...");
 						});
 					})
-					.withMessage(TokenValidatorErrors.TOKEN_INVALID.getErrorMessage());
+					.withMessage(TokenValidatorErrors.TOKEN_INVALID_OR_EXPIRED.getErrorMessage());
 
 		this.tokenValidator.check(key, value, ()->{
 			System.out.println("run...");
@@ -49,7 +49,7 @@ public class TokenValidatorTest extends RedisBaseTest {
 							Assert.fail("will not run...");
 						});
 					})
-					.withMessage(TokenValidatorErrors.TOKEN_INVALID.getErrorMessage());
+					.withMessage(TokenValidatorErrors.TOKEN_INVALID_OR_EXPIRED.getErrorMessage());
 
 		//只能使用一次，再次使用，value正确也不行
 		Assertions.assertThatExceptionOfType(ServiceException.class)
@@ -58,7 +58,7 @@ public class TokenValidatorTest extends RedisBaseTest {
 							Assert.fail("will not run...");
 						});
 					})
-					.withMessage(TokenValidatorErrors.TOKEN_INVALID.getErrorMessage());
+					.withMessage(TokenValidatorErrors.TOKEN_INVALID_OR_EXPIRED.getErrorMessage());
 
 		this.tokenValidator.save(key, ()->value);
 		this.tokenValidator.checkOnlyOnce(key, value, ()->{
