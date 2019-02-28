@@ -8,13 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.io.IOUtils;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
@@ -24,6 +22,7 @@ import com.netflix.hystrix.exception.HystrixBadRequestException;
 
 import feign.Response;
 import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
 
 /** 除了2xx和404，都算错误，会调用，详见：
  * SynchronousMethodHandler#executeAndDecode

@@ -63,13 +63,13 @@
      
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <optional>true</optional>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-zuul</artifactId>
+            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
             <optional>true</optional>
         </dependency>
         
@@ -100,17 +100,17 @@
         <!-- feign hystrix -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-hystrix</artifactId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-ribbon</artifactId>
+          <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
           <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-feign</artifactId>
+          <artifactId>spring-cloud-starter-openfeign</artifactId>
           <optional>true</optional>
         </dependency>
         
@@ -153,11 +153,15 @@
         
         
         <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-zipkin</artifactId>
             <optional>true</optional>
         </dependency>
-		<dependency>
+		<!-- <dependency>
 		    <groupId>io.zipkin.reporter2</groupId>
 		    <artifactId>zipkin-sender-okhttp3</artifactId>
             <optional>true</optional>
@@ -171,7 +175,7 @@
           <groupId>io.zipkin.brave</groupId>
           <artifactId>brave-instrumentation-mysql</artifactId>
           <optional>true</optional>
-        </dependency>
+        </dependency> -->
         
         <!-- for logback jmx -->
         <dependency>
@@ -213,13 +217,13 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
-	    <dependency>
+	    <!-- <dependency>
 	        <groupId>io.zipkin.brave</groupId>
 	        <artifactId>brave-bom</artifactId>
 	        <version>${brave.version}</version>
 	        <type>pom</type>
 	        <scope>import</scope>
-	    </dependency>
+	    </dependency> -->
       </dependencies>
     </dependencyManagement>
     

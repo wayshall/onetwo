@@ -1,11 +1,11 @@
 package org.onetwo.cloud.bugfix;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.onetwo.boot.core.web.mvc.ExtRequestMappingHandlerMapping;
 import org.onetwo.cloud.util.BootCloudUtils;
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author wayshall

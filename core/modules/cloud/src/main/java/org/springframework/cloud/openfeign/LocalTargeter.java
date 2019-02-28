@@ -1,10 +1,8 @@
-package org.springframework.cloud.netflix.feign;
+package org.springframework.cloud.openfeign;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.onetwo.cloud.feign.EnhanceFeignClient;
 import org.onetwo.common.spring.aop.Proxys;
@@ -12,12 +10,14 @@ import org.onetwo.common.spring.aop.Proxys.SpringBeanMethodInterceptor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.cloud.openfeign.FeignContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import feign.Feign;
 import feign.Target;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**

@@ -14,7 +14,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.netflix.zuul.filters.route.okhttp.OkHttpRibbonCommand;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;

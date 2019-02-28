@@ -112,10 +112,8 @@
         <scope>import</scope>
         <exclusions>
             <exclusion>
-			    <dependency>
-			        <groupId>mysql</groupId>
-			        <artifactId>mysql-connector-java</artifactId>
-			    </dependency> 
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
             </exclusion>
         </exclusions>
     </dependency>
