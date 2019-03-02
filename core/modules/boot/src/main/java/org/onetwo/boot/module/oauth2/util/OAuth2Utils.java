@@ -37,6 +37,9 @@ public abstract class OAuth2Utils {
 	
 
 	private static Optional<ClientDetailsObtainService> getClientDetailsObtainService() {
+		if (!Springs.getInstance().isInitialized()) {
+			return Optional.empty();
+		}
 		ClientDetailsObtainService service = Springs.getInstance().getBean(ClientDetailsObtainService.class);
 		return Optional.ofNullable(service);
 	}
