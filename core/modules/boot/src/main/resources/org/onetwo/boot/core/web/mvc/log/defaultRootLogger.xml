@@ -18,13 +18,6 @@
         </encoder>
     </appender>
 
-    <logger name="org.onetwo.dbm.core.internal.LogSqlInterceptor" level="TRACE">
-    </logger>
-    
-    <logger name="org.onetwo.common.spring.rest.ExtRestTemplate" level="DEBUG">
-    </logger>
-    <logger name="com.icloudsoft.neo.polyv.PolyvUtils" level="DEBUG">
-    </logger>
 
     <root level="INFO">
         <!-- <appender-ref ref="console" />    -->
