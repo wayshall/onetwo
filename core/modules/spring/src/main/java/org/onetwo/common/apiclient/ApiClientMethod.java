@@ -163,7 +163,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	}
 	
 	protected ApiErrorHandler obtainDefaultApiErrorHandler() {
-		return ApiErrorHandler.DEFAULT;
+		return null;
 	}
 	
 	private <T> T createAndInitComponent(Class<T> clazz) {
@@ -187,8 +187,8 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	public CustomResponseHandler<?> getCustomResponseHandler() {
 		return customResponseHandler;
 	}
-	public ApiErrorHandler getApiErrorHandler() {
-		return apiErrorHandler;
+	public Optional<ApiErrorHandler> getApiErrorHandler() {
+		return Optional.ofNullable(apiErrorHandler);
 	}
 
 	public Optional<ApiHeaderCallback> getApiHeaderCallback(Object[] args){
