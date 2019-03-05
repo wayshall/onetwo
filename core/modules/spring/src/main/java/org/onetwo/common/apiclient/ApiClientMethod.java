@@ -153,13 +153,17 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			
 			Class<? extends ApiErrorHandler> errorHandlerClass = resHandler.errorHandler();
 			if (errorHandlerClass==DefaultErrorHandler.class) {
-				this.apiErrorHandler = ApiErrorHandler.DEFAULT;
+				this.apiErrorHandler = obtainDefaultApiErrorHandler();
 			} else {
 				this.apiErrorHandler = createAndInitComponent(errorHandlerClass);
 			}
 		} else {
-			this.apiErrorHandler = ApiErrorHandler.DEFAULT;
+			this.apiErrorHandler = obtainDefaultApiErrorHandler();
 		}
+	}
+	
+	protected ApiErrorHandler obtainDefaultApiErrorHandler() {
+		return ApiErrorHandler.DEFAULT;
 	}
 	
 	private <T> T createAndInitComponent(Class<T> clazz) {
