@@ -10,7 +10,7 @@ import org.springframework.util.ClassUtils;
  */
 abstract public class ApiClientUtils {
 	
-	private static final Logger apiclientLogger = JFishLoggerFactory.getLogger("JFishRestApiClient");
+	private static final Logger apiclientLogger = JFishLoggerFactory.getLogger("RestApiClientLogger");
 	
 	public static final String CLASS_REQUEST_MAPPING = "org.springframework.web.bind.annotation.RequestMapping";
 	

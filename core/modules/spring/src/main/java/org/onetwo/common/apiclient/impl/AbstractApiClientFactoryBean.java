@@ -8,6 +8,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
+import org.onetwo.common.apiclient.ApiErrorHandler;
 import org.onetwo.common.apiclient.CustomResponseHandler;
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
@@ -64,11 +65,16 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	protected RestExecutor restExecutor;
 	@Autowired(required=false)
 	protected ValidatorWrapper validatorWrapper;
-	protected ApiClientResponseHandler<M> responseHandler = new DefaultApiClientResponseHandler<M>();
+	protected ApiClientResponseHandler<M> responseHandler;
+	protected ApiErrorHandler apiErrorHandler;
 	protected ApplicationContext applicationContext;
 	
 	final public void setResponseHandler(ApiClientResponseHandler<M> responseHandler) {
 		this.responseHandler = responseHandler;
+	}
+
+	public void setApiErrorHandler(ApiErrorHandler apiErrorHandler) {
+		this.apiErrorHandler = apiErrorHandler;
 	}
 
 	@Override
@@ -79,6 +85,12 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(restExecutor, "restExecutor can not be null");
+		if (responseHandler == null) {
+			responseHandler = new DefaultApiClientResponseHandler<M>();
+		}
+		if (apiErrorHandler == null) {
+			apiErrorHandler = ApiErrorHandler.DEFAULT;
+		}
 		
 //		this.apiObject = Proxys.interceptInterfaces(Arrays.asList(interfaceClass), apiClient);
 		
@@ -192,7 +204,8 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
 			}*/
 			catch (Exception e) {
-				return invokeMethod.getApiErrorHandler().handleError(invokeMethod, e);
+				ApiErrorHandler handler = invokeMethod.getApiErrorHandler().orElse(apiErrorHandler);
+				return handler.handleError(invokeMethod, e);
 			}
 		}
 
