@@ -180,19 +180,19 @@
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
-      <artifactId>onetwo-plugin-parent</artifactId>
+      <artifactId>zifish-plugin-parent</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
-      <artifactId>onetwo-plugin-web-admin</artifactId>
+      <artifactId>zifish-plugin-web-admin</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
     
     <dependency>
       <groupId>org.onetwo4j</groupId>
-      <artifactId>onetwo-plugin-swaggerext</artifactId>
+      <artifactId>zifish-plugin-swaggerext</artifactId>
       <version>${onetwo.version}</version>
     </dependency>
     
