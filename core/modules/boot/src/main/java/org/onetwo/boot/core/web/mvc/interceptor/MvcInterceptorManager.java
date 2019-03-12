@@ -13,9 +13,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.boot.core.web.mvc.annotation.Interceptor;
 import org.onetwo.boot.core.web.mvc.annotation.InterceptorDisabled.DisableMvcInterceptor;
@@ -44,6 +41,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -162,7 +162,12 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		for(HandlerMethod hm : handlerMethods.values()){
-			List<? extends MvcInterceptor> interceptors = findMvcInterceptors(hm);
+			List<? extends MvcInterceptor> interceptors = null;
+			try {
+				interceptors = findMvcInterceptors(hm);
+			} catch (Exception e) {
+				throw new BaseException("find MvcInterceptor error for HandlerMethod: " + hm.getMethod(), e);
+			}
 			if(!interceptors.isEmpty()){
 				AnnotationAwareOrderComparator.sort(interceptors);
 				HandlerMethodInterceptorMeta meta = new HandlerMethodInterceptorMeta(hm, interceptors);
