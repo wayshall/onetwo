@@ -5,7 +5,9 @@ import java.util.Collection;
 
 import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.boot.plugin.core.WebPlugin;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,6 +25,8 @@ import springfox.documentation.spring.web.plugins.Docket;
  *
  */
 public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implements InitializingBean {
+	
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired(required=false)
 	private PluginManager pluginManager;
@@ -52,16 +56,25 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		Predicate<RequestHandler> predicate = RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(rootClass));
 		Collection<Predicate<RequestHandler>> predicates = Arrays.asList(predicate);
 		
+		logger.info("register docket for rootClass: {}", rootClass);
 		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
 		String docketBeanName = appName+"Docket";
+		logger.info("docket[{}] created...", docketBeanName);
 		if (!applicationContext.containsBeanDefinition(docketBeanName)) {
 			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, docket);
+			logger.info("docket[{}] registered", docketBeanName);
+		} else {
+			logger.info("docket[{}] ignored", docketBeanName);
 		}
 		
 		docketBeanName = appName+"InnerDocket";
+		logger.info("docket[{}] created...", docketBeanName);
 		Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
 		if (!applicationContext.containsBeanDefinition(docketBeanName)) {
 			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, innerDocket);
+			logger.info("docket[{}] registered", docketBeanName);
+		} else {
+			logger.info("docket[{}] ignored", docketBeanName);
 		}
 	}
 	
