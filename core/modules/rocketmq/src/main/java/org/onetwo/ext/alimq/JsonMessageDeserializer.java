@@ -16,15 +16,23 @@ import com.google.common.collect.Maps;
  */
 public class JsonMessageDeserializer implements MessageDeserializer {
 	public static final JsonMessageDeserializer INSTANCE = new JsonMessageDeserializer();
+	public static final JsonMessageDeserializer TYPING_INSTANCE = new JsonMessageDeserializer(true);
 	
-	private JsonMapper jsonMapper = JsonMapper.ignoreNull();
+	private JsonMapper jsonMapper;
 	
 	private Map<String, String> compatibilityTypeMappings = Maps.newHashMap();
+	
+	public JsonMessageDeserializer() {
+		this.jsonMapper = JsonMessageSerializer.createJsonMapper(false);
+	}
+	public JsonMessageDeserializer(boolean enableTyping) {
+		this.jsonMapper = JsonMessageSerializer.createJsonMapper(enableTyping);
+	}
 
 	@Override
 	public Object deserialize(byte[] body, MessageExt message) {
 		String typeName = message.getUserProperty(JsonMessageSerializer.PROP_BODY_TYPE);
-		//兼容。。。
+		//兼容：如果没有类名，则直接使用jdk的反序列化。。。
 		if(StringUtils.isBlank(typeName)){
 			return MessageDeserializer.DEFAULT.deserialize(body, message);
 		}

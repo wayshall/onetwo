@@ -244,10 +244,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				if(AnnotationUtils.findAnnotation(m, ONSSubscribe.class)!=null){
 					Parameter[] parameters = m.getParameters();
 					if(parameters.length==0 || parameters.length>2){
-						throw new BaseException("the maximum parameter of consumer method is two.");
+						throw new BaseException("the maximum parameter of consumer method[" + m.toGenericString() + "]  is two.");
 					}
 					if(parameters[0].getType()!=ConsumContext.class){
-						throw new BaseException("the first parameter type of the consumer method must be: "+ConsumContext.class);
+						throw new BaseException("the first parameter type of the consumer method[" + m.toGenericString() + "] must be: "+ConsumContext.class);
 					}
 					return true;
 				}

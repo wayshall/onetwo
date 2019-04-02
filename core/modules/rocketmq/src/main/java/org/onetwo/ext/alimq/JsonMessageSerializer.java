@@ -8,8 +8,20 @@ import org.onetwo.common.reflect.ReflectUtils;
  * <br/>
  */
 public class JsonMessageSerializer implements MessageSerializer {
+
+	final public static JsonMapper createJsonMapper(boolean enableTyping) {
+		JsonMapper jsonMapper;
+		if (enableTyping) {
+			jsonMapper = JsonMapper.ignoreNull().enableTyping();
+		} else {
+			jsonMapper = JsonMapper.ignoreNull();
+		}
+		return jsonMapper;
+	}
+	
 	public static final JsonMessageSerializer INSTANCE = new JsonMessageSerializer(false);
 	public static final JsonMessageSerializer CHECKED_INSTANCE = new JsonMessageSerializer(true);
+	public static final JsonMessageSerializer TYPING_INSTANCE = new JsonMessageSerializer(true, true);
 	
 	public static final String PROP_BODY_TYPE = "PROP_BODY_TYPE";
 	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
@@ -22,8 +34,13 @@ public class JsonMessageSerializer implements MessageSerializer {
 	}
 	
 	public JsonMessageSerializer(boolean checkMessageBodyInstantiate) {
+		this(checkMessageBodyInstantiate, false);
+	}
+	
+	public JsonMessageSerializer(boolean checkMessageBodyInstantiate, boolean enableTyping) {
 		super();
 		this.checkMessageBodyInstantiate = checkMessageBodyInstantiate;
+		this.jsonMapper = createJsonMapper(enableTyping);
 	}
 
 	@Override

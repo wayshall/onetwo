@@ -89,7 +89,8 @@ public class ONSProperties implements InitializingBean {
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
 		JSON(JsonMessageSerializer.INSTANCE, JsonMessageDeserializer.INSTANCE),
-		CHECKED_JSON(JsonMessageSerializer.CHECKED_INSTANCE, JsonMessageDeserializer.INSTANCE);
+		CHECKED_JSON(JsonMessageSerializer.CHECKED_INSTANCE, JsonMessageDeserializer.INSTANCE),
+		TYPING_JSON(JsonMessageSerializer.TYPING_INSTANCE, JsonMessageDeserializer.TYPING_INSTANCE);
 
 		final private MessageSerializer serializer;
 		final private MessageDeserializer deserializer;
