@@ -9,11 +9,12 @@ import java.util.function.Supplier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangOps;
+import org.slf4j.Logger;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 
 import lombok.Builder;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 默认超时一分钟
@@ -21,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author wayshall
  * <br/>
  */
-@Slf4j
 public class RedisLockRunner {
 	
 	public static RedisLockRunner createLoker(RedisLockRegistry redisLockRegistry, String lockkey, String lockerTimeout) {
@@ -38,6 +38,9 @@ public class RedisLockRunner {
 														 .build();
 		return redisLockRunner;
 	}
+	
+	// org.onetwo.boot.module.redis.RedisLockRunner
+	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	final private RedisLockRegistry redisLockRegistry;
 	private String lockKey;
@@ -94,25 +97,29 @@ public class RedisLockRunner {
 	public <T> T tryLock(Function<Lock, Boolean> lockTryer, Supplier<T> action, Supplier<T> lockFailAction){
 		Lock lock = redisLockRegistry.obtain(lockKey);
 		T result = null;
+		boolean locked = false;
 		try {
-			if(!lockTryer.apply(lock)){
+			locked = lockTryer.apply(lock);
+			if(!locked){
 				if(lockFailAction!=null){
 					return lockFailAction.get();
 				}
 				
-				log.warn("can not obtain task lock, ignore task. lock key: {}", lockKey);
+				logger.warn("can not obtain task lock, ignore task. lock key: {}", lockKey);
 				return null;
 			}
-			if(log.isDebugEnabled()){
-				log.debug("lock with key : {}", lockKey);
+			if(logger.isDebugEnabled()){
+				logger.debug("lock with key : {}", lockKey);
 			}
 			result = action.get();
 		} catch (Exception e) {
 			handleException(e);
 		} finally{
-			lock.unlock();
-			if(log.isDebugEnabled()){
-				log.debug("unlock with key : {}", lockKey);
+			if (locked) {
+				lock.unlock();
+			}
+			if(logger.isDebugEnabled()){
+				logger.debug("unlock with key : {}", lockKey);
 			}
 		}
 		return result;
@@ -122,7 +129,7 @@ public class RedisLockRunner {
 		if(errorHandler!=null){
 			errorHandler.accept(e);
 		}else{
-			log.error("execute error: "+e.getMessage(), e);
+			logger.error("execute error: "+e.getMessage(), e);
 		}
 	}
 

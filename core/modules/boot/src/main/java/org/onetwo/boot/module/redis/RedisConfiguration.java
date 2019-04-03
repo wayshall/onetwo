@@ -94,7 +94,7 @@ public class RedisConfiguration {
 	
 	@Bean
 	public RedisOperationService redisOperationService(){
-		return new RedisOperationService();
+		return new SimpleRedisOperationService();
 	}
 	
 	@Bean

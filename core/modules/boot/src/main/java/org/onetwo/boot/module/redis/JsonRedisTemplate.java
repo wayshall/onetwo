@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
  * @author wayshall
  * <br/>
  */
-public class JsonRedisTemplate extends RedisTemplate<String, Object>{
+public class JsonRedisTemplate extends RedisTemplate<Object, Object>{
 
 	public JsonRedisTemplate(RedisConnectionFactory connectionFactory) {
 		this();
