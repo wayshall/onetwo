@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 
 
@@ -56,11 +55,7 @@ public class RedisConfiguration {
 	@ConditionalOnProperty(name=JFishRedisProperties.SERIALIZER_KEY, havingValue="stringKey", matchIfMissing=false)
 //	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
 	public RedisTemplate<String, Object> stringKeyRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
-		RedisTemplate<String, Object> template = new RedisTemplate<>();
-		template.setKeySerializer(new StringRedisSerializer());
-		template.setHashKeySerializer(new StringRedisSerializer());
-		template.setConnectionFactory(jedisConnectionFactory);
-		
+		RedisTemplate<String, Object> template = RedisUtils.createStringRedisTemplate(jedisConnectionFactory, false);
 		return template;
 	}
 	

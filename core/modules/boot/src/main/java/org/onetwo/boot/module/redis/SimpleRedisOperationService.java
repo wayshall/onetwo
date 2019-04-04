@@ -45,7 +45,7 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	private String cacheKeyPrefix = "ZIFISH:CACHE:";
 	private String lockerKey = LOCK_KEY;
 	@Setter
-    private int retryLockInSeconds = 1;
+    private long waitLockInSeconds = 60;
 	@Setter
     private Map<String, Long> expires;
 	@Autowired(required=false)
@@ -55,12 +55,10 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
     @SuppressWarnings("unchecked")
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		redisTemplate = new JsonRedisTemplate();
-		redisTemplate.setConnectionFactory(jedisConnectionFactory);
-		redisTemplate.afterPropertiesSet();
+		redisTemplate = createReidsTemplate(jedisConnectionFactory);
 		
 		StringRedisTemplate template = new StringRedisTemplate();
-		template.setConnectionFactory(redisTemplate.getConnectionFactory());
+		template.setConnectionFactory(jedisConnectionFactory);
 		template.afterPropertiesSet();
 		this.stringRedisTemplate = template;
 		
@@ -71,6 +69,12 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		}
 	}
     
+    protected RedisTemplate<Object, Object> createReidsTemplate(JedisConnectionFactory jedisConnectionFactory) {
+    	JsonRedisTemplate redisTemplate = new JsonRedisTemplate();
+		redisTemplate.setConnectionFactory(jedisConnectionFactory);
+		redisTemplate.afterPropertiesSet();
+		return redisTemplate;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.onetwo.boot.module.redis.RedisOperationService#getRedisLockRunnerByKey(java.lang.String)
@@ -79,6 +83,8 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	public RedisLockRunner getRedisLockRunnerByKey(String key){
 		RedisLockRunner redisLockRunner = RedisLockRunner.builder()
 														 .lockKey(lockerKey+key)
+														 .time(waitLockInSeconds)
+														 .unit(TimeUnit.SECONDS)
 														 .errorHandler(e->{
 															 throw new BaseException("no error hanlder!", e);
 														 })
@@ -115,6 +121,9 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		Object value = ops.get();
 		if (value==null && cacheLoader!=null) {
 			CacheData<T> cacheData = getCacheData(ops, cacheKey, cacheLoader);
+			if (cacheData==null) {
+				throw new BaseException("can not load cache data.").put("key", key);
+			}
 			ops.set(cacheData.getValue());
 			if (cacheData.getExpire()!=null) {
 				ops.expire(cacheData.getExpire(), cacheData.getTimeUnit());
@@ -140,14 +149,15 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 			}
 			cacheStatis.addMiss(1);
 			return cacheLoader.get();
-		}, ()->{
+		}/*, ()->{
 			//如果锁定失败，则休息1秒，然后递归……
+			int retryLockInSeconds = 1;
 			if(logger.isWarnEnabled()){
-				logger.warn("obtain redisd lock error, sleep {} seconds and retry...", retryLockInSeconds);
+				logger.warn("obtain redis lock error, sleep {} seconds and retry...", retryLockInSeconds);
 			}
 			LangUtils.await(retryLockInSeconds);
 			return getCacheData(ops, cacheKey, cacheLoader);
-		});
+		}*/);
 	}
 	
 

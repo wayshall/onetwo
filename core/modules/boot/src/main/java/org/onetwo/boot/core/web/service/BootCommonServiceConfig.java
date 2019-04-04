@@ -1,7 +1,5 @@
 package org.onetwo.boot.core.web.service;
 
-import net.coobird.thumbnailator.Thumbnails;
-
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
@@ -28,6 +26,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 /***
  * 通用服务配置
@@ -104,7 +104,7 @@ public class BootCommonServiceConfig {
 	@ConditionalOnMissingBean({SimpleLoggerManager.class})
 	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_LOGGER_LEVEL, matchIfMissing=false)
 	public SimpleLoggerManager simpleLoggerManager(){
-		return new SimpleLoggerManager();
+		return SimpleLoggerManager.getInstance();
 	}
 
 

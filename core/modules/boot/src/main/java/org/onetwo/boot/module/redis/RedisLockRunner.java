@@ -47,8 +47,8 @@ public class RedisLockRunner {
 	/***
 	 * 默认超时一分钟
 	 */
-	private Long time;
-	private TimeUnit unit;
+	private Long time = 60L;
+	private TimeUnit unit = TimeUnit.SECONDS;
 	private Consumer<Exception> errorHandler;
 
 	@Builder
@@ -57,8 +57,12 @@ public class RedisLockRunner {
 		super();
 		this.redisLockRegistry = redisLockRegistry;
 		this.lockKey = lockKey;
-		this.time = time;
-		this.unit = unit;
+		if (time!=null) {
+			this.time = time;
+		}
+		if (unit!=null) {
+			this.unit = unit;
+		}
 		this.errorHandler = errorHandler;
 	}
 	
@@ -67,6 +71,28 @@ public class RedisLockRunner {
 	}
 	
 	public <T> T tryLock(Supplier<T> action, Supplier<T> lockFailAction){
+		/*Function<Lock, Boolean> lockTryer = null;
+		if(time!=null && unit!=null){
+			lockTryer = lock->{
+				try {
+					return lock.tryLock(time, unit);
+				} catch (InterruptedException e) {
+					throw new BaseException("try lock error", e);
+				}
+			};
+		}else{
+			lockTryer = lock->lock.tryLock();
+		}
+		return tryLock(lockTryer, action, lockFailAction);*/
+		return tryLock(time, unit, action, lockFailAction);
+	}
+	
+	public <T> T tryLock(Function<Lock, Boolean> lockTryer, Supplier<T> action){
+		return tryLock(lockTryer, action, null);
+	}
+	
+
+	public <T> T tryLock(Long time, TimeUnit unit, Supplier<T> action, Supplier<T> lockFailAction){
 		Function<Lock, Boolean> lockTryer = null;
 		if(time!=null && unit!=null){
 			lockTryer = lock->{
@@ -81,11 +107,6 @@ public class RedisLockRunner {
 		}
 		return tryLock(lockTryer, action, lockFailAction);
 	}
-	
-	public <T> T tryLock(Function<Lock, Boolean> lockTryer, Supplier<T> action){
-		return tryLock(lockTryer, action, null);
-	}
-	
 	/***
 	 * 
 	 * @author wayshall
@@ -102,14 +123,17 @@ public class RedisLockRunner {
 			locked = lockTryer.apply(lock);
 			if(!locked){
 				if(lockFailAction!=null){
+					if(logger.isDebugEnabled()){
+						logger.debug("lock failed with key : {}. execute lockFailAction", lockKey);
+					}
 					return lockFailAction.get();
 				}
 				
-				logger.warn("can not obtain task lock, ignore task. lock key: {}", lockKey);
+				logger.warn("can not obtain redis lock, ignore operation. lock key: {}", lockKey);
 				return null;
 			}
 			if(logger.isDebugEnabled()){
-				logger.debug("lock with key : {}", lockKey);
+				logger.debug("lock with key : {}, execute lock action", lockKey);
 			}
 			result = action.get();
 		} catch (Exception e) {
@@ -117,9 +141,9 @@ public class RedisLockRunner {
 		} finally{
 			if (locked) {
 				lock.unlock();
-			}
-			if(logger.isDebugEnabled()){
-				logger.debug("unlock with key : {}", lockKey);
+				if(logger.isDebugEnabled()){
+					logger.debug("unlock with key : {}", lockKey);
+				}
 			}
 		}
 		return result;

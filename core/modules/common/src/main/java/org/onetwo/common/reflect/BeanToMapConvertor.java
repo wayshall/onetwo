@@ -2,6 +2,7 @@ package org.onetwo.common.reflect;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.onetwo.common.annotation.IgnoreField;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
@@ -41,6 +43,11 @@ public class BeanToMapConvertor implements Cloneable {
 			String clsName = prop.getPropertyType().getName();
 			if(clsName.startsWith(GROOVY_META) ){
 				return false;
+			} else {
+				Method readMethod = prop.getReadMethod();
+				if (readMethod.isAnnotationPresent(IgnoreField.class)) {
+					return false;
+				}
 			}
 			return val!=null;
 		}
