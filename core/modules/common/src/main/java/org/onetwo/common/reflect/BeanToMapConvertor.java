@@ -36,15 +36,18 @@ public class BeanToMapConvertor implements Cloneable {
 	 * @author way
 	 *
 	 */
-	static public class DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
+	static public class DefaultPropertyAcceptor implements BiFunction<PropertyContext, Object, Boolean> {
 
 		@Override
-		public Boolean apply(PropertyDescriptor prop, Object val) {
-			String clsName = prop.getPropertyType().getName();
+		public Boolean apply(PropertyContext prop, Object val) {
+			String clsName = prop.getProperty().getPropertyType().getName();
 			if(clsName.startsWith(GROOVY_META) ){
 				return false;
 			} else {
-				Method readMethod = prop.getReadMethod();
+				if (prop.getField().isAnnotationPresent(IgnoreField.class)) {
+					return false;
+				}
+				Method readMethod = prop.getProperty().getReadMethod();
 				if (readMethod.isAnnotationPresent(IgnoreField.class)) {
 					return false;
 				}
@@ -54,7 +57,7 @@ public class BeanToMapConvertor implements Cloneable {
 		
 	}
 	
-	static public class ExcludePropertyAcceptor extends DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
+	static public class ExcludePropertyAcceptor extends DefaultPropertyAcceptor implements BiFunction<PropertyContext, Object, Boolean> {
 		
 		private Collection<String> excludeProperties;
 		
@@ -63,7 +66,7 @@ public class BeanToMapConvertor implements Cloneable {
 		}
 
 		@Override
-		public Boolean apply(PropertyDescriptor prop, Object val) {
+		public Boolean apply(PropertyContext prop, Object val) {
 			if(excludeProperties.contains(prop.getName())){
 				return false;
 			}
@@ -101,7 +104,7 @@ public class BeanToMapConvertor implements Cloneable {
 	private String listCloser = "]";
 	private String propertyAccesor = ".";
 	private String prefix = "";
-	private BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor;
+	private BiFunction<PropertyContext, Object, Boolean> propertyAcceptor;
 	private BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 	
 	private Function<Object, Boolean> flatableObject = DEFAULT_FLATABLE;
@@ -154,7 +157,7 @@ public class BeanToMapConvertor implements Cloneable {
 		this.prefix = prefix;
 	}
 	public void setPropertyAcceptor(
-			BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
+			BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
 //		this.checkFreezed();
 		this.propertyAcceptor = propertyAcceptor;
 	}
@@ -192,12 +195,13 @@ public class BeanToMapConvertor implements Cloneable {
 		Object val = null;
 		for (PropertyDescriptor prop : props) {
 			val = objWrapper.getPropertyValue(prop);
-			if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
+			PropertyContext propContext = createPropertyContext(obj, prop);
+			if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
 				if(valueConvertor!=null){
 					Object newVal = valueConvertor.apply(prop, val);
 					val = (newVal!=null?newVal:val);
 				}
-				PropertyContext propContext = createPropertyContext(obj, prop);
+//				PropertyContext propContext = createPropertyContext(obj, prop);
 				rsMap.put(toPropertyName(propContext.getName()), val);
 			}
 		}
@@ -315,7 +319,8 @@ public class BeanToMapConvertor implements Cloneable {
 //				Object val = ReflectUtils.getProperty(obj, prop);
 				Object val = ow.getPropertyValue(prop);
 //				System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
-				if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
+				PropertyContext propContext = createPropertyContext(obj, prop);
+				if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
 					/*if(isMapObject(val) || isMultiple(val)){
 						//no convert
 					}else if(valueConvertor!=null){
@@ -325,7 +330,6 @@ public class BeanToMapConvertor implements Cloneable {
 						val = ((Enum<?>)val).name();
 					}*/
 					
-					PropertyContext propContext = createPropertyContext(obj, prop);
 					if(StringUtils.isBlank(prefixName)){
 						flatObject(propContext.getName(), val, valuePutter, propContext);
 					}else{
@@ -426,7 +430,7 @@ public class BeanToMapConvertor implements Cloneable {
 	}
 	protected static class BaseBeanToMapBuilder<T extends BaseBeanToMapBuilder<T>> {
 //		private BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
-		protected BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor = new DefaultPropertyAcceptor();
+		protected BiFunction<PropertyContext, Object, Boolean> propertyAcceptor = new DefaultPropertyAcceptor();
 		protected BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 		protected Function<Object, Boolean> flatableObject;
 		protected boolean enableFieldNameAnnotation = false;
@@ -442,7 +446,7 @@ public class BeanToMapConvertor implements Cloneable {
 			builder.enableUnderLineStyle = this.enableUnderLineStyle;
 		}
 		
-		public T propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
+		public T propertyAcceptor(BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
 			this.propertyAcceptor = propertyAcceptor;
 			return self();
 		}
