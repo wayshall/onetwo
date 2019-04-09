@@ -20,7 +20,7 @@ public class PluginContextInterceptor extends WebInterceptorAdapter {
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		HandlerMethod handlerMethod = this.getHandlerMethod(handler);
-		if (handler==null) {
+		if (handlerMethod==null) {
 			return true;
 		}
 		Optional<WebPlugin> webPlugin = this.pluginManager.findPluginByElementClass(handlerMethod.getBeanType());
