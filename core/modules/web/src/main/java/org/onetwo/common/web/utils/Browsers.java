@@ -25,7 +25,9 @@ abstract public class Browsers {
 	private static final Map<String, BrowserMeta> AGENT_BROWSER = new LinkedHashMap<>();
 	
 	static {
-		addBrowsers(FIREFOX,
+		addBrowsers(
+					WECHAT,
+					FIREFOX,
 					CHROME,
 					MSIE_4,
 					MSIE_5,
@@ -33,7 +35,6 @@ abstract public class Browsers {
 					MSIE_7,
 					MSIE_8,
 					MSIE_9,
-					WECHAT,
 					OPERA,
 					NETSCAPE,
 					UNKNOW);

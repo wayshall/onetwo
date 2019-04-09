@@ -68,7 +68,7 @@ public class ExtFeignConfiguration implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(simpleLoggerManager==null){
-			this.simpleLoggerManager = new SimpleLoggerManager();
+			this.simpleLoggerManager = SimpleLoggerManager.getInstance();
 		}
 	}
 	
