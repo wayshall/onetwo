@@ -25,8 +25,9 @@ public interface RedisOperationService {
 	 */
 	<T> T getCache(String key, Supplier<CacheData<T>> cacheLoader);
 
-	String getAndDel(String key);
-
+	String getAndDelString(String key);
+	<T> T getAndDel(String key);
+	
 	Long clear(String key);
 
 	RedisTemplate<Object, Object> getRedisTemplate();

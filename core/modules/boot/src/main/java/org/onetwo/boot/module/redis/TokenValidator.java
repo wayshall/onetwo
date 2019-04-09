@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.redis;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -7,8 +8,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 
 /**
  * @author wayshall
@@ -63,18 +62,31 @@ public class TokenValidator {
     public String save(String key, int expiredInSeconds, Supplier<String> valueGenerator){
     	this.checkValue(key);
     	String storeKey = getStoreKey(key);
-    	ValueOperations<String, String> ops = redisOperationService.getStringRedisTemplate().opsForValue();
-    	String value = ops.get(storeKey);
-    	if (StringUtils.isNotBlank(value)) {
+    	/*ValueOperations<String, String> ops = redisOperationService.getStringRedisTemplate().opsForValue();
+    	String value = ops.get(storeKey);*/
+    	Optional<String> valueOpt = this.redisOperationService.getCacheIfPreset(storeKey, String.class);
+    	if (valueOpt.isPresent()) {
     		throw new ServiceException(TokenValidatorErrors.TOKEN_NOT_EXPIRED)
     								.put("key", storeKey)
-    								.put("token", value);
+    								.put("token", valueOpt.get());
     	}
-    	value = valueGenerator.get();
+    	/*value = valueGenerator.get();
     	redisOperationService.getStringRedisTemplate()
     							.opsForValue()
-    							.set(storeKey, value, expiredInSeconds, TimeUnit.SECONDS);
+    							.set(storeKey, value, expiredInSeconds, TimeUnit.SECONDS);*/
+    	String value = this.redisOperationService.getCache(storeKey, () -> {
+    		return CacheData.<String>builder()
+    								.value(valueGenerator.get())
+    								.expire(Long.valueOf(expiredInSeconds))
+    								.timeUnit(TimeUnit.SECONDS)
+    							.build();
+    	});
     	return value;
+    }
+    
+    public Long clear(String key) {
+    	String cacheKey = this.getStoreKey(key);
+    	return this.redisOperationService.clear(cacheKey);
     }
     
     private void checkValue(String value){
@@ -114,9 +126,10 @@ public class TokenValidator {
     	this.checkValue(key);
     	this.checkValue(value);
     	String storeKey = getStoreKey(key);
-    	StringRedisTemplate stringRedisTemplate = redisOperationService.getStringRedisTemplate();
-    	String storeValue = stringRedisTemplate.boundValueOps(storeKey).get();
-    	if(storeValue==null || !storeValue.equals(value)) {
+    	/*StringRedisTemplate stringRedisTemplate = redisOperationService.getStringRedisTemplate();
+    	String storeValue = stringRedisTemplate.boundValueOps(storeKey).get();*/
+    	Optional<String> storeValue = this.redisOperationService.getCacheIfPreset(storeKey, String.class);
+    	if(!storeValue.isPresent() || !storeValue.get().equals(value)) {
     		throw new ServiceException(TokenValidatorErrors.TOKEN_INVALID_OR_EXPIRED)
 										.put("storeKey", storeKey)
     									.put("storeValue", storeValue)
@@ -126,7 +139,7 @@ public class TokenValidator {
     	if (supplier!=null) {
     		res = supplier.get();
         	if (deleteCode) {
-        		stringRedisTemplate.delete(storeKey);
+        		redisOperationService.clear(storeKey);
         	}
     	}
     	return res;

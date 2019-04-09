@@ -12,7 +12,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	JsonRedisTemplateTest.class,
-	RedisOperationServiceTest.class
+	RedisOperationServiceTest.class,
+	TokenValidatorTest.class
 })
 public class RedisTestCase {
 

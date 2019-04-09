@@ -166,10 +166,11 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public String getAndDel(String key){
+	public String getAndDelString(String key){
 //    	ValueOperations<String, Object> ops = redisTemplate.opsForValue();
 		final String cacheKey = getCacheKey(key);
 		RedisSerializer<String> stringSerializer = (RedisSerializer<String>)stringRedisTemplate.getKeySerializer();
+//		RedisSerializer<Object> keySerializer = (RedisSerializer<Object>)redisTemplate.getKeySerializer();
     	String value = stringRedisTemplate.execute(new RedisCallback<String>() {
 
     		public String doInRedis(RedisConnection connection) throws DataAccessException {
@@ -189,18 +190,42 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
     	return value;
     }
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getAndDel(String key){
+//    	ValueOperations<String, Object> ops = redisTemplate.opsForValue();
+		final String cacheKey = getCacheKey(key);
+//		RedisSerializer<String> stringSerializer = (RedisSerializer<String>)stringRedisTemplate.getKeySerializer();
+		RedisSerializer<Object> keySerializer = getKeySerializer();
+    	T value = this.redisTemplate.execute(new RedisCallback<T>() {
+
+    		public T doInRedis(RedisConnection connection) throws DataAccessException {
+    			byte[] rawKey = keySerializer.serialize(cacheKey);
+    			connection.multi();
+    			connection.get(rawKey);
+    			connection.del(rawKey);
+    			List<Object> results = connection.exec();
+    			if(LangUtils.isEmpty(results)){
+    				return null;
+    			}
+    			Object result = results.get(0);
+    			return (T)keySerializer.deserialize((byte[])result);
+    		}
+    		
+		});
+    	return value;
+    }
+	
 	/* (non-Javadoc)
 	 * @see org.onetwo.boot.module.redis.RedisOperationService#clear(java.lang.String)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public Long clear(String key){
 		final String cacheKey = getCacheKey(key);
-		RedisSerializer<Object> keySerializer = (RedisSerializer<Object>)redisTemplate.getKeySerializer();
     	Long value = redisTemplate.execute(new RedisCallback<Long>() {
 
     		public Long doInRedis(RedisConnection connection) throws DataAccessException {
-    			byte[] rawKey = keySerializer.serialize(cacheKey);
+    			byte[] rawKey = getKeySerializer().serialize(cacheKey);
     			Long delCount = connection.del(rawKey);
     			return delCount;
     		}
@@ -209,6 +234,10 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
     	return value;
     }
 
+	@SuppressWarnings("unchecked")
+	protected final RedisSerializer<Object> getKeySerializer() {
+		return (RedisSerializer<Object>)redisTemplate.getKeySerializer();
+	}
 	/* (non-Javadoc)
 	 * @see org.onetwo.boot.module.redis.RedisOperationService#getRedisTemplate()
 	 */
