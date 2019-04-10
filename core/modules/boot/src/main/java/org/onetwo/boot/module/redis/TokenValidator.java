@@ -18,7 +18,7 @@ public class TokenValidator {
 	@Autowired
 	private RedisOperationService redisOperationService;
 	
-    private int expiredInSeconds = 60*2;
+    private int expiredInSeconds = 60;
     private String tokenKeyPrefix = "once-token:";
     
     protected String getStoreKey(String key){
@@ -33,7 +33,11 @@ public class TokenValidator {
      * @return
      */
     public String generate(String key, int length){
-    	return save(key, ()->RandomStringUtils.randomNumeric(length));
+    	return generate(key, length, expiredInSeconds);
+    }
+    
+    public String generate(String key, int length, int expiredInSeconds){
+    	return save(key, expiredInSeconds, ()->RandomStringUtils.randomNumeric(length));
     }
     
     /***
@@ -44,7 +48,10 @@ public class TokenValidator {
      * @return
      */
     public String generateAlphanumeric(String key, int length){
-    	return save(key, ()->RandomStringUtils.randomAlphanumeric(length));
+    	return generateAlphanumeric(key, length, expiredInSeconds);
+    }
+    public String generateAlphanumeric(String key, int length, int expiredInSeconds){
+    	return save(key, expiredInSeconds, ()->RandomStringUtils.randomAlphanumeric(length));
     }
     
     public String save(String key, Supplier<String> valueGenerator){

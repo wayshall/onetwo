@@ -28,5 +28,8 @@ public class NotLoginException extends AuthenticationException {
 	public NotLoginException(String message, Throwable cause) {
 		super(DEFAULT_MESSAGE+message, cause);
 	}
+	public NotLoginException(ErrorType exceptionType) {
+		super(exceptionType);
+	}
 
 }
