@@ -235,12 +235,14 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 //		MvcInterceptor interInst = null;
 
 		Class<? extends MvcInterceptor> cls = attr.getInterceptorType();
-		List<? extends MvcInterceptor> inters = SpringUtils.getBeans(applicationContext, cls);
+		@SuppressWarnings("unchecked")
+		List<MvcInterceptor> inters = (List<MvcInterceptor>)SpringUtils.getBeans(applicationContext, cls);
 		if(LangUtils.isEmpty(inters)){
 //			throw new BaseException("MvcInterceptor not found for : " + cls);
 			MvcInterceptor interInst = createInterceptorInstance(attr);
 			return interInst;
 		}else if(inters.size()>1){
+			// 有多个实现时，仅查找本身
 			List<MvcInterceptor> typeInterceptors = inters.stream().filter(inter -> inter.getClass()==cls).collect(Collectors.toList());
 			if (typeInterceptors.size()>1) {
 				throw new BaseException("multip MvcInterceptor found for : " + cls);
