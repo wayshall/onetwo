@@ -78,4 +78,8 @@ public class JwtUserDetail implements UserDetail {
 		this.newToken = newToken;
 	}
 
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 }
