@@ -2,7 +2,6 @@
 
 
 <included>
-    <property name="LOG_PATH" value="#{log.dir}"></property>
     <if condition='isDefined("app.log.dir")'>
         <then>
             <property name="LOG_PATH" value="${app.log.dir}"></property>

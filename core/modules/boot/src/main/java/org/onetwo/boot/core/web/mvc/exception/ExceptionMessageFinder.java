@@ -138,7 +138,12 @@ public interface ExceptionMessageFinder {
 			detail = false;
 			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
-		}else{
+		} else if(ex instanceof IllegalArgumentException){
+			findMsgByCode = false;
+			detail = false;
+			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
+			error.setHttpStatus(HttpStatus.BAD_REQUEST);
+		} else{
 			errorCode = SystemErrorCode.UNKNOWN;
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
