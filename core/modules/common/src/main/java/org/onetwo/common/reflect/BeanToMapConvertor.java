@@ -44,7 +44,8 @@ public class BeanToMapConvertor implements Cloneable {
 			if(clsName.startsWith(GROOVY_META) ){
 				return false;
 			} else {
-				if (prop.getField().isAnnotationPresent(IgnoreField.class)) {
+				Field field = prop.getField();
+				if (field!=null && field.isAnnotationPresent(IgnoreField.class)) {
 					return false;
 				}
 				Method readMethod = prop.getProperty().getReadMethod();
