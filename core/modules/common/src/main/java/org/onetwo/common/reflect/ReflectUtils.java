@@ -5,6 +5,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -1949,7 +1951,31 @@ public class ReflectUtils {
 		}
 		return maps;
 	}
+	
+	public static MethodHandles.Lookup createMethodHandlesLookup(Class<?> clazz) {
+		try {
+			Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class, int.class);
+	        constructor.setAccessible(true);
+	        MethodHandles.Lookup lookup = constructor.newInstance(clazz, MethodHandles.Lookup.PRIVATE);
+	        return lookup;
+		} catch (Exception e) {
+			throw new BaseException("create instance of MethodHandles.Lookup error for class: " + clazz);
+		}
+	}
 
+	public static Object invokeDefaultMethod(MethodHandles.Lookup lookup, Method method, Object proxy, Object... args) {
+		Object result;
+		try {
+			result = lookup.in(method.getDeclaringClass())
+					.unreflectSpecial(method, method.getDeclaringClass())
+			        .bindTo(proxy)
+			        .invokeWithArguments(args);
+		}catch (Throwable e) {
+			throw new BaseException("invoke default method error for : " + method);
+		}
+		return result;
+	}
+	
 	public static void main(String[] args) {
 
 	}
