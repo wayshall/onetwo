@@ -25,6 +25,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.copier.BaseCopierBuilder.SimpleCopierBuilder;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -140,6 +141,11 @@ public class CopyUtils {
     public static final PropertyNameConvertor UNDERLINE_CONVERTOR = SeperatorNamedConvertor.UNDERLINE_CONVERTOR;
 //    public static final SimpleBeanCopier BEAN_COPIER = SimpleBeanCopier.unmodifyCopier(new SimpleBeanCopier(UNDERLINE_CONVERTOR));
     public static final SimpleBeanCopier BEAN_COPIER = BeanCopierBuilder.newBuilder().propertyNameConvertor(UNDERLINE_CONVERTOR).build();
+    public static final SimpleBeanCopier IGNORE_NULL_BLANK_COPIER = BeanCopierBuilder.newBuilder()
+    																	.propertyNameConvertor(UNDERLINE_CONVERTOR)
+    																	.ignoreNullValue()
+    																	.ignoreBlankString()
+    																	.build();
 	
 	public static BeanWrapper newBeanWrapper(Object obj){
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
@@ -186,6 +192,22 @@ public class CopyUtils {
 
     public static <T> T copy(T target, Object src){
     	return BEAN_COPIER.fromObject(src, target);
+    }
+
+    public static <T> T copyIgnoreNullAndBlank(Class<T> targetClass, Object src){
+    	return IGNORE_NULL_BLANK_COPIER.fromObject(src, newInstance(targetClass));
+    }
+    
+    public static <T> T copyIgnoreNullAndBlank(T target, Object src, String... propertyNames){
+    	if (LangUtils.isEmpty(propertyNames)) {
+        	IGNORE_NULL_BLANK_COPIER.fromObject(src, target);
+    	} else {
+    		copyFrom(src).ignoreNullValue()
+					.ignoreBlankString()
+					.ignoreFields(propertyNames)
+					.to(target);
+    	}
+    	return target;
     }
 
     /****
