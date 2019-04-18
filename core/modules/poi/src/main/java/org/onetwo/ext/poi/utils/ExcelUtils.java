@@ -334,6 +334,21 @@ abstract public class ExcelUtils {
 		}
 	}
 	
+
+	public static Workbook createWorkbook(File file){
+		Workbook workbook = null;
+		InputStream in = null;
+		try {
+			in = new FileInputStream(file);
+			workbook = createWorkbook(in);
+		} catch (Exception e) {
+			throw new ExcelException("read excel error : " + file.getPath(), e);
+		}finally{
+			IOUtils.closeQuietly(in);
+		}
+		return workbook;
+	}
+	
 	public static Workbook createWorkbook(InputStream in){
 		Workbook workbook = null;
 		try {

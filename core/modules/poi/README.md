@@ -1,4 +1,4 @@
-# onetw-poi
+# onetwo-poi
 基于poi，对操作excel的简单封装。
 
 ## maven ##
@@ -88,4 +88,28 @@ List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(CardEntit
 											"密码", "cardPwd")
 											.readFirstSheet(path);
 		
+```
+
+### 流式读取api
+上面那些看上去整得太复杂？   
+4.7.3 后增加一个简单的流式api读取excel
+```Java
+new ExcelStreamReaderBuilder().readSheet(0) //读取第一个表格
+								//读取第3行
+								.row(2).onData((row, index) -> {
+									batch.setBillMonth(row.getString(1));
+									batch.setDepartmentId(departmentId);
+									duesImport.setBatch(batch);
+								})
+								////读取第6行到结束
+								.row(5).toEnd().onData((row, index) -> {
+									DuesDetailImportData detail = new DuesDetailImportData();
+									detail.setRealName(row.getString(0));
+									detail.setUserName(row.getString(1));
+									detail.setFee(row.getCellValue(2, BigDecimal.class));
+									detail.setPayEndTime(row.getCellValue(3, Date.class));
+									dataList.add(detail);
+								})
+							.endSheet()
+							.from(dataFile);//从哪个数据文件读取
 ```
