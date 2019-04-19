@@ -135,7 +135,7 @@ public class ExcelStreamReader {
 		 */
 		public RowStreamReaderBuilder row(int startIndex) {
 			RowStreamReaderBuilder rowBuilder = new RowStreamReaderBuilder(this);
-			return rowBuilder.from(startIndex);
+			return rowBuilder.from(startIndex).to(startIndex);
 		}
 		
 		private void check() {
