@@ -97,7 +97,8 @@ List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(CardEntit
 
 ```Java
 ImportBatchVO batch = new ImportBatchVO();
-new ExcelStreamReaderBuilder().readSheet(0) //读取第一个表格
+WorkbookReaderFactory.streamReader()
+		.readSheet(0).readSheet(0) //读取第一个表格
 			//读取第1行作为标题
 			.row(0).onData((row, index) -> {
 				batch.setTitle(row.getString(1));

@@ -19,7 +19,7 @@ import lombok.Data;
  */
 public class TokenValidator {
 	
-	@Autowired
+//	@Autowired
 	private RedisOperationService redisOperationService;
 	
     private int expiredInSeconds = 60;

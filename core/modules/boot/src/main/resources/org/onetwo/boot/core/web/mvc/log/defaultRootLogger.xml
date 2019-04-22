@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- https://logback.qos.ch/manual/configuration.html -->
 
 <included>
     <if condition='isDefined("app.log.dir")'>
         <then>
             <property name="LOG_PATH" value="${app.log.dir}"></property>
+        </then>
+    </if>
+    <if condition='!isDefined("LOG_PATH")'>
+        <then>
+            <property name="LOG_PATH" value="./logs"></property>
         </then>
     </if>
     <include resource="org/onetwo/boot/core/web/mvc/log/fileLogger.xml"/>

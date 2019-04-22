@@ -93,11 +93,12 @@ public class RedisConfiguration {
 	}
 	
 	@Bean
-	public TokenValidator tokenValidator(){
+	public TokenValidator tokenValidator(RedisOperationService redisOperationService){
 		OnceTokenProperties config = this.redisProperties.getOnceToken();
 		TokenValidator token = new TokenValidator();
 		token.setTokenKeyPrefix(config.getPrefix());
 		token.setExpiredInSeconds(config.getExpiredInSeconds());
+		token.setRedisOperationService(redisOperationService);
 		return token;
 	}
     

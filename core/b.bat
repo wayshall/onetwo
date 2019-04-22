@@ -1,6 +1,4 @@
-﻿@rem batch git push
-
-@echo off
+﻿@echo off
 @echo current dir: %~dp0
 @echo run cmd: %*
 @rem 换行

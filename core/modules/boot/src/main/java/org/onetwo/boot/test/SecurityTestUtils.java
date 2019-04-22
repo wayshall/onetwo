@@ -1,4 +1,4 @@
-package org.onetwo.test.boot;
+package org.onetwo.boot.test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
