@@ -1,4 +1,4 @@
-package org.onetwo.test.boot;
+package org.onetwo.boot.test;
 
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.ext.security.utils.LoginUserDetails;

@@ -1,4 +1,4 @@
-package org.onetwo.test.boot;
+package org.onetwo.boot.test;
 
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
