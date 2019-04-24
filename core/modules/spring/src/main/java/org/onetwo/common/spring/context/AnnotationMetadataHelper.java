@@ -3,8 +3,10 @@ package org.onetwo.common.spring.context;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.spring.SpringUtils;
@@ -52,7 +54,7 @@ public class AnnotationMetadataHelper {
 		this.attributes = attributes;
 	}
 	
-	public Stream<BeanDefinition> scanBeanDefinitions(Class<? extends Annotation> annoClass, String...extraPackagesToScans){
+	public List<BeanDefinition> scanBeanDefinitions(Class<? extends Annotation> annoClass, String...extraPackagesToScans){
 		ClassPathScanningCandidateComponentProvider scanner = createAnnotationScanner(classLoader, annoClass);
 		if(resourceLoader!=null){
 			scanner.setResourceLoader(resourceLoader);
@@ -69,7 +71,8 @@ public class AnnotationMetadataHelper {
 			basePackages.addAll(Arrays.asList(extraPackagesToScans));
 		}
 		return basePackages.stream()
-							.flatMap(pack->scanner.findCandidateComponents(pack).stream());
+							.flatMap(pack->scanner.findCandidateComponents(pack).stream())
+							.collect(Collectors.toList());
 	}
 	
 

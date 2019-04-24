@@ -9,18 +9,16 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-import net.jodah.typetools.TypeResolver;
-
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.convertor.ApiclientJackson2HttpMessageConverter;
+import org.onetwo.common.apiclient.convertor.ApiclientJackson2XmlMessageConverter;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.slf4j.Logger;
-import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -34,6 +32,7 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
@@ -41,14 +40,13 @@ import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import net.jodah.typetools.TypeResolver;
+
 public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	static private final Logger logger = JFishLoggerFactory.getLogger(ExtRestTemplate.class);
 	
 	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().enableUnderLineStyle().build();
-	
-	private NamedThreadLocal<RequestContextData> contextThreadLocal = new NamedThreadLocal<>("RestExecutor Context");
-
 	
 	@SuppressWarnings("rawtypes")
 	private ExtRestErrorHandler extErrorHandler;
@@ -80,6 +78,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 																	MediaType.TEXT_PLAIN));
 				});*/
 		CUtils.replaceOrAdd(getMessageConverters(), MappingJackson2HttpMessageConverter.class, new ApiclientJackson2HttpMessageConverter());
+		CUtils.replaceOrAdd(getMessageConverters(), MappingJackson2XmlHttpMessageConverter.class, new ApiclientJackson2XmlMessageConverter());
 		
 		applyDefaultCharset();
 		
@@ -124,10 +123,10 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	@Override
 	public <T> ResponseEntity<T> execute(RequestContextData context) {
 		try {
-			contextThreadLocal.set(context);
+			RestExecuteThreadLocal.set(context);
 			return doExecute(context);
 		} finally {
-			contextThreadLocal.remove();
+			RestExecuteThreadLocal.remove();
 		}
 	}
 	
@@ -174,7 +173,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	@Override
 	protected <T> T doExecute(URI url, HttpMethod method, RequestCallback requestCallback, ResponseExtractor<T> responseExtractor) throws RestClientException {
-		RequestContextData ctx = contextThreadLocal.get();
+		RequestContextData ctx = RestExecuteThreadLocal.get();
 		if(logger.isDebugEnabled()){
 			logger.debug("rest requestId[{}] : {} - {}", ctx.getRequestId(), method, url);
 		}

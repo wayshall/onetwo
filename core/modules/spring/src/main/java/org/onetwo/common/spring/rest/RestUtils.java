@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 import org.onetwo.common.reflect.BeanToMapConvertor;
-import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.spring.utils.EnhanceBeanToMapConvertor.EnhanceBeanToMapBuilder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
@@ -38,14 +37,15 @@ public final class RestUtils {
 	public static final HttpHeaders JSON_HEADER;
 	public static final HttpHeaders TEXT_HEADER;
 
-	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder().build();
+//	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder().build();
 	/*private static final BeanToMapConvertor STRING_VALUE_CONVERTOR = BeanToMapBuilder.newBuilder()
 																						.propertyAcceptor((p, v)->v!=null)
 																						.valueConvertor((p, v)->v.toString())
 																						.build();*/
-	private static final BeanToMapConvertor STRING_VALUE_CONVERTOR = EnhanceBeanToMapBuilder.enhanceBuilder()
+	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = EnhanceBeanToMapBuilder.enhanceBuilder()
 																							.enableJsonPropertyAnnotation()
 																							.enableFieldNameAnnotation()
+//																							.enableUnderLineStyle()
 																							.propertyAcceptor((p, v)->v!=null)
 //																							.valueConvertor((p, v)->v.toString())
 																							.build();
@@ -68,6 +68,9 @@ public final class RestUtils {
 		
 	}
 	
+	public static BeanToMapConvertor getBeanToMapConvertor() {
+		return BEAN_TO_MAP_CONVERTOR;
+	}
 	public static boolean isRequestBodySupportedMethod(HttpMethod method){
 		return isRequestBodySupportedMethod(RequestMethod.valueOf(method.name()));
 	}
@@ -82,7 +85,7 @@ public final class RestUtils {
 
 //	@SuppressWarnings("unchecked")
 	public static HttpEntity<?> createFormEntity(final Object obj){
-		return createFormEntity(obj, STRING_VALUE_CONVERTOR);
+		return createFormEntity(obj, BEAN_TO_MAP_CONVERTOR);
 	}
 	public static HttpEntity<?> createFormEntity(final Object obj, BeanToMapConvertor convertor){
 		Assert.notNull(obj);
@@ -102,7 +105,7 @@ public final class RestUtils {
 	
 	public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj){
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		STRING_VALUE_CONVERTOR.flatObject("", obj, (key, value, ctx)->params.set(key, value.toString()));
+		BEAN_TO_MAP_CONVERTOR.flatObject("", obj, (key, value, ctx)->params.set(key, value.toString()));
 		return params;
 	}
 	/*public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj, BeanToMapConvertor convertor){

@@ -1,5 +1,6 @@
 package org.onetwo.ext.alimq;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.ReflectUtils;
 
@@ -49,7 +50,13 @@ public class JsonMessageSerializer implements MessageSerializer {
 			//检查消息是否可以用反射实例化，保证反序列化时不会因为没有默认构造函数而出错
 			ReflectUtils.newInstance(body.getClass());
 		}
-		messageDelegate.putUserProperties(PROP_BODY_TYPE, body.getClass().getName());
+		if (messageDelegate!=null && StringUtils.isBlank(messageDelegate.getUserProperties(PROP_BODY_TYPE))) {
+			String bodyClassName = body.getClass().getName();
+			if (body instanceof JsonMessageDeserializerClassMapping) {
+				bodyClassName = ((JsonMessageDeserializerClassMapping)body).getMappingClassName();
+			}
+			messageDelegate.putUserProperties(PROP_BODY_TYPE, bodyClassName);
+		}
 		return jsonMapper.toJsonBytes(body);
 	}
 

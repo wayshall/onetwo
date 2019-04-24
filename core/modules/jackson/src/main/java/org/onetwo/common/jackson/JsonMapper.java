@@ -103,7 +103,6 @@ public class JsonMapper {
 //		setDateFormat(DateUtils.DATE_TIME);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_COMMENTS, true);
-		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 //		objectMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -122,6 +121,16 @@ public class JsonMapper {
 	public JsonMapper singleQuotes() {
 		this.objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
 		this.objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		return this;
+	}
+
+	/****
+	 * 允许单引号括住的值
+	 * @author weishao zeng
+	 * @return
+	 */
+	public JsonMapper allowSingleQuotes() {
+		this.objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 		return this;
 	}
 	

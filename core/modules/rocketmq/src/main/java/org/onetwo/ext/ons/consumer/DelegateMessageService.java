@@ -2,9 +2,12 @@ package org.onetwo.ext.ons.consumer;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.MessageDeserializer;
+import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
+import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.exception.ConsumeException;
 import org.slf4j.Logger;
@@ -38,6 +41,13 @@ public class DelegateMessageService implements InitializingBean {
 		Assert.notNull(consumerListenerComposite, "consumerListenerComposite can not be null");
 	}
 
+	private MessageDeserializer getMessageDeserializer(String deserializer) {
+		MessageDeserializer messageDeserializer = this.messageDeserializer;
+		if (StringUtils.isNotBlank(deserializer)) {
+			messageDeserializer = MessageSerializerType.valueOf(deserializer.toUpperCase()).getDeserializer();
+		}
+		return messageDeserializer;
+	}
 	/***
 	 * 返回最近一次消费上下文
 	 * @author wayshall
@@ -58,6 +68,8 @@ public class DelegateMessageService implements InitializingBean {
 				logger.info("rmq-consumer[{}] received id: {}, key: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId, message.getKeys(), message.getTopic(), message.getTags());
 			}
 			
+			String deserializer = message.getUserProperty(TracableMessage.SERIALIZER_KEY);
+			MessageDeserializer messageDeserializer = getMessageDeserializer(deserializer);
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
 			if(meta.isAutoDeserialize()){

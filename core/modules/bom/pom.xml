@@ -33,7 +33,7 @@
 	
 	<validation.version>1.1.0.Final</validation.version>
 	<dozer.version>5.4.0</dozer.version>
-	<lombok.version>1.16.8</lombok.version>
+	<lombok.version>1.18.6</lombok.version>
 	<mail.version>1.4.5</mail.version>
 	
 	<shiro.version>1.2.3</shiro.version>

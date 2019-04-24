@@ -2,7 +2,6 @@ package org.onetwo.ext.alimq;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.springframework.util.ClassUtils;
@@ -33,9 +32,9 @@ public class JsonMessageDeserializer implements MessageDeserializer {
 	public Object deserialize(byte[] body, MessageExt message) {
 		String typeName = message.getUserProperty(JsonMessageSerializer.PROP_BODY_TYPE);
 		//兼容：如果没有类名，则直接使用jdk的反序列化。。。
-		if(StringUtils.isBlank(typeName)){
+		/*if(StringUtils.isBlank(typeName)){
 			return MessageDeserializer.DEFAULT.deserialize(body, message);
-		}
+		}*/
 		try {
 			if(compatibilityTypeMappings.containsKey(typeName)){
 				typeName = compatibilityTypeMappings.get(typeName);

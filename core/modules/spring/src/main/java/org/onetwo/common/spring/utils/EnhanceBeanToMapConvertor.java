@@ -5,10 +5,7 @@ import java.util.Optional;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.reflect.BeanToMapConvertor;
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.FieldName;
-import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeanWrapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,44 +30,33 @@ public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
 		}
 	}
 	
-	private boolean enableJsonPropertyAnnotation = false;
 
 	@Override
 	protected ObjectWrapper objectWrapper(Object obj) {
 		return new DefaultObjectWrapper(obj);
 	}
 	
-	@Override
-	protected PropertyContext createPropertyContext(Object obj, PropertyDescriptor prop) {
-		return new PropertyContext(obj, prop, prop.getName()){
+	public static class JsonPropertyConvert extends DefaultPropertyNameConvertor {
+		private boolean enableJsonPropertyAnnotation = false;
+		
+		public JsonPropertyConvert(boolean enableJsonPropertyAnnotation, boolean enableFieldNameAnnotation, boolean enableUnderLineStyle) {
+			super(enableFieldNameAnnotation, enableUnderLineStyle);
+			this.enableJsonPropertyAnnotation = enableJsonPropertyAnnotation;
+		}
 
-			public String getName() {
-				String name = this.name;
-				if(source!=null){
-					if(enableFieldNameAnnotation){
-						FieldName fn = ReflectUtils.getFieldNameAnnotation(source.getClass(), name);
-						if(fn!=null){
-							name = fn.value();
-							//直接返回,和父类实现稍有不同
-							return name;
-						}
-					}
-					if(enableJsonPropertyAnnotation){
-						Optional<JsonProperty> jp = AnnotationUtils.findAnnotationOnPropertyOrField(source.getClass(), getProperty(), JsonProperty.class);
-						if(jp.isPresent()){
-							name = jp.get().value();
-							return name;
-						}
-					}
+		@Override
+		public String convert(PropertyContext ctx) {
+			String name = super.convert(ctx);
+			if(enableJsonPropertyAnnotation){
+				Optional<JsonProperty> jp = AnnotationUtils.findAnnotationOnPropertyOrField(ctx.getSource().getClass(), ctx.getProperty(), JsonProperty.class);
+				if(jp.isPresent()){
+					name = jp.get().value();
 				}
-				if(enableUnderLineStyle){
-					name = StringUtils.convert2UnderLineName(name);
-				}
-				return name;
 			}
-		};
+			return name;
+		}
+		
 	}
-
 
 
 	public static class EnhanceBeanToMapBuilder extends BaseBeanToMapBuilder<EnhanceBeanToMapBuilder> {
@@ -97,9 +83,9 @@ public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
 			if(flatableObject!=null){
 				beanToFlatMap.setFlatableObject(flatableObject);
 			}
-			beanToFlatMap.enableFieldNameAnnotation = enableFieldNameAnnotation;
-			beanToFlatMap.enableUnderLineStyle = enableUnderLineStyle;
-			beanToFlatMap.enableJsonPropertyAnnotation = enableJsonPropertyAnnotation;
+			beanToFlatMap.setPropertyNameConvertor(new JsonPropertyConvert(enableJsonPropertyAnnotation, 
+																			enableFieldNameAnnotation, 
+																			enableUnderLineStyle));
 			return beanToFlatMap;
 		}
 	}

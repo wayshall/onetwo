@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,6 +81,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /****
@@ -736,6 +738,17 @@ final public class SpringUtils {
 		} catch (IOException e) {
 			throw new BaseException("get InputStream error: " + resource.getFilename());
 		}
+	}
+	
+
+	public static BeanToMapConvertor getBeanToMapConvertor(String... excludeProperties){
+		List<String> excludes = Lists.newArrayList();
+		excludes.addAll(Arrays.asList(excludeProperties));
+		BeanToMapConvertor convertor = BeanToMapBuilder.newBuilder()
+														.excludeProperties(excludes.toArray(new String[0]))
+														.enableFieldNameAnnotation()
+														.build();
+		return convertor;
 	}
 	
 }

@@ -1,9 +1,8 @@
 package org.onetwo.boot.func.submit;
 
-import java.util.UUID;
-
 import org.onetwo.boot.module.redis.RedisOperationService;
 import org.onetwo.boot.module.redis.TokenValidator;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +26,7 @@ public class SubmitTokenService implements InitializingBean {
 	}
 	
 	public String get() {
-		String key = UUID.randomUUID().toString();
+		String key = LangUtils.randomUUID();
 		this.tokenValidator.save(key, () -> Boolean.TRUE.toString());
 		return key;
 	}

@@ -52,6 +52,9 @@ public class ONSProperties implements InitializingBean {
 		return consumers;
 	}
 
+	public MessageSerializerType getSerializer() {
+		return serializer;
+	}
 	public Properties baseProperties(){
 		Properties baseConfig = new Properties();
 		baseConfig.putAll(commons);

@@ -101,18 +101,49 @@ public class BeanToMapConvertor implements Cloneable {
 		return true;
 	};
 	
+	public static interface PropertyNameConvertor {
+		String convert(PropertyContext ctx);
+	}
+	
+	public static class DefaultPropertyNameConvertor implements PropertyNameConvertor {
+		protected boolean enableFieldNameAnnotation = false;
+		protected boolean enableUnderLineStyle = false;
+		
+		public DefaultPropertyNameConvertor(boolean enableFieldNameAnnotation, boolean enableUnderLineStyle) {
+			super();
+			this.enableFieldNameAnnotation = enableFieldNameAnnotation;
+			this.enableUnderLineStyle = enableUnderLineStyle;
+		}
+
+		@Override
+		public String convert(PropertyContext ctx) {
+			String name = ctx.name;
+			if(enableFieldNameAnnotation && ctx.source!=null){
+				FieldName fn = ReflectUtils.getFieldNameAnnotation(ctx.source.getClass(), name);
+				if(fn!=null){
+					name = fn.value();
+				}
+			}
+			if(enableUnderLineStyle){
+				name = StringUtils.convert2UnderLineName(name);
+			}
+			return name;
+		}
+	}
+	
 	private String listOpener = "[";
 	private String listCloser = "]";
 	private String propertyAccesor = ".";
 	private String prefix = "";
 	private BiFunction<PropertyContext, Object, Boolean> propertyAcceptor;
+	private PropertyNameConvertor propertyNameConvertor;
 	private BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 	
 	private Function<Object, Boolean> flatableObject = DEFAULT_FLATABLE;
 //	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
 //	private boolean freezed;
-	protected boolean enableFieldNameAnnotation = false;
-	protected boolean enableUnderLineStyle = false;
+//	protected boolean enableFieldNameAnnotation = false;
+//	protected boolean enableUnderLineStyle = false;
 	
 	protected BeanToMapConvertor(){
 	}
@@ -148,8 +179,7 @@ public class BeanToMapConvertor implements Cloneable {
 		convertor.propertyAcceptor = this.propertyAcceptor;
 		convertor.valueConvertor = this.valueConvertor;
 		convertor.flatableObject = this.flatableObject;
-		convertor.enableFieldNameAnnotation = this.enableFieldNameAnnotation;
-		convertor.enableUnderLineStyle = this.enableUnderLineStyle;
+		convertor.propertyNameConvertor = this.propertyNameConvertor;
 		return convertor;
 	}
 
@@ -170,6 +200,11 @@ public class BeanToMapConvertor implements Cloneable {
 //		this.checkFreezed();
 		this.flatableObject = flatableObject;
 	}
+	
+	public void setPropertyNameConvertor(PropertyNameConvertor propertyNameConvertor) {
+		this.propertyNameConvertor = propertyNameConvertor;
+	}
+
 	/***
 	 * 简单反射对象的propertyName为key， propertyValue为value
 	 * 默认忽略value==null的属性，参见DefaultPropertyAcceptor
@@ -203,7 +238,7 @@ public class BeanToMapConvertor implements Cloneable {
 					val = (newVal!=null?newVal:val);
 				}
 //				PropertyContext propContext = createPropertyContext(obj, prop);
-				rsMap.put(toPropertyName(propContext.getName()), val);
+				rsMap.put(toPropertyName(propContext.getConvertedName()), val);
 			}
 		}
 		return rsMap;
@@ -332,11 +367,11 @@ public class BeanToMapConvertor implements Cloneable {
 					}*/
 					
 					if(StringUtils.isBlank(prefixName)){
-						flatObject(propContext.getName(), val, valuePutter, propContext);
+						flatObject(propContext.getConvertedName(), val, valuePutter, propContext);
 					}else{
 						String prefix = prefixName+propertyAccesor;
 						propContext.setPrefix(prefix);
-						flatObject(prefix+propContext.getName(), val, valuePutter, propContext);
+						flatObject(prefix+propContext.getConvertedName(), val, valuePutter, propContext);
 					}
 				}
 			});
@@ -401,7 +436,7 @@ public class BeanToMapConvertor implements Cloneable {
 			return ClassIntroManager.getInstance().getIntro(source.getClass()).getField(name);
 		}
 		public String getName() {
-			String name = this.name;
+			/*String name = this.name;
 			if(enableFieldNameAnnotation && source!=null){
 				FieldName fn = ReflectUtils.getFieldNameAnnotation(source.getClass(), name);
 				if(fn!=null){
@@ -410,8 +445,12 @@ public class BeanToMapConvertor implements Cloneable {
 			}
 			if(enableUnderLineStyle){
 				name = StringUtils.convert2UnderLineName(name);
-			}
+			}*/
+//			String name = propertyNameConvertor.convert(this);
 			return name;
+		}
+		private String getConvertedName() {
+			return propertyNameConvertor.convert(this);
 		}
 		public String getPrefix() {
 			return prefix;
@@ -437,6 +476,7 @@ public class BeanToMapConvertor implements Cloneable {
 		protected boolean enableFieldNameAnnotation = false;
 		protected boolean enableUnderLineStyle = false;
 		protected String prefix = "";
+		protected PropertyNameConvertor propertyNameConvertor;
 
 		public void copyTo(BaseBeanToMapBuilder<?> builder){
 			builder.prefix = this.prefix;
@@ -453,6 +493,10 @@ public class BeanToMapConvertor implements Cloneable {
 		}
 		public T excludeProperties(String... properties) {
 			this.propertyAcceptor = new ExcludePropertyAcceptor(Arrays.asList(properties));
+			return self();
+		}
+		public T propertyNameConvertor(PropertyNameConvertor propertyNameConvertor) {
+			this.propertyNameConvertor = propertyNameConvertor;
 			return self();
 		}
 
@@ -499,8 +543,7 @@ public class BeanToMapConvertor implements Cloneable {
 			if(flatableObject!=null){
 				beanToFlatMap.setFlatableObject(flatableObject);
 			}
-			beanToFlatMap.enableFieldNameAnnotation = enableFieldNameAnnotation;
-			beanToFlatMap.enableUnderLineStyle = enableUnderLineStyle;
+			beanToFlatMap.propertyNameConvertor = new DefaultPropertyNameConvertor(enableFieldNameAnnotation, enableUnderLineStyle);
 			return beanToFlatMap;
 		}
 	}

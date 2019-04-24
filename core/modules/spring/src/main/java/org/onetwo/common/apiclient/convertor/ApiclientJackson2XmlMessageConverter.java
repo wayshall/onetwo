@@ -3,15 +3,16 @@ package org.onetwo.common.apiclient.convertor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.jackson.JacksonXmlMapper;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
 import com.google.common.collect.Sets;
 
@@ -19,18 +20,17 @@ import com.google.common.collect.Sets;
  * @author wayshall
  * <br/>
  */
-public class ApiclientJackson2HttpMessageConverter extends MappingJackson2HttpMessageConverter {
-
+public class ApiclientJackson2XmlMessageConverter extends MappingJackson2XmlHttpMessageConverter {
+	
 	private SupportedMediaTypeExtractor supportedMediaTypes = new SupportedMediaTypeExtractor();
-
 	private Set<MediaType> supportedMediaTypeSet = Sets.newHashSet();
 	
-	public ApiclientJackson2HttpMessageConverter() {
-		super(JsonMapper.ignoreNull().getObjectMapper());
-		setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, 
-														MediaType.APPLICATION_JSON_UTF8,
-														MediaType.TEXT_PLAIN,//for wechat api
-														MediaType.TEXT_HTML));
+	public ApiclientJackson2XmlMessageConverter() {
+		super(JacksonXmlMapper.ignoreNull().getObjectMapper());
+		setSupportedMediaTypes(Arrays.asList(
+										MediaType.APPLICATION_XML
+//										MediaType.TEXT_PLAIN//for wechat api
+									));
 	}
 
 	public void setSupportedMediaTypes(List<MediaType> supportedMediaTypes) {
@@ -76,6 +76,7 @@ public class ApiclientJackson2HttpMessageConverter extends MappingJackson2HttpMe
 		return super.canWrite(clazz, mediaType);
 	}
 
+	
 	protected List<MediaType> getMediaTypes(Type clazz){
 		List<MediaType> mediaTypes = supportedMediaTypes.getMediaTypes(clazz);
 		addMediaTypeIfNotExists(mediaTypes);
@@ -89,8 +90,12 @@ public class ApiclientJackson2HttpMessageConverter extends MappingJackson2HttpMe
 		for(MediaType mediaType : mediaTypes){
 			if(!supportedMediaTypeSet.contains(mediaType)){
 				supportedMediaTypeSet.add(mediaType);
-				super.setSupportedMediaTypes(new ArrayList<MediaType>(supportedMediaTypeSet));
 			}
 		}
+	}
+
+	@Override
+	public List<MediaType> getSupportedMediaTypes() {
+		return Collections.unmodifiableList(new ArrayList<MediaType>(supportedMediaTypeSet));
 	}
 }

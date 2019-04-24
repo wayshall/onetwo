@@ -2,11 +2,13 @@ package org.onetwo.common.apiclient;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
@@ -92,8 +94,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private RequestMethod requestMethod;
 	private String path;
 	private Class<?> componentType;
-	
-	private Optional<String> acceptHeader;
+
+	private List<String> acceptHeaders;
+	private List<MediaType> consumeMediaTypes;
 	/***
 	 * resttemplate会根据contentType（consumes）决定采用什么样的httpMessageConvertor
 	 * 详见HttpEntityRequestCallback#doWithRequest -> requestContentType
@@ -122,8 +125,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		
 		AnnotationAttributes reqestMappingAttrs = requestMapping.get();
 		//SpringMvcContract#parseAndValidateMetadata
-		this.acceptHeader = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("produces"));
-		this.contentType = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("consumes"));
+		this.acceptHeaders = Arrays.asList(reqestMappingAttrs.getStringArray("produces"));
+		String[] consumes = reqestMappingAttrs.getStringArray("consumes");
+		this.contentType = LangUtils.getFirstOptional(consumes);
+		this.consumeMediaTypes = Stream.of(consumes).map(MediaType::parseMediaType).collect(Collectors.toList());
 		this.headers = reqestMappingAttrs.getStringArray("headers");
 		
 		String[] paths = reqestMappingAttrs.getStringArray("value");
@@ -203,8 +208,17 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return headers;
 	}
 
-	public Optional<String> getAcceptHeader() {
-		return acceptHeader;
+	public List<String> getAcceptHeaders() {
+		return acceptHeaders;
+	}
+	public List<MediaType> getProduceMediaTypes() {
+		return acceptHeaders.stream().map(accept -> {
+			return MediaType.parseMediaType(accept);
+		}).collect(Collectors.toList());
+	}
+
+	public List<MediaType> getConsumeMediaTypes() {
+		return consumeMediaTypes;
 	}
 
 	public Optional<String> getContentType() {
