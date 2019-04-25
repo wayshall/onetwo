@@ -7,4 +7,7 @@ public interface CustomONSConsumer<T> {
 
 	void doConsume(ConsumContext consumContext);
 	
+	default Class<?> getMessageBodyClass(ConsumContext consumContext) {
+		return null;
+	}
 }

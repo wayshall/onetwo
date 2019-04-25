@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
+import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
@@ -73,6 +74,10 @@ public class DelegateMessageService implements InitializingBean {
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
 			if(meta.isAutoDeserialize()){
+				Class<?> bodyClass = consumer.getMessageBodyClass(currentConetxt);
+				if (bodyClass!=null) {
+					message.putUserProperty(JsonMessageSerializer.PROP_BODY_TYPE, bodyClass.getName());
+				}
 				body = messageDeserializer.deserialize(message.getBody(), message);
 				currentConetxt = ConsumContext.builder()
 												.messageId(msgId)

@@ -51,11 +51,7 @@ public class JsonMessageSerializer implements MessageSerializer {
 			ReflectUtils.newInstance(body.getClass());
 		}
 		if (messageDelegate!=null && StringUtils.isBlank(messageDelegate.getUserProperties(PROP_BODY_TYPE))) {
-			String bodyClassName = body.getClass().getName();
-			if (body instanceof JsonMessageDeserializerClassMapping) {
-				bodyClassName = ((JsonMessageDeserializerClassMapping)body).getMappingClassName();
-			}
-			messageDelegate.putUserProperties(PROP_BODY_TYPE, bodyClassName);
+			messageDelegate.putUserProperties(PROP_BODY_TYPE, body.getClass().getName());
 		}
 		return jsonMapper.toJsonBytes(body);
 	}
