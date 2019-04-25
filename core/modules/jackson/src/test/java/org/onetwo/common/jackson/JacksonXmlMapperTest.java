@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.jackson.JsonMapperTest.TestJsonData;
 import org.onetwo.common.jackson.JsonMapperTest.TestJsonData2;
 import org.onetwo.common.jackson.UserEntity.SubUserEntity;
@@ -55,6 +56,16 @@ public class JacksonXmlMapperTest {
 		list.add(storeDetailVo);
 		String s = mapper.writeValueAsString(list);
 		System.out.println(s);
+	}
+	
+	@Test
+	public void testWxXml() {
+		String xml = FileUtils.readAsString(FileUtils.getResourcePath("wx_test.xml"));
+		JacksonXmlMapper jacksonXmlMapper = JacksonXmlMapper.ignoreNull();
+		Map<String, String> map = jacksonXmlMapper.fromXml(xml, Map.class);
+		System.out.println("map: " + map);
+		assertThat(map.get("appid")).isEqualTo("wx2421b1c4370ec43b");
+		assertThat(map.get("mch_id")).isEqualTo("10000100");
 	}
 	
 	/*@Test
