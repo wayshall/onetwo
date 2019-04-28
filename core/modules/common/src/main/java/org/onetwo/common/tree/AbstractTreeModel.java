@@ -90,8 +90,9 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 		if(this.isLeafage())
 			return null;
 		for(T node : (List<T>)this.children){
-			if(node.getId().equals(id))
+			if(node.getId().equals(id)) {
 				return node;
+			}
 		}
 		return null;
 	}

@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +16,8 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
+
+import com.google.common.collect.Lists;
 
 public class LangUtilsTest {
 	
@@ -371,6 +374,26 @@ public class LangUtilsTest {
 		System.out.println("key:" + key);
 		key = "sport-"+RandomStringUtils.randomAlphanumeric(128);
 		System.out.println("key:" + key);
+	}
+	
+	@Test
+	public void testSort() {
+		List<Integer> datas = Lists.newArrayList(3, 2, 44, 22, 77, 0, -23);
+		// 升序
+		datas.sort((d1, d2) -> d1 - d2);
+		System.out.println("升序: " + datas);
+		
+		// 降序
+		datas.sort((d1, d2) -> -(d1 - d2));
+		System.out.println("降序: " + datas);
+
+		// 升序
+		datas.sort(Comparator.comparingInt(d->(Integer)d));
+		System.out.println("升序: " + datas);
+
+		// 降序
+		datas.sort(Comparator.comparingInt(d->(Integer)d).reversed());
+		System.out.println("降序: " + datas);
 	}
 }
 

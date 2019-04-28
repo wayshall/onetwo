@@ -1971,7 +1971,7 @@ public class ReflectUtils {
 			        .bindTo(proxy)
 			        .invokeWithArguments(args);
 		}catch (Throwable e) {
-			throw new BaseException("invoke default method error for : " + method);
+			throw new BaseException("invoke default method error for : " + method, e);
 		}
 		return result;
 	}

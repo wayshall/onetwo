@@ -10,6 +10,8 @@ public interface TreeModel<T>{
 	public Object getId();
 	public String getName();
 	
-	public Comparable<?> getSort();
+	default public Comparable<?> getSort() {
+		return (Comparable<?>)getId();
+	}
 
 }
