@@ -49,7 +49,7 @@ public class BeanToMapConvertor implements Cloneable {
 					return false;
 				}
 				Method readMethod = prop.getProperty().getReadMethod();
-				if (readMethod.isAnnotationPresent(IgnoreField.class)) {
+				if (readMethod!=null && readMethod.isAnnotationPresent(IgnoreField.class)) {
 					return false;
 				}
 			}

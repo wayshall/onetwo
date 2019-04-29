@@ -16,7 +16,8 @@ abstract public class Browsers {
 	public static final BrowserMeta MSIE_7 = new BrowserMeta("msie 7.0", "MSIE", "7.0");
 	public static final BrowserMeta MSIE_8 = new BrowserMeta("msie 8.0", "MSIE", "8.0");
 	public static final BrowserMeta MSIE_9 = new BrowserMeta("msie 9.0", "MSIE", "9.0");
-	public static final BrowserMeta WECHAT = new BrowserMeta("micromessenger", "", "9.0");
+	public static final BrowserMeta WXWORK = new BrowserMeta("wxwork", "", "");
+	public static final BrowserMeta WECHAT = new BrowserMeta("micromessenger", "", "");
 	public static final BrowserMeta OPERA = new BrowserMeta("opera", "Opera", "");
 	public static final BrowserMeta NETSCAPE = new BrowserMeta("mozilla/5.0", "Netscape", "");
 	public static final BrowserMeta UNKNOW = new BrowserMeta("UNKNOW", "UNKNOW", "");

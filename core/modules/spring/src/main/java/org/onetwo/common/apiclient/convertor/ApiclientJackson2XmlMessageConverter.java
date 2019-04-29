@@ -57,7 +57,9 @@ public class ApiclientJackson2XmlMessageConverter extends MappingJackson2XmlHttp
 				return mediaTypes.contains(mediaType);
 			}
 		}
-		return super.canRead(type, contextClass, mediaType);
+		// xml必须要显式加注解声明，否则返回false
+//		return super.canRead(type, contextClass, mediaType);
+		return false;
 	}
 	
 	@Override
@@ -73,7 +75,9 @@ public class ApiclientJackson2XmlMessageConverter extends MappingJackson2XmlHttp
 				return mediaTypes.contains(mediaType);
 			}
 		}
-		return super.canWrite(clazz, mediaType);
+		// xml必须要显式加注解声明，否则返回false
+//		return super.canWrite(clazz, mediaType);
+		return false;
 	}
 
 	

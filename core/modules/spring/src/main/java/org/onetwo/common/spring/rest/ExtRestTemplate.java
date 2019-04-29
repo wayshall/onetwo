@@ -153,10 +153,10 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			//根据consumers 设置header，以指定messageConvertor
 //			Object requestBody = context.getRequestBodySupplier().get();
 			Object requestBody = context.getRequestBodySupplier().getRequestBody(context);
-			if(logger.isDebugEnabled()){
+			if(requestBody!=null && logger.isDebugEnabled()){
 				//打印时不能使用toJson，会破坏某些特殊对象，比如resource
 //				logger.debug("requestBody for json: {}", JsonMapper.IGNORE_NULL.toJson(requestBody));
-				logger.debug("requestBody : {}", requestBody);
+				logger.debug("requestBody {} : {}", requestBody.getClass(), requestBody);
 			}
 			requestEntity = new HttpEntity<>(requestBody, headers);
 			
