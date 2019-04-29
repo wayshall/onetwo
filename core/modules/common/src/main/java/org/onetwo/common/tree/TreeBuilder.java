@@ -28,7 +28,8 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	
 	public static interface RootNodeFunc<T extends TreeModel<T>> {
 		
-		public boolean isRootNode(T node);
+//		public boolean isRootNode(T node);
+		boolean isRootNode(T node, Map<Object, T> nodeMap);
 	}
 	
 	public static class RootIdsFunc<T extends TreeModel<T>> implements RootNodeFunc<T> {
@@ -40,7 +41,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		}
 
 		@Override
-		public boolean isRootNode(T node) {
+		public boolean isRootNode(T node, Map<Object, T> nodeMap) {
 			return rootIds.contains(node.getId()) || node.getParentId()==null;
 		}
 		
@@ -66,10 +67,10 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	};
 	
 
-	public final ParentNodeNotFoundAction<TM> THROW_ERROR = node->{
+	private final ParentNodeNotFoundAction<TM> THROW_ERROR = node->{
 		throw new RuntimeException("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
 	};
-	public final ParentNodeNotFoundAction<TM> IGNORE = node->{
+	private final ParentNodeNotFoundAction<TM> IGNORE = node->{
 		logger.error("build tree error: can't not find the node[" + node.getId() + ", " + node.getName() + "]'s parent node[" + node.getParentId() + "]");
 		return null;
 	};
@@ -79,6 +80,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 //	private Comparator<Object> comparator = null;
 //	private List<?> rootIds;
 	private RootNodeFunc<TM> rootNodeFunc;
+	private ParentNodeNotFoundAction<TM> parentNotFoundAction = THROW_ERROR;
 	
 	/*private Set<Object> notFoundParentIds = Sets.newHashSet();
 	public final ParentNodeNotFoundAction<TM> STORE_NOT_FOUND_PARENTS = node->{
@@ -87,17 +89,18 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		return null;
 	};*/
 
-	public TreeBuilder(List<TM> datas) {
-		Collections.sort(datas, comparator);
-		for(TM tm : datas){
+	public TreeBuilder(Collection<TM> datas) {
+		List<TM> nodes = new ArrayList<>(datas);
+		Collections.sort(nodes, comparator);
+		for(TM tm : nodes){
 			this.nodeMap.put(tm.getId(), tm);
 		}
 	}
-	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator) {
+	public <T> TreeBuilder(Collection<T> datas, TreeModelCreator<TM, T> treeNodeCreator) {
 		this(datas, treeNodeCreator, null);
 	}
 
-	public <T> TreeBuilder(List<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<TM> comparator) {
+	public <T> TreeBuilder(Collection<T> datas, TreeModelCreator<TM, T> treeNodeCreator, Comparator<TM> comparator) {
 //		Assert.notEmpty(datas);
 		final TreeModelCreator<TM, T> tnc = treeNodeCreator;
 
@@ -134,10 +137,19 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		return this;
 	}
 	
-	public List<TM> buidTree() {
-		return this.buidTree(THROW_ERROR);
+	public TreeBuilder<TM> ignoreParentNotFound() {
+		return parentNotFound(IGNORE);
 	}
 	
+	public TreeBuilder<TM> parentNotFound(ParentNodeNotFoundAction<TM> parentNotFoundAction) {
+		this.parentNotFoundAction = parentNotFoundAction;
+		return this;
+	}
+	
+	public List<TM> buidTree() {
+		return this.buidTree(parentNotFoundAction);
+	}
+
 	public List<TM> buidTree(ParentNodeNotFoundAction<TM> notFoundAction) {
 		if (nodeMap.isEmpty()) {
 			return Collections.EMPTY_LIST;
@@ -150,7 +162,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		//这个循环比较特殊，会动态修改list，所以采用这种循环方式
 		for (int i = 0; i < treeModels.size(); i++) {
 			TM node = treeModels.get(i);
-			if (this.rootNodeFunc!=null && this.rootNodeFunc.isRootNode(node)) {
+			if (this.rootNodeFunc!=null && this.rootNodeFunc.isRootNode(node, nodeMap)) {
 				addRoot(node);
 				continue;
 			}else if(node.getParentId() == null){
