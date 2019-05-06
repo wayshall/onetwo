@@ -1,14 +1,18 @@
 package org.onetwo.boot.core.jwt;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author wayshall
  * <br/>
  */
-@Value
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class JwtTokenInfo {
 	
 	private String token;

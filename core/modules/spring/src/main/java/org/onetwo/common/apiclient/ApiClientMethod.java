@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiErrorHandler.DefaultErrorHandler;
 import org.onetwo.common.apiclient.CustomResponseHandler.NullHandler;
@@ -28,7 +29,6 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.rest.RestUtils;
-import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.AnnotatedElementUtils;

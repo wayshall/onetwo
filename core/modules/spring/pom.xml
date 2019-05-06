@@ -53,12 +53,6 @@
         <artifactId>rxjava</artifactId>
     </dependency>
     
-	<dependency>
-	  <groupId>net.sf.dozer</groupId>
-	  <artifactId>dozer</artifactId>
-	  <optional>true</optional>
-	</dependency>
-	
 	<!-- spring begin -->
 	<dependency>
 	  <groupId>org.springframework</groupId>

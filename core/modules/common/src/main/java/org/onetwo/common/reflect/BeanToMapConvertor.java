@@ -18,9 +18,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.annotation.IgnoreField;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 

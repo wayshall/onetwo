@@ -30,6 +30,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.onetwo.common.annotation.AnnotationUtils;
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.delegate.DelegateFactory;
 import org.onetwo.common.delegate.DelegateMethod;
@@ -45,7 +46,6 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.CollectionUtils;
-import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.Closure2;
