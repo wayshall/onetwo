@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * <br/>
  */
 @Configuration
-@ConditionalOnProperty(value=FeignProperties.LOCAL_ENABLE_KEY, havingValue="true", matchIfMissing=true)
+@ConditionalOnProperty(value=FeignProperties.LOCAL_ENABLE_KEY, havingValue="true", matchIfMissing=false)
 public class LocalFeignTargeterConfiguration {
 
 	@Bean
