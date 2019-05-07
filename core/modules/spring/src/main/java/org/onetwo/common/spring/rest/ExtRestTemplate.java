@@ -13,6 +13,7 @@ import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.convertor.ApiclientJackson2HttpMessageConverter;
 import org.onetwo.common.apiclient.convertor.ApiclientJackson2XmlMessageConverter;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
@@ -153,11 +154,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			//根据consumers 设置header，以指定messageConvertor
 //			Object requestBody = context.getRequestBodySupplier().get();
 			Object requestBody = context.getRequestBodySupplier().getRequestBody(context);
-			if(requestBody!=null && logger.isDebugEnabled()){
-				//打印时不能使用toJson，会破坏某些特殊对象，比如resource
-//				logger.debug("requestBody for json: {}", JsonMapper.IGNORE_NULL.toJson(requestBody));
-				logger.debug("requestBody {} : {}", requestBody.getClass(), requestBody);
-			}
+			logData(requestBody);
 			requestEntity = new HttpEntity<>(requestBody, headers);
 			
 			rc = super.httpEntityCallback(requestEntity, context.getResponseType());
@@ -169,6 +166,18 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 			rc = wrapRequestCallback(context, rc);
 		}
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
+	}
+	
+	private void logData(Object requestBody) {
+		if(requestBody!=null && logger.isDebugEnabled()){
+			//打印时不能使用toJson，会破坏某些特殊对象，比如resource
+			try {
+				logger.debug("requestBody for json: {}", JsonMapper.IGNORE_NULL.toJson(requestBody));
+			} catch (Exception e) {
+				// ignore
+				logger.debug("requestBody {} : {}", requestBody.getClass(), requestBody);
+			}
+		}
 	}
 	
 	@Override
