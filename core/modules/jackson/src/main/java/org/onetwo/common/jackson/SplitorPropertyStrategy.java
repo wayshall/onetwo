@@ -7,6 +7,12 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 
+/***
+ * toJson的时候，把驼峰命名的属性转换为下划线
+ * 
+ * @author way
+ *
+ */
 public class SplitorPropertyStrategy extends PropertyNamingStrategy {
 
 	/**
@@ -43,6 +49,12 @@ public class SplitorPropertyStrategy extends PropertyNamingStrategy {
 		return convertName(defaultName);
 	} 
 
+	/****
+	 * 大小写转换为下划线
+	 * @author weishao zeng
+	 * @param name
+	 * @return
+	 */
 	private String convertName(String name){
 		return StringUtils.convertWithSeperator(name, splitor);
 	}

@@ -223,6 +223,11 @@ public class JsonMapperTest {
 		Assert.assertTrue(json.contains("birth_day2"));
 		Assert.assertTrue(json.contains("1984-01-01"));
 		System.out.println("testJson2: " + json);
+		
+		SubUserEntity subUser = jsonMapper.fromJson(json, SubUserEntity.class);
+		assertThat(subUser.getBirthDay()).isNull();
+		assertThat(DateUtils.formatDate(subUser.getBirthDay2())).isEqualTo("1984-01-01");
+		assertThat(subUser.getEmail()).isEqualTo(user.getEmail());
 	}
 	
 	@Test

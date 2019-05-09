@@ -88,7 +88,7 @@ final public class CUtils {
     
     public static <T> Collection<T> emptyIfNull(Collection<T> col){
     	if(col==null)
-    		return Collections.EMPTY_SET;
+    		return Collections.emptyList();
     	return col;
     }
     

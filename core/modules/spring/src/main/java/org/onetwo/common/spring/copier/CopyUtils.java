@@ -230,7 +230,7 @@ public class CopyUtils {
      * @author wayshall
      * @param targetClass
      * @param src
-     * @param propertyNames 需要忽略复制的属性
+     * @param propertyNames 需要忽略复制的属性名称，名称为目标对象的属性名称
      * @return
      */
     public static <T> T copyIgnoreProperties(Class<T> targetClass, Object src, String... propertyNames){
