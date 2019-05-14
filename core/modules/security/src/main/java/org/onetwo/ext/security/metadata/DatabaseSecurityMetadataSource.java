@@ -12,11 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -43,6 +38,11 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 
 public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements JdbcSecurityMetadataSourceBuilder {
@@ -90,7 +90,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 			}
 		}
 		
-		Assert.hasText(resourceQuery);
+		Assert.hasText(resourceQuery, "resourceQuery must has text!");
 //		ResourceMapping mapping = new ResourceMapping(getDataSource(), resourceQuery);
 //		List<AuthorityResource> authorities = mapping.execute();
 		ResourceMapping mapping = new ResourceMapping();
@@ -184,7 +184,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 	@Override
 	@SuppressWarnings("unchecked")
 	public void buildSecurityMetadataSource(){
-		Assert.notNull(filterSecurityInterceptor);
+		Assert.notNull(filterSecurityInterceptor, "filterSecurityInterceptor can not be null");
 		this.buildRequestMap();
 		DefaultFilterInvocationSecurityMetadataSource originMetadata = (DefaultFilterInvocationSecurityMetadataSource)filterSecurityInterceptor.getSecurityMetadataSource();
 		//这个内置实现不支持一个url映射到多个表达式

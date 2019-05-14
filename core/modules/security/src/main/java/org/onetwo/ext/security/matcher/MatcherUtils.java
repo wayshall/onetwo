@@ -15,7 +15,7 @@ public final class MatcherUtils {
 		List<RequestMatcher> matchers = Stream.of(paths).map(path->{
 			if(path.contains("|")){
 				String[] strs = GuavaUtils.split(path, "|");
-				return new AntPathRequestMatcher(strs[0], strs[1]);
+				return new AntPathRequestMatcher(strs[1], strs[0]);
 			}else{
 				return new AntPathRequestMatcher(path);
 			}

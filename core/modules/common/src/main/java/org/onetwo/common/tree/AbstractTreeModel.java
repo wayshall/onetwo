@@ -75,7 +75,7 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 		this.children.add(node);
 	}
 	
-	public boolean isFirst(){
+	/*public boolean isFirst(){
 		return this.index==0;
 	}
 	
@@ -85,7 +85,7 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 		else
 			return (this.index+1) == this.getParent().getChildren().size();
 	}
-	
+	*/
 	public T getChild(Object id){
 		if(this.isLeafage())
 			return null;

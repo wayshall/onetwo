@@ -92,6 +92,12 @@ final public class CUtils {
     	return col;
     }
     
+    public static <T> List<T> emptyListIfNull(List<T> col){
+    	if(col==null)
+    		return Collections.emptyList();
+    	return col;
+    }
+    
 	public static <K, V> Map<K, V> subtract(Map<K, V> first, Map<K, V> map){
 		return subtract(first, map, false);
 	}

@@ -1,12 +1,9 @@
 package org.onetwo.common.tree;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @SuppressWarnings("serial")
-@XmlType(name="TreeModel")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties({"parent", "level", "index", "first", "last"})
 public class DefaultTreeModel extends AbstractTreeModel<DefaultTreeModel> {
 
 	public DefaultTreeModel() {
