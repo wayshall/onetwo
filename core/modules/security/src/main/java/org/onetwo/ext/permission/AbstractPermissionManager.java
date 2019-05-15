@@ -13,7 +13,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
-import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
+import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -30,7 +30,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	/*@Resource
 	protected MenuInfoParser<P> menuInfoParser;*/
 	private List<MenuInfoParser<P>> parsers;
-	private JdbcSecurityMetadataSourceBuilder databaseSecurityMetadataSource;
+	private SecurityMetadataSourceBuilder securityMetadataSourceBuilder;
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -126,9 +126,19 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	@Transactional
 	public void syncMenuToDatabase(){
 		parsers.stream().forEach(parser->syncMenuToDatabase(parser));
-		if(databaseSecurityMetadataSource!=null)
-			databaseSecurityMetadataSource.buildSecurityMetadataSource();
+		if(securityMetadataSourceBuilder!=null) {
+			securityMetadataSourceBuilder.buildSecurityMetadataSource();
+		}
 	}
+	
+	/***
+	 * 刷新security权限数据
+	 * @author weishao zeng
+	 */
+	public void refreshSecurityMetadataSource() {
+		this.getSecurityMetadataSourceBuilder().buildSecurityMetadataSource();
+	}
+	
 	public void syncMenuToDatabase(MenuInfoParser<P> menuInfoParser){
 //		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
@@ -153,7 +163,18 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 
 		logger.info("menu data has synchronized to database...");
 	}
-	
+
+	public SecurityMetadataSourceBuilder getSecurityMetadataSourceBuilder() {
+		SecurityMetadataSourceBuilder securityMetadataSourceBuilder = this.securityMetadataSourceBuilder;
+		if (securityMetadataSourceBuilder==null) {
+			securityMetadataSourceBuilder = SpringUtils.getBean(applicationContext, SecurityMetadataSourceBuilder.class);
+		}
+		return securityMetadataSourceBuilder;
+	}
+
+	public void setSecurityMetadataSourceBuilder(SecurityMetadataSourceBuilder securityMetadataSourceBuilder) {
+		this.securityMetadataSourceBuilder = securityMetadataSourceBuilder;
+	}
 
 	/*@Override
 	public String parseCode(Class<?> permClass) {

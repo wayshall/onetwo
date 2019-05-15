@@ -21,6 +21,12 @@ public interface PermissionManager<P extends IPermission> {
 	 * 同步菜单
 	 */
 	void syncMenuToDatabase();
+	
+	/***
+	 * 刷新security的权限数据（内存）
+	 * @author weishao zeng
+	 */
+	void refreshSecurityMetadataSource();
 
 	P findByCode(String code);
 

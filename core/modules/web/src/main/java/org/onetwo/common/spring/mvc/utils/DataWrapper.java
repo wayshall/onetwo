@@ -12,6 +12,7 @@ import org.onetwo.common.data.LazyValue;
  * 
  * 扩展：可以根据不同的 X ResponseView 指定不同的DataWrapper，
  * 如果找不到，且指定了默认名字（DEFAULT_NAME）的DataWrapper，则使用默认的DataWrapper
+ * 否则，直接返回
  *
  */
 @SuppressWarnings("serial")

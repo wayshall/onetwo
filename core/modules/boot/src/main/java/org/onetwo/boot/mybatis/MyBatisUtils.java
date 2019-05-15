@@ -4,17 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.onetwo.common.utils.Page;
-import org.onetwo.easyui.EasyDataGrid;
 
 import com.github.pagehelper.PageHelper;
 
 public class MyBatisUtils {
 	
-	public static void setCurrentQueryPage(EasyDataGrid<?> page){
+	/*public static void setCurrentQueryPage(EasyDataGrid<?> page){
 		if(page.isPagination()){
 			PageHelper.startPage(page.getPage(), page.getPageSize());  
 		}
-	}
+	}*/
 	
 	public static void setCurrentQueryPage(Page<?> page){
 		if(page.isPagination()){
@@ -22,6 +21,7 @@ public class MyBatisUtils {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> Optional<Page<T>> getPage(List<T> rows){
 		if(Page.class.isInstance(rows)){
 			Page<T> page = (Page<T>) rows;

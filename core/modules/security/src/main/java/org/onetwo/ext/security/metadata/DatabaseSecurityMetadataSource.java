@@ -175,22 +175,18 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		return new CodeSecurityConfig(auth, authorizeExpression);
 	}
 	
-	
+	private Map<RequestMatcher, Collection<ConfigAttribute>> defaultRequestMap;
 	/****
 	 * 基于url匹配拦截时，转换为ExpressionBasedFilterInvocationSecurityMetadataSource
 	 * @param source
 	 * @return
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void buildSecurityMetadataSource(){
 		Assert.notNull(filterSecurityInterceptor, "filterSecurityInterceptor can not be null");
 		this.buildRequestMap();
-		DefaultFilterInvocationSecurityMetadataSource originMetadata = (DefaultFilterInvocationSecurityMetadataSource)filterSecurityInterceptor.getSecurityMetadataSource();
-		//这个内置实现不支持一个url映射到多个表达式
-//		ExpressionBasedFilterInvocationSecurityMetadataSource fism = new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
 		
-		Map<RequestMatcher, Collection<ConfigAttribute>> originRequestMap = (Map<RequestMatcher, Collection<ConfigAttribute>>)ReflectUtils.getFieldValue(originMetadata, "requestMap", false);
+		Map<RequestMatcher, Collection<ConfigAttribute>> originRequestMap = getDefaultRequestMap();
 		if(originRequestMap!=null && !originRequestMap.isEmpty()){
 			this.requestMap.putAll(originRequestMap);
 		}
@@ -198,7 +194,20 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		this.filterSecurityInterceptor.setSecurityMetadataSource(fism);
 	}
 	
-	
+
+	@SuppressWarnings("unchecked")
+	protected final Map<RequestMatcher, Collection<ConfigAttribute>> getDefaultRequestMap() {
+		Map<RequestMatcher, Collection<ConfigAttribute>> requestMap = this.defaultRequestMap;
+		if (requestMap==null) {
+			DefaultFilterInvocationSecurityMetadataSource originMetadata = (DefaultFilterInvocationSecurityMetadataSource)filterSecurityInterceptor.getSecurityMetadataSource();
+			//这个内置实现不支持一个url映射到多个表达式
+//			ExpressionBasedFilterInvocationSecurityMetadataSource fism = new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, securityExpressionHandler);
+			requestMap = (Map<RequestMatcher, Collection<ConfigAttribute>>)ReflectUtils.getFieldValue(originMetadata, "requestMap", false);
+			this.defaultRequestMap = requestMap;
+		}
+		return requestMap;
+	}
+
 	public void setFilterSecurityInterceptor(FilterSecurityInterceptor filterSecurityInterceptor) {
 		this.filterSecurityInterceptor = filterSecurityInterceptor;
 	}

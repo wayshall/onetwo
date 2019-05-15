@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.onetwo.common.reflect.ReflectUtils;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
 
 public class RelaodableDelegatingMethodSecurityMetadataSource implements MethodSecurityMetadataSource {
@@ -19,7 +20,7 @@ public class RelaodableDelegatingMethodSecurityMetadataSource implements MethodS
 
 	@Override
 	public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
-		if(debug){
+		if(debug && delegatingMethodSecurityMetadataSource instanceof DelegatingMethodSecurityMetadataSource){
 			Map<?, ?> attributeCache = (Map<?, ?>)ReflectUtils.getFieldValue(delegatingMethodSecurityMetadataSource, "attributeCache");
 			attributeCache.clear();
 		}
