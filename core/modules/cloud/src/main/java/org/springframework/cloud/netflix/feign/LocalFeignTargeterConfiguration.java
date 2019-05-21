@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * 这个比较奇怪，必须放到spring.factories，@ConditionalOnProperty才起作用
  * @author wayshall
  * <br/>
  */

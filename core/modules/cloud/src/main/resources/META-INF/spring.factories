@@ -3,7 +3,8 @@ org.springframework.context.ApplicationContextInitializer=\
 org.onetwo.cloud.feign.local.LocalFeignContextInitializer
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.onetwo.cloud.eureka.EurekaClientContextConfig
+org.onetwo.cloud.eureka.EurekaClientContextConfig,\
+org.springframework.cloud.netflix.feign.LocalFeignTargeterConfiguration
 
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
 org.onetwo.cloud.config.ConfigClientConfiguration

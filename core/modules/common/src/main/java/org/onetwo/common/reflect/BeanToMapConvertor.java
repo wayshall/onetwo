@@ -233,10 +233,11 @@ public class BeanToMapConvertor implements Cloneable {
 			val = objWrapper.getPropertyValue(prop);
 			PropertyContext propContext = createPropertyContext(obj, prop);
 			if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
-				if(valueConvertor!=null){
+				/*if(valueConvertor!=null){
 					Object newVal = valueConvertor.apply(prop, val);
 					val = (newVal!=null?newVal:val);
-				}
+				}*/
+				val = convertValue(prop, val);
 //				PropertyContext propContext = createPropertyContext(obj, prop);
 				rsMap.put(toPropertyName(propContext.getConvertedName()), val);
 			}
@@ -379,12 +380,13 @@ public class BeanToMapConvertor implements Cloneable {
 	}
 	
 	private Object convertValue(PropertyDescriptor prop, Object val){
-		if(val instanceof Enum){
-			val = ((Enum<?>)val).name();
-		}
 		if(valueConvertor!=null){
 			Object newVal = valueConvertor.apply(prop, val);
 			val = (newVal!=null?newVal:val);
+		} else {
+			if(val instanceof Enum){
+				val = ((Enum<?>)val).name();
+			}
 		}
 		return val;
 	}
