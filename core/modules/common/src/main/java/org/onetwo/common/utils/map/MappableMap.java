@@ -2,6 +2,7 @@ package org.onetwo.common.utils.map;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,24 @@ public class MappableMap extends HashMap<String, Object>{
 	
 	public static <E> StaticMappingBuilder<E> newMappingBuilder(){
 		return new StaticMappingBuilder<E>();
+	}
+	
+	public static <E> StaticMappingBuilder<E> newMapping(){
+		return new StaticMappingBuilder<E>();
+	}
+	
+	/***
+	 * 把枚举类型自动映射为 
+	 * [{label: label, value: e->e.name()}]
+	 * @author weishao zeng
+	 * @param typing
+	 * @return
+	 */
+	public static <E extends Enum<E>> List<MappableMap> bindEnums(Class<E> typing){
+		return new EnumMappingBuilder<E>(typing).autoBind();
+	}
+	public static <E extends Enum<E>> EnumMappingBuilder<E> enumMapping(){
+		return new EnumMappingBuilder<E>();
 	}
 	
 //	final private Object sourceObject;
@@ -77,6 +96,10 @@ public class MappableMap extends HashMap<String, Object>{
 										    .collect(Collectors.toList());
 		}
 		
+		public List<MappableMap> bindValues(T[] sourceObjects){
+		    return bindValues(Arrays.asList(sourceObjects));
+		}
+		
 		public MappableMap bindValue(T sourceObject){
 			return bindMappings(new MappableMap(), sourceObject);
 		}
@@ -97,6 +120,30 @@ public class MappableMap extends HashMap<String, Object>{
 		    return mappingObject;
 		}
 		
+	}
+	
+	public static class EnumMappingBuilder<T extends Enum<T>> extends StaticMappingBuilder<T> {
+		private Class<T> enumClass;
+		
+		EnumMappingBuilder() {
+			super();
+		}
+
+		EnumMappingBuilder(Class<T> enumClass) {
+			super();
+			this.enumClass = enumClass;
+		}
+
+		public List<MappableMap> autoBind(){
+			T[] enums = this.enumClass.getEnumConstants();
+			return bindEnums(enums);
+		}
+		
+		public List<MappableMap> bindEnums(T[] enums){
+			specifyMappedFields().addMapping("label", "label")
+								.addMapping("value", e -> ((Enum<?>)e).name());
+		    return bindValues(Arrays.asList(enums));
+		}
 	}
 
 	public static interface MappingValueFunc<T, R> {
