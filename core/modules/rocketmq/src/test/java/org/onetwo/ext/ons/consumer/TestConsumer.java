@@ -20,7 +20,7 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.Consum
 			tags={ONSProducerTest.ORDER_CANCEL, ONSProducerTest.ORDER_PAY}, 
 			consumeFromWhere=ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET,
 			idempotent=IdempotentType.DATABASE)
-public class TestConsumer implements CustomONSConsumer<String> /*MessageListener*/ {
+public class TestConsumer implements CustomONSConsumer /*MessageListener*/ {
 	int count = 0;
 
 //	@Override

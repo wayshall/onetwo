@@ -2,7 +2,6 @@ package org.onetwo.ext.ons.consumer;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.onetwo.ext.alimq.ConsumContext;
@@ -12,7 +11,7 @@ import org.springframework.util.ReflectionUtils;
  * @author wayshall
  * <br/>
  */
-public class DelegateCustomONSConsumer implements CustomONSConsumer<Object> {
+public class DelegateCustomONSConsumer implements CustomONSConsumer {
 	private Object target;
 	private Method consumerMethod;
 	private Parameter[] parameters;

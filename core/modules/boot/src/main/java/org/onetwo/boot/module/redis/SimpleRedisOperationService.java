@@ -124,12 +124,17 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 			if (cacheData==null) {
 				throw new BaseException("can not load cache data.").put("key", key);
 			}
-			ops.set(cacheData.getValue());
+//			ops.set(cacheData.getValue());
 			if (cacheData.getExpire()!=null && cacheData.getExpire()>0) {
-				ops.expire(cacheData.getExpire(), cacheData.getTimeUnit());
+//				ops.expire(cacheData.getExpire(), cacheData.getTimeUnit());
+				ops.set(cacheData.getValue(), cacheData.getExpire(), cacheData.getTimeUnit());
 			} else if (this.expires.containsKey(key)) {
 				Long expireInSeconds = this.expires.get(key);
-				ops.expire(expireInSeconds, TimeUnit.SECONDS);
+//				ops.expire(expireInSeconds, TimeUnit.SECONDS);
+				ops.set(cacheData.getValue(), expireInSeconds, TimeUnit.SECONDS);
+			} else {
+//				ops.set(cacheData.getValue(), expireInSeconds, TimeUnit.SECONDS);
+				ops.set(cacheData.getValue());
 			}
 			value = cacheData.getValue();
 		} else {

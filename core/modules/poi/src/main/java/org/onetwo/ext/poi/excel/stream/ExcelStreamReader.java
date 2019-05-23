@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.convert.Types;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.springframework.util.Assert;
 
@@ -18,26 +19,26 @@ import org.springframework.util.Assert;
  * <br/>
  */
 public class ExcelStreamReader {
-	private List<SheetStreamReader> sheetReaders;
+	private List<SheetStreamReader<?>> sheetReaders;
 	
-	private ExcelStreamReader(List<SheetStreamReader> sheetReaders) {
+	private ExcelStreamReader(List<SheetStreamReader<?>> sheetReaders) {
 		super();
 		this.sheetReaders = sheetReaders;
 	}
 	
-	public void from(String path) {
-		read(ExcelUtils.createWorkbook(new File(path)));
+	public void from(String path, SheeDataModelConsumer consumer) {
+		read(ExcelUtils.createWorkbook(new File(path)), consumer);
 	}
 	
-	public void from(File file) {
-		read(ExcelUtils.createWorkbook(file));
+	public void from(File file, SheeDataModelConsumer consumer) {
+		read(ExcelUtils.createWorkbook(file), consumer);
 	}
 	
-	public void from(InputStream inputStream) {
-		read(ExcelUtils.createWorkbook(inputStream));
+	public void from(InputStream inputStream, SheeDataModelConsumer consumer) {
+		read(ExcelUtils.createWorkbook(inputStream), consumer);
 	}
 	
-	public void read(Workbook workbook){
+	public void read(Workbook workbook, SheeDataModelConsumer consumer){
 		Assert.notNull(workbook, "workbook can not be null");
 		try {
 			int sheetCount = workbook.getNumberOfSheets();
@@ -47,9 +48,12 @@ public class ExcelStreamReader {
 				if(sheet.getPhysicalNumberOfRows()<1)
 					continue;
 				
-				for(SheetStreamReader reader : sheetReaders) {
+				for(SheetStreamReader<?> reader : sheetReaders) {
 					if (reader.match(sheetIndex)) {
-						reader.onRead(sheet, sheetIndex);
+						Object dataInst = reader.onRead(sheet, sheetIndex);
+						if (consumer!=null && dataInst!=null) {
+							consumer.onSheetReadCompleted(dataInst);
+						}
 					}
 				}
 			}
@@ -58,10 +62,15 @@ public class ExcelStreamReader {
 		}
 	}
 	
+	public static interface SheeDataModelConsumer {
+		void onSheetReadCompleted(Object dataInst);
+	}
+	
 
 	public static class ExcelStreamReaderBuilder {
-		private List<SheetStreamReader> sheetReaders = new ArrayList<>();
-		public ExcelStreamReaderBuilder addSheetReader(SheetStreamReader sheetReader) {
+		private List<SheetStreamReader<?>> sheetReaders = new ArrayList<>();
+		
+		public ExcelStreamReaderBuilder addSheetReader(SheetStreamReader<?> sheetReader) {
 			this.sheetReaders.add(sheetReader);
 			return this;
 		}
@@ -72,18 +81,21 @@ public class ExcelStreamReader {
 		 * @param fromIndex
 		 * @return
 		 */
-		public SheetStreamReaderBuilder readSheet(int fromIndex) {
-			SheetStreamReaderBuilder sheetBuilder = new SheetStreamReaderBuilder(this);
-			return sheetBuilder.from(fromIndex).to(fromIndex);
+		public <T> SheetStreamReaderBuilder<T> readSheet(int fromIndex) {
+			return readSheet(fromIndex, null);
 		}
-		public void from(String path) {
-			build().from(path);
+		public <T> SheetStreamReaderBuilder<T> readSheet(int fromIndex, Class<T> dataModel) {
+			SheetStreamReaderBuilder<T> sheetBuilder = new SheetStreamReaderBuilder<T>(this);
+			return sheetBuilder.from(fromIndex).to(fromIndex).dataModel(dataModel);
 		}
-		public void from(InputStream inputStream) {
-			build().from(inputStream);
+		public void from(String path, SheeDataModelConsumer consumer) {
+			build().from(path, consumer);
 		}
-		public void from(File file) {
-			build().from(file);
+		public void from(InputStream inputStream, SheeDataModelConsumer consumer) {
+			build().from(inputStream, consumer);
+		}
+		public void from(File file, SheeDataModelConsumer consumer) {
+			build().from(file, consumer);
 		}
 		public ExcelStreamReader build() {
 			ExcelStreamReader reader = new ExcelStreamReader(sheetReaders);
@@ -91,38 +103,45 @@ public class ExcelStreamReader {
 		}
 	}
 	
-	public static class SheetStreamReaderBuilder {
+	public static class SheetStreamReaderBuilder<T> {
 		int fromIndex;
 		int toIndex;
-		private List<RowStreamReader> rowReaders = new ArrayList<>();
+		private List<RowStreamReader<T>> rowReaders = new ArrayList<>();
 		private ExcelStreamReaderBuilder parentBuilder;
+		private Class<T> dataModel;
 		
 		public SheetStreamReaderBuilder(ExcelStreamReaderBuilder parentBuilder) {
 			this.parentBuilder = parentBuilder;
 		}
-
-		public SheetStreamReaderBuilder from(int startIndex) {
+		
+		public SheetStreamReaderBuilder<T> dataModel(Class<T> dataModel) {
+			this.dataModel = dataModel;
+			return this;
+		}
+		
+		public SheetStreamReaderBuilder<T> from(int startIndex) {
 			this.fromIndex = startIndex;
 			return this;
 		}
 
-		public SheetStreamReaderBuilder to(int toIndex) {
+
+		public SheetStreamReaderBuilder<T> to(int toIndex) {
 			this.toIndex = toIndex;
 			return this;
 		}
 
-		public SheetStreamReaderBuilder toEnd() {
+		public SheetStreamReaderBuilder<T> toEnd() {
 			this.toIndex = Integer.MAX_VALUE;
 			return this;
 		}
 
-		protected SheetStreamReaderBuilder addRowReader(RowStreamReader rowReader) {
+		protected SheetStreamReaderBuilder<T> addRowReader(RowStreamReader<T> rowReader) {
 			this.rowReaders.add(rowReader);
 			return this;
 		}
 		public ExcelStreamReaderBuilder endSheet() {
 			this.check();
-			SheetStreamReader sheetReader = new SheetStreamReader(fromIndex, toIndex, rowReaders);
+			SheetStreamReader<T> sheetReader = new SheetStreamReader<T>(fromIndex, toIndex, rowReaders, dataModel);
 			parentBuilder.addSheetReader(sheetReader);
 			this.reset();
 			return parentBuilder;
@@ -147,87 +166,104 @@ public class ExcelStreamReader {
 			this.fromIndex = -1;
 			this.toIndex = -1;
 		}
+		
+
+		public class RowStreamReaderBuilder {
+			private int fromIndex;
+			private int toIndex;
+			private SheetStreamReaderBuilder<T> parentSheetBuilder;
+			
+			public RowStreamReaderBuilder(SheetStreamReaderBuilder<T> parentSheetBuilder) {
+				super();
+				this.parentSheetBuilder = parentSheetBuilder;
+			}
+
+			public RowStreamReaderBuilder from(int fromIndex) {
+				this.fromIndex = fromIndex;
+				return this;
+			}
+
+			public RowStreamReaderBuilder to(int toIndex) {
+				this.toIndex = toIndex;
+				return this;
+			}
+
+			public RowStreamReaderBuilder toEnd() {
+				this.toIndex = Integer.MAX_VALUE;
+				return this;
+			}
+			
+			private void check() {
+				Assert.state(fromIndex!=-1, "fromIndex not set");
+				Assert.state(toIndex!=-1, "toIndex not set");
+			}
+			
+			private void reset() {
+				this.fromIndex = -1;
+				this.toIndex = -1;
+			}
+			
+			public SheetStreamReaderBuilder<T> onData(RowConsumer<T> rowConsumer) {
+				this.check();
+				RowStreamReader<T> RowStreamReader = new RowStreamReader<>(fromIndex, toIndex, rowConsumer);
+				this.parentSheetBuilder.addRowReader(RowStreamReader);
+				this.reset();
+				return parentSheetBuilder;
+			}
+			public SheetStreamReaderBuilder<T> end() {
+				return parentSheetBuilder;
+			}
+		}
+
 	}
 
-	public static class RowStreamReaderBuilder {
-		private int fromIndex;
-		private int toIndex;
-		private SheetStreamReaderBuilder parentSheetBuilder;
-		
-		public RowStreamReaderBuilder(SheetStreamReaderBuilder parentSheetBuilder) {
-			super();
-			this.parentSheetBuilder = parentSheetBuilder;
-		}
-
-		public RowStreamReaderBuilder from(int fromIndex) {
-			this.fromIndex = fromIndex;
-			return this;
-		}
-
-		public RowStreamReaderBuilder to(int toIndex) {
-			this.toIndex = toIndex;
-			return this;
-		}
-
-		public RowStreamReaderBuilder toEnd() {
-			this.toIndex = Integer.MAX_VALUE;
-			return this;
-		}
-		
-		private void check() {
-			Assert.state(fromIndex!=-1, "fromIndex not set");
-			Assert.state(toIndex!=-1, "toIndex not set");
-		}
-		
-		private void reset() {
-			this.fromIndex = -1;
-			this.toIndex = -1;
-		}
-		
-		public SheetStreamReaderBuilder onData(RowConsumer rowConsumer) {
-			this.check();
-			RowStreamReader RowStreamReader = new RowStreamReader(fromIndex, toIndex, rowConsumer);
-			this.parentSheetBuilder.addRowReader(RowStreamReader);
-			this.reset();
-			return parentSheetBuilder;
-		}
-		public SheetStreamReaderBuilder end() {
-			return parentSheetBuilder;
-		}
+	static public interface RowConsumer<T> {
+		void onRow(T dataModel, RowData row, int rowIndex);
 	}
 	
-	public static class SheetStreamReader {
+	public static class SheetStreamReader<T> {
 		private int fromIndex;
 		private int toIndex;
-		private List<RowStreamReader> rowReaders;
+		private List<RowStreamReader<T>> rowReaders;
+		private Class<T> dataModel;
 		
-		public SheetStreamReader(int fromIndex, int toIndex, List<RowStreamReader> rowReaders) {
+		public SheetStreamReader(int fromIndex, int toIndex, List<RowStreamReader<T>> rowReaders, Class<T> dataModel) {
 			super();
 			this.fromIndex = fromIndex;
 			this.toIndex = toIndex;
 			this.rowReaders = rowReaders;
+			this.dataModel = dataModel;
 		}
 		public boolean match(int sheetIndex) {
 			return fromIndex <= sheetIndex && sheetIndex <= toIndex;
 		}
-		public void onRead(Sheet sheet, int sheetIndex) {
+		private T createDataModel() {
+			T dataModelInst = null;
+			if (dataModel!=null) {
+				dataModelInst = ReflectUtils.newInstance(dataModel);
+			}
+			return dataModelInst;
+		}
+		public T onRead(Sheet sheet, int sheetIndex) {
+			T dataModelInst = createDataModel();
 			int rowCount = sheet.getPhysicalNumberOfRows();
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-				for(RowStreamReader reader : rowReaders) {
+				for(RowStreamReader<T> reader : rowReaders) {
 					Row row = sheet.getRow(rowIndex);
 					if (reader.match(rowIndex)) {
-						reader.onRead(sheet, sheetIndex, row, rowIndex);
+						reader.onRead(dataModelInst, sheet, sheetIndex, row, rowIndex);
 					}
 				}
 			}
+			return dataModelInst;
 		}
 	}
 	
-	static class RowStreamReader {
+	static class RowStreamReader<T> {
 		private int fromIndex;
 		private int toIndex;
-		private RowConsumer rowConsumer;
-		public RowStreamReader(int fromIndex, int toIndex, RowConsumer rowConsumer) {
+		private RowConsumer<T> rowConsumer;
+		public RowStreamReader(int fromIndex, int toIndex, RowConsumer<T> rowConsumer) {
 			super();
 			this.fromIndex = fromIndex;
 			this.toIndex = toIndex;
@@ -236,13 +272,10 @@ public class ExcelStreamReader {
 		public boolean match(int rowIndex) {
 			return fromIndex <= rowIndex && rowIndex <= toIndex;
 		}
-		public void onRead(Sheet sheet, int sheetIndex, Row row, int rowIndex) {
+		public void onRead(T dataModel, Sheet sheet, int sheetIndex, Row row, int rowIndex) {
 			RowData rowData = new RowData(row, sheetIndex);
-			rowConsumer.onRow(rowData, rowIndex);
+			rowConsumer.onRow(dataModel, rowData, rowIndex);
 		}
-	}
-	public static interface RowConsumer {
-		void onRow(RowData row, int rowIndex);
 	}
 	
 	public static class RowData {

@@ -25,5 +25,9 @@ public class DefaultTreeModel extends AbstractTreeModel<DefaultTreeModel> {
 	public void setSort(Comparable<?> sort){
 		this.sort = sort;
 	}
+	
+	public String getLabel() {
+		return getName();
+	}
  
 }

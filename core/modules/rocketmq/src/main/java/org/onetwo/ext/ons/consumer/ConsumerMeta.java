@@ -41,5 +41,9 @@ public class ConsumerMeta {
 	private boolean autoDeserialize;
 	
 	private IdempotentType idempotentType;
+	
+	public boolean shouldWithTransational() {
+		return getIdempotentType()==IdempotentType.DATABASE;
+	}
 
 }

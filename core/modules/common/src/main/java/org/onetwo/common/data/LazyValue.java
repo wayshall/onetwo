@@ -1,5 +1,5 @@
 package org.onetwo.common.data;
 
-public interface LazyValue {
-	Object lazyGet();
+public interface LazyValue<E> {
+	E lazyGet();
 }

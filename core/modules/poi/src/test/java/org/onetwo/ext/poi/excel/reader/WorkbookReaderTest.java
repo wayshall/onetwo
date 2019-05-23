@@ -19,11 +19,11 @@ public class WorkbookReaderTest {
 	public void testExcelStreamReaderBuilder(){
 		String path = ExcelUtils.class.getClassLoader().getResource("").getPath()+"/org/onetwo/common/excel/test.xls";
 		new ExcelStreamReaderBuilder().readSheet(0).to(1)
-										.row(0).onData((row, index) -> {
+										.row(0).onData((dataModel, row, index) -> {
 											System.out.println("rwo: " + row.getCell(0));
 											assertThat(row.getCellValue(0)).isEqualTo("主键");
 										})
-										.row(1).toEnd().onData((row, index) -> {
+										.row(1).toEnd().onData((dataModel, row, index) -> {
 											System.out.println("rwo["+index+"]: " + row.getCell(0));
 											if (row.getSheetIndex()==0) {
 												assertThat(row.getCellValue(0)).isEqualTo(String.valueOf(index));
@@ -31,14 +31,14 @@ public class WorkbookReaderTest {
 										})
 									.endSheet()
 								.readSheet(1).to(1)
-										.row(0).to(0).onData((row, index) -> {
+										.row(0).to(0).onData((dataModel, row, index) -> {
 											System.out.println("row2: " + row.getCell(0));
 										})
-										.row(1).toEnd().onData((row, index) -> {
+										.row(1).toEnd().onData((dataModel, row, index) -> {
 											System.out.println("row2: " + row.getCell(0));
 										})
 									.endSheet()
-								.from(path);
+								.from(path, null);
 	}
 	
 	@Test

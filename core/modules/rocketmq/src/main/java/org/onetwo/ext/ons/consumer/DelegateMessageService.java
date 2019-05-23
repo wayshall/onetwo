@@ -23,11 +23,11 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message
  * @author wayshall
  * <br/>
  */
-@Transactional
 public class DelegateMessageService implements InitializingBean {
 	final Logger logger = ONSUtils.getONSLogger();
 	final private MessageDeserializer messageDeserializer;
 	private ONSConsumerListenerComposite consumerListenerComposite;
+	private DelegateMessageService delegateMessageService;
 	
 	
 	public DelegateMessageService(MessageDeserializer messageDeserializer, ONSConsumerListenerComposite consumerListenerComposite) {
@@ -57,8 +57,7 @@ public class DelegateMessageService implements InitializingBean {
 	 * @param context
 	 * @return
 	 */
-	@Transactional
-	@SuppressWarnings("rawtypes")
+//	@Transactional
 	public ConsumContext processMessages(ConsumerMeta meta, List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
 		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getConsumerAction();
 
@@ -96,7 +95,11 @@ public class DelegateMessageService implements InitializingBean {
 												.build();
 			}
 			
-			consumeMessage(consumer, meta, currentConetxt);
+			if (meta.shouldWithTransational()) {
+				delegateMessageService.consumeMessageWithTransactional(consumer, meta, currentConetxt);
+			} else {
+				consumeMessage(consumer, meta, currentConetxt);
+			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), currentConetxt.getDeserializedBody());
 			} else if(logger.isInfoEnabled()) {
@@ -106,7 +109,6 @@ public class DelegateMessageService implements InitializingBean {
 		return currentConetxt;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void consumeMessage(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
 		consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 		try {
@@ -120,6 +122,11 @@ public class DelegateMessageService implements InitializingBean {
 			throw new ConsumeException(msg, e);
 		}
 		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
+	}
+
+	@Transactional
+	public void consumeMessageWithTransactional(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
+		this.consumeMessage(consumer, meta, currentConetxt);
 	}
 
 }

@@ -185,9 +185,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 		logger.error("login error", exception);
 		if(RequestUtils.isAjaxRequest(request)){
 			String msg = exception.getMessage();
-			if(BadCredentialsException.class.isInstance(exception)){
+			/*if(BadCredentialsException.class.isInstance(exception)){
 				msg = "用户密码不匹配！";
-			}
+			}*/
 			SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
 			
 			DataResult<?> rs = buildErrorCode(builder, request, exception)

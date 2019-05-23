@@ -23,7 +23,7 @@ public class DataWrapper implements Serializable{
 		return new DataWrapper(value);
 	}
 	
-	public static DataWrapper lazy(LazyValue value){
+	public static DataWrapper lazy(LazyValue<?> value){
 		return new DataWrapper(value);
 	}
 	
@@ -35,7 +35,7 @@ public class DataWrapper implements Serializable{
 
 	public Object getValue() {
 		if(LazyValue.class.isInstance(value)){
-			return ((LazyValue)value).lazyGet();
+			return ((LazyValue<?>)value).lazyGet();
 		}
 		return value;
 	}
