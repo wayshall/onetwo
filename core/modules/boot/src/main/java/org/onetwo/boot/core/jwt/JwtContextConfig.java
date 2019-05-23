@@ -44,7 +44,7 @@ public class JwtContextConfig {
 
 
 	@Bean
-	@ConditionalOnMissingBean(JwtSessionUserManager.class)
+	@ConditionalOnProperty(value=JwtConfig.PREFIX + ".sessionManager.enabled", matchIfMissing=true, havingValue="true")
 	public SessionUserManager<UserDetail> sessionUserManager(){
 		return new JwtSessionUserManager(jfishConfig.getJwt().getAuthHeader());
 	}
