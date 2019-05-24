@@ -13,6 +13,7 @@ import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.exception.ConsumeException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -27,6 +28,7 @@ public class DelegateMessageService implements InitializingBean {
 	final Logger logger = ONSUtils.getONSLogger();
 	final private MessageDeserializer messageDeserializer;
 	private ONSConsumerListenerComposite consumerListenerComposite;
+	@Autowired
 	private DelegateMessageService delegateMessageService;
 	
 	
