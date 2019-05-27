@@ -20,6 +20,16 @@ import com.google.common.collect.Lists;
 public class TreeBuilder<TM extends TreeModel<TM>> {
 	
 	public static interface ParentNodeNotFoundAction<Node extends TreeModel<Node>> {
+//		DefaultTreeModel ROOT_NODE = new DefaultTreeModel("__ROOT__", "ROOT_NODE");
+		
+		/***
+		 * 返回null，则忽略
+		 * 返回自身，则添加到根节点
+		 * 否则，把currentNode添加到返回的父节点
+		 * @author weishao zeng
+		 * @param currentNode
+		 * @return
+		 */
 		Node onParentNodeNotFound(Node currentNode);
 		/*default Node findParent(Map<Object, Node> nodeMap, Node node) {
 			return nodeMap.get(node.getId());
@@ -162,6 +172,9 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		//这个循环比较特殊，会动态修改list，所以采用这种循环方式
 		for (int i = 0; i < treeModels.size(); i++) {
 			TM node = treeModels.get(i);
+			/*if (node.getId().toString().contains("Politicals_DuesMgr")) {
+				System.out.println("test");
+			}*/
 			if (this.rootNodeFunc!=null && this.rootNodeFunc.isRootNode(node, nodeMap)) {
 				addRoot(node);
 				continue;
@@ -187,15 +200,22 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 				p.addChild(node);
 //				node.setParent(p);
 			}*/
-			if(p==null){
+			if (p==null) {
 				p = notFoundAction.onParentNodeNotFound(node);
-				if(p!=null){
+				if(p==null){
+					// do nothing
+//					addRoot(node);
+				} else if (p.equals(node)) {
+					// 返回自身，则添加到根节点
+					addRoot(node);
+				} else {
 					nodeMap.put(p.getId(), p);
 					treeModels.add(p);
+					// 当父节点是延迟加载的时候会出现修改list的情况
+					p.addChild(node);
 				}
-			}
-			// 当父节点是延迟加载的时候会出现修改list的情况
-			if(p!=null){
+			}else {
+				// 当父节点是延迟加载的时候会出现修改list的情况
 				p.addChild(node);
 			}
 		}

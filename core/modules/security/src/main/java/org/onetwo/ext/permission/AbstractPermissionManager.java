@@ -1,5 +1,6 @@
 package org.onetwo.ext.permission;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,10 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	    				.map(parser->parser.getRootMenu().get())
 	    				.collect(Collectors.toList());
     }
+	
+	protected Set<String> getDatabaseRootCodes() {
+		return Collections.emptySet();
+	}
 
 	/****
 	 * 根据menuClass构建菜单
@@ -93,6 +98,14 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		}
 		return null;
 	}
+	
+	/****
+	 * 根据权限代码删除权限和相关已分配给角色的权限关联数据
+	 * @author weishao zeng
+	 * @param permissionCode
+	 * @param usePostLike
+	 */
+	abstract protected void removePermission(String permissionCode, boolean usePostLike);
 	
 	/***
 	 * syncMenuToDatabase菜单同步方法调用时，需要查找已存在的需要同步到菜单数据
@@ -126,9 +139,24 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	@Transactional
 	public void syncMenuToDatabase(){
 		parsers.stream().forEach(parser->syncMenuToDatabase(parser));
+
+		Set<String> memoryRootCodes = parsers.stream()
+											.filter(p -> p.getRootMenu().isPresent())
+											.map(p -> p.getRootMenuCode())
+											.collect(Collectors.toSet());
+		Set<String> deleteRootCodes = Sets.difference(getDatabaseRootCodes(), memoryRootCodes);
+		deleteRootCodes.stream().forEach(rootCode -> {
+			this.removeUnusedRootMenu(rootCode);
+		});
+		
 		if(securityMetadataSourceBuilder!=null) {
 			securityMetadataSourceBuilder.buildSecurityMetadataSource();
 		}
+	}
+
+	
+	protected void removeUnusedRootMenu(String rootCode) {
+		this.removePermission(rootCode, true);
 	}
 	
 	/***

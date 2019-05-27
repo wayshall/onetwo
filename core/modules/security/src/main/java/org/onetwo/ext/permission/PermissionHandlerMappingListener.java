@@ -155,7 +155,8 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		IPermission perm = this.permissionManager.getPermission(codeClass);
 		if(perm==null){
 //			System.out.println("html: " + this.permissionManagerImpl.getMenuInfoParser().getRootMenu());
-			throw new RuntimeException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
+			throw new RuntimeException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue() + "."
+					+ "Maybe you forgot register the menu class!");
 		}
 		if(PermissionUtils.isMenu(perm) && permClassInst.overrideMenuUrl()){
 			this.setMenuUrlByRequestMappingInfo(codeClass, perm, entry);
