@@ -278,6 +278,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		Double quality;
 		Integer width;
 		Integer height;
+		@Builder.Default
 		List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 	}
 	
