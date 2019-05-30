@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.DataResults;
@@ -26,7 +27,6 @@ import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -190,8 +190,13 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			}*/
 			SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
 			
+			String errorCode = SecurityErrors.AUTH_FAILED.name();
+			if (exception instanceof ExceptionCodeMark) {
+				errorCode = ((ExceptionCodeMark)exception).getCode();
+			}
+			
 			DataResult<?> rs = buildErrorCode(builder, request, exception)
-										.code(SecurityErrors.AUTH_FAILED)
+										.code(errorCode)
 										.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);

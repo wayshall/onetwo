@@ -25,6 +25,10 @@ public class ValueWrapper<T> implements Serializable{
 	public T getValue() {
 		return value;
 	}
+	
+	public boolean isPresent() {
+		return this.value!=null;
+	}
 
 	public void setValue(T value) {
 		this.value = value;

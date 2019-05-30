@@ -131,20 +131,20 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	public static class LazyResult extends AbstractDataResult<Object> {
 
 
-		public static LazyResult success(String message, LazyValue obj){
+		public static LazyResult success(String message, LazyValue<?> obj){
 			return create(SUCCESS, message, obj);
 		}
-		public static LazyResult create(String code, String message, LazyValue obj){
+		public static LazyResult create(String code, String message, LazyValue<?> obj){
 			LazyResult result = new LazyResult(obj);
 			result.setCode(code);
 			result.setMessage(message);
 			return result;
 		}
 		
-		private LazyValue lazyValue;
+		private LazyValue<?> lazyValue;
 		private Object data;
 
-		private LazyResult(LazyValue data) {
+		private LazyResult(LazyValue<?> data) {
 			super();
 			Assert.notNull(data);
 			this.lazyValue = data;
