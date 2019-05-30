@@ -73,7 +73,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	 * 默认不重试
 	 */
 	protected int maxRetryCount = 0;
-	protected int retryWaitInMillis = 500;
+	protected int retryWaitInMillis = 200;
 	
 	final public void setResponseHandler(ApiClientResponseHandler<M> responseHandler) {
 		this.responseHandler = responseHandler;

@@ -83,9 +83,16 @@ public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
 			if(flatableObject!=null){
 				beanToFlatMap.setFlatableObject(flatableObject);
 			}
-			beanToFlatMap.setPropertyNameConvertor(new JsonPropertyConvert(enableJsonPropertyAnnotation, 
-																			enableFieldNameAnnotation, 
-																			enableUnderLineStyle));
+			
+
+			if (this.propertyNameConvertor==null) {
+				beanToFlatMap.setPropertyNameConvertor(new JsonPropertyConvert(enableJsonPropertyAnnotation, 
+																				enableFieldNameAnnotation, 
+																				enableUnderLineStyle));
+			} else {
+				beanToFlatMap.setPropertyNameConvertor(this.propertyNameConvertor);
+			}
+			
 			return beanToFlatMap;
 		}
 	}

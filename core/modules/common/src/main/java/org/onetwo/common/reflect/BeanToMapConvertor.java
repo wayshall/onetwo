@@ -545,7 +545,11 @@ public class BeanToMapConvertor implements Cloneable {
 			if(flatableObject!=null){
 				beanToFlatMap.setFlatableObject(flatableObject);
 			}
-			beanToFlatMap.propertyNameConvertor = new DefaultPropertyNameConvertor(enableFieldNameAnnotation, enableUnderLineStyle);
+			if (this.propertyNameConvertor==null) {
+				beanToFlatMap.propertyNameConvertor = new DefaultPropertyNameConvertor(enableFieldNameAnnotation, enableUnderLineStyle);
+			} else {
+				beanToFlatMap.propertyNameConvertor = this.propertyNameConvertor;
+			}
 			return beanToFlatMap;
 		}
 	}
