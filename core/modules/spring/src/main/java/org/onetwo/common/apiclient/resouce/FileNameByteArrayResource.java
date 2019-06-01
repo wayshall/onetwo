@@ -13,6 +13,11 @@ public class FileNameByteArrayResource extends ByteArrayResource {
 
 	private String filename;
 	
+
+	public FileNameByteArrayResource(byte[] byteArray) {
+		super(byteArray);
+	}
+	
 	public FileNameByteArrayResource(String filename, byte[] byteArray) {
 		super(byteArray);
 		this.filename = filename;
@@ -22,4 +27,9 @@ public class FileNameByteArrayResource extends ByteArrayResource {
 	public String getFilename() {
 		return filename;
 	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+	
 }

@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 import org.onetwo.common.apiclient.interceptor.ApiInterceptor;
 
 /**
- * TODO：待实现
  * api拦截器
  * @author wayshall
  * <br/>
