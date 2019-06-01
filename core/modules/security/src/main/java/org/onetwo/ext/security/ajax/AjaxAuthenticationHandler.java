@@ -100,7 +100,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			if(StringUtils.isBlank(jwtAuthHeader)){
 				jwtAuthHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 			}
-			Assert.notNull(jwtAuthStores);
+			Assert.notNull(jwtAuthStores, "jwt auth store can not be null");
 		}
 		if(authenticationFailureUrl!=null){
 	    	this.failureHandler = new SimpleUrlAuthenticationFailureHandler(authenticationFailureUrl);

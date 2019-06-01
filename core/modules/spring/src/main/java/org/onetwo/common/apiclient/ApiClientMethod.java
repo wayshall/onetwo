@@ -1,5 +1,6 @@
 package org.onetwo.common.apiclient;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -15,8 +16,10 @@ import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiErrorHandler.DefaultErrorHandler;
 import org.onetwo.common.apiclient.CustomResponseHandler.NullHandler;
+import org.onetwo.common.apiclient.annotation.ApiClientInterceptor;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
 import org.onetwo.common.apiclient.annotation.ResponseHandler;
+import org.onetwo.common.apiclient.interceptor.ApiInterceptor;
 import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.exception.ApiClientException;
@@ -109,6 +112,8 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private CustomResponseHandler<?> customResponseHandler;
 	private ApiErrorHandler apiErrorHandler;
 	
+	private List<ApiInterceptor> interceptors;
+	
 	public ApiClientMethod(Method method) {
 		super(method);
 		componentType = ReflectUtils.getGenricType(method.getGenericReturnType(), 0, null);
@@ -145,6 +150,43 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		});
 		
 
+		this.initHandlers();
+		this.initInterceptors();
+	}
+	
+	private void initInterceptors() {
+		ApiClientInterceptor interceptorAnno = findAnnotation(ApiClientInterceptor.class);
+		if (interceptorAnno==null) {
+			this.interceptors = Collections.emptyList();
+		} else {
+			this.interceptors = Stream.of(interceptorAnno.value()).map(cls -> {
+				return createAndInitComponent(cls);
+			})
+			.collect(Collectors.toList());
+		}
+	}
+	
+	
+	public List<ApiInterceptor> getInterceptors() {
+		return interceptors;
+	}
+
+	/****
+	 * 先从方法上查找注解，没有则从类上查找
+	 * @author weishao zeng
+	 * @param annoClass
+	 * @return
+	 */
+	public <T extends Annotation> T findAnnotation(Class<T> annoClass) {
+		T annoInst = AnnotatedElementUtils.getMergedAnnotation(getMethod(), annoClass);
+		if (annoInst==null) {
+			annoInst = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), annoClass);
+		}
+		return annoInst;
+	}
+	
+	private void initHandlers() {
+		// 需要加@Inherited才能继承
 		ResponseHandler resHandler = AnnotatedElementUtils.getMergedAnnotation(getMethod(), ResponseHandler.class);
 		if (resHandler==null){
 			resHandler = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), ResponseHandler.class);
