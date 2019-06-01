@@ -13,6 +13,7 @@ import org.onetwo.common.apiclient.ApiErrorHandler.ErrorInvokeContext;
 import org.onetwo.common.apiclient.CustomResponseHandler;
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
+import org.onetwo.common.apiclient.interceptor.ApiInterceptorChain;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
 import org.onetwo.common.spring.SpringUtils;
@@ -192,8 +193,19 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			invokeMethod.validateArgements(validatorWrapper, args);
 
 			RequestContextData context = createRequestContextData(invocation, args, invokeMethod);
-			return this.actualInvoke0(invokeMethod, context);
+			ApiInterceptorChain chain = new ApiInterceptorChain(invokeMethod.getInterceptors(), context, () -> {
+				return this.actualInvoke0(invokeMethod, context);
+			});
+			return chain.invoke();
 		}
+		
+		/*protected Object doInvoke2(MethodInvocation invocation, M invokeMethod) {
+			Object[] args = processArgumentsBeforeRequest(invocation, invokeMethod);
+			invokeMethod.validateArgements(validatorWrapper, args);
+
+			RequestContextData context = createRequestContextData(invocation, args, invokeMethod);
+			return this.actualInvoke0(invokeMethod, context);
+		}*/
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		protected Object actualInvoke0(M invokeMethod, RequestContextData context) {
