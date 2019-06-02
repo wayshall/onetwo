@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 /**
+ * 把list<String> 写成 value1,value2,value3
+ * 与 StringToListDerializer 对应
  * @author weishao zeng
  * <br/>
  */
@@ -37,9 +39,11 @@ public class ListToStringSerializer extends JsonSerializer<List<?>> {
 
 	@Override
 	public void serializeWithType(List<?> value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-		typeSer.writeTypePrefixForScalar(value, gen);
+//		typeSer.writeTypePrefixForScalar(value, gen);
+//		typeSer.writeTypePrefixForArray(value, gen);
 		serialize(value, gen, serializers);
-		typeSer.writeTypeSuffixForScalar(value, gen);
+//		typeSer.writeTypeSuffixForScalar(value, gen);
+//		typeSer.writeTypeSuffixForArray(value, gen);
 	}
 	
 	public static class ListToVerticalJoinerStringSerializer extends ListToStringSerializer {

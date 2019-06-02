@@ -1,6 +1,7 @@
 package org.onetwo.ext.alimq;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.ReflectUtils;
 
@@ -56,8 +57,20 @@ public class JsonMessageSerializer implements MessageSerializer {
 		return jsonMapper.toJsonBytes(body);
 	}
 
+	public <T> T deserialize(byte[] body, Class<T> messageType) {
+		try {
+			return jsonMapper.fromJson(body, messageType);
+		} catch (Exception e) {
+			throw new BaseException("deserialize message error for class: " + messageType.getName(), e);
+		}
+	}
+
 	public void setCheckMessageBodyInstantiate(boolean checkMessageBodyInstantiate) {
 		this.checkMessageBodyInstantiate = checkMessageBodyInstantiate;
+	}
+
+	public JsonMapper getJsonMapper() {
+		return jsonMapper;
 	}
 
 }

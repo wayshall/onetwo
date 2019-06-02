@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 
 /**
  * @author weishao zeng
@@ -33,5 +34,10 @@ public class StringToStringArrayDerializer extends JsonDeserializer<String[]> {
 		return GuavaUtils.split(val, splitor);
 	}
 
+
+    public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws IOException {
+    	Object val = deserialize(p, ctxt);
+    	return val;
+    }
 }
 

@@ -35,9 +35,9 @@ public class ArrayToStringSerializer extends JsonSerializer<Object[]> {
 
 	@Override
 	public void serializeWithType(Object[] value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-		typeSer.writeTypePrefixForScalar(value, gen);
+//		typeSer.writeTypePrefixForScalar(value, gen);
 		serialize(value, gen, serializers);
-		typeSer.writeTypeSuffixForScalar(value, gen);
+//		typeSer.writeTypeSuffixForScalar(value, gen);
 	}
 }
 

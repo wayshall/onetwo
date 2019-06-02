@@ -10,8 +10,11 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 
 /**
+ * 把value1,value2,value3写成List<String>
+ * 与 ListToStringSerializer 对应
  * @author weishao zeng
  * <br/>
  */
@@ -36,6 +39,14 @@ public class StringToListDerializer extends JsonDeserializer<List<String>> {
 	}
 	
 
+    public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws IOException {
+//    	Object obj = ctxt.des
+//    	return typeDeserializer.deserializeTypedFromArray(p, ctxt);
+    	Object val = deserialize(p, ctxt);
+//    	typeDeserializer.de
+//    	Object val = super.deserializeWithType(p, ctxt, typeDeserializer);
+    	return val;
+    }
 	
 	public static class VerticalSplitorToListDerializer extends StringToListDerializer {
 

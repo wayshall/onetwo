@@ -299,7 +299,7 @@ public class JsonMapper {
 	}
 
 	public <T> T fromJson(final Object json, Type objType){
-		return fromJson(json, objType, true);
+		return fromJson(json, objType, false);
 	}
 	
 	@SuppressWarnings("unchecked")
