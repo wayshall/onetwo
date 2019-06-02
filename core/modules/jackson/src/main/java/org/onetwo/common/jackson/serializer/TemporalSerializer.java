@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 public class TemporalSerializer extends JsonSerializer<Temporal>{
 
@@ -31,6 +32,13 @@ public class TemporalSerializer extends JsonSerializer<Temporal>{
 		}else{
 			jgen.writeObject(value);
 		}
+	}
+
+	@Override
+	public void serializeWithType(Temporal value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+		typeSer.writeTypePrefixForScalar(value, gen);
+		serialize(value, gen, serializers);
+		typeSer.writeTypeSuffixForScalar(value, gen);
 	}
 	
 }

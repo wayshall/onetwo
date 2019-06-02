@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 public class JsonDateOnlySerializer extends JsonSerializer<Date>{
 
@@ -17,5 +18,12 @@ public class JsonDateOnlySerializer extends JsonSerializer<Date>{
 		String val = DateUtils.formatDateByPattern(value, DateUtils.DATE_ONLY);
 		jgen.writeString(val);
 	}
-	
+
+
+	@Override
+	public void serializeWithType(Date value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+		typeSer.writeTypePrefixForScalar(value, gen);
+		serialize(value, gen, serializers);
+		typeSer.writeTypeSuffixForScalar(value, gen);
+	}
 }

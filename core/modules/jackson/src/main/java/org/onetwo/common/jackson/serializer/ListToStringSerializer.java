@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 /**
  * @author weishao zeng
@@ -31,6 +32,14 @@ public class ListToStringSerializer extends JsonSerializer<List<?>> {
 			throws IOException, JsonProcessingException {
 		String val = StringUtils.join(value, joiner);
 		gen.writeString(val);
+	}
+	
+
+	@Override
+	public void serializeWithType(List<?> value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+		typeSer.writeTypePrefixForScalar(value, gen);
+		serialize(value, gen, serializers);
+		typeSer.writeTypeSuffixForScalar(value, gen);
 	}
 	
 	public static class ListToVerticalJoinerStringSerializer extends ListToStringSerializer {

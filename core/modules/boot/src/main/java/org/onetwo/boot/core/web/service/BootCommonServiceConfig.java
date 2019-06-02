@@ -54,7 +54,7 @@ public class BootCommonServiceConfig {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(BootCommonService.class)
-//	@ConditionalOnBean(FileStorer.class)
+	@ConditionalOnBean(FileStorer.class)
 	@ConditionalOnProperty(BootSiteConfig.ENABLE_STORETYPE_PROPERTY)
 	public BootCommonService bootCommonService(){
 		SimpleBootCommonService service = new SimpleBootCommonService();
@@ -64,6 +64,7 @@ public class BootCommonServiceConfig {
 	
 	@Bean
 	@ConditionalOnMissingBean(UploadViewController.class)
+	@ConditionalOnBean(FileStorer.class)
 	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
 	public UploadViewController uploadViewController(){
 		return new UploadViewController();

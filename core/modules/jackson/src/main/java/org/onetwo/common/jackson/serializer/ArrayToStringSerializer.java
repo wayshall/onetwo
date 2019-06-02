@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 /**
  * @author weishao zeng
@@ -32,5 +33,11 @@ public class ArrayToStringSerializer extends JsonSerializer<Object[]> {
 		gen.writeString(val);
 	}
 
+	@Override
+	public void serializeWithType(Object[] value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+		typeSer.writeTypePrefixForScalar(value, gen);
+		serialize(value, gen, serializers);
+		typeSer.writeTypeSuffixForScalar(value, gen);
+	}
 }
 
