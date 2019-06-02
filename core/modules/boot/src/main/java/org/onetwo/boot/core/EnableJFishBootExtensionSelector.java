@@ -47,6 +47,10 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 	@Override
 	protected List<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		List<String> classNames = new ArrayList<String>();
+
+		//store 在BootCommonServiceConfig之前初始化，因为BootCommonService依赖filestore来加载
+		classNames.add(OssConfiguration.class.getName());
+		classNames.add(CosConfiguration.class.getName());
 		
 		if(attributes.getBoolean("enableCommonService")){
 			classNames.add(BootCommonServiceConfig.class.getName());
@@ -79,9 +83,6 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		classNames.add(SpringCacheConfiguration.class.getName());
 		classNames.add(RedissonConfiguration.class.getName());
 		
-		//store
-		classNames.add(OssConfiguration.class.getName());
-		classNames.add(CosConfiguration.class.getName());
 		
 		//swagger
 		classNames.add(SwaggerConfiguration.class.getName());
