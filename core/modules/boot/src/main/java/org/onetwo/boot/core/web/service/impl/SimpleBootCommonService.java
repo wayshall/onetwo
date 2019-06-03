@@ -42,6 +42,20 @@ public class SimpleBootCommonService implements BootCommonService {
 	//少于等于0则一律不压缩
 	private int compressThresholdSize = -1;
 	
+	/***
+	 * 上传的根目录
+	 */
+	private String fileStoreBaseDir = "";
+	
+	public void setFileStoreBaseDir(String fileStoreBaseDir) {
+		this.fileStoreBaseDir = fileStoreBaseDir;
+	}
+
+	public void setFileStorer(FileStorer fileStorer) {
+		this.fileStorer = fileStorer;
+	}
+
+
 	/****
 	 * 目前通过设置阈值决定是否压缩
 	 * 若需要控制压缩推荐使用uploadFile(UploadOptions options)方法
@@ -61,7 +75,10 @@ public class SimpleBootCommonService implements BootCommonService {
 			}else{
 				in = file.getInputStream();
 			}
-			return new StoringFileContext(module, in, file.getOriginalFilename());
+//			String storePath = StringUtils.appendEndWithSlash(fileStoreRootPath) + module;
+			StoringFileContext ctx = new StoringFileContext(module, in, file.getOriginalFilename());
+			ctx.setFileStoreBaseDir(fileStoreBaseDir);
+			return ctx;
 		} catch (IOException e) {
 			throw new BaseException("create StoringFileContext error: " + file.getOriginalFilename(), e);
 		} finally {
@@ -87,7 +104,7 @@ public class SimpleBootCommonService implements BootCommonService {
 
 	@Override
 	public FileStoredMeta uploadFile(UploadOptions options){
-		Assert.notNull(options.getModule(), "options.module can not be null");
+//		Assert.notNull(options.getModule(), "options.module can not be null");
 		Assert.notNull(options.getMultipartFile(), "options.multipartFile can not be null");
 		InputStream in;
 		try {
@@ -95,6 +112,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		} catch (IOException e) {
 			throw new BaseException("obtain file stream error: " + options.getMultipartFile().getOriginalFilename());
 		}
+		// TODO: 如果开始压缩，写入两张图片？
 		if(options.isCompressFile()){
 			ImageCompressor imageCompressor = this.imageCompressor;
 			if(imageCompressor==null){
@@ -106,6 +124,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		StoringFileContext context = StoringFileContext.create(options.getModule(), 
 																in, 
 																options.getMultipartFile().getOriginalFilename());
+		context.setFileStoreBaseDir(fileStoreBaseDir);
 		context.setStoreFilePathStrategy(storeFilePathStrategy);
 		context.setKey(options.getKey());
 		FileStoredMeta meta = fileStorer.write(context);

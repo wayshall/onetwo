@@ -3,9 +3,20 @@ package org.onetwo.common.file;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.onetwo.common.utils.StringUtils;
+
 
 public interface FileStorer {
 	
+	default String defaultStoreKey(StoringFileContext context) {
+		String dir = StringUtils.emptyIfNull(context.getFileStoreBaseDir());
+		if (StringUtils.isNotBlank(context.getModule())) {
+			dir = "/" + context.getModule();
+		}
+		dir = FileUtils.convertDir(dir);
+		String key = dir + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
+		return key;
+	}
 	FileStoredMeta write(StoringFileContext context);
 
 	void readFileTo(final String accessablePath, final OutputStream output);

@@ -8,7 +8,6 @@ import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
@@ -41,16 +40,12 @@ public class OssFileStore implements FileStorer, InitializingBean {
 	public FileStoredMeta write(StoringFileContext context) {
 		String key = context.getKey();
 		if(StringUtils.isBlank(key)){
-//			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule())).replace("/", "-");
-//			key = prefix+"-" + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
-			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule()));
-			key = prefix+"/" + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
-//			key = StringUtils.emptyIfNull(context.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
+			key = defaultStoreKey(context);
 		}
 		wrapper.objectOperation(bucketName, key)
 				.store(context.getInputStream());
-		
-		String accessablePath = "/"+key;
+
+		String accessablePath = StringUtils.appendStartWithSlash(key);
 
 		FileStoredMeta fmeta = null;
 		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();

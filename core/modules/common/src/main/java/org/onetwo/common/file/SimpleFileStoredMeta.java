@@ -67,4 +67,11 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 		this.accessablePath = accessablePath;
 	}
 
+	@Override
+	public String toString() {
+		return "SimpleFileStoredMeta [accessablePath=" + accessablePath + ", fullAccessablePath=" + fullAccessablePath
+				+ ", storedServerLocalPath=" + storedServerLocalPath + ", sotredFileName=" + sotredFileName
+				+ ", originalFilename=" + originalFilename + ", bizModule=" + bizModule + "]";
+	}
+
 }
