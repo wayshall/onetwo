@@ -29,12 +29,13 @@ public class FixSpringSessionCookieSerializerConfiguration {
 	public CookieSerializer cookieSerializer(){
 		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
 		CookieConfig cookieConfig = securityConfig.getCookie();
-		if(StringUtils.isNotBlank(cookieConfig.getPath())){
-			serializer.setCookiePath(cookieConfig.getPath());
-		}
+//		if(StringUtils.isNotBlank(cookieConfig.getPath())){
+		serializer.setCookiePath(cookieConfig.getPath());
+//		}
 		if(StringUtils.isNotBlank(cookieConfig.getDomain())){
 			serializer.setDomainName(cookieConfig.getDomain());
 		}
+		serializer.setCookieName(cookieConfig.getName());
 		return serializer;
 	}
 

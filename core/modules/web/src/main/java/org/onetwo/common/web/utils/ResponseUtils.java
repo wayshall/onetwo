@@ -94,7 +94,7 @@ abstract public class ResponseUtils {
 	 * @param domain
 	 */
 	public static void setHttpOnlyCookie(HttpServletResponse response, String name, String value, String path, int maxage, String domain) {
-		Assert.hasLength(name);
+		Assert.hasLength(name, "cookies name must has text");
 		if (StringUtils.isBlank(value))
 			value = "";
 
@@ -104,7 +104,8 @@ abstract public class ResponseUtils {
 		cookie.append("=");
 		cookie.append(Escape.escape(value));
 
-		if (StringUtils.isBlank(path)) {
+//		if (StringUtils.isBlank(path)) {
+		if (path==null) {
 			path = "/";
 		}
 		cookie.append("; path=").append(path);

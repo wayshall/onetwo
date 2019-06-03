@@ -27,6 +27,7 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 	private CaptchaChecker captchaChecker;
 	private String captchaParameterName = PARAMS_VERIFY_CODE;
 	private String captchaCookieName = COOKIES_VERIFY_CODE;
+	private String cookiePath;
 	
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -49,6 +50,7 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 	protected void check(String validCode){
 		String captchaValue = getCookieValue(request, captchaCookieName);
 		if(!captchaChecker.check(validCode.toLowerCase(), captchaValue)){
+			this.removeCookie();
 			throw new CaptchaAuthenticationException("验证码失效或错误！");
 //			throw new ServiceException("验证码失效或错误！");
 		}
@@ -81,8 +83,15 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 		Cookie cookie = new Cookie(captchaCookieName, null);
 		cookie.setMaxAge(0);
 		cookie.setSecure(request.isSecure());
-		cookie.setPath(request.getContextPath());
+		cookie.setPath(getCookiePath(request));
 		response.addCookie(cookie);
+	}
+	
+	protected String getCookiePath(HttpServletRequest request) {
+		if (cookiePath==null) {
+			return request.getContextPath();
+		}
+		return cookiePath;
 	}
 
 	public void setCaptchaParameterName(String captchaParameterName) {
@@ -95,6 +104,10 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 
 	public void setCaptchaChecker(CaptchaChecker captchaChecker) {
 		this.captchaChecker = captchaChecker;
+	}
+
+	public void setCookiePath(String cookiePath) {
+		this.cookiePath = cookiePath;
 	}
 	
 }
