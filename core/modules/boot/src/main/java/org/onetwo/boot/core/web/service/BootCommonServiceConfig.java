@@ -59,6 +59,7 @@ public class BootCommonServiceConfig {
 	public BootCommonService bootCommonService(){
 		SimpleBootCommonService service = new SimpleBootCommonService();
 		service.setCompressThresholdSize(bootSiteConfig.getUpload().getCompressImage().getThresholdSize());
+		service.setFileStoreBaseDir(bootSiteConfig.getUpload().getFileStorePath());
 		return service;
 	}
 	
