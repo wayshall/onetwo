@@ -3,6 +3,9 @@
 <!-- https://logback.qos.ch/manual/configuration.html -->
 
 <included>
+    <!-- spring boot loggin logback : base.xml -->
+    <property name="LOG_PATH" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}"/>
+    
     <if condition='isDefined("app.log.dir")'>
         <then>
             <property name="LOG_PATH" value="${app.log.dir}"></property>
