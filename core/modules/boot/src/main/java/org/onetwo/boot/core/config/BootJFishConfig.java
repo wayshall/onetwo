@@ -11,6 +11,7 @@ import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import lombok.Data;
@@ -66,7 +67,7 @@ public class BootJFishConfig {
 	
 	private boolean profile;
 	private boolean logErrorDetail;
-	List<String> notifyThrowables;
+	List<String> notifyThrowables = Lists.newArrayList("com.mysql.jdbc.MysqlDataTruncation", "SQLException");
 
 	private String errorView = "error";
 	

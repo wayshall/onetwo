@@ -6,13 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
-import org.onetwo.boot.core.web.utils.BootWebHelper;
-import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.DataResults;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -53,6 +49,10 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	@Override
 	public void afterPropertiesSet() throws Exception {
 //		this.notifyThrowables = this.bootJFishConfig.getNotifyThrowables();
+	}
+	
+	public Logger getErrorLogger() {
+		return JFishLoggerFactory.findErrorLogger(logger);
 	}
 
 	@ExceptionHandler({
@@ -98,23 +98,8 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 
 	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
-		String msg = "";
-		Object handlerMethod = null;
-		if(request!=null){
-			BootWebHelper helper = BootWebUtils.webHelper(request);
-			msg = RequestUtils.getServletPath(request);
-			handlerMethod = helper.getControllerHandler();
-		}
-		Exception ex = errorMessage.getException();
-		errorMessage.logErrorContext(logger);
-		boolean printDetail = errorMessage.isDetail();
-		if(printDetail){
-			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
-			logger.error(msg, ex);
-		}else{
-			logger.error(msg + "[{}] error: code[{}], message[{}]", handlerMethod, LangUtils.getBaseExceptonCode(ex), ex.getMessage());
-		}
-		JFishLoggerFactory.mailLog(this.bootJFishConfig.getNotifyThrowables(), ex, msg);
+		errorMessage.setNotifyThrowables(bootJFishConfig.getNotifyThrowables());
+		logError(request, errorMessage);
 	}
 
 	@Override

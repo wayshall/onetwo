@@ -2,17 +2,20 @@ package org.onetwo.boot.core.web.mvc.exception;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.RemoteClientUtils;
 import org.onetwo.boot.utils.BootUtils;
@@ -28,6 +31,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.dbm.exception.DbmException;
@@ -38,6 +42,9 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.HandlerMethod;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /****
  * TODO: 这里可以修改为非ExceptionCodeMark异常（即没有异常代码）可以根据异常获取映射的错误代码或ErrorType，
@@ -52,6 +59,31 @@ public interface ExceptionMessageFinder {
 	public String ERROR_JSERVICE_HEADER = "X-Response-JService";
 	
 
+	default Logger getErrorLogger() {
+		return JFishLoggerFactory.findErrorLogger();
+	}
+	
+	default void logError(HttpServletRequest request, ErrorMessage errorMessage){
+		Logger logger = getErrorLogger();
+		String msg = "";
+		Object handlerMethod = null;
+		if(request!=null){
+			BootWebHelper helper = BootWebUtils.webHelper(request);
+			msg = RequestUtils.getServletPath(request);
+			handlerMethod = helper.getControllerHandler();
+		}
+		Exception ex = errorMessage.getException();
+		errorMessage.logErrorContext(logger);
+		boolean printDetail = errorMessage.isDetail();
+		if(printDetail){
+			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
+			logger.error(msg, ex);
+		}else{
+			logger.error(msg + "[{}] error: code[{}], message[{}]", handlerMethod, LangUtils.getBaseExceptonCode(ex), ex.getMessage());
+		}
+		JFishLoggerFactory.mailLog(errorMessage.getNotifyThrowables(), ex, msg);
+	}
+	
 	default ErrorMessage getErrorMessage(Exception throwable, boolean alwaysLogErrorDetail){
 		String errorCode = "";
 		String errorMsg = "";
@@ -140,7 +172,7 @@ public interface ExceptionMessageFinder {
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		} else if(ex instanceof IllegalArgumentException){
 			findMsgByCode = false;
-			detail = false;
+			detail = true;
 			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
 		} else{
@@ -290,6 +322,10 @@ public interface ExceptionMessageFinder {
 		private String viewName;
 		
 		final private Exception exception;
+		
+		@Setter
+		@Getter
+		private List<String> notifyThrowables;
 		
 		
 		public ErrorMessage(Exception throwable) {

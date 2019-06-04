@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
-import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -195,23 +194,19 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	}
 
 	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
-		BootWebHelper helper = BootWebUtils.webHelper(request);
-		String msg = RequestUtils.getServletPath(request);
-		Exception ex = errorMessage.getException();
-		errorMessage.logErrorContext(logger);
-		if(errorMessage.isDetail()){
-			msg += " ["+helper.getControllerHandler()+"] error: " + ex.getMessage();
-			logger.error(msg, ex);
-		}else{
-			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
-		}
-		JFishLoggerFactory.mailLog(bootJFishConfig.getNotifyThrowables(), ex, msg);
+		errorMessage.setNotifyThrowables(bootJFishConfig.getNotifyThrowables());
+		logError(request, errorMessage);
 	}
 
 	@Override
 	public ExceptionMessageAccessor getExceptionMessageAccessor() {
 		return this.exceptionMessageAccessor;
 	}
+
+	public Logger getErrorLogger() {
+		return JFishLoggerFactory.findErrorLogger(logger);
+	}
+	
 	/*@Deprecated
 	private String findInSiteConfig(Exception ex){
 		Class<?> eclass = ex.getClass();

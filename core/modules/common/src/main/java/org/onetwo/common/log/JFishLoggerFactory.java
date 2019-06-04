@@ -17,10 +17,12 @@ import ch.qos.logback.classic.LoggerContext;
 public class JFishLoggerFactory {
 	
 	private static final String MAIL_LOGGER = "mailLogger";
+	private static final String ERROR_LOGGER = "errorLogger";
 	
 	public static final String COMMON_LOGGER_NAME = "org.onetwo.common.log.CommonLog";
 	
 	private static Logger mailLogger = null;
+	private static Logger errorLogger = null;
 	
 	public static Logger getCommonLogger(){
 		return getLogger(COMMON_LOGGER_NAME);
@@ -54,6 +56,22 @@ public class JFishLoggerFactory {
 				logger = NOPLogger.NOP_LOGGER;
 			}
 			mailLogger = logger;
+		}
+		return logger;
+	}
+
+	public static Logger findErrorLogger(){
+		return findErrorLogger(NOPLogger.NOP_LOGGER);
+	}
+	
+	public static Logger findErrorLogger(Logger def){
+		Logger logger = errorLogger;
+		if (logger == null) {
+			logger = findLogger(ERROR_LOGGER);
+			if (logger == null) {
+				logger = def;
+			}
+			errorLogger = logger;
 		}
 		return logger;
 	}
