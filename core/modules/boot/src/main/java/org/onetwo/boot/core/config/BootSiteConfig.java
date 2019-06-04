@@ -274,7 +274,13 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		//超过了配置值就启用自动压缩功能，比如：5KB
 		//少于0则一律不压缩
 		String thresholdSize;
+		/***
+		 * 缩放，0到无穷大（不包含)
+		 */
 		Double scale;
+		/***
+		 * 压缩质量0到1
+		 */
 		Double quality;
 		Integer width;
 		Integer height;
