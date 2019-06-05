@@ -11,11 +11,6 @@
             <property name="LOG_PATH" value="${app.log.dir}"></property>
         </then>
     </if>
-    <if condition='!isDefined("LOG_PATH")'>
-        <then>
-            <property name="LOG_PATH" value="./logs"></property>
-        </then>
-    </if>
     <include resource="org/onetwo/boot/core/web/mvc/log/fileLogger.xml"/>
     
     <jmxConfigurator/>
