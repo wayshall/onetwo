@@ -8,9 +8,12 @@ package org.onetwo.common.utils;
 public class PageRequest {
 	protected int page = 1;
 	protected int pageSize = Page.getDefaultPageSize();
+	private boolean pagination = true;
 	
 	public <E> Page<E> toPageObject(){
-		return Page.create(page, pageSize);
+		Page<E> pageObject = Page.create(page, pageSize);
+		pageObject.setPagination(pagination);
+		return pageObject;
 	}
 
 	public int getPage() {
@@ -27,6 +30,14 @@ public class PageRequest {
 
 	public void setPageSize(int pageSize) {
 		this.pageSize = pageSize;
+	}
+
+	public boolean isPagination() {
+		return pagination;
+	}
+
+	public void setPagination(boolean pagination) {
+		this.pagination = pagination;
 	}
 
 }
