@@ -328,6 +328,12 @@ abstract public class AbstractBaseController {
 		if(user==null && throwIfNotFound){
 			throw new NotLoginException();
 		}
+		if (!clazz.isInstance(user)) {
+			if(throwIfNotFound){
+				throw new NotLoginException();
+			}
+			return null;
+		}
 		return clazz.cast(user);
 	}
 	

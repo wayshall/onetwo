@@ -237,6 +237,7 @@ public class SecurityConfig {
 		private String path;
 		private String domain;
 		private String name = "sid";
+		private boolean fixCookie = true;
 	}
 
 	@Data
