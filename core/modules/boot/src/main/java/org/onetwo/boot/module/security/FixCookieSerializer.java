@@ -16,7 +16,10 @@ public class FixCookieSerializer extends DefaultCookieSerializer {
 
 	public List<String> readCookieValues(HttpServletRequest request) {
 		List<String> sids = super.readCookieValues(request);
-		return Arrays.asList(sids.get(sids.size()-1));
+		if(sids.size()>1) {
+			return Arrays.asList(sids.get(sids.size()-1));
+		}
+		return sids;
 	}
 
 }

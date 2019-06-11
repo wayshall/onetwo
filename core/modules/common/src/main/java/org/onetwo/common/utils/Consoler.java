@@ -28,13 +28,19 @@ public class Consoler {
 		this.consoleReader = consoleReader;
 	}
 	
-	public void waitIf(String in, ConsoleAction action){
+	public Consoler waitIf(String in, ConsoleAction action){
+		return waitIf(in, ":", action);
+	}
+	
+	public Consoler waitIf(String in, String cmdSplitor, ConsoleAction action){
 		try {
 			String input = null;
 			while((input = consoleReader.readLine())!=null){
-				if(input.equals(in)){
-					System.out.println("execute command: " + input);
-					action.execute(input);
+				String[] cmds = GuavaUtils.split(input, cmdSplitor);
+				if(cmds[0].equals(in)){
+					System.out.println("execute command: " + cmds[0]);
+					String value = cmds.length==1?cmds[0]:cmds[1];
+					action.execute(value);
 				}else{
 					System.out.println("no match command: " + input);
 				}
@@ -42,10 +48,12 @@ public class Consoler {
 		} catch (IOException e) {
 			LangUtils.throwBaseException("console error: " + e.getMessage());
 		}
+		return this;
 	}
 	
-	public void exitIf(String in){
+	public Consoler exitIf(String in){
 		waitIf(in, new ExitAction());
+		return this;
 	}
 
 }

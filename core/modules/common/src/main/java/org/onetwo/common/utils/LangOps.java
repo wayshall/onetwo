@@ -201,6 +201,9 @@ final public class LangOps {
 	public static long timeToMills(String time, long def) {
 		return parseTime(time, def, (duration, timeUnit)->timeUnit.toMillis(duration));
 	}
+	public static long timeToMinutes(String time, long def) {
+		return parseTime(time, def, (duration, timeUnit)->timeUnit.toMinutes(duration));
+	}
 	public static long parseTime(String time, long def, BiFunction<Integer, TimeUnit, Long> convert) {
 		if(StringUtils.isBlank(time)){
 			return def;

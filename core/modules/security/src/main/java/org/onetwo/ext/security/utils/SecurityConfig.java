@@ -4,10 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.Springs;
@@ -16,10 +12,13 @@ import org.onetwo.ext.security.jwt.JwtAuthStores;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 
-import redis.clients.jedis.JedisPoolConfig;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import redis.clients.jedis.JedisPoolConfig;
 
 
 /***
@@ -237,7 +236,7 @@ public class SecurityConfig {
 		private String path;
 		private String domain;
 		private String name = "sid";
-		private boolean fixCookie = true;
+		private boolean fixCookie = false;
 	}
 
 	@Data

@@ -120,9 +120,9 @@ public class SimpleExpression implements Expression {
 		return ctx;
 	}
 	
-	/*public String parse(ValueProvider provider) {
-		return parse(this.text, provider);
-	}*/
+	public String parse(String text, ValueProvider provider) {
+		return parseByProvider(text, provider);
+	}
 
 	public String parseByProvider(String text, Object provider){
 		return parseWithContextByProvider(text, provider).result;
