@@ -27,13 +27,7 @@ public class FixSpringSessionCookieSerializerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(CookieSerializer.class)
 	public CookieSerializer cookieSerializer(){
-//		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-		DefaultCookieSerializer serializer;
-		if (securityConfig.getCookie().isFixCookie()) {
-			serializer = new FixCookieSerializer();
-		} else {
-			serializer = new DefaultCookieSerializer();
-		}
+		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
 		CookieConfig cookieConfig = securityConfig.getCookie();
 //		if(StringUtils.isNotBlank(cookieConfig.getPath())){
 		serializer.setCookiePath(cookieConfig.getPath());

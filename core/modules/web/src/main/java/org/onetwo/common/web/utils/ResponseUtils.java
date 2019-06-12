@@ -171,6 +171,19 @@ abstract public class ResponseUtils {
 		}
 		response.addCookie(ck);
 	}
+	
+	public static void removeCookie(HttpServletRequest request, HttpServletResponse response, String name) { 
+		Cookie[] cookies = request.getCookies(); 
+		if(cookies==null) {
+			return ; 
+		}
+		for(Cookie ck : cookies) { 
+			if(name.equals(ck.getName())) { 
+				ck.setMaxAge(0);
+				response.addCookie(ck); 
+			} 
+		} 
+	}
 
 	public static void renderScript(PrintWriter out, String content) {
 		renderScript(true, out, content);
