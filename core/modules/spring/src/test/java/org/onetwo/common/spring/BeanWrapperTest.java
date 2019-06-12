@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.spring.entity.RoleEntity;
 import org.onetwo.common.spring.entity.UserEntity;
 import org.onetwo.common.utils.LangUtils;
@@ -61,6 +62,8 @@ public class BeanWrapperTest {
 //		bw = PropertyAccessorFactory.forBeanPropertyAccess(user);
 		bw = new JFishBeanWrapper(user);
 		bw.setAutoGrowNestedPaths(true);
+		
+		bw.setPropertyValue("birthDay", DateUtils.parseByPatterns("2018/07/01", "yyyy/MM/dd"));
 		
 		bw.setPropertyValue("id", "11");
 		Assert.assertTrue(user.getId()==11L);

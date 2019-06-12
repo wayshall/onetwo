@@ -14,6 +14,8 @@ import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.jwt.JwtUserDetail;
+import org.onetwo.boot.core.jwt.JwtUtils;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.common.data.AbstractDataResult;
@@ -327,6 +329,10 @@ abstract public class AbstractBaseController {
 		}
 		if(user==null && throwIfNotFound){
 			throw new NotLoginException();
+		}
+		if (!clazz.isInterface() && user instanceof JwtUserDetail) {
+			T targetUser = JwtUtils.createUserDetail((JwtUserDetail)user, clazz);
+			return targetUser;
 		}
 		if (!clazz.isInstance(user)) {
 			if(throwIfNotFound){
