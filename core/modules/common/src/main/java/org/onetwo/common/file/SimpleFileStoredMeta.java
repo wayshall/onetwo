@@ -11,6 +11,8 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 	private String originalFilename;
 	private String bizModule;
 	
+	private String baseUrl;
+	
 	public SimpleFileStoredMeta(String originalFilename, String storedServerLocalPath) {
 		super();
 		this.originalFilename = originalFilename;
@@ -67,11 +69,20 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 		this.accessablePath = accessablePath;
 	}
 
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "SimpleFileStoredMeta [accessablePath=" + accessablePath + ", fullAccessablePath=" + fullAccessablePath
 				+ ", storedServerLocalPath=" + storedServerLocalPath + ", sotredFileName=" + sotredFileName
-				+ ", originalFilename=" + originalFilename + ", bizModule=" + bizModule + "]";
+				+ ", originalFilename=" + originalFilename + ", bizModule=" + bizModule + ", baseUrl=" + baseUrl + "]";
 	}
+
 
 }

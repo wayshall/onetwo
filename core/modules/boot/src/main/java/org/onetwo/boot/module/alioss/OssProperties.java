@@ -1,11 +1,11 @@
 package org.onetwo.boot.module.alioss;
 
-import lombok.Data;
-
-import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.aliyun.oss.ClientConfiguration;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -14,6 +14,7 @@ import com.aliyun.oss.ClientConfiguration;
 @ConfigurationProperties("jfish.alioss")
 @Data
 public class OssProperties {
+	String downloadEndPoint;
 	String endpoint;
     String accessKeyId;
     String accessKeySecret;
@@ -23,10 +24,16 @@ public class OssProperties {
 	ClientConfiguration client = new ClientConfiguration();
 	
 	public String getUrl(String key){
-		String url = RequestUtils.HTTP_KEY + bucketName + "." + endpoint + "/" + key;
+		String url = buildUrl(false, getDownloadEndPoint(), bucketName, key); //RequestUtils.HTTP_KEY + bucketName + "." + endpoint + "/" + key;
 		return url;
 	}
 	
+	public String getDownloadEndPoint() {
+		if (StringUtils.isNotBlank(downloadEndPoint)) {
+			return downloadEndPoint;
+		}
+		return endpoint;
+	}
 
 	public static String buildUrl(boolean https, String endpoint, String bucketName, String key){
 		StringBuilder url = new StringBuilder(https?"https":"http");

@@ -51,6 +51,7 @@ public class CosFileStore implements FileStorer, InitializingBean {
 		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
 		if(strategy==null){
 			SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), accessablePath);
+			meta.setBaseUrl(cosProperties.getDownloadEndPoint());
 			meta.setSotredFileName(key);
 			meta.setAccessablePath(accessablePath);
 			meta.setFullAccessablePath(cosProperties.getDownloadUrl(key));

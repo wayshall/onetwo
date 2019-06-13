@@ -51,6 +51,7 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
 		if(strategy==null){
 			SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), key);
+			meta.setBaseUrl(ossProperties.getDownloadEndPoint());
 			meta.setSotredFileName(key);
 			meta.setAccessablePath(accessablePath);
 			meta.setFullAccessablePath(ossProperties.getUrl(key));

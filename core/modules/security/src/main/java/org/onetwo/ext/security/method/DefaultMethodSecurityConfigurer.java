@@ -143,6 +143,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		CsrfConfigurer<HttpSecurity> csrf = http.csrf();
 		if(securityConfig.getCsrf().isDisable()){
 			csrf.disable();
+			http.headers().frameOptions().disable();
 			return ;
 		}
 		if(ArrayUtils.isNotEmpty(securityConfig.getCsrf().getIgnoringPaths())){

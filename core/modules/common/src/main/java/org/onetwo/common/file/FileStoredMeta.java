@@ -4,6 +4,13 @@ package org.onetwo.common.file;
 public interface FileStoredMeta {
 	
 	/***
+	 * 基础路径
+	 * @author weishao zeng
+	 * @return
+	 */
+	String getBaseUrl();
+	
+	/***
 	 * 上传成功后客户端应该保存此路径到数据库
 	 * accessable path，exclude host: /aa/bb/cc.jpg
 	 * @author wayshall
