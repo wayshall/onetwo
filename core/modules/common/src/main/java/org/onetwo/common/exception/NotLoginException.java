@@ -14,11 +14,11 @@ public class NotLoginException extends AuthenticationException {
 	}
 
 	public NotLoginException(String message, String code) {
-		super(DEFAULT_MESSAGE+message, code);
+		super(message, code);
 	}
 
 	public NotLoginException(String message) {
-		super(DEFAULT_MESSAGE+message);
+		super(message);
 	}
 
 	public NotLoginException(Throwable cause) {
@@ -26,7 +26,7 @@ public class NotLoginException extends AuthenticationException {
 	}
 
 	public NotLoginException(String message, Throwable cause) {
-		super(DEFAULT_MESSAGE+message, cause);
+		super(message, cause);
 	}
 	public NotLoginException(ErrorType exceptionType) {
 		super(exceptionType);
