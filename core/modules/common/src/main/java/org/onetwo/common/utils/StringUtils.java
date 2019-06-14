@@ -205,6 +205,42 @@ public abstract class StringUtils {
 		}
 		return newStr.toString();
 	}
+	
+	/***
+	 * 不把本身大写转为小写
+	 * @author weishao zeng
+	 * @param str
+	 * @param op
+	 * @param isFirstUpper
+	 * @return
+	 */
+	public static String toCamelWithoutConvert2LowerCase(String str, char op, boolean isFirstUpper) {
+		if (str.indexOf(op) == -1) {
+//			str = str.toLowerCase();
+			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
+				return str.substring(0, 1).toUpperCase() + str.substring(1);
+			} else {
+				return str;
+			}
+		}
+		char[] chars = str.toCharArray();
+		StringBuilder newStr = new StringBuilder();
+		boolean needUpper = isFirstUpper;
+		for (int i = 0; i < chars.length; i++) {
+//			char c = Character.toLowerCase(chars[i]);
+			char c = chars[i];
+			if (needUpper) {
+				c = Character.toUpperCase(c);
+				needUpper = false;
+			}
+			if (c == op) {
+				needUpper = true;
+				continue;
+			}
+			newStr.append(c);
+		}
+		return newStr.toString();
+	}
 
 	public static boolean hasUpper(String str) {
 		char[] chars = str.toCharArray();
