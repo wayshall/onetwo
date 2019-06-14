@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
@@ -87,9 +88,27 @@ final public class LangOps {
 						.collect(Collectors.toList());
 	}
 	
-	public static void timeIt(String tag, Closure closure){
-		
+	public static <T> void splitTaskAndConsume(List<T> taskList, int taskSize, Consumer<List<T>> subTaskDataConsumer, boolean parallel) {
+		splitTaskAndConsume(taskList, taskSize, (subTasks, taskIndex) -> {
+			subTaskDataConsumer.accept(subTasks);
+		}, parallel);
 	}
+	
+	public static <T> void splitTaskAndConsume(List<T> taskList, int taskSize, BiConsumer<List<T>, Integer> subTaskDataConsumer) {
+		splitTaskAndConsume(taskList, taskSize, subTaskDataConsumer, false);
+	}
+	public static <T> void splitTaskAndConsume(List<T> taskList, int taskSize, BiConsumer<List<T>, Integer> subTaskDataConsumer, boolean parallel) {
+		long maxSize = taskList.size()%taskSize==0?taskList.size()/taskSize:(taskList.size()/taskSize+1);
+		Stream<Integer> stream = Stream.iterate(0, t -> t+1).limit(maxSize);
+		if (parallel) {
+			stream = stream.parallel();	
+		}
+		stream.forEach(taskIndex -> {
+			List<T> subTaskDatas = taskList.stream().skip(taskIndex * taskSize).limit(taskSize).collect(Collectors.toList());
+			subTaskDataConsumer.accept(subTaskDatas, taskIndex);
+		});
+	}
+	
 	public static void timeIt(String tag, Integer times, Closure closure){
 		TimeCounter tc = new TimeCounter(tag);
 		tc.start();

@@ -52,6 +52,29 @@ public class Java78Test {
 	}
 	
 	@Test
+	public void testSplitList() {
+		List<UserEntity> userList = LangOps.generateList(678, i-> createUser("testUserName"+i, i));
+		int taskSize = 100;
+		LangOps.splitTaskAndConsume(userList, taskSize, (subTasks, taskIndex) -> {
+			System.out.println("uses["+taskIndex+"]: " + subTasks.size());
+			if (taskIndex==6) {
+				assertThat(subTasks.size()).isEqualTo(78);
+			} else {
+				assertThat(subTasks.size()).isEqualTo(100);
+			}
+		});
+		userList = LangOps.generateList(77, i-> createUser("testUserName"+i, i));
+		LangOps.splitTaskAndConsume(userList, taskSize, (subTasks, taskIndex) -> {
+			System.out.println("uses["+taskIndex+"]: " + subTasks.size());
+			if (taskIndex==0) {
+				assertThat(subTasks.size()).isEqualTo(77);
+			} else {
+				assertThat(subTasks.size()).isEqualTo(100);
+			}
+		});
+	}
+	
+	@Test
 	public void test() {
 		/*String path = "";
 		try (BufferedReader br = new BufferedReader(new FileReader(path))){
