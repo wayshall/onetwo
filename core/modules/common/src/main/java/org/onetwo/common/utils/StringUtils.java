@@ -180,6 +180,9 @@ public abstract class StringUtils {
 	}
 
 	public static String toCamel(String str, char op, boolean isFirstUpper) {
+		if (str==null || str.length()==0) {
+			return str;
+		}
 		if (str.indexOf(op) == -1) {
 			str = str.toLowerCase();
 			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
@@ -215,6 +218,9 @@ public abstract class StringUtils {
 	 * @return
 	 */
 	public static String toCamelWithoutConvert2LowerCase(String str, char op, boolean isFirstUpper) {
+		if (str==null || str.length()==0) {
+			return str;
+		}
 		if (str.indexOf(op) == -1) {
 //			str = str.toLowerCase();
 			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
