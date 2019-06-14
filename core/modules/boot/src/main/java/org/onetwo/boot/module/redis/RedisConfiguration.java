@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,8 +25,8 @@ public class RedisConfiguration {
 	
 //	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";
 
-    @Autowired
-    private ApplicationContext applicationContext;
+//    @Autowired
+//    private ApplicationContext applicationContext;
     @Autowired
     private JFishRedisProperties redisProperties;
     
@@ -89,7 +88,9 @@ public class RedisConfiguration {
 	
 	@Bean
 	public RedisOperationService redisOperationService(){
-		return new SimpleRedisOperationService();
+		SimpleRedisOperationService op = new SimpleRedisOperationService();
+		op.setCacheKeyPrefix(redisProperties.getCacheKeyPrefix());
+		return op;
 	}
 	
 	@Bean

@@ -32,6 +32,8 @@ public class JFishRedisProperties {
 	OnceTokenProperties onceToken = new OnceTokenProperties();
 	LockRegistryProperties lockRegistry = new LockRegistryProperties();
 	
+	String cacheKeyPrefix = RedisOperationService.DEFAUTL_CACHE_PREFIX;
+	
 	/*public String getHostName() {
 		return hostName;
 	}*/

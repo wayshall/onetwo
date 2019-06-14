@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * <br/>
  */
 public interface RedisOperationService {
+	String DEFAUTL_CACHE_PREFIX = "ZIFISH:CACHE";
 
 	RedisLockRunner getRedisLockRunnerByKey(String key);
 

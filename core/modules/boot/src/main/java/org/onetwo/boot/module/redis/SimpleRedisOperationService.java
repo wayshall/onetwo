@@ -42,7 +42,7 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
     private StringRedisTemplate stringRedisTemplate;
 	@Autowired
 	private RedisLockRegistry redisLockRegistry;
-	private String cacheKeyPrefix = "ZIFISH:CACHE:";
+	private String cacheKeyPrefix = DEFAUTL_CACHE_PREFIX;
 	private String lockerKey = LOCK_KEY;
 	@Setter
     private long waitLockInSeconds = 60;
@@ -269,6 +269,14 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	@Override
 	public CacheStatis getCacheStatis() {
 		return cacheStatis;
+	}
+
+	public void setCacheKeyPrefix(String cacheKeyPrefix) {
+		this.cacheKeyPrefix = cacheKeyPrefix;
+	}
+
+	public void setLockerKey(String lockerKey) {
+		this.lockerKey = lockerKey;
 	}
 	
 }
