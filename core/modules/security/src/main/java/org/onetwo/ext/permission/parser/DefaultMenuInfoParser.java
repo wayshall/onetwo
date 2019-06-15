@@ -117,7 +117,7 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 			if(perm==null){
 				return Optional.ofNullable(rootMenu);
 			}
-			perm.setSort(1);
+//			perm.setSort(1);
 		} catch (Exception e) {
 			throw new BaseException("parse tree error: " + e.getMessage(), e);
 		}
@@ -293,14 +293,17 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 	*/
 	@Override
 	public String getCode(Class<?> menuClass){
-		P p = permissionMapByClass.get(menuClass);
+		PermClassParser menuClassParser = getPermClassParser(menuClass);
+//		P p = permissionMapByClass.get(menuClass);
+		Class<?> actualMenuClass = menuClassParser.getActualPermissionClass();
+		P p = permissionMapByClass.get(actualMenuClass);
 		if(p==null){
 			logger.info("root: " + rootMenu);
-			throw new BaseException("no permission found : " + menuClass.getName());
+			throw new BaseException("no permission found : " + actualMenuClass.getName());
 		}
 		String code = p.getCode();
 		if(StringUtils.isBlank(code))
-			throw new BaseException("no permission found : " + menuClass.getName());
+			throw new BaseException("no permission found : " + actualMenuClass.getName());
 		return code;
 	}
 	
