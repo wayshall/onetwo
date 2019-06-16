@@ -135,6 +135,9 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		this.permissionManager.build();
 		for(Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()){
+			/*if (entry.getValue().getBeanType().getName().contains("SysSettingsController")) {
+				System.out.println("test");
+			}*/
 			ByPermissionClass permClassInst = entry.getValue().getMethodAnnotation(ByPermissionClass.class);
 			if(permClassInst==null){
 				continue ;

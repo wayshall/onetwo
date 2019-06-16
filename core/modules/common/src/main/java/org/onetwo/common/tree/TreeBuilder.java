@@ -42,6 +42,31 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		boolean isRootNode(T node, Map<Object, T> nodeMap);
 	}
 	
+
+	public static class ReverseSortComparator<T extends TreeModel<T>> extends SortComparator<T> {
+		public int compare(T o1, T o2) {
+			return -super.compare(o1, o2);
+		}
+	}
+	public static class SortComparator<T extends TreeModel<T>> implements Comparator<T> {
+
+		@Override
+		public int compare(T o1, T o2) {
+			Comparable<Object> s1 = (Comparable<Object>)o1.getSort();
+			Comparable<Object> s2 = (Comparable<Object>)o2.getSort();
+			if(s1==null && s2==null){
+				return 0;
+			}else if(s1==null){
+				return -1;
+			}else if(s2==null){
+				return 1;
+			}else{
+				return s1.compareTo(s2);
+			}
+		}
+		
+	}
+	
 	public static class RootIdsFunc<T extends TreeModel<T>> implements RootNodeFunc<T> {
 		final private List<Object> rootIds;
 		
@@ -59,22 +84,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private Comparator<TM> comparator = new Comparator<TM>() {
-		@Override
-		public int compare(TM o1, TM o2) {
-			Comparable<Object> s1 = (Comparable<Object>)o1.getSort();
-			Comparable<Object> s2 = (Comparable<Object>)o2.getSort();
-			if(s1==null && s2==null){
-				return 0;
-			}else if(s1==null){
-				return -1;
-			}else if(s2==null){
-				return 1;
-			}else{
-				return s1.compareTo(s2);
-			}
-		}
-	};
+	private Comparator<TM> comparator = new SortComparator<>();
 	
 
 	private final ParentNodeNotFoundAction<TM> THROW_ERROR = node->{
@@ -220,7 +230,12 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			}
 		}
 
-//		Collections.sort(tree, this.comparator);
+		Collections.sort(rootNodes, this.comparator);
+		return rootNodes;
+	}
+	
+	public List<TM> reverseRoots() {
+		Collections.reverse(rootNodes);
 		return rootNodes;
 	}
 	
