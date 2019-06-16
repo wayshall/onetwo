@@ -238,7 +238,7 @@ abstract public class DateUtils {
 		Date date = null;
 		for (String p : patterns) {
 			SimpleDateFormat sdf = getDateFormat(p);
-			date = parse(sdf, dateStr);
+			date = parse(sdf, dateStr, false);
 			if (date != null)
 				return date;
 		}
