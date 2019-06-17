@@ -35,10 +35,23 @@ public class AnnotationMetadataHelper {
 		scanner.setClassLoader(classLoader);
 		return scanner;
 	}
+	
+	public static class NoAnnotationMetadataHelper extends AnnotationMetadataHelper {
+		private Set<String> basePackages;
+		public NoAnnotationMetadataHelper(Set<String> basePackages, Class<?> annotationType) {
+			super(null, annotationType);
+			this.basePackages = basePackages;
+		}
+
+		protected Set<String> getBasePackages() {
+			return basePackages;
+		}
+		
+	}
 
 	private final AnnotationMetadata importingClassMetadata;
 //	private final Class<?> annotationType;
-	private final AnnotationAttributes attributes;
+	private AnnotationAttributes attributes;
 	private ResourceLoader resourceLoader;
 	private ClassLoader classLoader;
 	
@@ -47,11 +60,13 @@ public class AnnotationMetadataHelper {
 		this.importingClassMetadata = classMetadata;
 //		this.annotationType = annotationType;
 		
-		AnnotationAttributes attributes = SpringUtils.getAnnotationAttributes(classMetadata, annotationType);
-		if (attributes == null) {
-			throw new IllegalArgumentException(String.format("@%s is not present on importing class '%s' as expected", annotationType.getSimpleName(), classMetadata.getClassName()));
+		if (classMetadata!=null) {
+			AnnotationAttributes attributes = SpringUtils.getAnnotationAttributes(classMetadata, annotationType);
+			if (attributes == null) {
+				throw new IllegalArgumentException(String.format("@%s is not present on importing class '%s' as expected", annotationType.getSimpleName(), classMetadata.getClassName()));
+			}
+			this.attributes = attributes;
 		}
-		this.attributes = attributes;
 	}
 	
 	public List<BeanDefinition> scanBeanDefinitions(Class<? extends Annotation> annoClass, String...extraPackagesToScans){

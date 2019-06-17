@@ -1,9 +1,12 @@
 package org.onetwo.common.utils;
 
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Optional;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 
 public class NetUtils {
@@ -29,6 +32,13 @@ public class NetUtils {
 			return Optional.ofNullable(InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
 			return Optional.empty();
+		}
+	}
+	public static String getHost(String url){
+		try {
+			return new URL(url).getHost();
+		} catch (MalformedURLException e) {
+			throw new BaseException("error url: " + url);
 		}
 	}
 	private NetUtils(){

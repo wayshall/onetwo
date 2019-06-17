@@ -113,6 +113,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private ApiErrorHandler apiErrorHandler;
 	
 	private List<ApiInterceptor> interceptors;
+	/***
+	 * 如果返回了业务错误代码，是否自动抛错
+	 */
+	private boolean autoThrowIfErrorCode = true;
 	
 	public ApiClientMethod(Method method) {
 		super(method);
@@ -169,6 +173,14 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	public List<ApiInterceptor> getInterceptors() {
 		return interceptors;
+	}
+	
+	public boolean isAutoThrowIfErrorCode() {
+		return autoThrowIfErrorCode;
+	}
+	
+	public void setAutoThrowIfErrorCode(boolean autoThrowIfErrorCode) {
+		this.autoThrowIfErrorCode = autoThrowIfErrorCode;
 	}
 
 	/****
