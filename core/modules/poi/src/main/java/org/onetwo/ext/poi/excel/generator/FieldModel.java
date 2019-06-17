@@ -14,6 +14,10 @@ public class FieldModel implements PoiModel {
 	private String name;
 	private String value;
 	private String dataFormat;
+	/***
+	 * CELL_TYPE_ + STRING(dataType) = Cell.CELL_TYPE_STRING
+	 */
+	private String dataType;
 	private String condition;
 	
 	private boolean columnTotal;
@@ -336,6 +340,14 @@ public class FieldModel implements PoiModel {
 
 	public void setUseMergedCells(boolean useMergedCells) {
 		this.useMergedCells = useMergedCells;
+	}
+
+	public String getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
 	}
 
 	
