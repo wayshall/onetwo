@@ -283,7 +283,9 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
 			context.setRequestUrl(actualUrl);
 
-			context.doWithHeaderCallback(headers->{
+			//根据consumers 设置header，以指定messageConvertor
+			//写成callback以复用
+			context.headerCallback(headers->{
 				if (!invokeMethod.getAcceptHeaders().isEmpty()) {
 					headers.set(ACCEPT, StringUtils.join(invokeMethod.getAcceptHeaders(), ","));
 				}
@@ -304,10 +306,17 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				//回调
 				invokeMethod.getApiHeaderCallback(args)
 							.ifPresent(c->c.onHeader(headers));
-			})
-			.requestBodySupplier(ctx->{
-				return invokeMethod.getRequestBody(args);
 			});
+			// 立即回调一次
+			context.acceptHeaderCallback();
+			
+			if (RestUtils.isRequestBodySupportedMethod(context.getHttpMethod())) {
+				Object requestBody = invokeMethod.getRequestBody(args);
+				context.setRequestBody(requestBody);
+			}
+			/*context.requestBodySupplier(ctx->{
+				return invokeMethod.getRequestBody(args);
+			});*/
 			
 			return context;
 		}

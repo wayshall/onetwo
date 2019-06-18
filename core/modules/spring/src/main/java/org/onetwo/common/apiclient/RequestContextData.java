@@ -25,7 +25,8 @@ public class RequestContextData {
 	@Getter
 	final private Map<String, ?> queryParameters;
 	private Consumer<HttpHeaders> headerCallback;
-	private RequestBodySupplier requestBodySupplier;
+//	private RequestBodySupplier requestBodySupplier;
+	private Object requestBody;
 	
 	private Object[] methodArgs;
 	
@@ -36,6 +37,8 @@ public class RequestContextData {
 	private int invokeCount = 0;
 	@Getter
 	final protected int maxRetryCount;
+	
+	private HttpHeaders headers = new HttpHeaders();
 	
 	@Builder
 	public RequestContextData(String requestId, RequestMethod requestMethod, 
@@ -80,29 +83,44 @@ public class RequestContextData {
 		return uriVariables;
 	}
 	
-	public RequestBodySupplier getRequestBodySupplier() {
+	/*public RequestBodySupplier getRequestBodySupplier() {
 		return requestBodySupplier;
 	}
 
 	public RequestContextData requestBodySupplier(RequestBodySupplier requestBodySupplier) {
 		this.requestBodySupplier = requestBodySupplier;
 		return this;
-	}
+	}*/
+	
 
-	/*public Object getRequestBody() {
+	public Object getRequestBody() {
 		return requestBody;
 	}
 	public void setRequestBody(Object requestBody) {
 		this.requestBody = requestBody;
-	}*/
-	public RequestContextData doWithHeaderCallback(Consumer<HttpHeaders> headerCallback) {
+	}
+	public RequestContextData headerCallback(Consumer<HttpHeaders> headerCallback) {
 		this.headerCallback = headerCallback;
 		return this;
 	}
-	public Consumer<HttpHeaders> getHeaderCallback() {
+	/*public Consumer<HttpHeaders> getHeaderCallback() {
 		return headerCallback;
+	}*/
+	public boolean hasHeaderCallback() {
+		return headerCallback!=null;
 	}
 
+	public void acceptHeaderCallback() {
+		acceptHeaderCallback(headers);
+	}
+	public void acceptHeaderCallback(HttpHeaders headers) {
+		if (this.headerCallback!=null) {
+			this.headerCallback.accept(headers);
+		} else {
+			// log no header callback
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "RequestContextData [httpMethod=" + httpMethod
@@ -129,6 +147,10 @@ public class RequestContextData {
 
 	public ApiClientMethod getInvokeMethod() {
 		return invokeMethod;
+	}
+
+	public HttpHeaders getHeaders() {
+		return headers;
 	}
 
 }

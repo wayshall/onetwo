@@ -7,7 +7,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
@@ -135,25 +134,27 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		RequestCallback rc = null;
 		HttpMethod method = context.getHttpMethod();
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = null;
-		HttpHeaders headers = null;
+		HttpHeaders headers = context.getHeaders();
 		HttpEntity<?> requestEntity = null;
 		
 		if(method==HttpMethod.GET) {
 //				rc = super.acceptHeaderRequestCallback(context.getResponseType());
 //				responseExtractor = responseEntityExtractor(context.getResponseType());
 			//根据consumers 设置header，以指定messageConvertor
-			headers = new HttpHeaders();
-			context.getHeaderCallback().accept(headers);
+//			headers = new HttpHeaders();
+//			context.acceptHeaderCallback(headers);
 			requestEntity = new HttpEntity<>(headers);
 			
 			rc = super.httpEntityCallback(requestEntity, context.getResponseType());
 			responseExtractor = responseEntityExtractor(context.getResponseType());
 		}else if(RestUtils.isRequestBodySupportedMethod(method)){
-			headers = new HttpHeaders();
-			context.getHeaderCallback().accept(headers);
+//			headers = new HttpHeaders();
 			//根据consumers 设置header，以指定messageConvertor
+//			context.acceptHeaderCallback(headers);
+			
 //			Object requestBody = context.getRequestBodySupplier().get();
-			Object requestBody = context.getRequestBodySupplier().getRequestBody(context);
+//			Object requestBody = context.getRequestBodySupplier().getRequestBody(context);
+			Object requestBody = context.getRequestBody();
 			logData(requestBody);
 			requestEntity = new HttpEntity<>(requestBody, headers);
 			
@@ -162,7 +163,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		}else{
 			throw new RestClientException("unsupported method: " + method);
 		}
-		if(context.getHeaderCallback()!=null){
+		if(context.hasHeaderCallback()){
 			rc = wrapRequestCallback(context, rc);
 		}
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
@@ -225,20 +226,21 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 
 	protected static class ProcessHeaderRequestCallback implements RequestCallback {
 		private final RequestCallback acceptHeaderRequestCallback;
-		private final Consumer<HttpHeaders> callback;
+//		private final Consumer<HttpHeaders> callback;
 		private RequestContextData context;
 
 		public ProcessHeaderRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
 			super();
 			this.acceptHeaderRequestCallback = acceptHeaderRequestCallback;
 			this.context = context;
-			this.callback = context.getHeaderCallback();
+//			this.callback = context.getHeaderCallback();
 		}
 
 		@Override
 		public void doWithRequest(ClientHttpRequest request) throws IOException {
 			//再次回调header callback，此时为实际请求的header，前一次调用为匹配messageConverter
-			this.callback.accept(request.getHeaders());
+//			this.callback.accept(request.getHeaders());
+			this.context.acceptHeaderCallback(request.getHeaders());
 			/*if(ReflectUtils.getFieldsAsMap(acceptHeaderRequestCallback.getClass()).containsKey("requestEntity")){
 				HttpEntity<?> requestEntity = (HttpEntity<?>) ReflectUtils.getFieldValue(acceptHeaderRequestCallback, "requestEntity");
 				if(requestEntity!=null){
