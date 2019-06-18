@@ -27,6 +27,10 @@ public interface CustomResponseHandler<T> /*extends ApiErrorHandler*/ {
 	 * @author wayshall
 	 * @return
 	 */
+	default Class<T> getResponseType(ApiClientMethod apiMethod) {
+		return getResponseType();
+	}
+	
 	@SuppressWarnings("unchecked")
 	default Class<T> getResponseType() {
 		Class<T> type = (Class<T>)TypeResolver.resolveRawArgument(CustomResponseHandler.class, getClass());

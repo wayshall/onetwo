@@ -87,6 +87,9 @@ public class SimpleApiClientResponseHandler<M extends ApiClientMethod, R extends
 	}
 	
 	public Object handleResponseMap(Map<String, ?> map, Class<?> responseType) {
+		if (Map.class.isAssignableFrom(responseType)) {
+			return map;
+		}
 		Object response = map2Bean(map, responseType);
 		if (response instanceof ApiCustomizeMappingField) {
 			ApiCustomizeMappingField customRes = (ApiCustomizeMappingField) response;

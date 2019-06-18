@@ -194,6 +194,10 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 
 			RequestContextData context = createRequestContextData(invocation, args, invokeMethod);
 			ApiInterceptorChain chain = new ApiInterceptorChain(invokeMethod.getInterceptors(), context, () -> {
+				if (RestUtils.isRequestBodySupportedMethod(context.getHttpMethod())) {
+					Object requestBody = invokeMethod.getRequestBody(args);
+					context.setRequestBody(requestBody);
+				}
 				return this.actualInvoke0(invokeMethod, context);
 			});
 			return chain.invoke();
@@ -215,7 +219,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				CustomResponseHandler<?> customHandler = invokeMethod.getCustomResponseHandler();
 				if(customHandler!=null){
 //					errorHanlder = customHandler;
-					context.setResponseType(customHandler.getResponseType());
+					context.setResponseType(customHandler.getResponseType(invokeMethod));
 					ResponseEntity responseEntity = invokeRestExector(context);
 					response = customHandler.handleResponse(invokeMethod, responseEntity);
 				}else{
@@ -309,11 +313,11 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			});
 			// 立即回调一次
 			context.acceptHeaderCallback();
-			
+			/*
 			if (RestUtils.isRequestBodySupportedMethod(context.getHttpMethod())) {
 				Object requestBody = invokeMethod.getRequestBody(args);
 				context.setRequestBody(requestBody);
-			}
+			}*/
 			/*context.requestBodySupplier(ctx->{
 				return invokeMethod.getRequestBody(args);
 			});*/
