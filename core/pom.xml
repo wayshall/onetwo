@@ -1,0 +1,226 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.onetwo4j</groupId>
+  <artifactId>onetwo-modules</artifactId>
+  <version>4.7.3-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>onetwo-modules</name>
+  <description>onetwo-modules</description>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+   <scm>
+       <url>https://github.com/wayshall/onetwo</url>
+       <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
+       <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
+       <tag>onetwo-modules-4.7.2</tag>
+   </scm>
+  <licenses>
+    <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+        <name>zeng weishao</name>
+        <email>weishao.zeng@gmail.com</email>
+    </developer>
+  </developers>
+    
+	<profiles>
+      
+       <profile>
+           <id>microcloud</id>
+			<modules>
+                <module>modules/spring</module>
+                <module>modules/boot</module>
+			</modules>
+           <build>
+              <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+              </plugins>
+           </build>
+       </profile>
+	   
+      <profile>
+        <id>all</id>
+        <modules>
+                <module>modules/bom</module>
+                
+                <module>modules/parent</module>
+                <module>modules/common</module>
+                <module>modules/jackson</module>
+                <module>modules/spring</module>
+                <module>../../dbm</module>
+                <module>modules/web</module>
+                <module>modules/</module>
+                <module>modules/security</module>
+                <module>modules/boot</module>
+                <module>modules/test</module>
+                <module>../../onetwo-wechat</module>
+                <module>modules/cloud</module>
+                
+                <module>modules/poi</module>
+                <module>modules/rocketmq</module>
+                <module>modules/tomcat</module>
+                
+                <module>../../zifish-plugins/parent</module>
+                <module>../../zifish-plugins/web-admin</module>
+                <module>../../zifish-plugins/swaggerext</module>
+        </modules>
+      </profile>
+     
+	  <profile>
+    	<id>release</id>
+    	<modules>
+                <module>modules/bom</module>
+                
+                <module>modules/parent</module>
+                <module>modules/common</module>
+                <module>modules/jackson</module>
+                <module>modules/spring</module>
+                <module>../../dbm</module>
+                <module>modules/web</module>
+                <module>modules/security</module>
+                <module>modules/boot</module>
+                <module>modules/test</module>
+                <module>../../onetwo-wechat</module>
+                <module>modules/cloud</module>
+                
+                <module>modules/poi</module>
+                <module>modules/rocketmq</module>
+                <module>modules/tomcat</module>
+                
+                <module>../../zifish-plugins/parent</module>
+                <module>../../zifish-plugins/web-admin</module>
+                <module>../../zifish-plugins/swaggerext</module>
+	  	</modules>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.6.1</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <compilerVersion>${java.version}</compilerVersion>
+                        <showWarnings>true</showWarnings>
+                        <encoding>utf-8</encoding>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-source-plugin</artifactId>
+                 <version>3.0.1</version>
+                 <executions>
+                     <execution>
+                         <phase>package</phase>
+                         <goals>
+                             <goal>jar-no-fork</goal>
+                         </goals>
+                     </execution>
+                 </executions>
+             </plugin>
+             <!-- Javadoc -->
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-javadoc-plugin</artifactId>
+                 <version>2.10.4</version>
+                 <configuration>
+                     <additionalparam>-Xdoclint:none</additionalparam>
+                 </configuration>
+                 <executions>
+                     <execution>
+                         <phase>package</phase>
+                         <goals>
+                             <goal>jar</goal>
+                         </goals>
+                     </execution>
+                 </executions>
+             </plugin>
+             <!-- GPG -->
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-gpg-plugin</artifactId>
+                 <version>1.5</version>
+                 <executions>
+                     <execution>
+                         <phase>verify</phase>
+                         <goals>
+                             <goal>sign</goal>
+                         </goals>
+                     </execution>
+                 </executions>
+             </plugin>
+             <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                  <serverId>oss</serverId>
+                  <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                  <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+              </plugin>
+            </plugins>
+        </build>
+         <distributionManagement>
+             <snapshotRepository>
+                 <id>oss</id>
+                 <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+             </snapshotRepository>
+             <repository>
+                 <id>oss</id>
+                 <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+             </repository>
+         </distributionManagement>
+	  </profile>
+	  
+	  <profile>
+	    <id>tomcat</id>
+	    <modules>
+           <module>modules/bom</module>
+	       <module>modules/tomcat</module>
+	    </modules>
+	  </profile>
+	</profiles>
+	
+	<build>
+	   <plugins>
+	       <plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-release-plugin</artifactId>
+			  <version>2.5.2</version>
+			  <configuration>
+			    <updateOnlySnapshots>false</updateOnlySnapshots>
+			    <autoVersionSubmodules>true</autoVersionSubmodules>
+			  </configuration>
+			</plugin>
+	   </plugins>
+	</build>
+
+</project>
