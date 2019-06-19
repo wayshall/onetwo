@@ -72,7 +72,7 @@ public class ZifishWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(UploadViewController.class)
 	@ConditionalOnBean(FileStorer.class)
-	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
+	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_VIEW)
 	public UploadViewController uploadViewController(){
 		return new UploadViewController();
 	}

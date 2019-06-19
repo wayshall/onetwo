@@ -96,7 +96,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
-		ErrorMessage errorMessage = this.getErrorMessage(ex, bootJFishConfig.isLogErrorDetail());
+		ErrorMessage errorMessage = this.getErrorMessage(ex);
 		String viewName = determineViewName(ex, request);
 		errorMessage.setViewName(viewName);
 		
@@ -206,19 +206,10 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	public Logger getErrorLogger() {
 		return JFishLoggerFactory.findErrorLogger(logger);
 	}
-	
-	/*@Deprecated
-	private String findInSiteConfig(Exception ex){
-		Class<?> eclass = ex.getClass();
-		String viewName = null;
-		while(eclass!=null && Throwable.class.isAssignableFrom(eclass)){
-			viewName = bootSiteConfig.getConfig(eclass.getName(), "");
-			if(StringUtils.isNotBlank(viewName))
-				return viewName;
-			eclass = eclass.getSuperclass();
-		} 
-		return viewName;
-	}*/
+
+	public ExceptionMessageFinderConfig getExceptionMessageFinderConfig() {
+		return this.bootJFishConfig;
+	}
 
 
 }

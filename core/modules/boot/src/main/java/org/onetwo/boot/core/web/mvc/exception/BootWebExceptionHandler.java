@@ -79,20 +79,20 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		DataResult<?> result = DataResults.error(errorMessage.getMesage())
 				.code(errorMessage.getCode())
 				.build();
-		return super.handleExceptionInternal(ex, result, headers, status, request);
+		return super.handleExceptionInternal(ex, result, headers, errorMessage.getHttpStatus()==null?status:errorMessage.getHttpStatus(), request);
 	}
 	
 	protected ErrorMessage handleException(Exception ex){
 		ErrorMessage errorMessage = (ErrorMessage)RequestContextHolder.getRequestAttributes().getAttribute(BootWebExceptionResolver.ERROR_MESSAGE_OBJECT_KEY, RequestAttributes.SCOPE_REQUEST);
 		if(errorMessage==null){
-			errorMessage = this.getErrorMessage(ex, bootJFishConfig.isLogErrorDetail());
+			errorMessage = this.getErrorMessage(ex);
 		}
 		
 		Optional<HttpServletRequest> reqOpt = WebHolder.getRequest();
 		doLog(reqOpt.orElse(null), errorMessage);
-		if(errorMessage.getHttpStatus()==null){
+		/*if(errorMessage.getHttpStatus()==null){
 			errorMessage.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		}*/
 		
 		return errorMessage;
 	}
@@ -107,5 +107,8 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 		return exceptionMessageAccessor;
 	}
 	
+	public ExceptionMessageFinderConfig getExceptionMessageFinderConfig() {
+		return this.bootJFishConfig;
+	}
 	
 }

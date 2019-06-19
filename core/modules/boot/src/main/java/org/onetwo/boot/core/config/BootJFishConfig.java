@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.boot.core.jwt.JwtConfig;
+import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ExceptionMessageFinderConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,7 +26,7 @@ import lombok.Data;
  */
 @ConfigurationProperties(prefix="jfish")
 @Data
-public class BootJFishConfig {
+public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	public static final String ENABLE_GRACEKILL = "jfish.graceKill.enabled";
 	public static final String ENABLE_SWAGGER = "jfish.swagger.enabled";
 	
@@ -99,6 +100,16 @@ public class BootJFishConfig {
 		this.logErrorDetail = logErrorDetail;
 	}
 	
+	@Override
+	public boolean isAlwaysLogErrorDetail() {
+		return logErrorDetail;
+	}
+
+	@Override
+	public Map<String, Integer> getExceptionsStatusMapping() {
+		return getMvc().getExceptionsStatusMapping();
+	}
+
 	@Data
 	public class FtlConfig {
 		String templateDir;
@@ -121,6 +132,8 @@ public class BootJFishConfig {
 		
 		/*@Deprecated
 		private AutoWrapResultConfig autoWrapResult = new AutoWrapResultConfig();*/
+
+		private Map<String, Integer> exceptionsStatusMapping = Maps.newHashMap();
 
 		public MvcConfig() {
 			this.mediaTypes = new Properties();

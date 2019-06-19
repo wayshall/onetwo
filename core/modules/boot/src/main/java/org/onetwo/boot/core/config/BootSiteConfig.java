@@ -45,7 +45,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";*/
 
-	public static final String ENABLE_UPLOAD_PREFIX = "site.upload.fileStorePath";
+	public static final String ENABLE_UPLOAD_VIEW = "site.upload.view";
 	public static final String ENABLE_STORETYPE_PROPERTY = "site.upload.storeType";
 //	public static final String ENABLE_KINDEDITOR_UPLOADSERVICE = "site.kindeditor.uploadService";
 	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compressImage.enable";

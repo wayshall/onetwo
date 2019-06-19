@@ -58,6 +58,38 @@ public interface ExceptionMessageFinder {
 	//TODO: 必要时加上serviceName头，一边追踪，待实现
 	public String ERROR_JSERVICE_HEADER = "X-Response-JService";
 	
+	interface ExceptionMessageFinderConfig {
+		String OTHER_MAPPING_KEY = "*";
+		/***
+		 * 是否一只显示详细log
+		 * @author weishao zeng
+		 * @return
+		 */
+		boolean isAlwaysLogErrorDetail();
+		
+		Map<String, Integer> getExceptionsStatusMapping();
+
+		default boolean isInternalError(Exception ex){
+			if(BootUtils.isHystrixErrorPresent()){
+				String name = ex.getClass().getName();
+				return name.endsWith("HystrixRuntimeException") || name.endsWith("HystrixBadRequestException");
+			}
+			return false;
+		}
+		
+		ExceptionMessageFinderConfig DEFAULT = new ExceptionMessageFinderConfig() {
+			public boolean isAlwaysLogErrorDetail() {
+				return false;
+			}
+			public Map<String, Integer> getExceptionsStatusMapping() {
+				return Collections.emptyMap();
+			}
+		};
+	}
+	
+	default ExceptionMessageFinderConfig getExceptionMessageFinderConfig() {
+		return ExceptionMessageFinderConfig.DEFAULT;
+	}
 
 	default Logger getErrorLogger() {
 		return JFishLoggerFactory.findErrorLogger();
@@ -84,7 +116,11 @@ public interface ExceptionMessageFinder {
 		JFishLoggerFactory.mailLog(errorMessage.getNotifyThrowables(), ex, msg);
 	}
 	
-	default ErrorMessage getErrorMessage(Exception throwable, boolean alwaysLogErrorDetail){
+	default boolean isInternalError(Exception ex) {
+		return getExceptionMessageFinderConfig().isInternalError(ex);
+	}
+	
+	default ErrorMessage getErrorMessage(Exception throwable){
 		String errorCode = "";
 		String errorMsg = "";
 		Object[] errorArgs = null;
@@ -180,7 +216,7 @@ public interface ExceptionMessageFinder {
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		detail = alwaysLogErrorDetail?true:detail;
+		detail = getExceptionMessageFinderConfig().isAlwaysLogErrorDetail()?true:detail;
 //		error.setMesage(errorMsg);
 		error.setDetail(detail);
 		
@@ -190,11 +226,21 @@ public interface ExceptionMessageFinder {
 		//设置code，findMessage需要用到
 		error.setCode(errorCode);
 
+		Throwable cause = LangUtils.getCauseServiceException(ex);
 		if(findMsgByCode){
 			errorMsg = findMessage(findMsgByCode, error, errorArgs);
 		}
 		if(StringUtils.isBlank(errorMsg)){
-			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
+			errorMsg = cause.getMessage();
+		}
+		
+		Map<String, Integer> statusMapping = getExceptionMessageFinderConfig().getExceptionsStatusMapping();
+		if (statusMapping.containsKey(ex.getClass().getName())) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ex.getClass().getName())));
+		} else if (statusMapping.containsKey(ex.getClass().getSimpleName())) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ex.getClass().getSimpleName())));
+		} else if (statusMapping.containsKey(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)));
 		}
 		
 		//防止远程调用时，方法返回null，且异常定义的httpstatus也为200时，尽管在responsebody里返回error相关数据，
@@ -251,14 +297,6 @@ public interface ExceptionMessageFinder {
 //			defaultViewName = ExceptionView.CODE_EXCEPTON;
 //			defaultViewName = ExceptionView.UNDEFINE;
 		return errorMsg;
-	}
-	
-	default boolean isInternalError(Exception ex){
-		if(BootUtils.isHystrixErrorPresent()){
-			String name = ex.getClass().getName();
-			return name.endsWith("HystrixRuntimeException") || name.endsWith("HystrixBadRequestException");
-		}
-		return false;
 	}
 	
 	default Locale getLocale(){
