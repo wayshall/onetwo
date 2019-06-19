@@ -1,5 +1,6 @@
-package org.onetwo.boot.core.web.controller;
+package org.onetwo.boot.webmgr;
 
+import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.spring.mvc.utils.DataResults;

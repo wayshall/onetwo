@@ -4,11 +4,7 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
-import org.onetwo.boot.core.web.controller.LoggerController;
-import org.onetwo.boot.core.web.controller.SettingsController;
-import org.onetwo.boot.core.web.controller.UploadViewController;
 import org.onetwo.boot.core.web.service.impl.DbmFileStorerListener;
-import org.onetwo.boot.core.web.service.impl.SettingsManager;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.utils.ImageCompressor;
@@ -64,14 +60,6 @@ public class BootCommonServiceConfig {
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean(UploadViewController.class)
-	@ConditionalOnBean(FileStorer.class)
-	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
-	public UploadViewController uploadViewController(){
-		return new UploadViewController();
-	}
-	
-	@Bean
 	@ConditionalOnProperty(value=BootSiteConfig.ENABLE_COMPRESS_PREFIX, matchIfMissing=false)
 	@ConditionalOnClass(Thumbnails.class)
 	public ImageCompressor imageCompressor(){
@@ -91,17 +79,6 @@ public class BootCommonServiceConfig {
 		return listener;
 	}
 	
-	/***
-	 * 动态修改logger level
-	 * @author wayshall
-	 * @return
-	 */
-	@Bean
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_LOGGER_LEVEL, matchIfMissing=false)
-	public LoggerController loggerController(){
-		return new LoggerController();
-	}
-	
 	@Bean
 	@ConditionalOnMissingBean({SimpleLoggerManager.class})
 	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_LOGGER_LEVEL, matchIfMissing=false)
@@ -110,24 +87,4 @@ public class BootCommonServiceConfig {
 	}
 
 
-	/***
-	 * 动态修改默认配置
-	 * @author wayshall
-	 * @return
-	 */
-	@Configuration
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_SETTING, matchIfMissing=true)
-	protected static class SettingsConfiguration {
-
-		@Bean
-		public SettingsController settingsController(){
-			return new SettingsController();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean({SettingsManager.class})
-		public SettingsManager settingsManager(){
-			return new SettingsManager();
-		}
-	}
 }

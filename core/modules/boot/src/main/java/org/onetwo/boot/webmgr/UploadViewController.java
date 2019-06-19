@@ -1,4 +1,4 @@
-package org.onetwo.boot.core.web.controller;
+package org.onetwo.boot.webmgr;
 
 import java.util.Arrays;
 import java.util.Date;

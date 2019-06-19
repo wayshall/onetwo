@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.annotation.ContentCheck;
+import org.onetwo.common.utils.LangUtils;
 
 public class ContentCheckConstraintValidator implements ConstraintValidator<ContentCheck, String> {
 	
@@ -27,7 +28,7 @@ public class ContentCheckConstraintValidator implements ConstraintValidator<Cont
 			return true;
 		}
 		List<String> sentitiveWords = getContentChecker().check(value);
-		if (sentitiveWords.isEmpty()) {
+		if (LangUtils.isEmpty(sentitiveWords)) {
 			return true;
 		}
 		context.disableDefaultConstraintViolation();
