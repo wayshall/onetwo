@@ -57,7 +57,9 @@ public class ErrorHandleConfiguration {
 	public MessageSource exceptionMessageSource(@Autowired BootJFishConfig bootJFishConfig){
 		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
 		ms.setCacheSeconds(bootJFishConfig.getMessageSource().getCacheSeconds());
-		ms.setBasenames("classpath:messages/exception-messages", "classpath:messages/default-exception-messages");
+		ms.setBasenames("classpath:messages/exception-messages", 
+				"classpath:messages/default-exception-messages", 
+				"org/hibernate/validator/ValidationMessages");
 		return ms;
 	}
 	

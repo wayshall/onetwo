@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.validator.annotation.AnyOneNotBlank;
@@ -46,7 +47,8 @@ public class ValidatorWrapperTest extends AbstractJUnit4SpringContextTests {
 		System.out.println("br:"+msg);
 		Assert.assertFalse(msg.contains("手机和用户名称不能都为空！"));
 		Assert.assertFalse(msg.contains("手机和用户id不能都为空！"));
-		Assert.assertTrue(msg.contains("remark发现敏感词：敏感词1, 敏感词2"));
+//		Assert.assertTrue(msg.contains("备注发现敏感词：敏感词1, 敏感词2"));
+		Assert.assertTrue(msg.contains("备注发现敏感词"));
 	}
 	
 	@AnyOneNotBlanks({
@@ -62,7 +64,8 @@ public class ValidatorWrapperTest extends AbstractJUnit4SpringContextTests {
 		@NotNull
 		private String userName;
 		
-		@ContentCheck
+		@ContentCheck(message="发现敏感词")
+		@FieldName("备注")
 		private String remark;
 		
 		public String getMobile() {

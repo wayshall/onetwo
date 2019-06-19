@@ -173,6 +173,12 @@
        <artifactId>okhttp</artifactId>
        <optional>true</optional>
      </dependency>
+        
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <optional>true</optional>
+    </dependency>
 	
 	<dependency>
 		<groupId>junit</groupId>
