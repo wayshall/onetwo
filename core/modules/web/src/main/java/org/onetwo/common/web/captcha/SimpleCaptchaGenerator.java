@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import lombok.Data;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
@@ -21,6 +19,8 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.StringUtils;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -111,6 +111,9 @@ public class SimpleCaptchaGenerator {
 		for(char code : codes.toCharArray()){
 			//整个图片高度减去字体高度后的剩余高度，减去字体高度，保证画时字体完整画出来
 			int surplusHeight = height-settings.getFontHeight();
+			if (surplusHeight<=0) {
+				surplusHeight = 1;
+			}
 			int randomMargin = getRandom().nextInt(surplusHeight);
 			//设置画板字体颜色，随机
 			Color color = settings.getActualCodeColor().orElseGet(()->getRandomColor(getRandom()));
@@ -146,6 +149,7 @@ public class SimpleCaptchaGenerator {
 		String imageFormatName = "png";
 		//验证码颜色,默认随机
 		String codeColor;
+		double fontHeight = 0.9;
 		
 		public Font getFont(){
 			if(font==null){
@@ -163,7 +167,7 @@ public class SimpleCaptchaGenerator {
 		}
 		
 		public int getFontHeight(){
-			return (int)(getHeight()*0.9);
+			return (int)(getHeight()*fontHeight);
 		}
 	}
 	
