@@ -164,7 +164,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			this.interceptors = Collections.emptyList();
 		} else {
 			this.interceptors = Stream.of(interceptorAnno.value()).map(cls -> {
-				return createAndInitComponent(cls);
+				return (ApiInterceptor)createAndInitComponent(cls);
 			})
 			.collect(Collectors.toList());
 		}
