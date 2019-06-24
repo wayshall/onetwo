@@ -23,7 +23,7 @@ import lombok.Data;
 @Data
 @ConfigurationProperties("jfish.ons")
 public class ONSProperties implements InitializingBean {
-
+	public static final String PRODUCER_ENABLED_KEY = "jfish.ons.producer.enabled";
 //	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
 //	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
 //	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
