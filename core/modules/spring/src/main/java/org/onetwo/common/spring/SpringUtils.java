@@ -680,19 +680,32 @@ final public class SpringUtils {
 	 * @return
 	 */
 	public static String resolvePlaceholders(Object applicationContext, String value){
-		return resolvePlaceholders(applicationContext, value, true);
+//		return resolvePlaceholders(applicationContext, value, true);
+		String resolvedValue = resolvePlaceholders(applicationContext, value, false);
+		if (DOLOR.isExpresstion(resolvedValue)){
+			String convertedName = StringUtils.convertWithSeperator(resolvedValue, "-");
+			if (value.equals(convertedName)) {
+				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + resolvedValue);
+			}
+			resolvedValue = resolvePlaceholders(applicationContext, convertedName, false);
+			if (DOLOR.isExpresstion(resolvedValue)){
+				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + resolvedValue);
+			}
+		}
+		return resolvedValue;
 	}
+	
 	public static String resolvePlaceholders(Object applicationContext, String value, boolean throwIfNotResolved){
 		String newValue = value;
 		if (StringUtils.hasText(value) && DOLOR.isExpresstion(value)){
-			if(applicationContext instanceof ConfigurableApplicationContext){
+			if (applicationContext instanceof ConfigurableApplicationContext){
 				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
 				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
-			}else if(applicationContext instanceof PropertyResolver){
+			} else if (applicationContext instanceof PropertyResolver){
 				PropertyResolver env = (PropertyResolver)applicationContext;
 				newValue = env.resolvePlaceholders(value);
 			}
-			if(DOLOR.isExpresstion(newValue) && throwIfNotResolved){
+			if (DOLOR.isExpresstion(newValue) && throwIfNotResolved){
 				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + newValue);
 			}
 		}

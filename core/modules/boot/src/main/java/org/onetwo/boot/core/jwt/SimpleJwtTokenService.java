@@ -10,7 +10,6 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
-import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
@@ -38,7 +37,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 	/*private BeanToMapConvertor beanToMap = BeanToMapBuilder.newBuilder()
 													.excludeProperties("userName", "userId")
 													.build();*/
-	private long refreshTokenIfRemainingSeconds;
+//	private long refreshTokenIfRemainingSeconds;
 	
 	protected Long getExpirationInSeconds(){
 		return jwtConfig.getExpirationInSeconds();
@@ -50,7 +49,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		if(StringUtils.isBlank(jwtConfig.getSigningKey())){
 			throw new BaseException("jwt signingKey not found!");
 		}
-		refreshTokenIfRemainingSeconds = LangOps.timeToSeconds(jwtConfig.getRefreshTokenIfRemainingTime(), 30);
+//		refreshTokenIfRemainingSeconds = LangOps.timeToSeconds(jwtConfig.getRefreshTokenIfRemainingTime(), 30);
 	}
 	
 
@@ -137,7 +136,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		userDetail.setClaims(claims);
 
 		long remainingSeconds = (claims.getExpiration().getTime() - System.currentTimeMillis())/1000;
-		if (remainingSeconds <= this.refreshTokenIfRemainingSeconds) {
+		if (remainingSeconds <= this.jwtConfig.getRefreshTokenIfRemainingSeconds()) {
 			if (log.isInfoEnabled()) {
 				log.info("token remaining in seconds: {}, generate new token...");
 			}

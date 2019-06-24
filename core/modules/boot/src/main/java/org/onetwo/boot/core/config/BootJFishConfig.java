@@ -67,7 +67,7 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	//security=BootSecurityConfig
 	
 	private boolean profile;
-	private boolean logErrorDetail;
+	private Boolean logErrorDetail;
 	List<String> notifyThrowables = Lists.newArrayList("com.mysql.jdbc.MysqlDataTruncation", "SQLException");
 
 	private String errorView = "error";
@@ -90,19 +90,19 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	}
 
     public boolean isLogErrorDetail(){
-    	if(logErrorDetail){
-    		return true;
+    	if(logErrorDetail!=null){
+    		return logErrorDetail;
     	}
     	return !bootSpringConfig.isProduct();
     }
 
-	public void setLogErrorDetail(boolean logErrorDetail) {
+	public void setLogErrorDetail(Boolean logErrorDetail) {
 		this.logErrorDetail = logErrorDetail;
 	}
 	
 	@Override
 	public boolean isAlwaysLogErrorDetail() {
-		return logErrorDetail;
+		return isLogErrorDetail();
 	}
 
 	@Override

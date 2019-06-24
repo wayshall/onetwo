@@ -6,6 +6,7 @@ import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiCustomizeMappingField;
 import org.onetwo.common.apiclient.ApiResponsable;
 import org.onetwo.common.apiclient.impl.DefaultApiClientResponseHandler;
+import org.onetwo.common.data.Result;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.exception.ErrorTypes;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.web.client.RestClientException;
  * @author wayshall
  * <br/>
  */
-public class SimpleApiClientResponseHandler<M extends ApiClientMethod, R extends ApiResponsable<?>> extends DefaultApiClientResponseHandler<M> {
+public class SimpleApiClientResponseHandler<M extends ApiClientMethod> extends DefaultApiClientResponseHandler<M> {
 	private String resultCodeField;
 	private String resultMessageField;
 	
@@ -41,7 +42,10 @@ public class SimpleApiClientResponseHandler<M extends ApiClientMethod, R extends
 			ApiResponsable<?> baseResponse = null;
 			if(ApiResponsable.class.isInstance(response)){
 				baseResponse = (ApiResponsable<?>) response;
-			}else if(Map.class.isAssignableFrom(actualResponseType)){
+			} else if (Result.class.isAssignableFrom(actualResponseType)) {
+				Result result = (Result) response;
+				baseResponse = new DataResultApiResponsableAdaptor(result);
+			} else if (Map.class.isAssignableFrom(actualResponseType)){
 				//reponseType have not define errcode and errmsg
 				Map<String, ?> map = (Map<String, ?>) response;
 				if (hasResultCodeField(map)) {
@@ -58,7 +62,7 @@ public class SimpleApiClientResponseHandler<M extends ApiClientMethod, R extends
 //					response = map2Bean(map, invokeMethod.getMethodReturnType());
 					response = handleResponseMap(map, invokeMethod.getMethodReturnType());
 				}
-			}else{
+			} else {
 				if(logger.isDebugEnabled()){
 					logger.debug("Non-WechatResponse type: {}", response.getClass());
 				}

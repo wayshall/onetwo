@@ -1,42 +1,37 @@
 package org.onetwo.common.apiclient.simple;
 
-import java.lang.annotation.Annotation;
-
 import org.onetwo.common.apiclient.ApiClientMethod;
-import org.onetwo.common.apiclient.ApiClientResponseHandler;
-import org.onetwo.common.apiclient.RestExecutorFactory;
-import org.onetwo.common.apiclient.impl.AbstractApiClentRegistrar;
-import org.onetwo.common.apiclient.impl.DefaultApiClientFactoryBean;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.onetwo.common.apiclient.annotation.EnableRestApiClient;
+import org.onetwo.common.apiclient.annotation.RestApiClient;
+import org.onetwo.common.spring.context.AnnotationMetadataHelper;
+import org.onetwo.common.spring.context.AnnotationMetadataHelper.NoAnnotationMetadataHelper;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.ClassUtils;
+
+import com.google.common.collect.Sets;
 
 /**
- * @author wayshall
+ * 没有@EnableXxx注解的api注册器
+ * @author weishao zeng
  * <br/>
  */
-public class SimpleApiClentRegistrar<IMPORT extends Annotation, COMPONENT extends Annotation> extends AbstractApiClentRegistrar<IMPORT, COMPONENT> {
+public class SimpleApiClentRegistrar extends GeneircApiClentRegistrar<EnableRestApiClient, RestApiClient> {
 
-	private ApiClientResponseHandler<ApiClientMethod> responseHandler;
+	private Class<?> componentBaseClass;
 	
-	@Override
-	protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {
-		String className = annotationMetadata.getClassName();
-		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(DefaultApiClientFactoryBean.class);
-
-		definition.addPropertyValue("url", resolveUrl(attributes));
-		definition.addPropertyValue("path", resolvePath(attributes));
-		definition.addPropertyValue("interfaceClass", className);
-		definition.addPropertyValue("responseHandler", responseHandler);
-		definition.addPropertyReference("restExecutor", RestExecutorFactory.REST_EXECUTOR_FACTORY_BEAN_NAME);
-		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-		
-		return definition;
+	public SimpleApiClentRegistrar(Class<?> componentBaseClass) {
+		this.componentBaseClass = componentBaseClass;
+		SimpleApiClientResponseHandler<ApiClientMethod> handler = new SimpleApiClientResponseHandler<>();
+		setResponseHandler(handler);
 	}
 
-	final public void setResponseHandler(ApiClientResponseHandler<ApiClientMethod> responseHandler) {
-		this.responseHandler = responseHandler;
+	protected AnnotationMetadataHelper createAnnotationMetadataHelper(AnnotationMetadata importingClassMetadata) {
+		AnnotationMetadataHelper annotationMetadataHelper = new NoAnnotationMetadataHelper(
+																		Sets.newHashSet(ClassUtils.getPackageName(componentBaseClass)), 
+																		getImportingAnnotationClass()
+																);
+		annotationMetadataHelper.setResourceLoader(resourceLoader);
+		annotationMetadataHelper.setClassLoader(classLoader);
+		return annotationMetadataHelper;
 	}
-	
 }

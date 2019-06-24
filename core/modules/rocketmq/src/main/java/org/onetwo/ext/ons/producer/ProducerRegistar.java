@@ -28,7 +28,7 @@ public class ProducerRegistar extends BaseImportRegistrar<EnableONSClient> {
 		for(AnnotationAttributes producer : producers){
 			String producerId = resolveAttribute(producer, "producerId", null);
 //			String beanName = "ONS-"+producerId;
-			String beanName = StringUtils.appendStartWith(producerId, "ons");
+			String beanName = StringUtils.appendStartWith(producerId, "ons-");
 			
 			if(registry.containsBeanDefinition(beanName)){
 				logger.info("produer[{}] has been registered, ignored...", beanName);
