@@ -232,16 +232,20 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 
 	//move to jfishConfig?
 	@Data
-	public class UploadConfig {
+	static public class UploadConfig {
 		/***
 		 * 如果设置了值，则会把上传目录映射到对应的访问路径，如：/upload/**
 		 */
 		String accessPathPatterns;
 //		StoreType storeType = StoreType.LOCAL;
+		/***
+		 * 如果是local存储，可以写绝对路径，如：/data/upload/cms；
+		 * 如果是云存储，可以看做是系统模块名称，如：cms
+		 */
 		String fileStorePath;
 //		boolean fileStorePathToResourceHandler = true;
 		Integer resourceCacheInDays = 30;
-		String appContextDir;
+//		String appContextDir;
 		//multipartProperties
 //		int maxUploadSize = BootStandardServletMultipartResolver.DEFAULT_MAX_UPLOAD_SIZE;
 		boolean storeFileMetaToDatabase;
@@ -259,6 +263,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		public Integer getResourceCacheInDays() {
 			return resourceCacheInDays;
 		}
+		
+		/*public String getAppContextDir() {
+			return appContextDir;
+		}*/
 
 		/*public int getMaxUploadSize(){
 			return maxUploadSize;
