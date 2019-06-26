@@ -5,10 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,6 +23,26 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.User.Address;
 
 public class ReflectUtilsTest {
+	
+	public static class ReflectTestClass {
+		public Optional<UserEntity> getUser() {
+			return null;
+		}
+	}
+	
+	@Test
+	public void testGetUser() {
+		Method method = ReflectUtils.findMethod(ReflectTestClass.class, "getUser");
+		Type returnType = method.getGenericReturnType();
+		if (returnType instanceof ParameterizedType) {
+			ParameterizedType ptype = (ParameterizedType) returnType;
+			System.out.println(ptype);
+			assertThat(ptype.getRawType()).isEqualTo(Optional.class);
+			assertThat(ptype.getActualTypeArguments()[0]).isEqualTo(UserEntity.class);
+		}
+		System.out.println(returnType);
+		assertThat(ReflectUtils.getGenricType(returnType, 0)).isEqualTo(UserEntity.class);
+	}
 	
 	@Test
 	public void testSuperClass(){
