@@ -61,7 +61,11 @@ public class SecurityConfig {
 	private CasConfig cas = new CasConfig();
 	private CrsfConfig csrf = new CrsfConfig();
 //	private boolean csrf = true;
-	protected Boolean syncPermissionData;
+	/***
+	 * 是否在启动的时候同步菜单类的数据到数据库
+	 */
+//	protected boolean syncPermissionData;
+	private PermConfig permission = new PermConfig();
 	
 	private RememberMeConfig rememberMe = new RememberMeConfig();
 	
@@ -83,6 +87,10 @@ public class SecurityConfig {
 	
 	public boolean isDebug(){
 		return debug;
+	}
+	
+	public void setSyncPermissionData(boolean syncPermissionData) {
+		this.permission.setSync2db(syncPermissionData);
 	}
 	
 	public String[] getIgnoringUrls(){
@@ -190,7 +198,24 @@ public class SecurityConfig {
 		}
 	}
 
-
+	@Data
+	public static class PermConfig {
+		/***
+		 * 是否在启动的时候同步菜单类的数据到数据库
+		 */
+		private boolean sync2db;
+		private ControllerPermissionNotFoundActions permissionNotFound = ControllerPermissionNotFoundActions.THROWS;
+	}
+	public static enum ControllerPermissionNotFoundActions {
+		/***
+		 * 忽略
+		 */
+		IGNORE,
+		/***
+		 * 抛错
+		 */
+		THROWS
+	}
 
 	/****
 	 * cas:
