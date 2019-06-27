@@ -22,8 +22,11 @@ public class SimpleCaptchaGeneratorTest {
 		CaptchaSettings settings = new CaptchaSettings();
 		settings.setWidth(400);
 		settings.setHeight(100);
+		settings.setPuzzleLineCount(50);
+//		settings.setCodeColor("255, 0, 0");
+//		settings.setFontHeight(0.8);
 		SimpleCaptchaGenerator generator = new SimpleCaptchaGenerator();
-		CaptchaResult res = generator.writeTo(settings, "D:/test/captcha.png");
+		CaptchaResult res = generator.writeTo(settings, "/data/tmp/captcha.png");
 		
 		CaptchaSignedResult signed = checker.encode(res.getCode());
 		boolean checked = checker.check(res.getCode(), signed.getSigned());
