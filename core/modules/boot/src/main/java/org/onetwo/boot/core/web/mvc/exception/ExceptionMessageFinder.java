@@ -135,7 +135,10 @@ public interface ExceptionMessageFinder {
 		Exception ex = throwable;
 		//内部调用失败
 		if(isInternalError(ex)){
-			ex = LangUtils.getCauseException(ex, ServiceException.class);
+			ServiceException seCuase = LangUtils.getCauseException(ex, ServiceException.class);
+			if (seCuase!=null) {
+				ex = seCuase;
+			}
 		}
 		
 		/*if(ex instanceof MaxUploadSizeExceededException){
