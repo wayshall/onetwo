@@ -101,28 +101,35 @@ public class SimpleCaptchaGenerator {
 	}
 	protected void drawCodes(Graphics2D g2d, CaptchaSettings settings, String codes){
 		int height = settings.getHeight();
+		int leftMargin = 5;
 		
 		//设置字体
 		g2d.setFont(settings.getFont());
 		//验证码宽高
-		int codeWidth = (settings.getWidth()-1)/codes.length();
+		int codeWidth = (settings.getWidth()-leftMargin*2)/codes.length();
 //		int codeHeight = height-10;
 		int codeIndex = 0;
 		for(char code : codes.toCharArray()){
 			//整个图片高度减去字体高度后的剩余高度，减去字体高度，保证画时字体完整画出来
 			int surplusHeight = height-settings.getFontHeight();
 			if (surplusHeight<=0) {
-				surplusHeight = 1;
+				surplusHeight = 2;
 			}
 			int randomMargin = getRandom().nextInt(surplusHeight);
+			if (randomMargin<1) {
+				randomMargin = 1;
+			}
 			//设置画板字体颜色，随机
 			Color color = settings.getActualCodeColor().orElseGet(()->getRandomColor(getRandom()));
 			g2d.setColor(color);
 //			g2d.setColor(Color.RED);
 			//xy为字母最后的点，即最右和最底部的点
 			int y = height-randomMargin*5;
-			y = y<height/2?height:y;
-			g2d.drawString(String.valueOf(code), codeIndex*codeWidth+randomMargin, y);
+			int middle = height-surplusHeight/2; //居中
+			// 如果计算出的y点少于高度的70%，则居中
+			y = y<height*0.7?middle:y;
+//			System.out.println("y: " + y + ", middle: " + middle);
+			g2d.drawString(String.valueOf(code), leftMargin+codeIndex*codeWidth+randomMargin, y);
 			codeIndex++;
 		}
 	}
