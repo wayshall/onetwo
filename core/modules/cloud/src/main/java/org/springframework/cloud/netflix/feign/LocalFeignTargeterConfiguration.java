@@ -1,6 +1,7 @@
 package org.springframework.cloud.netflix.feign;
 
 import org.onetwo.cloud.feign.FeignProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 //@ConditionalOnProperty(value=FeignProperties.LOCAL_ENABLE_KEY, havingValue="true", matchIfMissing=false)
 @EnableConfigurationProperties({FeignProperties.class})
+@ConditionalOnClass(feign.Feign.class)
 public class LocalFeignTargeterConfiguration {
 
 	@Bean
