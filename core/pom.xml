@@ -39,8 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/spring</module>
-                <module>modules/boot</module>
+                <module>../../onetwo-wechat</module>
 			</modules>
            <build>
               <plugins>
@@ -72,7 +71,6 @@
                 <module>modules/spring</module>
                 <module>../../dbm</module>
                 <module>modules/web</module>
-                <module>modules/</module>
                 <module>modules/security</module>
                 <module>modules/boot</module>
                 <module>modules/test</module>
