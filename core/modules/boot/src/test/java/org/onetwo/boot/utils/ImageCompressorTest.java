@@ -22,5 +22,14 @@ public class ImageCompressorTest {
 		compressor.setConfig(ImageCompressorConfig.builder().width(350).build());
 		compressor.compressTo("C:/Users/way/Desktop/bak/18da/hst.jpg", "C:/Users/way/Desktop/bak/18da/hst-compress.jpg");
 	}
+	
+	@Test
+	public void testOSX(){
+		ImageCompressor compressor = new ImageCompressor();
+		compressor.setConfig(ImageCompressorConfig.builder().scale(0.3).quality(0.3).build());
+		compressor.compressTo("/Users/way/data/defulat_cover.jpg", 
+				"/Users/way/data/defulat_cover_min.jpg");
+		
+	}
 
 }
