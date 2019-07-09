@@ -182,9 +182,23 @@ final public class LangOps {
 		return groups;
 	}
 	
+	/***
+	 * parse to b
+	 * @author weishao zeng
+	 * @param size
+	 * @return
+	 */
 	public static int parseSize(String size) {
 		return parseSize(size, null);
 	}
+	
+	/***
+	 * parse size to byte
+	 * @author weishao zeng
+	 * @param size
+	 * @param def
+	 * @return
+	 */
 	public static int parseSize(String size, Integer def) {
 		if(StringUtils.isBlank(size)){
 			if(def!=null){
