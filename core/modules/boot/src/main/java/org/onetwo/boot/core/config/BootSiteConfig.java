@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.filter.DefaultSiteConfig;
 import org.onetwo.common.web.filter.SiteConfigProvider;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -227,6 +228,16 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		}
 		public void setBasePath(String basePath){
 			this.basePath = basePath;
+		}
+		
+		public String getImageFullPath(String subPath){
+			if (subPath==null || RequestUtils.isHttpPath(subPath)) {
+				return subPath;
+			}
+			if(!basePath.endsWith("/") && !subPath.startsWith("/")){
+				basePath += "/";
+			}
+			return basePath + subPath;
 		}
 	}
 

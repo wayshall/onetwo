@@ -62,7 +62,7 @@ public class ImageBatchCompressor {
 				String fullpath = FileUtils.replaceBackSlashToSlash(file.getPath());
 				String fileExt = FileUtils.getExtendName(fullpath, true);
 				String filename = dir + FileUtils.getFileNameWithoutExt(fullpath);
-				String compressed = imageCompressor.compressTo(fullpath, filename + compressedFilePostfix + fileExt);
+				String compressed = imageCompressor.compressTo(fullpath, filename + fileExt);
 				return compressed;
 			}).collect(Collectors.toList());
 		} else {

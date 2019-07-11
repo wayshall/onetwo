@@ -64,7 +64,7 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 		subPath = subPath.toLowerCase();
 		return subPath.startsWith("http://") || subPath.startsWith("https://");
 	}
-	protected String fixPath(String basePath, String subPath){
+	static public String fixPath(String basePath, String subPath){
 		if(!basePath.endsWith("/") && !subPath.startsWith("/")){
 			basePath += "/";
 		}
