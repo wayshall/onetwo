@@ -2,6 +2,8 @@ package org.onetwo.boot.module.swagger;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.boot.plugin.core.WebPlugin;
@@ -52,24 +54,50 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		}
 	}
 	
+	final protected Collection<Predicate<RequestHandler>> createPackagePredicateByClass(Class<?>... rootClass) {
+		return Stream.of(rootClass)
+					.map(c -> {
+						return RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(c));
+					})
+					.collect(Collectors.toSet());
+	}
+	final protected Collection<Predicate<RequestHandler>> createPackagePredicate(String... packNames) {
+		return Stream.of(packNames)
+					.map(packName -> {
+						return RequestHandlerSelectors.basePackage(packName);
+					})
+					.collect(Collectors.toSet());
+	}
+	
 	final protected void registerDocketsByWebApiAnnotation(int index, String appName, Class<?> rootClass) {
-		Predicate<RequestHandler> predicate = RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(rootClass));
-		Collection<Predicate<RequestHandler>> predicates = Arrays.asList(predicate);
+		Collection<Predicate<RequestHandler>> predicates = createPackagePredicateByClass(rootClass);
 		
 		logger.info("register docket for rootClass: {}", rootClass);
-		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
+//		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
 		String docketBeanName = appName+"Docket";
 		logger.info("docket[{}] created...", docketBeanName);
-		if (!applicationContext.containsBeanDefinition(docketBeanName)) {
+		this.registerDocketIfNotExist(docketBeanName, index+".1 ["+appName+"]外部接口", appName, Arrays.asList(notWebApi(predicates)));
+		/*if (!applicationContext.containsBeanDefinition(docketBeanName)) {
 			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, docket);
 			logger.info("docket[{}] registered", docketBeanName);
 		} else {
 			logger.info("docket[{}] ignored", docketBeanName);
-		}
+		}*/
 		
 		docketBeanName = appName+"InnerDocket";
 		logger.info("docket[{}] created...", docketBeanName);
-		Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
+		this.registerDocketIfNotExist(docketBeanName, index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
+		/*Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
+		if (!applicationContext.containsBeanDefinition(docketBeanName)) {
+			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, innerDocket);
+			logger.info("docket[{}] registered", docketBeanName);
+		} else {
+			logger.info("docket[{}] ignored", docketBeanName);
+		}*/
+	}
+	
+	protected void registerDocketIfNotExist(String docketBeanName, String groupName, String appName, Collection<Predicate<RequestHandler>> packages) {
+		Docket innerDocket = createDocket(groupName, appName, packages);
 		if (!applicationContext.containsBeanDefinition(docketBeanName)) {
 			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, innerDocket);
 			logger.info("docket[{}] registered", docketBeanName);
