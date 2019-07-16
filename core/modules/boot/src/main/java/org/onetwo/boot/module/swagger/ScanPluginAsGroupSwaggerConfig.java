@@ -76,7 +76,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 //		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
 		String docketBeanName = appName+"Docket";
 		logger.info("docket[{}] created...", docketBeanName);
-		this.registerDocketIfNotExist(docketBeanName, index+".1 ["+appName+"]外部接口", appName, Arrays.asList(notWebApi(predicates)));
+		this.registerDocketIfNotExist(docketBeanName, index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
 		/*if (!applicationContext.containsBeanDefinition(docketBeanName)) {
 			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, docket);
 			logger.info("docket[{}] registered", docketBeanName);
