@@ -8,15 +8,16 @@ import java.util.function.Supplier;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author wayshall
  * <br/>
  */
+@Slf4j
 public class TokenValidator {
 	
 //	@Autowired
@@ -154,6 +155,9 @@ public class TokenValidator {
     	/*StringRedisTemplate stringRedisTemplate = redisOperationService.getStringRedisTemplate();
     	String storeValue = stringRedisTemplate.boundValueOps(storeKey).get();*/
     	Optional<String> storeValue = this.redisOperationService.getCacheIfPreset(storeKey, String.class);
+    	if (log.isDebugEnabled()) {
+    		log.debug("smscode check, request code: {}, store code: {}", value, storeValue.orElse(""));
+    	}
     	if(!storeValue.isPresent() || !storeValue.get().equals(value)) {
     		StoreContext ctx = new StoreContext(storeKey, storeValue.orElse(null));
     		return failFunc.apply(ctx);
