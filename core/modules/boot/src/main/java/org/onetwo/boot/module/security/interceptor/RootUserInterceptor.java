@@ -23,6 +23,9 @@ public class RootUserInterceptor extends MvcInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
 		UserDetail userDetail = sessionUserManager.getCurrentUser();
+		if (logger.isInfoEnabled()) {
+			logger.info("sessionUserManager: {}, userDetail", sessionUserManager, userDetail);
+		}
 		if (UserRoot.class.isInstance(userDetail) && ((UserRoot)userDetail).isSystemRootUser()) {
 			return true;
 		} else {

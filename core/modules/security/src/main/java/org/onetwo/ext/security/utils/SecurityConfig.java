@@ -305,6 +305,7 @@ public class SecurityConfig {
 		String password = "$2a$10$1Qrdb4WZcn7gDKrTfgJEAOZMOQRiUNWjuPcOmU520nLbrz2wHQlpa";//default is jfish
 		String[] roles;
 		String[] authorities;
+		Long userId;
 	}
 	@Data
 	public static class InterceptersConfig {

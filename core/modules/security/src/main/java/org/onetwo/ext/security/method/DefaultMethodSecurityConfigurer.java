@@ -91,6 +91,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 				.passwordEncoder(passwordEncoder);
 		}else{
 			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemory = auth.inMemoryAuthentication();
+//			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemory = auth.apply(new ExtInMemoryUserDetailsManagerConfigurer());
 			securityConfig.getMemoryUsers().forEach((user, config)->{
 				UserDetailsBuilder udb = inMemory.withUser(user).password(config.getPassword());
 				if(!LangUtils.isEmpty(config.getRoles())){
