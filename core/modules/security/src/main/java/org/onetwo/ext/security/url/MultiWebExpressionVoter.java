@@ -2,7 +2,10 @@ package org.onetwo.ext.security.url;
 
 import java.util.Collection;
 
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.web.userdetails.UserRoot;
 import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource.CodeSecurityConfig;
+import org.slf4j.Logger;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
@@ -26,6 +29,16 @@ public class MultiWebExpressionVoter implements AccessDecisionVoter<FilterInvoca
 		assert fi != null;
 		assert attributes != null;
 
+		if (authentication!=null && authentication.getDetails() instanceof UserRoot) {
+			UserRoot user = (UserRoot) authentication.getDetails();
+			if (user.isSystemRootUser()) {
+				Logger logger = JFishLoggerFactory.getCommonLogger();
+				if (logger.isInfoEnabled()) {
+					logger.info("access granted for root user");
+				}
+				return ACCESS_GRANTED;
+			}
+		}
 		CodeSecurityConfig codeConfig = findConfigAttribute(attributes);
 
 		if (codeConfig == null) {

@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.boot.module.security.annotation.RooUserAuth;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(BootWebUtils.CONTROLLER_PREFIX+"/changelog")
-@RooUserAuth
+//@RooUserAuth
 public class ChangelogController extends AbstractBaseController {
 	
 	private String path = "changelog.md";

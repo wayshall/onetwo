@@ -23,6 +23,7 @@ import springfox.documentation.service.VendorExtension;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
+   网关层需要做拦截： /zifishWeb/** : hasRole('ROLE_ADMIN')
  * @author wayshall
  * <br/>
  */
