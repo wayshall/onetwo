@@ -3,6 +3,7 @@ package org.onetwo.boot.webmgr;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.SettingsManager;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.boot.module.security.annotation.RooUserAuth;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * <br/>
  */
 @RequestMapping(BootWebUtils.CONTROLLER_PREFIX)
+@RooUserAuth
 public class SettingsController extends AbstractBaseController {
 	
 	@Autowired

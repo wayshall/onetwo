@@ -538,6 +538,14 @@ final public class SpringUtils {
 		return new ClassPathResource(path);
 	}
 	
+	public static InputStream classpathStream(String path){
+		try {
+			return classpath(path).getInputStream();
+		} catch (IOException e) {
+			throw new BaseException("read classpath file as stream error: " + path);
+		}
+	}
+	
 	public static BeanWrapper newBeanWrapper(Object obj){
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
 		bw.setAutoGrowNestedPaths(true);

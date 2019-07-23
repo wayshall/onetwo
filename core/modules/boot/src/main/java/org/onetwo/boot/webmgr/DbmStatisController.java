@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * <br/>
  */
 @RequestMapping(BootWebUtils.CONTROLLER_PREFIX+"/dbm/statis")
+//@RooUserAuth
 public class DbmStatisController extends AbstractBaseController {
 	@Autowired
 	private SqlExecutedStatis sqlExecutedStatis;

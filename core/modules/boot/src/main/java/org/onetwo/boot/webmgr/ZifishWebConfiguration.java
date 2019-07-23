@@ -28,12 +28,16 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @JFishWebPlugin(ZifishWebPlugin.class)
-//@ComponentScan
+//@ComponentScan(basePackageClasses=ZifishWebPlugin.class)
 @ConditionalOnBean(BootSiteConfig.class)
 // disable on zuul
 @ConditionalOnMissingBean(name="zuulProxyMarkerBean")
 public class ZifishWebConfiguration {
-	
+
+	@Bean
+	public ChangelogController changelogController() {
+		return new ChangelogController();
+	}
 
 	@Bean
 	@ConditionalOnBean(WebManagementDelegater.class)

@@ -3,6 +3,7 @@ package org.onetwo.boot.webmgr;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.boot.module.security.annotation.RooUserAuth;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * <br/>
  */
 @RequestMapping(BootWebUtils.CONTROLLER_PREFIX+"/logger")
+@RooUserAuth
 public class LoggerController extends AbstractBaseController {
 	
 	@Autowired
