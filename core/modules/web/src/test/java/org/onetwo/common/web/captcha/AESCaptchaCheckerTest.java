@@ -12,7 +12,9 @@ import org.onetwo.common.web.captcha.CaptchaChecker.CaptchaSignedResult;
  */
 public class AESCaptchaCheckerTest {
 
-	private AESCaptchaChecker checker = new AESCaptchaChecker("12345678123456781234567812345678", 3);
+	String key = "FoyRSp4wy0e9OpIxFHjQvQIO38Nv4VPXqbJrtscNeGFasdYHYzbJee4XVasdfasfZe2knLabXre3";
+//	String key = "1234567812345678";
+	private AESCaptchaChecker checker = new AESCaptchaChecker(key, 3);
 	
 	@Test
 	public void test() {

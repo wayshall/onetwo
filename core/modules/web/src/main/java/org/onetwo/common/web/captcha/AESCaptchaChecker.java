@@ -25,11 +25,23 @@ public class AESCaptchaChecker implements CaptchaChecker {
 	final private Logger logger = JFishLoggerFactory.getCommonLogger();
 	final private CodeType codeType = CodeType.HEX;
 
-	public AESCaptchaChecker(String salt, int validInSeconds) {
+	public AESCaptchaChecker(final String salt, int validInSeconds) {
 		super();
 		Assert.isTrue(validInSeconds>0, "validInSeconds["+validInSeconds+"] must greater than 0");
+		String realKey = salt;
+		if (salt.length()!=16 || salt.length()!=24 || salt.length()!=32) {
+//			throw new IllegalArgumentException("error key size: " + salt.length());
+			if (salt.length()>32) {
+				realKey = salt.substring(0, 32);
+			} else if (salt.length()>24) {
+				realKey = salt.substring(0, 24);
+			} else {
+				realKey = salt.substring(0, 16);
+			}
+			logger.info("aes key size[{}] error, auto cust as : {}", salt.length(), realKey);
+		}
 		this.expireInSeconds = validInSeconds;
-		this.aesCoder = EncryptCoderFactory.aesCbcCoder(salt);
+		this.aesCoder = EncryptCoderFactory.aesCbcCoder(realKey);
 	}
 	
 	public boolean check(String code, String hashStr){
