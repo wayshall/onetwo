@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.captcha.CaptchaChecker.CaptchaSignedResult;
-import org.onetwo.common.web.captcha.CaptchaChecker.HashCaptchaChecker;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaResult;
 import org.onetwo.common.web.captcha.SimpleCaptchaGenerator.CaptchaSettings;
 

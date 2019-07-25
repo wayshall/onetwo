@@ -2,7 +2,6 @@ package org.onetwo.common.web.captcha;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.common.web.captcha.CaptchaChecker.CaptchaSignedResult;
-import org.onetwo.common.web.captcha.CaptchaChecker.HashCaptchaChecker;
 
 /**
  * @author wayshall
