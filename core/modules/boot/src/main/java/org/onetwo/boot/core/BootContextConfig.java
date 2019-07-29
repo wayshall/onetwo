@@ -51,7 +51,7 @@ public class BootContextConfig {
 //			if (ClassUtils.isPresent("javax.validation.Validator", getClass().getClassLoader())) {
 			Class<?> clazz;
 			try {
-				String className = "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean";
+				String className = LOCAL_VALIDATOR_CLASS;
 				clazz = ClassUtils.forName(className, org.onetwo.common.utils.ClassUtils.getDefaultClassLoader());
 			} catch (ClassNotFoundException e) {
 				throw new BeanInitializationException("Could not find default validator", e);

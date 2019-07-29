@@ -98,11 +98,11 @@ public interface DataSigner {
 			return convertor;
 		}
 		
-		protected String convertToSourceString(String signKey, long timestamp, Object request, String... excludeProperties){
-			Assert.hasText(signKey, "signKey can not blank");
+		protected String convertToSourceString(String signingKey, long timestamp, Object request, String... excludeProperties){
+			Assert.hasText(signingKey, "signKey can not blank");
 			Map<String, Object> requestMap = getBeanToMapConvertor(excludeProperties).toFlatMap(request);
 			final String paramString = ParamUtils.comparableKeyMapToParamString(requestMap);
-			String sourceString = signKey+paramString+timestamp;
+			String sourceString = signingKey+paramString+timestamp;
 			if(logger.isDebugEnabled()){
 				logger.debug("param string: {}", paramString);
 				logger.debug("source string: {}", sourceString);
@@ -110,8 +110,8 @@ public interface DataSigner {
 			return sourceString;
 		}
 		
-		public String sign(String signKey, long timestamp, Object request, String... excludeProperties){
-			String sourceString = convertToSourceString(signKey, timestamp, request, excludeProperties);
+		public String sign(String signingKey, long timestampInSeconds, Object request, String... excludeProperties){
+			String sourceString = convertToSourceString(signingKey, timestampInSeconds, request, excludeProperties);
 			MessageDigestHasher hasher = Hashs.sha1(false, CodeType.HEX);
 			String hashString = hasher.hash(sourceString);
 			if(logger.isDebugEnabled()){
