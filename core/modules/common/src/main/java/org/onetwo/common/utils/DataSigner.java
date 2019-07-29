@@ -115,8 +115,8 @@ public interface DataSigner {
 			MessageDigestHasher hasher = Hashs.sha1(false, CodeType.HEX);
 			String hashString = hasher.hash(sourceString);
 			if(logger.isDebugEnabled()){
-				logger.debug("source string: {}", sourceString);
-				logger.debug("hash string: {}", hashString);
+				logger.debug("sign source string: {}", sourceString);
+				logger.debug("sign hash string: {}", hashString);
 			}
 			return hashString;
 		}
@@ -147,7 +147,7 @@ public interface DataSigner {
 			MessageDigestHasher hasher = Hashs.sha1(false, CodeType.HEX);
 			String hashString = hasher.hash(sourceString);
 			if(logger.isDebugEnabled()){
-				logger.debug("hash string: {}", hashString);
+				logger.debug("checkSign hash string: {}", hashString);
 			}
 			
 			if(!hasher.checkHash(sourceString, signRequest.getSignkey())){

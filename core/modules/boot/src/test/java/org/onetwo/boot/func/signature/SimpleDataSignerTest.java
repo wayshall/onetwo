@@ -21,9 +21,18 @@ public class SimpleDataSignerTest {
 		
 		SigningConfig config = new SigningConfig();
 		config.setMaxDelayTimeInSeconds(10);
-		config.setSigningKey("testtest");
+		config.setSigningKey("SigningKey");
 		
-		SignableRequest signRequest = new TestSignableRequest();
+		TestSignableRequest signRequest = new TestSignableRequest();
+		signRequest.setUserName("testUsername");
+		signRequest.setPassword("testpassword");
+		
+		long timestamp = System.currentTimeMillis()/1000;
+		String signkey = singer.sign(config.getSigningKey(), timestamp, signRequest);
+		
+		signRequest.setSignkey(signkey);
+		signRequest.setTimestamp(timestamp);
+		
 		singer.checkSign(config, signRequest, null);
 	}
 
