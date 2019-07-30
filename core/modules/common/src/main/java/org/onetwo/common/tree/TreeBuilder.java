@@ -110,7 +110,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	};*/
 
 	public TreeBuilder(Collection<TM> datas) {
-		List<TM> nodes = new ArrayList<>(datas);
+		List<TM> nodes = datas.stream().filter(d -> d!=null).collect(Collectors.toList());
 		Collections.sort(nodes, comparator);
 		for(TM tm : nodes){
 			this.nodeMap.put(tm.getId(), tm);

@@ -34,6 +34,7 @@ public interface PermissionManager<P extends IPermission> {
 
 	List<P> findAppMenus(String appCode);
 	List<P> findUserAppMenus(String appCode, UserDetail userDetail);
+	List<P> findUserAppPerms(String appCode, UserDetail userDetail);
 	List<P> findAppPermissions(String appCode);
 	/*
 	public List<P> findPermissionByCodes(String appCode, String[] permissionCodes);*/

@@ -151,7 +151,7 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 			
 			public boolean isPrettyPrint(){
 				 if(prettyPrint==null)
-					 return !bootSpringConfig.isProduct();
+					 return bootSpringConfig==null || !bootSpringConfig.isProduct();
 				 else
 					 return prettyPrint;
 			}

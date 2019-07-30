@@ -94,7 +94,9 @@ final public class PermissionUtils {
 //			PermisstionTreeModel pm = new PermisstionTreeModel(p.getCode(), p.getName(), p.getParentCode());
 			T pm = treeModelCreator.apply(p);
 			return pm;
-		}).collect(Collectors.toList());
+		})
+		.filter(pm -> pm!=null)
+		.collect(Collectors.toList());
 		
 		TreeBuilder<T> builder = new TreeBuilder<>(pmlist);
 	    return builder;

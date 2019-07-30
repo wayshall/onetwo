@@ -382,6 +382,9 @@ public final class RequestUtils {
 	
 
 	public static boolean isHttpPath(String path){
+		if (StringUtils.isBlank(path)) {
+			return false;
+		}
 		final String subPath = path.toLowerCase();
 		return subPath.startsWith(HTTP_KEY) || subPath.startsWith(HTTPS_KEY);
 	}

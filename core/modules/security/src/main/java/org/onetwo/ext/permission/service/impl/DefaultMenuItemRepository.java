@@ -64,7 +64,8 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 		if(UserRoot.class.isInstance(loginUser) && ((UserRoot)loginUser).isSystemRootUser()){
 			permissions = permissionManager.findAppMenus(null);
 		}else{
-			permissions = permissionManager.findUserAppMenus(null, loginUser);
+//			permissions = permissionManager.findUserAppMenus(null, loginUser);
+			permissions = permissionManager.findUserAppPerms(null, loginUser);
 		}
 	    return builder.build(permissions, getAllPermissions());
 	}
