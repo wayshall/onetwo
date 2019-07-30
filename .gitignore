@@ -57,3 +57,4 @@ core/deploy-microcloud.sh
 rebel.xml
 /core/modules/common/src/test/java/org/onetwo/common/project
 /core/git-scripts
+/core/pom.xml
