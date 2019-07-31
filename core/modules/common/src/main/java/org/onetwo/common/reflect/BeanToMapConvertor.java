@@ -472,7 +472,7 @@ public class BeanToMapConvertor implements Cloneable {
 	}
 	protected static class BaseBeanToMapBuilder<T extends BaseBeanToMapBuilder<T>> {
 //		private BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
-		protected BiFunction<PropertyContext, Object, Boolean> propertyAcceptor = new DefaultPropertyAcceptor();
+		protected BiFunction<PropertyContext, Object, Boolean> propertyAcceptor;
 		protected BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 		protected Function<Object, Boolean> flatableObject;
 		protected boolean enableFieldNameAnnotation = false;
@@ -489,11 +489,18 @@ public class BeanToMapConvertor implements Cloneable {
 			builder.enableUnderLineStyle = this.enableUnderLineStyle;
 		}
 		
+		private void checkPropertyAcceptor() {
+			if (this.propertyAcceptor!=null) {
+				throw new IllegalStateException("propertyAcceptor has set!");
+			}
+		}
 		public T propertyAcceptor(BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
+			this.checkPropertyAcceptor();
 			this.propertyAcceptor = propertyAcceptor;
 			return self();
 		}
 		public T excludeProperties(String... properties) {
+			this.checkPropertyAcceptor();
 			this.propertyAcceptor = new ExcludePropertyAcceptor(Arrays.asList(properties));
 			return self();
 		}
@@ -538,6 +545,9 @@ public class BeanToMapConvertor implements Cloneable {
 			return beanToFlatMap.toFlatMap(obj);
 		}*/
 		public BeanToMapConvertor build(){
+			if (this.propertyAcceptor==null) {
+				this.propertyAcceptor = new DefaultPropertyAcceptor();
+			}
 			BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
 			beanToFlatMap.setPrefix(prefix);
 			beanToFlatMap.setPropertyAcceptor(propertyAcceptor);
