@@ -86,7 +86,7 @@ public interface DataSigner {
 		protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	
-		private BeanToMapConvertor getBeanToMapConvertor(String... excludeProperties){
+		protected BeanToMapConvertor getBeanToMapConvertor(String... excludeProperties){
 			List<String> excludes = Lists.newArrayList();
 			excludes.add(BaseSignableRequest.FIELD_SIGNKEY);
 			excludes.add(BaseSignableRequest.FIELD_TIMESTAMP);
