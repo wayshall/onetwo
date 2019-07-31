@@ -42,9 +42,9 @@ public class StrDirective implements NamedDirective {
 
 	@Override
 	public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
-		String insertPrefix = FtlUtils.getRequiredParameterByString(params, PARAMS_INSERT_PREFIX);
-		String trimPrefixs = FtlUtils.getParameterByString(params, PARAMS_TRIM_PREFIXS, "");
-		String trimSuffixs = FtlUtils.getParameterByString(params, PARAMS_TRIM_SUFFIXS, "");
+		String insertPrefix = getInsertPrefix(params);
+		List<String> trimPrefixs = getTrimPrefixs(params);
+		List<String> trimSuffixs = getTrimSuffixs(params);
 		
 		StringWriter writer = new StringWriter();
 		body.render(writer);
@@ -64,8 +64,24 @@ public class StrDirective implements NamedDirective {
 		env.getOut().append(buffer);
 	}
 	
-	private void trimPrefixs(StringBuilder buffer, String sql, String trimPrefixs) {
+	protected String getInsertPrefix(Map params) {
+		return FtlUtils.getRequiredParameterByString(params, PARAMS_INSERT_PREFIX);
+	}
+	
+	protected List<String> getTrimPrefixs(Map params) {
+		String trimPrefixs = FtlUtils.getParameterByString(params, PARAMS_TRIM_PREFIXS, "");
 		List<String> trimPrefixList = Arrays.asList(StringUtils.split(trimPrefixs.toLowerCase(), SPLIT_CHAR));
+		return trimPrefixList;
+	}
+	
+	protected List<String> getTrimSuffixs(Map params) {
+		String trimSuffixs = FtlUtils.getParameterByString(params, PARAMS_TRIM_SUFFIXS, "");
+		List<String> trimSuffixList = Arrays.asList(StringUtils.split(trimSuffixs.toLowerCase(), SPLIT_CHAR));
+		return trimSuffixList;
+	}
+	
+	private void trimPrefixs(StringBuilder buffer, String sql, List<String> trimPrefixList) {
+//		List<String> trimPrefixList = Arrays.asList(StringUtils.split(trimPrefixs.toLowerCase(), SPLIT_CHAR));
 		for(String prefix : trimPrefixList) {
 			if (sql.startsWith(prefix)) {
 				buffer.delete(0, prefix.length());
@@ -74,8 +90,8 @@ public class StrDirective implements NamedDirective {
 		}
 	}
 	
-	private void trimSuffixs(StringBuilder buffer, String sql, String trimSuffixs) {
-		List<String> trimSuffixList = Arrays.asList(StringUtils.split(trimSuffixs.toLowerCase(), SPLIT_CHAR));
+	private void trimSuffixs(StringBuilder buffer, String sql, List<String> trimSuffixList) {
+//		List<String> trimSuffixList = Arrays.asList(StringUtils.split(trimSuffixs.toLowerCase(), SPLIT_CHAR));
 		for(String suffix : trimSuffixList) {
 			if (sql.endsWith(suffix)) {
 				int start = buffer.length()-suffix.length();
