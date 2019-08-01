@@ -18,7 +18,7 @@ import org.onetwo.common.file.FileStoredMeta;
 public class SimpleBootCommonServiceTest {
 
 	@Test
-	public void test() throws Exception {
+	public void testCos() throws Exception {
 		CosProperties cos = new CosProperties();
 		
 		String bucketName = "test"; //dangjian

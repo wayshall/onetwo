@@ -20,6 +20,7 @@ import org.springframework.util.Assert;
 
 import com.aliyun.oss.ClientConfiguration;
 import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.common.auth.DefaultCredentialProvider;
 import com.aliyun.oss.model.Bucket;
 import com.aliyun.oss.model.BucketList;
 import com.aliyun.oss.model.CannedAccessControlList;
@@ -37,17 +38,19 @@ import com.aliyun.oss.model.PutObjectResult;
 public class OssClientWrapper implements InitializingBean, DisposableBean {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
-	private String endpoint;
+	/*private String endpoint;
 	private String accessKeyId;
-	private String accessKeySecret;
+	private String accessKeySecret;*/
+	private OssProperties ossProperties;
 	private OSSClient ossClient;
 	private ClientConfiguration clinetConfig;
 	
-	public OssClientWrapper(String endpoint, String accessKeyId, String accessKeySecret) {
+	public OssClientWrapper(OssProperties ossProperties) {
 		super();
-		this.endpoint = endpoint;
+		/*this.endpoint = endpoint;
 		this.accessKeyId = accessKeyId;
-		this.accessKeySecret = accessKeySecret;
+		this.accessKeySecret = accessKeySecret;*/
+		this.ossProperties = ossProperties;
 	}
 	
 	@Override
@@ -61,7 +64,10 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			clinetConfig = new ClientConfiguration();
 		}
 		configClient(clinetConfig);
-		this.ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret, clinetConfig);
+		DefaultCredentialProvider credential = new DefaultCredentialProvider(ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
+		this.ossClient = new OSSClient(ossProperties.getEndpoint(), 
+										credential, 
+										clinetConfig);
 	}
 	
 	protected void configClient(ClientConfiguration clinetConfig){
@@ -122,7 +128,7 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 	}
 	
 	public String getUrl(boolean https, String bucketName, String key){
-		return OssProperties.buildUrl(https, endpoint, bucketName, key);
+		return OssProperties.buildUrl(https, ossProperties.getEndpoint(), bucketName, key);
 	}
 	
 	public PutObjectResult putObject(PutObjectRequest request){
@@ -153,7 +159,7 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		}
 
 		public String getUrl(boolean https){
-			return OssProperties.buildUrl(https, wrapper.endpoint, bucketName, key);
+			return OssProperties.buildUrl(https, wrapper.ossProperties.getEndpoint(), bucketName, key);
 		}
 		
 		public Optional<OSSObject> getOSSObject(){
@@ -208,9 +214,9 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			return store(new ReaderInputStream(sr), meta);
 		}
 		
-		public ObjectOperation store(InputStream in, ObjectMetadata meta){
-			Assert.notNull(in);
-			putObject(new PutObjectRequest(bucketName, key, in, meta));
+		public ObjectOperation store(InputStream inputStream, ObjectMetadata meta){
+			Assert.notNull(inputStream, "inputStream can not be null");
+			putObject(new PutObjectRequest(bucketName, key, inputStream, meta));
 			return this;
 		}
 		

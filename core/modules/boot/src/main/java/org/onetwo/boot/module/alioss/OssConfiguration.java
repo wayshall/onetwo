@@ -32,7 +32,7 @@ public class OssConfiguration {
 	@Bean
 	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="alioss")
 	public OssClientWrapper OssClientWrapper(){
-		OssClientWrapper wrapper = new OssClientWrapper(ossProperties.getEndpoint(), ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
+		OssClientWrapper wrapper = new OssClientWrapper(ossProperties);
 		wrapper.setClinetConfig(ossProperties.getClient());
 		return wrapper;
 	}
