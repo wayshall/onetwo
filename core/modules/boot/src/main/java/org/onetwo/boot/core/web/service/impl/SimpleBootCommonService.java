@@ -13,7 +13,6 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.copier.CopyUtils;
@@ -36,8 +35,8 @@ public class SimpleBootCommonService implements BootCommonService {
 	@Autowired(required=false)
 	private ImageCompressor imageCompressor;
 	
-	@Autowired(required=false)
-	private StoreFilePathStrategy storeFilePathStrategy;
+	/*@Autowired(required=false)
+	private StoreFilePathStrategy storeFilePathStrategy;*/
 	
 	//少于等于0则一律不压缩
 	private int compressThresholdSize = -1;
@@ -112,7 +111,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		} catch (IOException e) {
 			throw new BaseException("obtain file stream error: " + options.getMultipartFile().getOriginalFilename());
 		}
-		// TODO: 如果开始压缩，写入两张图片？
+		
 		if(options.isCompressFile()){
 			ImageCompressor imageCompressor = this.imageCompressor;
 			if(imageCompressor==null){
@@ -121,11 +120,12 @@ public class SimpleBootCommonService implements BootCommonService {
 			ImageCompressorConfig config = CopyUtils.copy(ImageCompressorConfig.class, options.getCompressConfig());
 			in = imageCompressor.compressStream(in, config);
 		}
-		StoringFileContext context = StoringFileContext.create(options.getModule(), 
+		BootStoringFileContext context = new BootStoringFileContext(options.getModule(), 
 																in, 
 																options.getMultipartFile().getOriginalFilename());
+		context.setResizeConfig(options.getResizeConfig());
 		context.setFileStoreBaseDir(fileStoreBaseDir);
-		context.setStoreFilePathStrategy(storeFilePathStrategy);
+//		context.setStoreFilePathStrategy(storeFilePathStrategy);
 		context.setKey(options.getKey());
 		FileStoredMeta meta = fileStorer.write(context);
 		if(fileStorerListener!=null){

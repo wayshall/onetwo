@@ -3,14 +3,17 @@ package org.onetwo.boot.module.alioss;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Optional;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.boot.core.web.service.impl.BootStoringFileContext;
+import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStoredMeta;
-import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -22,13 +25,13 @@ public class OssFileStore implements FileStorer, InitializingBean {
 	
 	private OssClientWrapper wrapper;
 	private OssProperties ossProperties;
-	private String bucketName;
+//	private String bucketName;
 
 	public OssFileStore(OssClientWrapper wrapper, OssProperties ossProperties) {
 		super();
 		this.wrapper = wrapper;
 		this.ossProperties = ossProperties;
-		this.bucketName = ossProperties.getBucketName();
+//		this.bucketName = ossProperties.getBucketName();
 	}
 
 	@Override
@@ -37,33 +40,50 @@ public class OssFileStore implements FileStorer, InitializingBean {
 	}
 
 	@Override
-	public FileStoredMeta write(StoringFileContext context) {
-		String key = context.getKey();
-		if(StringUtils.isBlank(key)){
-			key = defaultStoreKey(context);
+	public FileStoredMeta write(StoringFileContext ctx) {
+		BootStoringFileContext context = (BootStoringFileContext) ctx;
+		String key = defaultStoreKey(context);
+		context.setKey(key);
+		
+		ResizeProperties resizeConfig = new ResizeProperties();
+		CopyUtils.copyIgnoreNullAndBlank(resizeConfig, ossProperties.getResize());
+		if (context.getResizeConfig()!=null) {
+			// 如果显式传入了压缩参数，则必须生成缩略图
+			resizeConfig.setEnabled(true);
+			CopyUtils.copyIgnoreNullAndBlank(resizeConfig, context.getResizeConfig());
 		}
-		wrapper.objectOperation(bucketName, key)
-				.store(context.getInputStream());
+		
+		WaterMaskProperties waterMaskConfig = new WaterMaskProperties();
+		CopyUtils.copyIgnoreNullAndBlank(waterMaskConfig, ossProperties.getWatermask());
+		if (context.getWaterMaskConfig()!=null) {
+			// 如果显式传入了水印参数，则必须生成水印
+			waterMaskConfig.setEnabled(true);
+			CopyUtils.copyIgnoreNullAndBlank(waterMaskConfig, context.getWaterMaskConfig());
+		}
+		
+		Optional<String> minKey = wrapper.objectOperation(ossProperties.getBucketName(), key)
+				.store(context.getInputStream())
+				.watermask(waterMaskConfig)
+				.resize(resizeConfig);
 
 		String accessablePath = StringUtils.appendStartWithSlash(key);
 
-		FileStoredMeta fmeta = null;
-		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
-		if(strategy==null){
-			SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), key);
-			meta.setBaseUrl(ossProperties.getDownloadEndPoint());
-			meta.setSotredFileName(key);
-			meta.setAccessablePath(accessablePath);
-			meta.setFullAccessablePath(ossProperties.getUrl(key));
-			meta.setStoredServerLocalPath(key);
-			meta.setBizModule(context.getModule());
-			meta.setSotredFileName(key);
-			fmeta = meta;
-		}else{
-			fmeta = strategy.getStoreFilePath(null, null, context);
+		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), key);
+		meta.setBaseUrl(ossProperties.getDownloadEndPoint());
+		meta.setSotredFileName(key);
+		meta.setAccessablePath(accessablePath);
+		meta.setFullAccessablePath(ossProperties.getUrl(key));
+		meta.setStoredServerLocalPath(key);
+		meta.setBizModule(context.getModule());
+		meta.setSotredFileName(key);
+		
+		if (minKey.isPresent()) {
+			SimpleFileStoredMeta minMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), minKey.get());
+			minMeta.setSotredFileName(minKey.get());
+			meta.setResizeStoredMeta(minMeta);
 		}
 		
-		return fmeta;
+		return meta;
 	}
 	
 	@Override
@@ -79,7 +99,7 @@ public class OssFileStore implements FileStorer, InitializingBean {
 	@Override
 	public InputStream readFileStream(String accessablePath) {
 		String key = accessablePath;
-		InputStream in = wrapper.objectOperation(bucketName, key)
+		InputStream in = wrapper.objectOperation(ossProperties.getBucketName(), key)
 								.getOSSObject()
 								.orElseThrow(()->new BaseException("no file found for key: " + key))
 								.getObjectContent();
@@ -91,6 +111,4 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		return 0;
 	}
 	
-	
-
 }

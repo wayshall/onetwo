@@ -6,8 +6,10 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.input.ReaderInputStream;
+import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.jackson.JsonMapper;
@@ -25,6 +27,7 @@ import com.aliyun.oss.model.Bucket;
 import com.aliyun.oss.model.BucketList;
 import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.CreateBucketRequest;
+import com.aliyun.oss.model.GenericResult;
 import com.aliyun.oss.model.ListBucketsRequest;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
@@ -117,13 +120,13 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 	
 	public String storeWithFileName(String bucketName, File file, ObjectMetadata meta){
 		String key = FileUtils.getFileName(file.getPath());
-		objectOperation(bucketName, key).store(file, meta);
+		objectOperation(bucketName, key).store(file, meta, null);
 		return getUrl(true, bucketName, key);
 	}
 	
 	public String store(String bucketName, File file, ObjectMetadata meta){
 		String key = UUID.randomUUID().toString();
-		objectOperation(bucketName, key).store(file, meta);
+		objectOperation(bucketName, key).store(file, meta, null);
 		return getUrl(true, bucketName, key);
 	}
 	
@@ -149,7 +152,7 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		private OssClientWrapper wrapper;
 		private Optional<OSSObject> ossObject;
 		private OSSClient ossClient;
-		private PutObjectResult storeResult;
+//		private PutObjectResult storeResult;
 		public ObjectOperation(String bucketName, String key, OssClientWrapper wrapper) {
 			super();
 			this.bucketName = bucketName;
@@ -175,14 +178,93 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		}
 		
 		public ObjectOperation store(File file){
-			return store(file, null);
+			return store(file, null, null);
 		}
 		
-		public ObjectOperation store(File file, ObjectMetadata meta){
+		public ObjectOperation store(File file, ObjectMetadata meta, Consumer<PutObjectResult> onCompleted){
 			if(!file.exists()){
 				throw new BaseException("file is not exists!");
 			}
-			putObject(new PutObjectRequest(bucketName, key, file, meta));
+			PutObjectResult result = putObject(new PutObjectRequest(bucketName, key, file, meta));
+			if (onCompleted!=null) {
+				onCompleted.accept(result);
+			} else {
+				if (!result.getResponse().isSuccessful()) {
+					throw new BaseException("uplaod to oss error: " + result.getResponse().getErrorResponseAsString());
+				}
+			}
+			return this;
+		}
+		
+		public ObjectOperation resize(String targetKey, ResizeProperties config) {
+			return resize(targetKey, config, null);
+		}
+		
+		public Optional<String> resize(ResizeProperties config) {
+			if (config==null || !config.isEnabled()) {
+				return Optional.empty();
+			}
+			String dirPath = FileUtils.getParentpath(key);
+			String keyWithoutPostfix = FileUtils.getFileNameWithoutExt(key);
+			String resizeKey = dirPath + "/" + keyWithoutPostfix + "-min" + FileUtils.getExtendName(key, true);
+			resize(resizeKey, config, null);
+			return Optional.ofNullable(resizeKey);
+		}
+		
+		/***
+		 * 缩放
+		 * @author weishao zeng
+		 * @param targetKey
+		 * @param config
+		 * @param onCompleted
+		 * @return
+		 */
+		public ObjectOperation resize(String targetKey, ResizeProperties config, Consumer<GenericResult> onCompleted) {
+			Assert.hasText(targetKey, "targetKey must has text!");
+			Assert.notNull(config, "resize config can not be null!");
+			ResizeAction obj = new ResizeAction();
+			obj.setBucketName(bucketName);
+			obj.setSourceKey(key);
+			obj.setTargetKey(targetKey);
+			obj.configBy(config);
+			GenericResult result = this.ossClient.processObject(obj.buildRequest());
+			if (onCompleted!=null) {
+				onCompleted.accept(result);
+			} else {
+				if (!result.getResponse().isSuccessful()) {
+					throw new BaseException("resize error: " + result.getResponse().getErrorResponseAsString());
+				}
+			}
+			return this;
+		}
+		
+		/***
+		 * 原图加水印
+		 * @author weishao zeng
+		 * @param config
+		 * @return
+		 */
+		public ObjectOperation watermask(WaterMaskProperties config) {
+			if (!config.isEnabled()) {
+				return this;
+			}
+			return watermask(key, config, null);
+		}
+		public ObjectOperation watermask(String targetKey, WaterMaskProperties config, Consumer<GenericResult> onCompleted) {
+			WatermarkAction obj = new WatermarkAction();
+			obj.setBucketName(bucketName);
+			obj.setSourceKey(key);
+			obj.setTargetKey(targetKey);
+			obj.configBy(config);
+//			System.out.println("style: " + obj.toStyleWithName());
+			GenericResult result = this.ossClient.processObject(obj.buildRequest());
+			if (onCompleted!=null) {
+				onCompleted.accept(result);
+			} else {
+				if (!result.getResponse().isSuccessful()) {
+					throw new BaseException("watermask error: " + result.getResponse().getErrorResponseAsString());
+				}
+			}
 			return this;
 		}
 		
@@ -233,9 +315,9 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			return this;
 		}
 		
-		public ObjectOperation putObject(PutObjectRequest request){
-			storeResult = wrapper.putObject(request);
-			return this;
+		public PutObjectResult putObject(PutObjectRequest request){
+			PutObjectResult result = wrapper.putObject(request);
+			return result;
 		}
 		
 		public ObjectOperation accessPrivate(){
@@ -253,9 +335,9 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			return this;
 		}
 
-		public Optional<PutObjectResult> storeResult() {
+		/*public Optional<PutObjectResult> storeResult() {
 			return Optional.ofNullable(storeResult);
-		}
+		}*/
 		
 	}
 

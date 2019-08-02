@@ -3,7 +3,8 @@ package org.onetwo.boot.module.alioss;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
-import org.onetwo.boot.module.alioss.OssClientWrapperTest.TestInnerContextConfig;
+import org.onetwo.boot.module.alioss.OssClientWrapperTest.TestOssUploadContextConfig;
+import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
 import org.onetwo.boot.module.alioss.WatermarkAction.WatermarkFonts;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -22,7 +23,7 @@ import com.aliyun.oss.model.ProcessObjectRequest;
  * @author wayshall
  * <br/>
  */
-@ContextConfiguration(loader=AnnotationConfigContextLoader.class, classes=TestInnerContextConfig.class)
+@ContextConfiguration(loader=AnnotationConfigContextLoader.class, classes=TestOssUploadContextConfig.class)
 public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 	private OssProperties ossProperties;
 	
@@ -60,13 +61,14 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 	
 	@Test
 	public void testUpload() throws Exception {
+		ResizeProperties config = new ResizeProperties();
+		config.setWidth(200);
 		Resource resource = SpringUtils.classpath("data/test.jpg");
 		this.wraper.objectOperation(bucketName, "test/test.jpg")
-					.store(resource.getFile())
-					.storeResult()
-					.ifPresent(res -> {
+					.store(resource.getFile(), null, res -> {
 						System.out.println("res: " + res);
-					});
+					})
+					.resize(config);
 	}
 	
 	@Test
@@ -97,6 +99,14 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 		System.out.println("style: " + obj.toStyleWithName());
 		this.wraper.getOssClient().processObject(obj.buildRequest());
 	}
+	@Test
+	public void testWatermarkAction2() throws Exception {
+		WaterMaskProperties config = new WaterMaskProperties();
+		config.setText("测试了~~");
+		config.setSize(100);
+		this.wraper.objectOperation(bucketName, "test/test.jpg")
+					.watermask(config);
+	}
 	
 	@Test
 	public void testResizeAction() throws Exception {
@@ -104,14 +114,25 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 		obj.setBucketName(bucketName);
 		obj.setSourceKey("test/test.jpg");
 		obj.setTargetKey("test/test2.jpg");
-		obj.setWidth(200);
+//		obj.setWidth(200);
+		ResizeProperties config = new ResizeProperties();
+		config.setWidth(200);
+		obj.configBy(config);
 		System.out.println("style: " + obj.toStyleWithName());
 		this.wraper.getOssClient().processObject(obj.buildRequest());
+	}
+	
+	@Test
+	public void testResizeAction2() throws Exception {
+		ResizeProperties config = new ResizeProperties();
+		config.setWidth(200);
+		this.wraper.objectOperation(bucketName, "test/test.jpg")
+					.resize("test/test2.jpg", config);
 	}
 
 	@Configuration
 	@PropertySource(value="classpath:application-product.properties")
-	public static class TestInnerContextConfig {
+	public static class TestOssUploadContextConfig {
 		
 	}
 

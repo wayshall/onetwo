@@ -1,5 +1,7 @@
 package org.onetwo.boot.module.alioss;
 
+import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,7 +11,7 @@ import lombok.Getter;
  * @author weishao zeng
  * <br/>
  */
-public class WatermarkAction extends ObjectProcess {
+public class WatermarkAction extends ObjectProcess<WaterMaskProperties> {
 	
 	/**
 	 * image/watermark
@@ -33,7 +35,7 @@ public class WatermarkAction extends ObjectProcess {
 	}
 	
 	public void setFont(WatermarkFonts font) {
-		setType(font.name().toLowerCase().replace('_', '-'));
+		setType(font.getValue());
 	}
 	
 	/***
@@ -180,6 +182,10 @@ public class WatermarkAction extends ObjectProcess {
 		FANGZHENGKAITI("方正楷体");
 		@Getter
 		final private String labe;
+		
+		public String getValue() {
+			return name().toLowerCase().replace('_', '-');
+		}
 	}
 
 }

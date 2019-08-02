@@ -7,6 +7,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author wayshall
@@ -17,7 +21,20 @@ import lombok.Builder;
 public class UploadOptions {
 	final private String module;
 	final private MultipartFile multipartFile;
+	/***
+	 * 上传的时候是否压缩图片本身，统一实现
+	 */
 	private CompressConfig compressConfig;
+	
+	/****
+	 * 是否在上传的同事生成一张缩略图，各自storer实现
+	 * 暂时支持的fileStore：
+	 * ossFileStorer
+	 */
+	@Setter
+	@Getter
+	private ResizeConfig resizeConfig;
+	
 	/**
 	 * 如果指定了key，会覆盖
 	 */
@@ -66,4 +83,27 @@ public class UploadOptions {
 		return key;
 	}
 	
+	@NoArgsConstructor
+	@Data
+	static public class ResizeConfig {
+		/***
+		 * 指定目标缩略图的宽度
+		 */
+		Integer width;
+		Integer heigh;
+
+		@Builder
+		public ResizeConfig(Integer width, Integer heigh) {
+			super();
+			this.width = width;
+			this.heigh = heigh;
+		}
+	}
+
+	@Data
+	public static class WaterMaskConfig {
+		String text;
+		Integer size;
+		String type;
+	}
 }

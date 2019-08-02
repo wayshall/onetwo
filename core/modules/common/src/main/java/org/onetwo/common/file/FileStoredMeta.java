@@ -1,7 +1,6 @@
 package org.onetwo.common.file;
 
-
-public interface FileStoredMeta {
+public interface FileStoredMeta extends StoredMeta {
 	
 	/***
 	 * 基础路径
@@ -9,14 +8,6 @@ public interface FileStoredMeta {
 	 * @return
 	 */
 	String getBaseUrl();
-	
-	/***
-	 * 上传成功后客户端应该保存此路径到数据库
-	 * accessable path，exclude host: /aa/bb/cc.jpg
-	 * @author wayshall
-	 * @return
-	 */
-	String getAccessablePath();
 	/***
 	 * 包含了图片服务器地址的路径
 	 * full accessable path, include host : http://host.com/img/aa/bb/cc.jpg
@@ -33,18 +24,13 @@ public interface FileStoredMeta {
 	 */
 //	String getStoredServerLocalPath();
 	
-	/***
-	 * 保存后的文件名
-	 * @author wayshall
-	 * @return
-	 */
-	String getSotredFileName();
 	
 	String getOriginalFilename();
 	
 	String getBizModule();
 	
+	StoredMeta getResizeStoredMeta();
 	
-//	public File toFile();
+	void setResizeStoredMeta(StoredMeta resizeStoredMeta);
 	
 }

@@ -1,15 +1,12 @@
 package org.onetwo.boot.module.alioss;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
  * https://help.aliyun.com/document_detail/44688.html?spm=a2c4g.11186623.6.1382.49865bbfI9lDiK
  * 
  * @author weishao zeng
  * <br/>
  */
-public class ResizeAction extends ObjectProcess {
+public class ResizeAction extends ObjectProcess<ResizeProperties> {
 	
 	/**
 	 * image/resize
@@ -68,7 +65,7 @@ fixed：固定宽高，强制缩略。
 	 * @author weishao zeng
 	 * @param maxLong
 	 */
-	public void setLong(int maxLong) {
+	public void setMaxLong(int maxLong) {
 		if (maxLong < 1) {
 			maxLong = 1;
 		}else if (maxLong > 4096) {
@@ -83,7 +80,7 @@ fixed：固定宽高，强制缩略。
 	 * @author weishao zeng
 	 * @param minShort
 	 */
-	public void setShort(int minShort) {
+	public void setMinShort(int minShort) {
 		if (minShort < 1) {
 			minShort = 1;
 		}else if (minShort > 4096) {

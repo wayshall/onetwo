@@ -11,10 +11,17 @@ public interface FileStorer {
 	default String defaultStoreKey(StoringFileContext context) {
 		String dir = StringUtils.emptyIfNull(context.getFileStoreBaseDir());
 		if (StringUtils.isNotBlank(context.getModule())) {
-			dir = "/" + context.getModule();
+			dir += "/" + context.getModule();
 		}
 		dir = FileUtils.convertDir(dir);
-		String key = dir + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
+		// oss的key 不能以 / 开头
+		dir = StringUtils.trimStartWith(dir, FileUtils.SLASH);
+		String key = context.getKey();
+		if (StringUtils.isBlank(context.getKey())) {
+			key = dir + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
+		} else {
+			key = dir + key;
+		}
 		return key;
 	}
 	FileStoredMeta write(StoringFileContext context);

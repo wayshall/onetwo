@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.util.Assert;
 
@@ -17,7 +18,7 @@ import groovy.transform.ToString;
  * @author weishao zeng
  * <br/>
  */
-public class ObjectProcess {
+public class ObjectProcess<T> {
 	
 	/**
 	 * x-oss-process:
@@ -29,6 +30,10 @@ public class ObjectProcess {
 	private String bucketName;
 	
 	private Map<String, AttrValue> attrs;
+
+	public void configBy(T config) {
+		CopyUtils.copyIgnoreNullAndBlank(this, config, "enabled");
+	}
 	
 	final public void setAction(String action) {
 		this.action = action;
@@ -50,11 +55,15 @@ public class ObjectProcess {
 		return put(name, value, false);
 	}
 	public ObjectProcess put(String name, String value, boolean encodeBase64) {
+		if (value==null) {
+			return this;
+		}
 		AttrValue val = new AttrValue(value, encodeBase64);
 		put(name, val);
 		return this;
 	}
 	public ObjectProcess put(String name, AttrValue value) {
+		Assert.notNull(value, "value can not be null");
 		if (attrs==null) {
 			attrs = Maps.newHashMap();
 		}

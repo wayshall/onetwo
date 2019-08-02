@@ -3,9 +3,9 @@ package org.onetwo.boot.core.web.service.impl;
 import java.io.File;
 
 import org.junit.Test;
-import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.utils.SimpleMultipartFile;
 import org.onetwo.boot.core.web.utils.UploadOptions;
+import org.onetwo.boot.core.web.utils.UploadOptions.ResizeConfig;
 import org.onetwo.boot.module.cos.CosClientWrapper;
 import org.onetwo.boot.module.cos.CosFileStore;
 import org.onetwo.boot.module.cos.CosProperties;
@@ -47,10 +47,12 @@ public class SimpleBootCommonServiceTest {
 		SimpleMultipartFile upfile = new SimpleMultipartFile("test.png", file);
 		UploadOptions opts = UploadOptions.builder()		
 											.multipartFile(upfile)
-											.module("/aa")
+//											.module("/aa")
 //											.key("test.png")
+//											.resizeConfig(ResizeConfig.builder().width(200).build())
 											.build();
 		FileStoredMeta meta = common.uploadFile(opts);
 		System.out.println("meta: " + meta);
 	}
+	
 }
