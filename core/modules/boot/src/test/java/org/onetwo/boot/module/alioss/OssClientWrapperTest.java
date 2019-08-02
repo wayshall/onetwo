@@ -44,6 +44,7 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 		ossProperties.setEndpoint(endpoint);
 		ossProperties.setAccessKeyId(accessKeyId);
 		ossProperties.setAccessKeySecret(accessKeySecret);
+		ossProperties.setBucketName(bucketName);
 		
 		this.wraper = new OssClientWrapper(ossProperties);
 		wraper.afterPropertiesSet();

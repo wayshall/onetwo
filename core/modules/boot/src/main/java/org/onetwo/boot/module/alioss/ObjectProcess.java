@@ -12,7 +12,8 @@ import org.springframework.util.Assert;
 import com.aliyun.oss.model.ProcessObjectRequest;
 import com.google.common.collect.Maps;
 
-import groovy.transform.ToString;
+import lombok.ToString;
+
 
 /**
  * @author weishao zeng
@@ -51,10 +52,10 @@ public class ObjectProcess<T> {
 		this.bucketName = bucketName;
 	}
 
-	public ObjectProcess put(String name, String value) {
+	public ObjectProcess<T> put(String name, String value) {
 		return put(name, value, false);
 	}
-	public ObjectProcess put(String name, String value, boolean encodeBase64) {
+	public ObjectProcess<T> put(String name, String value, boolean encodeBase64) {
 		if (value==null) {
 			return this;
 		}
@@ -62,7 +63,7 @@ public class ObjectProcess<T> {
 		put(name, val);
 		return this;
 	}
-	public ObjectProcess put(String name, AttrValue value) {
+	public ObjectProcess<T> put(String name, AttrValue value) {
 		Assert.notNull(value, "value can not be null");
 		if (attrs==null) {
 			attrs = Maps.newHashMap();

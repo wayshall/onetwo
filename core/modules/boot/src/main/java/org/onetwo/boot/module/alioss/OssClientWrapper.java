@@ -114,6 +114,10 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
         return buckList.getBucketList();
 	}
 	
+	public ObjectOperation objectOperation(String key){
+		return new ObjectOperation(ossProperties.getBucketName(), key, this);
+	}
+	
 	public ObjectOperation objectOperation(String bucketName, String key){
 		return new ObjectOperation(bucketName, key, this);
 	}

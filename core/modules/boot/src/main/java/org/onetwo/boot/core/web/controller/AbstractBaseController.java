@@ -25,7 +25,6 @@ import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs;
@@ -83,21 +82,21 @@ abstract public class AbstractBaseController {
 		return sessionUserManager;
 	}
 
-	protected FileStoredMeta uploadFile(String module, MultipartFile file){
+	/*protected FileStoredMeta uploadFile(String module, MultipartFile file){
 		Assert.notNull(file, "file is required; it must not be null");
 		Assert.notNull(fileStorer, "fileStorer is required; it must not be null");
 		return uploadFile(module, file, null);
-	}
+	}*/
 	
-	protected FileStoredMeta uploadFile(String module, MultipartFile file, StoreFilePathStrategy storeFilePathStrategy){
+	protected FileStoredMeta uploadFile(String module, MultipartFile file){
 		Assert.notNull(file, "file is required; it must not be null");
 		Assert.notNull(fileStorer, "fileStorer is required; it must not be null");
 //		context = StoringFileContext.create(module, file.getInputStream(), file.getOriginalFilename());
 //		Assert.notNull(storeFilePathStrategy);
 		StoringFileContext context = BootWebUtils.createStoringFileContext(module, file);
-		if(storeFilePathStrategy!=null){
+		/*if(storeFilePathStrategy!=null){
 			context.setStoreFilePathStrategy(storeFilePathStrategy);
-		}
+		}*/
 		return fileStorer.write(context);
 	}
 

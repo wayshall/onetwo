@@ -50,7 +50,7 @@ public class OssProperties {
 		return url.toString();
 	}
 	
-	@Data
+	@lombok.Data
 	public static class WaterMaskProperties {
 		boolean enabled;
 		String text;
