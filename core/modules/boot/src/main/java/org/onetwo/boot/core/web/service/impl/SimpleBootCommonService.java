@@ -91,13 +91,15 @@ public class SimpleBootCommonService implements BootCommonService {
 	@Override
 	public FileStoredMeta uploadFile(String module, MultipartFile file){
 		Assert.notNull(file, "file can not be null");
-		Assert.notNull(fileStorer, "fileStorer can not be null");
-		StoringFileContext context = create(module, file);
+		
+		UploadOptions options = new UploadOptions(module, file);
+		return uploadFile(options);
+		/*StoringFileContext context = create(module, file);
 		FileStoredMeta meta = fileStorer.write(context);
 		if(fileStorerListener!=null){
 			fileStorerListener.afterFileStored(meta);
 		}
-		return meta;
+		return meta;*/
 	}
 
 
