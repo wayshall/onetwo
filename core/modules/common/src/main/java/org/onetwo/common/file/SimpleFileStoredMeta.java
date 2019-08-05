@@ -1,6 +1,7 @@
 package org.onetwo.common.file;
 
 import java.io.File;
+import java.util.Optional;
 
 public class SimpleFileStoredMeta implements FileStoredMeta{
 
@@ -80,16 +81,16 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 		this.baseUrl = baseUrl;
 	}
 
-	public StoredMeta getResizeStoredMeta() {
-		return resizeStoredMeta;
+	public Optional<StoredMeta> getResizeStoredMeta() {
+		return Optional.ofNullable(resizeStoredMeta);
 	}
 
 	public void setResizeStoredMeta(StoredMeta resizeStoredMeta) {
 		this.resizeStoredMeta = resizeStoredMeta;
 	}
 
-	public StoredMeta getSnapshotStoredMeta() {
-		return snapshotStoredMeta;
+	public Optional<StoredMeta> getSnapshotStoredMeta() {
+		return Optional.ofNullable(snapshotStoredMeta);
 	}
 
 	public void setSnapshotStoredMeta(StoredMeta snapshotStoredMeta) {

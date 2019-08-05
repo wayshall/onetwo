@@ -1,5 +1,7 @@
 package org.onetwo.common.file;
 
+import java.util.Optional;
+
 public interface FileStoredMeta extends StoredMeta {
 	
 	/***
@@ -29,7 +31,18 @@ public interface FileStoredMeta extends StoredMeta {
 	
 	String getBizModule();
 
-	StoredMeta getResizeStoredMeta();
-	StoredMeta getSnapshotStoredMeta();
+	/***
+	 * 获取缩略图
+	 * @author weishao zeng
+	 * @return
+	 */
+	Optional<StoredMeta> getResizeStoredMeta();
+	
+	/***
+	 * 获取视频截图
+	 * @author weishao zeng
+	 * @return
+	 */
+	Optional<StoredMeta> getSnapshotStoredMeta();
 	
 }
