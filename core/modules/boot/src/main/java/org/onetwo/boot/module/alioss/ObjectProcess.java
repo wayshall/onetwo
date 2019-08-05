@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 import com.aliyun.oss.model.ProcessObjectRequest;
 import com.google.common.collect.Maps;
 
+import lombok.Builder;
 import lombok.ToString;
 
 
@@ -52,6 +53,10 @@ public class ObjectProcess<T> {
 		this.bucketName = bucketName;
 	}
 
+	public ObjectProcess<T> put(String name, int value) {
+		return put(name, String.valueOf(value), false);
+	}
+	
 	public ObjectProcess<T> put(String name, String value) {
 		return put(name, value, false);
 	}
@@ -121,7 +126,7 @@ public class ObjectProcess<T> {
 	}
 
 	@ToString
-	static class AttrValue {
+	public static class AttrValue {
 		final private Object value;
 		final private boolean encodeBase64;
 		final private boolean encodeUrl;
@@ -129,6 +134,7 @@ public class ObjectProcess<T> {
 			this(value, encodeBase64, false);
 		}
 		
+		@Builder
 		public AttrValue(Object value, boolean encodeBase64, boolean encodeUrl) {
 			super();
 			this.value = value;

@@ -3,11 +3,12 @@ package org.onetwo.boot.module.alioss;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Optional;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.web.service.impl.BootStoringFileContext;
+import org.onetwo.boot.module.alioss.OssClientWrapper.ObjectOperation;
 import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
+import org.onetwo.boot.module.alioss.video.SnapshotProperties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -61,10 +62,9 @@ public class OssFileStore implements FileStorer, InitializingBean {
 			CopyUtils.copyIgnoreNullAndBlank(waterMaskConfig, context.getWaterMaskConfig());
 		}
 		
-		Optional<String> minKey = wrapper.objectOperation(ossProperties.getBucketName(), key)
+		ObjectOperation operation = wrapper.objectOperation(ossProperties.getBucketName(), key)
 				.store(context.getInputStream())
-				.watermask(waterMaskConfig)
-				.resize(resizeConfig);
+				.watermask(waterMaskConfig);
 
 		String accessablePath = StringUtils.appendStartWithSlash(key);
 
@@ -77,11 +77,24 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		meta.setBizModule(context.getModule());
 		meta.setSotredFileName(key);
 		
-		if (minKey.isPresent()) {
-			SimpleFileStoredMeta minMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), minKey.get());
-			minMeta.setSotredFileName(minKey.get());
+		operation.resize(resizeConfig, minKey -> {
+			SimpleFileStoredMeta minMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), minKey);
+			minMeta.setSotredFileName(minKey);
 			meta.setResizeStoredMeta(minMeta);
+		});
+		
+		SnapshotProperties snapshotConfig = new SnapshotProperties();
+		CopyUtils.copyIgnoreNullAndBlank(snapshotConfig, ossProperties.getSnapshot());
+		if (context.getSnapshotConfig()!=null) {
+			// 如果显式传入了压缩参数，则必须生成截图
+			snapshotConfig.setEnabled(true);
+			CopyUtils.copyIgnoreNullAndBlank(snapshotConfig, context.getSnapshotConfig());
 		}
+		operation.videoSnapshot(snapshotConfig, cutImageKey -> {
+			SimpleFileStoredMeta cutMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), cutImageKey);
+			cutMeta.setSotredFileName(cutImageKey);
+			meta.setSnapshotStoredMeta(cutMeta);
+		});
 		
 		return meta;
 	}

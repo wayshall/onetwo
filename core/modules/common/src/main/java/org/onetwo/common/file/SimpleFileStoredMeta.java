@@ -12,8 +12,9 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 	private String bizModule;
 	
 	private String baseUrl;
-	
+
 	private StoredMeta resizeStoredMeta;
+	private StoredMeta snapshotStoredMeta;
 	
 	public SimpleFileStoredMeta(String originalFilename, String storedServerLocalPath) {
 		super();
@@ -85,6 +86,14 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 
 	public void setResizeStoredMeta(StoredMeta resizeStoredMeta) {
 		this.resizeStoredMeta = resizeStoredMeta;
+	}
+
+	public StoredMeta getSnapshotStoredMeta() {
+		return snapshotStoredMeta;
+	}
+
+	public void setSnapshotStoredMeta(StoredMeta snapshotStoredMeta) {
+		this.snapshotStoredMeta = snapshotStoredMeta;
 	}
 
 	@Override

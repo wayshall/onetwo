@@ -35,6 +35,10 @@ public class UploadOptions {
 	@Getter
 	private ResizeConfig resizeConfig;
 	
+	@Setter
+	@Getter
+	private SnapshotConfig snapshotConfig;
+	
 	/**
 	 * 如果指定了key，会覆盖
 	 */
@@ -105,5 +109,31 @@ public class UploadOptions {
 		String text;
 		Integer size;
 		String type;
+	}
+	
+	/***
+	 * 视频截图配置
+	 * @author way
+	 *
+	 */
+	@Data
+	public static class SnapshotConfig {
+		/***
+		 * 截图时间	单位ms，[0,视频时长]
+		 */
+		int time;
+		/***
+		 * 截图宽度，如果指定为0则自动计算	像素值：[0,视频宽度]
+		 */
+		int width;
+		int height;
+		
+		@Builder
+		public SnapshotConfig(int time, int width, int height) {
+			super();
+			this.time = time;
+			this.width = width;
+			this.height = height;
+		}
 	}
 }

@@ -1,4 +1,7 @@
-package org.onetwo.boot.module.alioss;
+package org.onetwo.boot.module.alioss.image;
+
+import org.onetwo.boot.module.alioss.ObjectProcess;
+import org.onetwo.boot.module.alioss.ResizeProperties;
 
 /**
  * https://help.aliyun.com/document_detail/44688.html?spm=a2c4g.11186623.6.1382.49865bbfI9lDiK

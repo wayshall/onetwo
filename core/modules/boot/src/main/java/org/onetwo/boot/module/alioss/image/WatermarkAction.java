@@ -1,5 +1,6 @@
-package org.onetwo.boot.module.alioss;
+package org.onetwo.boot.module.alioss.image;
 
+import org.onetwo.boot.module.alioss.ObjectProcess;
 import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
 
 import lombok.AllArgsConstructor;
@@ -171,7 +172,11 @@ public class WatermarkAction extends ObjectProcess<WaterMaskProperties> {
 	 * @param image
 	 */
 	public void setImage(String image) {
-		put("image", image, true);
+		put("image", AttrValue.builder()
+									.encodeBase64(true)
+									.encodeUrl(true)
+									.value(image).build()
+			);
 	}
 	
 	@AllArgsConstructor

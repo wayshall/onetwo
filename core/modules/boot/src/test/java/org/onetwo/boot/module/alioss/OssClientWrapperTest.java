@@ -5,7 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.boot.module.alioss.OssClientWrapperTest.TestOssUploadContextConfig;
 import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
-import org.onetwo.boot.module.alioss.WatermarkAction.WatermarkFonts;
+import org.onetwo.boot.module.alioss.image.ResizeAction;
+import org.onetwo.boot.module.alioss.image.WatermarkAction;
+import org.onetwo.boot.module.alioss.image.WatermarkAction.WatermarkFonts;
+import org.onetwo.boot.module.alioss.video.SnapshotProperties;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,7 +72,7 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 					.store(resource.getFile(), null, res -> {
 						System.out.println("res: " + res);
 					})
-					.resize(config);
+					.resize(config, null);
 	}
 	
 	@Test
@@ -105,8 +108,21 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 		WaterMaskProperties config = new WaterMaskProperties();
 		config.setText("测试了~~");
 		config.setSize(100);
-		this.wraper.objectOperation(bucketName, "test/test.jpg")
-					.watermask(config);
+		config.setImage("test/activiti-logo.png?x-oss-process=image/resize,P_30");
+		this.wraper.objectOperation(bucketName, "test/test-upload.jpg")
+					.watermask("test/test-upload-mask.jpg", config, null);
+	}
+	
+	@Test
+	public void testVideoSnopsot() {
+		SnapshotProperties config = new SnapshotProperties();
+		config.setEnabled(true);
+		config.setTime(1000);
+
+		this.wraper.objectOperation(bucketName, "test/test.mp4")
+					.videoSnapshot(config, cutImagekey -> {
+						System.out.println("cutImagekey: " + cutImagekey);
+					});
 	}
 	
 	@Test

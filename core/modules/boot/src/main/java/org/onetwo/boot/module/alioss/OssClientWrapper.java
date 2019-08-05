@@ -10,6 +10,10 @@ import java.util.function.Consumer;
 
 import org.apache.commons.io.input.ReaderInputStream;
 import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
+import org.onetwo.boot.module.alioss.image.ResizeAction;
+import org.onetwo.boot.module.alioss.image.WatermarkAction;
+import org.onetwo.boot.module.alioss.video.SnapshotAction;
+import org.onetwo.boot.module.alioss.video.SnapshotProperties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.jackson.JsonMapper;
@@ -151,6 +155,8 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 	}
 
 	static public class ObjectOperation {
+		protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+		
 		private String bucketName;
 		private String key;
 		private OssClientWrapper wrapper;
@@ -204,15 +210,21 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			return resize(targetKey, config, null);
 		}
 		
-		public Optional<String> resize(ResizeProperties config) {
+		public ObjectOperation resize(ResizeProperties config, Consumer<String> onSuccess) {
 			if (config==null || !config.isEnabled()) {
-				return Optional.empty();
+				return this;
 			}
 			String dirPath = FileUtils.getParentpath(key);
 			String keyWithoutPostfix = FileUtils.getFileNameWithoutExt(key);
 			String resizeKey = dirPath + "/" + keyWithoutPostfix + "-min" + FileUtils.getExtendName(key, true);
-			resize(resizeKey, config, null);
-			return Optional.ofNullable(resizeKey);
+			resize(resizeKey, config, result -> {
+				if (!result.getResponse().isSuccessful()) {
+					throw new BaseException("resize error: " + result.getResponse().getErrorResponseAsString());
+				} else if (onSuccess!=null) {
+					onSuccess.accept(resizeKey);
+				}
+			});
+			return this;
 		}
 		
 		/***
@@ -249,12 +261,28 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		 * @return
 		 */
 		public ObjectOperation watermask(WaterMaskProperties config) {
-			if (!config.isEnabled()) {
-				return this;
-			}
 			return watermask(key, config, null);
 		}
+		
+		/****
+		 * 生成水印
+		 * @author weishao zeng
+		 * @param targetKey
+		 * @param config
+		 * @param onCompleted
+		 * @return
+		 */
 		public ObjectOperation watermask(String targetKey, WaterMaskProperties config, Consumer<GenericResult> onCompleted) {
+			if (!config.isEnabled()) {
+				logger.warn("water mask config is disabled.");
+				return this;
+			}
+			String fileExt = FileUtils.getExtendName(key);
+			if (!config.isSupportFileType(fileExt)) {
+				logger.warn("water mask unsupport the file ext: {}, supported file types: {}", fileExt, config.getSupportFileTypes());
+				return this;
+			}
+			
 			WatermarkAction obj = new WatermarkAction();
 			obj.setBucketName(bucketName);
 			obj.setSourceKey(key);
@@ -267,6 +295,48 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			} else {
 				if (!result.getResponse().isSuccessful()) {
 					throw new BaseException("watermask error: " + result.getResponse().getErrorResponseAsString());
+				}
+			}
+			return this;
+		}
+		
+
+		public ObjectOperation videoSnapshot(SnapshotProperties config, Consumer<String> onSuccess) {
+			String dirPath = FileUtils.getParentpath(key);
+			String keyWithoutPostfix = FileUtils.getFileNameWithoutExt(key);
+			String cutImageKey = dirPath + "/" + keyWithoutPostfix + "-cover." + config.getFormat().name().toLowerCase();
+			videoSnapshot(cutImageKey, config, result -> {
+				if (!result.getResponse().isSuccessful()) {
+					throw new BaseException("video snapshot error: " + result.getResponse().getErrorResponseAsString());
+				}else if (onSuccess!=null) {
+					onSuccess.accept(cutImageKey);
+				}
+			});
+			return this;
+		}
+		
+		public ObjectOperation videoSnapshot(String targetKey, SnapshotProperties config, Consumer<GenericResult> onCompleted) {
+			if (!config.isEnabled()) {
+				logger.warn("video snapshot config is disabled.");
+				return this;
+			}
+			String fileExt = FileUtils.getExtendName(key);
+			if (!config.isSupportFileType(fileExt)) {
+				logger.warn("video snapshot unsupport the file ext: {}, video snapshot file types: {}", fileExt, config.getSupportFileTypes());
+				return this;
+			}
+			SnapshotAction obj = new SnapshotAction();
+			obj.setBucketName(bucketName);
+			obj.setSourceKey(key);
+			obj.setTargetKey(targetKey);
+			obj.configBy(config);
+//			System.out.println("style: " + obj.toStyleWithName());
+			GenericResult result = this.ossClient.processObject(obj.buildRequest());
+			if (onCompleted!=null) {
+				onCompleted.accept(result);
+			} else {
+				if (!result.getResponse().isSuccessful()) {
+					throw new BaseException("video snapshot error: " + result.getResponse().getErrorResponseAsString());
 				}
 			}
 			return this;

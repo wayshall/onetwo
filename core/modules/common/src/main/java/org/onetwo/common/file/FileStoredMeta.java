@@ -28,9 +28,8 @@ public interface FileStoredMeta extends StoredMeta {
 	String getOriginalFilename();
 	
 	String getBizModule();
-	
+
 	StoredMeta getResizeStoredMeta();
-	
-	void setResizeStoredMeta(StoredMeta resizeStoredMeta);
+	StoredMeta getSnapshotStoredMeta();
 	
 }
