@@ -54,7 +54,7 @@ public class BootCommonServiceConfig {
 	@ConditionalOnProperty(BootSiteConfig.ENABLE_STORETYPE_PROPERTY)
 	public BootCommonService bootCommonService(){
 		SimpleBootCommonService service = new SimpleBootCommonService();
-		service.setCompressThresholdSize(bootSiteConfig.getUpload().getCompressImage().getThresholdSize());
+		service.setCompressConfig(bootSiteConfig.getUpload().getCompressImage());
 		service.setFileStoreBaseDir(bootSiteConfig.getUpload().getFileStorePath());
 		return service;
 	}

@@ -24,7 +24,12 @@ public interface FileStorer {
 		}
 		return key;
 	}
+	
 	FileStoredMeta write(StoringFileContext context);
+	
+	default void delete(String key) {
+		throw new UnsupportedOperationException();
+	}
 
 	void readFileTo(final String accessablePath, final OutputStream output);
 	InputStream readFileStream(final String accessablePath);

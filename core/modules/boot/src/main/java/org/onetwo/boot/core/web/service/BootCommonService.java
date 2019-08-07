@@ -12,6 +12,8 @@ public interface BootCommonService {
 	
 	FileStoredMeta uploadFile(UploadOptions options);
 	
+	void delete(String key);
+	
 	void readFileTo(String accessablePath, OutputStream output);
 
 }

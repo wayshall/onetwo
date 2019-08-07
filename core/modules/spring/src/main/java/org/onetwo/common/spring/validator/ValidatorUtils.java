@@ -63,8 +63,8 @@ public final class ValidatorUtils {
 			if(appendFieldname && FieldError.class.isInstance(error)){
 				FieldError fe = (FieldError) error;
 				FieldName info = findValidationInfo(br.getTarget().getClass(), fe.getField());
-//				msg = info==null?fe.getField():info.value();
-				msg = info==null?"":info.value();
+				msg = info==null?fe.getField():info.value();
+//				msg = info==null?"":info.value();
 			}
 			msg += error.getDefaultMessage();
 			msglist.add(msg);

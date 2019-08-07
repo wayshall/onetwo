@@ -61,8 +61,9 @@ public class UploadOptions {
 			return compress;
 		}
 		if(StringUtils.isNotBlank(this.compressConfig.getThresholdSize())){
+			//少于等于0则一律不压缩
 			int thresholdSize = FileUtils.parseSize(this.compressConfig.getThresholdSize());
-			compress = multipartFile.getSize() > thresholdSize;
+			compress = thresholdSize>0 && multipartFile.getSize() > thresholdSize;
 		}
 		return compress;
 	}

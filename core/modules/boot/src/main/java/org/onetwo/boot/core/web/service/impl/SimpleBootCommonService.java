@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.FileStorerListener;
 import org.onetwo.boot.core.web.utils.UploadOptions;
@@ -12,8 +13,6 @@ import org.onetwo.boot.utils.ImageCompressor.ImageCompressorConfig;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
-import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.slf4j.Logger;
@@ -39,7 +38,8 @@ public class SimpleBootCommonService implements BootCommonService {
 	private StoreFilePathStrategy storeFilePathStrategy;*/
 	
 	//少于等于0则一律不压缩
-	private int compressThresholdSize = -1;
+//	private int compressThresholdSize = -1;
+	private CompressConfig compressConfig;
 	
 	/***
 	 * 上传的根目录
@@ -63,7 +63,7 @@ public class SimpleBootCommonService implements BootCommonService {
 	 * @param module
 	 * @param file
 	 * @return
-	 */
+	
 	private StoringFileContext create(String module, MultipartFile file){
 		InputStream in = null;
 		try {
@@ -83,7 +83,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		} finally {
 //			IOUtils.closeQuietly(in);
 		}
-	}
+	} */
 
 	/***
 	 * 此方法安装全局配置来决定是否压缩
@@ -93,6 +93,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		Assert.notNull(file, "file can not be null");
 		
 		UploadOptions options = new UploadOptions(module, file);
+		options.setCompressConfig(compressConfig);
 		return uploadFile(options);
 		/*StoringFileContext context = create(module, file);
 		FileStoredMeta meta = fileStorer.write(context);
@@ -140,9 +141,13 @@ public class SimpleBootCommonService implements BootCommonService {
 	public void readFileTo(String accessablePath, OutputStream output){
 		this.fileStorer.readFileTo(accessablePath, output);
 	}
+	
+	public void delete(String key) {
+		this.fileStorer.delete(key);
+	}
 
-	public void setCompressThresholdSize(String compressThresholdSize) {
-		this.compressThresholdSize = FileUtils.parseSize(compressThresholdSize, -1);
+	public void setCompressConfig(CompressConfig compressConfig) {
+		this.compressConfig = compressConfig;
 	}
 	
 }

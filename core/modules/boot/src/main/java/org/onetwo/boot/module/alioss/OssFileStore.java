@@ -12,6 +12,7 @@ import org.onetwo.boot.module.alioss.video.SnapshotProperties;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.spring.copier.CopyUtils;
@@ -38,6 +39,12 @@ public class OssFileStore implements FileStorer, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.wrapper.createBucketIfNotExists(ossProperties.getBucketName());
+	}
+	
+	public void delete(String key) {
+		key = StringUtils.trimStartWith(key, FileUtils.SLASH);
+		ObjectOperation operation = wrapper.objectOperation(ossProperties.getBucketName(), key);
+		operation.delete();
 	}
 
 	@Override
@@ -86,7 +93,7 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		SnapshotProperties snapshotConfig = new SnapshotProperties();
 		CopyUtils.copyIgnoreNullAndBlank(snapshotConfig, ossProperties.getSnapshot());
 		if (context.getSnapshotConfig()!=null) {
-			// 如果显式传入了压缩参数，则必须生成截图
+			// 如果显式传入了截图参数，则必须生成截图
 			snapshotConfig.setEnabled(true);
 			CopyUtils.copyIgnoreNullAndBlank(snapshotConfig, context.getSnapshotConfig());
 		}
