@@ -87,6 +87,7 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		operation.resize(resizeConfig, minKey -> {
 			SimpleFileStoredMeta minMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), minKey);
 			minMeta.setSotredFileName(minKey);
+			minMeta.setAccessablePath(minKey);
 			meta.setResizeStoredMeta(minMeta);
 		});
 		
@@ -100,6 +101,7 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		operation.videoSnapshot(snapshotConfig, cutImageKey -> {
 			SimpleFileStoredMeta cutMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), cutImageKey);
 			cutMeta.setSotredFileName(cutImageKey);
+			cutMeta.setAccessablePath(cutImageKey);
 			meta.setSnapshotStoredMeta(cutMeta);
 		});
 		
