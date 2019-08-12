@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 public class CloudManagementConfiguration {
 	
 	@Bean
-	public CloudManagementDelegater cloudManagementDelegater() {
-		return new CloudManagementDelegater();
+	public RefreshEndpointWebCommand refreshEndpointWebCommand() {
+		return new RefreshEndpointWebCommand();
 	}
 
 }

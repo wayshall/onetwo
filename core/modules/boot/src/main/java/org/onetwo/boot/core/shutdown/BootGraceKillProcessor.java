@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
+ * windows:
+ * taskkill /f /pid pid
+ * 
+ * linux:
  * kill -s USR2 pid = kill -12 pid
  * 
  * kill默认为SIGTERM，会执行shutdownHook

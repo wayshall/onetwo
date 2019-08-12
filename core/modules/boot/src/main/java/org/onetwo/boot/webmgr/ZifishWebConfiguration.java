@@ -41,7 +41,7 @@ public class ZifishWebConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(WebManagementDelegater.class)
+	@ConditionalOnBean(WebManagementCommand.class)
 	public WebManagementController webManagementController() {
 		return new WebManagementController();
 	}
