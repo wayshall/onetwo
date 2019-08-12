@@ -2,12 +2,11 @@ package org.onetwo.cloud.eureka;
 
 import java.util.Map;
 
+import org.onetwo.boot.core.shutdown.AbstractGraceKillProcessor;
 import org.onetwo.boot.core.shutdown.GraceKillSignalHandler.GraceKillProcessor;
 import org.onetwo.boot.core.shutdown.GraceKillSignalHandler.SignalInfo;
 import org.onetwo.boot.webmgr.WebManagementCommand;
-import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
@@ -20,9 +19,7 @@ import com.netflix.discovery.EurekaClient;
  * <br/>
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class EurekaUnregisterProcessor implements GraceKillProcessor, WebManagementCommand {
-
-	private final Logger logger = JFishLoggerFactory.getCommonLogger();
+public class EurekaUnregisterProcessor extends AbstractGraceKillProcessor implements GraceKillProcessor, WebManagementCommand {
 	
 	@Autowired
 	private EurekaClient eurekaClient;
