@@ -30,10 +30,13 @@ import com.netflix.discovery.shared.Application;
 import com.netflix.eureka.EurekaServerContext;
 import com.netflix.eureka.EurekaServerContextHolder;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author weishao zeng
  * <br/>
  */
+@Slf4j
 @Controller
 @RequestMapping("${eureka.dashboard.path:/}")
 public class ExtEurekaController extends EurekaController {
@@ -104,9 +107,14 @@ public class ExtEurekaController extends EurekaController {
 			}
 			url = inst.getHomePageUrl() + url + "/refresh";
 		}
+		if (log.isInfoEnabled()) {
+			log.info("refresh config post url: {}", url);
+		}
 		String auth = RequestUtils.getCookieValue(request, "auth");
 		HttpHeaders headers = RestUtils.createHeader(MediaType.APPLICATION_JSON_UTF8);
-		headers.set("auth", auth);
+		if (StringUtils.isNotBlank(auth)) {
+			headers.set("auth", auth);
+		}
 		HttpEntity<?> entity = new HttpEntity<>(null, headers);
 		String result = this.restTemplate.postForEntity(url, entity, String.class).getBody();
 		return result;
