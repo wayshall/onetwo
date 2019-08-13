@@ -152,6 +152,11 @@ public final class RestUtils {
 		HttpEntity<T> entity = new HttpEntity<T>(obj, headers);
 		return entity;
 	}
+	
+	public static <T> HttpEntity<T> createHttpEntity(T obj, HttpHeaders headers){
+		HttpEntity<T> entity = new HttpEntity<T>(obj, headers);
+		return entity;
+	}
 
 	private RestUtils(){}
 }

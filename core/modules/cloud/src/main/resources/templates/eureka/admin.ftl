@@ -21,6 +21,7 @@
     <div class="container-fluid xd-container">
       <#include "navbar.ftl">
       <h1>Instances currently registered with Eureka</h1>
+      <div>${message!""}</div>
       <table id='instances' class="table table-striped table-hover">
         <thead>
           <tr><th>Application</th><th>AMIs</th><th>Availability Zones</th><th>Status</th></tr>
@@ -42,6 +43,7 @@
                 </td>
                 <td>
                   <#list app.instanceInfos as instanceInfo>
+                  <div style="border:1px solid #000;margin: 5px;">
                     <#if instanceInfo.isNotUp>
                       <font color=red size=+1><b>
                     </#if>
@@ -51,16 +53,27 @@
                     </#if>
                     <#list instanceInfo.instances as instance>
                       <#if instance.isHref>
-                        <div><a href="${instance.url}" target="_blank">${instance.id}</a>
-                            <form action="/remove" method="post">
-                            <input name="instId" value="${instance.id}" type="hidden"/>
-                            <button>移除实例</button>
-                        </form>
+                        <div style="margin: 5px;"><a href="${instance.url}" target="_blank">${instance.id}</a>
+                            <form action="${dashboardBaseUrl}/instance" method="post"  style="display:inline;">
+                                <input name="instId" value="${instance.id}" type="hidden"/>
+                            <#if instanceInfo.isNotUp>
+                                <input name="status" value="UP" type="hidden"/>
+                                <button>上线实例</button>
+                            <#else>
+                                <input name="status" value="OUT_OF_SERVICE" type="hidden"/>
+                                <button>下线实例</button>
+                            </#if>
+                            </form>
+                            <form action="${dashboardBaseUrl}/refreshConfig" method="post"  style="display:inline;">
+                                <input name="instId" value="${instance.id}" type="hidden"/>
+                                <button>刷新实例配置</button>
+                            </form>
                         </div>
                       <#else>
                         ${instance.id}
-                      </#if><#if instance_has_next><hr/></#if>
+                      </#if><#if instance_has_next><br/></#if>
                     </#list>
+                    </div>
                   </#list>
                 </td>
               </tr>

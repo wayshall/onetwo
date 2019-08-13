@@ -27,6 +27,10 @@ public enum JwtAuthStores {
 	COOKIES{
 		@Override
 		public String getToken(HttpServletRequest request, String authName) {
+			String value = JwtAuthStores.HEADER.getToken(request, authName);
+			if (value!=null) {
+				return value;
+			}
 			return RequestUtils.getCookieValue(request, authName);
 		}
 		@Override

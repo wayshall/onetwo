@@ -1,8 +1,11 @@
 package org.onetwo.cloud.eureka.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.netflix.eureka.server.EurekaController;
+import org.springframework.cloud.netflix.eureka.server.EurekaServerBootstrap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,6 +17,8 @@ import com.netflix.appinfo.ApplicationInfoManager;
  */
 //@EnableConfigurationProperties({BootJfishCloudConfig.class})
 @Configuration
+@ConditionalOnClass(EurekaController.class)
+@ConditionalOnBean(EurekaServerBootstrap.class)
 public class ExtEurekaServerConfiguration {
 
 	@Autowired
