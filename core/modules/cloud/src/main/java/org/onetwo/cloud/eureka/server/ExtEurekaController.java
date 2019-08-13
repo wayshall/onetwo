@@ -93,7 +93,7 @@ public class ExtEurekaController extends EurekaController {
 			return "cloud/message";
 		}
 		String result = this.refreshInstanceConfig(inst.get());
-		model.put("message", "刷新成功：" + result);
+		model.put("message", "刷新结果：" + result);
 		return "cloud/message";
 	}
 
@@ -107,14 +107,17 @@ public class ExtEurekaController extends EurekaController {
 			}
 			url = inst.getHomePageUrl() + url + "/refresh";
 		}
-		if (log.isInfoEnabled()) {
-			log.info("refresh config post url: {}", url);
-		}
+		
 		String auth = RequestUtils.getCookieValue(request, "auth");
 		HttpHeaders headers = RestUtils.createHeader(MediaType.APPLICATION_JSON_UTF8);
 		if (StringUtils.isNotBlank(auth)) {
 			headers.set("auth", auth);
 		}
+
+		if (log.isInfoEnabled()) {
+			log.info("refresh config post url: {}, auth: {}", url, auth);
+		}
+		
 		HttpEntity<?> entity = new HttpEntity<>(null, headers);
 		String result = this.restTemplate.postForEntity(url, entity, String.class).getBody();
 		return result;
