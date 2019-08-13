@@ -1,4 +1,4 @@
-package org.onetwo.cloud.eureka;
+package org.onetwo.cloud.eureka.server;
 
 import org.onetwo.cloud.core.BootJfishCloudConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

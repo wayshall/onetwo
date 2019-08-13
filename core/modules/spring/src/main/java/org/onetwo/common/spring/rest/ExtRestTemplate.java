@@ -23,6 +23,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -184,7 +185,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	@Override
 	protected <T> T doExecute(URI url, HttpMethod method, RequestCallback requestCallback, ResponseExtractor<T> responseExtractor) throws RestClientException {
 		RequestContextData ctx = RestExecuteThreadLocal.get();
-		if(logger.isDebugEnabled()){
+		if(ctx!=null && logger.isDebugEnabled()){
 			logger.debug("rest requestId[{}] : {} - {}", ctx.getRequestId(), method, url);
 		}
 		return super.doExecute(url, method, requestCallback, responseExtractor);
@@ -203,6 +204,14 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 
 	public <T> T post(String url, Object request, Class<T> responseType){
 		ResponseEntity<T> response = postForEntity(url, RestUtils.createFormEntity(request, beanToMapConvertor), responseType);
+		if(HttpStatus.OK.equals(response.getStatusCode())){
+			return response.getBody();
+		}
+		throw new RestClientException("invoke rest interface["+url+"] error: " + response);
+	}
+
+	public <T> T post(String url, Object request, MediaType mediaType, Class<T> responseType){
+		ResponseEntity<T> response = postForEntity(url, RestUtils.createHttpEntity(request, mediaType), responseType);
 		if(HttpStatus.OK.equals(response.getStatusCode())){
 			return response.getBody();
 		}

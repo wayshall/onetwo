@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.boot.core.web.view.XResponseView;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @RequestMapping(BootWebUtils.CONTROLLER_PREFIX+"webmanagement")
 //@RooUserAuth
+@XResponseView
 public class WebManagementController extends AbstractBaseController implements InitializingBean {
 	
 	@Autowired(required=false)

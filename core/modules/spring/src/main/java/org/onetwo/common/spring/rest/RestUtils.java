@@ -7,7 +7,6 @@ import java.util.function.BiFunction;
 
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.spring.utils.EnhanceBeanToMapConvertor.EnhanceBeanToMapBuilder;
-import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CharsetUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.springframework.http.HttpEntity;
@@ -88,7 +87,10 @@ public final class RestUtils {
 		return createFormEntity(obj, BEAN_TO_MAP_CONVERTOR);
 	}
 	public static HttpEntity<?> createFormEntity(final Object obj, BeanToMapConvertor convertor){
-		Assert.notNull(obj);
+//		Assert.notNull(obj);
+		if (obj==null) {
+			return new HttpEntity<MultiValueMap<String, ?>>(FORM_HEADER);
+		}
 		if(HttpEntity.class.isInstance(obj)){
 			return (HttpEntity<?>)obj;
 		}

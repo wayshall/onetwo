@@ -1,6 +1,7 @@
 package org.onetwo.common.data;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.onetwo.common.exception.ServiceException;
@@ -192,6 +193,44 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 		}
 
 		public void setData(T data) {
+			this.data = data;
+		}
+	}
+
+	public static class StringDataResult extends AbstractDataResult<String> {
+		
+		private String data;
+		
+		protected StringDataResult() {
+			super();
+		}
+
+		public String getData() {
+			return data;
+		}
+
+		public void setData(String data) {
+			this.data = data;
+		}
+	}
+	public static class MapDataResult extends AbstractDataResult<Map<String, Object>> {
+		
+		private Map<String, Object> data;
+		
+		protected MapDataResult() {
+			super();
+		}
+
+		protected MapDataResult(Map<String, Object> data) {
+			super();
+			this.data = data;
+		}
+
+		public Map<String, Object> getData() {
+			return data;
+		}
+
+		public void setData(Map<String, Object> data) {
 			this.data = data;
 		}
 	}

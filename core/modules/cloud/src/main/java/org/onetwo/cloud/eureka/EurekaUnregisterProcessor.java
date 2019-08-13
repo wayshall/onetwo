@@ -23,7 +23,7 @@ public class EurekaUnregisterProcessor extends AbstractGraceKillProcessor implem
 	
 	@Autowired
 	private EurekaClient eurekaClient;
-	@Value("${eureka.client.gracekill.waitSecondsAfterUnregister:3}")
+	@Value("${eureka.client.gracekill.waitSecondsAfterUnregister:5}")
 	private int waitSecondsAfterUnregister;
 	
 	@Override
