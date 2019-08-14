@@ -21,6 +21,13 @@ public abstract class StringUtils {
 
 	public static final String ENCODING = "UTF-8";
 	public static final String EMPTY = "";
+	
+	private static class ToStringer<T> implements ReturnableClosure<T, String> {
+		@Override
+		public String execute(T object) {
+			return ObjectUtils.toString(object);
+		}
+	}
 
 	
 	/***
@@ -173,6 +180,9 @@ public abstract class StringUtils {
 	}
 
 	public static String toCamel(String str, char op, boolean isFirstUpper) {
+		if (str==null || str.length()==0) {
+			return str;
+		}
 		if (str.indexOf(op) == -1) {
 			str = str.toLowerCase();
 			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
@@ -186,6 +196,45 @@ public abstract class StringUtils {
 		boolean needUpper = isFirstUpper;
 		for (int i = 0; i < chars.length; i++) {
 			char c = Character.toLowerCase(chars[i]);
+			if (needUpper) {
+				c = Character.toUpperCase(c);
+				needUpper = false;
+			}
+			if (c == op) {
+				needUpper = true;
+				continue;
+			}
+			newStr.append(c);
+		}
+		return newStr.toString();
+	}
+	
+	/***
+	 * 不把本身大写转为小写
+	 * @author weishao zeng
+	 * @param str
+	 * @param op
+	 * @param isFirstUpper
+	 * @return
+	 */
+	public static String toCamelWithoutConvert2LowerCase(String str, char op, boolean isFirstUpper) {
+		if (str==null || str.length()==0) {
+			return str;
+		}
+		if (str.indexOf(op) == -1) {
+//			str = str.toLowerCase();
+			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
+				return str.substring(0, 1).toUpperCase() + str.substring(1);
+			} else {
+				return str;
+			}
+		}
+		char[] chars = str.toCharArray();
+		StringBuilder newStr = new StringBuilder();
+		boolean needUpper = isFirstUpper;
+		for (int i = 0; i < chars.length; i++) {
+//			char c = Character.toLowerCase(chars[i]);
+			char c = chars[i];
 			if (needUpper) {
 				c = Character.toUpperCase(c);
 				needUpper = false;
@@ -420,19 +469,21 @@ public abstract class StringUtils {
 		return join(array, separator, 0, array.length);
 	}
 
-	public static String join(Object[] array, String separator, ReturnableClosure<Object, String> it) {
+	public static <T> String join(T[] array, String separator, ReturnableClosure<T, String> it) {
 		if (array == null) {
 			return EMPTY;
 		}
 		return join(array, separator, 0, array.length, it);
 	}
 
-	public static String join(Iterator iterator, String separator) {
-		return join(iterator, separator, null);
+	public static <T> String join(Iterator<T> iterator, String separator) {
+		return join(iterator, separator, new ToStringer<T>());
 	}
 
-	public static String join(Iterator iterator, String separator, ReturnableClosure<Object, String> it) {
-
+	public static <T> String join(Iterator<T> iterator, String separator, ReturnableClosure<T, String> it) {
+		if (it==null) {
+			it = new ToStringer<T>();
+		}
 		// handle null, zero and one elements before building a buffer
 		if (iterator == null) {
 			return EMPTY;
@@ -440,16 +491,16 @@ public abstract class StringUtils {
 		if (!iterator.hasNext()) {
 			return EMPTY;
 		}
-		Object first = iterator.next();
+		T first = iterator.next();
 		if (!iterator.hasNext()) {
-			return ObjectUtils.toString(first);
+			return it.execute(first);
 		}
 
 		// two or more elements
 		StringBuilder buf = new StringBuilder(256); // Java default is 16,
 													// probably too small
 		if (first != null) {
-			buf.append(first);
+			buf.append(it.execute(first));
 		}
 
 //		int index = 0;
@@ -457,7 +508,7 @@ public abstract class StringUtils {
 			if (separator != null) {
 				buf.append(separator);
 			}
-			Object obj = iterator.next();
+			T obj = iterator.next();
 			if (obj != null) {
 				if (it != null)
 					buf.append(it.execute(obj));
@@ -469,25 +520,25 @@ public abstract class StringUtils {
 		return buf.toString();
 	}
 
-	public static String join(Collection collection, String separator) {
+	public static String join(Collection<?> collection, String separator) {
 		if (collection == null) {
 			return EMPTY;
 		}
 		return join(collection.iterator(), separator);
 	}
 
-	public static String join(Collection collection, String separator, ReturnableClosure<Object, String> it) {
+	public static <T> String join(Collection<T> collection, String separator, ReturnableClosure<T, String> it) {
 		if (collection == null) {
 			return EMPTY;
 		}
 		return join(collection.iterator(), separator, it);
 	}
 
-	public static String join(Object[] array, String separator, int startIndex, int endIndex) {
+	public static <T> String join(T[] array, String separator, int startIndex, int endIndex) {
 		return join(array, separator, startIndex, endIndex, null);
 	}
 
-	public static String join(Object[] array, String separator, int startIndex, int endIndex, ReturnableClosure<Object, String> it) {
+	public static <T> String join(T[] array, String separator, int startIndex, int endIndex, ReturnableClosure<T, String> it) {
 		if (array == null) {
 			return EMPTY;
 		}

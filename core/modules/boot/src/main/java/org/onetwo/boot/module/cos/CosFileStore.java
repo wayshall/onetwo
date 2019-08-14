@@ -8,9 +8,7 @@ import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStoredMeta;
-import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,38 +37,31 @@ public class CosFileStore implements FileStorer, InitializingBean {
 
 	@Override
 	public FileStoredMeta write(StoringFileContext context) {
-		String key = context.getKey();
+		String key = defaultStoreKey(context);
+		context.setKey(key);
+		/*String key = context.getKey();
 		if(StringUtils.isBlank(key)){
-//			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule())).replace("/", "-");
-//			key = prefix + "-" + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
-			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule()));
-			key = prefix + "/" + FileUtils.randomUUIDFileName(context.getFileName(), context.isKeepOriginFileName());
-//			key = StringUtils.emptyIfNull(context.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
-		}
+			key = defaultStoreKey(context);
+		}*/
 		wrapper.objectOperation(bucketName, key)
 				.store(context.getInputStream());
 
-		String accessablePath = "/"+key;
+		String accessablePath = StringUtils.appendStartWithSlash(key);
 
-		FileStoredMeta fmeta = null;
-		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
-		if(strategy==null){
-			SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), key);
-			meta.setSotredFileName(key);
-			meta.setAccessablePath(accessablePath);
-			meta.setFullAccessablePath(cosProperties.getDownloadUrl(key));
-			if(cosProperties.isAlwaysStoreFullPath()){
-				meta.setAccessablePath(meta.getFullAccessablePath());
-			}
-			meta.setStoredServerLocalPath(key);
-			meta.setBizModule(context.getModule());
-			meta.setSotredFileName(key);
-			fmeta = meta;
-		}else{
-			fmeta = strategy.getStoreFilePath(null, null, context);
+//		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
+		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), accessablePath);
+		meta.setBaseUrl(cosProperties.getDownloadEndPoint());
+		meta.setSotredFileName(key);
+		meta.setAccessablePath(accessablePath);
+		meta.setFullAccessablePath(cosProperties.getDownloadUrl(key));
+		if(cosProperties.isAlwaysStoreFullPath()){
+			meta.setAccessablePath(meta.getFullAccessablePath());
 		}
+		meta.setStoredServerLocalPath(key);
+		meta.setBizModule(context.getModule());
+		meta.setSotredFileName(key);
 		
-		return fmeta;
+		return meta;
 	}
 	
 	@Override

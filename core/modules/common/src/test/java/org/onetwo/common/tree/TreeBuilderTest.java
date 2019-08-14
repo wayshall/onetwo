@@ -28,6 +28,10 @@ public class TreeBuilderTest {
 		TreeBuilder<DefaultTreeModel> treeBuilder = new TreeBuilder<>(models);
 		List<DefaultTreeModel> roots = treeBuilder.buidTree();
 		System.out.println("roots: \n" + roots.get(0));
+		
+		StringBuilder str = new StringBuilder();
+		TreeUtils.buildString(str, roots.get(0), "--");
+		System.out.println("roots: \n" + str);
 	}
 	
 	public static class TreeNodeDataTest {

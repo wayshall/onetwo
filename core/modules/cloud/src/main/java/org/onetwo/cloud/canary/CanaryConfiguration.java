@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Import;
 @Import(SpringMvcRequestContextConfiguration.class)
 @EnableConfigurationProperties({CanaryProperties.class})
 public class CanaryConfiguration implements InitializingBean {
-	
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -32,12 +31,20 @@ public class CanaryConfiguration implements InitializingBean {
 }
 
 @Configuration
-class CanaryRibbonConfiguration {
+class CanaryRibbonConfiguration implements InitializingBean {
+
+	/*@Autowired
+	ILoadBalancer loadBalancer;*/
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+//		RefreshEurekaServersListener.loadBalancers.add(loadBalancer);
+	}
 	
 	@Bean
 	public CanaryRule canaryRule(){
 		CanaryRule canaryRule = new CanaryRule();
 		return canaryRule;
 	}
-	
+
 }

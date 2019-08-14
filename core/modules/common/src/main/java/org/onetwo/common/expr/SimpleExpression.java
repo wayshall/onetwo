@@ -9,8 +9,8 @@ import java.util.Map;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.MyUtils;
 import org.onetwo.common.utils.StringUtils;
 
 /****
@@ -112,16 +112,17 @@ public class SimpleExpression implements Expression {
 		if(objects.length==1 && objects[0]!=null){
 			ctx = parseWithContextByProvider(text, objects[0]);
 		}else{
-			final Map context = MyUtils.convertParamMap(objects);
+//			final Map context = MyUtils.convertParamMap(objects);
+			final Map context = CUtils.asMap(objects);
 			ctx = parseWithContextByProvider(text, context);
 		}
 
 		return ctx;
 	}
 	
-	/*public String parse(ValueProvider provider) {
-		return parse(this.text, provider);
-	}*/
+	public String parse(String text, ValueProvider provider) {
+		return parseByProvider(text, provider);
+	}
 
 	public String parseByProvider(String text, Object provider){
 		return parseWithContextByProvider(text, provider).result;
@@ -264,6 +265,7 @@ public class SimpleExpression implements Expression {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected ValueProvider getValueProvider(Object provider){
 		Assert.notNull(provider, "provider can not be null!");
 		

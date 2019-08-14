@@ -3,12 +3,13 @@ package org.onetwo.common.apiclient;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import lombok.Builder;
-import lombok.Getter;
-
+import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * @author wayshall
@@ -24,14 +25,26 @@ public class RequestContextData {
 	@Getter
 	final private Map<String, ?> queryParameters;
 	private Consumer<HttpHeaders> headerCallback;
-	private RequestBodySupplier requestBodySupplier;
+//	private RequestBodySupplier requestBodySupplier;
+	private Object requestBody;
 	
 	private Object[] methodArgs;
+	
+	private ApiClientMethod invokeMethod;
+	@Getter
+	private MethodInvocation invocation;
+	@Getter
+	private int invokeCount = 0;
+	@Getter
+	final protected int maxRetryCount;
+	
+	private HttpHeaders headers = new HttpHeaders();
 	
 	@Builder
 	public RequestContextData(String requestId, RequestMethod requestMethod, 
 							Map<String, ?> queryParameters, Map<String, ?> uriVariables, 
-							Class<?> responseType, Object[] methodArgs) {
+							Class<?> responseType, Object[] methodArgs, ApiClientMethod invokeMethod, 
+							MethodInvocation invocation, int maxRetryCount) {
 		super();
 		this.httpMethod = HttpMethod.resolve(requestMethod.name());
 		this.uriVariables = uriVariables;
@@ -39,6 +52,17 @@ public class RequestContextData {
 		this.responseType = responseType;
 		this.requestId = requestId;
 		this.methodArgs = methodArgs;
+		this.invokeMethod = invokeMethod;
+		this.invocation = invocation;
+		this.maxRetryCount = maxRetryCount;
+	}
+	
+	public boolean isRetryable() {
+		return invokeCount-1 < maxRetryCount;
+	}
+	
+	public void increaseInvokeCount(int times) {
+		this.invokeCount = this.invokeCount + times;
 	}
 	
 	public Class<?> getResponseType() {
@@ -59,29 +83,44 @@ public class RequestContextData {
 		return uriVariables;
 	}
 	
-	public RequestBodySupplier getRequestBodySupplier() {
+	/*public RequestBodySupplier getRequestBodySupplier() {
 		return requestBodySupplier;
 	}
 
 	public RequestContextData requestBodySupplier(RequestBodySupplier requestBodySupplier) {
 		this.requestBodySupplier = requestBodySupplier;
 		return this;
-	}
+	}*/
+	
 
-	/*public Object getRequestBody() {
+	public Object getRequestBody() {
 		return requestBody;
 	}
 	public void setRequestBody(Object requestBody) {
 		this.requestBody = requestBody;
-	}*/
-	public RequestContextData doWithHeaderCallback(Consumer<HttpHeaders> headerCallback) {
+	}
+	public RequestContextData headerCallback(Consumer<HttpHeaders> headerCallback) {
 		this.headerCallback = headerCallback;
 		return this;
 	}
-	public Consumer<HttpHeaders> getHeaderCallback() {
+	/*public Consumer<HttpHeaders> getHeaderCallback() {
 		return headerCallback;
+	}*/
+	public boolean hasHeaderCallback() {
+		return headerCallback!=null;
 	}
 
+	public void acceptHeaderCallback() {
+		acceptHeaderCallback(headers);
+	}
+	public void acceptHeaderCallback(HttpHeaders headers) {
+		if (this.headerCallback!=null) {
+			this.headerCallback.accept(headers);
+		} else {
+			// log no header callback
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "RequestContextData [httpMethod=" + httpMethod
@@ -104,6 +143,14 @@ public class RequestContextData {
 
 	public void setResponseType(Class<?> responseType) {
 		this.responseType = responseType;
+	}
+
+	public ApiClientMethod getInvokeMethod() {
+		return invokeMethod;
+	}
+
+	public HttpHeaders getHeaders() {
+		return headers;
 	}
 
 }

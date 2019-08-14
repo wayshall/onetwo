@@ -22,6 +22,10 @@ public class SimpleMultipartFile implements MultipartFile {
 	private String contentType;
 	final private byte[] content;
 	
+	public SimpleMultipartFile(String originalFilename, File file) {
+		this(originalFilename, FileUtils.readFileToByteArray(file));
+	}
+	
 	public SimpleMultipartFile(String originalFilename, Resource resource) {
 		this(originalFilename, FileUtils.toByteArray(SpringUtils.getInputStream(resource)));
 	}

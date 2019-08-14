@@ -22,6 +22,7 @@ import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.annotation.ONSSubscribe.ConsumerProperty;
+import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
 import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
 import org.springframework.aop.support.AopUtils;
@@ -175,6 +176,12 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					} else {
 						logger.warn("message has been consumed and will skip: " + e.getMessage());
 					}
+				} catch(ImpossibleConsumeException e) {
+					// 不可能被消费，记录错误并发送提醒
+					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
+					logger.error(errorMsg, e);
+					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+//					applicationContext.publishEvent(event);
 				} catch (Exception e) {
 					String errorMsg = "consume message error.";
 					if(currentConetxt!=null){
@@ -244,10 +251,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				if(AnnotationUtils.findAnnotation(m, ONSSubscribe.class)!=null){
 					Parameter[] parameters = m.getParameters();
 					if(parameters.length==0 || parameters.length>2){
-						throw new BaseException("the maximum parameter of consumer method is two.");
+						throw new BaseException("the maximum parameter of consumer method[" + m.toGenericString() + "]  is two.");
 					}
 					if(parameters[0].getType()!=ConsumContext.class){
-						throw new BaseException("the first parameter type of the consumer method must be: "+ConsumContext.class);
+						throw new BaseException("the first parameter type of the consumer method[" + m.toGenericString() + "] must be: "+ConsumContext.class);
 					}
 					return true;
 				}

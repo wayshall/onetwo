@@ -73,7 +73,7 @@ public class DefaultXmlTemplateExcelFacotory extends AbstractWorkbookTemplateFac
 	}
 	
 	public String getBaseTemplateDir() {
-		baseTemplateDir = "classpath:";
+//		baseTemplateDir = "classpath:";
 		return baseTemplateDir;
 	}
 

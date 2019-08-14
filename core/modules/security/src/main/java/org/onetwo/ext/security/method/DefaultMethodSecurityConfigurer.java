@@ -91,6 +91,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 				.passwordEncoder(passwordEncoder);
 		}else{
 			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemory = auth.inMemoryAuthentication();
+//			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemory = auth.apply(new ExtInMemoryUserDetailsManagerConfigurer());
 			securityConfig.getMemoryUsers().forEach((user, config)->{
 				UserDetailsBuilder udb = inMemory.withUser(user).password(config.getPassword());
 				if(!LangUtils.isEmpty(config.getRoles())){
@@ -143,6 +144,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		CsrfConfigurer<HttpSecurity> csrf = http.csrf();
 		if(securityConfig.getCsrf().isDisable()){
 			csrf.disable();
+			http.headers().frameOptions().disable();
 			return ;
 		}
 		if(ArrayUtils.isNotEmpty(securityConfig.getCsrf().getIgnoringPaths())){

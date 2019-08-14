@@ -23,6 +23,7 @@ public class JFishOauth2Properties {
 	public static final String CONFIG_PREFIX = "jfish.oauth2";
 	public static final String TOKEN_STORE_ENABLED_KEY = CONFIG_PREFIX + ".tokenStore";
 	
+	
 	public static final String KEYS_REDIS = "redis";
 	public static final String KEYS_JDBC = "jdbc";
 	public static final String KEYS_JWT = "jwt";
@@ -50,7 +51,14 @@ public class JFishOauth2Properties {
 		        enabled: false
 	 */
 	AuthorizationServerProps authorizationServer = new AuthorizationServerProps();
+	/***
+	 * 资源服务器配置
+	 */
 	ResourceServerProps resourceServer = new ResourceServerProps();
+	/***
+	 * 客户端暂无配置
+	 */
+	ClientDetailsResolverProps client = new ClientDetailsResolverProps();
 	JwtProps jwt = new JwtProps();
 	String passwordEncoder = PasswordEncoders.NoOp.name();
 	
@@ -106,6 +114,7 @@ public class JFishOauth2Properties {
 	@Data
 	public static class ClientDetailsResolverProps {
 		public static final String ENABLED_KEY = CONFIG_PREFIX + ".clientDetailsResolver.enabled";
+		public static final String AUTHORIZATION_BASE_URL = CONFIG_PREFIX +".client.authorization.baseUrl";
 	}
 
 

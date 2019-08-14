@@ -70,15 +70,21 @@ public class BaseInitFilter extends IgnoreFiler {
 		return request;
 	}
 	
-	private void printRequestTime(boolean push, HttpServletRequest request){
-		if(!timeProfiler)
+	private void printRequestTime(boolean push, HttpServletRequest request, HttpServletResponse response){
+		if (!isDebug(request)) {
 			return ;
+		}
+		TimeProfileStack.active("true".equals(request.getParameter("__active__")));
 		String url = request.getMethod() + "|" + request.getRequestURI();
 		if(push){
 			TimeProfileStack.push(url);
 		}else{
 			TimeProfileStack.pop(url);
 		}
+	}
+	
+	private boolean isDebug(HttpServletRequest request) {
+		return "true".equals(request.getParameter("__debug__"));
 	}
 	
 	/*protected void reloadConfigIfNecessary(HttpServletRequest request){
@@ -95,7 +101,7 @@ public class BaseInitFilter extends IgnoreFiler {
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 //		WebHolder.initHolder(request, response);
 		
-		this.printRequestTime(true, request);
+		this.printRequestTime(true, request, response);
 		request.setAttribute(REQUEST_URI, RequestUtils.getServletPath(request));
 //		System.out.println("rq:"+request.getRequestURL()+", sid:"+request.getSession().getId()+", accept:"+request.getHeader("referer"));
 		try {
@@ -113,7 +119,7 @@ public class BaseInitFilter extends IgnoreFiler {
 			throw e;
 //			handleException(request, response, e);
 		} finally{
-			this.printRequestTime(false, request);
+			this.printRequestTime(false, request, response);
 //			WebHolder.reset();
 		}
 		

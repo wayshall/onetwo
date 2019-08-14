@@ -1,6 +1,5 @@
 package org.onetwo.common.date;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +10,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 
@@ -199,12 +199,19 @@ abstract public class DateUtils {
 	}
 
 	public static Date parse(SimpleDateFormat format, String dateStr) {
+		return parse(format, dateStr, true);
+	}
+	public static Date parse(SimpleDateFormat format, String dateStr, boolean throwIfError) {
 		Date date = null;
 		try {
 			date = format.parse(dateStr);
 		} catch (Exception e) {
 //			logger.error("parse date["+dateStr+"] error with format["+format+"]:"+e.getMessage()+", ignore.");
-			throw new BaseException("parse date["+dateStr+"] error with format : " + format, e);
+			if (throwIfError) {
+				throw new BaseException("parse date["+dateStr+"] error with format : " + format, e);
+			} else {
+				return null;
+			}
 		}
 		return date;
 	}
@@ -216,11 +223,11 @@ abstract public class DateUtils {
 			return parse(createDateFormat(DATE_TIME), dateStr);
 		Date date = null;
 		for (SimpleDateFormat sdf : dateFormats) {
-			date = parse(sdf, dateStr);
+			date = parse(sdf, dateStr, false);
 			if (date != null)
 				return date;
 		}
-		return date;
+		throw new BaseException("parse date string [" + dateStr + "] error with format: " + LangUtils.toString(dateFormats));
 	}
 
 	public static Date parseByPatterns(String dateStr, String... patterns) {
@@ -231,7 +238,7 @@ abstract public class DateUtils {
 		Date date = null;
 		for (String p : patterns) {
 			SimpleDateFormat sdf = getDateFormat(p);
-			date = parse(sdf, dateStr);
+			date = parse(sdf, dateStr, false);
 			if (date != null)
 				return date;
 		}

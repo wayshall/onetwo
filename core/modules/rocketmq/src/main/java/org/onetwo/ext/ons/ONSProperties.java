@@ -23,7 +23,7 @@ import lombok.Data;
 @Data
 @ConfigurationProperties("jfish.ons")
 public class ONSProperties implements InitializingBean {
-
+	public static final String PRODUCER_ENABLED_KEY = "jfish.ons.producer.enabled";
 //	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
 //	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
 //	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
@@ -52,6 +52,9 @@ public class ONSProperties implements InitializingBean {
 		return consumers;
 	}
 
+	public MessageSerializerType getSerializer() {
+		return serializer;
+	}
 	public Properties baseProperties(){
 		Properties baseConfig = new Properties();
 		baseConfig.putAll(commons);
@@ -89,7 +92,8 @@ public class ONSProperties implements InitializingBean {
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
 		JSON(JsonMessageSerializer.INSTANCE, JsonMessageDeserializer.INSTANCE),
-		CHECKED_JSON(JsonMessageSerializer.CHECKED_INSTANCE, JsonMessageDeserializer.INSTANCE);
+		CHECKED_JSON(JsonMessageSerializer.CHECKED_INSTANCE, JsonMessageDeserializer.INSTANCE),
+		TYPING_JSON(JsonMessageSerializer.TYPING_INSTANCE, JsonMessageDeserializer.TYPING_INSTANCE);
 
 		final private MessageSerializer serializer;
 		final private MessageDeserializer deserializer;

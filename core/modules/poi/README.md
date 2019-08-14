@@ -1,4 +1,4 @@
-# onetw-poi
+# onetwo-poi
 基于poi，对操作excel的简单封装。
 
 ## maven ##
@@ -29,7 +29,7 @@ excel_template.xml:
 		      fieldHeaderStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD"
 		      name="element" type="iterator" datasource="#cardList" fieldFont="boldweight:BOLDWEIGHT_NORMAL;color:COLOR_RED"> 
 			<fields>
-				<field label="主键" name="id" />
+				<field label="主键" name="id" dataType="java.lang.String"/>
 				<field label="卡号" name="cardNo"/>
 				<field label="卡密码" name="cardPwd" />
 			</fields>
@@ -38,7 +38,10 @@ excel_template.xml:
 </template>
 
 ```
+- id如果是一个比较大的长整型数字的时候，导出excel的时候会变成科学记数的形式数字，这时可以用dataType指定为string类型，这个单元格就会设为string类型
+
 ### java代码
+
 创建Java类Card：   
 
 ```Java
@@ -74,7 +77,42 @@ public class CardEntity {
 
 ```
 
+
+
+### 与spring mvc集成
+
+[zifish](https://github.com/wayshall/onetwo) 提供了一个与spring mvc的集成实现，可通过简单的配置即可启用集成
+
+```yaml
+jfish.poi.exportView.enabled = true # 默认即为true
+```
+
+启用后：
+
+1、编写xml模板放到项目的 META-INF/resources/excel-view/ 目录，比如excel_template.xml
+
+​		模板编写参考[定义xml模板](#定义xml模板)
+
+2、编写普通的spring mvc controller，并返回ModelAndView对象，其中ModelAndView的view路径为: excel_template，并把需要在template里用到的数据put到model里，大概代码如下：
+
+```java
+@RequestMapping(path="export", method=RequestMethod.GET)
+public ModelAndView export(){ 
+  List<CardData> cardList = userService.findList();
+
+  return pluginMv("excel_template", 
+                  "cardList", cardList,
+                  // fileName 为导出的文件名称
+                  "fileName", StringUtils.defaultValue(fileName, "人员列表"));
+}
+```
+
+3、直接访问controller的url地址并加上jfxls后缀即可导出文件，如：http://localhost:8080/export.jfxls
+
+
+
 ### 读取excel为Java对象
+
 excel模板如下：   
 ![excel_test.jpg](doc/image/excel_test.jpg)
 
@@ -89,3 +127,41 @@ List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(CardEntit
 											.readFirstSheet(path);
 		
 ```
+
+### 流式读取api
+上面那些看上去整得太复杂？   
+
+4.7.3 后增加一个简单的流式api读取excel
+
+```Java
+ImportBatchVO batch = new ImportBatchVO();
+WorkbookReaderFactory.streamReader()
+		.readSheet(0).readSheet(0) //读取第一个表格
+			//读取第1行作为标题
+			.row(0).onData((row, index) -> {
+				batch.setTitle(row.getString(1));
+			})
+			////读取第2行到结束
+			.row(1).toEnd().onData((row, index) -> {
+				DetailImportData detail = new DetailImportData();
+				detail.setRealName(row.getString(0));
+				detail.setUserName(row.getString(1));
+				detail.setFee(row.getCellValue(2, BigDecimal.class));
+				batch.dataList.add(detail);
+			})
+		.endSheet()
+		.from(dataFile);//从哪个数据文件读取
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

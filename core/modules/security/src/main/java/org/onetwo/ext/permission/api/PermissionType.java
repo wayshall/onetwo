@@ -5,7 +5,8 @@ import java.util.stream.Stream;
 public enum PermissionType {
 	MENU("菜单"),
 	FUNCTION("功能"),
-	RESOURCE("资源");
+	RESOURCE("资源")
+	;
 //	DATAFIELD
 	
 	private final String label;

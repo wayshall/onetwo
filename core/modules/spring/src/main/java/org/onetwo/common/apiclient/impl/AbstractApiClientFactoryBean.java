@@ -8,9 +8,12 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
+import org.onetwo.common.apiclient.ApiErrorHandler;
+import org.onetwo.common.apiclient.ApiErrorHandler.ErrorInvokeContext;
 import org.onetwo.common.apiclient.CustomResponseHandler;
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
+import org.onetwo.common.apiclient.interceptor.ApiInterceptorChain;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.proxy.AbstractMethodInterceptor;
 import org.onetwo.common.spring.SpringUtils;
@@ -64,11 +67,25 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	protected RestExecutor restExecutor;
 	@Autowired(required=false)
 	protected ValidatorWrapper validatorWrapper;
-	protected ApiClientResponseHandler<M> responseHandler = new DefaultApiClientResponseHandler<M>();
+	protected ApiClientResponseHandler<M> responseHandler;
+	protected ApiErrorHandler apiErrorHandler;
 	protected ApplicationContext applicationContext;
+	/***
+	 * 默认不重试
+	 */
+	protected int maxRetryCount = 0;
+	protected int retryWaitInMillis = 200;
 	
 	final public void setResponseHandler(ApiClientResponseHandler<M> responseHandler) {
 		this.responseHandler = responseHandler;
+	}
+
+	public void setApiErrorHandler(ApiErrorHandler apiErrorHandler) {
+		this.apiErrorHandler = apiErrorHandler;
+	}
+
+	public void setMaxRetryCount(int maxRetryCount) {
+		this.maxRetryCount = maxRetryCount;
 	}
 
 	@Override
@@ -79,6 +96,12 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(restExecutor, "restExecutor can not be null");
+		if (responseHandler == null) {
+			responseHandler = new DefaultApiClientResponseHandler<M>();
+		}
+		if (apiErrorHandler == null) {
+			apiErrorHandler = ApiErrorHandler.DEFAULT;
+		}
 		
 //		this.apiObject = Proxys.interceptInterfaces(Arrays.asList(interfaceClass), apiClient);
 		
@@ -165,20 +188,38 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			super(methodCache);
 		}
 		
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		protected Object doInvoke(MethodInvocation invocation, M invokeMethod) {
 			Object[] args = processArgumentsBeforeRequest(invocation, invokeMethod);
 			invokeMethod.validateArgements(validatorWrapper, args);
 
-			RequestContextData context = createRequestContextData(args, invokeMethod);
-			Object response = null;
-			CustomResponseHandler<?> customHandler = invokeMethod.getCustomResponseHandler();
-//			ApiErrorHandler errorHanlder = invokeMethod.getApiErrorHandler();
-			
+			RequestContextData context = createRequestContextData(invocation, args, invokeMethod);
+			ApiInterceptorChain chain = new ApiInterceptorChain(invokeMethod.getInterceptors(), context, () -> {
+				if (RestUtils.isRequestBodySupportedMethod(context.getHttpMethod())) {
+					Object requestBody = invokeMethod.getRequestBody(args);
+					context.setRequestBody(requestBody);
+				}
+				return this.actualInvoke0(invokeMethod, context);
+			});
+			return chain.invoke();
+		}
+		
+		/*protected Object doInvoke2(MethodInvocation invocation, M invokeMethod) {
+			Object[] args = processArgumentsBeforeRequest(invocation, invokeMethod);
+			invokeMethod.validateArgements(validatorWrapper, args);
+
+			RequestContextData context = createRequestContextData(invocation, args, invokeMethod);
+			return this.actualInvoke0(invokeMethod, context);
+		}*/
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		protected Object actualInvoke0(M invokeMethod, RequestContextData context) {
 			try {
+				context.increaseInvokeCount(1);
+				Object response;
+				CustomResponseHandler<?> customHandler = invokeMethod.getCustomResponseHandler();
 				if(customHandler!=null){
 //					errorHanlder = customHandler;
-					context.setResponseType(customHandler.getResponseType());
+					context.setResponseType(customHandler.getResponseType(invokeMethod));
 					ResponseEntity responseEntity = invokeRestExector(context);
 					response = customHandler.handleResponse(invokeMethod, responseEntity);
 				}else{
@@ -186,13 +227,20 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 					response = responseHandler.handleResponse(invokeMethod, responseEntity, context.getResponseType());
 				}
 				return response;
-			}/* catch (ApiClientException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
-			}*/
-			catch (Exception e) {
-				return invokeMethod.getApiErrorHandler().handleError(invokeMethod, e);
+			}
+			catch (Throwable e) {
+				// /ocketException, UnknownHostException等网络异常
+				ApiErrorHandler handler = invokeMethod.getApiErrorHandler().orElse(apiErrorHandler);
+				ErrorInvokeContext ctx = new ErrorInvokeContext(context, e);
+				ctx.setRetryInvoker(ioe -> {
+					logger.warn("{} times invoke throws io error: {}, retry after {} ms ...", context.getInvokeCount(), ioe.getMessage(), retryWaitInMillis);
+					if (retryWaitInMillis>0) {
+						LangUtils.awaitInMillis(retryWaitInMillis); //休眠500毫秒
+					}
+					Object res = actualInvoke0(invokeMethod, context);
+					return res;
+				});
+				return handler.handleError(ctx);
 			}
 		}
 
@@ -216,7 +264,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			return args;
 		}
 		
-		protected RequestContextData createRequestContextData(Object[] args, M invokeMethod){
+		protected RequestContextData createRequestContextData(MethodInvocation invocation, Object[] args, M invokeMethod){
 			Map<String, ?> queryParameters = invokeMethod.getQueryStringParameters(args);
 			Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
 			uriVariables.putAll(queryParameters);
@@ -230,16 +278,21 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 															.queryParameters(queryParameters)
 															.responseType(responseType)
 															.methodArgs(args)
+															.invokeMethod(invokeMethod)
+															.invocation(invocation)
+															.maxRetryCount(maxRetryCount)
 															.build();
 			
 			String actualUrl = getFullPath(invokeMethod.getPath());
 			actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
 			context.setRequestUrl(actualUrl);
 
-			context.doWithHeaderCallback(headers->{
-				invokeMethod.getAcceptHeader().ifPresent(accept->{
-					headers.set(ACCEPT, accept);
-				});
+			//根据consumers 设置header，以指定messageConvertor
+			//写成callback以复用
+			context.headerCallback(headers->{
+				if (!invokeMethod.getAcceptHeaders().isEmpty()) {
+					headers.set(ACCEPT, StringUtils.join(invokeMethod.getAcceptHeaders(), ","));
+				}
 				//HttpEntityRequestCallback#doWithRequest -> requestContentType
 				invokeMethod.getContentType().ifPresent(contentType->{
 					headers.set(CONTENT_TYPE, contentType);
@@ -257,10 +310,17 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				//回调
 				invokeMethod.getApiHeaderCallback(args)
 							.ifPresent(c->c.onHeader(headers));
-			})
-			.requestBodySupplier(ctx->{
-				return invokeMethod.getRequestBody(args);
 			});
+			// 立即回调一次
+			context.acceptHeaderCallback();
+			/*
+			if (RestUtils.isRequestBodySupportedMethod(context.getHttpMethod())) {
+				Object requestBody = invokeMethod.getRequestBody(args);
+				context.setRequestBody(requestBody);
+			}*/
+			/*context.requestBodySupplier(ctx->{
+				return invokeMethod.getRequestBody(args);
+			});*/
 			
 			return context;
 		}

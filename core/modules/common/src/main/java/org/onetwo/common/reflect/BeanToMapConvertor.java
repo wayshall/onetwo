@@ -2,6 +2,7 @@ package org.onetwo.common.reflect;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
@@ -17,8 +18,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.onetwo.common.annotation.FieldName;
+import org.onetwo.common.annotation.IgnoreField;
 import org.onetwo.common.utils.CUtils;
-import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
@@ -34,20 +36,29 @@ public class BeanToMapConvertor implements Cloneable {
 	 * @author way
 	 *
 	 */
-	static public class DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
+	static public class DefaultPropertyAcceptor implements BiFunction<PropertyContext, Object, Boolean> {
 
 		@Override
-		public Boolean apply(PropertyDescriptor prop, Object val) {
-			String clsName = prop.getPropertyType().getName();
+		public Boolean apply(PropertyContext prop, Object val) {
+			String clsName = prop.getProperty().getPropertyType().getName();
 			if(clsName.startsWith(GROOVY_META) ){
 				return false;
+			} else {
+				Field field = prop.getField();
+				if (field!=null && field.isAnnotationPresent(IgnoreField.class)) {
+					return false;
+				}
+				Method readMethod = prop.getProperty().getReadMethod();
+				if (readMethod!=null && readMethod.isAnnotationPresent(IgnoreField.class)) {
+					return false;
+				}
 			}
 			return val!=null;
 		}
 		
 	}
 	
-	static public class ExcludePropertyAcceptor extends DefaultPropertyAcceptor implements BiFunction<PropertyDescriptor, Object, Boolean> {
+	static public class ExcludePropertyAcceptor extends DefaultPropertyAcceptor implements BiFunction<PropertyContext, Object, Boolean> {
 		
 		private Collection<String> excludeProperties;
 		
@@ -56,7 +67,7 @@ public class BeanToMapConvertor implements Cloneable {
 		}
 
 		@Override
-		public Boolean apply(PropertyDescriptor prop, Object val) {
+		public Boolean apply(PropertyContext prop, Object val) {
 			if(excludeProperties.contains(prop.getName())){
 				return false;
 			}
@@ -90,18 +101,49 @@ public class BeanToMapConvertor implements Cloneable {
 		return true;
 	};
 	
+	public static interface PropertyNameConvertor {
+		String convert(PropertyContext ctx);
+	}
+	
+	public static class DefaultPropertyNameConvertor implements PropertyNameConvertor {
+		protected boolean enableFieldNameAnnotation = false;
+		protected boolean enableUnderLineStyle = false;
+		
+		public DefaultPropertyNameConvertor(boolean enableFieldNameAnnotation, boolean enableUnderLineStyle) {
+			super();
+			this.enableFieldNameAnnotation = enableFieldNameAnnotation;
+			this.enableUnderLineStyle = enableUnderLineStyle;
+		}
+
+		@Override
+		public String convert(PropertyContext ctx) {
+			String name = ctx.name;
+			if(enableFieldNameAnnotation && ctx.source!=null){
+				FieldName fn = ReflectUtils.getFieldNameAnnotation(ctx.source.getClass(), name);
+				if(fn!=null){
+					name = fn.value();
+				}
+			}
+			if(enableUnderLineStyle){
+				name = StringUtils.convert2UnderLineName(name);
+			}
+			return name;
+		}
+	}
+	
 	private String listOpener = "[";
 	private String listCloser = "]";
 	private String propertyAccesor = ".";
 	private String prefix = "";
-	private BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor;
+	private BiFunction<PropertyContext, Object, Boolean> propertyAcceptor;
+	private PropertyNameConvertor propertyNameConvertor;
 	private BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 	
 	private Function<Object, Boolean> flatableObject = DEFAULT_FLATABLE;
 //	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
 //	private boolean freezed;
-	protected boolean enableFieldNameAnnotation = false;
-	protected boolean enableUnderLineStyle = false;
+//	protected boolean enableFieldNameAnnotation = false;
+//	protected boolean enableUnderLineStyle = false;
 	
 	protected BeanToMapConvertor(){
 	}
@@ -137,8 +179,7 @@ public class BeanToMapConvertor implements Cloneable {
 		convertor.propertyAcceptor = this.propertyAcceptor;
 		convertor.valueConvertor = this.valueConvertor;
 		convertor.flatableObject = this.flatableObject;
-		convertor.enableFieldNameAnnotation = this.enableFieldNameAnnotation;
-		convertor.enableUnderLineStyle = this.enableUnderLineStyle;
+		convertor.propertyNameConvertor = this.propertyNameConvertor;
 		return convertor;
 	}
 
@@ -147,7 +188,7 @@ public class BeanToMapConvertor implements Cloneable {
 		this.prefix = prefix;
 	}
 	public void setPropertyAcceptor(
-			BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
+			BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
 //		this.checkFreezed();
 		this.propertyAcceptor = propertyAcceptor;
 	}
@@ -159,6 +200,11 @@ public class BeanToMapConvertor implements Cloneable {
 //		this.checkFreezed();
 		this.flatableObject = flatableObject;
 	}
+	
+	public void setPropertyNameConvertor(PropertyNameConvertor propertyNameConvertor) {
+		this.propertyNameConvertor = propertyNameConvertor;
+	}
+
 	/***
 	 * 简单反射对象的propertyName为key， propertyValue为value
 	 * 默认忽略value==null的属性，参见DefaultPropertyAcceptor
@@ -185,13 +231,15 @@ public class BeanToMapConvertor implements Cloneable {
 		Object val = null;
 		for (PropertyDescriptor prop : props) {
 			val = objWrapper.getPropertyValue(prop);
-			if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
-				if(valueConvertor!=null){
+			PropertyContext propContext = createPropertyContext(obj, prop);
+			if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
+				/*if(valueConvertor!=null){
 					Object newVal = valueConvertor.apply(prop, val);
 					val = (newVal!=null?newVal:val);
-				}
-				PropertyContext propContext = createPropertyContext(obj, prop);
-				rsMap.put(toPropertyName(propContext.getName()), val);
+				}*/
+				val = convertValue(prop, val);
+//				PropertyContext propContext = createPropertyContext(obj, prop);
+				rsMap.put(toPropertyName(propContext.getConvertedName()), val);
 			}
 		}
 		return rsMap;
@@ -308,7 +356,8 @@ public class BeanToMapConvertor implements Cloneable {
 //				Object val = ReflectUtils.getProperty(obj, prop);
 				Object val = ow.getPropertyValue(prop);
 //				System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
-				if (propertyAcceptor==null || propertyAcceptor.apply(prop, val)){
+				PropertyContext propContext = createPropertyContext(obj, prop);
+				if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
 					/*if(isMapObject(val) || isMultiple(val)){
 						//no convert
 					}else if(valueConvertor!=null){
@@ -318,13 +367,12 @@ public class BeanToMapConvertor implements Cloneable {
 						val = ((Enum<?>)val).name();
 					}*/
 					
-					PropertyContext propContext = createPropertyContext(obj, prop);
 					if(StringUtils.isBlank(prefixName)){
-						flatObject(propContext.getName(), val, valuePutter, propContext);
+						flatObject(propContext.getConvertedName(), val, valuePutter, propContext);
 					}else{
 						String prefix = prefixName+propertyAccesor;
 						propContext.setPrefix(prefix);
-						flatObject(prefix+propContext.getName(), val, valuePutter, propContext);
+						flatObject(prefix+propContext.getConvertedName(), val, valuePutter, propContext);
 					}
 				}
 			});
@@ -332,12 +380,13 @@ public class BeanToMapConvertor implements Cloneable {
 	}
 	
 	private Object convertValue(PropertyDescriptor prop, Object val){
-		if(val instanceof Enum){
-			val = ((Enum<?>)val).name();
-		}
 		if(valueConvertor!=null){
 			Object newVal = valueConvertor.apply(prop, val);
 			val = (newVal!=null?newVal:val);
+		} else {
+			if(val instanceof Enum){
+				val = ((Enum<?>)val).name();
+			}
 		}
 		return val;
 	}
@@ -389,7 +438,7 @@ public class BeanToMapConvertor implements Cloneable {
 			return ClassIntroManager.getInstance().getIntro(source.getClass()).getField(name);
 		}
 		public String getName() {
-			String name = this.name;
+			/*String name = this.name;
 			if(enableFieldNameAnnotation && source!=null){
 				FieldName fn = ReflectUtils.getFieldNameAnnotation(source.getClass(), name);
 				if(fn!=null){
@@ -398,8 +447,12 @@ public class BeanToMapConvertor implements Cloneable {
 			}
 			if(enableUnderLineStyle){
 				name = StringUtils.convert2UnderLineName(name);
-			}
+			}*/
+//			String name = propertyNameConvertor.convert(this);
 			return name;
+		}
+		private String getConvertedName() {
+			return propertyNameConvertor.convert(this);
 		}
 		public String getPrefix() {
 			return prefix;
@@ -419,12 +472,13 @@ public class BeanToMapConvertor implements Cloneable {
 	}
 	protected static class BaseBeanToMapBuilder<T extends BaseBeanToMapBuilder<T>> {
 //		private BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
-		protected BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor = new DefaultPropertyAcceptor();
+		protected BiFunction<PropertyContext, Object, Boolean> propertyAcceptor;
 		protected BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 		protected Function<Object, Boolean> flatableObject;
 		protected boolean enableFieldNameAnnotation = false;
 		protected boolean enableUnderLineStyle = false;
 		protected String prefix = "";
+		protected PropertyNameConvertor propertyNameConvertor;
 
 		public void copyTo(BaseBeanToMapBuilder<?> builder){
 			builder.prefix = this.prefix;
@@ -435,12 +489,23 @@ public class BeanToMapConvertor implements Cloneable {
 			builder.enableUnderLineStyle = this.enableUnderLineStyle;
 		}
 		
-		public T propertyAcceptor(BiFunction<PropertyDescriptor, Object, Boolean> propertyAcceptor) {
+		private void checkPropertyAcceptor() {
+			if (this.propertyAcceptor!=null) {
+				throw new IllegalStateException("propertyAcceptor has set!");
+			}
+		}
+		public T propertyAcceptor(BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
+			this.checkPropertyAcceptor();
 			this.propertyAcceptor = propertyAcceptor;
 			return self();
 		}
 		public T excludeProperties(String... properties) {
+			this.checkPropertyAcceptor();
 			this.propertyAcceptor = new ExcludePropertyAcceptor(Arrays.asList(properties));
+			return self();
+		}
+		public T propertyNameConvertor(PropertyNameConvertor propertyNameConvertor) {
+			this.propertyNameConvertor = propertyNameConvertor;
 			return self();
 		}
 
@@ -480,6 +545,9 @@ public class BeanToMapConvertor implements Cloneable {
 			return beanToFlatMap.toFlatMap(obj);
 		}*/
 		public BeanToMapConvertor build(){
+			if (this.propertyAcceptor==null) {
+				this.propertyAcceptor = new DefaultPropertyAcceptor();
+			}
 			BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
 			beanToFlatMap.setPrefix(prefix);
 			beanToFlatMap.setPropertyAcceptor(propertyAcceptor);
@@ -487,8 +555,11 @@ public class BeanToMapConvertor implements Cloneable {
 			if(flatableObject!=null){
 				beanToFlatMap.setFlatableObject(flatableObject);
 			}
-			beanToFlatMap.enableFieldNameAnnotation = enableFieldNameAnnotation;
-			beanToFlatMap.enableUnderLineStyle = enableUnderLineStyle;
+			if (this.propertyNameConvertor==null) {
+				beanToFlatMap.propertyNameConvertor = new DefaultPropertyNameConvertor(enableFieldNameAnnotation, enableUnderLineStyle);
+			} else {
+				beanToFlatMap.propertyNameConvertor = this.propertyNameConvertor;
+			}
 			return beanToFlatMap;
 		}
 	}

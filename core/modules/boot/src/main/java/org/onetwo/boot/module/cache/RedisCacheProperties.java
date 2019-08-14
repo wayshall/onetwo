@@ -5,12 +5,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import lombok.Data;
-
+import org.onetwo.boot.module.redis.RedisOperationService;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Maps;
+
+import lombok.Data;
 
 /**
  * spring: 
@@ -27,7 +28,7 @@ public class RedisCacheProperties {
 	public static final String PREFIX = "jfish.cache.redis";
 	
 	Collection<String> cacheNames;
-	boolean usePrefix = false;
+	boolean usePrefix = true;
 	boolean transactionAware = false;
 	boolean loadRemoteCachesOnStartup = false;
 	// 0 - never expire
@@ -36,6 +37,8 @@ public class RedisCacheProperties {
 	Map<String, String> expires = Maps.newHashMap();
 	
 	boolean useJsonRedisTemplate = true;
+	
+	String cacheKeyPrefix = RedisOperationService.DEFAUTL_CACHE_PREFIX;
 	
 	public Map<String, Long> expiresInSeconds(){
 		if(expires.isEmpty()){

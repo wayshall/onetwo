@@ -14,17 +14,23 @@ public class ToBigDecemalConvertor extends AbstractTypeConvert<BigDecimal> {
 //		if (value == null)
 //            return BigDecimal.valueOf(0L);
         Class<?> c = value.getClass();
-        if(c==BigDecimal.class)
+        if (c==BigDecimal.class) {
         	return (BigDecimal)value;
-        if(c==BigInteger.class)
+        } else if(c==BigInteger.class) {
         	return new BigDecimal((BigInteger)value);
-        if (c.getSuperclass() == Number.class)
-            return BigDecimal.valueOf(((Number) value).longValue());
-        if (c == Boolean.class)
+        } else if (c.getSuperclass() == Integer.class) {
+            return BigDecimal.valueOf((Integer)value);
+        } else if (c.getSuperclass() == Long.class) {
+            return BigDecimal.valueOf((Long)value);
+        } else if (c.getSuperclass() == Number.class) {
+            return BigDecimal.valueOf(((Number) value).doubleValue());
+        } else if (c == Boolean.class) {
             return BigDecimal.valueOf(((Boolean) value).booleanValue() ? 1L : 0L);
-        if (c == Character.class)
+        } else if (c == Character.class) {
             return BigDecimal.valueOf(((Character) value).charValue());
-        return new BigDecimal(value.toString().trim());
+        } else {
+        	return new BigDecimal(value.toString().trim());
+        }
 
 	}
 

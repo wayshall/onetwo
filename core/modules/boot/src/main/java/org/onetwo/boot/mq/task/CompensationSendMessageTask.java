@@ -61,14 +61,14 @@ public class CompensationSendMessageTask implements InitializingBean {
 	}
 
 	/***
-	 * 定时器运行时间，默认60秒一次
+	 * 定时器运行时间，默认30秒一次
 	 * @author wayshall
 	 */
 //	@Scheduled(cron="${"+ONSProperties.TRANSACTIONAL_TASK_CRON_KEY+":0 0/1 * * * *}")
-	@Scheduled(fixedRateString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY+":60000}", initialDelay=30000)
+	@Scheduled(fixedRateString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY+":30000}", initialDelay=30000)
 	public void scheduleCheckSendMessage(){
 		SendTaskProps taskProps = this.mqProperties.getTransactional().getSendTask();
-		int ignoreCreateAtRecently = (int)LangOps.timeToSeconds(taskProps.getIgnoreCreateAtRecently(), 60);
+		int ignoreCreateAtRecently = (int)LangOps.timeToSeconds(taskProps.getIgnoreCreateAtRecently(), 30);
 		doCheckSendMessage(taskProps.getSendCountPerTask(), ignoreCreateAtRecently);
 	}
 

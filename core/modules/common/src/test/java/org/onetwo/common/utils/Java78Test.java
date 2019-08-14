@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.Closeable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,6 +49,29 @@ public class Java78Test {
 			users.add(createUser(userName, i));
 		}
 		return users;
+	}
+	
+	@Test
+	public void testSplitList() {
+		List<UserEntity> userList = LangOps.generateList(678, i-> createUser("testUserName"+i, i));
+		int taskSize = 100;
+		LangOps.splitTaskAndConsume(userList, taskSize, (subTasks, taskIndex) -> {
+			System.out.println("uses["+taskIndex+"]: " + subTasks.size());
+			if (taskIndex==6) {
+				assertThat(subTasks.size()).isEqualTo(78);
+			} else {
+				assertThat(subTasks.size()).isEqualTo(100);
+			}
+		});
+		userList = LangOps.generateList(77, i-> createUser("testUserName"+i, i));
+		LangOps.splitTaskAndConsume(userList, taskSize, (subTasks, taskIndex) -> {
+			System.out.println("uses["+taskIndex+"]: " + subTasks.size());
+			if (taskIndex==0) {
+				assertThat(subTasks.size()).isEqualTo(77);
+			} else {
+				assertThat(subTasks.size()).isEqualTo(100);
+			}
+		});
 	}
 	
 	@Test
@@ -435,6 +461,22 @@ public class Java78Test {
 		Assert.assertEquals(3, counted.get("aa").intValue());
 		Assert.assertEquals(1, counted.get("bb").intValue());
 		Assert.assertEquals(2, counted.get("cc").intValue());
+		
+		Map<String, List<Long>> userNameIdsMap = all.stream()
+													.collect(Collectors.groupingBy(
+																u -> u.getUserName(),
+																Collector.of(
+																		() -> new ArrayList<Long>(),
+																		(list, user) -> list.add(user.getId()),
+																		(left, right) -> { left.addAll(right); return left; }
+																)
+															));
+		Assert.assertEquals(3, userNameIdsMap.get("aa").size());
+		Assert.assertEquals(1, userNameIdsMap.get("bb").size());
+		Assert.assertEquals(2, userNameIdsMap.get("cc").size());
+		assertThat(userNameIdsMap.get("aa")).contains(0L, 1L, 2L);
+		assertThat(userNameIdsMap.get("bb")).contains(0L);
+		assertThat(userNameIdsMap.get("cc")).contains(0L, 1L);
 	}
 	
 	@Test

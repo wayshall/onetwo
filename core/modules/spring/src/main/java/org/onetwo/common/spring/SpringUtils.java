@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,6 +81,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /****
@@ -536,6 +538,14 @@ final public class SpringUtils {
 		return new ClassPathResource(path);
 	}
 	
+	public static InputStream classpathStream(String path){
+		try {
+			return classpath(path).getInputStream();
+		} catch (IOException e) {
+			throw new BaseException("read classpath file as stream error: " + path);
+		}
+	}
+	
 	public static BeanWrapper newBeanWrapper(Object obj){
 		BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(obj);
 		bw.setAutoGrowNestedPaths(true);
@@ -678,19 +688,32 @@ final public class SpringUtils {
 	 * @return
 	 */
 	public static String resolvePlaceholders(Object applicationContext, String value){
-		return resolvePlaceholders(applicationContext, value, true);
+//		return resolvePlaceholders(applicationContext, value, true);
+		String resolvedValue = resolvePlaceholders(applicationContext, value, false);
+		if (DOLOR.isExpresstion(resolvedValue)){
+			String convertedName = StringUtils.convertWithSeperator(resolvedValue, "-");
+			if (value.equals(convertedName)) {
+				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + resolvedValue);
+			}
+			resolvedValue = resolvePlaceholders(applicationContext, convertedName, false);
+			if (DOLOR.isExpresstion(resolvedValue)){
+				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + resolvedValue);
+			}
+		}
+		return resolvedValue;
 	}
+	
 	public static String resolvePlaceholders(Object applicationContext, String value, boolean throwIfNotResolved){
 		String newValue = value;
 		if (StringUtils.hasText(value) && DOLOR.isExpresstion(value)){
-			if(applicationContext instanceof ConfigurableApplicationContext){
+			if (applicationContext instanceof ConfigurableApplicationContext){
 				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
 				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
-			}else if(applicationContext instanceof PropertyResolver){
+			} else if (applicationContext instanceof PropertyResolver){
 				PropertyResolver env = (PropertyResolver)applicationContext;
 				newValue = env.resolvePlaceholders(value);
 			}
-			if(DOLOR.isExpresstion(newValue) && throwIfNotResolved){
+			if (DOLOR.isExpresstion(newValue) && throwIfNotResolved){
 				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + newValue);
 			}
 		}
@@ -736,6 +759,17 @@ final public class SpringUtils {
 		} catch (IOException e) {
 			throw new BaseException("get InputStream error: " + resource.getFilename());
 		}
+	}
+	
+
+	public static BeanToMapConvertor getBeanToMapConvertor(String... excludeProperties){
+		List<String> excludes = Lists.newArrayList();
+		excludes.addAll(Arrays.asList(excludeProperties));
+		BeanToMapConvertor convertor = BeanToMapBuilder.newBuilder()
+														.excludeProperties(excludes.toArray(new String[0]))
+														.enableFieldNameAnnotation()
+														.build();
+		return convertor;
 	}
 	
 }

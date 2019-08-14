@@ -12,6 +12,7 @@ import org.onetwo.cloud.core.BootCloudConfigration;
 import org.onetwo.cloud.env.AuthEnvsConfiguration;
 import org.onetwo.cloud.feign.CornerFeignConfiguration;
 import org.onetwo.cloud.sleuth.SleuthConfiguration;
+import org.onetwo.cloud.webmgr.CloudManagementConfiguration;
 import org.onetwo.common.spring.context.AbstractImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -41,6 +42,8 @@ public class EnableJFishCloudExtensionSelector extends AbstractImportSelector<En
 		
 		//sleuth
 		classNames.add(SleuthConfiguration.class.getName());
+		
+		classNames.add(CloudManagementConfiguration.class.getName());
 		
 		return classNames;
 	}

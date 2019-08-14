@@ -273,9 +273,9 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 	}
 	
 	private void generateSheet(SheetData sheetData) {
-		Assert.notNull(this.tempalte);
+		Assert.notNull(this.tempalte, "template can not be null");
 		final List<RowModel> rows = this.tempalte.getRows();
-		Assert.notEmpty(rows);
+		Assert.notEmpty(rows, "rows can not be null");
 //		sheet = workbook.createSheet(tempalte.getName());
 		//for (RowModel row : this.tempalte.getRows()) {
 //		int columns = 0;

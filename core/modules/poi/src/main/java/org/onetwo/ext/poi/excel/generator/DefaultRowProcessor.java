@@ -13,6 +13,8 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.onetwo.common.convert.Types;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.excel.data.CellContextData;
 import org.onetwo.ext.poi.excel.data.RowContextData;
 import org.onetwo.ext.poi.excel.exception.ExcelException;
@@ -204,7 +206,22 @@ public class DefaultRowProcessor implements RowProcessor {
 			CellRangeAddress range = new CellRangeAddress(rowNum, rowNum+rowSpan-1, cell.getColumnIndex(), cell.getColumnIndex()+colspan-1);
 			sheet.addMergedRegion(range);
 		}
+		/*int cellType = getCellType(field.getDataType());
+		cell.setCellType(cellType);*/
 		return cell;
+	}
+	
+	private int getCellType(String dateType) {
+		int type = Cell.CELL_TYPE_STRING;
+		if (StringUtils.isNotBlank(dateType)) {
+			String actualFieldName = "CELL_TYPE_" + dateType.toUpperCase();
+			try {
+				type = (int)ReflectUtils.getStaticFieldValue(Cell.class, actualFieldName);
+			} catch (Exception e) {
+				logger.error("get cell type value error for dataType: " + dateType + ". cause: " + e.getMessage());
+			}
+		}
+		return type;
 	}
 	
 	private Cell createCell(Row row, int cellIndex){
@@ -373,7 +390,12 @@ public class DefaultRowProcessor implements RowProcessor {
 			HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
 			cell.setCellValue(cellValue);
 		}*/
-		ExcelUtils.setCellValue(cell, value);
+		if (StringUtils.isNotBlank(field.getDataType())) {
+			Object convertedValue = Types.convertValue(value, ReflectUtils.loadClass(field.getDataType()));
+			ExcelUtils.setCellValue(cell, convertedValue);
+		} else  {
+			ExcelUtils.setCellValue(cell, value);
+		}
 	}
 	protected void setCellValue(FieldModel field, Cell cell, Object value) {
 		if(this.cellListener!=null)

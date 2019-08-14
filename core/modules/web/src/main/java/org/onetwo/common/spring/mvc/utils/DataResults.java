@@ -106,7 +106,7 @@ final public class DataResults {
 		return map(objects).extractableData(true);
 	}
 	
-	public static LazyResultBuilder lazy(LazyValue data){
+	public static LazyResultBuilder lazy(LazyValue<?> data){
 		LazyResultBuilder builder = new LazyResultBuilder().success();
 		builder.data(data);
 		return builder;
@@ -126,7 +126,7 @@ final public class DataResults {
 		}
 	}
 	
-	public static class LazyResultBuilder extends AbstractResultBuilder<LazyValue, LazyResultBuilder> {
+	public static class LazyResultBuilder extends AbstractResultBuilder<LazyValue<?>, LazyResultBuilder> {
 		public static LazyResultBuilder builder(){
 			return new LazyResultBuilder();
 		}

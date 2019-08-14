@@ -4,10 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.Springs;
@@ -16,10 +12,13 @@ import org.onetwo.ext.security.jwt.JwtAuthStores;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 
-import redis.clients.jedis.JedisPoolConfig;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import redis.clients.jedis.JedisPoolConfig;
 
 
 /***
@@ -62,7 +61,11 @@ public class SecurityConfig {
 	private CasConfig cas = new CasConfig();
 	private CrsfConfig csrf = new CrsfConfig();
 //	private boolean csrf = true;
-	protected Boolean syncPermissionData;
+	/***
+	 * 是否在启动的时候同步菜单类的数据到数据库
+	 */
+//	protected boolean syncPermissionData;
+	private PermConfig permission = new PermConfig();
 	
 	private RememberMeConfig rememberMe = new RememberMeConfig();
 	
@@ -84,6 +87,10 @@ public class SecurityConfig {
 	
 	public boolean isDebug(){
 		return debug;
+	}
+	
+	public void setSyncPermissionData(boolean syncPermissionData) {
+		this.permission.setSync2db(syncPermissionData);
 	}
 	
 	public String[] getIgnoringUrls(){
@@ -191,7 +198,24 @@ public class SecurityConfig {
 		}
 	}
 
-
+	@Data
+	public static class PermConfig {
+		/***
+		 * 是否在启动的时候同步菜单类的数据到数据库
+		 */
+		private boolean sync2db;
+		private ControllerPermissionNotFoundActions permissionNotFound = ControllerPermissionNotFoundActions.THROWS;
+	}
+	public static enum ControllerPermissionNotFoundActions {
+		/***
+		 * 忽略
+		 */
+		IGNORE,
+		/***
+		 * 抛错
+		 */
+		THROWS
+	}
 
 	/****
 	 * cas:
@@ -281,6 +305,7 @@ public class SecurityConfig {
 		String password = "$2a$10$1Qrdb4WZcn7gDKrTfgJEAOZMOQRiUNWjuPcOmU520nLbrz2wHQlpa";//default is jfish
 		String[] roles;
 		String[] authorities;
+		Long userId;
 	}
 	@Data
 	public static class InterceptersConfig {

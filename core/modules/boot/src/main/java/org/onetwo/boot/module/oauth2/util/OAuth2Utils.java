@@ -25,6 +25,9 @@ import org.springframework.util.Assert;
  */
 public abstract class OAuth2Utils {
 	public static String BEARER_TYPE = OAuth2AccessToken.BEARER_TYPE; //"Bearer";
+	
+	public static final String GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials";
+	
 	public static final String OAUTH2_AUTHORIZATION_HEADER = "Authorization";
 	
 	public static final String OAUTH2_CLIENT_DETAILS_SERVICE = "oauth2ClientDetailsService";
@@ -37,6 +40,9 @@ public abstract class OAuth2Utils {
 	
 
 	private static Optional<ClientDetailsObtainService> getClientDetailsObtainService() {
+		if (!Springs.getInstance().isInitialized()) {
+			return Optional.empty();
+		}
 		ClientDetailsObtainService service = Springs.getInstance().getBean(ClientDetailsObtainService.class);
 		return Optional.ofNullable(service);
 	}

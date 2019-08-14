@@ -247,7 +247,7 @@ public class BootWebCommonAutoConfig {
 		UploadConfig config = bootSiteConfig.getUpload();
 		SimpleFileStorer fs = new SimpleFileStorer();
 		fs.setStoreBaseDir(config.getFileStorePath());//site.upload.fileStorePath
-		fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
+//		fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
 		return fs;
 	}
 	
@@ -264,7 +264,7 @@ public class BootWebCommonAutoConfig {
 		fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
 //		fs.setStoreBaseDir(config.getFtpBaseDir());
 		fs.setStoreBaseDir(config.getFileStorePath());
-		fs.setAppContextDir(config.getAppContextDir());
+//		fs.setAppContextDir(config.getAppContextDir());
 		return fs;
 	}
 

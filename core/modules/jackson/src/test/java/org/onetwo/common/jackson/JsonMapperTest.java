@@ -223,6 +223,11 @@ public class JsonMapperTest {
 		Assert.assertTrue(json.contains("birth_day2"));
 		Assert.assertTrue(json.contains("1984-01-01"));
 		System.out.println("testJson2: " + json);
+		
+		SubUserEntity subUser = jsonMapper.fromJson(json, SubUserEntity.class);
+		assertThat(subUser.getBirthDay()).isNull();
+		assertThat(DateUtils.formatDate(subUser.getBirthDay2())).isEqualTo("1984-01-01");
+		assertThat(subUser.getEmail()).isEqualTo(user.getEmail());
 	}
 	
 	@Test
@@ -300,7 +305,7 @@ public class JsonMapperTest {
 		String json = "{id:200,'userName':\"userNameJsonTest\",\"email\":null,\"age\":11,\"birthDay\":\"2012-07-02 15:26:10\"}";
 		System.out.println("testJsonIgnoreEmpty: " + json);
 		
-		Map<String, String> map = JsonMapper.defaultMapper().fromJson(json, Map.class);
+		Map<String, String> map = JsonMapper.defaultMapper().allowSingleQuotes().fromJson(json, Map.class);
 		System.out.println("map: " + map);
 		Assert.assertEquals(Integer.valueOf(200), map.get("id"));
 		Assert.assertEquals("userNameJsonTest", map.get("userName"));

@@ -28,6 +28,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 				properties={
 							"spring.redis.host=localhost",
 							"spring.redis.port=6379",
+							"spring.redis.database=0",
+							"jfish.redis.lockRegistry.key=test_redis_locker",
 							"jfish.redis.enabled=true"
 							}
 )

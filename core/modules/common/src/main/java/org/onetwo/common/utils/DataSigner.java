@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.onetwo.common.annotation.IgnoreField;
 import org.onetwo.common.exception.ErrorType;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -25,12 +26,22 @@ public interface DataSigner {
 	
 	String sign(String signKey, long timestamp, Object request, String... excludeProperties);
 	void checkSign(SigningConfig config, SignableRequest signRequest, Object actualRequest, String... excludeProperties);
-	
-	public class SignableRequest {
+
+	public interface SignableRequest {
 		public static final String FIELD_SIGNKEY = "signkey";
 		public static final String FIELD_TIMESTAMP = "timestamp";
 		
+		
+		public String getSignkey();
+		public Long getTimestamp();
+	}
+	
+	public class BaseSignableRequest implements SignableRequest {
+		public static final String FIELD_SIGNKEY = "signkey";
+		public static final String FIELD_TIMESTAMP = "timestamp";
+		@IgnoreField
 		private String signkey;
+		@IgnoreField
 		private Long timestamp;
 		
 		public String getSignkey() {
@@ -45,13 +56,16 @@ public interface DataSigner {
 		public void setTimestamp(Long timestamp) {
 			this.timestamp = timestamp;
 		}
-		
-		
 	}
 	
 	public class SigningConfig {
-		private int maxDelayTimeInSeconds = 60*10;
+		private int maxDelayTimeInSeconds = 60*3;
 		private String signingKey;
+		/***
+		 * 若小于0，则不判断重放攻击
+		 * @author weishao zeng
+		 * @return
+		 */
 		public int getMaxDelayTimeInSeconds() {
 			return maxDelayTimeInSeconds;
 		}
@@ -72,10 +86,10 @@ public interface DataSigner {
 		protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	
-		private BeanToMapConvertor getBeanToMapConvertor(String... excludeProperties){
+		protected BeanToMapConvertor getBeanToMapConvertor(String... excludeProperties){
 			List<String> excludes = Lists.newArrayList();
-			excludes.add(SignableRequest.FIELD_SIGNKEY);
-			excludes.add(SignableRequest.FIELD_TIMESTAMP);
+			excludes.add(BaseSignableRequest.FIELD_SIGNKEY);
+			excludes.add(BaseSignableRequest.FIELD_TIMESTAMP);
 			excludes.addAll(Arrays.asList(excludeProperties));
 			BeanToMapConvertor convertor = BeanToMapBuilder.newBuilder()
 															.excludeProperties(excludes.toArray(new String[0]))
@@ -83,11 +97,12 @@ public interface DataSigner {
 															.build();
 			return convertor;
 		}
-		protected String convertToSourceString(String signKey, long timestamp, Object request, String... excludeProperties){
-			Assert.hasText(signKey, "signKey can not blank");
+		
+		protected String convertToSourceString(String signingKey, long timestamp, Object request, String... excludeProperties){
+			Assert.hasText(signingKey, "signKey can not blank");
 			Map<String, Object> requestMap = getBeanToMapConvertor(excludeProperties).toFlatMap(request);
 			final String paramString = ParamUtils.comparableKeyMapToParamString(requestMap);
-			String sourceString = signKey+paramString+timestamp;
+			String sourceString = signingKey+paramString+timestamp;
 			if(logger.isDebugEnabled()){
 				logger.debug("param string: {}", paramString);
 				logger.debug("source string: {}", sourceString);
@@ -95,15 +110,19 @@ public interface DataSigner {
 			return sourceString;
 		}
 		
-		public String sign(String signKey, long timestamp, Object request, String... excludeProperties){
-			String sourceString = convertToSourceString(signKey, timestamp, request, excludeProperties);
+		public String sign(String signingKey, long timestampInSeconds, Object request, String... excludeProperties){
+			String sourceString = convertToSourceString(signingKey, timestampInSeconds, request, excludeProperties);
 			MessageDigestHasher hasher = Hashs.sha1(false, CodeType.HEX);
 			String hashString = hasher.hash(sourceString);
 			if(logger.isDebugEnabled()){
-				logger.debug("source string: {}", sourceString);
-				logger.debug("hash string: {}", hashString);
+				logger.debug("sign source string: {}", sourceString);
+				logger.debug("sign hash string: {}", hashString);
 			}
 			return hashString;
+		}
+		
+		protected Long getTimestampInMills(long timestampInSeconds) {
+			return timestampInSeconds * 1000;
 		}
 		
 		public void checkSign(SigningConfig config, SignableRequest signRequest, Object actualRequest, String... excludeProperties){
@@ -116,9 +135,10 @@ public interface DataSigner {
 			if(config==null){
 				throw new ServiceException(SignErrors.CONFIG_ERR);
 			}
-			DateTime requestTime = new DateTime(signRequest.getTimestamp());
+			long timestampInMills = getTimestampInMills(signRequest.getTimestamp());
+			DateTime requestTime = new DateTime(timestampInMills);
 			//如果请求时间+延迟时间后少于当前时间，则可能是攻击
-			if(requestTime.plusSeconds(config.getMaxDelayTimeInSeconds()).isBefore(DateTime.now())){
+			if(config.getMaxDelayTimeInSeconds()>0 && requestTime.plusSeconds(config.getMaxDelayTimeInSeconds()).isBefore(DateTime.now())){
 				throw new ServiceException(SignErrors.INVALID_INVOKE);
 			}
 			
@@ -127,7 +147,7 @@ public interface DataSigner {
 			MessageDigestHasher hasher = Hashs.sha1(false, CodeType.HEX);
 			String hashString = hasher.hash(sourceString);
 			if(logger.isDebugEnabled()){
-				logger.debug("hash string: {}", hashString);
+				logger.debug("checkSign hash string: {}", hashString);
 			}
 			
 			if(!hasher.checkHash(sourceString, signRequest.getSignkey())){
@@ -141,7 +161,7 @@ public interface DataSigner {
 
 		TIMESTAMP_ERR("时间戳不能为空"),
 		SIGNKEY_ERR("签名不能为空"),
-		CONFIG_ERR("配置错误"),
+		CONFIG_ERR("服务端配置错误"),
 		INVALID_INVOKE("非法调用"),
 		INVALID_SIGNKEY("非法签名");
 

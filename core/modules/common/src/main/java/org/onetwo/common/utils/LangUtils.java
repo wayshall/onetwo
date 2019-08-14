@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -1766,5 +1767,9 @@ public class LangUtils {
 		CRC32 crc = new CRC32();
 		crc.update(bytes);
 		return crc.getValue();
+	}
+	
+	public static String randomUUID() {
+		return UUID.randomUUID().toString().replace("-", "");
 	}
 }

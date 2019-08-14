@@ -1,6 +1,7 @@
 package org.onetwo.common.file;
 
 import java.io.File;
+import java.util.Optional;
 
 public class SimpleFileStoredMeta implements FileStoredMeta{
 
@@ -10,6 +11,11 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 	private String sotredFileName;
 	private String originalFilename;
 	private String bizModule;
+	
+	private String baseUrl;
+
+	private StoredMeta resizeStoredMeta;
+	private StoredMeta snapshotStoredMeta;
 	
 	public SimpleFileStoredMeta(String originalFilename, String storedServerLocalPath) {
 		super();
@@ -66,5 +72,37 @@ public class SimpleFileStoredMeta implements FileStoredMeta{
 	public void setAccessablePath(String accessablePath) {
 		this.accessablePath = accessablePath;
 	}
+
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+
+	public Optional<StoredMeta> getResizeStoredMeta() {
+		return Optional.ofNullable(resizeStoredMeta);
+	}
+
+	public void setResizeStoredMeta(StoredMeta resizeStoredMeta) {
+		this.resizeStoredMeta = resizeStoredMeta;
+	}
+
+	public Optional<StoredMeta> getSnapshotStoredMeta() {
+		return Optional.ofNullable(snapshotStoredMeta);
+	}
+
+	public void setSnapshotStoredMeta(StoredMeta snapshotStoredMeta) {
+		this.snapshotStoredMeta = snapshotStoredMeta;
+	}
+
+	@Override
+	public String toString() {
+		return "SimpleFileStoredMeta [accessablePath=" + accessablePath + ", fullAccessablePath=" + fullAccessablePath
+				+ ", storedServerLocalPath=" + storedServerLocalPath + ", sotredFileName=" + sotredFileName
+				+ ", originalFilename=" + originalFilename + ", bizModule=" + bizModule + ", baseUrl=" + baseUrl + "]";
+	}
+
 
 }

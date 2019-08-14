@@ -3,15 +3,17 @@ package org.onetwo.boot.module.session;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.Setter;
-
 import org.onetwo.boot.module.session.SessionProperties.SessionStrategies;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.session.Session;
 import org.springframework.session.web.http.CookieHttpSessionStrategy;
+import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.HeaderHttpSessionStrategy;
 import org.springframework.session.web.http.HttpSessionStrategy;
 import org.springframework.util.Assert;
+
+import lombok.Setter;
 
 /**
  * @author weishao zeng
@@ -26,6 +28,9 @@ public class CustomizableHttpSessionStrategy implements HttpSessionStrategy, Ini
 	private HeaderHttpSessionStrategy headerStrategy;
 	private CookieHttpSessionStrategy cookieStrategy;
 	
+	@Autowired(required=false)
+	private CookieSerializer cookieSerializer;
+	
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -33,6 +38,9 @@ public class CustomizableHttpSessionStrategy implements HttpSessionStrategy, Ini
 		this.headerStrategy = new HeaderHttpSessionStrategy();
 		this.headerStrategy.setHeaderName(tokenHeaderName);
 		this.cookieStrategy = new CookieHttpSessionStrategy();
+		if (cookieSerializer!=null) {
+			this.cookieStrategy.setCookieSerializer(cookieSerializer);
+		}
 	}
 
 	@Override

@@ -47,6 +47,7 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 		cacheManager.setLoadRemoteCachesOnStartup(properties.isLoadRemoteCachesOnStartup());
 		cacheManager.setUsePrefix(properties.isUsePrefix());
 		cacheManager.setTransactionAware(properties.isTransactionAware());
+		cacheManager.setCachePrefix(new ZifishRedisCachePrefix(properties.getCacheKeyPrefix()));
 		
 		Map<String, Long> expires = Maps.newHashMap();
 //		expires.putAll(getCacheExpiresFromProviders());

@@ -12,9 +12,18 @@ import org.springframework.core.io.ByteArrayResource;
 public class FileNameByteArrayResource extends ByteArrayResource {
 
 	private String filename;
+	private String contentType;
+	
+
+	public FileNameByteArrayResource(byte[] byteArray) {
+		super(byteArray);
+	}
 	
 	public FileNameByteArrayResource(String filename, byte[] byteArray) {
-		super(byteArray);
+		this(filename, byteArray, null);
+	}
+	public FileNameByteArrayResource(String filename, byte[] byteArray, String description) {
+		super(byteArray, description);
 		this.filename = filename;
 	}
 	
@@ -22,4 +31,17 @@ public class FileNameByteArrayResource extends ByteArrayResource {
 	public String getFilename() {
 		return filename;
 	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+	
 }

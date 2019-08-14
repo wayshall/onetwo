@@ -19,7 +19,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class BootJfishCloudConfig {
 	
 	public static final String CONFIG_PREFIX = "jfish.cloud"; 
-	public static final String ZUUL_FIXHEADERS_ENABLED = CONFIG_PREFIX + ".zuul.endabledFixHeader"; 
+	public static final String ZUUL_FIXHEADERS_ENABLED = CONFIG_PREFIX + ".zuul.endabledFixHeader";
+	
+	public static final String EUREKA_EMBEDDED_KEY = "jfish.cloud.eureka.embedded";
 	
 	ZuulConfig zuul = new ZuulConfig();
 	

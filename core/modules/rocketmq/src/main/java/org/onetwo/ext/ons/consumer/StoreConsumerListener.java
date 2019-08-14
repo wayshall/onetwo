@@ -3,7 +3,6 @@ package org.onetwo.ext.ons.consumer;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.ConsumerListener;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.annotation.ONSSubscribe.IdempotentType;
 import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
@@ -25,7 +24,7 @@ public class StoreConsumerListener implements ConsumerListener {
 
 	@Override
 	public void beforeConsumeMessage(ConsumerMeta consumerMeta, ConsumContext context) {
-		if(consumerMeta.getIdempotentType()==IdempotentType.DATABASE) {
+		if(consumerMeta.shouldWithTransational()) {
 			store2Database(consumerMeta, context);
 		}
 	}

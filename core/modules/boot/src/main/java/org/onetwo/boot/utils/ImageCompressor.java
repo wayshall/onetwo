@@ -8,15 +8,15 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.Thumbnails.Builder;
-
-import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.file.FileUtils;
 
 /**
  * @author wayshall
@@ -40,6 +40,7 @@ public class ImageCompressor {
 		Double quality;
 		Integer width;
 		Integer height;
+		@lombok.Builder.Default
 		List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 	}
 	
@@ -110,11 +111,14 @@ public class ImageCompressor {
 	 */
 	protected void configBuilder(Builder<?> builder, ImageCompressorConfig config){
 		if(config==null){
-			return ;
+			throw new BaseException("config can not be null");
 		}
 		if(config.getScale()!=null){
 			builder.scale(config.getScale());//经过测试，可以大幅减少大小，比如 0.5
+		} else if (config.getWidth()==null && config.getHeight()==null) {
+			throw new BaseException("scale and size(width, height) can not both be null");
 		}
+		
 		if(config.getWidth()!=null && config.getHeight()!=null){
 			builder.size(config.getWidth(), config.getHeight());
 		}else if(config.getWidth()!=null){

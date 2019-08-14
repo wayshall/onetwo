@@ -19,7 +19,7 @@ public interface Expression {
 	public String parse(String text, Object... objects);
 //	public void setThrowIfVarNotfound(boolean throwIfVarNotfound);
 
-//	public String parse(ValueProvider provider);
+	public String parse(String text, ValueProvider provider);
 
 	public String parseByProvider(String text, Object provider);
 

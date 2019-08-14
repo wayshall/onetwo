@@ -89,6 +89,10 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 			}
 			outputMessage.getHeaders().setContentType(MediaType.parseMediaType("application/javascript"));
 		}
+		if (value instanceof Optional) {
+			Optional<?> opt = (Optional<?>) value;
+			value = opt.orElse(null);
+		}
 		return value;
 	}
 	

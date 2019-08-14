@@ -24,4 +24,7 @@ public class AuthenticationException extends ServiceException {
 	public AuthenticationException(String message, Throwable cause) {
 		super(message, cause);
 	}
+	public AuthenticationException(ErrorType exceptionType) {
+		super(exceptionType);
+	}
 }

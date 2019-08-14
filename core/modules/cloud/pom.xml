@@ -4,7 +4,7 @@
 	<parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.7.2</version>
+        <version>4.7.3-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
     <artifactId>onetwo-cloud</artifactId>
@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         
-        <onetwo.version>4.7.2</onetwo.version>
+        <onetwo.version>4.7.3-SNAPSHOT</onetwo.version>
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
@@ -36,6 +36,12 @@
         <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-dbm</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-eureka-server</artifactId>
           <optional>true</optional>
         </dependency>
 	   

@@ -37,7 +37,7 @@ release-pom.xml
 pom.xml.releaseBackup
 *.orig
 /core/modules/dbm/src/test/resources/db/generator/emall/emall-jdbc.properties
-application-product.yaml
+application-product.*
 *.externalToolBuilders
 *.iml
 /core/modules/dbm/*.iml
@@ -56,3 +56,5 @@ core/deploy-all.sh
 core/deploy-microcloud.sh
 rebel.xml
 /core/modules/common/src/test/java/org/onetwo/common/project
+/core/git-scripts
+/core/pom.xml

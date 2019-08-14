@@ -44,8 +44,6 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	
 //	protected final Logger log = JFishLoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private ApplicationContext applicationContext;
 //	@Autowired
 //	private BootJFishConfig bootJFishConfig;
 	
@@ -116,7 +114,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 //					UserDetails.class.isInstance(entry.getValue()) ||
 					MultipartFile.class.isInstance(entry.getValue())){
 				model.remove(entry.getKey());
-			}else if(entry.getValue()!=null && excludeClasses.contains(entry.getValue().getClass())){
+			}else if(entry.getValue()!=null && excludeClasses.contains(entry.getValue().getClass().getName())){
 				model.remove(entry.getKey());
 			}
 		}
