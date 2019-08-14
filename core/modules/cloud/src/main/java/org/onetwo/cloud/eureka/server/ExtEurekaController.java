@@ -47,6 +47,8 @@ public class ExtEurekaController extends EurekaController {
 	private String dashboardPath = "";*/
 	@Value("${eureka.dashboard.baseurl:/gateway/eureka}")
 	private String baseurl = "";
+	@Value("${eureka.dashboard.authHeaderName:auth}")
+	private String authHeaderName = "";
 	
 	private ExtRestTemplate restTemplate = new ExtRestTemplate();
 	
@@ -108,10 +110,11 @@ public class ExtEurekaController extends EurekaController {
 			url = inst.getHomePageUrl() + url + "/refresh";
 		}
 		
-		String auth = RequestUtils.getCookieValue(request, "auth");
+		String auth = RequestUtils.getCookieValue(request, authHeaderName);
 		HttpHeaders headers = RestUtils.createHeader(MediaType.APPLICATION_JSON_UTF8);
 		if (StringUtils.isNotBlank(auth)) {
-			headers.set("auth", auth);
+//			headers.set("auth", auth);
+			headers.set("Cookie", authHeaderName+"="+auth);
 		}
 
 		if (log.isInfoEnabled()) {
