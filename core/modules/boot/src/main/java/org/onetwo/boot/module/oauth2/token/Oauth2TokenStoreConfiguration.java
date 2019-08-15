@@ -31,7 +31,7 @@ public class Oauth2TokenStoreConfiguration {
 	@ConditionalOnProperty(name=JFishOauth2Properties.TOKEN_STORE_ENABLED_KEY, havingValue=JFishOauth2Properties.KEYS_REDIS)
 	protected static class  RedisTokenStoreConfiguration {
 		@Bean
-		public RedisTokenStore redisTokenStore(@Autowired RedisConnectionFactory redisConnectionFactory){
+		public TokenStore redisTokenStore(@Autowired RedisConnectionFactory redisConnectionFactory){
 			RedisTokenStore store = new RedisTokenStore(redisConnectionFactory);
 			return store;
 		}
@@ -41,7 +41,7 @@ public class Oauth2TokenStoreConfiguration {
 	@ConditionalOnProperty(name=JFishOauth2Properties.TOKEN_STORE_ENABLED_KEY, havingValue=JFishOauth2Properties.KEYS_JDBC)
 	protected static class JdbcTokenStoreConfiguration {
 		@Bean
-		public JdbcTokenStore jdbcTokenStore(@Autowired DataSource dataSource){
+		public TokenStore jdbcTokenStore(@Autowired DataSource dataSource){
 			JdbcTokenStore store = new JdbcTokenStore(dataSource);
 			return store;
 		}
@@ -58,7 +58,7 @@ public class Oauth2TokenStoreConfiguration {
 		private JFishOauth2Properties jfishOauth2Properties;
 		
 		@Bean
-		public JwtTokenStore jwtTokenStore(){
+		public TokenStore jwtTokenStore(){
 			JwtTokenStore store = new JwtTokenStore(jwtAccessTokenConverter());
 			return store;
 		}

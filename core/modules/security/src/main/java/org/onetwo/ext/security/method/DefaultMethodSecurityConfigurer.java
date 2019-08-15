@@ -4,6 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
+import org.onetwo.ext.security.ajax.AjaxLogoutSuccessHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
 import org.onetwo.ext.security.matcher.MatcherUtils;
@@ -24,6 +25,7 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.DefaultLoginPageConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
@@ -49,6 +51,8 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	
 	@Autowired(required=false)
 	private AjaxSupportedAuthenticationEntryPoint authenticationEntryPoint;
+	@Autowired(required=false)
+	private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
 	
 
 	@Getter
@@ -222,12 +226,15 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 					.failureHandler(ajaxAuthenticationHandler)
 					.successHandler(ajaxAuthenticationHandler);
 		
-		http
-			.logout()
-			.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
-			.logoutSuccessUrl(securityConfig.getLogoutSuccessUrl()).permitAll()
-		.and()
-			.httpBasic()
+		LogoutConfigurer<HttpSecurity> logoutConf = http.logout()
+										.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
+										.logoutSuccessUrl(securityConfig.getLogoutSuccessUrl()).permitAll();
+
+		if (ajaxLogoutSuccessHandler!=null) {
+			logoutConf.logoutSuccessHandler(ajaxLogoutSuccessHandler);
+		}
+		
+		http.httpBasic()
 			.disable()
 			.headers()
 				.frameOptions()
