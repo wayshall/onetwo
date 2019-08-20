@@ -11,6 +11,9 @@ import org.onetwo.boot.module.alioss.ResizeProperties;
  */
 public class ResizeAction extends ObjectProcess<ResizeProperties> {
 	
+	// 生成缩略图时生成水印
+//	private WatermarkAction watermark;
+	
 	/**
 	 * image/resize
 	 */

@@ -130,6 +130,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		context.setFileStoreBaseDir(fileStoreBaseDir);
 //		context.setStoreFilePathStrategy(storeFilePathStrategy);
 		context.setKey(options.getKey());
+		context.setWaterMaskConfig(options.getWaterMaskConfig());
 		FileStoredMeta meta = fileStorer.write(context);
 		if(fileStorerListener!=null){
 			fileStorerListener.afterFileStored(meta);

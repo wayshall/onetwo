@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.onetwo.boot.core.web.utils.SimpleMultipartFile;
 import org.onetwo.boot.core.web.utils.UploadOptions;
 import org.onetwo.boot.core.web.utils.UploadOptions.ResizeConfig;
+import org.onetwo.boot.core.web.utils.UploadOptions.WaterMaskConfig;
 import org.onetwo.boot.module.alioss.OssClientWrapper;
 import org.onetwo.boot.module.alioss.OssClientWrapperTest.TestOssUploadContextConfig;
 import org.onetwo.boot.module.alioss.OssFileStore;
@@ -52,6 +53,7 @@ private OssProperties ossProperties;
 //		watermask.setEnabled(true);
 		watermask.setText("测试oss~~");
 		watermask.setSize(100);
+//		watermask.setImageProcess("x-oss-process=image/resize,P_30");
 		
 		this.wraper = new OssClientWrapper(ossProperties);
 		wraper.afterPropertiesSet();
@@ -75,6 +77,36 @@ private OssProperties ossProperties;
 											.multipartFile(upfile)
 											.key("test-upload.jpg")
 											.resizeConfig(ResizeConfig.builder().width(200).build())
+											.build();
+		FileStoredMeta meta = common.uploadFile(opts);
+		System.out.println("meta: " + meta);
+	}
+	
+	@Test
+	public void testOssWithImageMask() throws Exception {
+		
+		Resource resource = SpringUtils.classpath("data/test.jpg");
+
+
+		WaterMaskProperties watermask = new WaterMaskProperties();
+//		watermask.setEnabled(true);
+//		watermask.setText("测试oss~~");
+//		watermask.setSize(100);
+		watermask.setImageProcess("x-oss-process=image/resize,P_15");
+		
+		ossProperties.setWatermask(watermask);
+		storer = new OssFileStore(wraper, ossProperties);
+		SimpleBootCommonService common = new SimpleBootCommonService();
+		common.setFileStoreBaseDir("/test");
+		common.setFileStorer(storer);
+		
+		SimpleMultipartFile upfile = new SimpleMultipartFile("test.jpg", resource.getFile());
+		UploadOptions opts = UploadOptions.builder()		
+											.multipartFile(upfile)
+											.key("test-upload.jpg")
+											.resizeConfig(ResizeConfig.builder().width(200).build())
+											.waterMaskConfig(WaterMaskConfig.builder().image("mask/hyatt.png").build())
+											.waterMaskConfig(WaterMaskConfig.builder().image("mask/tgts.png").build())
 											.build();
 		FileStoredMeta meta = common.uploadFile(opts);
 		System.out.println("meta: " + meta);

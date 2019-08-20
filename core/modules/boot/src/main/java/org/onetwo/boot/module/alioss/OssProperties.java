@@ -69,6 +69,7 @@ public class OssProperties {
 		对panda.png按30%缩放。 那么水印文件是：panda.png?x-oss-process=image/resize,P_30
 		 */
 		String image;
+		String imageProcess = "x-oss-process=image/resize,P_15";
 		Integer size;
 		Integer shadow;
 		Integer transparency;
@@ -81,6 +82,13 @@ public class OssProperties {
 		
 		public boolean isSupportFileType(String postfix) {
 			return supportFileTypes.contains(postfix.toLowerCase());
+		}
+		
+		public String getImage() {
+			if (StringUtils.isBlank(imageProcess)) {
+				return image;
+			}
+			return image + "?" + imageProcess;
 		}
 	}
 

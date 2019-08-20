@@ -132,5 +132,9 @@ public class OssFileStore implements FileStorer, InitializingBean {
 	public long getLastModified(String accessablePath) {
 		return 0;
 	}
+
+	public OssProperties getOssProperties() {
+		return ossProperties;
+	}
 	
 }

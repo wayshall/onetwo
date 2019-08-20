@@ -38,6 +38,10 @@ public class UploadOptions {
 	@Setter
 	@Getter
 	private SnapshotConfig snapshotConfig;
+
+	@Setter
+	@Getter
+	private WaterMaskConfig waterMaskConfig;
 	
 	/**
 	 * 如果指定了key，会覆盖
@@ -110,6 +114,18 @@ public class UploadOptions {
 		String text;
 		Integer size;
 		String type;
+		String image;
+
+		@Builder
+		public WaterMaskConfig(String text, Integer size, String type, String image) {
+			super();
+			this.text = text;
+			this.size = size;
+			this.type = type;
+			this.image = image;
+		}
+		
+		
 	}
 	
 	/***
