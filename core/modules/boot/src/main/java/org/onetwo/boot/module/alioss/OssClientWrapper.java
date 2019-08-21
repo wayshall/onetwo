@@ -288,7 +288,11 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			obj.setSourceKey(key);
 			obj.setTargetKey(targetKey);
 			obj.configBy(config);
-//			System.out.println("style: " + obj.toStyleWithName());
+			
+			if (logger.isInfoEnabled()) {
+				logger.info("watermask style: {}", obj.toStyleWithName());
+			}
+			
 			GenericResult result = this.ossClient.processObject(obj.buildRequest());
 			if (onCompleted!=null) {
 				onCompleted.accept(result);

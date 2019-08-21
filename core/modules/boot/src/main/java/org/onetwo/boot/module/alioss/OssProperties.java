@@ -85,6 +85,9 @@ public class OssProperties {
 		}
 		
 		public String getImage() {
+			if (StringUtils.isBlank(image)) {
+				return image;
+			}
 			if (StringUtils.isBlank(imageProcess)) {
 				return image;
 			}

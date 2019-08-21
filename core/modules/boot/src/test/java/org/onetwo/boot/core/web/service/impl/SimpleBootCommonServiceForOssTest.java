@@ -92,7 +92,7 @@ private OssProperties ossProperties;
 //		watermask.setEnabled(true);
 //		watermask.setText("测试oss~~");
 //		watermask.setSize(100);
-		watermask.setImageProcess("x-oss-process=image/resize,P_15");
+//		watermask.setImageProcess("x-oss-process=image/resize,P_15");
 		
 		ossProperties.setWatermask(watermask);
 		storer = new OssFileStore(wraper, ossProperties);
