@@ -29,7 +29,7 @@ public class AsyncTaskConfiguration {
 	private AsyncTaskProperties asyncTaskProperties;
 	
 	@Bean(ASYNC_TASK_BEAN_NAME)
-	@ConditionalOnMissingBean(name=AsyncTaskConfiguration.ASYNC_TASK_BEAN_NAME)
+	@ConditionalOnMissingBean(AsyncTaskExecutor.class)
     public AsyncTaskExecutor mvcAsyncTaskExecutor(SimpleTaskDecorator simpleTaskDecorator) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(asyncTaskProperties.getCorePoolSize());
