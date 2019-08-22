@@ -31,15 +31,14 @@ import org.onetwo.common.utils.StringUtils;
  */
 public class BeanToMapConvertor implements Cloneable {
 	private static final String GROOVY_META = "groovy.lang.MetaClass";
-	/****
-	 * 默认忽略值为null的属性
-	 * @author way
-	 *
-	 */
-	static public class DefaultPropertyAcceptor implements BiFunction<PropertyContext, Object, Boolean> {
+
+	public static interface PropertyAcceptor {
+		boolean apply(PropertyContext prop, Object val);
+	}
+	static public class DefaultPropertyAcceptor implements PropertyAcceptor {
 
 		@Override
-		public Boolean apply(PropertyContext prop, Object val) {
+		public boolean apply(PropertyContext prop, Object val) {
 			String clsName = prop.getProperty().getPropertyType().getName();
 			if(clsName.startsWith(GROOVY_META) ){
 				return false;
@@ -53,25 +52,55 @@ public class BeanToMapConvertor implements Cloneable {
 					return false;
 				}
 			}
-			return val!=null;
+			return checkValue(val);
+		}
+		
+		protected boolean checkValue(Object value) {
+			return true;
 		}
 		
 	}
-	
-	static public class ExcludePropertyAcceptor extends DefaultPropertyAcceptor implements BiFunction<PropertyContext, Object, Boolean> {
+	/****
+	 * 默认忽略值为null的属性
+	 * @author way
+	 *
+	 */
+	static public class IgnoreNullValuePropertyAcceptor extends DefaultPropertyAcceptor implements PropertyAcceptor {
+		private PropertyAcceptor delegateAcceptor;
 		
+		public IgnoreNullValuePropertyAcceptor(PropertyAcceptor delegateAcceptor) {
+			super();
+			this.delegateAcceptor = delegateAcceptor;
+		}
+
+		public boolean apply(PropertyContext prop, Object val) {
+			boolean res = super.apply(prop, val);
+			if (!res) {
+				return false;
+			}
+			return delegateAcceptor==null || delegateAcceptor.apply(prop, val);
+		}
+		@Override
+		protected boolean checkValue(Object value) {
+			return value!=null;
+		}
+	}
+	
+	static public class ExcludePropertyAcceptor implements PropertyAcceptor {
+		private PropertyAcceptor delegateAcceptor;
 		private Collection<String> excludeProperties;
 		
-		public ExcludePropertyAcceptor(Collection<String> excludeProperties){
+		public ExcludePropertyAcceptor(PropertyAcceptor delegateAcceptor, Collection<String> excludeProperties){
+			this.delegateAcceptor = delegateAcceptor;
 			this.excludeProperties = excludeProperties;
 		}
 
 		@Override
-		public Boolean apply(PropertyContext prop, Object val) {
+		public boolean apply(PropertyContext prop, Object val) {
 			if(excludeProperties.contains(prop.getName())){
 				return false;
 			}
-			return super.apply(prop, val);
+			return delegateAcceptor==null || delegateAcceptor.apply(prop, val);
 		}
 		
 	}
@@ -135,7 +164,7 @@ public class BeanToMapConvertor implements Cloneable {
 	private String listCloser = "]";
 	private String propertyAccesor = ".";
 	private String prefix = "";
-	private BiFunction<PropertyContext, Object, Boolean> propertyAcceptor;
+	private PropertyAcceptor propertyAcceptor;
 	private PropertyNameConvertor propertyNameConvertor;
 	private BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 	
@@ -187,8 +216,7 @@ public class BeanToMapConvertor implements Cloneable {
 //		this.checkFreezed();
 		this.prefix = prefix;
 	}
-	public void setPropertyAcceptor(
-			BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
+	public void setPropertyAcceptor(PropertyAcceptor propertyAcceptor) {
 //		this.checkFreezed();
 		this.propertyAcceptor = propertyAcceptor;
 	}
@@ -472,7 +500,7 @@ public class BeanToMapConvertor implements Cloneable {
 	}
 	protected static class BaseBeanToMapBuilder<T extends BaseBeanToMapBuilder<T>> {
 //		private BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
-		protected BiFunction<PropertyContext, Object, Boolean> propertyAcceptor;
+		protected PropertyAcceptor propertyAcceptor;
 		protected BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
 		protected Function<Object, Boolean> flatableObject;
 		protected boolean enableFieldNameAnnotation = false;
@@ -494,14 +522,20 @@ public class BeanToMapConvertor implements Cloneable {
 				throw new IllegalStateException("propertyAcceptor has set!");
 			}
 		}
-		public T propertyAcceptor(BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
+//		public T propertyAcceptor(BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
+		public T propertyAcceptor(PropertyAcceptor propertyAcceptor) {
 			this.checkPropertyAcceptor();
 			this.propertyAcceptor = propertyAcceptor;
 			return self();
 		}
 		public T excludeProperties(String... properties) {
-			this.checkPropertyAcceptor();
-			this.propertyAcceptor = new ExcludePropertyAcceptor(Arrays.asList(properties));
+//			this.checkPropertyAcceptor();
+			this.propertyAcceptor = new ExcludePropertyAcceptor(this.propertyAcceptor, Arrays.asList(properties));
+			return self();
+		}
+		public T ignoreNull() {
+//			this.checkPropertyAcceptor();
+			this.propertyAcceptor = new IgnoreNullValuePropertyAcceptor(this.propertyAcceptor);
 			return self();
 		}
 		public T propertyNameConvertor(PropertyNameConvertor propertyNameConvertor) {
@@ -546,7 +580,7 @@ public class BeanToMapConvertor implements Cloneable {
 		}*/
 		public BeanToMapConvertor build(){
 			if (this.propertyAcceptor==null) {
-				this.propertyAcceptor = new DefaultPropertyAcceptor();
+				this.propertyAcceptor = new IgnoreNullValuePropertyAcceptor(null);
 			}
 			BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
 			beanToFlatMap.setPrefix(prefix);
