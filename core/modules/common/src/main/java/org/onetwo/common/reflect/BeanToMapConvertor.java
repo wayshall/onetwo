@@ -32,9 +32,6 @@ import org.onetwo.common.utils.StringUtils;
 public class BeanToMapConvertor implements Cloneable {
 	private static final String GROOVY_META = "groovy.lang.MetaClass";
 
-	public static interface PropertyAcceptor {
-		boolean apply(PropertyContext prop, Object val);
-	}
 	static public class DefaultPropertyAcceptor implements PropertyAcceptor {
 
 		@Override

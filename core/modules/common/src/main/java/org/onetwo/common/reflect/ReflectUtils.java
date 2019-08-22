@@ -940,10 +940,12 @@ public class ReflectUtils {
 	}
 	
 	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor) {
-		return toMap(obj, acceptor, null);
+		return toMap(obj, (prop, val) -> {
+			return acceptor.apply(prop, val);
+		}, null);
 	}
 	
-	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
 		return BeanToMapBuilder.newBuilder()
 						.propertyAcceptor(acceptor)
 						.valueConvertor(valueConvertor)
