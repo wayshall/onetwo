@@ -92,6 +92,7 @@ public interface DataSigner {
 			excludes.add(BaseSignableRequest.FIELD_TIMESTAMP);
 			excludes.addAll(Arrays.asList(excludeProperties));
 			BeanToMapConvertor convertor = BeanToMapBuilder.newBuilder()
+															.ignoreNull()
 															.excludeProperties(excludes.toArray(new String[0]))
 															.enableFieldNameAnnotation()
 															.build();

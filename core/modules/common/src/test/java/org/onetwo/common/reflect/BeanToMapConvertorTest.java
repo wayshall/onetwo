@@ -1,5 +1,7 @@
 package org.onetwo.common.reflect;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Map;
 
@@ -25,7 +27,22 @@ public class BeanToMapConvertorTest {
 										 				.build();
 
 	@Test
-	public void test(){
+	public void testWithExcludeOnly(){
+		UserEntity user = new UserEntity();
+		user.setId(11L);
+		user.setUserName("testUserName");
+		
+		Map<String, Object> map = BeanToMapBuilder.newBuilder()
+								 				.enableFieldNameAnnotation()
+								 				.excludeProperties("roles", "role")
+								 				.build()
+								 				.toMap(user);
+		System.out.println("map: " + map);
+		assertThat(map.toString()).isEqualTo("{birthDay=null, id=11, userName=testUserName, age=0, email=null, height=0.0, status=null}");
+	}
+
+	@Test
+	public void testWithDefaultIgnoreNull(){
 		UserEntity user = new UserEntity();
 		user.setId(11L);
 		user.setUserName("testUserName");

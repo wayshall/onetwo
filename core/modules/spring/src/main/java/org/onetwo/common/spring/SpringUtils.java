@@ -766,6 +766,7 @@ final public class SpringUtils {
 		List<String> excludes = Lists.newArrayList();
 		excludes.addAll(Arrays.asList(excludeProperties));
 		BeanToMapConvertor convertor = BeanToMapBuilder.newBuilder()
+														.ignoreNull()
 														.excludeProperties(excludes.toArray(new String[0]))
 														.enableFieldNameAnnotation()
 														.build();

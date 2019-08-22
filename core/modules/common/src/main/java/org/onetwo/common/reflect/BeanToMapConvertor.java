@@ -577,7 +577,7 @@ public class BeanToMapConvertor implements Cloneable {
 		}*/
 		public BeanToMapConvertor build(){
 			if (this.propertyAcceptor==null) {
-				this.propertyAcceptor = new IgnoreNullValuePropertyAcceptor(null);
+				this.ignoreNull();
 			}
 			BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
 			beanToFlatMap.setPrefix(prefix);
