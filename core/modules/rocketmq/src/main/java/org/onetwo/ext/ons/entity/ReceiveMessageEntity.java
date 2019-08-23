@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import org.onetwo.dbm.annotation.DbmIdGenerator;
 import org.onetwo.dbm.id.SnowflakeGenerator;
 import org.onetwo.dbm.jpa.BaseEntity;
-import org.onetwo.dbm.mapping.DbmEnumValueMapping;
+import org.onetwo.dbm.mapping.DbmEnumIntMapping;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,7 +45,7 @@ public class ReceiveMessageEntity extends BaseEntity {
 	private ConsumeStates state;
 	
 	@AllArgsConstructor
-	public static enum ConsumeStates implements DbmEnumValueMapping {
+	public static enum ConsumeStates implements DbmEnumIntMapping {
 		/***
 		 * 已消费
 		 */
