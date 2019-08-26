@@ -495,12 +495,12 @@ public class BeanToMapConvertor implements Cloneable {
 			}
 		}
 		public T propertyAcceptor(BiFunction<PropertyContext, Object, Boolean> propertyAcceptor) {
-			this.checkPropertyAcceptor();
+//			this.checkPropertyAcceptor();
 			this.propertyAcceptor = propertyAcceptor;
 			return self();
 		}
 		public T excludeProperties(String... properties) {
-			this.checkPropertyAcceptor();
+//			this.checkPropertyAcceptor();
 			this.propertyAcceptor = new ExcludePropertyAcceptor(Arrays.asList(properties));
 			return self();
 		}
