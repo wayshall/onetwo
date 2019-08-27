@@ -40,7 +40,6 @@ import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.expr.ValueProvider;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
-import org.onetwo.common.reflect.BeanToMapConvertor.PropertyContext;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
@@ -945,6 +944,7 @@ public class ReflectUtils {
 		}, null);
 	}
 	
+	// public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
 	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
 		return BeanToMapBuilder.newBuilder()
 						.propertyAcceptor(acceptor)

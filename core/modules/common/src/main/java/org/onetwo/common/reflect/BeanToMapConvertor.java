@@ -55,7 +55,6 @@ public class BeanToMapConvertor implements Cloneable {
 		protected boolean checkValue(Object value) {
 			return true;
 		}
-		
 	}
 	/****
 	 * 默认忽略值为null的属性
@@ -128,7 +127,7 @@ public class BeanToMapConvertor implements Cloneable {
 	};
 	
 	public static interface PropertyNameConvertor {
-		String convert(PropertyContext ctx);
+		String convert(ObjectPropertyContext ctx);
 	}
 	
 	public static class DefaultPropertyNameConvertor implements PropertyNameConvertor {
@@ -142,7 +141,7 @@ public class BeanToMapConvertor implements Cloneable {
 		}
 
 		@Override
-		public String convert(PropertyContext ctx) {
+		public String convert(ObjectPropertyContext ctx) {
 			String name = ctx.name;
 			if(enableFieldNameAnnotation && ctx.source!=null){
 				FieldName fn = ReflectUtils.getFieldNameAnnotation(ctx.source.getClass(), name);
@@ -171,8 +170,8 @@ public class BeanToMapConvertor implements Cloneable {
 //	protected boolean enableFieldNameAnnotation = false;
 //	protected boolean enableUnderLineStyle = false;
 	
-	protected BeanToMapConvertor(){
-	}
+	/*protected BeanToMapConvertor(){
+	}*/
 	
 	/*public BeanToMapConvertor addNotFlatableTypes(Class<?>... types){
 		mapableValueTypes.addAll(Arrays.asList(types));
@@ -230,6 +229,14 @@ public class BeanToMapConvertor implements Cloneable {
 		this.propertyNameConvertor = propertyNameConvertor;
 	}
 
+	public void setListOpener(String listOpener) {
+		this.listOpener = listOpener;
+	}
+
+	public void setListCloser(String listCloser) {
+		this.listCloser = listCloser;
+	}
+
 	/***
 	 * 简单反射对象的propertyName为key， propertyValue为value
 	 * 默认忽略value==null的属性，参见DefaultPropertyAcceptor
@@ -256,7 +263,7 @@ public class BeanToMapConvertor implements Cloneable {
 		Object val = null;
 		for (PropertyDescriptor prop : props) {
 			val = objWrapper.getPropertyValue(prop);
-			PropertyContext propContext = createPropertyContext(obj, prop);
+			ObjectPropertyContext propContext = createPropertyContext(obj, prop, null);
 			if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
 				/*if(valueConvertor!=null){
 					Object newVal = valueConvertor.apply(prop, val);
@@ -274,8 +281,8 @@ public class BeanToMapConvertor implements Cloneable {
 		return new DefaultObjectWrapper(obj);
 	}
 	
-	protected PropertyContext createPropertyContext(final Object obj, PropertyDescriptor prop){
-		return new PropertyContext(obj, prop, prop.getName());
+	protected ObjectPropertyContext createPropertyContext(final Object obj, PropertyDescriptor prop, PropertyContext keyContext){
+		return new ObjectPropertyContext(keyContext, obj, prop, prop.getName());
 	}
 	
 	private String toPropertyName(String propertyName){
@@ -350,11 +357,12 @@ public class BeanToMapConvertor implements Cloneable {
 				mapPrefixName = prefixName+this.propertyAccesor;
 			}
 			for(Entry<String, Object> entry : ((Map<String, Object>)obj).entrySet()){
+				MapPropertyContext mapCtx = new MapPropertyContext(keyContext, prefixName, obj, entry);
 				if(isMappableValue(entry.getValue())){
 					Object convertedValue = convertValue(null, entry.getValue());
-					valuePutter.put(mapPrefixName+entry.getKey(), convertedValue, null);
+					valuePutter.put(mapPrefixName+entry.getKey(), convertedValue, mapCtx);
 				}else{
-					flatObject(mapPrefixName+entry.getKey(), entry.getValue(), valuePutter);
+					flatObject(mapPrefixName+entry.getKey(), entry.getValue(), valuePutter, mapCtx);
 				}
 			}
 		}else if(isMultiple(obj)){
@@ -362,11 +370,12 @@ public class BeanToMapConvertor implements Cloneable {
 			int index = 0;
 			for(Object o : list){
 				String listIndexName = prefixName + this.listOpener+index+this.listCloser;
+				ListPropertyContext listCtx = new ListPropertyContext(keyContext, prefixName, list, o, index);
 				if(isMappableValue(o)){
 					Object convertedValue = convertValue(null, o);
-					valuePutter.put(listIndexName, convertedValue, null);
+					valuePutter.put(listIndexName, convertedValue, listCtx);
 				}else{
-					flatObject(listIndexName, o, valuePutter);
+					flatObject(listIndexName, o, valuePutter, listCtx);
 				}
 				index++;
 			}
@@ -381,7 +390,7 @@ public class BeanToMapConvertor implements Cloneable {
 //				Object val = ReflectUtils.getProperty(obj, prop);
 				Object val = ow.getPropertyValue(prop);
 //				System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
-				PropertyContext propContext = createPropertyContext(obj, prop);
+				ObjectPropertyContext propContext = createPropertyContext(obj, prop, keyContext);
 				if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
 					/*if(isMapObject(val) || isMultiple(val)){
 						//no convert
@@ -441,27 +450,63 @@ public class BeanToMapConvertor implements Cloneable {
 		void put(String key, Object value, PropertyContext keyContext);
 	}
 	
-	public class PropertyContext {
+	public class MapPropertyContext extends ObjectPropertyContext implements PropertyContext {
+		private Map.Entry<String, Object> entry;
+		public MapPropertyContext(PropertyContext parentContext, String prefixName, Object source, Map.Entry<String, Object> entry) {
+			super(parentContext, source, null, entry.getKey());
+			this.entry = entry;
+			this.setPrefix(prefixName);
+		}
+		public Map.Entry<String, Object> getEntry() {
+			return entry;
+		}
+		
+	}
+	
+	public class ListPropertyContext extends ObjectPropertyContext implements PropertyContext {
+		private int itemIndex;
+		private Object item;
+		public ListPropertyContext(PropertyContext parentContext, String prefixName, Object source, Object item, int index) {
+			super(parentContext, source, null, index + "");
+			this.itemIndex = index;
+			this.item = item;
+			this.setPrefix(prefixName);
+		}
+		public int getItemIndex() {
+			return itemIndex;
+		}
+		public Object getItem() {
+			return item;
+		}
+	}
+	
+	public class ObjectPropertyContext implements PropertyContext {
 		final protected Object source;
 		final protected PropertyDescriptor property;
 		final protected String name;
 		protected String prefix;
-		public PropertyContext(Object source, PropertyDescriptor property,
+		private final PropertyContext parent;
+		public ObjectPropertyContext(PropertyContext parentContext, Object source, PropertyDescriptor property,
 				String originName) {
 			super();
 			this.source = source;
 			this.property = property;
 			this.name = originName;
+			this.parent = parentContext;
 		}
+		@Override
 		public Object getSource() {
 			return source;
 		}
+		@Override
 		public PropertyDescriptor getProperty() {
 			return property;
 		}
+		@Override
 		public Field getField(){
 			return ClassIntroManager.getInstance().getIntro(source.getClass()).getField(name);
 		}
+		@Override
 		public String getName() {
 			/*String name = this.name;
 			if(enableFieldNameAnnotation && source!=null){
@@ -479,11 +524,15 @@ public class BeanToMapConvertor implements Cloneable {
 		private String getConvertedName() {
 			return propertyNameConvertor.convert(this);
 		}
+		@Override
 		public String getPrefix() {
 			return prefix;
 		}
 		public void setPrefix(String prefix) {
 			this.prefix = prefix;
+		}
+		public PropertyContext getParent() {
+			return parent;
 		}
 		
 	}
@@ -594,6 +643,5 @@ public class BeanToMapConvertor implements Cloneable {
 			return beanToFlatMap;
 		}
 	}
-	
 	
 }

@@ -45,7 +45,7 @@ public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
 		}
 
 		@Override
-		public String convert(PropertyContext ctx) {
+		public String convert(ObjectPropertyContext ctx) {
 			String name = super.convert(ctx);
 			if(enableJsonPropertyAnnotation){
 				Optional<JsonProperty> jp = AnnotationUtils.findAnnotationOnPropertyOrField(ctx.getSource().getClass(), ctx.getProperty(), JsonProperty.class);

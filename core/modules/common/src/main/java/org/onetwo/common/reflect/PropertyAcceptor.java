@@ -1,7 +1,5 @@
 package org.onetwo.common.reflect;
 
-import org.onetwo.common.reflect.BeanToMapConvertor.PropertyContext;
-
 /**
  * @author weishao zeng
  * <br/>
