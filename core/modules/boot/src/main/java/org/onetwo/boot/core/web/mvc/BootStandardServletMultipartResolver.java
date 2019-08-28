@@ -2,7 +2,12 @@ package org.onetwo.boot.core.web.mvc;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadBase.FileSizeLimitExceededException;
+import org.onetwo.boot.core.web.mvc.exception.UploadFileSizeLimitExceededException;
+import org.onetwo.boot.core.web.utils.WebErrors;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -47,7 +52,16 @@ public class BootStandardServletMultipartResolver extends StandardServletMultipa
 				throw new MaxUploadSizeExceededException(maxUploadSize);
 			}
 		}
-		return super.resolveMultipart(request);
+		try {
+			return super.resolveMultipart(request);
+		} catch (MultipartException e) {
+			FileSizeLimitExceededException fsee = LangUtils.getCauseException(e, FileSizeLimitExceededException.class);
+			if (fsee!=null) {
+				throw new UploadFileSizeLimitExceededException(fsee);
+			} else {
+				throw new BaseException(WebErrors.UPLOAD, e);
+			}
+		}
 	}
 
 	public void setMaxUploadSize(int maxUploadSize) {

@@ -56,6 +56,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 			classNames.add(BootCommonServiceConfig.class.getName());
 		}
 		
+		classNames.add(BootFixedConfiguration.class.getName());
 		AppcationType appcationType = (AppcationType)attributes.get("appcationType");
 		if(appcationType==AppcationType.WEB_SERVICE){
 			classNames.add(BootMSContextAutoConfig.class.getName());

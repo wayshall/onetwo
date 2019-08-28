@@ -89,11 +89,12 @@ public class BootWebCommonAutoConfig {
 		Springs.initApplicationIfNotInitialized(applicationContext);
 	}
 
-	@Bean
+	/* @see BootFixedConfiguration
+	 * @Bean
 	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
-	}
+	}*/
 	
 	@Bean
 	public MvcViewRender mvcViewRender(){
@@ -217,13 +218,15 @@ public class BootWebCommonAutoConfig {
 		return viewManager;
 	}
 	
-	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
+	/*
+	 * @see BootFixedConfiguration
+	 * @Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 //	@ConditionalOnMissingBean(MultipartResolver.class)
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
 		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
 		return resolver;
-	}
+	}*/
 
 	@Bean
 	@ConditionalOnMissingBean(SessionUserManager.class)

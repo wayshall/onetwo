@@ -1794,6 +1794,10 @@ public class LangUtils {
 		return System.getProperties().getProperty("os.name", "");
 	}
 	
+	public static boolean isWindowsOS() {
+		return getOsName().toLowerCase().startsWith("win");
+	}
+	
 	public static String converTo36Radix(String str){
 		Long value = getCrc32(str.getBytes());
 		return Long.toString(value, 36);
