@@ -93,7 +93,7 @@ public class SimpleBootCommonService implements BootCommonService {
 		Assert.notNull(file, "file can not be null");
 		
 		UploadOptions options = new UploadOptions(module, file);
-		options.setCompressConfig(compressConfig);
+//		options.setCompressConfig(compressConfig);
 		return uploadFile(options);
 		/*StoringFileContext context = create(module, file);
 		FileStoredMeta meta = fileStorer.write(context);
