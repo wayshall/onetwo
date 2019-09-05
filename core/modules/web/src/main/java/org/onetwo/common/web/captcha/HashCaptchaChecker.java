@@ -24,7 +24,7 @@ public class HashCaptchaChecker implements CaptchaChecker {
 	
 	public boolean check(String code, String hashStr){
 		long validTime = getValidTime();
-		String source = code+salt+validTime;
+		String source = code.toUpperCase()+salt+validTime;
 		boolean res = hasher.checkHash(source, hashStr);
 		return res;
 	}
@@ -35,7 +35,7 @@ public class HashCaptchaChecker implements CaptchaChecker {
 		if(logger.isInfoEnabled()){
 			logger.info("signing validTime: {}", validTime);
 		}
-		String source = code+salt+validTime;
+		String source = code.toUpperCase()+salt+validTime;
 		String signed = hasher.hash(source);
 		return new CaptchaSignedResult(signed, validTime);
 	}
