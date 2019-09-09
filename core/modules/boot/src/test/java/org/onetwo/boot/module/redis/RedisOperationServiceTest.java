@@ -3,8 +3,13 @@ package org.onetwo.boot.module.redis;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
+import org.onetwo.boot.module.cache.UserEntity;
+import org.onetwo.common.concurrent.ConcurrentRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+
+import ch.qos.logback.classic.Level;
 
 /**
  * @author wayshall
@@ -12,12 +17,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  */
 public class RedisOperationServiceTest extends RedisBaseTest {
 	@Autowired
+	SimpleRedisOperationService redisOperationService;
+	
 	@Test
 	public void testGetAndDel() throws Exception{
 		String key = "test12";
-		RedisOperationService ops = new RedisOperationService();
-		ops.setRedisTemplate(redisTemplate);
-		ops.afterPropertiesSet();
+		SimpleRedisOperationService ops = redisOperationService;
 		
 		StringRedisTemplate stringRedisTemplate = ops.getStringRedisTemplate();
 		
@@ -30,6 +35,41 @@ public class RedisOperationServiceTest extends RedisBaseTest {
 		value = ops.getAndDel(key);
 		assertThat(value).isEqualTo(testValue);
 		assertThat(stringRedisTemplate.opsForValue().get(key)).isNull();
+	}
+	
+	@Test
+	public void testCache() {
+		SimpleLoggerManager.getInstance().changeLevel(Level.DEBUG, RedisLockRunner.class);
+		
+		String key = "testCache";
+		redisOperationService.getCacheStatis().setEnabled(true);
+		redisOperationService.clear(key);
+		UserEntity user = new UserEntity();
+		user.setId(1L);
+		user.setUserName("testUserName");
+		UserEntity cacheUser = this.redisOperationService.getCache(key, ()->CacheData.<UserEntity>builder().value(user).build());
+		assertThat(cacheUser).isEqualTo(user);
+		CacheStatis statis = redisOperationService.getCacheStatis();
+		assertThat(statis.getMissCount().get()).isEqualTo(1);
+		
+		cacheUser = this.redisOperationService.getCache(key, ()->CacheData.<UserEntity>builder().value(user).build());
+		assertThat(cacheUser).isEqualTo(user);
+		cacheUser = this.redisOperationService.getCacheIfPreset(key, UserEntity.class).get();
+		assertThat(cacheUser).isEqualTo(user);
+		assertThat(statis.getMissCount().get()).isEqualTo(1);
+		assertThat(statis.getHitCount().get()).isEqualTo(2);
+
+		System.out.println("=================================================");
+		int count = 10;
+		redisOperationService.clear(key);
+		ConcurrentRunnable.create(count, () -> {
+			UserEntity cacheUser2 = this.redisOperationService.getCache(key, ()->CacheData.<UserEntity>builder().value(user).expire(60L).build());
+			assertThat(cacheUser2).isEqualTo(user);
+		})
+		.start()
+		.await();
+		assertThat(statis.getMissCount().get()).isEqualTo(2);
+		assertThat(statis.getHitCount().get()).isEqualTo(2+count-1);
 	}
 
 }

@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -69,8 +70,16 @@ public abstract class ParamUtils {
 		StringBuilder sb = new StringBuilder();
 		int index = 0;
 		for(Map.Entry<K, Object> entry : (Set<Map.Entry<K, Object>>)params.entrySet()){
-			if(entry.getValue()==null)
+			Object entryValue = entry.getValue();
+			if (entryValue==null || StringUtils.isBlank(entryValue.toString()) || LangUtils.isEmpty(entryValue)) {
 				continue;
+			}
+			if (entryValue instanceof Collection) {
+				List<?> list = CUtils.tolist(entryValue, true);
+				if (list.size()==0) {
+					continue;
+				}
+			}
 			Collection<?> values = CUtils.toCollection(entry.getValue());
 			for(Object value : values){
 				if(index!=0 && joiner.length()>0)

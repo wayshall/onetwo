@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.date.DateInterval;
-import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.date.DateUtils.DateType;
 
 import freemarker.core.Environment;
@@ -15,10 +14,10 @@ import freemarker.template.TemplateModel;
 
 /*****
  * 
- * [@foreach from='2014-10-01' to='2014-10-11' format='yyyyMMdd' joiner=' or '; dpcode, index]
+ * [@dateRange from='2014-10-01' to='2014-10-11' format='yyyyMMdd' joiner=' or '; dpcode, index]
     		-- rtcs.linedept= :deptCode${index}
     		bbl.dptcode = :deptCode${index}
-    	[/@foreach]
+    	[/@dateRange]
     	
  * @author way
  *

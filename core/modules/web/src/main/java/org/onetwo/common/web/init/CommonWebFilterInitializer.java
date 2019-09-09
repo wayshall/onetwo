@@ -72,12 +72,12 @@ public class CommonWebFilterInitializer {
 	
 	protected void registeredMultipartFilter(ServletContext servletContext, Class<? extends Filter> multipartFilterClass){
 		Optional.ofNullable(multipartFilterClass).ifPresent(cls->{
-			Dynamic fr = servletContext.addFilter(MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME, multipartFilterClass);
-			Optional.ofNullable(fr).ifPresent(frconfig->{
+			Dynamic frconfig = servletContext.addFilter(MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME, multipartFilterClass);
+			if (frconfig!=null) {
 				frconfig.setAsyncSupported(true);
 				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), isMatchAfter, "/*");
 				logger.info("FilterInitializer: {} has bean registered!", multipartFilterClass.getSimpleName());
-			});
+			}
 		});
 	}
 	

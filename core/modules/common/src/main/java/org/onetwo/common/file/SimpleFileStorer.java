@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 public class SimpleFileStorer implements FileStorer {
 	
 	
-	public static final StoreFilePathStrategy SIMPLE_STORE_STRATEGY = new SimpleStoreFilePathStrategy();
+	public static final SimpleStoreFilePathStrategy SIMPLE_STORE_STRATEGY = new SimpleStoreFilePathStrategy();
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
@@ -48,13 +48,13 @@ public class SimpleFileStorer implements FileStorer {
 		if(StringUtils.isBlank(storeBaseDir)){
 			throw new BaseException("store dir must be config, but blank ");
 		}
-		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
-		if(strategy==null){
+		SimpleStoreFilePathStrategy strategy = SIMPLE_STORE_STRATEGY;
+		/*if(strategy==null){
 			strategy = SIMPLE_STORE_STRATEGY;
-		}
-		String storeBaseDir = getStoreBaseDir();
+		}*/
+//		String storeBaseDir = getStoreBaseDir();
 		String appContextDir = getAppContextDir();
-		SimpleFileStoredMeta meta = (SimpleFileStoredMeta)strategy.getStoreFilePath(storeBaseDir, appContextDir, context);
+		SimpleFileStoredMeta meta = (SimpleFileStoredMeta)strategy.getStoreFilePath(appContextDir, context);
 		return meta;
 	}
 
@@ -106,11 +106,20 @@ public class SimpleFileStorer implements FileStorer {
 	}
 
 
-	public static class SimpleStoreFilePathStrategy implements StoreFilePathStrategy {
-		@Override
-		public FileStoredMeta getStoreFilePath(String storeBaseDir, String appContextDir, StoringFileContext ctx) {
+	private static class SimpleStoreFilePathStrategy /*implements StoreFilePathStrategy*/ {
+		static public String getAppModulePath(String appContextDir, StoringFileContext ctx){
+			String baseDir = FileUtils.convertDir(appContextDir);
+			baseDir = StringUtils.appendStartWith(baseDir, FileUtils.SLASH);
+			if(StringUtils.isNotBlank(ctx.getModule())){
+				baseDir += FileUtils.convertDir(ctx.getModule());
+			}
+			return baseDir;
+		}
+		
+//		@Override
+		public FileStoredMeta getStoreFilePath(String appContextDir, StoringFileContext ctx) {
 			String newfn = ctx.getKey();
-			String accessablePath = StoreFilePathStrategy.getAppModulePath(storeBaseDir, appContextDir, ctx);
+			String accessablePath = SimpleStoreFilePathStrategy.getAppModulePath(appContextDir, ctx);
 			if (StringUtils.isBlank(newfn)){
 				String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(ctx.getModule())).replace("/", "-");
 				newfn = prefix+"-"+ FileUtils.randomUUIDFileName(ctx.getFileName(), ctx.isKeepOriginFileName());
@@ -121,7 +130,7 @@ public class SimpleFileStorer implements FileStorer {
 
 			
 			//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
-			String storedServerLocalPath = storeBaseDir + accessablePath;
+			String storedServerLocalPath = ctx.getFileStoreBaseDir() + accessablePath;
 			
 			SimpleFileStoredMeta meta = new SimpleFileStoredMeta(ctx.getFileName(), storedServerLocalPath);
 			meta.setSotredFileName(newfn);

@@ -8,6 +8,7 @@ import org.onetwo.common.apiclient.annotation.RestApiClient;
 import org.onetwo.common.apiclient.response.WeatherResponse;
 import org.onetwo.common.jackson.JsonMapper;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +22,7 @@ public interface WeatherClient {
 	
 	String BASE_URL = "http://www.weather.com.cn/data";
 	
-	@GetMapping(value="/sk/{cityid}.html")
+	@GetMapping(value="/sk/{cityid}.html", produces=MediaType.APPLICATION_JSON_VALUE)
 	WeatherResponse getWeather(@PathVariable String cityid, HttpHeaders header, ApiHeaderCallback callback);
 	
 

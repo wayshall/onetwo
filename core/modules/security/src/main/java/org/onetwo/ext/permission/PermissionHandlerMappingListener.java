@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.onetwo.common.annotation.AnnotationUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
@@ -17,9 +18,12 @@ import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
+import org.onetwo.ext.security.utils.SecurityConfig.ControllerPermissionNotFoundActions;
+import org.onetwo.ext.security.utils.SecurityConfig.PermConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -35,21 +39,28 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	private PermissionManager<?> permissionManager;
 	@Autowired
 	private RequestMappingHandlerMapping requestMappingHandlerMapping;
-	private boolean syncPermissionData;
+//	private boolean syncPermissionData;
+	private PermConfig permConfig;
 	
-	public void setSyncPermissionData(boolean syncMenuDataEnable) {
+	/*public void setSyncPermissionData(boolean syncMenuDataEnable) {
 		this.syncPermissionData = syncMenuDataEnable;
-	}
+	}*/
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(!syncPermissionData){
+		Assert.notNull(permConfig, "permConfig can not be null");
+		
+		if(!permConfig.isSync2db()){
 			return ;
 		}
 		Map<RequestMappingInfo, HandlerMethod> handlerMethods = this.requestMappingHandlerMapping.getHandlerMethods();
 		this.onHandlerMethodsInitialized(handlerMethods);
 
 		this.permissionManager.syncMenuToDatabase();
+	}
+
+	public void setPermConfig(PermConfig permConfig) {
+		this.permConfig = permConfig;
 	}
 
 	private void setMenuUrlByRequestMappingInfo(Class<?> codeClass, IPermission perm, Entry<RequestMappingInfo, HandlerMethod> entry){
@@ -135,6 +146,9 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		this.permissionManager.build();
 		for(Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()){
+			/*if (entry.getValue().getBeanType().getName().contains("SysSettingsController")) {
+				System.out.println("test");
+			}*/
 			ByPermissionClass permClassInst = entry.getValue().getMethodAnnotation(ByPermissionClass.class);
 			if(permClassInst==null){
 				continue ;
@@ -155,7 +169,14 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		IPermission perm = this.permissionManager.getPermission(codeClass);
 		if(perm==null){
 //			System.out.println("html: " + this.permissionManagerImpl.getMenuInfoParser().getRootMenu());
-			throw new RuntimeException("can not find the menu code class["+ codeClass+"] in controller: " + entry.getValue());
+			String msg = String.format("can not find the menu code class[%s] in controller: %s. Maybe you forgot register the menu class!", 
+									codeClass, entry.getValue());
+			if (permConfig.getPermissionNotFound()==ControllerPermissionNotFoundActions.THROWS) {
+				throw new BaseException(msg);
+			} else {
+				logger.warn(msg);
+				return ;
+			}
 		}
 		if(PermissionUtils.isMenu(perm) && permClassInst.overrideMenuUrl()){
 			this.setMenuUrlByRequestMappingInfo(codeClass, perm, entry);

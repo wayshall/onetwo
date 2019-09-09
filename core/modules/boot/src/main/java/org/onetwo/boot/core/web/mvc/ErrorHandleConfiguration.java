@@ -26,11 +26,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * <br/>
  */
 @Configuration
-@EnableConfigurationProperties({BootSiteConfig.class, BootSpringConfig.class, BootJFishConfig.class})
+@EnableConfigurationProperties({BootSiteConfig.class, BootSpringConfig.class, BootJFishConfig.class, ServerProperties.class})
 public class ErrorHandleConfiguration {
 
-	@Autowired
-	private ServerProperties serverProperties;
+//	@Autowired
+//	private ServerProperties serverProperties;
 
 
 	@Autowired(required = false)
@@ -48,8 +48,8 @@ public class ErrorHandleConfiguration {
 	
 	@Bean
 	@ConditionalOnMissingBean(DataResultErrorController.class)
-	public ErrorController dataResultErrorController(ErrorAttributes errorAttributes){
-		return new DataResultErrorController(errorAttributes, this.serverProperties.getError(),
+	public ErrorController dataResultErrorController(ErrorAttributes errorAttributes, ServerProperties serverProperties){
+		return new DataResultErrorController(errorAttributes, serverProperties.getError(),
 				this.errorViewResolvers);
 	}
 	
@@ -57,7 +57,9 @@ public class ErrorHandleConfiguration {
 	public MessageSource exceptionMessageSource(@Autowired BootJFishConfig bootJFishConfig){
 		ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
 		ms.setCacheSeconds(bootJFishConfig.getMessageSource().getCacheSeconds());
-		ms.setBasenames("classpath:messages/exception-messages", "classpath:messages/default-exception-messages");
+		ms.setBasenames("classpath:messages/exception-messages", 
+				"classpath:messages/default-exception-messages", 
+				"org/hibernate/validator/ValidationMessages");
 		return ms;
 	}
 	

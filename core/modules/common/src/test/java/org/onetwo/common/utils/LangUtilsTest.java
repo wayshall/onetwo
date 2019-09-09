@@ -56,12 +56,15 @@ public class LangUtilsTest {
 		
 
 		val = LangUtils.formatValue(-800.755, "0.00");
-		Assert.assertEquals("-800.76", val);
+		//这个断言在jdk8之前的版本是可以通过的，jdk8后无法通过，详见：https://stackoverflow.com/questions/30778927/roundingmode-half-down-issue-in-java8
+		// 实际上和小数无法精确表示有关，-800.755的ieee二进制表示是一个近似值-800.75499999999之类，即第三位之后其实少于5，所以HALF_UP后，应该是900.755
+//		Assert.assertEquals("-800.76", val);
+		Assert.assertEquals("-800.75", val);
 
 		val = LangUtils.formatValue(-800.755, "#0.00元");
-		Assert.assertEquals("-800.76元", val);
-		
-		
+		//这个断言在jdk8之前的版本是可以通过的，jdk8后无法通过，详见：https://stackoverflow.com/questions/30778927/roundingmode-half-down-issue-in-java8
+//		Assert.assertEquals("-800.76元", val);
+		Assert.assertEquals("-800.75元", val);
 	}
 	
 	@Test
@@ -372,5 +375,6 @@ public class LangUtilsTest {
 		key = "sport-"+RandomStringUtils.randomAlphanumeric(128);
 		System.out.println("key:" + key);
 	}
+	
 }
 

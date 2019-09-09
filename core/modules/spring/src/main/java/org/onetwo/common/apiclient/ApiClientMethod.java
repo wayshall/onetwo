@@ -1,19 +1,25 @@
 package org.onetwo.common.apiclient;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiErrorHandler.DefaultErrorHandler;
 import org.onetwo.common.apiclient.CustomResponseHandler.NullHandler;
+import org.onetwo.common.apiclient.annotation.ApiClientInterceptor;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
 import org.onetwo.common.apiclient.annotation.ResponseHandler;
+import org.onetwo.common.apiclient.interceptor.ApiInterceptor;
 import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.exception.ApiClientException;
@@ -26,7 +32,6 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.rest.RestUtils;
-import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -92,8 +97,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private RequestMethod requestMethod;
 	private String path;
 	private Class<?> componentType;
-	
-	private Optional<String> acceptHeader;
+
+	private List<String> acceptHeaders;
+	private List<MediaType> consumeMediaTypes;
 	/***
 	 * resttemplate会根据contentType（consumes）决定采用什么样的httpMessageConvertor
 	 * 详见HttpEntityRequestCallback#doWithRequest -> requestContentType
@@ -105,6 +111,12 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	private CustomResponseHandler<?> customResponseHandler;
 	private ApiErrorHandler apiErrorHandler;
+	
+	private List<ApiInterceptor> interceptors;
+	/***
+	 * 如果返回了业务错误代码，是否自动抛错
+	 */
+	private boolean autoThrowIfErrorCode = true;
 	
 	public ApiClientMethod(Method method) {
 		super(method);
@@ -122,8 +134,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		
 		AnnotationAttributes reqestMappingAttrs = requestMapping.get();
 		//SpringMvcContract#parseAndValidateMetadata
-		this.acceptHeader = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("produces"));
-		this.contentType = LangUtils.getFirstOptional(reqestMappingAttrs.getStringArray("consumes"));
+		this.acceptHeaders = Arrays.asList(reqestMappingAttrs.getStringArray("produces"));
+		String[] consumes = reqestMappingAttrs.getStringArray("consumes");
+		this.contentType = LangUtils.getFirstOptional(consumes);
+		this.consumeMediaTypes = Stream.of(consumes).map(MediaType::parseMediaType).collect(Collectors.toList());
 		this.headers = reqestMappingAttrs.getStringArray("headers");
 		
 		String[] paths = reqestMappingAttrs.getStringArray("value");
@@ -140,6 +154,51 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		});
 		
 
+		this.initHandlers();
+		this.initInterceptors();
+	}
+	
+	private void initInterceptors() {
+		ApiClientInterceptor interceptorAnno = findAnnotation(ApiClientInterceptor.class);
+		if (interceptorAnno==null) {
+			this.interceptors = Collections.emptyList();
+		} else {
+			this.interceptors = Stream.of(interceptorAnno.value()).map(cls -> {
+				return (ApiInterceptor)createAndInitComponent(cls);
+			})
+			.collect(Collectors.toList());
+		}
+	}
+	
+	
+	public List<ApiInterceptor> getInterceptors() {
+		return interceptors;
+	}
+	
+	public boolean isAutoThrowIfErrorCode() {
+		return autoThrowIfErrorCode;
+	}
+	
+	public void setAutoThrowIfErrorCode(boolean autoThrowIfErrorCode) {
+		this.autoThrowIfErrorCode = autoThrowIfErrorCode;
+	}
+
+	/****
+	 * 先从方法上查找注解，没有则从类上查找
+	 * @author weishao zeng
+	 * @param annoClass
+	 * @return
+	 */
+	public <T extends Annotation> T findAnnotation(Class<T> annoClass) {
+		T annoInst = AnnotatedElementUtils.getMergedAnnotation(getMethod(), annoClass);
+		if (annoInst==null) {
+			annoInst = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), annoClass);
+		}
+		return annoInst;
+	}
+	
+	private void initHandlers() {
+		// 需要加@Inherited才能继承
 		ResponseHandler resHandler = AnnotatedElementUtils.getMergedAnnotation(getMethod(), ResponseHandler.class);
 		if (resHandler==null){
 			resHandler = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), ResponseHandler.class);
@@ -203,8 +262,17 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return headers;
 	}
 
-	public Optional<String> getAcceptHeader() {
-		return acceptHeader;
+	public List<String> getAcceptHeaders() {
+		return acceptHeaders;
+	}
+	public List<MediaType> getProduceMediaTypes() {
+		return acceptHeaders.stream().map(accept -> {
+			return MediaType.parseMediaType(accept);
+		}).collect(Collectors.toList());
+	}
+
+	public List<MediaType> getConsumeMediaTypes() {
+		return consumeMediaTypes;
 	}
 
 	public Optional<String> getContentType() {

@@ -12,11 +12,11 @@ import java.util.function.Function;
 
 import lombok.Builder;
 
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.FieldName;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 

@@ -31,8 +31,6 @@ import org.springframework.web.multipart.support.MultipartFilter;
 @Configuration
 public class ExtZuulContextConfig {
 	@Autowired
-    private BootJfishCloudConfig cloudConfig;
-	@Autowired
 	private MultipartProperties multipartProperties;
 
 	@Bean
@@ -69,6 +67,11 @@ public class ExtZuulContextConfig {
 	public static FixFormBodyWrapperFilterPostProcessor formBodyWrapperFilterPostProcessor(){
 		return new FixFormBodyWrapperFilterPostProcessor();
 	}
+	
+	/*@Bean
+	public RefreshEurekaServersListener refreshEurekaServersListener() {
+		return new RefreshEurekaServersListener();
+	}*/
 
 
 	/*@Bean

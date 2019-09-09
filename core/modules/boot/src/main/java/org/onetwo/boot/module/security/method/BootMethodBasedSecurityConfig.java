@@ -57,5 +57,9 @@ public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {
 	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
 		return super.defaultSecurityConfigurer();
 	}
+
+	/*protected RunAsManager runAsManager() {
+		return new RunAsManagerImpl();
+	}*/
 	
 }

@@ -34,7 +34,11 @@ public class Page<T> implements Serializable {
 		page.pagination = p.pagination;
 		page.totalCount = p.totalCount;
 		if(mapper!=null){
-			List<E2> rs = p.result.stream().map(mapper).collect(Collectors.toList());
+			List<E2> rs = p.result.stream()
+//									.filter(d -> d!=null)
+									.map(mapper)
+									.filter(m -> m!=null)
+									.collect(Collectors.toList());
 			page.setResult(rs);
 		}
 		return page;

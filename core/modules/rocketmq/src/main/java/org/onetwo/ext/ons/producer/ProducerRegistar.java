@@ -2,12 +2,15 @@ package org.onetwo.ext.ons.producer;
 
 import org.onetwo.common.spring.context.BaseImportRegistrar;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
+import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
 import org.onetwo.ext.ons.producer.ONSTransactionProducerServiceImpl.FakeProducerService;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAttributes;
 
@@ -16,6 +19,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
  * <br/>
  */
 @Configuration
+@ConditionalOnProperty(prefix=ONSProperties.PRODUCER_ENABLED_KEY, matchIfMissing=true)
 public class ProducerRegistar extends BaseImportRegistrar<EnableONSClient> {
 
 	@Override
@@ -26,7 +30,8 @@ public class ProducerRegistar extends BaseImportRegistrar<EnableONSClient> {
 		}
 		for(AnnotationAttributes producer : producers){
 			String producerId = resolveAttribute(producer, "producerId", null);
-			String beanName = "ONS-"+producerId;
+//			String beanName = "ONS-"+producerId;
+			String beanName = StringUtils.appendStartWith(producerId, "ons-");
 			
 			if(registry.containsBeanDefinition(beanName)){
 				logger.info("produer[{}] has been registered, ignored...", beanName);

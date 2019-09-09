@@ -25,7 +25,7 @@ spring 4.0+
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-boot</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.7.3-SNAPSHOT</version>
 </dependency>
 
 ```
@@ -76,6 +76,20 @@ jfish:
 		maxPoolSize: 50
 		queueCapacity: 100000
 ```
+
+### 异常和http status code 映射配置
+有些时候（设计），我们需要把一些我们业务或者框架抛出的异常映射为特定的http status code，比如200，可以这样配置：
+```yaml
+jfish: 
+    mvc: 
+        exceptionsStatusMapping: 
+            TypeMismatchException: 200
+            ConstraintViolationException: 200
+            BindException: 200
+            MethodArgumentNotValidException: 200
+            "*": 400
+```
+
 ### 阿里ons配置
 注解启用
 ```Java

@@ -13,6 +13,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class JsonValueRedisTemplate<T> extends RedisTemplate<String, T>{
 	private Class<T> valueType;
 
+	@SuppressWarnings("unchecked")
+	public JsonValueRedisTemplate(RedisConnectionFactory connectionFactory) {
+		this(connectionFactory, (Class<T>)Object.class);
+	}
 
 	public JsonValueRedisTemplate(RedisConnectionFactory connectionFactory, Class<T> valueType) {
 		this(valueType);
@@ -28,7 +32,12 @@ public class JsonValueRedisTemplate<T> extends RedisTemplate<String, T>{
 //		this.valueType = (Class<T>)ReflectUtils.getGenricType(getClass(), 0);
 		this.valueType = valueType;
 		RedisSerializer<String> keySerializer = new StringRedisSerializer();
-		RedisSerializer<T> valueSerializer = new Jackson2JsonRedisSerializer<T>(valueType);
+		RedisSerializer<?> valueSerializer = null;
+		if (valueType==null || valueType==Object.class) {
+			valueSerializer = RedisUtils.typingJackson2RedisSerializer();
+		} else {
+			valueSerializer = new Jackson2JsonRedisSerializer<T>(valueType);
+		}
 		setKeySerializer(keySerializer);
 		setValueSerializer(valueSerializer);
 		setHashKeySerializer(keySerializer);

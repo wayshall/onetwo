@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author wayshall
  * <br/>
  */
-@Transactional
+//@Transactional(propagation=Propagation.MANDATORY)
 public class DbmSendMessageRepository implements SendMessageRepository {
 	private static final String LOCK_MESSAGE_SQL = "update data_mq_send set locker=:locker where state = :state and deliver_at < :now and locker='' ";
 	
@@ -35,7 +35,7 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 	
 //	private NamedThreadLocal<Set<SendMessageContext>> messageStorer = new NamedThreadLocal<>("rmq message thread storer");
 
-	@Transactional(propagation=Propagation.REQUIRED)
+//	@Transactional(propagation=Propagation.MANDATORY)
 	@Override
 	public void save(SendMessageContext<?> ctx){
 		/*Serializable message = ctx.getMessage();

@@ -1,7 +1,10 @@
 package org.onetwo.common.utils;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -40,6 +43,11 @@ public final class GuavaUtils {
 	
 	public static String join(Iterable<?> strs, String joiner) {
 		return Joiner.on(joiner).skipNulls().join(strs);
+	}
+	
+	public static <T> String join(List<T> datas, String joiner, Function<T, String> mapper) {
+		List<String> list = datas.stream().map(mapper).collect(Collectors.toList());
+		return join(list, joiner);
 	}
 	
 	public static String join(Iterable<? extends Entry<?, ?>> strs, String joiner, String keyValueSeparator) {

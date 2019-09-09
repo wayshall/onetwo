@@ -1,7 +1,7 @@
 package org.onetwo.common.spring.context;
 
 import java.lang.annotation.Annotation;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
@@ -84,36 +84,40 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 	public AnnotationMetadataHelper getAnnotationMetadataHelper(AnnotationMetadata importingClassMetadata){
 		AnnotationMetadataHelper annotationMetadataHelper = this.annotationMetadataHelper;
 		if(annotationMetadataHelper==null){
-			annotationMetadataHelper = new AnnotationMetadataHelper(importingClassMetadata, getImportingAnnotationClass());
-			annotationMetadataHelper.setResourceLoader(resourceLoader);
-			annotationMetadataHelper.setClassLoader(classLoader);
+			annotationMetadataHelper = createAnnotationMetadataHelper(importingClassMetadata);
 			this.afterCreateAnnotationMetadataHelper(annotationMetadataHelper);
 			this.annotationMetadataHelper = annotationMetadataHelper;
 		}
 		return annotationMetadataHelper;
 	}
 	
+	protected AnnotationMetadataHelper createAnnotationMetadataHelper(AnnotationMetadata importingClassMetadata) {
+		AnnotationMetadataHelper annotationMetadataHelper = new AnnotationMetadataHelper(importingClassMetadata, getImportingAnnotationClass());
+		annotationMetadataHelper.setResourceLoader(resourceLoader);
+		annotationMetadataHelper.setClassLoader(classLoader);
+		return annotationMetadataHelper;
+	}
 	protected void afterCreateAnnotationMetadataHelper(AnnotationMetadataHelper annotationMetadataHelper){
 	}
 	
-	protected Stream<BeanDefinition> scanBeanDefinitions(AnnotationMetadata importingClassMetadata){
+	protected List<BeanDefinition> scanBeanDefinitions(AnnotationMetadata importingClassMetadata){
 		return getAnnotationMetadataHelper(importingClassMetadata).scanBeanDefinitions(getComponentAnnotationClass());
 	}
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Class<? extends Annotation> componentAnnoClass = getComponentAnnotationClass();
-		scanBeanDefinitions(importingClassMetadata)
-								.filter(AnnotatedBeanDefinition.class::isInstance)
-								.forEach(bd->{
-									AnnotatedBeanDefinition beanDefinition = (AnnotatedBeanDefinition) bd;
-									AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
-									Assert.isTrue(annotationMetadata.isInterface(),
-											"@"+componentAnnoClass.getSimpleName()+" can only be specified on an interface");
+		List<BeanDefinition> beandefList = scanBeanDefinitions(importingClassMetadata);
+		beandefList.stream().filter(AnnotatedBeanDefinition.class::isInstance)
+						.forEach(bd->{
+							AnnotatedBeanDefinition beanDefinition = (AnnotatedBeanDefinition) bd;
+							AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
+							Assert.isTrue(annotationMetadata.isInterface(),
+									"@"+componentAnnoClass.getSimpleName()+" can only be specified on an interface");
 
-									AnnotationAttributes tagAttributes = SpringUtils.getAnnotationAttributes(annotationMetadata, componentAnnoClass);
-									registerComponent(registry, annotationMetadata, tagAttributes);
-								});;
+							AnnotationAttributes tagAttributes = SpringUtils.getAnnotationAttributes(annotationMetadata, componentAnnoClass);
+							registerComponent(registry, annotationMetadata, tagAttributes);
+						});
 	}
 	
 

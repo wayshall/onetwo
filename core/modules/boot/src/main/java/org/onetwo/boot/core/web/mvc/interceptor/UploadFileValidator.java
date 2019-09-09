@@ -19,6 +19,8 @@ public @interface UploadFileValidator {
 	/****
 	 * 每个文件上传大小限制，注意这个值不能超过容器的最大值
 	 * 
+	 * 这里的判断是通过拦截器判断，在这个之前还有配置限制，见：
+	 * spring.http.multipart.maxFileSize
 	 * spring.http.multipart.maxRequestSize
 	 * 
 	 * @author wayshall

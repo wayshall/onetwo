@@ -16,7 +16,8 @@ abstract public class Browsers {
 	public static final BrowserMeta MSIE_7 = new BrowserMeta("msie 7.0", "MSIE", "7.0");
 	public static final BrowserMeta MSIE_8 = new BrowserMeta("msie 8.0", "MSIE", "8.0");
 	public static final BrowserMeta MSIE_9 = new BrowserMeta("msie 9.0", "MSIE", "9.0");
-	public static final BrowserMeta WECHAT = new BrowserMeta("micromessenger", "", "9.0");
+	public static final BrowserMeta WXWORK = new BrowserMeta("wxwork", "", "");
+	public static final BrowserMeta WECHAT = new BrowserMeta("micromessenger", "", "");
 	public static final BrowserMeta OPERA = new BrowserMeta("opera", "Opera", "");
 	public static final BrowserMeta NETSCAPE = new BrowserMeta("mozilla/5.0", "Netscape", "");
 	public static final BrowserMeta UNKNOW = new BrowserMeta("UNKNOW", "UNKNOW", "");
@@ -25,7 +26,9 @@ abstract public class Browsers {
 	private static final Map<String, BrowserMeta> AGENT_BROWSER = new LinkedHashMap<>();
 	
 	static {
-		addBrowsers(FIREFOX,
+		addBrowsers(
+					WECHAT,
+					FIREFOX,
 					CHROME,
 					MSIE_4,
 					MSIE_5,
@@ -33,7 +36,6 @@ abstract public class Browsers {
 					MSIE_7,
 					MSIE_8,
 					MSIE_9,
-					WECHAT,
 					OPERA,
 					NETSCAPE,
 					UNKNOW);

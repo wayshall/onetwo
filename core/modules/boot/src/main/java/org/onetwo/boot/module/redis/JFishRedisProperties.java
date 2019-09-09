@@ -4,6 +4,9 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import org.onetwo.common.utils.LangOps;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,6 +23,7 @@ public class JFishRedisProperties {
 	public static final String SERIALIZER_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.serializer";
 	public static final String ENABLED_LOCK_REGISTRY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.lockRegistry.key";
 	private static final String LOCK_PREFX_KEY = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ":RedisLock:";
+//	private static final String LOCK_PREFX_KEY = "Zifish:RedisLock:";
 
 	/*String hostName = "localhost";
 	int port = Protocol.DEFAULT_PORT;
@@ -32,6 +36,8 @@ public class JFishRedisProperties {
 	
 	OnceTokenProperties onceToken = new OnceTokenProperties();
 	LockRegistryProperties lockRegistry = new LockRegistryProperties();
+	
+	String cacheKeyPrefix = RedisOperationService.DEFAUTL_CACHE_PREFIX;
 	
 	/*public String getHostName() {
 		return hostName;

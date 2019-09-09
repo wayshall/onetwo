@@ -284,6 +284,12 @@
           <optional>true</optional>
 	    </dependency>
 	    <dependency>
+		  <groupId>org.mybatis</groupId>
+		  <artifactId>mybatis</artifactId>
+          <optional>true</optional>
+		</dependency>
+			    
+	    <dependency>
 	        <groupId>com.github.pagehelper</groupId>
 	        <artifactId>pagehelper</artifactId>
           <optional>true</optional>
@@ -393,6 +399,29 @@
             <artifactId>activemq-web</artifactId>
             <optional>true</optional>
         </dependency>
+	    
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.4.3-1.4.3</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.4.3-1.4.3</version>
+            <classifier>linux-x86_64</classifier>
+            <optional>true</optional>
+        </dependency> 
+        
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.4.3-1.4.3</version>
+            <classifier>windows-x86_64</classifier>
+            <optional>true</optional>
+        </dependency> -->
 	    
         <!-- test -->
         <!-- <dependency>

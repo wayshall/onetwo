@@ -32,7 +32,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -62,6 +64,13 @@ public class JsonMapper {
 	 * 忽略空值
 	 */
 	public static final JsonMapper IGNORE_EMPTY = ignoreEmpty();
+	
+
+	public static SimpleFilterProvider exceptFilter(String id, String...properties){
+		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+		filterProvider.addFilter(id, SimpleBeanPropertyFilter.serializeAllExcept(properties));
+		return filterProvider;
+	}
 	
 	public static JsonMapper defaultMapper(){
 		JsonMapper jsonm = new JsonMapper(Include.ALWAYS);
@@ -96,20 +105,20 @@ public class JsonMapper {
 	public JsonMapper(ObjectMapper objectMapper, Include include){
 		this(objectMapper, include, false);
 	}
-	@SuppressWarnings("deprecation")
+	
 	public JsonMapper(ObjectMapper objectMapper, Include include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 //		setDateFormat(DateUtils.DATE_TIME);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_COMMENTS, true);
-		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 //		objectMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		if(fieldVisibility)
 			objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-		objectMapper.setFilters(filterProvider);
+		objectMapper.setFilterProvider(filterProvider);
+//		objectMapper.addMixIn(target, mixinSource);
 		this.objectMapper = objectMapper;
 		this.typeFactory = this.objectMapper.getTypeFactory();
 	}
@@ -122,6 +131,16 @@ public class JsonMapper {
 	public JsonMapper singleQuotes() {
 		this.objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
 		this.objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		return this;
+	}
+
+	/****
+	 * 允许单引号括住的值
+	 * @author weishao zeng
+	 * @return
+	 */
+	public JsonMapper allowSingleQuotes() {
+		this.objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 		return this;
 	}
 	
@@ -181,19 +200,24 @@ public class JsonMapper {
 		return toJson(object, true);
 	}
 	
+	public ObjectWriter writer(FilterProvider filterProvider) {
+		return this.objectMapper.writer(filterProvider);
+	}
+	
 	public String toJson(Object object, boolean throwIfError){
 		if(object==null){
 			return null;
 		}
 		String json = "";
 		try {
-			json = this.objectMapper.writeValueAsString(object);
+//			ObjectWriter writer = objectMapper.writer(filterProvider);
+			json = objectMapper.writeValueAsString(object);
 		} catch (Exception e) {
 //			e.printStackTrace();
 			if(throwIfError)
-				throw new JsonException("parse to json error : " + object, e);
+				throw new JsonException("parse ["+object+"] to json error : " + e.getMessage(), e);
 			else
-				logger.warn("parse to json error : " + object);
+				logger.warn("parse [{}] to json error : {}", object, e.getMessage());
 		}
 		return json;
 	}
@@ -275,7 +299,7 @@ public class JsonMapper {
 	}
 
 	public <T> T fromJson(final Object json, Type objType){
-		return fromJson(json, objType, true);
+		return fromJson(json, objType, false);
 	}
 	
 	@SuppressWarnings("unchecked")

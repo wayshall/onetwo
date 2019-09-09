@@ -1,16 +1,10 @@
 package org.onetwo.boot.core.web.service;
 
-import net.coobird.thumbnailator.Thumbnails;
-
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
-import org.onetwo.boot.core.web.controller.LoggerController;
-import org.onetwo.boot.core.web.controller.SettingsController;
-import org.onetwo.boot.core.web.controller.UploadViewController;
 import org.onetwo.boot.core.web.service.impl.DbmFileStorerListener;
-import org.onetwo.boot.core.web.service.impl.SettingsManager;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
 import org.onetwo.boot.utils.ImageCompressor;
@@ -28,6 +22,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 /***
  * 通用服务配置
@@ -54,19 +50,13 @@ public class BootCommonServiceConfig {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(BootCommonService.class)
-//	@ConditionalOnBean(FileStorer.class)
+	@ConditionalOnBean(FileStorer.class)
 	@ConditionalOnProperty(BootSiteConfig.ENABLE_STORETYPE_PROPERTY)
 	public BootCommonService bootCommonService(){
 		SimpleBootCommonService service = new SimpleBootCommonService();
-		service.setCompressThresholdSize(bootSiteConfig.getUpload().getCompressImage().getThresholdSize());
+		service.setCompressConfig(bootSiteConfig.getUpload().getCompressImage());
+		service.setFileStoreBaseDir(bootSiteConfig.getUpload().getFileStorePath());
 		return service;
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean(UploadViewController.class)
-	@ConditionalOnProperty(BootSiteConfig.ENABLE_UPLOAD_PREFIX)
-	public UploadViewController uploadViewController(){
-		return new UploadViewController();
 	}
 	
 	@Bean
@@ -89,43 +79,12 @@ public class BootCommonServiceConfig {
 		return listener;
 	}
 	
-	/***
-	 * 动态修改logger level
-	 * @author wayshall
-	 * @return
-	 */
-	@Bean
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_LOGGER_LEVEL, matchIfMissing=false)
-	public LoggerController loggerController(){
-		return new LoggerController();
-	}
-	
 	@Bean
 	@ConditionalOnMissingBean({SimpleLoggerManager.class})
 	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_LOGGER_LEVEL, matchIfMissing=false)
 	public SimpleLoggerManager simpleLoggerManager(){
-		return new SimpleLoggerManager();
+		return SimpleLoggerManager.getInstance();
 	}
 
 
-	/***
-	 * 动态修改默认配置
-	 * @author wayshall
-	 * @return
-	 */
-	@Configuration
-	@ConditionalOnProperty(value=BootJFishConfig.ENABLE_DYNAMIC_SETTING, matchIfMissing=true)
-	protected static class SettingsConfiguration {
-
-		@Bean
-		public SettingsController settingsController(){
-			return new SettingsController();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean({SettingsManager.class})
-		public SettingsManager settingsManager(){
-			return new SettingsManager();
-		}
-	}
 }

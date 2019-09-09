@@ -58,6 +58,11 @@ public class SimpleMessage implements OnsMessage, TracableMessage {
      * 用户属性
      */
     private Properties userProperties;
+    
+    /***
+     * 指定客户端的反序列化器
+     */
+    private String serializer;
 
     public SimpleMessage putUserProperty(String key, String value) {
     	if(this.userProperties==null) {

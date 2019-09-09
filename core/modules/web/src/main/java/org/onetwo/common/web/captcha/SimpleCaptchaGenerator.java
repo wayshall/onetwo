@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import lombok.Data;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
@@ -21,6 +19,8 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.StringUtils;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -60,7 +60,7 @@ public class SimpleCaptchaGenerator {
 		drawBorder(g2d, settings);
 		drawPuzzleLines(g2d, settings);
 
-		String codes = RandomStringUtils.randomAlphanumeric(settings.getCodeLength()).toLowerCase();
+		String codes = RandomStringUtils.randomAlphanumeric(settings.getCodeLength()).toUpperCase();
 		drawCodes(g2d, settings, codes);
 		CaptchaResult result = new CaptchaResult(codes);
 		
@@ -101,25 +101,36 @@ public class SimpleCaptchaGenerator {
 	}
 	protected void drawCodes(Graphics2D g2d, CaptchaSettings settings, String codes){
 		int height = settings.getHeight();
+		int leftMargin = 5;
 		
 		//设置字体
 		g2d.setFont(settings.getFont());
 		//验证码宽高
-		int codeWidth = (settings.getWidth()-1)/codes.length();
+		int codeWidth = (settings.getWidth()-leftMargin*2)/codes.length();
 //		int codeHeight = height-10;
 		int codeIndex = 0;
 		for(char code : codes.toCharArray()){
 			//整个图片高度减去字体高度后的剩余高度，减去字体高度，保证画时字体完整画出来
 			int surplusHeight = height-settings.getFontHeight();
+			if (surplusHeight<=0) {
+				surplusHeight = 2;
+			}
 			int randomMargin = getRandom().nextInt(surplusHeight);
+			if (randomMargin<1) {
+				randomMargin = 1;
+			}
 			//设置画板字体颜色，随机
 			Color color = settings.getActualCodeColor().orElseGet(()->getRandomColor(getRandom()));
 			g2d.setColor(color);
 //			g2d.setColor(Color.RED);
 			//xy为字母最后的点，即最右和最底部的点
 			int y = height-randomMargin*5;
-			y = y<height/2?height:y;
-			g2d.drawString(String.valueOf(code), codeIndex*codeWidth+randomMargin, y);
+			int middle = height-Math.round(surplusHeight/2); //居中
+			// 如果计算出的y点少于高度的60%，则居中
+			y = y<height*0.6?middle:y;
+//			y = height;
+//			System.out.println("y: " + y + ", middle: " + middle);
+			g2d.drawString(String.valueOf(code), leftMargin+codeIndex*codeWidth+randomMargin, y);
 			codeIndex++;
 		}
 	}
@@ -146,6 +157,7 @@ public class SimpleCaptchaGenerator {
 		String imageFormatName = "png";
 		//验证码颜色,默认随机
 		String codeColor;
+		double fontHeight = 0.8;
 		
 		public Font getFont(){
 			if(font==null){
@@ -163,7 +175,7 @@ public class SimpleCaptchaGenerator {
 		}
 		
 		public int getFontHeight(){
-			return (int)(getHeight()*0.9);
+			return (int)(getHeight()*fontHeight);
 		}
 	}
 	

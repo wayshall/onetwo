@@ -5,6 +5,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -28,6 +30,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.onetwo.common.annotation.AnnotationUtils;
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.delegate.DelegateFactory;
 import org.onetwo.common.delegate.DelegateMethod;
@@ -42,7 +45,6 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.CollectionUtils;
-import org.onetwo.common.utils.FieldName;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.Closure2;
@@ -936,11 +938,14 @@ public class ReflectUtils {
 		}, valueConvertor);
 	}
 	
-	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyDescriptor, Object, Boolean> acceptor) {
-		return toMap(obj, acceptor, null);
+	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor) {
+		return toMap(obj, (prop, val) -> {
+			return acceptor.apply(prop, val);
+		}, null);
 	}
 	
-	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyDescriptor, Object, Boolean> acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+	// public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
 		return BeanToMapBuilder.newBuilder()
 						.propertyAcceptor(acceptor)
 						.valueConvertor(valueConvertor)
@@ -1948,7 +1953,31 @@ public class ReflectUtils {
 		}
 		return maps;
 	}
+	
+	public static MethodHandles.Lookup createMethodHandlesLookup(Class<?> clazz) {
+		try {
+			Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class, int.class);
+	        constructor.setAccessible(true);
+	        MethodHandles.Lookup lookup = constructor.newInstance(clazz, MethodHandles.Lookup.PRIVATE);
+	        return lookup;
+		} catch (Exception e) {
+			throw new BaseException("create instance of MethodHandles.Lookup error for class: " + clazz);
+		}
+	}
 
+	public static Object invokeDefaultMethod(MethodHandles.Lookup lookup, Method method, Object proxy, Object... args) {
+		Object result;
+		try {
+			result = lookup.in(method.getDeclaringClass())
+					.unreflectSpecial(method, method.getDeclaringClass())
+			        .bindTo(proxy)
+			        .invokeWithArguments(args);
+		}catch (Throwable e) {
+			throw new BaseException("invoke default method error for : " + method, e);
+		}
+		return result;
+	}
+	
 	public static void main(String[] args) {
 
 	}

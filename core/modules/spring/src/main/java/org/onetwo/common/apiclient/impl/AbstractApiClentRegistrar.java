@@ -77,7 +77,7 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 
 	final protected String resolveUrl(AnnotationAttributes tagAttributes) {
 		String url = resolve(tagAttributes.getString(ATTRS_URL));
-		if(!StringUtils.hasText(url)){
+		if(!StringUtils.hasText(url) && annotationMetadataHelper!=null){
 			url = resolve(annotationMetadataHelper.getAttributes().getString(ATTRS_BASE_URL));
 		}
 		if (StringUtils.hasText(url)) {

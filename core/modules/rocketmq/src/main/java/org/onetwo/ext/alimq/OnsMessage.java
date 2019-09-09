@@ -19,6 +19,7 @@ public interface OnsMessage extends Serializable {
 		String USER_ID_KEY = PREFIX + "user_id";
 		String DATA_ID_KEY = PREFIX + "data_id";
 		String OCCUR_ON_KEY = PREFIX + "occur_on";
+		String SERIALIZER_KEY = PREFIX + "serializer";
 //		String IDENTITY_KEY = PREFIX + "identity";
 		
 		String getUserId();
@@ -33,6 +34,9 @@ public interface OnsMessage extends Serializable {
 		
 		void setIdentityKey(String identityKey);
 		String getIdentityKey();
+		
+		void setSerializer(String serializer);
+		String getSerializer();
 		
 	}
 	

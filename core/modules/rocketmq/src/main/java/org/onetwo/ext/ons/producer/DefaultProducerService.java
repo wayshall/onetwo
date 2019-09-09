@@ -8,8 +8,8 @@ import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.ons.ONSUtils;
@@ -69,6 +69,7 @@ public interface DefaultProducerService extends TraceableProducer {
 				tracableMessage.setOccurOn(new Date());
 			}
 			message.putUserProperties(TracableMessage.OCCUR_ON_KEY, String.valueOf(tracableMessage.getOccurOn().getTime()));
+			message.putUserProperties(TracableMessage.SERIALIZER_KEY, tracableMessage.getSerializer());
 
 			TracableMessageKey key = ONSUtils.toKey(message.getTopic(), message.getTag(), tracableMessage);
 			if (StringUtils.isBlank(message.getKey())) {

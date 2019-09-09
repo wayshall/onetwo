@@ -15,20 +15,22 @@ public class AbstractClientDetailController extends AbstractBaseController {
 	@Autowired(required=false)
 	protected Oauth2ClientDetailManager oauth2ClientDetailManager;
 	
-	protected Optional<ClientDetails> getCurrentClientDetail(){
-		return oauth2ClientDetailManager.getCurrentClientDetail();
-	}
 	protected ClientDetails requiredCurrentClientDetail(){
-		Optional<ClientDetails> opt = oauth2ClientDetailManager.getCurrentClientDetail();
+		Optional<ClientDetails> opt = getOauth2ClientDetailManager().getCurrentClientDetail();
 		return opt.orElseThrow(()->new ServiceException(OAuth2Errors.CLIENT_ACCESS_TOKEN_NOT_FOUND));
 	}
 	
 	protected <T extends ClientDetails> Optional<T> getCurrentClientDetail(Class<T> clazz){
-		return oauth2ClientDetailManager.getCurrentClientDetail();
+		return getOauth2ClientDetailManager().getCurrentClientDetail();
 	}
 	
 	protected <T extends ClientDetails> T requiredCurrentClientDetail(Class<T> clazz){
-		Optional<T> opt = oauth2ClientDetailManager.getCurrentClientDetail();
-		return opt.orElseThrow(()->new ServiceException(OAuth2Errors.CLIENT_ACCESS_TOKEN_NOT_FOUND));
+		Optional<T> opt = getOauth2ClientDetailManager().getCurrentClientDetail();
+		return opt.map(d -> clazz.cast(d)).orElseThrow(()->new ServiceException(OAuth2Errors.CLIENT_ACCESS_TOKEN_NOT_FOUND));
 	}
+
+	protected Oauth2ClientDetailManager getOauth2ClientDetailManager() {
+		return oauth2ClientDetailManager;
+	}
+	
 }

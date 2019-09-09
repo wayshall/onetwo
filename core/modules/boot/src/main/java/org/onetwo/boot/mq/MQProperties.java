@@ -49,7 +49,7 @@ public class MQProperties {
 		TaskLocks lock = TaskLocks.DB;
 		int sendCountPerTask = 1000;
 		//忽略最近时间创建的消息，默认1分钟
-		String ignoreCreateAtRecently = "1m";
+		String ignoreCreateAtRecently;// = "30s";
 		//锁定的key
 		String locker;
 		private String redisLockTimeout;

@@ -5,6 +5,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
@@ -12,6 +13,7 @@ import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -131,9 +133,12 @@ public class ExtResponseEntityDecoder implements Decoder {
 			Object decodedObject = decode(responseAdapter, type);
 
 			return createResponse(decodedObject, response);
-		}
-		else if (isHttpEntity(type)) {
+		} else if (isHttpEntity(type)) {
 			return createResponse(null, response);
+		} else if (isOptional(type)) {
+			Type actualType = ReflectUtils.getGenricType(type, 0);
+			Object result = decode(responseAdapter, actualType);
+			return Optional.ofNullable(result);
 		}
 		else {
 			return decode(responseAdapter, type);
@@ -144,6 +149,15 @@ public class ExtResponseEntityDecoder implements Decoder {
 	private boolean isParameterizeHttpEntity(Type type) {
 		if (type instanceof ParameterizedType) {
 			return isHttpEntity(((ParameterizedType) type).getRawType());
+		}
+		return false;
+	}
+	
+	private boolean isOptional(Type type) {
+		if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			Type rawType = parameterizedType.getRawType();
+			return Optional.class.equals(rawType);
 		}
 		return false;
 	}

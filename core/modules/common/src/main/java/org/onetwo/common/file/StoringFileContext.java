@@ -16,9 +16,10 @@ public class StoringFileContext {
 	private String fileName;
 //	private Map<String, Object> context;
 	private String module;
-	private StoreFilePathStrategy storeFilePathStrategy;// = SimpleFileStorer.SIMPLE_STORE_STRATEGY;
+//	private StoreFilePathStrategy storeFilePathStrategy;// = SimpleFileStorer.SIMPLE_STORE_STRATEGY;
 	private String key;
-	private boolean keepOriginFileName = true;
+	private boolean keepOriginFileName = false;
+	private String fileStoreBaseDir;
 	
 	
 	public StoringFileContext(String module, InputStream inputStream, String fileName) {
@@ -64,13 +65,13 @@ public class StoringFileContext {
 		this.module = module;
 	}
 
-	public StoreFilePathStrategy getStoreFilePathStrategy() {
+	/*public StoreFilePathStrategy getStoreFilePathStrategy() {
 		return storeFilePathStrategy;
 	}
 
 	public void setStoreFilePathStrategy(StoreFilePathStrategy storeFilePathStrategy) {
 		this.storeFilePathStrategy = storeFilePathStrategy;
-	}
+	}*/
 
 	public boolean isKeepOriginFileName() {
 		return keepOriginFileName;
@@ -78,6 +79,14 @@ public class StoringFileContext {
 
 	public void setKeepOriginFileName(boolean keepOriginFileName) {
 		this.keepOriginFileName = keepOriginFileName;
+	}
+
+	public String getFileStoreBaseDir() {
+		return fileStoreBaseDir;
+	}
+
+	public void setFileStoreBaseDir(String fileStoreBaseDir) {
+		this.fileStoreBaseDir = fileStoreBaseDir;
 	}
 
 }

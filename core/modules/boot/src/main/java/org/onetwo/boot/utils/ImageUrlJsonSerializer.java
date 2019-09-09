@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.ImageServer;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.jackson.UrlJsonSerializer;
+import org.onetwo.common.jackson.serializer.UrlJsonSerializer;
 import org.onetwo.common.spring.Springs;
 
 /**

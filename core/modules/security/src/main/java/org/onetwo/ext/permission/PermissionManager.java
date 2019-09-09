@@ -21,6 +21,12 @@ public interface PermissionManager<P extends IPermission> {
 	 * 同步菜单
 	 */
 	void syncMenuToDatabase();
+	
+	/***
+	 * 刷新security的权限数据（内存）
+	 * @author weishao zeng
+	 */
+	void refreshSecurityMetadataSource();
 
 	P findByCode(String code);
 
@@ -28,6 +34,7 @@ public interface PermissionManager<P extends IPermission> {
 
 	List<P> findAppMenus(String appCode);
 	List<P> findUserAppMenus(String appCode, UserDetail userDetail);
+	List<P> findUserAppPerms(String appCode, UserDetail userDetail);
 	List<P> findAppPermissions(String appCode);
 	/*
 	public List<P> findPermissionByCodes(String appCode, String[] permissionCodes);*/

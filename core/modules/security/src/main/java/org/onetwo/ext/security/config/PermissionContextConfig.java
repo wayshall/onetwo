@@ -44,7 +44,8 @@ public class PermissionContextConfig {
 	@Bean
 	public PermissionHandlerMappingListener permissionHandlerMappingListener(){
 		PermissionHandlerMappingListener listener = new PermissionHandlerMappingListener();
-		listener.setSyncPermissionData(securityConfig.getSyncPermissionData());
+//		listener.setSyncPermissionData(securityConfig.isSyncPermissionData());
+		listener.setPermConfig(securityConfig.getPermission());
 		return listener;
 	}
 	

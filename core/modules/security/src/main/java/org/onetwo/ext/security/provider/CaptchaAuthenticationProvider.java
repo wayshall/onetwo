@@ -5,7 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.web.captcha.CaptchaChecker;
+import org.onetwo.ext.security.exception.CaptchaAuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -25,6 +27,7 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 	private CaptchaChecker captchaChecker;
 	private String captchaParameterName = PARAMS_VERIFY_CODE;
 	private String captchaCookieName = COOKIES_VERIFY_CODE;
+	private String cookiePath;
 	
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -36,8 +39,10 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 			check(validCode);
 		} catch (AuthenticationException e) {
 			throw e;
+		} catch (ServiceException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new InternalAuthenticationServiceException("check verify code error", e);
+			throw new CaptchaAuthenticationException("验证码失效或错误！", e);
 		}
 		return null;
 	}
@@ -45,7 +50,9 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 	protected void check(String validCode){
 		String captchaValue = getCookieValue(request, captchaCookieName);
 		if(!captchaChecker.check(validCode.toLowerCase(), captchaValue)){
-			throw new InternalAuthenticationServiceException("验证码失效或错误！");
+			this.removeCookie();
+			throw new CaptchaAuthenticationException("验证码失效或错误！");
+//			throw new ServiceException("验证码失效或错误！");
 		}
 		this.removeCookie();
 	}
@@ -76,8 +83,15 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 		Cookie cookie = new Cookie(captchaCookieName, null);
 		cookie.setMaxAge(0);
 		cookie.setSecure(request.isSecure());
-		cookie.setPath(request.getContextPath());
+		cookie.setPath(getCookiePath(request));
 		response.addCookie(cookie);
+	}
+	
+	protected String getCookiePath(HttpServletRequest request) {
+		if (cookiePath==null) {
+			return request.getContextPath();
+		}
+		return cookiePath;
 	}
 
 	public void setCaptchaParameterName(String captchaParameterName) {
@@ -90,6 +104,10 @@ public class CaptchaAuthenticationProvider implements AuthenticationProvider {
 
 	public void setCaptchaChecker(CaptchaChecker captchaChecker) {
 		this.captchaChecker = captchaChecker;
+	}
+
+	public void setCookiePath(String cookiePath) {
+		this.cookiePath = cookiePath;
 	}
 	
 }

@@ -1,6 +1,7 @@
 package org.onetwo.common.data;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.onetwo.common.exception.ServiceException;
@@ -131,20 +132,20 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	public static class LazyResult extends AbstractDataResult<Object> {
 
 
-		public static LazyResult success(String message, LazyValue obj){
+		public static LazyResult success(String message, LazyValue<?> obj){
 			return create(SUCCESS, message, obj);
 		}
-		public static LazyResult create(String code, String message, LazyValue obj){
+		public static LazyResult create(String code, String message, LazyValue<?> obj){
 			LazyResult result = new LazyResult(obj);
 			result.setCode(code);
 			result.setMessage(message);
 			return result;
 		}
 		
-		private LazyValue lazyValue;
+		private LazyValue<?> lazyValue;
 		private Object data;
 
-		private LazyResult(LazyValue data) {
+		private LazyResult(LazyValue<?> data) {
 			super();
 			Assert.notNull(data);
 			this.lazyValue = data;
@@ -192,6 +193,44 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 		}
 
 		public void setData(T data) {
+			this.data = data;
+		}
+	}
+
+	public static class StringDataResult extends AbstractDataResult<String> {
+		
+		private String data;
+		
+		protected StringDataResult() {
+			super();
+		}
+
+		public String getData() {
+			return data;
+		}
+
+		public void setData(String data) {
+			this.data = data;
+		}
+	}
+	public static class MapDataResult extends AbstractDataResult<Map<String, Object>> {
+		
+		private Map<String, Object> data;
+		
+		protected MapDataResult() {
+			super();
+		}
+
+		protected MapDataResult(Map<String, Object> data) {
+			super();
+			this.data = data;
+		}
+
+		public Map<String, Object> getData() {
+			return data;
+		}
+
+		public void setData(Map<String, Object> data) {
 			this.data = data;
 		}
 	}

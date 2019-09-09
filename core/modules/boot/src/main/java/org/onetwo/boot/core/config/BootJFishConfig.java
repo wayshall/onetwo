@@ -7,10 +7,12 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.boot.core.jwt.JwtConfig;
+import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ExceptionMessageFinderConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import lombok.Data;
@@ -35,6 +37,11 @@ public class BootJFishConfig {
 	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.loggerLevel";
 	public static final String ENABLE_DYNAMIC_SETTING = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.setting";
 //	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.loggerInterceptor";
+//	public static final String ENABLE_CORSFILTER = PREFIX + ".corsfilter.enabled";
+//	public static final String ENABLE_MVC_CORSFILTER = PREFIX + ".mvc.corsFilter";
+//	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = PREFIX + ".dynamic.loggerLevel";
+//	public static final String ENABLE_DYNAMIC_SETTING = PREFIX + ".dynamic.setting";
+//	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = "jfish.mvc.loggerInterceptor";
 //	public static final String VALUE_AUTO_CONFIG_WEB_UI = "web-ui";
 //	public static final String VALUE_AUTO_CONFIG_WEB_MS = "web-ms";
 //	public static final String VALUE_AUTO_CONFIG_DISABLED = "disabled";
@@ -67,8 +74,8 @@ public class BootJFishConfig {
 	//security=BootSecurityConfig
 	
 	private boolean profile;
-	private boolean logErrorDetail;
-	List<String> notifyThrowables;
+	private Boolean logErrorDetail;
+	List<String> notifyThrowables = Lists.newArrayList("com.mysql.jdbc.MysqlDataTruncation", "SQLException");
 
 	private String errorView = "error";
 	
@@ -90,16 +97,26 @@ public class BootJFishConfig {
 	}
 
     public boolean isLogErrorDetail(){
-    	if(logErrorDetail){
-    		return true;
+    	if(logErrorDetail!=null){
+    		return logErrorDetail;
     	}
     	return !bootSpringConfig.isProduct();
     }
 
-	public void setLogErrorDetail(boolean logErrorDetail) {
+	public void setLogErrorDetail(Boolean logErrorDetail) {
 		this.logErrorDetail = logErrorDetail;
 	}
 	
+	@Override
+	public boolean isAlwaysLogErrorDetail() {
+		return isLogErrorDetail();
+	}
+
+	@Override
+	public Map<String, Integer> getExceptionsStatusMapping() {
+		return getMvc().getExceptionsStatusMapping();
+	}
+
 	@Data
 	public class FtlConfig {
 		String templateDir;
@@ -123,6 +140,8 @@ public class BootJFishConfig {
 		/*@Deprecated
 		private AutoWrapResultConfig autoWrapResult = new AutoWrapResultConfig();*/
 
+		private Map<String, Integer> exceptionsStatusMapping = Maps.newHashMap();
+
 		public MvcConfig() {
 			this.mediaTypes = new Properties();
 			this.mediaTypes.put("json", "application/json");
@@ -138,7 +157,7 @@ public class BootJFishConfig {
 			
 			public boolean isPrettyPrint(){
 				 if(prettyPrint==null)
-					 return !bootSpringConfig.isProduct();
+					 return bootSpringConfig==null || !bootSpringConfig.isProduct();
 				 else
 					 return prettyPrint;
 			}

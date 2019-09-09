@@ -20,6 +20,7 @@ public class TokenValidatorTest extends RedisBaseTest {
 	public void testCheck(){
 		String key = "addOrder";
 		String value = "709394";
+		this.tokenValidator.clear(key);
 		this.tokenValidator.save(key, ()->value);
 		
 		//value不正确
@@ -34,12 +35,15 @@ public class TokenValidatorTest extends RedisBaseTest {
 		this.tokenValidator.check(key, value, ()->{
 			System.out.println("run...");
 		});
+		this.tokenValidator.clear(key);
 	}
 	
 	@Test
 	public void testCheckOnlyOnce(){
 		String key = "addOrder";
 		String value = "709394";
+		this.tokenValidator.clear(key);
+		
 		this.tokenValidator.save(key, ()->value);
 		
 		//value不正确

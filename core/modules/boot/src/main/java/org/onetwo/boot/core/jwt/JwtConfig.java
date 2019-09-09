@@ -2,11 +2,11 @@ package org.onetwo.boot.core.jwt;
 
 import java.util.concurrent.TimeUnit;
 
-import lombok.Data;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangOps;
+
+import lombok.Data;
 
 /**
  * iss: jwt签发者
@@ -54,6 +54,10 @@ public class JwtConfig {
 			return inSeconds;
 		}
 		return expirationInSeconds;
+	}
+	
+	public long getRefreshTokenIfRemainingSeconds() {
+		return LangOps.timeToSeconds(getRefreshTokenIfRemainingTime(), 30);
 	}
 	
 }

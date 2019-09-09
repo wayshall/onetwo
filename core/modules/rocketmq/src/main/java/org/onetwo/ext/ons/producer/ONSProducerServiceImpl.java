@@ -4,19 +4,19 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
+import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
-import org.onetwo.ext.ons.ONSUtils;
-import org.slf4j.Logger;
+import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,8 +139,9 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		String tag = resolvePlaceholders(message.getTag());
 		message.setTag(tag);
 		
+		MessageSerializer messageSerializer = getMessageSerializer(onsMessage);
 		if(needSerialize(body)){
-			message.setBody(this.messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
+			message.setBody(messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
 		}else{
 			message.setBody((byte[])body);
 		}
@@ -148,7 +149,18 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		
 		return sendRawMessage(message, interceptorPredicate);
 	}
-	
+
+	private MessageSerializer getMessageSerializer(OnsMessage onsMessage) {
+		if(!TracableMessage.class.isInstance(onsMessage)) {
+			return this.messageSerializer;
+		}
+		TracableMessage tracableMessage = (TracableMessage) onsMessage;
+		MessageSerializer messageSerializer = this.messageSerializer;
+		if (StringUtils.isNotBlank(tracableMessage.getSerializer())) {
+			messageSerializer = MessageSerializerType.valueOf(tracableMessage.getSerializer().toUpperCase()).getSerializer();
+		}
+		return messageSerializer;
+	}
 	/*private void configMessage(Message message, OnsMessage onsMessage) {
 		if(onsMessage instanceof TracableMessage) {
 			//自动生成key

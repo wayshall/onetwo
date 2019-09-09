@@ -37,7 +37,7 @@ release-pom.xml
 pom.xml.releaseBackup
 *.orig
 /core/modules/dbm/src/test/resources/db/generator/emall/emall-jdbc.properties
-application-product.yaml
+application-product.*
 *.externalToolBuilders
 *.iml
 /core/modules/dbm/*.iml
@@ -56,11 +56,5 @@ core/deploy-all.sh
 core/deploy-microcloud.sh
 rebel.xml
 /core/modules/common/src/test/java/org/onetwo/common/project
-/core/git-scripts/git-checkout-to-Finchley.bat
-/core/git-scripts/code-checkout-to-dev.bat
-/core/git-scripts/code-checkout-to-master.bat
-/core/git-scripts/code-master-merge-dev-push.bat
-/core/git-scripts/code-stash.bat
-/core/git-scripts/code-status.bat
-/core/git-scripts/code-tag-push.bat
-/core/git-scripts/git-checkout-new-branch.bat
+/core/git-scripts
+/core/pom.xml

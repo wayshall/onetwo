@@ -107,7 +107,7 @@ public class XResponseViewManager implements HandlerMappingListener {
 			return Optional.empty();
 		}
 		//直接从model里查找view，并强转为DataWrapper
-		DataWrapper dw = (DataWrapper)model.get(responseView);
+		DataWrapper dw = (DataWrapper)model.get(responseView.get());
 		if(dw!=null){
 			Object result = dw.getValue();
 			return Optional.ofNullable(result);

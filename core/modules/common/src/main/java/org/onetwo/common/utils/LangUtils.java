@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -1687,6 +1688,46 @@ public class LangUtils {
 		}
 	}
 	
+
+	public static String safeUrlEncode(String base64) {
+		return safeUrlEncode(base64, false);
+	}
+	
+	/***
+	 * URL安全的Base64编码适用于以URL方式传递Base64编码结果的场景。该编码方式的基本过程是先将内容以Base64格式编码为字符串，然后检查该结果字符串，将字符串中的加号+换成中划线-，并且将斜杠/换成下划线_。 
+详细编码规范请参考RFC4648标准中的相关描述。 
+补充：对于末尾的“=”占位符，Bouncy Castle将之用.代替，而Commons Codes杜绝任何的补位符。
+	 * @author weishao zeng
+	 * @param base64
+	 * @return
+	 */
+	public static String safeUrlEncode(String base64, boolean bouncyCastle) {
+		String val = base64;
+		val = val.replace('+', '-');
+		val = val.replace('/', '_');
+		if (bouncyCastle) {
+			val = val.replace('=', '.');
+		} else {
+			val = val.replace("=", "");
+		}
+		return val;
+	}
+	
+	public static String safeUrldecode(String base64, boolean bouncyCastle) {
+		String val = base64;
+		val = val.replace('-', '+');
+		val = val.replace('_', '/');
+		if (bouncyCastle) {
+			val = val.replace('.', '=');
+		} else {
+			int mod4 = base64.length()%4;
+			if(mod4 > 0){
+				val = val + "====".substring(mod4);
+			}
+		}
+		return val;
+	}
+	
 	public static boolean isDigitString(String str){
 		return DIGIT.matcher(str).matches();
 	}
@@ -1753,6 +1794,10 @@ public class LangUtils {
 		return System.getProperties().getProperty("os.name", "");
 	}
 	
+	public static boolean isWindowsOS() {
+		return getOsName().toLowerCase().startsWith("win");
+	}
+	
 	public static String converTo36Radix(String str){
 		Long value = getCrc32(str.getBytes());
 		return Long.toString(value, 36);
@@ -1766,5 +1811,9 @@ public class LangUtils {
 		CRC32 crc = new CRC32();
 		crc.update(bytes);
 		return crc.getValue();
+	}
+	
+	public static String randomUUID() {
+		return UUID.randomUUID().toString().replace("-", "");
 	}
 }

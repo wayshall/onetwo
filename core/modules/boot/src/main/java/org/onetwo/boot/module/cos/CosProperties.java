@@ -30,6 +30,10 @@ public class CosProperties {
     String bucketName;
     boolean createBucket;
     boolean alwaysStoreFullPath;
+    /***
+     * 是否启用异步上传
+     */
+    boolean enabledAsyncUpload = false;
 
 	ClientConfig client = new ClientConfig(null);
 	
@@ -62,7 +66,7 @@ public class CosProperties {
 		return getAppBucketName(bucketName);
 	}
 	public String getAppBucketName(String bucketName){
-		Assert.hasText(appid);
+		Assert.hasText(appid, "appid must has text");
 		String postfix = "-"+appid;
 		if(bucketName.endsWith(postfix)){
 			return bucketName;
@@ -82,7 +86,6 @@ public class CosProperties {
 			.append(bucketName)
 			.append(".")
 			.append(endpoint)
-			.append("/")
 			.append(key);
 		return url.toString();
 	}

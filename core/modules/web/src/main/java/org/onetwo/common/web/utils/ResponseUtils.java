@@ -94,7 +94,7 @@ abstract public class ResponseUtils {
 	 * @param domain
 	 */
 	public static void setHttpOnlyCookie(HttpServletResponse response, String name, String value, String path, int maxage, String domain) {
-		Assert.hasLength(name);
+		Assert.hasLength(name, "cookies name must has text");
 		if (StringUtils.isBlank(value))
 			value = "";
 
@@ -104,7 +104,8 @@ abstract public class ResponseUtils {
 		cookie.append("=");
 		cookie.append(Escape.escape(value));
 
-		if (StringUtils.isBlank(path)) {
+//		if (StringUtils.isBlank(path)) {
+		if (path==null) {
 			path = "/";
 		}
 		cookie.append("; path=").append(path);
@@ -169,6 +170,19 @@ abstract public class ResponseUtils {
 			ck.setDomain(domain);
 		}
 		response.addCookie(ck);
+	}
+	
+	public static void removeCookie(HttpServletRequest request, HttpServletResponse response, String name) { 
+		Cookie[] cookies = request.getCookies(); 
+		if(cookies==null) {
+			return ; 
+		}
+		for(Cookie ck : cookies) { 
+			if(name.equals(ck.getName())) { 
+				ck.setMaxAge(0);
+				response.addCookie(ck); 
+			} 
+		} 
 	}
 
 	public static void renderScript(PrintWriter out, String content) {

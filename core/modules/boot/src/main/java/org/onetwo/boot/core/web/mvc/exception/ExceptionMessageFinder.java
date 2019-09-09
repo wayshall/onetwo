@@ -2,17 +2,20 @@ package org.onetwo.boot.core.web.mvc.exception;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.RemoteClientUtils;
 import org.onetwo.boot.utils.BootUtils;
@@ -28,6 +31,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.validator.ValidatorUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.dbm.exception.DbmException;
@@ -38,6 +42,9 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.HandlerMethod;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /****
  * TODO: 这里可以修改为非ExceptionCodeMark异常（即没有异常代码）可以根据异常获取映射的错误代码或ErrorType，
@@ -51,8 +58,69 @@ public interface ExceptionMessageFinder {
 	//TODO: 必要时加上serviceName头，一边追踪，待实现
 	public String ERROR_JSERVICE_HEADER = "X-Response-JService";
 	
+	interface ExceptionMessageFinderConfig {
+		String OTHER_MAPPING_KEY = "*";
+		/***
+		 * 是否一只显示详细log
+		 * @author weishao zeng
+		 * @return
+		 */
+		boolean isAlwaysLogErrorDetail();
+		
+		Map<String, Integer> getExceptionsStatusMapping();
 
-	default ErrorMessage getErrorMessage(Exception throwable, boolean alwaysLogErrorDetail){
+		default boolean isInternalError(Exception ex){
+			if(BootUtils.isHystrixErrorPresent()){
+				String name = ex.getClass().getName();
+				return name.endsWith("HystrixRuntimeException") || name.endsWith("HystrixBadRequestException");
+			}
+			return false;
+		}
+		
+		ExceptionMessageFinderConfig DEFAULT = new ExceptionMessageFinderConfig() {
+			public boolean isAlwaysLogErrorDetail() {
+				return false;
+			}
+			public Map<String, Integer> getExceptionsStatusMapping() {
+				return Collections.emptyMap();
+			}
+		};
+	}
+	
+	default ExceptionMessageFinderConfig getExceptionMessageFinderConfig() {
+		return ExceptionMessageFinderConfig.DEFAULT;
+	}
+
+	default Logger getErrorLogger() {
+		return JFishLoggerFactory.findErrorLogger();
+	}
+	
+	default void logError(HttpServletRequest request, ErrorMessage errorMessage){
+		Logger logger = getErrorLogger();
+		String msg = "";
+		Object handlerMethod = null;
+		if(request!=null){
+			BootWebHelper helper = BootWebUtils.webHelper(request);
+			msg = RequestUtils.getServletPath(request);
+			handlerMethod = helper.getControllerHandler();
+		}
+		Exception ex = errorMessage.getException();
+		errorMessage.logErrorContext(logger);
+		boolean printDetail = errorMessage.isDetail();
+		if(printDetail){
+			msg += " ["+handlerMethod+"] error: " + ex.getMessage();
+			logger.error(msg, ex);
+		}else{
+			logger.error(msg + "[{}] error: code[{}], message[{}]", handlerMethod, LangUtils.getBaseExceptonCode(ex), ex.getMessage());
+		}
+		JFishLoggerFactory.mailLog(errorMessage.getNotifyThrowables(), ex, msg);
+	}
+	
+	default boolean isInternalError(Exception ex) {
+		return getExceptionMessageFinderConfig().isInternalError(ex);
+	}
+	
+	default ErrorMessage getErrorMessage(Exception throwable){
 		String errorCode = "";
 		String errorMsg = "";
 		Object[] errorArgs = null;
@@ -67,7 +135,10 @@ public interface ExceptionMessageFinder {
 		Exception ex = throwable;
 		//内部调用失败
 		if(isInternalError(ex)){
-			ex = LangUtils.getCauseException(ex, ServiceException.class);
+			ServiceException seCuase = LangUtils.getCauseException(ex, ServiceException.class);
+			if (seCuase!=null) {
+				ex = seCuase;
+			}
 		}
 		
 		/*if(ex instanceof MaxUploadSizeExceededException){
@@ -138,12 +209,17 @@ public interface ExceptionMessageFinder {
 			detail = false;
 			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
-		}else{
+		} else if(ex instanceof IllegalArgumentException){
+			findMsgByCode = false;
+			detail = true;
+			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
+			error.setHttpStatus(HttpStatus.BAD_REQUEST);
+		} else{
 			errorCode = SystemErrorCode.UNKNOWN;
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		detail = alwaysLogErrorDetail?true:detail;
+		detail = getExceptionMessageFinderConfig().isAlwaysLogErrorDetail()?true:detail;
 //		error.setMesage(errorMsg);
 		error.setDetail(detail);
 		
@@ -153,11 +229,21 @@ public interface ExceptionMessageFinder {
 		//设置code，findMessage需要用到
 		error.setCode(errorCode);
 
+		Throwable cause = LangUtils.getCauseServiceException(ex);
 		if(findMsgByCode){
 			errorMsg = findMessage(findMsgByCode, error, errorArgs);
 		}
 		if(StringUtils.isBlank(errorMsg)){
-			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
+			errorMsg = cause.getMessage();
+		}
+		
+		Map<String, Integer> statusMapping = getExceptionMessageFinderConfig().getExceptionsStatusMapping();
+		if (statusMapping.containsKey(ex.getClass().getName())) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ex.getClass().getName())));
+		} else if (statusMapping.containsKey(ex.getClass().getSimpleName())) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ex.getClass().getSimpleName())));
+		} else if (statusMapping.containsKey(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)));
 		}
 		
 		//防止远程调用时，方法返回null，且异常定义的httpstatus也为200时，尽管在responsebody里返回error相关数据，
@@ -214,14 +300,6 @@ public interface ExceptionMessageFinder {
 //			defaultViewName = ExceptionView.CODE_EXCEPTON;
 //			defaultViewName = ExceptionView.UNDEFINE;
 		return errorMsg;
-	}
-	
-	default boolean isInternalError(Exception ex){
-		if(BootUtils.isHystrixErrorPresent()){
-			String name = ex.getClass().getName();
-			return name.endsWith("HystrixRuntimeException") || name.endsWith("HystrixBadRequestException");
-		}
-		return false;
 	}
 	
 	default Locale getLocale(){
@@ -285,6 +363,10 @@ public interface ExceptionMessageFinder {
 		private String viewName;
 		
 		final private Exception exception;
+		
+		@Setter
+		@Getter
+		private List<String> notifyThrowables;
 		
 		
 		public ErrorMessage(Exception throwable) {
