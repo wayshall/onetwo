@@ -26,7 +26,7 @@ import lombok.Data;
  */
 @ConfigurationProperties(prefix=BootJFishConfig.ZIFISH_CONFIG_PREFIX)
 @Data
-public class BootJFishConfig {
+public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	public static final String ZIFISH_CONFIG_PREFIX = "jfish";
 	
 	public static final String ENABLE_GRACEKILL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".graceKill.enabled";

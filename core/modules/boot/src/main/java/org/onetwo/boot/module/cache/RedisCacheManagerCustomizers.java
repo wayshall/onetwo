@@ -1,20 +1,26 @@
 package org.onetwo.boot.module.cache;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.onetwo.boot.module.redis.JsonRedisTemplate;
-import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.google.common.collect.ImmutableSet;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -28,10 +34,53 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 	@Autowired(required=false)
 	private List<CacheConfigProvider> providers;
 	@Autowired 
-	private JedisConnectionFactory jedisConnectionFactory;
-
+	private RedisConnectionFactory redisConnectionFactory;
+	
 	@Override
 	public void customize(RedisCacheManager cacheManager) {
+		Map<String, Long> cacheExpires = getCacheConfigsFromProviders();
+		
+		Set<String> cacheNames = Sets.newHashSet();
+		if(properties.getCacheNames()!=null){
+			cacheNames.addAll(properties.getCacheNames());
+		}
+		cacheNames.addAll(cacheExpires.keySet());
+		// 配置文件覆盖
+		cacheNames.addAll(properties.getExpires().keySet());
+		
+
+		Map<String, Long> expires = Maps.newHashMap();
+		expires.putAll(cacheExpires);
+		expires.putAll(properties.expiresInSeconds());
+		
+		Map<String, org.springframework.data.redis.cache.RedisCacheConfiguration> cacheConfigs = Maps.newHashMap();
+		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig();
+		if (properties.isUsePrefix()) {
+			config.usePrefix();
+		}
+		config = config.computePrefixWith(new ZifishRedisCachePrefix());
+		for(String cacheName : cacheNames) {
+			if (expires.containsKey(cacheName)) {
+				config.entryTtl(Duration.ofSeconds(expires.get(cacheName)));
+			}
+			if (properties.isUseJsonRedisTemplate()) {
+				JsonMapper jsonMapper = JsonMapper.ignoreNull();
+				ObjectMapper mapper = jsonMapper.getObjectMapper();
+				mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);//用这个配置，如果写入的对象是list，并且元素是复合对象时，会抛错：Current context not Object but Array
+//				mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
+				
+				RedisSerializer<String> keySerializer = new StringRedisSerializer();
+//				RedisSerializer<String> keySerializer = new GenericJackson2JsonRedisSerializer(mapper);
+				RedisSerializer<Object> valueSerializer = new GenericJackson2JsonRedisSerializer(mapper);
+				
+				config = config.serializeKeysWith(SerializationPair.fromSerializer(keySerializer))
+								.serializeValuesWith(SerializationPair.fromSerializer(valueSerializer));
+			}
+			cacheConfigs.put(cacheName, config);
+		}
+	}
+
+	/*public void customize2(RedisCacheManager cacheManager) {
 		Map<String, Long> cacheExpires = getCacheConfigsFromProviders();
 		
 		Set<String> cacheNames = Sets.newHashSet();
@@ -56,11 +105,11 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 		cacheManager.setExpires(expires);
 		
 		if(properties.isUseJsonRedisTemplate()){
-			JsonRedisTemplate template = new JsonRedisTemplate(jedisConnectionFactory);
+			JsonRedisTemplate template = new JsonRedisTemplate(redisConnectionFactory);
 			ReflectUtils.setFieldValue(cacheManager, "redisOperations", template);
 		}
 		//GenericJackson2JsonRedisSerializer
-	}
+	}*/
 
 	/***
 	 * 获取通过代码配置的cache

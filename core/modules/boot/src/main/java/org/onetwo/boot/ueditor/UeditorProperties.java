@@ -13,7 +13,7 @@ import lombok.Data;
 @ConfigurationProperties(UeditorProperties.UEDITOR)
 @Data
 public class UeditorProperties {
-	public static final String UEDITOR = BootJFishConfig.PREFIX + ".ueditor";
+	public static final String UEDITOR = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".ueditor";
 	public static final String UEDITOR_UPLOAD_PATH = UEDITOR + ".upload.path";
 	
 	UeditorConfig config = new UeditorConfig();
