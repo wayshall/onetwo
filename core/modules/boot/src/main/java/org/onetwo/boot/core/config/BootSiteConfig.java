@@ -47,10 +47,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_IMAGE = "path.image";*/
 
 	public static final String ENABLE_UPLOAD_VIEW = "site.upload.view";
-	public static final String ENABLE_STORETYPE_PROPERTY = "site.upload.storeType";
+	public static final String ENABLE_STORETYPE_PROPERTY = "site.upload.store-type";
 //	public static final String ENABLE_KINDEDITOR_UPLOADSERVICE = "site.kindeditor.uploadService";
-	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compressImage.enable";
-	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.storeFileMetaToDatabase";
+	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compress-image.enable";
+	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.store-file-meta-to-database";
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 

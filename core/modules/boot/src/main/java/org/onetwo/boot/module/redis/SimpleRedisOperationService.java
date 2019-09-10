@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,10 +37,10 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
-	private JedisConnectionFactory jedisConnectionFactory;
+	private RedisConnectionFactory redisConnectionFactory;
 	private RedisTemplate<Object, Object> redisTemplate;
     private StringRedisTemplate stringRedisTemplate;
-	@Autowired
+	@Autowired(required=false)
 	private RedisLockRegistry redisLockRegistry;
 	private String cacheKeyPrefix = DEFAUTL_CACHE_PREFIX;
 	private String lockerKey = LOCK_KEY;
@@ -55,10 +55,10 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
     @SuppressWarnings("unchecked")
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		redisTemplate = createReidsTemplate(jedisConnectionFactory);
+		redisTemplate = createReidsTemplate(redisConnectionFactory);
 		
 		StringRedisTemplate template = new StringRedisTemplate();
-		template.setConnectionFactory(jedisConnectionFactory);
+		template.setConnectionFactory(redisConnectionFactory);
 		template.afterPropertiesSet();
 		this.stringRedisTemplate = template;
 		
@@ -69,9 +69,9 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		}
 	}
     
-    protected RedisTemplate<Object, Object> createReidsTemplate(JedisConnectionFactory jedisConnectionFactory) {
+    protected RedisTemplate<Object, Object> createReidsTemplate(RedisConnectionFactory redisConnectionFactory) {
     	JsonRedisTemplate redisTemplate = new JsonRedisTemplate();
-		redisTemplate.setConnectionFactory(jedisConnectionFactory);
+		redisTemplate.setConnectionFactory(redisConnectionFactory);
 		redisTemplate.afterPropertiesSet();
 		return redisTemplate;
     }
@@ -81,6 +81,9 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	 */
 	@Override
 	public RedisLockRunner getRedisLockRunnerByKey(String key){
+		if (redisLockRegistry==null) {
+			throw new IllegalStateException("redisLockRegistry could not be found, Maybe miss config: " + JFishRedisProperties.ENABLED_LOCK_REGISTRY);
+		}
 		RedisLockRunner redisLockRunner = RedisLockRunner.builder()
 														 .lockKey(lockerKey+key)
 														 .time(waitLockInSeconds)

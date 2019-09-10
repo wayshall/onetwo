@@ -1,7 +1,7 @@
 package org.onetwo.boot.module.redis;
 
 import org.onetwo.common.jackson.JsonMapper;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -17,15 +17,15 @@ import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
  */
 final public class RedisUtils {
 
-	static public RedisTemplate<Object, Object> createRedisTemplate(JedisConnectionFactory jedisConnectionFactory) {
+	static public RedisTemplate<Object, Object> createRedisTemplate(RedisConnectionFactory jedisConnectionFactory) {
 		RedisTemplate<Object, Object> jsonRedisTemplate = new JsonRedisTemplate(jedisConnectionFactory);
 		return jsonRedisTemplate;
 	}
 	
-	static public RedisTemplate<String, Object> createStringRedisTemplate(JedisConnectionFactory jedisConnectionFactory) {
+	static public RedisTemplate<String, Object> createStringRedisTemplate(RedisConnectionFactory jedisConnectionFactory) {
 		return createStringRedisTemplate(jedisConnectionFactory, true);
 	}
-	static public RedisTemplate<String, Object> createStringRedisTemplate(JedisConnectionFactory jedisConnectionFactory, boolean init) {
+	static public RedisTemplate<String, Object> createStringRedisTemplate(RedisConnectionFactory jedisConnectionFactory, boolean init) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
@@ -35,7 +35,7 @@ final public class RedisUtils {
 		}
 		return template;
 	}
-	static public RedisTemplate<String, Object> createJsonValueRedisTemplate(JedisConnectionFactory jedisConnectionFactory) {
+	static public RedisTemplate<String, Object> createJsonValueRedisTemplate(RedisConnectionFactory jedisConnectionFactory) {
 		JsonValueRedisTemplate<Object> template = new JsonValueRedisTemplate<Object>(jedisConnectionFactory);
 		return template;
 	}

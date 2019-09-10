@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.redis.util.RedisLockRegistry;
@@ -45,7 +46,7 @@ public class RedisConfiguration {
 	/***
 	 * 和StringRedisSerializer不同，只有key使用string
 	 * @author wayshall
-	 * @param jedisConnectionFactory
+	 * @param redisConnectionFactory
 	 * @return
 	 * @throws Exception
 	 */
@@ -53,16 +54,16 @@ public class RedisConfiguration {
 //	@ConditionalOnMissingBean(name="stringKeyRedisTemplate")
 	@ConditionalOnProperty(name=JFishRedisProperties.SERIALIZER_KEY, havingValue="stringKey", matchIfMissing=false)
 //	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true")
-	public RedisTemplate<String, Object> stringKeyRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
-		RedisTemplate<String, Object> template = RedisUtils.createStringRedisTemplate(jedisConnectionFactory, false);
+	public RedisTemplate<String, Object> stringKeyRedisTemplate(@Autowired RedisConnectionFactory redisConnectionFactory) throws Exception  {
+		RedisTemplate<String, Object> template = RedisUtils.createStringRedisTemplate(redisConnectionFactory, false);
 		return template;
 	}
 	
 	@Bean
 	@ConditionalOnProperty(name=JFishRedisProperties.SERIALIZER_KEY, havingValue="jackson2", matchIfMissing=true)
-	public JsonRedisTemplate jsonRedisTemplate(@Autowired JedisConnectionFactory jedisConnectionFactory) throws Exception  {
+	public JsonRedisTemplate jsonRedisTemplate(@Autowired RedisConnectionFactory redisConnectionFactory) throws Exception  {
 		JsonRedisTemplate template = new JsonRedisTemplate();
-		template.setConnectionFactory(jedisConnectionFactory);
+		template.setConnectionFactory(redisConnectionFactory);
 		return template;
 	}
 
@@ -78,9 +79,9 @@ public class RedisConfiguration {
 	@Bean
 	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
 	@ConditionalOnClass({RedisLockRegistry.class})
-	public RedisLockRegistry redisLockRegistry(@Autowired JedisConnectionFactory jedisConnectionFactory){
+	public RedisLockRegistry redisLockRegistry(@Autowired RedisConnectionFactory redisConnectionFactory){
 		LockRegistryProperties lockRegistryProperties = redisProperties.getLockRegistry();
-		RedisLockRegistry lockRegistry = new RedisLockRegistry(jedisConnectionFactory, 
+		RedisLockRegistry lockRegistry = new RedisLockRegistry(redisConnectionFactory, 
 																lockRegistryProperties.getKey(), 
 																lockRegistryProperties.getExpireAfter());
 		return lockRegistry;

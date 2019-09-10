@@ -29,12 +29,12 @@ import lombok.Data;
 public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	public static final String ZIFISH_CONFIG_PREFIX = "jfish";
 	
-	public static final String ENABLE_GRACEKILL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".graceKill.enabled";
+	public static final String ENABLE_GRACEKILL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".grace-kill.enabled";
 	public static final String ENABLE_SWAGGER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".swagger.enabled";
 	
 	public static final String ENABLE_CORSFILTER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".corsfilter.enabled";
-	public static final String ENABLE_MVC_CORSFILTER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.corsFilter";
-	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.loggerLevel";
+	public static final String ENABLE_MVC_CORSFILTER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.cors-filter";
+	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.logger-level";
 	public static final String ENABLE_DYNAMIC_SETTING = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.setting";
 //	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.loggerInterceptor";
 //	public static final String ENABLE_CORSFILTER = PREFIX + ".corsfilter.enabled";

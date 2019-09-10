@@ -8,11 +8,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -33,8 +33,8 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 	private RedisCacheProperties properties;
 	@Autowired(required=false)
 	private List<CacheConfigProvider> providers;
-	@Autowired 
-	private RedisConnectionFactory redisConnectionFactory;
+	/*@Autowired 
+	private RedisConnectionFactory redisConnectionFactory;*/
 	
 	@Override
 	public void customize(RedisCacheManager cacheManager) {
@@ -78,6 +78,7 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 			}
 			cacheConfigs.put(cacheName, config);
 		}
+		ReflectUtils.setFieldValue(cacheManager, "initialCacheConfiguration", cacheConfigs);
 	}
 
 	/*public void customize2(RedisCacheManager cacheManager) {
