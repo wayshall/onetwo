@@ -1,7 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.onetwo.cloud.eureka.EurekaClientContextConfig,\
 org.onetwo.cloud.eureka.server.EmbeddedEurekaServerConfiguration,\
-org.springframework.cloud.netflix.feign.LocalFeignTargeterConfiguration
+org.springframework.cloud.openfeign.LocalFeignTargeterConfiguration
 
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
 org.onetwo.cloud.config.ConfigClientConfiguration
