@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.web.http.HttpSessionStrategy;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 
 /**
  * @author weishao zeng
@@ -14,7 +14,7 @@ import org.springframework.session.web.http.HttpSessionStrategy;
  */
 @Configuration
 @EnableConfigurationProperties(SessionProperties.class)
-@ConditionalOnClass(HttpSessionStrategy.class)
+@ConditionalOnClass(HttpSessionIdResolver.class)
 public class BootSpringSessionConfiguration {
 	
 	@Autowired
@@ -22,7 +22,7 @@ public class BootSpringSessionConfiguration {
 	
 	@Bean
 	@ConditionalOnProperty(name=SessionProperties.STRATEGY_KEY, havingValue=SessionProperties.STRATEGE_CUSTOMIZABLE)
-	public HttpSessionStrategy headerFirst() {
+	public HttpSessionIdResolver headerFirst() {
 		CustomizableHttpSessionStrategy strategy = new CustomizableHttpSessionStrategy();
 		strategy.setStrategyHeaderName(sessionProperties.getStrategyHeaderName());
 		strategy.setTokenHeaderName(sessionProperties.getTokenHeaderName());
