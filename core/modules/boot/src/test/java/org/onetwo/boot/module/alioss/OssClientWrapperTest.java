@@ -110,7 +110,7 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 		config.setSize(100);
 		config.setImage("test/activiti-logo.png?x-oss-process=image/resize,P_30");
 		this.wraper.objectOperation(bucketName, "test/test-upload.jpg")
-					.watermask("test/test-upload-mask.jpg", config, null);
+					.watermask("mask/test-upload-mask.jpg", config, null);
 	}
 	
 	@Test
