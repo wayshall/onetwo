@@ -64,7 +64,7 @@ public class ExtEurekaController extends EurekaController {
 
 	@RequestMapping(path="instance", method = RequestMethod.POST)
 	public String instance(@RequestParam String instId, InstanceStatus status, Map<String, Object> model) {
-		Optional<InstanceInfo> inst = findInstanceInfoById(instId);
+		Optional<InstanceInfo> inst = InstanceInfoMeta.findInstanceInfoById(instId);
 		
 		if (!inst.isPresent()) {
 			model.put("message", "找不到实例：" + instId);
@@ -88,7 +88,7 @@ public class ExtEurekaController extends EurekaController {
 
 	@RequestMapping(path="refreshConfig", method = RequestMethod.POST)
 	public String refreshConfig(@RequestParam String instId, Map<String, Object> model) {
-		Optional<InstanceInfo> inst = findInstanceInfoById(instId);
+		Optional<InstanceInfo> inst = InstanceInfoMeta.findInstanceInfoById(instId);
 		
 		if (!inst.isPresent()) {
 			model.put("message", "找不到实例：" + instId);
@@ -100,20 +100,10 @@ public class ExtEurekaController extends EurekaController {
 	}
 
 	protected String refreshInstanceConfig(InstanceInfo inst) {
-		String url = inst.getMetadata().get("refresh-config-url");
-		if (StringUtils.isBlank(url)) {
-			url = inst.getMetadata().get("management.context-path");
-			if (url==null) {
-//				throw new ServiceException("the config [metadata-map.management.context-path] of client is missing!");
-				url = "";
-			}
-			url = inst.getHomePageUrl() + url + "/refresh";
-		}
+		InstanceInfoMeta meta = InstanceInfoMeta.newInstance(inst);
+		String url = meta.getRefreshConfigUrl();
 
-		String authHeaderName = inst.getMetadata().get("management.auth-header-name");
-		if (StringUtils.isBlank(authHeaderName)) {
-			authHeaderName = this.authHeaderName;
-		}
+		String authHeaderName = meta.getAuthHeaderName(this.authHeaderName);
 		
 		String auth = RequestUtils.getCookieValue(request, authHeaderName);
 		HttpHeaders headers = RestUtils.createHeader(MediaType.APPLICATION_JSON_UTF8);
@@ -142,19 +132,6 @@ public class ExtEurekaController extends EurekaController {
 		return null;
 	}
 	
-	private Optional<InstanceInfo> findInstanceInfoById(String instId) {
-		List<Application> sortedApplications = getEurekaServerContext().getRegistry().getSortedApplications();
-		Optional<InstanceInfo> inst = sortedApplications.stream().filter(app -> {
-			return app.getByInstanceId(instId)!=null;
-		})
-		.findFirst()
-		.map(app -> app.getByInstanceId(instId));
-		return inst;
-	}
-	
-	private EurekaServerContext getEurekaServerContext() {
-		return EurekaServerContextHolder.getInstance().getServerContext();
-	}
 	
 	@ModelAttribute("dashboardBaseUrl")
 	public String getDashboardBaseurl(){
