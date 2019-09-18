@@ -1,7 +1,6 @@
 package org.onetwo.cloud.canary;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,14 +18,14 @@ import org.springframework.util.AntPathMatcher;
  * @author wayshall
  * <br/>
  */
-public class CanaryMatcherRegister extends MapRegisterManager<String, Function<String[], Matcher<CanaryContext>>> {
+public class CanaryMatcherRegister extends MapRegisterManager<String, PatternMatcherCreator> {
 	public static final CanaryMatcherRegister INSTANCE = new CanaryMatcherRegister();
 	
 	/*private Cache<String, Matcher<CanaryContext>> matcherCachers = CacheBuilder.newBuilder()
 																					.weakKeys()
 																					.expireAfterWrite(10, TimeUnit.MINUTES)
 																					.build();*/
-
+	
 	public CanaryMatcherRegister() {
 		super();
 		register("antpath", (patterns)->{
