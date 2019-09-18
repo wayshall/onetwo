@@ -120,11 +120,5 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 	public boolean hasAnnotation(Class<? extends Annotation> annoClass) {
 		return getAnnotationInfo().hasAnnotation(annoClass);
 	}
-
-	@Override
-	public <T extends Annotation> T getAnnotation(Class<T> annoClass) {
-		return getAnnotationInfo().getAnnotation(annoClass);
-	}
-
 	
 }

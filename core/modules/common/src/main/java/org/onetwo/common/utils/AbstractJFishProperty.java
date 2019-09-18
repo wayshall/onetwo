@@ -1,5 +1,6 @@
 package org.onetwo.common.utils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -77,5 +78,13 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 	public boolean isMapType(){
 		return propertyClassWrapper!=null && propertyClassWrapper.isMap();
 	}
-	
+
+	@Override
+	public <T extends Annotation> T getAnnotation(Class<T> annoClass) {
+		return getAnnotationInfo().getAnnotation(annoClass);
+	}
+
+	/*public <T extends Annotation> Set<T> getAnnotations(Class<T> annoClass) {
+		return annotationInfo.getAnnotations(annoClass);
+	}*/
 }

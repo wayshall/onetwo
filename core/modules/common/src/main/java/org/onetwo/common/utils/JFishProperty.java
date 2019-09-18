@@ -39,6 +39,7 @@ public interface JFishProperty {
 	boolean hasAnnotation(Class<? extends Annotation> annoClass);
 	
 	<T extends Annotation> T getAnnotation(Class<T> annoClass);
+//	<T extends Annotation> Set<T> getAnnotations(Class<T> annoClass);
 	
 	AnnotationInfo getAnnotationInfo();
 

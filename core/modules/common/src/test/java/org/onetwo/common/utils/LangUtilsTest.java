@@ -375,21 +375,21 @@ public class LangUtilsTest {
 	public void testSensitive() {
 	 String name = "李建国";
 	 
-	 String unsensitive = LangUtils.sensitiveRight(name, 1);
+	 String unsensitive = LangUtils.sensitive(name, 1);
 	 assertThat(unsensitive).isEqualTo("李**");
-	 unsensitive = LangUtils.sensitiveRight(name, 4);
+	 unsensitive = LangUtils.sensitive(name, 4);
 	 assertThat(unsensitive).isEqualTo("李建国");
 	 
-	 unsensitive = LangUtils.sensitiveLeft(name, 1);
+	 unsensitive = LangUtils.sensitive(name, -1);
 	 assertThat(unsensitive).isEqualTo("**国");
-	 unsensitive = LangUtils.sensitiveLeft(name, 4);
+	 unsensitive = LangUtils.sensitive(name, 4);
 	 assertThat(unsensitive).isEqualTo("李建国");
 	 
 	 name = "13666676666";
-	 unsensitive = LangUtils.sensitiveRight(name, 7);
+	 unsensitive = LangUtils.sensitive(name, 7);
 	 assertThat(unsensitive).isEqualTo("1366667****");
 	 
-	 unsensitive = LangUtils.sensitiveLeft(name, 4);
+	 unsensitive = LangUtils.sensitive(name, -4);
 	 assertThat(unsensitive).isEqualTo("*******6666");
 	}
 	

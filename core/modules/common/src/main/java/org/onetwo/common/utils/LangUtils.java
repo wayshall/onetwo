@@ -1817,44 +1817,58 @@ public class LangUtils {
 		return UUID.randomUUID().toString().replace("-", "");
 	}
 
-	public static String sensitiveLeft(String sensitive, int keePlainTextLengthFromRight) {
-		return sensitiveLeft(sensitive, keePlainTextLengthFromRight, "*");
+
+	public static String sensitive(String sensitive, int sensitiveIndex) {
+		return sensitive(sensitive, sensitiveIndex, "*");
 	}
 	/****
-	 * 脱敏左边的字符
 	 * 
 	 * @author weishao zeng
 	 * @param sensitive
-	 * @param keePlainTextLengthFromRight
+	 * @param keepPlainTextSize 少于0时表示从右边开始计算脱敏索引
 	 * @param replaceStr
 	 * @return
 	 */
-	public static String sensitiveLeft(String sensitive, int keePlainTextLengthFromRight, String replaceStr) {
-		if (keePlainTextLengthFromRight<0) {
-			throw new IllegalArgumentException("error keePlainTextLengthFromLeft, it must greater than 0, but acutal " + keePlainTextLengthFromRight);
+	public static String sensitive(String sensitive, int keepPlainTextSize, String replaceStr) {
+		String unsensitive = sensitive;
+		if (keepPlainTextSize>=0) {
+			unsensitive = LangUtils.sensitiveFromLeft(sensitive, keepPlainTextSize, replaceStr);
+		} else {
+			unsensitive = LangUtils.sensitiveFromRight(sensitive, -keepPlainTextSize, replaceStr);
 		}
-		String unsensitive = org.apache.commons.lang3.StringUtils.right(sensitive, keePlainTextLengthFromRight);
+		return unsensitive;
+	}
+	
+	/****
+	 * 从右边指定的索引开始脱敏
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keepPlainTextSize
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitiveFromRight(String sensitive, int keepPlainTextSize, String replaceStr) {
+		if (keepPlainTextSize<0) {
+			throw new IllegalArgumentException("error keepPlainTextSize, it must greater than 0, but acutal " + keepPlainTextSize);
+		}
+		String unsensitive = org.apache.commons.lang3.StringUtils.right(sensitive, keepPlainTextSize);
 		unsensitive = org.apache.commons.lang3.StringUtils.leftPad(unsensitive, sensitive.length(), replaceStr);
 		return unsensitive;
 	}
 
-	public static String sensitiveRight(String sensitive, int keePlainTextLengthFromLeft) {
-		return sensitiveRight(sensitive, keePlainTextLengthFromLeft, "*");
-	}
 	/***
-	 * 脱敏右边的字符
-	 * 
+	 * 从左边指定的索引开始脱敏
 	 * @author weishao zeng
 	 * @param sensitive
-	 * @param keePlainTextLengthFromLeft
+	 * @param keepPlainTextSize
 	 * @param replaceStr
 	 * @return
 	 */
-	public static String sensitiveRight(String sensitive, int keePlainTextLengthFromLeft, String replaceStr) {
-		if (keePlainTextLengthFromLeft<0) {
-			throw new IllegalArgumentException("error keePlainTextLengthFromLeft, it must greater than 0, but acutal " + keePlainTextLengthFromLeft);
+	public static String sensitiveFromLeft(String sensitive, int keepPlainTextSize, String replaceStr) {
+		if (keepPlainTextSize<0) {
+			throw new IllegalArgumentException("error keepPlainTextSize, it must greater than 0, but acutal " + keepPlainTextSize);
 		}
-		String unsensitive = org.apache.commons.lang3.StringUtils.left(sensitive, keePlainTextLengthFromLeft);
+		String unsensitive = org.apache.commons.lang3.StringUtils.left(sensitive, keepPlainTextSize);
 		unsensitive = org.apache.commons.lang3.StringUtils.rightPad(unsensitive, sensitive.length(), replaceStr);
 		return unsensitive;
 	}
