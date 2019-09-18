@@ -1816,4 +1816,46 @@ public class LangUtils {
 	public static String randomUUID() {
 		return UUID.randomUUID().toString().replace("-", "");
 	}
+
+	public static String sensitiveLeft(String sensitive, int keePlainTextLengthFromRight) {
+		return sensitiveLeft(sensitive, keePlainTextLengthFromRight, "*");
+	}
+	/****
+	 * 脱敏左边的字符
+	 * 
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keePlainTextLengthFromRight
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitiveLeft(String sensitive, int keePlainTextLengthFromRight, String replaceStr) {
+		if (keePlainTextLengthFromRight<0) {
+			throw new IllegalArgumentException("error keePlainTextLengthFromLeft, it must greater than 0, but acutal " + keePlainTextLengthFromRight);
+		}
+		String unsensitive = org.apache.commons.lang3.StringUtils.right(sensitive, keePlainTextLengthFromRight);
+		unsensitive = org.apache.commons.lang3.StringUtils.leftPad(unsensitive, sensitive.length(), replaceStr);
+		return unsensitive;
+	}
+
+	public static String sensitiveRight(String sensitive, int keePlainTextLengthFromLeft) {
+		return sensitiveRight(sensitive, keePlainTextLengthFromLeft, "*");
+	}
+	/***
+	 * 脱敏右边的字符
+	 * 
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keePlainTextLengthFromLeft
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitiveRight(String sensitive, int keePlainTextLengthFromLeft, String replaceStr) {
+		if (keePlainTextLengthFromLeft<0) {
+			throw new IllegalArgumentException("error keePlainTextLengthFromLeft, it must greater than 0, but acutal " + keePlainTextLengthFromLeft);
+		}
+		String unsensitive = org.apache.commons.lang3.StringUtils.left(sensitive, keePlainTextLengthFromLeft);
+		unsensitive = org.apache.commons.lang3.StringUtils.rightPad(unsensitive, sensitive.length(), replaceStr);
+		return unsensitive;
+	}
 }
