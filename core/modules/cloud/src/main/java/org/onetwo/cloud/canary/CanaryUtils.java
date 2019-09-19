@@ -46,11 +46,17 @@ final public class CanaryUtils {
 	public static enum CanaryMode {
 		//不启用，走默认侧策略
 		DISABLED,
-		//当没有x-canary头的时候，查找没有配置canary.filter的服务
+		/***
+		 * 当没有x-canary头的时候，查找没有配置canary.filter的服务
+		 */
 		CANARY_NONE,
-		//启用，当没有匹配的时候，使用默认查找策略
+		/***
+		 * 启用，当没有匹配的时候，使用默认查找策略
+		 */
 		SMOOTHNESS,
-		//启用，强制匹配，没有匹配的时候，抛错
+		/***
+		 * 启用，强制匹配，没有匹配的时候，抛错
+		 */
 		FORCE;
 		
 

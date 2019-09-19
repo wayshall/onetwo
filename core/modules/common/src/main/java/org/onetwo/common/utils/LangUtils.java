@@ -1816,4 +1816,60 @@ public class LangUtils {
 	public static String randomUUID() {
 		return UUID.randomUUID().toString().replace("-", "");
 	}
+
+
+	public static String sensitive(String sensitive, int sensitiveIndex) {
+		return sensitive(sensitive, sensitiveIndex, "*");
+	}
+	/****
+	 * 
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keepPlainTextSize 少于0时表示从右边开始计算脱敏索引
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitive(String sensitive, int keepPlainTextSize, String replaceStr) {
+		String unsensitive = sensitive;
+		if (keepPlainTextSize>=0) {
+			unsensitive = LangUtils.sensitiveFromLeft(sensitive, keepPlainTextSize, replaceStr);
+		} else {
+			unsensitive = LangUtils.sensitiveFromRight(sensitive, -keepPlainTextSize, replaceStr);
+		}
+		return unsensitive;
+	}
+	
+	/****
+	 * 从右边指定的索引开始脱敏
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keepPlainTextSize
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitiveFromRight(String sensitive, int keepPlainTextSize, String replaceStr) {
+		if (keepPlainTextSize<0) {
+			throw new IllegalArgumentException("error keepPlainTextSize, it must greater than 0, but acutal " + keepPlainTextSize);
+		}
+		String unsensitive = org.apache.commons.lang3.StringUtils.right(sensitive, keepPlainTextSize);
+		unsensitive = org.apache.commons.lang3.StringUtils.leftPad(unsensitive, sensitive.length(), replaceStr);
+		return unsensitive;
+	}
+
+	/***
+	 * 从左边指定的索引开始脱敏
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keepPlainTextSize
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitiveFromLeft(String sensitive, int keepPlainTextSize, String replaceStr) {
+		if (keepPlainTextSize<0) {
+			throw new IllegalArgumentException("error keepPlainTextSize, it must greater than 0, but acutal " + keepPlainTextSize);
+		}
+		String unsensitive = org.apache.commons.lang3.StringUtils.left(sensitive, keepPlainTextSize);
+		unsensitive = org.apache.commons.lang3.StringUtils.rightPad(unsensitive, sensitive.length(), replaceStr);
+		return unsensitive;
+	}
 }

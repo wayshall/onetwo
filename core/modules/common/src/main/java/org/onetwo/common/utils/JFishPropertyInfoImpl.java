@@ -127,10 +127,6 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 		return annotationInfo.hasAnnotation(annoClass);
 	}
 
-	public <T extends Annotation> T getAnnotation(Class<T> annoClass) {
-		return annotationInfo.getAnnotation(annoClass);
-	}
-
 	public boolean isTransientModifier(){
 		return Modifier.isTransient(readMethod.getModifiers());
 	}

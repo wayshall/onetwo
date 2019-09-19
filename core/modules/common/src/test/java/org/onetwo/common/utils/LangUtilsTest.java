@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
@@ -366,6 +368,29 @@ public class LangUtilsTest {
 	public void testPad2() {
 	 System.out.println(padRight("Howto", 20) + "*");
 	 System.out.println(padLeft("Howto", 20) + "*");
+	}
+
+
+	@Test
+	public void testSensitive() {
+	 String name = "李建国";
+	 
+	 String unsensitive = LangUtils.sensitive(name, 1);
+	 assertThat(unsensitive).isEqualTo("李**");
+	 unsensitive = LangUtils.sensitive(name, 4);
+	 assertThat(unsensitive).isEqualTo("李建国");
+	 
+	 unsensitive = LangUtils.sensitive(name, -1);
+	 assertThat(unsensitive).isEqualTo("**国");
+	 unsensitive = LangUtils.sensitive(name, 4);
+	 assertThat(unsensitive).isEqualTo("李建国");
+	 
+	 name = "13666676666";
+	 unsensitive = LangUtils.sensitive(name, 7);
+	 assertThat(unsensitive).isEqualTo("1366667****");
+	 
+	 unsensitive = LangUtils.sensitive(name, -4);
+	 assertThat(unsensitive).isEqualTo("*******6666");
 	}
 	
 	@Test
