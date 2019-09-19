@@ -21,7 +21,7 @@
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
-        <spring-cloud.version>Finchley.SR2</spring-cloud.version>
+        <spring-cloud.version>Finchley.SR4</spring-cloud.version>
         <brave.version>5.6.1</brave.version>
     </properties>
 

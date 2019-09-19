@@ -16,7 +16,7 @@
 	
 	<onetwo.version>5.0.0-SNAPSHOT</onetwo.version>
 	<spring-boot.version>2.0.6.RELEASE</spring-boot.version>
-	<boot-admin.version>2.1.3</boot-admin.version>
+	<boot-admin.version>2.0.6</boot-admin.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
 	<common-codec.version>1.10</common-codec.version>
@@ -133,21 +133,12 @@
 	    
     
     <!-- boot plugin -->
-    <dependency>
-        <groupId>de.codecentric</groupId>
-        <artifactId>spring-boot-admin-server</artifactId>
-        <version>${boot-admin.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>de.codecentric</groupId>
-        <artifactId>spring-boot-admin-server-ui</artifactId>
-        <version>${boot-admin.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>de.codecentric</groupId>
-        <artifactId>spring-boot-admin-starter-client</artifactId>
-        <version>${boot-admin.version}</version>
-    </dependency>
+	<dependency>
+	    <groupId>de.codecentric</groupId>
+        <artifactId>spring-boot-admin-starter-server</artifactId>
+	    <version>${boot-admin.version}</version>
+	</dependency>
+
     
     <!-- spring session -->
     
