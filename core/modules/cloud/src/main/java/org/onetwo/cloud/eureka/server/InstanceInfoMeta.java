@@ -16,6 +16,17 @@ import com.netflix.eureka.EurekaServerContextHolder;
  */
 public class InstanceInfoMeta {
 	
+	public static final String VERSION_1 = "1";
+	public static final String VERSION_2 = "2";
+	
+	/****
+	 * actuator的版本
+	 */
+	public static final String MANAGEMENT_VERSION = "management.version";
+	public static final String MANAGEMENT_AUTH_HEADER_NAME = "management.auth-header-name";
+	public static final String MANAGEMENT_CONTEXT_PATH = "management.context-path";
+	public static final String MANAGEMENT_REFRESH_CONFIG_URL = "management.refresh-config-url";
+	
 	public static Optional<InstanceInfoMeta> findByInstId(String instId) {
 		return findInstanceInfoById(instId).map(inst -> {
 			return newInstance(inst);
@@ -26,9 +37,6 @@ public class InstanceInfoMeta {
 		return new InstanceInfoMeta(inst);
 	}
 	
-	public static final String VERSION_1 = "1";
-	public static final String VERSION_2 = "2";
-	
 	final private InstanceInfo inst;
 
 	private InstanceInfoMeta(InstanceInfo inst) {
@@ -37,7 +45,7 @@ public class InstanceInfoMeta {
 	}
 	
 	public String getAuthHeaderName(String defaultAuthHeaderName) {
-		String authHeaderName = inst.getMetadata().get("management.auth-header-name");
+		String authHeaderName = inst.getMetadata().get(MANAGEMENT_AUTH_HEADER_NAME);
 		if (StringUtils.isBlank(authHeaderName)) {
 			authHeaderName = defaultAuthHeaderName;
 		}
@@ -50,20 +58,19 @@ public class InstanceInfoMeta {
 	 * @return
 	 */
 	public String getRefreshConfigUrl() {
-		String url = inst.getMetadata().get("management.refresh-config-url");
+		String url = inst.getMetadata().get(MANAGEMENT_REFRESH_CONFIG_URL);
 		if (StringUtils.isBlank(url)) {
-			url = inst.getMetadata().get("management.context-path");
+			url = inst.getMetadata().get(MANAGEMENT_CONTEXT_PATH);
 			if (StringUtils.isBlank(url)) {
-				url = isVersion2() ? "/actuator" : "";
+				url = isVersion2() ? "actuator" : "";
 			}
-			url = url + "/refresh";
 		}
-		url = inst.getHomePageUrl() + url + "/refresh";
+		url = inst.getHomePageUrl() + StringUtils.emptyIfNull(url) + "/refresh";
 		return url;
 	}
 	
 	public String getVersion() {
-		String version = inst.getMetadata().get("management.version");
+		String version = inst.getMetadata().get(MANAGEMENT_VERSION);
 		if (StringUtils.isBlank(version)) {
 			version = VERSION_1;
 		}
@@ -71,7 +78,7 @@ public class InstanceInfoMeta {
 	}
 	
 	public boolean isVersion2() {
-		return getVersion().equals(VERSION_2);
+		return getVersion().startsWith(VERSION_2);
 	}
 
 	

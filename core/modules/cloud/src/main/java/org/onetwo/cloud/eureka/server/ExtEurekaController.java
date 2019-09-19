@@ -1,6 +1,5 @@
 package org.onetwo.cloud.eureka.server;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
-import com.netflix.discovery.shared.Application;
-import com.netflix.eureka.EurekaServerContext;
-import com.netflix.eureka.EurekaServerContextHolder;
 
 import lombok.extern.slf4j.Slf4j;
 
