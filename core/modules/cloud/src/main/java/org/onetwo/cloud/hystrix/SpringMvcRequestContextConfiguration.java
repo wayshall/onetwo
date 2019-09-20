@@ -34,7 +34,7 @@ public class SpringMvcRequestContextConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(name = "jfish.cloud.hystrix.shareRequestContext")
+		@ConditionalOnProperty(name = "jfish.cloud.hystrix.shareRequestContext", matchIfMissing=true)
 		static class ShareRequestContext {
 		}
 
