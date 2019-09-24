@@ -75,7 +75,7 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 		this.children.add(node);
 	}
 	
-	public boolean isFirst(){
+	/*public boolean isFirst(){
 		return this.index==0;
 	}
 	
@@ -85,13 +85,14 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 		else
 			return (this.index+1) == this.getParent().getChildren().size();
 	}
-	
+	*/
 	public T getChild(Object id){
 		if(this.isLeafage())
 			return null;
 		for(T node : (List<T>)this.children){
-			if(node.getId().equals(id))
+			if(node.getId().equals(id)) {
 				return node;
+			}
 		}
 		return null;
 	}
@@ -158,7 +159,7 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 			return true;
 		if(!(o instanceof AbstractTreeModel))
 			return false;
-		AbstractTreeModel obj = (AbstractTreeModel) o;
+		AbstractTreeModel<T> obj = (AbstractTreeModel<T>) o;
 		return new EqualsBuilder().append(this.getId(), obj.getId()).isEquals();
 	}
 

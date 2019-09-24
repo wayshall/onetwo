@@ -33,10 +33,17 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		this.regiseterRestExecutor(getAnnotationMetadataHelper(importingClassMetadata), registry);
+//		this.regiseterRestExecutor(getAnnotationMetadataHelper(importingClassMetadata), registry);
 		super.registerBeanDefinitions(importingClassMetadata, registry);
 	}
 	
+	/***
+	 * @see RestApiClientConfiguration#apiClientRestExecutor()
+	 * @author wayshall
+	 * @param annotationMetadataHelper
+	 * @param registry
+	 */
+	@Deprecated
 	protected void regiseterRestExecutor(AnnotationMetadataHelper annotationMetadataHelper, BeanDefinitionRegistry registry){
 		if(registry.containsBeanDefinition(RestExecutorFactory.REST_EXECUTOR_FACTORY_BEAN_NAME)){
 			return ;
@@ -70,7 +77,7 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 
 	final protected String resolveUrl(AnnotationAttributes tagAttributes) {
 		String url = resolve(tagAttributes.getString(ATTRS_URL));
-		if(!StringUtils.hasText(url)){
+		if(!StringUtils.hasText(url) && annotationMetadataHelper!=null){
 			url = resolve(annotationMetadataHelper.getAttributes().getString(ATTRS_BASE_URL));
 		}
 		if (StringUtils.hasText(url)) {

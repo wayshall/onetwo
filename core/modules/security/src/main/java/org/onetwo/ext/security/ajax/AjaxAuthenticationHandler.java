@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.DataResults;
@@ -22,10 +23,10 @@ import org.onetwo.ext.security.jwt.JwtSecurityTokenInfo;
 import org.onetwo.ext.security.jwt.JwtSecurityTokenService;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.utils.CookieStorer;
+import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -99,7 +100,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			if(StringUtils.isBlank(jwtAuthHeader)){
 				jwtAuthHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 			}
-			Assert.notNull(jwtAuthStores);
+			Assert.notNull(jwtAuthStores, "jwt auth store can not be null");
 		}
 		if(authenticationFailureUrl!=null){
 	    	this.failureHandler = new SimpleUrlAuthenticationFailureHandler(authenticationFailureUrl);
@@ -157,10 +158,9 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 				SavedRequest saveRequest = this.requestCache.getRequest(request, response);
 				if(saveRequest!=null){
 					this.requestCache.removeRequest(request, response);
+					redirectUrl = saveRequest.getRedirectUrl();
+					clearAuthenticationAttributes(request);
 				}
-				
-				redirectUrl = saveRequest.getRedirectUrl();
-				clearAuthenticationAttributes(request);
 			}
 			
 			Object data = redirectUrl;
@@ -185,12 +185,19 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 		logger.error("login error", exception);
 		if(RequestUtils.isAjaxRequest(request)){
 			String msg = exception.getMessage();
-			if(BadCredentialsException.class.isInstance(exception)){
+			/*if(BadCredentialsException.class.isInstance(exception)){
 				msg = "用户密码不匹配！";
-			}
+			}*/
 			SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
 			
-			DataResult<?> rs = buildErrorCode(builder, request, exception).build();
+			String errorCode = SecurityErrors.AUTH_FAILED.name();
+			if (exception instanceof ExceptionCodeMark) {
+				errorCode = ((ExceptionCodeMark)exception).getCode();
+			}
+			
+			DataResult<?> rs = buildErrorCode(builder, request, exception)
+										.code(errorCode)
+										.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else{

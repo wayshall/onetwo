@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.onetwo.boot.module.atuator.ActuatorContextConfig
+org.onetwo.boot.module.atuator.ActuatorContextConfig,\
+org.onetwo.boot.webmgr.ZifishWebConfiguration

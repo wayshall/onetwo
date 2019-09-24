@@ -3,7 +3,7 @@ package org.onetwo.common.reflect;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.onetwo.common.utils.FieldName;
+import org.onetwo.common.annotation.FieldName;
 
 public class IntroTest {
 	

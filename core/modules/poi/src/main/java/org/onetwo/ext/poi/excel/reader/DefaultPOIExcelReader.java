@@ -1,18 +1,14 @@
 package org.onetwo.ext.poi.excel.reader;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.onetwo.ext.poi.excel.exception.ExcelException;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.TableDataExtractor;
 import org.springframework.util.Assert;
@@ -52,7 +48,7 @@ public class DefaultPOIExcelReader implements ExcelReader {
 	 * @return
 	 */
 	public <T> Map<String, T> readData(Workbook workbook, TableDataExtractor<T, Sheet> extractor, int startSheet, int readCount){
-		Assert.notNull(workbook);
+		Assert.notNull(workbook, "workbook can not be null");
 		try {
 			int sheetCount = workbook.getNumberOfSheets();
 			Sheet sheet = null;
@@ -90,17 +86,7 @@ public class DefaultPOIExcelReader implements ExcelReader {
 	}
 	
 	protected Workbook createWorkbook(File file){
-		Workbook workbook = null;
-		InputStream in = null;
-		try {
-			in = new FileInputStream(file);
-			workbook = createWorkbook(in);
-		} catch (Exception e) {
-			throw new ExcelException("read excel error : " + file.getPath(), e);
-		}finally{
-			IOUtils.closeQuietly(in);
-		}
-		return workbook;
+		return ExcelUtils.createWorkbook(file);
 	}
 	
 	/*
@@ -135,10 +121,10 @@ public class DefaultPOIExcelReader implements ExcelReader {
 		
 		List<String> names = mapper.mapTitleRow(sheet);
 		
-		Row row = null;
+//		Row row = null;
 		List<Object> datas = new ArrayList<Object>();
 		for(int rowIndex=mapper.getDataRowStartIndex(); rowIndex<rowCount; rowIndex++){
-			row = sheet.getRow(rowIndex);
+//			row = sheet.getRow(rowIndex);
 			Object value = mapper.mapDataRow(sheet, names, rowIndex);
 			if(value==null)
 				continue;

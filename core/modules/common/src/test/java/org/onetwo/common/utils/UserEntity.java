@@ -103,5 +103,10 @@ public class UserEntity {
 		this.role = role;
 	}
 
+	@Override
+	public String toString() {
+		return "UserEntity [id=" + id + ", userName=" + userName + ", status=" + status + "]";
+	}
+
 
 }

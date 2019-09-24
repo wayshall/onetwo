@@ -1,6 +1,9 @@
 package org.onetwo.common.encrypt;
 
+import java.security.AlgorithmParameters;
+
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.onetwo.common.encrypt.Crypts.AESAlgs;
@@ -13,8 +16,37 @@ import org.onetwo.common.exception.BaseException;
  */
 public class AESCoder {
 	
+	/****
+	 * 
+	 * @author wayshall
+	 * @param iv iv的长度为16个字节
+	 * @return
+	 */
+	static final CipherIniter createAesIniter(byte[] iv){
+		return (cipher, mode, keySpec)->{
+			AlgorithmParameters params = AlgorithmParameters.getInstance(Crypts.AES_KEY);  
+//	        params.init(new IvParameterSpec(Base64.decodeBase64(iv)));
+	        params.init(new IvParameterSpec(iv));
+	        cipher.init(mode, keySpec, params);
+		};
+	};
+	
 	public static AESCoder pkcs7Padding(byte[] aesKey){
-		return new AESCoder(AESAlgs.CBC_PKCS7Padding, aesKey);
+		AESCoder coder = new AESCoder(AESAlgs.CBC_PKCS7Padding, aesKey);
+		return coder;
+	}
+	
+	/****
+	 * cbc模式需要iv向量
+	 * @author wayshall
+	 * @param aesKey
+	 * @param iv
+	 * @return
+	 */
+	public static AESCoder pkcs7Padding(byte[] aesKey, byte[] iv){
+		AESCoder coder = new AESCoder(AESAlgs.CBC_PKCS7Padding, aesKey);
+		coder.initer(createAesIniter(iv));
+		return coder;
 	}
 	
 	final protected String cipher;
@@ -79,6 +111,10 @@ public class AESCoder {
 		}else{
 			cipherInst.init(mode, key_spec);
 		}*/
+	}
+	
+	protected boolean isCbc(){
+		return AESAlgs.CBC_PKCS7Padding.equals(cipher);
 	}
 	
 	public static interface CipherIniter {

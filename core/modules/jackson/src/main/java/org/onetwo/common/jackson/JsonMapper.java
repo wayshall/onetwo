@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,14 +21,20 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -36,6 +43,8 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 
 
 /********
+ * 使用JsonFormat注解时，注意时区问题
+ * 推荐 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
  * http://wiki.fasterxml.com/JacksonHowToCustomSerializers
  * 
  * @author way
@@ -43,6 +52,7 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
  */
 public class JsonMapper {
 	
+	final public static String TIME_ZONE_CHINESE = "GMT+8";
 	public static String DEFAULT_JSONP_NAME = "callback";
 
 	public static final JsonMapper DEFAULT_MAPPER = defaultMapper();
@@ -54,6 +64,13 @@ public class JsonMapper {
 	 * 忽略空值
 	 */
 	public static final JsonMapper IGNORE_EMPTY = ignoreEmpty();
+	
+
+	public static SimpleFilterProvider exceptFilter(String id, String...properties){
+		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+		filterProvider.addFilter(id, SimpleBeanPropertyFilter.serializeAllExcept(properties));
+		return filterProvider;
+	}
 	
 	public static JsonMapper defaultMapper(){
 		JsonMapper jsonm = new JsonMapper(Include.ALWAYS);
@@ -88,21 +105,49 @@ public class JsonMapper {
 	public JsonMapper(ObjectMapper objectMapper, Include include){
 		this(objectMapper, include, false);
 	}
+	
 	public JsonMapper(ObjectMapper objectMapper, Include include, boolean fieldVisibility){
 		objectMapper.setSerializationInclusion(include);
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 //		setDateFormat(DateUtils.DATE_TIME);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_COMMENTS, true);
-		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 //		objectMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		if(fieldVisibility)
 			objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-		objectMapper.setFilters(filterProvider);
+		objectMapper.setFilterProvider(filterProvider);
+//		objectMapper.addMixIn(target, mixinSource);
 		this.objectMapper = objectMapper;
 		this.typeFactory = this.objectMapper.getTypeFactory();
+	}
+	
+	public JsonMapper prettyPrint() {
+		this.objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		return this;
+	}
+	
+	public JsonMapper singleQuotes() {
+		this.objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+		this.objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		return this;
+	}
+
+	/****
+	 * 允许单引号括住的值
+	 * @author weishao zeng
+	 * @return
+	 */
+	public JsonMapper allowSingleQuotes() {
+		this.objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
+		return this;
+	}
+	
+	public JsonMapper unquotedFieldNames() {
+		this.objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+		this.objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		return this;
 	}
 	
 	public JsonMapper disable(SerializationFeature features){
@@ -112,6 +157,10 @@ public class JsonMapper {
 	}
 	public JsonMapper disable(DeserializationFeature features){
 		this.objectMapper.disable(features);
+		return this;
+	}
+	public JsonMapper enableTyping(){
+		objectMapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
 		return this;
 	}
 	
@@ -133,9 +182,15 @@ public class JsonMapper {
 	}
 	
 	public JsonMapper setDateFormat(String format){
+		return setDateFormat(format, TIME_ZONE_CHINESE);
+	}
+	
+	public JsonMapper setDateFormat(String format, String timezone){
 		if(StringUtils.isBlank(format))
 			return this;
-		objectMapper.setDateFormat(new SimpleDateFormat(format));
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		sdf.setTimeZone(TimeZone.getTimeZone(timezone));
+		objectMapper.setDateFormat(sdf);
 //		objectMapper.getSerializationConfig().withDateFormat(df);
 //		objectMapper.getDeserializationConfig().withDateFormat(df);
 		return this;
@@ -145,16 +200,24 @@ public class JsonMapper {
 		return toJson(object, true);
 	}
 	
+	public ObjectWriter writer(FilterProvider filterProvider) {
+		return this.objectMapper.writer(filterProvider);
+	}
+	
 	public String toJson(Object object, boolean throwIfError){
+		if(object==null){
+			return null;
+		}
 		String json = "";
 		try {
-			json = this.objectMapper.writeValueAsString(object);
+//			ObjectWriter writer = objectMapper.writer(filterProvider);
+			json = objectMapper.writeValueAsString(object);
 		} catch (Exception e) {
 //			e.printStackTrace();
 			if(throwIfError)
-				throw new JsonException("parse to json error : " + object, e);
+				throw new JsonException("parse ["+object+"] to json error : " + e.getMessage(), e);
 			else
-				logger.warn("parse to json error : " + object);
+				logger.warn("parse [{}] to json error : {}", object, e.getMessage());
 		}
 		return json;
 	}
@@ -235,8 +298,12 @@ public class JsonMapper {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T fromJson(final Object json, Type objType){
+		return fromJson(json, objType, false);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T fromJson(final Object json, Type objType, boolean parseAsStringIfError){
 		if(json==null)
 			return null;
 		Assert.notNull(objType);
@@ -250,10 +317,18 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else{
 				String jsonstr = json.toString();
+				if(StringUtils.isBlank(jsonstr)){
+					return null;
+				}
 				obj = this.objectMapper.readValue(jsonstr, constructJavaType(objType));
 			}
 		} catch (Exception e) {
-			throw new JsonException("parse json to "+objType+" error : " + json, e);
+			if (parseAsStringIfError) {
+				String jsonstr = fromJson(json, String.class, false);
+				throw new JsonException("parse json to ["+objType+"] error, json: " + jsonstr, e);
+			} else {
+				throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
+			}
 		}
 		return (T)obj;
 	}
@@ -366,7 +441,7 @@ public class JsonMapper {
 		try {
 			obj = objectMapper.readerForUpdating(object).readValue(jsonString);
 		}catch (Exception e) {
-			logger.warn("update json string:" + jsonString + " to object:" + object + " error.", e);
+			throw new JsonException("update json string:" + jsonString + " to object:" + object + " error.", e);
 		}
 		return obj;
 	}

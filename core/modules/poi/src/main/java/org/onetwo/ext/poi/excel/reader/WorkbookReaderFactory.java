@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.onetwo.ext.poi.excel.generator.CellValueConvertor;
 import org.onetwo.ext.poi.excel.reader.ListRowMapper.StringListRowMapper;
+import org.onetwo.ext.poi.excel.stream.ExcelStreamReader.ExcelStreamReaderBuilder;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.TheFunction;
 import org.slf4j.Logger;
@@ -228,6 +229,10 @@ public abstract class WorkbookReaderFactory {
 //		stringWb.setRowMapper(new StringListRowMapper());
 		WORKBOOK_CACHES.put(StringListRowMapper.class.getName(), stringWb);
 	}*/
+	
+	public static ExcelStreamReaderBuilder streamReader() {
+		return new ExcelStreamReaderBuilder();
+	}
 
 	public static WorkbookReader getWorkbookReader(){
 		return getWorkbookReader(HashMap.class);

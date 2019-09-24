@@ -12,6 +12,7 @@ import org.onetwo.common.data.LazyValue;
  * 
  * 扩展：可以根据不同的 X ResponseView 指定不同的DataWrapper，
  * 如果找不到，且指定了默认名字（DEFAULT_NAME）的DataWrapper，则使用默认的DataWrapper
+ * 否则，直接返回
  *
  */
 @SuppressWarnings("serial")
@@ -22,7 +23,7 @@ public class DataWrapper implements Serializable{
 		return new DataWrapper(value);
 	}
 	
-	public static DataWrapper lazy(LazyValue value){
+	public static DataWrapper lazy(LazyValue<?> value){
 		return new DataWrapper(value);
 	}
 	
@@ -34,7 +35,7 @@ public class DataWrapper implements Serializable{
 
 	public Object getValue() {
 		if(LazyValue.class.isInstance(value)){
-			return ((LazyValue)value).lazyGet();
+			return ((LazyValue<?>)value).lazyGet();
 		}
 		return value;
 	}

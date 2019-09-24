@@ -20,6 +20,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /****
@@ -60,21 +61,32 @@ public class Springs {
 		if(instance.initialized){
 			return ;
 		}
-		initApplication(webappContext);
+		if(webappContext!=null){
+			initApplication(webappContext);
+		}
 	}
-	public static void initApplication(ApplicationContext webappContext) {
-		instance.appContext = webappContext;
+	public static void initApplication(ApplicationContext applicationContext) {
+		Assert.notNull(applicationContext, "applicationContext can not be null");
+		instance.appContext = applicationContext;
 		instance.initialized = true;
 		instance.printBeanNames();
-		if(ConfigurableApplicationContext.class.isInstance(webappContext)){
-			((ConfigurableApplicationContext)webappContext).registerShutdownHook();
+		if(ConfigurableApplicationContext.class.isInstance(applicationContext)){
+			((ConfigurableApplicationContext)applicationContext).registerShutdownHook();
 		}
-		webappContext.publishEvent(new SpringsInitEvent(webappContext));
+		applicationContext.publishEvent(new SpringsInitEvent(applicationContext));
 	}
 	
 	public ApplicationContext getAppContext() {
 		checkInitialized();
 		return appContext;
+	}
+	
+	public boolean isActive(){
+		if(appContext instanceof ConfigurableApplicationContext){
+			ConfigurableApplicationContext cac = (ConfigurableApplicationContext) appContext;
+			return cac.isActive();
+		}
+		return isInitialized();
 	}
 	
 
@@ -161,7 +173,7 @@ public class Springs {
 		checkInitialized();
 		try {
 			return instance.appContext.getBean(clazz);
-		} catch (BeansException e) {
+		} catch (IllegalStateException | BeansException e) {
 			if(throwIfError){
 				throw e;
 			}
@@ -231,12 +243,16 @@ public class Springs {
 	
 	public void printBeanNames(){
 		String[] beanNames = getAppContext().getBeanDefinitionNames();
-		System.out.println("=================================== spring beans ===================================");
+		StringBuilder buf = new StringBuilder(100);
+		buf.append("\n=================================== spring beans ===================================\n");
 		int index = 0;
 		for (String bn : beanNames) {
-			System.out.println("["+(++index)+"]" + bn );
+			buf.append("["+(++index)+"]" + bn ).append("\n");
 		}
-		System.out.println("=================================== spring beans ===================================");
+		buf.append("=================================== spring beans ===================================\n");
+		if(logger.isInfoEnabled()){
+			logger.info(buf.toString());
+		}
 	}
 
 	/*public BaseEntityManager getBaseEntityManager() {

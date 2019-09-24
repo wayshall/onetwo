@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
-import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -97,7 +96,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
 		ModelMap model = new ModelMap();
-		ErrorMessage errorMessage = this.getErrorMessage(ex, bootJFishConfig.isLogErrorDetail());
+		ErrorMessage errorMessage = this.getErrorMessage(ex);
 		String viewName = determineViewName(ex, request);
 		errorMessage.setViewName(viewName);
 		
@@ -195,35 +194,22 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	}
 
 	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
-		BootWebHelper helper = BootWebUtils.webHelper(request);
-		String msg = RequestUtils.getServletPath(request);
-		Exception ex = errorMessage.getException();
-		errorMessage.logErrorContext(logger);
-		if(errorMessage.isDetail()){
-			msg += " ["+helper.getControllerHandler()+"] error: " + ex.getMessage();
-			logger.error(msg, ex);
-			JFishLoggerFactory.mailLog(bootJFishConfig.getNotifyThrowables(), ex, msg);
-		}else{
-			logger.error(msg + " code[{}], message[{}]", LangUtils.getBaseExceptonCode(ex), ex.getMessage());
-		}
+		errorMessage.setNotifyThrowables(bootJFishConfig.getNotifyThrowables());
+		logError(request, errorMessage);
 	}
 
 	@Override
 	public ExceptionMessageAccessor getExceptionMessageAccessor() {
 		return this.exceptionMessageAccessor;
 	}
-	/*@Deprecated
-	private String findInSiteConfig(Exception ex){
-		Class<?> eclass = ex.getClass();
-		String viewName = null;
-		while(eclass!=null && Throwable.class.isAssignableFrom(eclass)){
-			viewName = bootSiteConfig.getConfig(eclass.getName(), "");
-			if(StringUtils.isNotBlank(viewName))
-				return viewName;
-			eclass = eclass.getSuperclass();
-		} 
-		return viewName;
-	}*/
+
+	public Logger getErrorLogger() {
+		return JFishLoggerFactory.findErrorLogger(logger);
+	}
+
+	public ExceptionMessageFinderConfig getExceptionMessageFinderConfig() {
+		return this.bootJFishConfig;
+	}
 
 
 }

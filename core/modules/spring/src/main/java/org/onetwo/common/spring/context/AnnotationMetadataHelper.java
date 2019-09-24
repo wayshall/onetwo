@@ -3,8 +3,10 @@ package org.onetwo.common.spring.context;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.spring.SpringUtils;
@@ -33,10 +35,23 @@ public class AnnotationMetadataHelper {
 		scanner.setClassLoader(classLoader);
 		return scanner;
 	}
+	
+	public static class NoAnnotationMetadataHelper extends AnnotationMetadataHelper {
+		private Set<String> basePackages;
+		public NoAnnotationMetadataHelper(Set<String> basePackages, Class<?> annotationType) {
+			super(null, annotationType);
+			this.basePackages = basePackages;
+		}
+
+		protected Set<String> getBasePackages() {
+			return basePackages;
+		}
+		
+	}
 
 	private final AnnotationMetadata importingClassMetadata;
 //	private final Class<?> annotationType;
-	private final AnnotationAttributes attributes;
+	private AnnotationAttributes attributes;
 	private ResourceLoader resourceLoader;
 	private ClassLoader classLoader;
 	
@@ -45,14 +60,16 @@ public class AnnotationMetadataHelper {
 		this.importingClassMetadata = classMetadata;
 //		this.annotationType = annotationType;
 		
-		AnnotationAttributes attributes = SpringUtils.getAnnotationAttributes(classMetadata, annotationType);
-		if (attributes == null) {
-			throw new IllegalArgumentException(String.format("@%s is not present on importing class '%s' as expected", annotationType.getSimpleName(), classMetadata.getClassName()));
+		if (classMetadata!=null) {
+			AnnotationAttributes attributes = SpringUtils.getAnnotationAttributes(classMetadata, annotationType);
+			if (attributes == null) {
+				throw new IllegalArgumentException(String.format("@%s is not present on importing class '%s' as expected", annotationType.getSimpleName(), classMetadata.getClassName()));
+			}
+			this.attributes = attributes;
 		}
-		this.attributes = attributes;
 	}
 	
-	public Stream<BeanDefinition> scanBeanDefinitions(Class<? extends Annotation> annoClass, String...extraPackagesToScans){
+	public List<BeanDefinition> scanBeanDefinitions(Class<? extends Annotation> annoClass, String...extraPackagesToScans){
 		ClassPathScanningCandidateComponentProvider scanner = createAnnotationScanner(classLoader, annoClass);
 		if(resourceLoader!=null){
 			scanner.setResourceLoader(resourceLoader);
@@ -69,7 +86,8 @@ public class AnnotationMetadataHelper {
 			basePackages.addAll(Arrays.asList(extraPackagesToScans));
 		}
 		return basePackages.stream()
-							.flatMap(pack->scanner.findCandidateComponents(pack).stream());
+							.flatMap(pack->scanner.findCandidateComponents(pack).stream())
+							.collect(Collectors.toList());
 	}
 	
 
@@ -90,7 +108,9 @@ public class AnnotationMetadataHelper {
 		Stream.of((Class[]) attributes.get("basePackageClasses"))
 										.map(ClassUtils::getPackageName)
 										.forEach(basePackages::add);
-		if (basePackages.isEmpty()) {
+
+		// 如果注解没有设置属性，则默认使用启用了这个注解的类所在的包
+		if(LangUtils.isEmpty(basePackages)) {
 			basePackages.add(ClassUtils.getPackageName(importingClassMetadata.getClassName()));
 		}
 		return basePackages;

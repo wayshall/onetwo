@@ -22,7 +22,6 @@ import org.onetwo.common.web.utils.ResponseUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,11 +40,10 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	public static final DataResultWrapper DATA_RESULT_WRAPPER = new DefaultDataResultWrapper();
 	
 	public static final String CONTENT_TYPE = "application/json;charset=utf-8";
+	private List<String> excludeClasses = Lists.newArrayList("org.springframework.security.core.userdetails.UserDetails");
 	
 //	protected final Logger log = JFishLoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private ApplicationContext applicationContext;
 //	@Autowired
 //	private BootJFishConfig bootJFishConfig;
 	
@@ -113,8 +111,10 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 			}
 			
 			if(BindingResult.class.isInstance(entry.getValue()) ||
-					UserDetails.class.isInstance(entry.getValue()) ||
+//					UserDetails.class.isInstance(entry.getValue()) ||
 					MultipartFile.class.isInstance(entry.getValue())){
+				model.remove(entry.getKey());
+			}else if(entry.getValue()!=null && excludeClasses.contains(entry.getValue().getClass().getName())){
 				model.remove(entry.getKey());
 			}
 		}

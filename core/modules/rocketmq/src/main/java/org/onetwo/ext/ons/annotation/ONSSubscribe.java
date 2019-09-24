@@ -13,7 +13,9 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartb
  * @author wayshall
  * 
  * 消费方法最多两个参数，第一个参数为ConsumContext，第二个参数为反序列化后的body
- *
+ * 
+ * 配置参考 PropertyKeyConst
+ * 
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -28,4 +30,22 @@ public @interface ONSSubscribe {
 	long ignoreOffSetThreshold() default -1;
 	int maxReconsumeTimes() default -1;
 	boolean autoDeserialize() default true;
+	IdempotentType idempotent() default IdempotentType.NONE;
+	
+	//consumeTimeoutInMinutes
+	//properties: field=vlaue
+	
+	ConsumerProperty[] properties() default {};
+	
+	public enum IdempotentType {
+		NONE,
+		DATABASE;
+	}
+	
+	@Target({ElementType.METHOD})
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface ConsumerProperty {
+		String name();
+		String value();
+	}
 }

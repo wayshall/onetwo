@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<included>
+    <appender name="errorLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Support multiple-JVM writing to the same log file -->
+        <prudent>false</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 45 days' worth of history -->
+            <maxHistory>45</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} %L - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="asyncErrorLogFile" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>1</discardingThreshold>
+        <queueSize>10000</queueSize>
+        <appender-ref ref="errorLogFile"/>
+    </appender>
+    
+    <logger name="errorLogger" level="ERROR">
+        <appender-ref ref="asyncErrorLogFile"/>
+    </logger>
+</included>
+

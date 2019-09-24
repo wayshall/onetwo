@@ -66,7 +66,7 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 	}
 	
 	public Map<String, List<Object>> readData(InputStream in){
-		Assert.notNull(in);
+		Assert.notNull(in, "inpustream can not be null");
 		Workbook workbook = createWorkbook(in);
 		return readData(workbook);
 	}
@@ -79,7 +79,7 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 	}*/
 
 	public Map<String, List<Object>> readData(File file){
-		Assert.notNull(file);
+		Assert.notNull(file, "file can not be null");
 		try {
 			if(!file.exists()){
 				throw new FileNotFoundException("文件不存在：" + file.getPath());
@@ -106,7 +106,7 @@ public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implem
 	}
 
 	public Map<String, List<Object>> readData(File file, int startSheet, int readCount){
-		Assert.notNull(file);
+		Assert.notNull(file, "file can not be null");
 		try {
 			if(!file.exists()){
 				throw new FileNotFoundException("文件不存在：" + file.getPath());

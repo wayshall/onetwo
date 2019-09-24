@@ -2,12 +2,12 @@ package org.onetwo.boot.module.oauth2;
 
 import java.util.Map;
 
-import lombok.Data;
-
 import org.onetwo.boot.module.oauth2.util.PasswordEncoders;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Maps;
+
+import lombok.Data;
 
 /**
  * 统一在网关验证授权，因此后端的api项目除了需要获取auth2而配置tokenStore外，
@@ -23,9 +23,11 @@ public class JFishOauth2Properties {
 	public static final String CONFIG_PREFIX = "jfish.oauth2";
 	public static final String TOKEN_STORE_ENABLED_KEY = CONFIG_PREFIX + ".tokenStore";
 	
+	
 	public static final String KEYS_REDIS = "redis";
 	public static final String KEYS_JDBC = "jdbc";
 	public static final String KEYS_JWT = "jwt";
+	public static final String KEYS_JWT_REDIS = "jwt-redis";
 	public static final String KEYS_IN_MEMORY = "in_memory";
 	
 	
@@ -49,7 +51,14 @@ public class JFishOauth2Properties {
 		        enabled: false
 	 */
 	AuthorizationServerProps authorizationServer = new AuthorizationServerProps();
+	/***
+	 * 资源服务器配置
+	 */
 	ResourceServerProps resourceServer = new ResourceServerProps();
+	/***
+	 * 客户端暂无配置
+	 */
+	ClientDetailsResolverProps client = new ClientDetailsResolverProps();
 	JwtProps jwt = new JwtProps();
 	String passwordEncoder = PasswordEncoders.NoOp.name();
 	
@@ -77,6 +86,8 @@ public class JFishOauth2Properties {
 		Map<String[], String> intercepterUrls = Maps.newHashMap();
 		String anyRequest;
 		
+		Map<String, String> pathMappings = Maps.newHashMap();
+		
 	}
 	
 
@@ -89,12 +100,21 @@ public class JFishOauth2Properties {
 		 * resource server
 		 */
 		String[] requestMatchers;
-		Map<String[], String> intercepterUrls = Maps.newHashMap();
+		Map<String[], String> intercepterUrls = Maps.newLinkedHashMap();
 		String anyRequest;
 		public String[] getRequestMatchers() {
 			return requestMatchers;
 		}
-		
+		public Map<String[], String> getIntercepterUrls() {
+			return intercepterUrls;
+		}
+	}
+	
+
+	@Data
+	public static class ClientDetailsResolverProps {
+		public static final String ENABLED_KEY = CONFIG_PREFIX + ".clientDetailsResolver.enabled";
+		public static final String AUTHORIZATION_BASE_URL = CONFIG_PREFIX +".client.authorization.baseUrl";
 	}
 
 

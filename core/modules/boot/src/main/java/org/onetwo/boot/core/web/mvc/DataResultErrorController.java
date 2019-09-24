@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.web.ErrorViewResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -25,10 +24,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author wayshall
  * <br/>
  */
-@Controller
+//@Controller
 @RequestMapping("${server.error.path:${error.path:/error}}")
 public class DataResultErrorController extends BasicErrorController {
-
+	
 	public DataResultErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
 		super(errorAttributes, errorProperties);
 	}

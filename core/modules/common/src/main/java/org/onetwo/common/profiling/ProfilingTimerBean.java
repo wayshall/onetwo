@@ -64,7 +64,11 @@ public class ProfilingTimerBean implements java.io.Serializable {
         return resource;
     }
 
-    /**
+    public long getTotalTime() {
+		return totalTime;
+	}
+
+	/**
      * Get a formatted string representing all the methods that took longer than a specified time.
      */
 

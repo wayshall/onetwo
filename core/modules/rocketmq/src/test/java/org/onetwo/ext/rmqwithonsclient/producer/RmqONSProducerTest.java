@@ -1,18 +1,14 @@
 package org.onetwo.ext.rmqwithonsclient.producer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.onetwo.boot.mq.SendMessageEntity;
-import org.onetwo.boot.mq.SendMessageRepository;
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.repository.SendMessageRepository;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.ds.DatasourceFactoryBean;
 import org.onetwo.common.exception.ServiceException;
@@ -32,6 +28,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author wayshall
@@ -145,11 +146,13 @@ public class RmqONSProducerTest {
 	}
 	
 	@Data
+	@NoArgsConstructor
 	@Builder
 	@AllArgsConstructor
-	@NoArgsConstructor
 	public static class OrderTestMessage {
 		Long orderId;
 		String title;
+		
+		
 	}
 }

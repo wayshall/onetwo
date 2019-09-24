@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class MvcUtils {
 	
 	
+	@SuppressWarnings("unchecked")
 	public static ModelAndView createModelAndView(String viewName, Object... models){
 		ModelAndView mv = new ModelAndView(viewName);
 //		mv.getModel().put(UrlHelper.MODEL_KEY, getUrlMeta());

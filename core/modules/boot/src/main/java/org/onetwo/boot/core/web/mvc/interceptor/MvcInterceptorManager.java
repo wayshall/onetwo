@@ -13,15 +13,13 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.boot.core.web.mvc.annotation.Interceptor;
 import org.onetwo.boot.core.web.mvc.annotation.InterceptorDisabled.DisableMvcInterceptor;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.mvc.utils.ModelAttr;
 import org.onetwo.common.spring.utils.PropertyAnnotationReader;
 import org.onetwo.common.spring.utils.PropertyAnnotationReader.PropertyAnnoMeta;
 import org.onetwo.common.utils.LangUtils;
@@ -33,6 +31,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -43,13 +42,16 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * @author wayshall
  * <br/>
  */
 @Slf4j
-public class MvcInterceptorManager extends WebInterceptorAdapter implements HandlerMappingListener, ApplicationContextAware, HandlerInterceptor {
+public class MvcInterceptorManager extends WebInterceptorAdapter implements HandlerMappingListener, ApplicationContextAware, HandlerInterceptor, AsyncHandlerInterceptor {
 	private static final String INTERCEPTORS_KEY = MvcInterceptorManager.class.getName() + ".interceptors";
 	
 	private Cache<Method, HandlerMethodInterceptorMeta> interceptorMetaCaces = CacheBuilder.newBuilder().build();
@@ -84,15 +86,23 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		List<? extends MvcInterceptor> interceptors = meta.get().getInterceptors();
 		request.setAttribute(INTERCEPTORS_KEY, interceptors);
 		for(MvcInterceptor inter : interceptors){
-			boolean nextPreHandle = inter.preHandle(request, response, hmethod);
-			if(!nextPreHandle){
-				return nextPreHandle;
+			try {
+				boolean nextPreHandle = inter.preHandle(request, response, hmethod);
+				if(!nextPreHandle){
+					return nextPreHandle;
+				}
+			} catch (BaseException e) {
+				request.setAttribute(ModelAttr.ERROR_MESSAGE, e.getMessage());
+				throw e;
 			}
 		}
 		
 		return true;
 	}
 
+	/****
+	 * aysnc controller will not invoke
+	 */
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		executeInterceptors(request, handler, (hmethod, inter)->{
@@ -100,6 +110,10 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		});
 	}
 
+	/***
+	 * 
+	 * aysnc controller will not invoke
+	 */
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 		executeInterceptors(request, handler, (hmethod, inter)->{
@@ -107,6 +121,14 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		});
 	}
 	
+	
+	@Override
+	public void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		executeInterceptors(request, handler, (hmethod, inter)->{
+			inter.afterConcurrentHandlingStarted(request, response, handler);
+		});
+	}
+
 	@SuppressWarnings("unchecked")
 	private void executeInterceptors(HttpServletRequest request, Object handler, BiConsumer<HandlerMethod, MvcInterceptor> consumer){
 		/*HandlerMethod hmethod = getHandlerMethod(handler);
@@ -140,7 +162,12 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		for(HandlerMethod hm : handlerMethods.values()){
-			List<? extends MvcInterceptor> interceptors = findMvcInterceptors(hm);
+			List<? extends MvcInterceptor> interceptors = null;
+			try {
+				interceptors = findMvcInterceptors(hm);
+			} catch (Exception e) {
+				throw new BaseException("find MvcInterceptor error for HandlerMethod: " + hm.getMethod(), e);
+			}
 			if(!interceptors.isEmpty()){
 				AnnotationAwareOrderComparator.sort(interceptors);
 				HandlerMethodInterceptorMeta meta = new HandlerMethodInterceptorMeta(hm, interceptors);
@@ -208,13 +235,19 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 //		MvcInterceptor interInst = null;
 
 		Class<? extends MvcInterceptor> cls = attr.getInterceptorType();
-		List<? extends MvcInterceptor> inters = SpringUtils.getBeans(applicationContext, cls);
+		@SuppressWarnings("unchecked")
+		List<MvcInterceptor> inters = (List<MvcInterceptor>)SpringUtils.getBeans(applicationContext, cls);
 		if(LangUtils.isEmpty(inters)){
 //			throw new BaseException("MvcInterceptor not found for : " + cls);
 			MvcInterceptor interInst = createInterceptorInstance(attr);
 			return interInst;
 		}else if(inters.size()>1){
-			throw new BaseException("multip MvcInterceptor found for : " + cls);
+			// 有多个实现时，仅查找本身
+			List<MvcInterceptor> typeInterceptors = inters.stream().filter(inter -> inter.getClass()==cls).collect(Collectors.toList());
+			if (typeInterceptors.size()>1) {
+				throw new BaseException("multip MvcInterceptor found for : " + cls);
+			}
+			return typeInterceptors.get(0);
 		}else{
 			if(log.isDebugEnabled()){
 				log.debug("found MvcInterceptor from applicationContext: {}", cls);

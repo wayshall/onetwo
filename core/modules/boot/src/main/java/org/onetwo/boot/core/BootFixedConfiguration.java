@@ -6,9 +6,11 @@ import java.lang.management.ManagementFactory;
 import javax.servlet.MultipartConfigElement;
 
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
+import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,8 @@ public class BootFixedConfiguration {
 	
 
 	@Bean
-	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
+//	@ConditionalOnProperty(value="maxHttpPostSize", prefix="server", matchIfMissing=true, havingValue="auto")
+	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
 	}
@@ -58,7 +61,7 @@ public class BootFixedConfiguration {
 	public MultipartConfigElement multipartConfigElement() {
 		String location = multipartProperties.getLocation();
 		if(StringUtils.isBlank(location)){
-			location = DEFAULT_TMP_DIR;
+			location = LangUtils.isWindowsOS()?FileUtils.getJavaIoTmpdir():DEFAULT_TMP_DIR;
 			location = location + "/sb.tomcat."+serverProperties.getPort();
 			String pid = getPid();
 			if(StringUtils.isNotBlank(pid)){

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.spring.SpringUtils;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +22,14 @@ public class SimpleMultipartFile implements MultipartFile {
 	private String contentType;
 	final private byte[] content;
 	
+	public SimpleMultipartFile(String originalFilename, File file) {
+		this(originalFilename, FileUtils.readFileToByteArray(file));
+	}
+	
+	public SimpleMultipartFile(String originalFilename, Resource resource) {
+		this(originalFilename, FileUtils.toByteArray(SpringUtils.getInputStream(resource)));
+	}
+	
 	public SimpleMultipartFile(String originalFilename, InputStream inputStream) {
 		this(originalFilename, FileUtils.toByteArray(inputStream));
 	}
@@ -29,8 +39,8 @@ public class SimpleMultipartFile implements MultipartFile {
 	}
 	public SimpleMultipartFile(String fieldName, String originalFilename, byte[] content) {
 		super();
-		Assert.notNull(originalFilename);
-		Assert.notNull(content);
+		Assert.notNull(originalFilename, "originalFilename");
+		Assert.notNull(content, "content");
 		this.originalFilename = originalFilename;
 		this.content = content;
 		this.name = fieldName;

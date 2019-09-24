@@ -1,0 +1,379 @@
+package com..emall.search.service;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.elasticsearch.common.geo.GeoDistance;
+import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+@Service
+public class ProductSearchServiceImpl {
+	final protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
+
+	protected SynonymsMap synonymsMap = SynonymsMap.buildFromClassPath();
+	
+	@Autowired
+	private ThreadPoolTaskExecutor executor;
+	
+	/*****
+	 * TODO 等待代码搬迁
+	 * @param param
+	 * @return
+	 */
+	/*public ProductGetResult get(ProductGetParam param){
+		List<Long> scopeIds = this.saleScopeServiceImpl.findScopeDetailIds(param.getApp_id(), param.getPartner_id());
+		SimpleSearchQueryBuilder builder = SimpleSearchQueryBuilder.from(this.productServiceImpl.getIndexName(), SearchUtils.TYPE_PRODUCT);
+		builder.bool()
+				.mustTerm("id", param.getId())
+				.mustTerms("scopeId", scopeIds);
+		
+//		List<ProductDetailDoc> details =builder.queryForList(elasticsearchTemplate, ProductDetailDoc.class);
+		return null;
+	}*/
+	
+	@SuppressWarnings("unchecked")
+	@Transactional(readOnly=true)
+	public Object searchAsGroup(ProductSearchQueryParam query){
+		RestResult<ProductSearchResult> res = (RestResult<ProductSearchResult>)search(query);
+		List<ProductResult> products = res.getData().getProducts();
+		List<ProductSearchGroupResult> datas = products.stream()
+															.collect(Collectors.groupingBy(e->e.getBase_type()))
+															.entrySet()
+															.stream()
+															.map(e->new ProductSearchGroupResult(e.getKey(), e.getValue()))
+															.collect(Collectors.toList());
+		
+		RestResult<List<ProductSearchGroupResult>> rs = new RestResult<>();
+		rs.setData(datas);
+		rs.setTotal_count(Long.valueOf(datas.size()));
+		return rs;
+	}
+	
+	public Object search(ProductSearchQueryParam query){
+		logger.info("search query: {}", query);
+		
+		try {
+			this.calcGeoOrderBy(query);
+		} catch (Exception e) {
+			logger.error("计算坐标排序错误", e);
+		}
+		
+		executor.execute(() -> searchLogServiceImpl.save(query)); 
+		
+		SimpleSearchQueryBuilder builder = this.createSearchBuilder(query);
+		
+		return queryWithBuilder(query, builder);
+	}
+	
+	private void calcGeoOrderBy(ProductSearchQueryParam query){
+		GeoPointVO geo = null;
+		if(query.getLatitude()==null || query.getLongitude()==null){
+			if(StringUtils.isNotBlank(query.getCurrent_city())){
+				geo = geoServiceImpl.getGeoByGeo(query.getCurrent_city());
+				logger.info("geo: {}", geo);
+			}
+		}else{
+			AddressResultVo address = geoServiceImpl.getAddressByGeo(query.getLatitude(), query.getLongitude());
+			logger.info("address: {}", address);
+			//用户所在地不等于选择的城市
+			if(!address.getAddressComponent().getCity().contains(query.getCurrent_city())){
+				geo = geoServiceImpl.getGeoByGeo(query.getCurrent_city());
+				logger.info("address geo: {}", geo);;
+			}
+		}
+		if(geo!=null){
+			query.setLatitude(geo.getLat());
+			query.setLongitude(geo.getLng());
+		}
+	}
+	
+	
+	
+	protected SimpleSearchQueryBuilder createSearchBuilder(ProductSearchQueryParam query){
+		SimpleSearchQueryBuilder builder = SimpleSearchQueryBuilder.from(this.productServiceImpl.getIndexName(), SearchUtils.TYPE_PRODUCT)
+																	.withPageable(query.getPage_no()-1, query.getPage_size());
+		
+		logger.info("createSearchBuilder begin");
+		
+		Pair<Double, Double> priceRange = SearchUtils.splitPriceRange(query.getPrice_range());
+		if(SearchUtils.isProductNo(query.getKeyword())){
+			builder.bool()
+					.mustTerm("productNo", query.getKeyword())
+					.mustTerm("state", State.NORMAL.value())
+					.mustTerm("isHide", YesOrNo.NO.getValue())
+					.end();
+		}else{
+			List<Long> scopeIds = saleScopeServiceImpl.findScopeDetailIds(query.getApp_id(), query.getPartner_id());
+			logger.info("scopeIds:{}", scopeIds);
+			
+//			String city = query.getCurrent_city();
+			builder.match(query.getKeyword(), "productName^3", "showTags")
+					.bool()
+						.shouldTerms("showTags", SearchUtils.toSet(query.getTags()))
+						.shouldTerms("classifyTags", SearchUtils.toSet(query.getTags()))
+//						.mustTerms("cities", getCityAliasName(city))
+						.mustTerm("merchantId", query.getMerchant_id())
+						.mustTerm("tourDays", query.getTour_days())
+						.mustTerm("destinations", query.getDestination())
+//						.mustMissing("salesOccasionId")
+						.with(bool->{
+							if(query.getOccasion_id()!=null){
+								bool.mustTerm("salesOccasionId", query.getOccasion_id());
+							}else{
+								bool.mustMissing("salesOccasionId");
+							}
+						})
+						.mustTerms("baseTypes", SearchUtils.toSet(query.getBase_type()))
+						.mustTerm("state", State.NORMAL.value())
+						.mustTerm("isHide", YesOrNo.NO.getValue())
+						//增加销售范围过滤
+						.mustTerms("scopeId", scopeIds)
+						.range("salePrice", priceRange)
+					.end();
+			buildSorts(builder, query);
+			
+		}
+		
+		//非内部ip，则过滤test产品
+		Set<String> innerIps = SearchUtils.getInnerIps();
+		if(StringUtils.isBlank(query.getClient_ip()) || !innerIps.contains(query.getClient_ip())){
+			builder.bool()
+					.mustTerm("isTest", YesOrNo.NO.getValue());
+		}
+		
+		//条件聚合
+		SimpleAggregationBuilder<SimpleSearchQueryBuilder> aggBuilder = builder.aggFilter("conditionAggs")
+																				.filter(builder.retriveBoolQuery());
+		if(StringUtils.isBlank(query.getDestination())){
+			aggBuilder.subAgg("destinations", "destinationsWithLevel", 0).end();
+		}
+		if(StringUtils.isBlank(query.getTags())){
+			aggBuilder.subAgg("showTags", "showTags", 0).end();
+		}
+		if(query.getTour_days()==null){
+			aggBuilder.subAgg("tourDays", "tourDays", 0).end();
+		}
+		if(priceRange==null){
+			aggBuilder.subAggExtendedStats("salePriceStats").field("salePrice");
+		}
+		
+		logger.info("createSearchBuilder end");
+		
+		return builder;
+	}
+	
+	protected Object queryWithBuilder(ProductSearchQueryParam query, SimpleSearchQueryBuilder builder){
+		
+		logger.info("queryWithBuilder begin");
+		
+		final QueryResult qresult = builder.doQueryResult(elasticsearchTemplate);
+		
+		logger.info("queryWithBuilder 1");
+		
+		//设置聚合结果
+		ConditionResult condition = new ConditionResult();
+		qresult.getAggregationsResult()
+				.getKeysByPath("conditionAggs>showTags")
+				.ifPresent(showTags->condition.setTags(SearchUtils.toSet(showTags)));
+		qresult.getAggregationsResult()
+				.getKeysByPath("conditionAggs>tourDays")
+				.ifPresent(tourDays->condition.setTour_days(SearchUtils.toSet(tourDays, o->Integer.parseInt(o.toString()))));
+		qresult.getAggregationsResult()
+				.getKeysByPath("conditionAggs>destinations")
+				.ifPresent(destinations->condition.setDestination(SearchUtils.toSet(destinations)));
+		if(query.getOrderby()==null){
+			condition.setOrderby(ImmutableSet.of(new SortResult(SortType.SALE_PRICE_ASC),
+												new SortResult(SortType.VIEW_COUNT_DESC),
+												new SortResult(SortType.NEAR_ME)));
+		}
+		
+		logger.info("queryWithBuilder 2");
+		
+		SalePriceStatsResult statsRes = qresult.getAggregationsResult().mapAggregation("conditionAggs>salePriceStats", SalePriceStatsResult.class);
+		
+		logger.info("queryWithBuilder 3");
+		
+		UserBehaviorDoc behavior = userBehaviorServiceImpl.findBySessid(query.get_sessid());
+		
+		logger.info("queryWithBuilder 4");
+		
+		Set<Long> viewIds = behavior==null || behavior.getViewProductIds()==null?Sets.newHashSet():behavior.getViewProductIds();
+		Set<Long> favIds = behavior==null || behavior.getFavProductIds()==null?Sets.newHashSet():behavior.getFavProductIds();
+		//查询数据
+		ProductSearchResult result = new ProductSearchResult();
+		PageArrayList<ProductResult> products = builder.doQuery(q->{
+//			PageArrayList<ProductResult> datas = SpringDataUtils.mapToPage(elasticsearchTemplate.queryForPage(q, ProductDoc.class), pd->{
+			PageArrayList<ProductResult> datas = SpringDataUtils.mapToPage(qresult.getPage(ProductDoc.class), pd->{
+				ProductResult r = ReflectUtils.copyIgnoreBlank(new ProductResult(), pd);
+				r.setBase_type(StringUtils.join(pd.getBaseTypes(), ","));
+				r.setTags(StringUtils.join(pd.getShowTags(), ","));
+				r.setIs_viewed(viewIds.contains(pd.getId())?1:0);
+				r.setIs_favored(favIds.contains(pd.getId())?1:0);
+				return r;
+			});
+			return datas;
+		});
+		
+		logger.info("queryWithBuilder 5");
+		
+		result.setProducts(products);
+		result.setCondition(condition);
+		
+		//计算价格区间
+		if(statsRes!=null){
+			List<String> priceRangeKeys = this.calcPriceRangeKeys(builder, statsRes, products.getTotalCount());
+			condition.setPrice_range(priceRangeKeys);
+		}
+		
+		logger.info("queryWithBuilder 6");
+		
+		RestResult<ProductSearchResult> rs = new RestResult<>();
+		rs.setData(result);
+		rs.setTotal_count(products.getTotalCount());
+		result.setParams(query);
+		
+		logger.info("queryWithBuilder end");
+		
+		return rs;
+	}
+	
+	/****
+	 * 计算价格区间
+	 * @param builder
+	 * @param statsRes
+	 * @param totalCount
+	 * @return
+	 */
+	private List<String> calcPriceRangeKeys(SimpleSearchQueryBuilder builder, SalePriceStatsResult statsRes, long totalCount){
+		if(logger.isInfoEnabled()){
+			logger.info("statsRes: {}", statsRes);
+		}
+		try {
+			if(Double.isNaN(statsRes.getAvg()) || Double.isNaN(statsRes.getStdDeviation())){
+				return Collections.emptyList();
+			}
+			PriceSpliter spliter = new PriceSpliter(statsRes.getAvg(), statsRes.getStdDeviation(), totalCount, 5);
+			List<RangeQueryer> rangeQueryers = spliter.getRangeQueryers();
+			if(rangeQueryers.isEmpty()){
+				logger.info("rangeQueryers is empty, ignore calcPriceRangeKeys", rangeQueryers);
+				return Collections.emptyList();
+			}
+			builder.forceClearAggregations()
+					.withPageable(0, 1)
+					.aggRanges("salePriceRange", "salePrice", spliter.getRangeQueryers());
+			
+			logger.info("calcPriceRangeKeys 1");
+			
+			List<RangeResult> rangeDatas = builder.doQueryResult(elasticsearchTemplate)
+													.getAggregationsResult()
+													.mapBuckets("salePriceRange", RangeResult.class);
+			
+			logger.info("calcPriceRangeKeys 2");
+		
+			List<String> priceRangeKeys = spliter.splitAndGetKeys(rangeDatas, r->r.getKey());
+			return priceRangeKeys;
+		} catch (Exception e) {
+			logger.error("calcPriceRangeKeys error: " + e.getMessage(), e);
+		}
+		return Collections.emptyList();
+	}
+	
+	private void buildSorts(SimpleSearchQueryBuilder builder, ProductSearchQueryParam query){
+		//默认
+		if(query.getOrderby()==null){
+			builder.withSortBuilder(SortBuilders.fieldSort("sort").order(SortOrder.DESC));
+			//条件排序
+			String condition = SearchUtils.buildConditionString(query.getCurrent_city(), 
+																query.getOccasion_id(), 
+																query.getTags(), 
+																query.getKeyword(), 
+																query.getPartner_id(), 
+																query.getApp_id(), query.getBase_type());
+			builder.withScriptSort("(doc.sortConditions.value==\""+condition+"\"?doc.productSort.value:0)", SortOrder.DESC);
+
+			builder.withSortBuilder(defaultSortBuilder(builder, query));
+		}else{
+			builder.withSortBuilder(defaultSortBuilder(builder, query));
+		}
+		
+	}
+	
+	private SortBuilder defaultSortBuilder(SimpleSearchQueryBuilder builder, ProductSearchQueryParam query){
+		SortBuilder sortBuilder = SortType.toSortBuilder(query.getOrderby());
+		if(sortBuilder instanceof GeoDistanceSortBuilder){
+			if(query.getLatitude()!=null && query.getLongitude()!=null){
+				GeoDistanceSortBuilder geoBuilder = (GeoDistanceSortBuilder) sortBuilder;
+				geoBuilder.unit(DistanceUnit.MILES)
+							.geoDistance(GeoDistance.PLANE)
+							.point(query.getLatitude(), query.getLongitude());
+				return sortBuilder;
+			}else{
+				return null;
+			}
+		}
+		return sortBuilder;
+	}
+	
+	@SuppressWarnings("unused")
+	private Object[] getCityAliasName(String city){
+		if(StringUtils.isBlank(city))
+			return null;
+		String alisName = city.endsWith("市")?city.substring(0, city.length()-1):city+"市";
+		if(synonymsMap.containsKey(city)){
+			Collection<String> values = synonymsMap.get(city);
+			if(!values.contains(alisName)){
+				values.add(alisName);
+			}
+			return values.toArray(new String[0]);
+		}
+		return new String[]{city, alisName};
+	}
+	
+	@Cacheable("hotSearchLisCache")
+	public ProductHotSearchResult findHotSearchList(ProductHotSearchQueryParam query){
+		ProductHotSearchResult result = new ProductHotSearchResult();
+		Set<String> manuallyHots = this.dataKeyClobServiceImpl.findHotWords();
+		List<String> totalHotWords = Lists.newArrayList(manuallyHots);
+		if(totalHotWords.size()<query.getHot_count()){
+			List<String> searchHotWords = searchLogServiceImpl.getHotKeywords(query);
+			totalHotWords.addAll(searchHotWords);
+		}
+		
+		sensitiveServiceImpl.removeSensitive(totalHotWords);
+		if(totalHotWords.size()>query.getHot_count()){
+			totalHotWords = totalHotWords.subList(0, query.getHot_count());
+		}
+		result.setHost_words(totalHotWords);
+		return result;
+	}
+
+	@Cacheable("completionTextsCache")
+	public List<String> getCompletionTexts(CompletionParam query){
+		List<String> texts = SimpleSuggestionBuilder.from(this.productServiceImpl.getIndexName())
+															.name("searchCompletion")
+															.field("autoCompletion")
+															.text(query.getKeyword())
+															.completionFuzzy()
+															.getTexts(elasticsearchTemplate);
+		return texts;
+	}
+}

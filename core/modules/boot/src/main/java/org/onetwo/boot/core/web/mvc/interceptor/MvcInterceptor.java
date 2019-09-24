@@ -23,8 +23,20 @@ public interface MvcInterceptor {
 	 */
 	boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) ;
 
-	void postHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, ModelAndView modelAndView) ;
+	default void postHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, ModelAndView modelAndView) {
+	}
 	
-	void afterCompletion(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, Exception ex) ;
+	default void afterCompletion(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, Exception ex) {
+	}
+	
+	/****
+	 * async controller will invoke
+	 * @author wayshall
+	 * @param request
+	 * @param response
+	 * @param handler
+	 */
+	default void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler) {
+	}
 	
 }

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.7.1-SNAPSHOT</version>
+        <version>4.7.4-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 	
@@ -53,12 +53,6 @@
         <artifactId>rxjava</artifactId>
     </dependency>
     
-	<dependency>
-	  <groupId>net.sf.dozer</groupId>
-	  <artifactId>dozer</artifactId>
-	  <optional>true</optional>
-	</dependency>
-	
 	<!-- spring begin -->
 	<dependency>
 	  <groupId>org.springframework</groupId>
@@ -154,7 +148,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     
     <dependency>
@@ -179,6 +173,12 @@
        <artifactId>okhttp</artifactId>
        <optional>true</optional>
      </dependency>
+        
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <optional>true</optional>
+    </dependency>
 	
 	<dependency>
 		<groupId>junit</groupId>
@@ -212,7 +212,6 @@
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-source-plugin</artifactId>
 		</plugin>
-		
   	</plugins>
   </build>
   

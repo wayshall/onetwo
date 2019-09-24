@@ -32,5 +32,9 @@ public class ClientDetailsMvcInterceptor extends MvcInterceptorAdapter {
 		});
 		return true;
 	}
-	
+
+	@Override
+	public int getOrder() {
+		return afterFirst(ORDER_STEP);
+	}
 }

@@ -2,15 +2,14 @@ package org.onetwo.common.spring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.date.DateUtils;
-import org.onetwo.common.utils.FieldName;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;

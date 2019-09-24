@@ -10,7 +10,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.filter.SpringMultipartFilterProxy;
 import org.onetwo.common.web.filter.BaseInitFilter;
 import org.slf4j.Logger;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -38,11 +37,15 @@ public class CommonWebFilterInitializer {
 	public void onServletContextStartup(ServletContext servletContext) throws ServletException {
 		//encodingFilter
 		registeredEncodingFilter(servletContext, CharacterEncodingFilter.class);
+		
+//		multipartFilter
+		registeredMultipartFilter(servletContext);
+		
 		//hiddenHttpMethodFilter 
 		registeredHiddenMethodFilter(servletContext, HiddenHttpMethodFilter.class);
 		
 		//multipartFilter
-		registeredMultipartFilter(servletContext, SpringMultipartFilterProxy.class);
+//		registeredMultipartFilter(servletContext, SpringMultipartFilterProxy.class);
 
 		//systemFilter
 		registeredInitFilter(servletContext, BaseInitFilter.class);
@@ -50,6 +53,9 @@ public class CommonWebFilterInitializer {
 		//ajaxAnywhere 
 //		registeredAjaxAnywhere(servletContext, AAFilter.class);
 		
+	}
+	
+	protected void registeredMultipartFilter(ServletContext servletContext){
 	}
 	
 	protected void registeredEncodingFilter(ServletContext servletContext, Class<? extends Filter> encodingFilterClass){
@@ -66,12 +72,12 @@ public class CommonWebFilterInitializer {
 	
 	protected void registeredMultipartFilter(ServletContext servletContext, Class<? extends Filter> multipartFilterClass){
 		Optional.ofNullable(multipartFilterClass).ifPresent(cls->{
-			Dynamic fr = servletContext.addFilter(MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME, multipartFilterClass);
-			Optional.ofNullable(fr).ifPresent(frconfig->{
+			Dynamic frconfig = servletContext.addFilter(MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME, multipartFilterClass);
+			if (frconfig!=null) {
 				frconfig.setAsyncSupported(true);
 				frconfig.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), isMatchAfter, "/*");
 				logger.info("FilterInitializer: {} has bean registered!", multipartFilterClass.getSimpleName());
-			});
+			}
 		});
 	}
 	

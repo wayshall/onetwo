@@ -1,32 +1,32 @@
 package org.onetwo.boot.module.swagger;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.ClassUtils;
 
-import springfox.documentation.RequestHandler;
-import springfox.documentation.annotations.ApiIgnore;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.service.VendorExtension;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
 
-public class AutoScanPluginSwaggerConfig {
+import springfox.documentation.RequestHandler;
+import springfox.documentation.annotations.ApiIgnore;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+
+/***
+ * 自动扫描当前项目主类和插件，并合并注册成一个swagger docket
+ * @author way
+ *
+ */
+public class AutoScanPluginSwaggerConfig extends AbstractSwaggerConfig {
 	
 	@Autowired(required=false)
 	private PluginManager pluginManager;
@@ -51,26 +51,14 @@ public class AutoScanPluginSwaggerConfig {
     	return packages;
 	}
 	
-	@SuppressWarnings("deprecation")
 	protected Predicate<RequestHandler> webApi(){
 		Set<Predicate<RequestHandler>> packages = getAllApiDocPackages();
-    	return rh->{
-        	return Predicates.or(packages).apply(rh) && 
-        								WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
-        															rh.declaringClass())
-        															.isPresent();
-        };
+    	return webApi(packages);
 	}
 
-	@SuppressWarnings("deprecation")
 	protected Predicate<RequestHandler> notWebApi(){
 		Set<Predicate<RequestHandler>> packages = getAllApiDocPackages();
-    	return rh->{
-        	return Predicates.or(packages).apply(rh) && 
-										!WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
-																	rh.declaringClass())
-																	.isPresent();
-        };
+    	return notWebApi(packages);
 	}
 
     @Bean
@@ -88,7 +76,7 @@ public class AutoScanPluginSwaggerConfig {
 						            .apis(Predicates.or(packages))
 						            .paths(PathSelectors.any())
 						        .build()
-						        .apiInfo(apiInfo());
+						        .apiInfo(apiInfo(getServiceName()));
     	return docket;
     }
     
@@ -98,20 +86,5 @@ public class AutoScanPluginSwaggerConfig {
     
     protected String getServiceName(){
     	return "JFish Service";
-    }
-
-    @SuppressWarnings("rawtypes")
-    protected ApiInfo apiInfo() {
-    	String serviceName = getServiceName();
-        ApiInfo apiInfo = new ApiInfo(
-        	serviceName,
-        	serviceName = " REST API",
-            "1.0",
-            "termsOfServiceUrl",
-            new Contact("wayshall", "", "wayshall@qq.com"),
-            "API License",
-            "API License URL",
-            new ArrayList<VendorExtension>());
-        return apiInfo;
     }
 }

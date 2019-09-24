@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 
-import org.onetwo.boot.mq.SendMessageInterceptor;
-import org.onetwo.boot.mq.SendMessageInterceptor.InterceptorPredicate;
-import org.onetwo.boot.mq.SendMessageInterceptorChain;
+import org.onetwo.boot.mq.InterceptableMessageSender;
+import org.onetwo.boot.mq.SendMessageFlags;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
@@ -19,13 +20,13 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.bean.TransactionProducerBean;
+import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
 import com.aliyun.openservices.ons.api.transaction.TransactionStatus;
 
@@ -34,7 +35,7 @@ import com.aliyun.openservices.ons.api.transaction.TransactionStatus;
  * @author wayshall
  * <br/>
  */
-public class ONSTransactionProducerServiceImpl extends TransactionProducerBean implements InitializingBean, DisposableBean, TransactionProducerService {
+public class ONSTransactionProducerServiceImpl extends TransactionProducerBean implements InitializingBean, DisposableBean, DefaultProducerService, TransactionProducerService {
 	
 	public static final LocalTransactionExecuter COMMIT_EXECUTER = (msg, arg)->{
 		return TransactionStatus.CommitTransaction;
@@ -49,6 +50,7 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 //	private ONSProducerListenerComposite producerListenerComposite;
 	@Autowired
 	private List<SendMessageInterceptor> sendMessageInterceptors;
+	private InterceptableMessageSender<SendResult> interceptableMessageSender;
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -74,11 +76,11 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.hasText(producerId);
-		Assert.notNull(onsProperties);
-		Assert.notNull(messageSerializer);
+		Assert.hasText(producerId, "produerId must has text");
+		Assert.notNull(onsProperties, "onsProperties can not be null");
+		Assert.notNull(messageSerializer, "messageSerializer can not be null");
 
-		AnnotationAwareOrderComparator.sort(sendMessageInterceptors);
+		this.interceptableMessageSender = new InterceptableMessageSender<SendResult>(sendMessageInterceptors);
 		
 		Properties producerProperties = onsProperties.baseProperties();
 		Properties customProps = onsProperties.getProducers().get(producerId);
@@ -101,35 +103,55 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 
 	@Override
 	public SendResult sendMessage(OnsMessage onsMessage, LocalTransactionExecuter executer, Object arg){
-		Message message = onsMessage.toMessage();
-		String topic = SpringUtils.resolvePlaceholders(applicationContext, message.getTopic());
-		message.setTopic(topic);
 		Object body = onsMessage.getBody();
+		if(body instanceof Message){
+			return sendRawMessage((Message)body, executer, arg);
+		}
+		
+		Message message = onsMessage.toMessage();
+		
+		String topic = resolvePlaceholders(message.getTopic());
+		message.setTopic(topic);
+		String tag = resolvePlaceholders(message.getTag());
+		message.setTag(tag);
+		
 		if(needSerialize(body)){
 			message.setBody(this.messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
 		}else{
 			message.setBody((byte[])body);
 		}
+		configMessage(message, onsMessage);
+		
 		return sendRawMessage(message, executer, arg);
 	}
 
-	protected boolean needSerialize(Object body){
-		if(body==null){
-			return false;
-		}
-		return !byte[].class.isInstance(body);
-	}
-
 	protected SendResult sendRawMessage(Message message, LocalTransactionExecuter executer, Object arg){
-		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, null, ()->this.send(message, executer, arg));
+		return this.sendRawMessage(message, SendMessageFlags.DisableDatabaseTransactional, executer, arg);
+	}
+	
+	protected SendResult sendRawMessage(Message message, InterceptorPredicate interPredicate, LocalTransactionExecuter executer, Object arg){
+		/*SendMessageInterceptorChain chain = new SendMessageInterceptorChain(sendMessageInterceptors, null, ()->this.send(message, executer, arg));
 		ONSSendMessageContext ctx = ONSSendMessageContext.builder()
 													.message(message)
 													.source(this)
-													.transactionProducer(this)
+//													.transactionProducer(this)
 													.chain(chain)
 													.build();
 		chain.setSendMessageContext(ctx);
-		return (SendResult)chain.invoke();
+		return (SendResult)chain.invoke();*/
+		
+		return this.sendRawMessage(message, interPredicate, () -> doSendRawMessage(message, executer, arg));
+	}
+
+	public SendResult doSendRawMessage(Message message, LocalTransactionExecuter executer, Object arg){
+		try {
+			return send(message, executer, arg);
+		} catch (ONSClientException e) {
+			handleException(e, message);
+		}catch (Throwable e) {
+			handleException(e, message);
+		}
+		return null;
 	}
 	
 	@Override
@@ -141,6 +163,10 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	public <T> T getRawProducer(Class<T> targetClass) {
 		return targetClass.cast(this);
 	}
+	
+	protected String resolvePlaceholders(String value){
+		return SpringUtils.resolvePlaceholders(applicationContext, value);
+	}
 
 	/***
 	 * 伪装一个非事务producer，简化调用
@@ -150,6 +176,10 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 	 */
 	public ProducerService fakeProducerService(){
 		return fakeProducerService;
+	}
+
+	public InterceptableMessageSender<SendResult> getInterceptableMessageSender() {
+		return interceptableMessageSender;
 	}
 	
 	public class FakeProducerService implements ProducerService {
@@ -215,4 +245,5 @@ public class ONSTransactionProducerServiceImpl extends TransactionProducerBean i
 		}
 
 	}*/
+	
 }

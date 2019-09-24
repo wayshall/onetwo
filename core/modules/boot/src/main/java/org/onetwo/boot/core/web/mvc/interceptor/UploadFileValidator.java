@@ -17,7 +17,12 @@ public @interface UploadFileValidator {
 	String allowedPostfixErrorMessage() default "It's not allowed file type.";
 	
 	/****
-	 * max upload size for item
+	 * 每个文件上传大小限制，注意这个值不能超过容器的最大值
+	 * 
+	 * 这里的判断是通过拦截器判断，在这个之前还有配置限制，见：
+	 * spring.http.multipart.maxFileSize
+	 * spring.http.multipart.maxRequestSize
+	 * 
 	 * @author wayshall
 	 * @return
 	 */

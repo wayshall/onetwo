@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * enable的key少写了d，使用AllNestedConditions修复兼容 
  * @author wayshall
  * <br/>
  */
@@ -43,7 +44,7 @@ public class JwtContextConfig {
 
 
 	@Bean
-	@ConditionalOnMissingBean(JwtSessionUserManager.class)
+	@ConditionalOnProperty(value=JwtConfig.PREFIX + ".sessionManager.enabled", matchIfMissing=true, havingValue="true")
 	public SessionUserManager<UserDetail> sessionUserManager(){
 		return new JwtSessionUserManager(jfishConfig.getJwt().getAuthHeader());
 	}

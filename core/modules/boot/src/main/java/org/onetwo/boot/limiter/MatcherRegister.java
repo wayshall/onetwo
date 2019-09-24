@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.onetwo.boot.limiter.Matcher.AbstractMathcer;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
@@ -19,7 +18,7 @@ import org.springframework.util.AntPathMatcher;
  * @author wayshall
  * <br/>
  */
-public class MatcherRegister extends MapRegisterManager<String, Function<String[], Matcher>> {
+public class MatcherRegister extends MapRegisterManager<String, Function<String[], Matcher<InvokeContext>>> {
 	public static final MatcherRegister INSTANCE = new MatcherRegister();
 
 	public MatcherRegister() {
@@ -39,14 +38,37 @@ public class MatcherRegister extends MapRegisterManager<String, Function<String[
 		;
 	}
 	
-	public Matcher createMatcher(String matcherName, String...patterns){
+	public Matcher<InvokeContext> createMatcher(String matcherName, String...patterns){
 		Assert.hasText(matcherName);
 		Assert.notEmpty(patterns);
-		Matcher matcher = findRegistered(matcherName).orElseThrow(()->new BaseException("matcher not found, name: " + matcherName))
+		Matcher<InvokeContext> matcher = findRegistered(matcherName).orElseThrow(()->new BaseException("matcher not found, name: " + matcherName))
 													.apply(patterns);
 		return matcher;
 	}
 
+	static abstract public class AbstractMathcer implements Matcher<InvokeContext> {
+		final private String[] patterns;
+		
+		public AbstractMathcer(String[] patterns) {
+			super();
+			Assert.notEmpty(patterns);
+			this.patterns = patterns;
+		}
+		@Override
+		public boolean matches(InvokeContext context) {
+			return Stream.of(getPatterns())
+							.anyMatch(pattern->doMatches(pattern, context));
+//			return antMatcher.match(getPatterns(), context.getRequestPath());
+		}
+		
+		protected boolean doMatches(String pattern, InvokeContext context){
+			throw new RuntimeException("operation not implement yet!");
+		}
+		
+		public String[] getPatterns() {
+			return patterns;
+		}
+	}
 	
 	public static class AntpathMatcher extends AbstractMathcer {
 		static final private AntPathMatcher antMatcher = new AntPathMatcher();

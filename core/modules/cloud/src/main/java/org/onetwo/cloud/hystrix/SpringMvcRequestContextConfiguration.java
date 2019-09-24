@@ -34,7 +34,7 @@ public class SpringMvcRequestContextConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(name = "jfish.cloud.hystrix.shareRequestContext")
+		@ConditionalOnProperty(name = "jfish.cloud.hystrix.shareRequestContext", matchIfMissing=true)
 		static class ShareRequestContext {
 		}
 
@@ -45,9 +45,9 @@ public class SpringMvcRequestContextConfiguration {
 		 * @author wayshall
 		 *
 		 */
-		@ConditionalOnProperty(name = "feign.hystrix.enabled")
+		/*@ConditionalOnProperty(name = "feign.hystrix.enabled")
 		static class feignHystrixConfig {
-		}
+		}*/
 
 		@ConditionalOnClass(Hystrix.class)
 		static class OnHystrix {

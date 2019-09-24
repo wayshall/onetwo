@@ -6,14 +6,15 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootJFishConfig;
-import org.onetwo.boot.core.config.BootJFishConfig.MvcConfig.ResourceHandlerConfig;
+import org.onetwo.boot.core.config.BootJFishConfig.CorsConfig;
+import org.onetwo.boot.core.config.BootJFishConfig.ResourceHandlerConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
 import org.onetwo.boot.core.web.async.MvcAsyncProperties;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
-import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
@@ -38,6 +39,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -77,6 +79,26 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
     public void afterPropertiesSet() throws Exception {
 //		Assert.notNull(bootWebExceptionResolver);
     }
+	
+
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		if (!jfishBootConfig.getMvc().isCorsFilter()) {
+			addCorsMappings(registry, this.jfishBootConfig.getMvc().getCors());
+		}
+	}
+
+	static public void addCorsMappings(CorsRegistry registry, List<CorsConfig> corsConfigs) {
+		corsConfigs.forEach(corsConfig -> {
+			registry.addMapping(corsConfig.getMapping())
+					.allowedHeaders(corsConfig.getAllowedHeaders())
+					.allowedMethods(corsConfig.getAllowedMethods())
+					.allowedOrigins(corsConfig.getAllowedOrigins())
+					.allowCredentials(corsConfig.isAllowCredentials())
+					.exposedHeaders(corsConfig.getExposedHeaders())
+					.maxAge(corsConfig.getMaxAgeInMillis());
+		});
+	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
@@ -172,8 +194,9 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 		/*registry.addResourceHandler(UploadViewController.CONTROLLER_PATH+"/**")
 				.setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS));*/
 		//默认把上传目录映射
-		if(siteConfig.getUpload().isFileStorePathToResourceHandler()){
-			registry.addResourceHandler(BootWebUtils.CONTROLLER_PREFIX+"/upload/**")
+		String patterns = siteConfig.getUpload().getAccessPathPatterns();
+		if(StringUtils.isNotBlank(patterns)){
+			registry.addResourceHandler(patterns)
 					.addResourceLocations("file:"+FileUtils.convertDir(siteConfig.getUpload().getFileStorePath()))
 					.setCacheControl(CacheControl.maxAge(siteConfig.getUpload().getResourceCacheInDays(), TimeUnit.DAYS));
 		}

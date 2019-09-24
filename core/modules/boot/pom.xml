@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-		<version>4.7.1-SNAPSHOT</version>
+		<version>4.7.4-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -266,6 +266,12 @@
 	      <artifactId>mybatis</artifactId>
           <optional>true</optional>
 	    </dependency>
+		<dependency>
+		  <groupId>org.mybatis</groupId>
+		  <artifactId>mybatis</artifactId>
+          <optional>true</optional>
+		</dependency>
+			    
 	    <dependency>
 	        <groupId>com.github.pagehelper</groupId>
 	        <artifactId>pagehelper</artifactId>
@@ -288,13 +294,39 @@
           <groupId>io.springfox</groupId>
           <artifactId>springfox-swagger2</artifactId>
           <optional>true</optional>
+          <exclusions>
+            <exclusion>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-models</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         
         <dependency>
           <groupId>io.springfox</groupId>
           <artifactId>springfox-swagger-ui</artifactId>
           <optional>true</optional>
+          <exclusions>
+            <exclusion>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-models</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
+        
+		<dependency>
+	      <groupId>io.swagger</groupId>
+	      <artifactId>swagger-parser</artifactId>
+          <optional>true</optional>
+		</dependency>
+		        
+		<!-- <dependency>
+		  <groupId>io.swagger.parser.v3</groupId>
+		  <artifactId>swagger-parser</artifactId>
+		  <version>2.0.1</version>
+          <optional>true</optional>
+		</dependency> -->
+		        
         
         <!-- aliyun oss -->
         <dependency>
@@ -350,6 +382,29 @@
             <artifactId>activemq-web</artifactId>
             <optional>true</optional>
         </dependency>
+        
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.4.3-1.4.3</version>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.4.3-1.4.3</version>
+            <classifier>linux-x86_64</classifier>
+            <optional>true</optional>
+        </dependency> 
+        
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.4.3-1.4.3</version>
+            <classifier>windows-x86_64</classifier>
+            <optional>true</optional>
+        </dependency> -->
 	    
         <!-- test -->
         <!-- <dependency>
@@ -398,14 +453,6 @@
         </repository>
 	</repositories>
 	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
 		<pluginRepository>
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>

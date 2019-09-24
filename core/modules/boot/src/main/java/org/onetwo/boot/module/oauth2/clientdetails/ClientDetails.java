@@ -19,6 +19,10 @@ public class ClientDetails implements Serializable {
 		this.clientId = clientId;
 	}
 	
+	public <T> T castTo(Class<T> clazz) {
+		return clazz.cast(this);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T> T getProperty(String key, T def){
 		T val = (T)getProperties().get(key);

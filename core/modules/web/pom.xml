@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.7.1-SNAPSHOT</version>
+        <version>4.7.4-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 	
@@ -69,6 +69,12 @@
       <groupId>org.mitre.dsmiley.httpproxy</groupId>
       <artifactId>smiley-http-proxy-servlet</artifactId>
       <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
     </dependency>
 	
 	<!-- <dependency>

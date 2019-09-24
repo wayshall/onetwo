@@ -4,6 +4,7 @@ import org.onetwo.common.spring.condition.OnMissingBean;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
+import org.onetwo.ext.security.ajax.AjaxLogoutSuccessHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
 import org.onetwo.ext.security.mvc.args.SecurityArgumentResolver;
@@ -109,5 +110,12 @@ public class SecurityCommonContextConfig implements InitializingBean{
 		ep.setHttpsPort(securityConfig.getRedirectStrategy().getHttpsPort());
 		ep.setContextRelative(securityConfig.getRedirectStrategy().isContextRelative());
 		return ep;
+	}
+	
+	@Bean
+	@OnMissingBean(AjaxLogoutSuccessHandler.class)
+	public AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler(){
+		AjaxLogoutSuccessHandler handler = new AjaxLogoutSuccessHandler();
+		return handler;
 	}
 }

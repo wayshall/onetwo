@@ -1,5 +1,7 @@
 package org.onetwo.boot.core;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.onetwo.boot.apiclient.ApiClientConfiguration;
@@ -49,8 +51,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -85,16 +89,22 @@ public class BootWebCommonAutoConfig {
 		Springs.initApplicationIfNotInitialized(applicationContext);
 	}
 
-	@Bean
+	/* @see BootFixedConfiguration
+	 * @Bean
 	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
-	}
+	}*/
 	
 	@Bean
 	public MvcViewRender mvcViewRender(){
 		return new MvcViewRender();
 	}
+	
+	/*@Bean
+	public SpringMultipartFilterProxy springMultipartFilterProxy() {
+		return new SpringMultipartFilterProxy();
+	}*/
 	
 	/***
 	 * 异常解释
@@ -208,13 +218,15 @@ public class BootWebCommonAutoConfig {
 		return viewManager;
 	}
 	
-	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
+	/*
+	 * @see BootFixedConfiguration
+	 * @Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 //	@ConditionalOnMissingBean(MultipartResolver.class)
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
 		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
 		return resolver;
-	}
+	}*/
 
 	@Bean
 	@ConditionalOnMissingBean(SessionUserManager.class)
@@ -234,17 +246,17 @@ public class BootWebCommonAutoConfig {
 	 */
 	@Bean
 	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="local")
-	public FileStorer<?> localStorer(){
+	public FileStorer localStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
 		SimpleFileStorer fs = new SimpleFileStorer();
 		fs.setStoreBaseDir(config.getFileStorePath());//site.upload.fileStorePath
-		fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
+//		fs.setAppContextDir(config.getAppContextDir());//site.upload.appContextDir
 		return fs;
 	}
 	
 	@Bean
 	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="ftp")
-	public FileStorer<?> ftpStorer(){
+	public FileStorer ftpStorer(){
 		UploadConfig config = bootSiteConfig.getUpload();
 		FtpConfig ftpConfig = new FtpConfig();
 		ftpConfig.setEncoding(config.getFtpEncoding());
@@ -255,7 +267,7 @@ public class BootWebCommonAutoConfig {
 		fs.setLoginParam(config.getFtpUser(), config.getFtpPassword());
 //		fs.setStoreBaseDir(config.getFtpBaseDir());
 		fs.setStoreBaseDir(config.getFileStorePath());
-		fs.setAppContextDir(config.getAppContextDir());
+//		fs.setAppContextDir(config.getAppContextDir());
 		return fs;
 	}
 
@@ -287,6 +299,22 @@ public class BootWebCommonAutoConfig {
 		@Bean
 		public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
 			return new BootJackson2ObjectMapperBuilder();
+		}
+	}
+	
+	@Configuration
+	protected static class ConfigureMessageConvertor {
+		private List<RequestMappingHandlerAdapter> handlerAdapters;
+		
+		public ConfigureMessageConvertor(List<RequestMappingHandlerAdapter> handlerAdapters) {
+			this.handlerAdapters = handlerAdapters;
+		}
+
+		@PostConstruct
+		public void configureHttpMessageConverters() {
+			for (RequestMappingHandlerAdapter handlerAdapter : this.handlerAdapters) {
+				AnnotationAwareOrderComparator.sort(handlerAdapter.getMessageConverters());
+			}
 		}
 	}
 }

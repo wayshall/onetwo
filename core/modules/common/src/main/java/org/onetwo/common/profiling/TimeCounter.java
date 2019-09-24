@@ -101,15 +101,15 @@ public class TimeCounter {
 		long stopMills = System.currentTimeMillis();
 		this.stop = new Date(stopMills);
 		this.costTime = this.stop.getTime() - this.start.getTime();
-		message.append(this.target)
-				.append("cost time[").append(this.costTime).append(" (millis), ").append(this.costTime / 1000).append(" (second)]")
-				.append(", start time[").append(DateUtils.formatDateTimeMillis(start))
-				.append("], stop time[").append(DateUtils.formatDateTimeMillis(this.stop))
-				.append("]");
-		if(printMemory){
-			message.append("\n").append(LangUtils.statisticsMemory(""));
-		}
 		if(printer!=null){
+			message.append("[").append(this.target).append("] ")
+					.append("cost time[").append(this.costTime).append(" (millis), ").append(this.costTime / 1000).append(" (second)]")
+					.append(", start time[").append(DateUtils.formatDateTimeMillis(start))
+					.append("], stop time[").append(DateUtils.formatDateTimeMillis(this.stop))
+					.append("]");
+			if(printMemory){
+				message.append("\n").append(LangUtils.statisticsMemory(""));
+			}
 			printer.accept(message.toString());
 		}
 		return this.stop;
@@ -121,6 +121,9 @@ public class TimeCounter {
 	public void printMemory(){
 		LangUtils.printMemory();
 		System.out.println();
+	}
+	public long getCostTime() {
+		return costTime;
 	}
 
 }

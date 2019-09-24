@@ -5,7 +5,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import org.onetwo.common.utils.FieldName;
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyFactory;
 import org.onetwo.common.utils.LangUtils;

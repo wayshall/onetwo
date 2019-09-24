@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.util.ClassUtils;
 
 /**
+ * 忽略扫描注解这种特殊的interface
  * @author wayshall
  * <br/>
  */

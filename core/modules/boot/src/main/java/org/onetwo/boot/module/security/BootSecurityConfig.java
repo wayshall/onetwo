@@ -2,9 +2,6 @@ package org.onetwo.boot.module.security;
 
 import javax.servlet.ServletContext;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.StringUtils;
@@ -12,6 +9,9 @@ import org.onetwo.common.web.filter.WebContextConfigProvider;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 /***
@@ -35,12 +35,12 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	
 	ExceptionUserCheckerConfig exceptionUserChecker = new ExceptionUserCheckerConfig();
 	
-	public Boolean getSyncPermissionData(){
+	/*public Boolean getSyncPermissionData(){
 		if(this.syncPermissionData==null){
 			return bootSiteConfig!=null && !bootSiteConfig.isProduct();
 		}
 		return this.syncPermissionData;
-	}
+	}*/
 	
 	@Override
 	public String getUserLogoutUrl(){
@@ -56,6 +56,10 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 		String baseUrl = getBaseURL();
 		if(StringUtils.isNotBlank(baseUrl) && !url.startsWith(baseUrl)){
 			url = baseUrl + url;
+		}
+		String ctxPath = bootSiteConfig.getContextPath();
+		if(StringUtils.isNotBlank(ctxPath) && url.startsWith(ctxPath)){
+			url = url.substring(ctxPath.length());
 		}
 		return url;
 	}
@@ -86,7 +90,7 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 
 	@Data
 	public static class ExceptionUserCheckerConfig {
-		private String duration = "1d";
+		private String duration = "1m";
 		private int maxLoginTimes = 5;
 	}
 

@@ -24,6 +24,9 @@ abstract public class ResponseUtils {
 
 	private static final Logger logger = JFishLoggerFactory.getLogger(ResponseUtils.class);
 
+
+	public static final String ERROR_RESPONSE_HEADER = "X-RESPONSE-JFISH-ERROR";
+	
 	public static final String TEXT_TYPE = "text/plain; charset=UTF-8";
 	public static final String JSON_TYPE = "application/json; charset=UTF-8";
 	public static final String XML_TYPE = "text/xml; charset=UTF-8";
@@ -91,7 +94,7 @@ abstract public class ResponseUtils {
 	 * @param domain
 	 */
 	public static void setHttpOnlyCookie(HttpServletResponse response, String name, String value, String path, int maxage, String domain) {
-		Assert.hasLength(name);
+		Assert.hasLength(name, "cookies name must has text");
 		if (StringUtils.isBlank(value))
 			value = "";
 
@@ -101,7 +104,8 @@ abstract public class ResponseUtils {
 		cookie.append("=");
 		cookie.append(Escape.escape(value));
 
-		if (StringUtils.isBlank(path)) {
+//		if (StringUtils.isBlank(path)) {
+		if (path==null) {
 			path = "/";
 		}
 		cookie.append("; path=").append(path);
@@ -167,6 +171,19 @@ abstract public class ResponseUtils {
 		}
 		response.addCookie(ck);
 	}
+	
+	public static void removeCookie(HttpServletRequest request, HttpServletResponse response, String name) { 
+		Cookie[] cookies = request.getCookies(); 
+		if(cookies==null) {
+			return ; 
+		}
+		for(Cookie ck : cookies) { 
+			if(name.equals(ck.getName())) { 
+				ck.setMaxAge(0);
+				response.addCookie(ck); 
+			} 
+		} 
+	}
 
 	public static void renderScript(PrintWriter out, String content) {
 		renderScript(true, out, content);
@@ -222,6 +239,9 @@ abstract public class ResponseUtils {
 		render(response, text, JSON_TYPE, true);
 	}
 	
+	public static void renderHtml(HttpServletResponse response, String html){
+		render(response, html, HTML_TYPE, true);
+	}
 	public static void render(HttpServletResponse response, String text, String contentType, boolean noCache){
 		try {
 			if(!StringUtils.isBlank(contentType))
@@ -231,7 +251,7 @@ abstract public class ResponseUtils {
 
 			if (noCache) {
 				response.setHeader("Pragma", "No-cache");
-				response.setHeader("Cache-Control", "no-cache");
+				response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 				response.setDateHeader("Expires", 0);
 			}
 			PrintWriter pr = response.getWriter();

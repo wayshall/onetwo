@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +95,47 @@ public class LangOpsTest {
 		tu = LangOps.parseTimeUnit("11d");
 		assertThat(tu.getLeft()).isEqualTo(11);
 		assertThat(tu.getRight()).isEqualTo(TimeUnit.DAYS);
+	}
+	
+	@Test
+	public void testParseSize(){
+		int size = LangOps.parseSize("1kb");
+		assertThat(size).isEqualTo(1024);
+		
+		size = LangOps.parseSize("1mb");
+		assertThat(size).isEqualTo(1024*1024);
+		
+		size = LangOps.parseSize("1GB");
+		assertThat(size).isEqualTo(1024*1024*1024);
+		
+		size = LangOps.parseSize("1k");
+		assertThat(size).isEqualTo(1024);
+		
+		size = LangOps.parseSize("1M");
+		assertThat(size).isEqualTo(1024*1024);
+		
+		size = LangOps.parseSize("1g");
+		assertThat(size).isEqualTo(1024*1024*1024);
+	}
+
+	@Test
+	public void testSort() {
+		List<Integer> datas = Lists.newArrayList(3, 2, 44, 22, 77, 0, -23);
+		// 升序
+		datas.sort((d1, d2) -> d1 - d2);
+		System.out.println("升序: " + datas);
+		
+		// 降序
+		datas.sort((d1, d2) -> -(d1 - d2));
+		System.out.println("降序: " + datas);
+
+		// 升序
+		datas.sort(Comparator.comparingInt(d->(Integer)d));
+		System.out.println("升序: " + datas);
+
+		// 降序
+		datas.sort(Comparator.comparingInt(d->(Integer)d).reversed());
+		System.out.println("降序: " + datas);
 	}
 
 	class BigDecimalBox {

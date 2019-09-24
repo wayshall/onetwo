@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileFilter;
@@ -24,6 +26,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -604,6 +607,16 @@ public class FileUtils {
 
 	public static String getExtendName(String fileName) {
 		return getExtendName(fileName, false);
+	}
+
+	public static String randomUUIDFileName(String fileName, boolean keepFilename) {
+		String newfn = UUID.randomUUID().toString();
+		if (keepFilename) {
+			newfn = newfn + "." + fileName;
+		} else {
+			newfn = newfn + FileUtils.getExtendName(fileName, true);
+		}
+		return newfn;
 	}
 	
 
@@ -1450,6 +1463,19 @@ public class FileUtils {
 			throw new BaseException("copy content from inputStream error: " + e.getMessage(), e);
 		}
     }
+    
+    public static ByteArrayInputStream toByteArrayInputStream(InputStream in) {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			IOUtils.copy(in, output);
+		} catch (IOException e) {
+			throw new BaseException("copy InputStream error: " + e.getMessage(), e);
+		} finally{
+			IOUtils.closeQuietly(in);
+		}
+		ByteArrayInputStream bin = new ByteArrayInputStream(output.toByteArray());
+		return bin;
+	}
 	
 	public static void main(String[] args) {
 		String file = "c:\\aa/bb\\ccsfd.txt";

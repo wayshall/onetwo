@@ -1,5 +1,6 @@
 package org.onetwo.ext.permission;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,9 @@ import javax.annotation.PostConstruct;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.ext.permission.entity.DefaultIPermission;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
-import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
+import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,14 +24,14 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Sets;
 
-abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>> implements PermissionManager<P> {
+abstract public class AbstractPermissionManager<P extends IPermission> implements PermissionManager<P> {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 	/*@Resource
 	protected MenuInfoParser<P> menuInfoParser;*/
 	private List<MenuInfoParser<P>> parsers;
-	private JdbcSecurityMetadataSourceBuilder databaseSecurityMetadataSource;
+	private SecurityMetadataSourceBuilder securityMetadataSourceBuilder;
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -40,7 +41,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 		if(parsers==null || parsers.isEmpty()){
 			this.parsers = SpringUtils.getBeans(applicationContext, MenuInfoParser.class, new ParameterizedTypeReference<MenuInfoParser<P>>(){});
 		}
-		Assert.notEmpty(parsers);
+		checkParsers();
 	}
 
 	protected MenuInfoParser<P> getTopMenuInfoParser(){
@@ -50,23 +51,31 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	public void setParsers(List<MenuInfoParser<P>> parsers) {
 		this.parsers = parsers;
 	}
+	
+	private void checkParsers(){
+		Assert.notEmpty(parsers, "parsers can not be empty");
+	}
 
 
 	public List<P> getMemoryRootMenu() {
-		Assert.notNull(parsers);
+		checkParsers();
 //	    return this.menuInfoParser.getRootMenu();
 	    return parsers.stream()
 	    				.filter(p->p.getRootMenu().isPresent())
 	    				.map(parser->parser.getRootMenu().get())
 	    				.collect(Collectors.toList());
     }
+	
+	protected Set<String> getDatabaseRootCodes() {
+		return Collections.emptySet();
+	}
 
 	/****
 	 * 根据menuClass构建菜单
 	 */
 	@Override
 	public void build(){
-		Assert.notNull(parsers);
+		checkParsers();
 //		PermissionUtils.setMenuInfoParser(menuInfoParser);
 		parsers.stream().forEach(parser->{
 			Optional<P> rootMenu = parser.parseTree();
@@ -80,7 +89,7 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 
 	@Override
 	public P getPermission(Class<?> permClass){
-		Assert.notNull(parsers);
+		checkParsers();
 //		return menuInfoParser.getPermission(permClass);
 		for(MenuInfoParser<P> parser : parsers){
 			P perm = parser.getPermission(permClass);
@@ -89,6 +98,14 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 		}
 		return null;
 	}
+	
+	/****
+	 * 根据权限代码删除权限和相关已分配给角色的权限关联数据
+	 * @author weishao zeng
+	 * @param permissionCode
+	 * @param usePostLike
+	 */
+	abstract protected void removePermission(String permissionCode, boolean usePostLike);
 	
 	/***
 	 * syncMenuToDatabase菜单同步方法调用时，需要查找已存在的需要同步到菜单数据
@@ -122,9 +139,34 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 	@Transactional
 	public void syncMenuToDatabase(){
 		parsers.stream().forEach(parser->syncMenuToDatabase(parser));
-		if(databaseSecurityMetadataSource!=null)
-			databaseSecurityMetadataSource.buildSecurityMetadataSource();
+
+		Set<String> memoryRootCodes = parsers.stream()
+											.filter(p -> p.getRootMenu().isPresent())
+											.map(p -> p.getRootMenuCode())
+											.collect(Collectors.toSet());
+		Set<String> deleteRootCodes = Sets.difference(getDatabaseRootCodes(), memoryRootCodes);
+		deleteRootCodes.stream().forEach(rootCode -> {
+			this.removeUnusedRootMenu(rootCode);
+		});
+		
+		if(securityMetadataSourceBuilder!=null) {
+			securityMetadataSourceBuilder.buildSecurityMetadataSource();
+		}
 	}
+
+	
+	protected void removeUnusedRootMenu(String rootCode) {
+		this.removePermission(rootCode, true);
+	}
+	
+	/***
+	 * 刷新security权限数据
+	 * @author weishao zeng
+	 */
+	public void refreshSecurityMetadataSource() {
+		this.getSecurityMetadataSourceBuilder().buildSecurityMetadataSource();
+	}
+	
 	public void syncMenuToDatabase(MenuInfoParser<P> menuInfoParser){
 //		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
@@ -149,7 +191,18 @@ abstract public class AbstractPermissionManager<P extends DefaultIPermission<P>>
 
 		logger.info("menu data has synchronized to database...");
 	}
-	
+
+	public SecurityMetadataSourceBuilder getSecurityMetadataSourceBuilder() {
+		SecurityMetadataSourceBuilder securityMetadataSourceBuilder = this.securityMetadataSourceBuilder;
+		if (securityMetadataSourceBuilder==null) {
+			securityMetadataSourceBuilder = SpringUtils.getBean(applicationContext, SecurityMetadataSourceBuilder.class);
+		}
+		return securityMetadataSourceBuilder;
+	}
+
+	public void setSecurityMetadataSourceBuilder(SecurityMetadataSourceBuilder securityMetadataSourceBuilder) {
+		this.securityMetadataSourceBuilder = securityMetadataSourceBuilder;
+	}
 
 	/*@Override
 	public String parseCode(Class<?> permClass) {

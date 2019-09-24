@@ -1,11 +1,14 @@
 package org.onetwo.common.utils;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
@@ -51,6 +54,11 @@ final public class LangOps {
 				 .collect(Collectors.toMap(array->(K)array[0], array->(V)array[1]));
 	}
 	
+	public static <K, V> Map<K, V> toMap(List<V> data, Function<V, K> keyExtractor){
+		 return data.stream()
+				 	.collect(Collectors.toMap(item->keyExtractor.apply(item), item->item));
+	}
+	
 	public static Object[] toArray(Map<?, ?> map){
 		return map.entrySet().stream().map(e -> Arrays.asList(e.getKey(), e.getValue())).flatMap(list -> list.stream()).toArray();
 	}
@@ -80,9 +88,27 @@ final public class LangOps {
 						.collect(Collectors.toList());
 	}
 	
-	public static void timeIt(String tag, Closure closure){
-		
+	public static <T> void splitTaskAndConsume(List<T> taskList, int taskSize, Consumer<List<T>> subTaskDataConsumer, boolean parallel) {
+		splitTaskAndConsume(taskList, taskSize, (subTasks, taskIndex) -> {
+			subTaskDataConsumer.accept(subTasks);
+		}, parallel);
 	}
+	
+	public static <T> void splitTaskAndConsume(List<T> taskList, int taskSize, BiConsumer<List<T>, Integer> subTaskDataConsumer) {
+		splitTaskAndConsume(taskList, taskSize, subTaskDataConsumer, false);
+	}
+	public static <T> void splitTaskAndConsume(List<T> taskList, int taskSize, BiConsumer<List<T>, Integer> subTaskDataConsumer, boolean parallel) {
+		long maxSize = taskList.size()%taskSize==0?taskList.size()/taskSize:(taskList.size()/taskSize+1);
+		Stream<Integer> stream = Stream.iterate(0, t -> t+1).limit(maxSize);
+		if (parallel) {
+			stream = stream.parallel();	
+		}
+		stream.forEach(taskIndex -> {
+			List<T> subTaskDatas = taskList.stream().skip(taskIndex * taskSize).limit(taskSize).collect(Collectors.toList());
+			subTaskDataConsumer.accept(subTaskDatas, taskIndex);
+		});
+	}
+	
 	public static void timeIt(String tag, Integer times, Closure closure){
 		TimeCounter tc = new TimeCounter(tag);
 		tc.start();
@@ -156,9 +182,23 @@ final public class LangOps {
 		return groups;
 	}
 	
+	/***
+	 * parse to b
+	 * @author weishao zeng
+	 * @param size
+	 * @return
+	 */
 	public static int parseSize(String size) {
 		return parseSize(size, null);
 	}
+	
+	/***
+	 * parse size to byte
+	 * @author weishao zeng
+	 * @param size
+	 * @param def
+	 * @return
+	 */
 	public static int parseSize(String size, Integer def) {
 		if(StringUtils.isBlank(size)){
 			if(def!=null){
@@ -170,12 +210,20 @@ final public class LangOps {
 		size = size.toLowerCase();
 		if (size.endsWith("kb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024;
-		}
-		if (size.endsWith("mb")) {
+		}else if (size.endsWith("mb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
-		}
-		if (size.endsWith("gb")) {
+		}else if (size.endsWith("gb")) {
 			return Integer.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024* 1024;
+		}else {
+			//fix: 补充兼容不写b的写法
+			int strimCount = 1;
+			if (size.endsWith("k")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024;
+			}else if (size.endsWith("m")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024 * 1024;
+			}else if (size.endsWith("g")) {
+				return Integer.valueOf(size.substring(0, size.length() - strimCount)) * 1024 * 1024* 1024;
+			}
 		}
 		return Integer.valueOf(size);
 	}
@@ -185,6 +233,9 @@ final public class LangOps {
 	}
 	public static long timeToMills(String time, long def) {
 		return parseTime(time, def, (duration, timeUnit)->timeUnit.toMillis(duration));
+	}
+	public static long timeToMinutes(String time, long def) {
+		return parseTime(time, def, (duration, timeUnit)->timeUnit.toMinutes(duration));
 	}
 	public static long parseTime(String time, long def, BiFunction<Integer, TimeUnit, Long> convert) {
 		if(StringUtils.isBlank(time)){
@@ -253,6 +304,20 @@ final public class LangOps {
 		}
 		int duration = Integer.valueOf(time.substring(0, time.length() - unitLength)) * times;
 		return Pair.of(duration, timeUnit);
+	}
+	
+
+	static public Color parseColor(String color){
+		String[] strs = GuavaUtils.split(color, ",");
+		return new Color(Integer.parseInt(strs[0]), Integer.parseInt(strs[1]), Integer.parseInt(strs[2]));
+	}
+
+    @SafeVarargs
+	public static <T> List<T> asList(T...values) {
+		if (LangUtils.isEmpty(values)) {
+			return Collections.emptyList();
+		}
+		return Arrays.asList(values);
 	}
 	
 	private LangOps(){}

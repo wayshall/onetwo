@@ -49,9 +49,14 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 			readMethod = property.getReadMethod();
 			writeMethod = property.getWriteMethod();
 		}
-		Annotation[] annotations = getReadMethod().getAnnotations();
-		annotationInfo = new AnnotationInfo(beanClass, annotations);
+//		Annotation[] annotations = getReadMethod().getAnnotations();
+		annotationInfo = new AnnotationInfo(beanClass, getReadMethod());
 		this.propertyClassWrapper = Intro.wrap(propertyType);
+	}
+	
+	@Override
+	public boolean isBeanProperty() {
+		return true;
 	}
 
 	@Override
@@ -120,10 +125,6 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 
 	public boolean hasAnnotation(Class<? extends Annotation> annoClass) {
 		return annotationInfo.hasAnnotation(annoClass);
-	}
-
-	public <T extends Annotation> T getAnnotation(Class<T> annoClass) {
-		return annotationInfo.getAnnotation(annoClass);
 	}
 
 	public boolean isTransientModifier(){

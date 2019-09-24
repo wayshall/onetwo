@@ -2,18 +2,21 @@ package org.onetwo.boot.core.web.controller;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.jwt.JwtUserDetail;
+import org.onetwo.boot.core.jwt.JwtUtils;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.common.data.AbstractDataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
@@ -22,12 +25,12 @@ import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.file.StoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
+import org.onetwo.common.spring.mvc.utils.ModelAttr;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.StringUtils;
@@ -36,9 +39,11 @@ import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;
+import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -64,7 +69,7 @@ abstract public class AbstractBaseController {
 	private BootSiteConfig bootSiteConfig;
 	
 	@Autowired(required=false)
-	private FileStorer<?> fileStorer;
+	private FileStorer fileStorer;
 	
 	@Autowired
 	private SessionUserManager<UserDetail> sessionUserManager;
@@ -77,21 +82,21 @@ abstract public class AbstractBaseController {
 		return sessionUserManager;
 	}
 
-	protected FileStoredMeta uploadFile(String module, MultipartFile file){
+	/*protected FileStoredMeta uploadFile(String module, MultipartFile file){
 		Assert.notNull(file, "file is required; it must not be null");
 		Assert.notNull(fileStorer, "fileStorer is required; it must not be null");
 		return uploadFile(module, file, null);
-	}
+	}*/
 	
-	protected FileStoredMeta uploadFile(String module, MultipartFile file, StoreFilePathStrategy storeFilePathStrategy){
+	protected FileStoredMeta uploadFile(String module, MultipartFile file){
 		Assert.notNull(file, "file is required; it must not be null");
 		Assert.notNull(fileStorer, "fileStorer is required; it must not be null");
 //		context = StoringFileContext.create(module, file.getInputStream(), file.getOriginalFilename());
 //		Assert.notNull(storeFilePathStrategy);
 		StoringFileContext context = BootWebUtils.createStoringFileContext(module, file);
-		if(storeFilePathStrategy!=null){
+		/*if(storeFilePathStrategy!=null){
 			context.setStoreFilePathStrategy(storeFilePathStrategy);
-		}
+		}*/
 		return fileStorer.write(context);
 	}
 
@@ -126,14 +131,14 @@ abstract public class AbstractBaseController {
 	}
 	
 	protected ModelAndView putSuccessMessage(ModelAndView mv, String message){
-		Assert.notNull(mv);
+		checkModelAndView(mv);
 		mv.addObject(MESSAGE, message);
 		mv.addObject(MESSAGE_TYPE, MESSAGE_TYPE_SUCCESS);
 		return mv;
 	}
 	
 	protected ModelAndView putErrorMessage(ModelAndView mv, String message){
-		Assert.notNull(mv);
+		checkModelAndView(mv);
 		mv.addObject(MESSAGE, message);
 		mv.addObject(MESSAGE_TYPE, MESSAGE_TYPE_ERROR);
 		return mv;
@@ -237,11 +242,44 @@ abstract public class AbstractBaseController {
 			IOUtils.closeQuietly(input);
 		}
 	}
+
+	protected void write(HttpServletResponse response, byte[] data){
+		write(response, MediaType.APPLICATION_OCTET_STREAM_VALUE, data);
+	}
+	
+	protected void write(HttpServletResponse response, String contentType, byte[] data){
+		if(StringUtils.isNotBlank(contentType)){
+			response.setContentType(contentType);
+		}
+		ServletOutputStream ouput = null;
+		try {
+			ouput = response.getOutputStream();
+			ouput.write(data);
+		} catch (IOException e) {
+			String msg = "write data error：";
+			logger.error(msg + e.getMessage(), e);
+		} finally{
+			IOUtils.closeQuietly(ouput);
+		}
+	}
+	
+	protected void renderHtml(HttpServletResponse response, String html){
+		ResponseUtils.renderHtml(response, html);
+	}
+	
 	
 	protected void exportText(HttpServletResponse response, List<?> datas, String filename){
 		exportText(response, datas, filename, obj->obj.toString());
 	}
 	
+	/****
+	 * 下载文本文件
+	 * @author wayshall
+	 * @param response
+	 * @param datas
+	 * @param filename
+	 * @param block
+	 */
 	protected void exportText(HttpServletResponse response, List<?> datas, String filename, ReturnableClosure<Object, String> block){
 		PrintWriter out = null;
 		try {
@@ -290,6 +328,16 @@ abstract public class AbstractBaseController {
 		}
 		if(user==null && throwIfNotFound){
 			throw new NotLoginException();
+		}
+		if (!clazz.isInterface() && user instanceof JwtUserDetail) {
+			T targetUser = JwtUtils.createUserDetail((JwtUserDetail)user, clazz);
+			return targetUser;
+		}
+		if (!clazz.isInstance(user)) {
+			if(throwIfNotFound){
+				throw new NotLoginException();
+			}
+			return null;
 		}
 		return clazz.cast(user);
 	}
@@ -378,9 +426,14 @@ abstract public class AbstractBaseController {
 		return viewName;
 	}
 	protected ModelAndView responsePageOrData(ModelAndView mv, JsonResponseValue value){
-		Assert.notNull(mv);
+		checkModelAndView(mv);
 		mv.addObject(getJsonResponseValue(value));
 		return mv;
+	}
+	private void checkModelAndView(ModelAndView mv){
+		if(mv==null){
+			throw new IllegalArgumentException("ModelAndView can not be null");
+		}
 	}
 	/***
 	 * 如果请求的url是.json后缀

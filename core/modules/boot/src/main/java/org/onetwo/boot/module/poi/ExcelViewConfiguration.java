@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnProperty(value=PoiProperties.EXPORT_VIEW_ENABLE_KEY, matchIfMissing=true)
-@ConditionalOnClass(XmlTemplateGeneratorFactory.class)
+@ConditionalOnClass({XmlTemplateGeneratorFactory.class, org.apache.poi.ss.usermodel.Workbook.class})
 @EnableConfigurationProperties(value=PoiProperties.class)
 public class ExcelViewConfiguration {
 

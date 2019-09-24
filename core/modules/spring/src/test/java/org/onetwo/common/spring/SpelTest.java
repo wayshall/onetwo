@@ -1,11 +1,16 @@
 package org.onetwo.common.spring;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Map;
 
 import junit.framework.Assert;
+import lombok.Data;
 
 import org.junit.Test;
+import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -14,17 +19,29 @@ public class SpelTest {
 	
 	private SpelExpressionParser parser = new SpelExpressionParser();
 	
+	@Data
 	public static class TestBean {
 		private String aaa;
+		private String IDCardNo;
+		private String IDCardType;
+		private String Name;
+//		private String name;
 
-		public String getAaa() {
-			return aaa;
-		}
-
-		public void setAaa(String aaa) {
-			this.aaa = aaa;
-		}
+	}
+	
+	@Test
+	public void test1(){
+		Intro<TestBean> intro = Intro.wrap(TestBean.class);
+		intro.getProperties().forEach(p->{
+			System.out.println("p:"+p);
+		});
+		TestBean test = new TestBean();
+		BeanWrapper bw = SpringUtils.newBeanWrapper(test);
+		bw.setPropertyValue("Name", "testName");
+		assertThat(test.getName()).isEqualTo("testName");
 		
+		intro.setPropertyValue(test, "name", "testName2");
+		assertThat(test.getName()).isEqualTo("testName2");
 	}
 
 	@Test

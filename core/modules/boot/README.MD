@@ -25,7 +25,7 @@ spring 4.0+
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-boot</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.7.3-SNAPSHOT</version>
 </dependency>
 
 ```
@@ -76,6 +76,20 @@ jfish:
 		maxPoolSize: 50
 		queueCapacity: 100000
 ```
+
+### 异常和http status code 映射配置
+有些时候（设计），我们需要把一些我们业务或者框架抛出的异常映射为特定的http status code，比如200，可以这样配置：
+```yaml
+jfish: 
+    mvc: 
+        exceptionsStatusMapping: 
+            TypeMismatchException: 200
+            ConstraintViolationException: 200
+            BindException: 200
+            MethodArgumentNotValidException: 200
+            "*": 400
+```
+
 ### 阿里ons配置
 注解启用
 ```Java
@@ -191,8 +205,8 @@ jfish:
             /login/** : permitAll
 ```
 
-oauth2配置：
-认证服务器：
+### oauth2配置：
+#### 认证服务器：
 Java配置
 ```Java
 @EnableJFishOauth2(OAuth2Role.AUTHORIZATION_SERVER)
@@ -217,7 +231,7 @@ client_id = test
 client_secret = test
 
 
-资源服务器：
+#### 资源服务器：
 Java配置
 ```Java
 @EnableJFishOauth2(OAuth2Role.RESOURCE_SERVER)
@@ -240,6 +254,9 @@ jfish:
 访问资源时带上access_token
 http://localhost:8081/api/article?access_token=xxxxxxxxxxxxx
 
+#### 增加jwt-redis tokenStore
+这种存储方式结合redis和jwt的形式，认证服务器把jwt的token和uuid对应保存到redis，客户端使用uuid作为access_token，网关统一验证access_token并转为jwt的token，网关后面的服务使用jwt的token来调用，从而实现无状态调用，又避免了jwt的token无法手动失效的缺点。
+
 ### 优雅退出支持
 ```yaml
 jfish: 
@@ -255,6 +272,47 @@ jfish:
         accessLog: 
             enabled: true
             pathPatterns: /health
+```
+
+### redis
+配置redisTemplate的序列化方式为jackson2
+```yaml
+jfish:
+    redis: 
+        serializer: jackson2
+```
+
+### redis cache
+redis 缓存配置
+使用json序列化缓存
+```yaml
+jfish:
+    cache: 
+        redis: 
+			useJsonRedisTemplate: true
+            usePrefix: true
+            expires:
+                key1:key2: 30m
+```
+
+### dbm
+是否启用dbm sql统计controller
+```yaml
+jfish: 
+    dbm: 
+        web: 
+            statisController: 
+                enabled: true
+```
+
+### cors配置
+```yaml
+jfish: 
+	cors: 
+        - mapping: /v2/api-doc
+          allowedOrigins: *
+		  allowedMethods: GET, OPTION
+		  allowedHeaders: Content-Type
 ```
 
 ### 其它一些简化使用的扩展

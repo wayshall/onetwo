@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<included>
+    <!-- 是否把access log 输出到独立的文件 -->
+    <appender name="accessAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Support multiple-JVM writing to the same log file -->
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/access.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="asyncAccessFile" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 容量少于queueSize / 5 时，丢弃info及以下的日志，默认为-1，不丢弃任何日志 -->
+        <discardingThreshold>1</discardingThreshold>
+        <!-- 永不阻塞 -->
+        <neverBlock>true</neverBlock>
+        <queueSize>3000</queueSize>
+        <appender-ref ref="accessAppender"/>
+    </appender>
+    
+    <logger name="accessLogger" level="INFO">
+        <appender-ref ref="asyncAccessFile" />
+    </logger>
+</included>
+

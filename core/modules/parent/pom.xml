@@ -3,7 +3,7 @@
 
   	<groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-parent</artifactId>
-	<version>4.7.1-SNAPSHOT</version>
+	<version>4.7.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-parent</name>
@@ -34,6 +34,7 @@
       <url>https://github.com/wayshall/onetwo</url>
       <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
       <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
+    <tag>onetwo-modules-4.7.2</tag>
   </scm>
   
   <dependencies>
@@ -59,7 +60,7 @@
 		<dependency>
 	         <groupId>org.onetwo4j</groupId>
 	         <artifactId>onetwo-bom</artifactId>
-	         <version>4.7.1-SNAPSHOT</version>
+	         <version>4.7.4-SNAPSHOT</version>
 	         <type>pom</type>
 	         <scope>import</scope>
 	     </dependency>
@@ -74,6 +75,15 @@
 		            <groupId>org.apache.maven.plugins</groupId>
 		            <artifactId>maven-source-plugin</artifactId>
 		            <version>3.0.1</version>
+		        </plugin>
+		        <!-- source code encoding -->
+		        <plugin>
+		           <groupId>org.apache.maven.plugins</groupId>
+			       <artifactId>maven-resources-plugin</artifactId>
+			       <version>3.0.2</version>
+			       <configuration>
+			         <encoding>utf-8</encoding>
+			       </configuration>
 		        </plugin>
 	       </plugins>
 	   </pluginManagement>

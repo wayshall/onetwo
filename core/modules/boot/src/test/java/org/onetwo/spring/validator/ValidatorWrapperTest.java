@@ -5,10 +5,12 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.validator.annotation.AnyOneNotBlank;
 import org.onetwo.common.spring.validator.annotation.AnyOneNotBlanks;
+import org.onetwo.common.spring.validator.annotation.ContentCheck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -25,22 +27,28 @@ public class ValidatorWrapperTest extends AbstractJUnit4SpringContextTests {
 		ValidationBindingResult br = validatorWrapper.validate(param);
 		Assert.assertEquals(4, br.getErrorCount());
 		String msg = br.getErrorMessagesAsString();
+		System.out.println("br:"+msg);
 		Assert.assertTrue(msg.contains("手机和用户名称不能都为空！"));
 		Assert.assertTrue(msg.contains("手机和用户id不能都为空！"));
 		
 		param.setMobile("");
 		param.setUserName("userName");
+		param.setRemark("没有敏感词");
 		br = validatorWrapper.validate(param);
 		msg = br.getErrorMessagesAsString();
+		System.out.println("br:"+msg);
 		Assert.assertTrue(msg.contains("手机和用户id不能都为空！"));
 
 		param.setUserName(null);
 		param.setMobile("1333333333");
+		param.setRemark("这里有敏感词1，敏感词2");
 		br = validatorWrapper.validate(param);
 		msg = br.getErrorMessagesAsString();
 		System.out.println("br:"+msg);
 		Assert.assertFalse(msg.contains("手机和用户名称不能都为空！"));
 		Assert.assertFalse(msg.contains("手机和用户id不能都为空！"));
+//		Assert.assertTrue(msg.contains("备注发现敏感词：敏感词1, 敏感词2"));
+		Assert.assertTrue(msg.contains("备注发现敏感词"));
 	}
 	
 	@AnyOneNotBlanks({
@@ -55,6 +63,10 @@ public class ValidatorWrapperTest extends AbstractJUnit4SpringContextTests {
 
 		@NotNull
 		private String userName;
+		
+		@ContentCheck(message="发现敏感词")
+		@FieldName("备注")
+		private String remark;
 		
 		public String getMobile() {
 			return mobile;
@@ -73,6 +85,12 @@ public class ValidatorWrapperTest extends AbstractJUnit4SpringContextTests {
 		}
 		public void setUserName(String userName) {
 			this.userName = userName;
+		}
+		public String getRemark() {
+			return remark;
+		}
+		public void setRemark(String remark) {
+			this.remark = remark;
 		}
 		
 	}

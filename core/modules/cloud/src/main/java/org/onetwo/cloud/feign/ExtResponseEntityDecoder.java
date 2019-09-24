@@ -5,17 +5,19 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.cloud.netflix.zuul.filters.route.okhttp.OkHttpRibbonCommand;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +27,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 
 import com.netflix.hystrix.exception.HystrixBadRequestException;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
+import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
 
 import feign.FeignException;
 import feign.Response;
 import feign.codec.Decoder;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author wayshall
@@ -53,14 +58,22 @@ public class ExtResponseEntityDecoder implements Decoder {
 				res = decodeByType(response, type);
 			}else{
 				SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
-				if(dr.isError()){
+				if(isCutoutError(response, dr)){
+					ServiceException cause = new ServiceException(dr.getMessage(), dr.getCode());
+					String message = "cutoutError, remote service error:"+dr.getMessage();
+					JFishLoggerFactory.findMailLogger().error(message);
+					
+					throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
+				}else if(dr.isError()){
 					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 				}
 				res = dr.getData();
 			}
 		} catch (HttpMessageNotReadableException e) {
 			if(log.isErrorEnabled()){
-				log.error("decode error, try to use[{}] to decode again, error message: {}", SimpleDataResult.class.getSimpleName(), e.getMessage());
+				String msg = String.format("decode error, try to use[%s] to decode again, error message: %s", SimpleDataResult.class.getSimpleName(), e.getMessage());
+				log.error(msg);
+				JFishLoggerFactory.findMailLogger().error(msg, e);
 			}
 			//兼容。。。。。。。。正常解码失败后尝试用SimpleDataResult解码
 			response.getBody().reset();
@@ -75,6 +88,11 @@ public class ExtResponseEntityDecoder implements Decoder {
 			res = dr.getData();
 		}
 		return res;
+	}
+	
+	protected boolean isCutoutError(FeignResponseAdapter response, SimpleDataResult<?> dr){
+		//TODO dr.getCode().startWith("SHORTCIRCUIT_")，暂时不需要
+		return false;
 	}
 
 	@SuppressWarnings({ "rawtypes" })
@@ -115,9 +133,12 @@ public class ExtResponseEntityDecoder implements Decoder {
 			Object decodedObject = decode(responseAdapter, type);
 
 			return createResponse(decodedObject, response);
-		}
-		else if (isHttpEntity(type)) {
+		} else if (isHttpEntity(type)) {
 			return createResponse(null, response);
+		} else if (isOptional(type)) {
+			Type actualType = ReflectUtils.getGenricType(type, 0);
+			Object result = decode(responseAdapter, actualType);
+			return Optional.ofNullable(result);
 		}
 		else {
 			return decode(responseAdapter, type);
@@ -128,6 +149,15 @@ public class ExtResponseEntityDecoder implements Decoder {
 	private boolean isParameterizeHttpEntity(Type type) {
 		if (type instanceof ParameterizedType) {
 			return isHttpEntity(((ParameterizedType) type).getRawType());
+		}
+		return false;
+	}
+	
+	private boolean isOptional(Type type) {
+		if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			Type rawType = parameterizedType.getRawType();
+			return Optional.class.equals(rawType);
 		}
 		return false;
 	}

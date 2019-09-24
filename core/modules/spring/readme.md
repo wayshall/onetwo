@@ -32,7 +32,7 @@ spring 4.0+
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-spring</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.7.2-SNAPSHOT</version>
 </dependency>
 
 ```
@@ -151,6 +151,26 @@ public interface WeatherClient {
 	@GetMapping(value="/sk/{cityid}.html")
 	@ResponseHandler(WeatherResponseHandler.class)
 	WeatherResponse getWeatherWithHandler(@PathVariable String cityid);
+
+}
+```
+
+### 拦截器
+RestApiClient 的接口底层实现使用resttemplate，所以若想拦截接口的请求只需要实现spring的ClientHttpRequestInterceptor接口即可，为了和普通的拦截器区分，实现类还必须添加@RestExecutorInterceptor注解。
+如简单的打印日志拦截器：
+```Java
+@RestExecutorInterceptor
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class RestExecutorSimpleLogInterceptor implements ClientHttpRequestInterceptor {
+	private Logger logger = ApiClientUtils.getApiclientlogger();
+
+	@Override
+	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+		if(logger.isDebugEnabled()){
+			logger.debug("RestExecutor url: {}", request.getURI());
+		}
+		return execution.execute(request, body);
+	}
 
 }
 ```

@@ -32,8 +32,12 @@ import com.qcloud.cos.model.ListBucketsRequest;
 import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
+import com.qcloud.cos.transfer.TransferManager;
+import com.qcloud.cos.transfer.Upload;
 
 /**
+ * 文档：https://cloud.tencent.com/document/product/436/31355
+ * 
  * @author wayshall
  * <br/>
  */
@@ -43,6 +47,7 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 	private CosProperties cosProperties;
 	private COSClient cosClient;
 	private ClientConfig clientConfig;
+	private TransferManager transferManager;
 	
 	public CosClientWrapper(CosProperties cosProperties) {
 		super();
@@ -60,6 +65,9 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 		}
 		configClient(clientConfig);
 		cosClient = new COSClient(credentials, clientConfig);
+		if (cosProperties.isEnabledAsyncUpload()) {
+			transferManager = new TransferManager(cosClient);
+		}
 	}
 	
 	protected void configClient(ClientConfig clientConfig){
@@ -93,6 +101,9 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 	
 	@Override
 	public void destroy() throws Exception {
+		if (transferManager!=null) {
+			this.transferManager.shutdownNow();
+		}
 		if(cosClient!=null){
 			this.cosClient.shutdown();
 		}
@@ -105,7 +116,11 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 	}
 	
 	public ObjectOperation objectOperation(String bucketName, String key){
-		return new ObjectOperation(bucketName, key, this);
+		ObjectOperation op = new ObjectOperation(bucketName, key, this);
+//		if (cosProperties.isEnabledAsyncUpload()) {
+//			op.useAsync();
+//		}
+		return op;
 	}
 	
 	public String storeWithFileName(String bucketName, File file, ObjectMetadata meta){
@@ -147,6 +162,8 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 		private Optional<COSObject> cosObject;
 		private COSClient cosClient;
 		private PutObjectResult storeResult;
+		private Upload upload;
+		private boolean useAsync;
 		public ObjectOperation(String bucketName, String key, CosClientWrapper wrapper) {
 			super();
 			this.bucketName = bucketName;
@@ -223,8 +240,9 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 		}
 		
 		public ObjectOperation store(InputStream in, ObjectMetadata meta){
-			Assert.notNull(in);
+			Assert.notNull(in, "inpustream can not be null");
 			putObject(new PutObjectRequest(bucketName, key, in, meta));
+//			upload(new PutObjectRequest(bucketName, key, in, meta));
 			return this;
 		}
 		
@@ -242,8 +260,16 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 		}
 		
 		public ObjectOperation putObject(PutObjectRequest request){
-			storeResult = wrapper.putObject(request);
+			if (useAsync) {
+				upload = upload(request);
+			} else {
+				storeResult = wrapper.putObject(request);
+			}
 			return this;
+		}
+		
+		public Upload upload(PutObjectRequest request){
+			return wrapper.transferManager.upload(request);
 		}
 		
 		public ObjectOperation accessPrivate(){
@@ -260,9 +286,18 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 			wrapper.cosClient.setObjectAcl(bucketName, key, access);
 			return this;
 		}
+		
+		public ObjectOperation useAsync(){
+			this.useAsync = true;
+			return this;
+		}
 
 		public Optional<PutObjectResult> storeResult() {
 			return Optional.ofNullable(storeResult);
+		}
+
+		public Optional<Upload> ifAsyncUpload() {
+			return Optional.ofNullable(upload);
 		}
 		
 	}

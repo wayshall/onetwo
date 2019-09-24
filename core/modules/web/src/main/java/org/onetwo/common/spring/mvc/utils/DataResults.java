@@ -34,6 +34,10 @@ final public class DataResults {
 		return SimpleResultBuilder.<T>builder().error(errorType);
 	}
 
+	public static <T> SimpleResultBuilder<T> code(String code){
+		return SimpleResultBuilder.<T>builder().code(code);
+	}
+
 	public static <T> SimpleResultBuilder<T> error(BindingResult bindingResult){
 		String message = ValidatorUtils.asString(bindingResult);
 		return error(message);
@@ -102,7 +106,7 @@ final public class DataResults {
 		return map(objects).extractableData(true);
 	}
 	
-	public static LazyResultBuilder lazy(LazyValue data){
+	public static LazyResultBuilder lazy(LazyValue<?> data){
 		LazyResultBuilder builder = new LazyResultBuilder().success();
 		builder.data(data);
 		return builder;
@@ -122,7 +126,7 @@ final public class DataResults {
 		}
 	}
 	
-	public static class LazyResultBuilder extends AbstractResultBuilder<LazyValue, LazyResultBuilder> {
+	public static class LazyResultBuilder extends AbstractResultBuilder<LazyValue<?>, LazyResultBuilder> {
 		public static LazyResultBuilder builder(){
 			return new LazyResultBuilder();
 		}

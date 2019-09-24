@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://logback.qos.ch/manual/configuration.html -->
+
+<included>
+    <!-- spring boot loggin logback : base.xml -->
+    <property name="LOG_PATH" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}"/>
+    
+    <if condition='isDefined("app.log.dir")'>
+        <then>
+            <property name="LOG_PATH" value="${app.log.dir}"></property>
+        </then>
+    </if>
+    <include resource="org/onetwo/boot/core/web/mvc/log/fileLogger.xml"/>
+    
+    <jmxConfigurator/>
+    
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread] %logger{0} %L - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="INFO">
+        <!-- <appender-ref ref="console" />    -->
+        <if condition='isDefined("app.log.dir") || isDefined("mailLogOnError")'>
+            <then>
+                <appender-ref ref="asyncLogFile"/>
+            </then>
+            <else>
+                <appender-ref ref="logFile"/>
+                <appender-ref ref="console"/>
+            </else>
+        </if>
+    </root>
+</included>
+

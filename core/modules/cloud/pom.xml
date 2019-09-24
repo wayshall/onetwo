@@ -4,7 +4,7 @@
 	<parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.7.1-SNAPSHOT</version>
+        <version>4.7.4-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
     <artifactId>onetwo-cloud</artifactId>
@@ -17,11 +17,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         
-        <onetwo.version>4.7.1-SNAPSHOT</onetwo.version>
+        <onetwo.version>4.7.4-SNAPSHOT</onetwo.version>
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
         <spring-cloud.version>Edgware.SR2</spring-cloud.version>
+        <brave.version>5.6.1</brave.version>
     </properties>
 
     <dependencies>
@@ -29,6 +30,18 @@
         <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-boot</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.onetwo4j</groupId>
+          <artifactId>onetwo-dbm</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-eureka-server</artifactId>
           <optional>true</optional>
         </dependency>
 	   
@@ -63,6 +76,18 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-zuul</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-server</artifactId>
             <optional>true</optional>
         </dependency>
         
@@ -132,10 +157,39 @@
  			<artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         
+        
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
+            <optional>true</optional>
+        </dependency>
+		<dependency>
+		    <groupId>io.zipkin.reporter2</groupId>
+		    <artifactId>zipkin-sender-okhttp3</artifactId>
+            <optional>true</optional>
+		</dependency>
+        <dependency>
+          <groupId>io.zipkin.brave</groupId>
+          <artifactId>brave</artifactId>
+          <optional>true</optional>
+        </dependency>
+        <dependency>
+          <groupId>io.zipkin.brave</groupId>
+          <artifactId>brave-instrumentation-mysql</artifactId>
+          <optional>true</optional>
+        </dependency>
+        
         <!-- for logback jmx -->
         <dependency>
            <groupId>org.jolokia</groupId>
            <artifactId>jolokia-core</artifactId>
+        </dependency>
+        
+        
+        <!-- zipkin -->
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-sleuth</artifactId>
         </dependency>
         
         <!-- for test -->
@@ -165,6 +219,13 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
+	    <dependency>
+	        <groupId>io.zipkin.brave</groupId>
+	        <artifactId>brave-bom</artifactId>
+	        <version>${brave.version}</version>
+	        <type>pom</type>
+	        <scope>import</scope>
+	    </dependency>
       </dependencies>
     </dependencyManagement>
     
@@ -174,6 +235,15 @@
 	        <plugin>
 	            <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-source-plugin</artifactId>
+	        </plugin>
+	        
+	        <plugin>
+	           <groupId>org.apache.maven.plugins</groupId>
+	           <artifactId>maven-resources-plugin</artifactId>
+	           <version>3.0.2</version>
+	           <configuration>
+	             <encoding>utf-8</encoding>
+	           </configuration>
 	        </plugin>
 	        
 	        <plugin>

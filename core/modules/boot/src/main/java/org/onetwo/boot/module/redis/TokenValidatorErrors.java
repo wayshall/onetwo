@@ -8,7 +8,8 @@ import org.onetwo.common.exception.ErrorType;
  */
 public enum TokenValidatorErrors implements ErrorType {
 	REQUIRED_VALUE("the token is reqired"),
-	TOKEN_INVALID("invalid token")
+	TOKEN_NOT_EXPIRED("token not expired"),// 尚未过期
+	TOKEN_INVALID_OR_EXPIRED("token invalid or expired")
 	;
 
 	final private String errorMessage;

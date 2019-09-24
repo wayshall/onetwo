@@ -33,7 +33,12 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 		}
 		this.field = field;
 		this.propertyClassWrapper = Intro.wrap(field.getType());
-		this.annotationInfo = new AnnotationInfo(beanClassWrapper.getClazz(), field.getAnnotations());
+		this.annotationInfo = new AnnotationInfo(beanClassWrapper.getClazz(), field);
+	}
+	
+	@Override
+	public boolean isBeanProperty() {
+		return false;
 	}
 
 	@Override
@@ -115,11 +120,5 @@ public class JFishFieldInfoImpl extends AbstractJFishProperty {
 	public boolean hasAnnotation(Class<? extends Annotation> annoClass) {
 		return getAnnotationInfo().hasAnnotation(annoClass);
 	}
-
-	@Override
-	public <T extends Annotation> T getAnnotation(Class<T> annoClass) {
-		return getAnnotationInfo().getAnnotation(annoClass);
-	}
-
 	
 }

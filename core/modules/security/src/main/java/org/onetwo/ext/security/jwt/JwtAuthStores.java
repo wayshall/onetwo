@@ -3,11 +3,11 @@ package org.onetwo.ext.security.jwt;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.Builder;
-import lombok.Data;
-
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.ext.security.utils.CookieStorer;
+
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -27,10 +27,15 @@ public enum JwtAuthStores {
 	COOKIES{
 		@Override
 		public String getToken(HttpServletRequest request, String authName) {
+			/*String value = JwtAuthStores.HEADER.getToken(request, authName);
+			if (value!=null) {
+				return value;
+			}*/
 			return RequestUtils.getCookieValue(request, authName);
 		}
 		@Override
 		public void saveToken(StoreContext ctx) {
+			ctx.getCookieStorer().clear(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey());
 			ctx.getCookieStorer().save(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey(), ctx.getToken().getToken());
 		}
 	},

@@ -3,12 +3,11 @@ package org.onetwo.boot.module.cos;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.utils.StringUtils;
@@ -18,7 +17,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author wayshall
  * <br/>
  */
-public class CosFileStore implements FileStorer<SimpleFileStoredMeta>, InitializingBean {
+public class CosFileStore implements FileStorer, InitializingBean {
 	
 	private CosClientWrapper wrapper;
 	private CosProperties cosProperties;
@@ -37,27 +36,31 @@ public class CosFileStore implements FileStorer<SimpleFileStoredMeta>, Initializ
 	}
 
 	@Override
-	public SimpleFileStoredMeta write(StoringFileContext context) {
-		String key = context.getKey();
+	public FileStoredMeta write(StoringFileContext context) {
+		String key = defaultStoreKey(context);
+		context.setKey(key);
+		/*String key = context.getKey();
 		if(StringUtils.isBlank(key)){
-			String prefix = FileUtils.replaceBackSlashToSlash(StringUtils.emptyIfNull(context.getModule())).replace("/", "-");
-			key = prefix+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
-//			key = StringUtils.emptyIfNull(context.getModule())+"-"+UUID.randomUUID().toString()+FileUtils.getExtendName(context.getFileName(), true);
-		}
+			key = defaultStoreKey(context);
+		}*/
 		wrapper.objectOperation(bucketName, key)
 				.store(context.getInputStream());
 
-		String accessablePath = "/"+key;
-		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), key);
+		String accessablePath = StringUtils.appendStartWithSlash(key);
+
+//		StoreFilePathStrategy strategy = context.getStoreFilePathStrategy();
+		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), accessablePath);
+		meta.setBaseUrl(cosProperties.getDownloadEndPoint());
 		meta.setSotredFileName(key);
 		meta.setAccessablePath(accessablePath);
-		meta.setFullAccessablePath(cosProperties.getDownloadUrl(key));
+		meta.setFullAccessablePath(cosProperties.getDownloadUrl(accessablePath));
 		if(cosProperties.isAlwaysStoreFullPath()){
 			meta.setAccessablePath(meta.getFullAccessablePath());
 		}
 		meta.setStoredServerLocalPath(key);
 		meta.setBizModule(context.getModule());
 		meta.setSotredFileName(key);
+		
 		return meta;
 	}
 	

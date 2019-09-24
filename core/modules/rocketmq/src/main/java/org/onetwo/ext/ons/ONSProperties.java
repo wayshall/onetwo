@@ -3,8 +3,6 @@ package org.onetwo.ext.ons;
 import java.util.Map;
 import java.util.Properties;
 
-import lombok.Data;
-
 import org.onetwo.ext.alimq.JsonMessageDeserializer;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
@@ -16,6 +14,8 @@ import org.springframework.util.Assert;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.google.common.collect.Maps;
 
+import lombok.Data;
+
 /**
  * @author wayshall
  * <br/>
@@ -23,10 +23,11 @@ import com.google.common.collect.Maps;
 @Data
 @ConfigurationProperties("jfish.ons")
 public class ONSProperties implements InitializingBean {
-
+	public static final String PRODUCER_ENABLED_KEY = "jfish.ons.producer.enabled";
 //	public static final String TRANSACTIONAL_ENABLED_KEY = "jfish.ons.transactional.enabled";
 //	public static final String TRANSACTIONAL_TASK_CRON_KEY = "jfish.ons.transactional.task.cron";
 //	public static final String TRANSACTIONAL_DELETE_TASK_CRON_KEY = "jfish.ons.transactional.deleteTask.cron";
+
 
 	MqServerTypes serverType = MqServerTypes.ONS;
 	
@@ -38,7 +39,9 @@ public class ONSProperties implements InitializingBean {
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
-
+	
+	DeleteReceiveTask deleteReceiveTask = new DeleteReceiveTask();
+	
 //	Map<String, String> jsonDeserializerCompatibilityTypeMappings = Maps.newHashMap();	
 
 	public Map<String, Properties> getProducers() {
@@ -49,6 +52,9 @@ public class ONSProperties implements InitializingBean {
 		return consumers;
 	}
 
+	public MessageSerializerType getSerializer() {
+		return serializer;
+	}
 	public Properties baseProperties(){
 		Properties baseConfig = new Properties();
 		baseConfig.putAll(commons);
@@ -72,11 +78,22 @@ public class ONSProperties implements InitializingBean {
 		
 	}
 
+	@Data
+	public static class DeleteReceiveTask {
+		/***
+		 * 默认半夜3点触发
+		 */
+		public static final String DELETE_RECEIVE_TASK_CRON = "${jfish.ons.deleteReceiveTask.cron: 0 0 3 * * ?}";
+		private String deleteBeforeAt;
+		private String redisLockTimeout;
+		
+	}
 
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
 		JSON(JsonMessageSerializer.INSTANCE, JsonMessageDeserializer.INSTANCE),
-		CHECKED_JSON(JsonMessageSerializer.CHECKED_INSTANCE, JsonMessageDeserializer.INSTANCE);
+		CHECKED_JSON(JsonMessageSerializer.CHECKED_INSTANCE, JsonMessageDeserializer.INSTANCE),
+		TYPING_JSON(JsonMessageSerializer.TYPING_INSTANCE, JsonMessageDeserializer.TYPING_INSTANCE);
 
 		final private MessageSerializer serializer;
 		final private MessageDeserializer deserializer;

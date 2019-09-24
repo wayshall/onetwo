@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -12,6 +13,8 @@ import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 
 public abstract class ParamUtils {
+	
+	public static final String URL_PARAM_JOINER = "&";
 
 	private static final BeanToMapConvertor BEAN_TO_MAP_CONVERTOR = BeanToMapBuilder.newBuilder()
 																					.enableFieldNameAnnotation()
@@ -22,13 +25,22 @@ public abstract class ParamUtils {
     }
 
     public static <T extends Comparable<T>> String comparableKeyMapToParamString(Map<T, ?> params){
-    	return toParamString(params, Comparator.comparing(e->e));
+    	return comparableKeyMapToParamString(params, URL_PARAM_JOINER);
+    }
+    public static <T extends Comparable<T>> String comparableKeyMapToParamString(Map<T, ?> params, String joiner){
+    	return toParamString(params, Comparator.comparing(e->e), joiner, null);
+    }
+    public static <T extends Comparable<T>> String comparableKeyMapToParamString(Map<T, ?> params, String joiner, BiFunction<T, Object, String> toStringFunc){
+    	return toParamString(params, Comparator.comparing(e->e), joiner, toStringFunc);
     }
     /*public static String mapToParamString(Map<?, ?> params){
     	return toParamString(params, null);
     }*/
 
     public static <T> String toParamString(Map<T, ?> params, Comparator<T> comparator){
+    	return toParamString(params, comparator, URL_PARAM_JOINER, null);
+    }
+    public static <T> String toParamString(Map<T, ?> params, Comparator<T> comparator, String joiner, BiFunction<T, Object, String> toStringFunc){
 		Map<T, Object> map = null;
 		if(comparator==null){
 			map = new HashMap<>(params);
@@ -38,24 +50,40 @@ public abstract class ParamUtils {
 //			System.out.println("sortmap:"+map);
 		}
 		
-		return toParamString(map);
+		return toParamString(map, toStringFunc, joiner);
 	}
 
-    @SuppressWarnings({ "rawtypes" })
-	public static String toParamString(Map params){
-		return toParamString(params, (BiFunction<Object, Object, String>)null);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <K> String toParamString(Map params){
+		return toParamString(params, (BiFunction<K, Object, String>)null);
 	}
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	public static String toParamString(Map params, BiFunction<Object, Object, String> toStringFunc){
+
+	public static <K> String toParamString(Map<K, Object> params, String joiner){
+		return toParamString(params, (BiFunction<K, Object, String>)null, joiner);
+	}
+
+	public static <K> String toParamString(Map<K, Object> params, BiFunction<K, Object, String> toStringFunc){
+		return toParamString(params, toStringFunc, URL_PARAM_JOINER);
+	}
+	
+	public static <K> String toParamString(Map<K, Object> params, BiFunction<K, Object, String> toStringFunc, String joiner){
 		StringBuilder sb = new StringBuilder();
 		int index = 0;
-		for(Map.Entry entry : (Set<Map.Entry>)params.entrySet()){
-			if(entry.getValue()==null)
+		for(Map.Entry<K, Object> entry : (Set<Map.Entry<K, Object>>)params.entrySet()){
+			Object entryValue = entry.getValue();
+			if (entryValue==null || StringUtils.isBlank(entryValue.toString()) || LangUtils.isEmpty(entryValue)) {
 				continue;
+			}
+			if (entryValue instanceof Collection) {
+				List<?> list = CUtils.tolist(entryValue, true);
+				if (list.size()==0) {
+					continue;
+				}
+			}
 			Collection<?> values = CUtils.toCollection(entry.getValue());
 			for(Object value : values){
-				if(index!=0)
-					sb.append("&");
+				if(index!=0 && joiner.length()>0)
+					sb.append(joiner);
 				if(toStringFunc!=null){
 					sb.append(toStringFunc.apply(entry.getKey(), value));
 				}else{
@@ -70,7 +98,7 @@ public abstract class ParamUtils {
 	public static String appendParam(String action, String name, String value){
 		String result = action;
 		if (action.indexOf("?")!=-1){
-			result += "&"+name+"="+value;
+			result += URL_PARAM_JOINER+name+"="+value;
 		}else{
 			result += "?"+name+"="+value;
 		}
@@ -80,7 +108,7 @@ public abstract class ParamUtils {
 	public static String appendParamString(String action, String paramstr){
 		String result = action;
 		if (action.indexOf("?")!=-1){
-			result += "&"+paramstr;
+			result += URL_PARAM_JOINER+paramstr;
 		}else{
 			result += "?"+paramstr;
 		}

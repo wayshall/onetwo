@@ -88,7 +88,13 @@ final public class CUtils {
     
     public static <T> Collection<T> emptyIfNull(Collection<T> col){
     	if(col==null)
-    		return Collections.EMPTY_SET;
+    		return Collections.emptyList();
+    	return col;
+    }
+    
+    public static <T> List<T> emptyListIfNull(List<T> col){
+    	if(col==null)
+    		return Collections.emptyList();
     	return col;
     }
     
@@ -167,14 +173,14 @@ final public class CUtils {
 	
 	public static <T extends Map> T arrayIntoMap(T properties, Object... params) {
 		if (params.length % 2 == 1)
-			throw new IllegalArgumentException("参数不是key, value形式！ ");
+			throw new IllegalArgumentException("params is not key/value pair!");
 
 		int index = 0;
 		Object name = null;
 		for (Object s : params) {
 			if (index % 2 == 0) {
 				if (s == null || (String.class.isInstance(s) && StringUtils.isBlank(s.toString())))
-					throw new IllegalArgumentException("字段名称不能为空！ ");
+					throw new IllegalArgumentException("key can not be null or blank");
 				name = s;
 			} else {
 				properties.put(name, s);
@@ -649,6 +655,16 @@ final public class CUtils {
 			list.set(targetElement.get().getKey(), element);
 		}else{
 			list.add(element);
+		}
+	}
+	
+	public static void removeByClass(List<?> list, Class<?> targetClass){
+		Iterator<?> it = list.iterator();
+		while(it.hasNext()){
+			Object e = it.next();
+			if(e!=null && targetClass.isAssignableFrom(ReflectUtils.getObjectClass(e))){
+				it.remove();
+			}
 		}
 	}
 	

@@ -1,16 +1,19 @@
-# onetwo（jfish）
+# zifish
 ------
 基于spring boot的快速开发框架   
+
 spring-boot技术交流群：  604158262
 
 
 
-## 环境要求
-JDK8+
-
+## 环境要求和主要框架依赖版本
+- JDK 8+
+- Spring 4.x+
+- Spring Boot 1.5.16.RELEASE (boot模块要求）
+- Spring Cloud Edgware (cloud模块要求)
 
 ## maven   
-当前snapshot版本：**4.6.1-SNAPSHOT**   
+当前snapshot版本：**4.7.2-SNAPSHOT**   
 
 若使用snapshot版本，请添加snapshotRepository仓储：   
 ```xml   
@@ -24,9 +27,9 @@ JDK8+
 ```   
 
 ## 示例项目   
-基于jfish的web示例项目：
+基于zifish的web示例项目：
 [web-sample](https://github.com/wayshall/onetwo-web-sample)  
-基于jfish的后台管理示例项目：
+基于zifish的后台管理示例项目：
 [web-manager](https://github.com/wayshall/onetwo-web-manager)   
 
 
@@ -51,15 +54,20 @@ JDK8+
 [boot-dbm-sample](https://github.com/wayshall/boot-dbm-sample)
 
 ## [security模块](https://github.com/wayshall/onetwo/tree/master/core/modules/security)
-基于spring security实现的动态rbac和基于Java代码的权限管理  
+基于spring security实现的动态 RBAC 权限管理  
    
 
 ## [boot模块](https://github.com/wayshall/onetwo/tree/master/core/modules/boot)
-boot模块，基于boot和freemarker上封装了一点点的插件机制。
+boot模块：
+- 基于boot之上封装插件机制
+- freemarker增加插件路径分派支持
+- 封装第三方库使用
    
 
-## [web-admin插件](https://github.com/wayshall/onetwo/tree/master/core/plugins/web-admin)
-基于boot模块的插件机制，使用jquery-easyui编写的简单后台管理，包含了基本的权限管理和菜单功能。
+## [zifish-plugins插件项目](https://github.com/wayshall/zifish-plugins)
+包含了基于本框架开发的插件。
+- web-admin插件：使用jquery-easyui编写的简单后台管理，包含了基本的权限管理和菜单功能。
+- swaggerext插件
 
 
 ## 捐赠

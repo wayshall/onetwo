@@ -48,10 +48,14 @@ public class AccessTokkenClientDetailsObtainService implements ClientDetailsObta
 		});
 	}
 
+	/****
+	 * @param accessTokenValue no Bearer prefix
+	 */
 	@Override
 	public ClientDetails resolveClientDetails(String accessTokenValue) {
+		accessTokenValue = extractHeaderToken(accessTokenValue);
 		OAuth2AccessToken accessToken = tokenStore.readAccessToken(accessTokenValue);
-		OAuth2Authentication authentication = tokenStore.readAuthentication(accessTokenValue);
+		OAuth2Authentication authentication = tokenStore.readAuthentication(accessToken);
 		return clientDetailConverter.convert(accessToken, authentication);
 	}
 	
@@ -59,6 +63,13 @@ public class AccessTokkenClientDetailsObtainService implements ClientDetailsObta
 	public void setClientDetailConverter(ClientDetailConverter<? extends ClientDetails> clientDetailConverter) {
 		this.clientDetailConverter = clientDetailConverter;
 	}
-	
+
+	public static String extractHeaderToken(String value) {
+		if (value.toLowerCase().startsWith(OAuth2AccessToken.BEARER_TYPE.toLowerCase())) {
+			String authHeaderValue = value.substring(OAuth2AccessToken.BEARER_TYPE.length()).trim();
+			return authHeaderValue;
+		}
+		return value;
+	}
 
 }

@@ -2,6 +2,9 @@ package org.onetwo.boot.mq;
 
 import java.io.Serializable;
 
+import org.onetwo.boot.mq.entity.SendMessageEntity;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
+
 import lombok.Builder;
 import lombok.Data;
 

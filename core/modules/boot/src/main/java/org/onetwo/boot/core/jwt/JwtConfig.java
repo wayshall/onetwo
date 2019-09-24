@@ -2,11 +2,11 @@ package org.onetwo.boot.core.jwt;
 
 import java.util.concurrent.TimeUnit;
 
-import lombok.Data;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangOps;
+
+import lombok.Data;
 
 /**
  * iss: jwt签发者
@@ -23,7 +23,8 @@ jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重
 @Data
 public class JwtConfig {
 	
-	public static final String ENABLE_KEY = "jfish.jwt.enable";
+	public static final String PREFIX = "jfish.jwt";
+	public static final String ENABLE_KEY = PREFIX + ".enable";
 
 	String authHeader = JwtUtils.DEFAULT_HEADER_KEY;
 	String signingKey;
@@ -31,6 +32,7 @@ public class JwtConfig {
 	String expiration;
 	String issuer = "jfish";
 	String audience = "webclient";
+	String refreshTokenIfRemainingTime = "30s";
 	
 	public String getSigningKey(){
 		String key = this.signingKey;
@@ -52,6 +54,10 @@ public class JwtConfig {
 			return inSeconds;
 		}
 		return expirationInSeconds;
+	}
+	
+	public long getRefreshTokenIfRemainingSeconds() {
+		return LangOps.timeToSeconds(getRefreshTokenIfRemainingTime(), 30);
 	}
 	
 }

@@ -2,11 +2,13 @@ package org.onetwo.common.spring;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,18 +17,21 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.propconf.PropUtils;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
+import org.onetwo.common.reflect.BeanToMapConvertor.ValuePutter;
+import org.onetwo.common.reflect.PropertyContext;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
@@ -74,7 +79,9 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /****
@@ -116,13 +123,17 @@ final public class SpringUtils {
     	return res;
 	}
 	
-	public static Map<String, Object> toFlatMap(Object obj) {
+	/*public static Map<String, Object> toFlatMap(Object obj) {
 		return toFlatMap(obj, o->!LangUtils.isSimpleTypeObject(o));
-	}
+	}*/
 	
-	public static Map<String, Object> toFlatMap(Object obj, Function<Object, Boolean> isNestedObject) {
+	public static Map<String, Object> toFlatMap(Object obj) {
 		Map<String, Object> map = Maps.newHashMap();
-		BEAN_TO_MAP_CONVERTOR.flatObject("", obj, (k, v, ctx)->{
+		
+		ConsumableValuePutter putter = new ConsumableValuePutter((k, v) -> {
+			map.put(k, v);
+		});
+		/*BEAN_TO_MAP_CONVERTOR.flatObject("", obj, (k, v, ctx)->{
 			Object value = v;
 			TypeDescriptor sourceType = null;
 			if(v.getClass()!=String.class){
@@ -136,8 +147,38 @@ final public class SpringUtils {
             	value = getFormattingConversionService().convert(v, sourceType, TypeDescriptor.valueOf(String.class));
             }
         	map.put(k, value);
-		});
+		});*/
+		BEAN_TO_MAP_CONVERTOR.flatObject("", obj, putter);
 		return map;
+	}
+	
+	public static class ConsumableValuePutter implements ValuePutter {
+		private final BiConsumer<String, Object> consumer;
+		
+		public ConsumableValuePutter(BiConsumer<String, Object> consumer) {
+			super();
+			this.consumer = consumer;
+		}
+
+		@Override
+		public void put(String k, Object v, PropertyContext ctx) {
+			Object value = v;
+			TypeDescriptor sourceType = null;
+			if(v.getClass()!=String.class){
+            	Field field = ctx.getField();
+            	if(field!=null && (field.getAnnotation(DateTimeFormat.class)!=null || field.getAnnotation(NumberFormat.class)!=null) ){
+    	            sourceType = new TypeDescriptor(field);
+            	}
+            	if(sourceType==null){
+    	            sourceType = new TypeDescriptor(new Property(ctx.getSource().getClass(), ctx.getProperty().getReadMethod(), ctx.getProperty().getWriteMethod()));
+            	}
+            	value = getFormattingConversionService().convert(v, sourceType, TypeDescriptor.valueOf(String.class));
+            }
+//        	map.put(k, value);
+			this.consumer.accept(k, value);
+		
+		}
+		
 	}
 	
 	public static TypeDescriptor typeDescriptorForPerperty(Class<?> clazz, String propertyName){
@@ -365,12 +406,17 @@ final public class SpringUtils {
 
 	public static <T> void injectAndInitialize(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
 		acb.autowireBeanProperties(bean, autowireMode, false);
-		initializeBean(acb, bean, autowireMode);
+		initializeBean(acb, bean);
 	}
 
-	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
+	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean) {
 		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
 		acb.initializeBean(bean, beanName);
+	}
+
+	public static <T> void initializeBean(ApplicationContext appContext, T bean) {
+		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
+		appContext.getAutowireCapableBeanFactory().initializeBean(bean, beanName);
 	}
 	
 
@@ -490,6 +536,14 @@ final public class SpringUtils {
 	
 	public static Resource classpath(String path){
 		return new ClassPathResource(path);
+	}
+	
+	public static InputStream classpathStream(String path){
+		try {
+			return classpath(path).getInputStream();
+		} catch (IOException e) {
+			throw new BaseException("read classpath file as stream error: " + path);
+		}
 	}
 	
 	public static BeanWrapper newBeanWrapper(Object obj){
@@ -634,19 +688,32 @@ final public class SpringUtils {
 	 * @return
 	 */
 	public static String resolvePlaceholders(Object applicationContext, String value){
-		return resolvePlaceholders(applicationContext, value, true);
+//		return resolvePlaceholders(applicationContext, value, true);
+		String resolvedValue = resolvePlaceholders(applicationContext, value, false);
+		if (DOLOR.isExpresstion(resolvedValue)){
+			String convertedName = StringUtils.convertWithSeperator(resolvedValue, "-");
+			if (value.equals(convertedName)) {
+				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + resolvedValue);
+			}
+			resolvedValue = resolvePlaceholders(applicationContext, convertedName, false);
+			if (DOLOR.isExpresstion(resolvedValue)){
+				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + resolvedValue);
+			}
+		}
+		return resolvedValue;
 	}
+	
 	public static String resolvePlaceholders(Object applicationContext, String value, boolean throwIfNotResolved){
 		String newValue = value;
 		if (StringUtils.hasText(value) && DOLOR.isExpresstion(value)){
-			if(applicationContext instanceof ConfigurableApplicationContext){
+			if (applicationContext instanceof ConfigurableApplicationContext){
 				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
 				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
-			}else if(applicationContext instanceof PropertyResolver){
+			} else if (applicationContext instanceof PropertyResolver){
 				PropertyResolver env = (PropertyResolver)applicationContext;
 				newValue = env.resolvePlaceholders(value);
 			}
-			if(DOLOR.isExpresstion(newValue) && throwIfNotResolved){
+			if (DOLOR.isExpresstion(newValue) && throwIfNotResolved){
 				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + newValue);
 			}
 		}
@@ -661,94 +728,49 @@ final public class SpringUtils {
 		return MAP_TO_BEAN;
 	}
 	
-	/*public static boolean isSimpleTypeObject(Object obj) {
-		return obj != null && LangUtils.isSimpleType(obj.getClass());
+	public static String readClassPathFile(String path){
+		return readClassPathFile(path, FileUtils.DEFAULT_CHARSET);
 	}
-
-	public static Map<String, Object> toMap(Object obj) {
-		return toMap(obj, o->!isSimpleTypeObject(o), false);
-	}
-
-	public static Map<String, Object> toMap(Object obj, boolean enableFieldName) {
-		return toMap(obj, o->!isSimpleTypeObject(o), enableFieldName);
-	}
-
-	public static Map<String, Object> toMap(Object obj, Function<Object, Boolean> isNestedObject) {
-		return toMap(obj, isNestedObject, false);
-	}
-
-	public static Map<String, Object> toMap(Object obj, Function<Object, Boolean> isNestedObject, boolean enableFieldName) {
-        if (obj == null)
-            return Collections.emptyMap();
-        Map<String, Object> rsMap = new HashMap<>();
-        if(obj instanceof Map){
-        	Map<?, ?> objMap = (Map<?, ?>) obj;
-        	objMap.forEach((k, v)->rsMap.put(k.toString(), v));
-        	return rsMap;
-        }
-        PropertyDescriptor[] props = ReflectUtils.desribProperties(obj.getClass());
-        if (props == null || props.length == 0)
-            return Collections.emptyMap();
-        
-        Map<String, Field> fieldMap = ReflectUtils.getFieldsAsMap(obj.getClass());
-        Object val;
-        for (PropertyDescriptor prop : props) {
-			String name = prop.getName();
-			
-            val = ReflectUtils.getProperty(obj, prop);
-            if(val==null){
-            	continue;
-			}
-            
-            if(isNestedObject!=null && (val instanceof Collection || val.getClass().isArray())){
-				Collection<?> values = CUtils.toCollection(val);
-				int index = 0;
-				for (Object v : values) {
-					String listKey = name+"["+index+"]";
-					putToMap(rsMap, listKey, v, isNestedObject, null, enableFieldName);
-					index++;
-				}
-			}else if(isNestedObject!=null && val instanceof Map){
-				Map<String, Object> map = (Map<String, Object>) val;
-				for(Entry<String, Object> entry : map.entrySet()){
-					putToMap(rsMap, entry.getKey(), entry.getValue(), isNestedObject, null, enableFieldName);
-				}
-			}else{
-            	TypeDescriptor sourceType = null;
-            	Field field = fieldMap.get(prop.getName());
-            	if(field!=null && (field.getAnnotation(DateTimeFormat.class)!=null || field.getAnnotation(NumberFormat.class)!=null) ){
-    	            sourceType = new TypeDescriptor(field);
-            	}
-            	if(sourceType==null){
-    	            sourceType = new TypeDescriptor(new Property(obj.getClass(), prop.getReadMethod(), prop.getWriteMethod()));
-            	}
-            	if(enableFieldName){
-                	FieldName fieldName = sourceType.getAnnotation(FieldName.class);
-                	if(fieldName!=null){
-                		name = fieldName.value();
-                	}else{
-                		continue;
-                	}
-            	}
-				putToMap(rsMap, name, val, isNestedObject, sourceType, enableFieldName);
-			}
-        }
-        return rsMap;
-    }
 	
-	private static void putToMap(Map<String, Object> rsMap, String key, Object value, Function<Object, Boolean> isNestedObject, TypeDescriptor sourceType, boolean enableFieldName){
-		if(isNestedObject==null || !isNestedObject.apply(value)){
-			if(value.getClass()!=String.class && sourceType!=null){
-				value = getFormattingConversionService().convert(value, sourceType, TypeDescriptor.valueOf(String.class));
-			}
-			rsMap.put(key, value);
-		}else{
-			String newKey = key+".";
-			Map<String, Object> props = toMap(value, isNestedObject, enableFieldName);
-			for(Entry<String, Object> entry : props.entrySet()){
-				putToMap(rsMap, newKey+entry.getKey(), entry.getValue(), isNestedObject, null, enableFieldName);
-			}
+	public static String readClassPathFile(String path, String charset){
+		Resource res = classpath(path);
+		try {
+			return IOUtils.toString(res.getInputStream(), charset);
+		} catch (IOException e) {
+			throw new BaseException("read classpath file error: " + path);
 		}
-	}*/
+	}
+	
+	public static String readMultipartFile(MultipartFile multipartFile){
+		return readMultipartFile(multipartFile, FileUtils.DEFAULT_CHARSET);
+	}
+	
+	public static String readMultipartFile(MultipartFile multipartFile, String charset){
+		try {
+			return IOUtils.toString(multipartFile.getInputStream(), charset);
+		} catch (IOException e) {
+			throw new BaseException("read classpath file error: " + multipartFile.getOriginalFilename());
+		}
+	}
+	
+	public static InputStream getInputStream(Resource resource){
+		try {
+			return resource.getInputStream();
+		} catch (IOException e) {
+			throw new BaseException("get InputStream error: " + resource.getFilename());
+		}
+	}
+	
+
+	public static BeanToMapConvertor getBeanToMapConvertor(String... excludeProperties){
+		List<String> excludes = Lists.newArrayList();
+		excludes.addAll(Arrays.asList(excludeProperties));
+		BeanToMapConvertor convertor = BeanToMapBuilder.newBuilder()
+														.ignoreNull()
+														.excludeProperties(excludes.toArray(new String[0]))
+														.enableFieldNameAnnotation()
+														.build();
+		return convertor;
+	}
 	
 }

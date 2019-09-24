@@ -7,12 +7,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
+import org.onetwo.cloud.env.AuthEnvs;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -32,13 +30,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 
-import com.google.common.collect.ImmutableSet;
-
 import feign.Contract;
 import feign.Feign;
 import feign.Logger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 
 /**
  * @author wayshall
@@ -70,7 +68,7 @@ public class ExtFeignConfiguration implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(simpleLoggerManager==null){
-			this.simpleLoggerManager = new SimpleLoggerManager();
+			this.simpleLoggerManager = SimpleLoggerManager.getInstance();
 		}
 	}
 	
@@ -145,17 +143,19 @@ public class ExtFeignConfiguration implements InitializingBean {
 	
 	@Configuration
 	protected static class FeignRequestInterceptorConfiguration {
-		@Autowired
-		private FeignProperties feignProperties;
+//		@Autowired
+//		private FeignProperties feignProperties;
 		
 		@Bean
-		public KeepHeaderRequestInterceptor keepHeaderRequestInterceptor(){
+		public KeepHeaderRequestInterceptor keepHeaderRequestInterceptor(AuthEnvs authEnvs){
 			KeepHeaderRequestInterceptor interceptor = new KeepHeaderRequestInterceptor();
-			if(!LangUtils.isEmpty(feignProperties.getKeepHeaders())){
-				interceptor.setKeepHeaders(ImmutableSet.copyOf(feignProperties.getKeepHeaders()));
-			}
+//			if(!LangUtils.isEmpty(feignProperties.getKeepHeaders())){
+//				interceptor.setKeepHeaders(ImmutableSet.copyOf(feignProperties.getKeepHeaders()));
+//			}
+			interceptor.setAuthEnvs(authEnvs);
 			return interceptor;
 		}
+		
 	}
 	
 	

@@ -3,12 +3,13 @@ package org.onetwo.boot.core.web.view;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.onetwo.boot.core.web.utils.ModelAttr;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.DataResultWrapper;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataResults.MapResultBuilder;
+import org.onetwo.common.spring.mvc.utils.ModelAttr;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 
 /**
@@ -20,6 +21,10 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 	
 	@Override
 	public Object wrapResult(final Object data) {
+		// MappingJacksonValue 类型的不包装
+		if (data instanceof MappingJacksonValue) {
+			return data;
+		}
 		Object newData = wrapAsDataResultIfNeed(data);
 		return newData;
 	}

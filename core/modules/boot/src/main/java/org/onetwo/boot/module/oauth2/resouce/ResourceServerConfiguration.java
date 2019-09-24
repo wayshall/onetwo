@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
-import org.springframework.security.oauth2.provider.error.OAuth2ExceptionRenderer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 @EnableResourceServer
@@ -32,8 +31,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 	
 	//for error
 
-	@Autowired(required=false)
-	private OAuth2ExceptionRenderer oauth2ExceptionRenderer;
+//	@Autowired(required=false)
+//	private OAuth2ExceptionRenderer oauth2ExceptionRenderer;
 	@Autowired(required=false)
 	private OAuth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint;
 	@Autowired(required=false)

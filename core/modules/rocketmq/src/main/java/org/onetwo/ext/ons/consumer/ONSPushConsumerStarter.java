@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -20,8 +21,10 @@ import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
+import org.onetwo.ext.ons.annotation.ONSSubscribe.ConsumerProperty;
+import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
+import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,7 +50,7 @@ import com.google.common.collect.Maps;
 
 public class ONSPushConsumerStarter implements InitializingBean, DisposableBean {
 
-	private final Logger logger = LoggerFactory.getLogger(ONSPushConsumerStarter.class);
+	private final Logger logger = ONSUtils.getONSLogger(); //LoggerFactory.getLogger(ONSPushConsumerStarter.class);
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -87,7 +90,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		ConsumerScanner scanner = new ConsumerScanner(applicationContext);
 		Map<String, ConsumerMeta> consumers = scanner.findConsumers();
 
-		consumers.entrySet().forEach(e->{
+		consumers.entrySet().parallelStream().forEach(e->{
 			try {
 				this.initializeConsumers(e.getValue());
 			} catch (MQClientException | InterruptedException ex) {
@@ -114,12 +117,16 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		Properties comsumerProperties = onsProperties.baseProperties();
 		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
 		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
-		if(meta.getMaxReconsumeTimes()>0){
+		if (meta.getMaxReconsumeTimes()>0){
 			comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
 		}
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
-		if(customProps!=null){
+		if (customProps!=null){
 			comsumerProperties.putAll(customProps);
+		}
+		// 注解覆盖配置
+		if (meta.getComsumerProperties()!=null) {
+			comsumerProperties.putAll(meta.getComsumerProperties());
 		}
 //		rawConsumer.setMessageModel(meta.getMessageModel());
 		
@@ -162,6 +169,19 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				ConsumContext currentConetxt = null;
 				try {
 					currentConetxt = delegateMessageService.processMessages(meta, msgs, context);
+				} catch(MessageConsumedException e) {
+					// 忽略已消费异常
+					if (logger.isDebugEnabled()) {
+						logger.debug("message has been consumed and will skip: " + e.getMessage(), e);
+					} else {
+						logger.warn("message has been consumed and will skip: " + e.getMessage());
+					}
+				} catch(ImpossibleConsumeException e) {
+					// 不可能被消费，记录错误并发送提醒
+					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
+					logger.error(errorMsg, e);
+					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+//					applicationContext.publishEvent(event);
 				} catch (Exception e) {
 					String errorMsg = "consume message error.";
 					if(currentConetxt!=null){
@@ -170,6 +190,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 										", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
 					}
 					logger.error(errorMsg, e);
+					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
 					return ConsumeConcurrentlyStatus.RECONSUME_LATER;
 //					throw new BaseException(e);
 				}
@@ -230,10 +251,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				if(AnnotationUtils.findAnnotation(m, ONSSubscribe.class)!=null){
 					Parameter[] parameters = m.getParameters();
 					if(parameters.length==0 || parameters.length>2){
-						throw new BaseException("the maximum parameter of consumer method is two.");
+						throw new BaseException("the maximum parameter of consumer method[" + m.toGenericString() + "]  is two.");
 					}
 					if(parameters[0].getType()!=ConsumContext.class){
-						throw new BaseException("the first parameter type of the consumer method must be: "+ConsumContext.class);
+						throw new BaseException("the first parameter type of the consumer method[" + m.toGenericString() + "] must be: "+ConsumContext.class);
 					}
 					return true;
 				}
@@ -270,6 +291,12 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			}
 			String topic = resloveValue(subscribe.topic());
 			String consumerId = resloveValue(subscribe.consumerId());
+			
+			ConsumerProperty[] onsProperties = subscribe.properties();
+			Map<String, String> props = Stream.of(onsProperties).collect(Collectors.toMap(prop->prop.name(), prop->resloveValue(prop.value())));
+			Properties properties = new Properties();
+			properties.putAll(props);
+			
 			ConsumerMeta meta = ConsumerMeta.builder()
 					.consumerId(consumerId)
 					.topic(topic)
@@ -282,6 +309,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					.consumerAction(listener)
 					.consumerBeanName(listernName)
 					.autoDeserialize(subscribe.autoDeserialize())
+					.idempotentType(subscribe.idempotent())
+					.comsumerProperties(properties)
 					.build();
 			return meta;
 		}

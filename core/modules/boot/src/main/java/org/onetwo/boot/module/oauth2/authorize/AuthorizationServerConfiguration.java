@@ -205,6 +205,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 			endpoints.tokenStore(tokenStore);
 		}
 		endpoints.tokenEnhancer(tokenEnhancerChain());
+		
+		this.oauth2Properties.getAuthorizationServer().getPathMappings().forEach((defPath, customPath) -> {
+			endpoints.pathMapping(defPath, customPath);
+		});
 	}
 	
 	@Configuration

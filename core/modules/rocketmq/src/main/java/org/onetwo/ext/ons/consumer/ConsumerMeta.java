@@ -2,13 +2,14 @@ package org.onetwo.ext.ons.consumer;
 
 import java.util.Properties;
 
-import lombok.Builder;
-import lombok.Data;
-
 import org.onetwo.ext.ons.ListenerType;
+import org.onetwo.ext.ons.annotation.ONSSubscribe.IdempotentType;
 
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
+
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * maxReconsumeTimes:
@@ -38,5 +39,11 @@ public class ConsumerMeta {
 	private Properties comsumerProperties;
 	
 	private boolean autoDeserialize;
+	
+	private IdempotentType idempotentType;
+	
+	public boolean shouldWithTransational() {
+		return getIdempotentType()==IdempotentType.DATABASE;
+	}
 
 }

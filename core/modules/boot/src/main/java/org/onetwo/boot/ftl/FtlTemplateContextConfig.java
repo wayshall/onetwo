@@ -7,18 +7,19 @@ import org.onetwo.common.spring.ftl.DefaultTemplateParser;
 import org.onetwo.common.spring.ftl.DirsFreemarkerTemplateConfigurer;
 import org.onetwo.common.spring.ftl.TemplateParser;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 
-//@Configuration
+@Configuration
 public class FtlTemplateContextConfig {
 	
 	@Resource
-	private BootJFishConfig jfishBootConfig;
+	private BootJFishConfig jfishConfig;
 	
 	@Bean
 	public DirsFreemarkerTemplateConfigurer dirFreemarkerTemplateConfigurer(){
 		DirsFreemarkerTemplateConfigurer dirconfig = new DirsFreemarkerTemplateConfigurer();
-//		dirconfig.setTemplatePaths(jfishBootConfig.getFtlDir());
+		dirconfig.setTemplatePaths(jfishConfig.getFtl().getTemplateDir());
 		dirconfig.initialize();
 		return dirconfig;
 	}
@@ -28,11 +29,5 @@ public class FtlTemplateContextConfig {
 		DefaultTemplateParser parser = new DefaultTemplateParser(dirFreemarkerTemplateConfigurer());
 		return parser;
 	}
-	
-	/*@Bean
-	public WebRender ftlWebRender(){
-		WebRender webrender = new FtlWebRender(dirFreemarkerTemplateConfigurer());
-		return webrender;
-	}*/
 	
 }

@@ -84,10 +84,10 @@ public class TimeProfileStack
      * 
      * @param name profile name
      */
-    public static void pop(String name)
+    public static ProfilingTimerBean pop(String name)
     {
         if (!isActive())
-            return;
+            return null;
 
         ProfilingTimerBean currentTimer = (ProfilingTimerBean) current.get();
 
@@ -119,7 +119,7 @@ public class TimeProfileStack
             }
         }
 
-
+        return currentTimer;
     }
 
     /**
@@ -137,7 +137,7 @@ public class TimeProfileStack
      * 
      * @return long
      */
-    private static long getMinTime()
+    public static long getMinTime()
     {
         try
         {

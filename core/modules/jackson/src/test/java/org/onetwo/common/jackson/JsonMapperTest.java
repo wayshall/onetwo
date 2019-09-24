@@ -1,5 +1,7 @@
 package org.onetwo.common.jackson;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,13 +14,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.jackson.UserEntity.SubUserEntity;
+import org.onetwo.common.jackson.exception.JsonException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.map.ParamMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.google.common.collect.Lists;
 
 public class JsonMapperTest {
 
@@ -58,6 +64,61 @@ public class JsonMapperTest {
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		objectMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 //		objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
+	
+
+	@Test
+	public void testSerialWithTypeList() throws Exception{
+		JsonMapper jsonMapper = JsonMapper.ignoreNull();
+		ObjectMapper mapper = jsonMapper.getObjectMapper();
+		mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+		
+		List<StoreDetailVo> list = Lists.newArrayList();
+		StoreDetailVo storeDetailVo = new StoreDetailVo();
+		storeDetailVo.setStoreId(1L);
+		list.add(storeDetailVo);
+		String s = mapper.writeValueAsString(list);
+		System.out.println(s);
+	}
+	
+	@Test
+	public void testSerialWithType(){
+		JsonMapper json = JsonMapper.ignoreNull().enableTyping();
+//		ObjectMapper objectMapper = json.getObjectMapper();
+//		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, As.PROPERTY);
+//		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+
+		TestJsonData u1 = new TestJsonData();
+		u1.setCreate_time(new Timestamp(new Date().getTime()));
+		u1.setUser_name("user_name");
+		
+		String data = json.toJson(u1);
+		System.out.println("data:"+data);
+		
+		Object u2 = json.fromJson(data, Object.class);
+		assertThat(u2.getClass()).isEqualTo(u1.getClass());
+
+		try {
+			TestJsonData2 u3 = json.fromJson(data, TestJsonData2.class);
+//			assertThat(u3.getUser_name()).isEqualTo(u1.getUser_name());
+			Assert.fail();
+		} catch (Exception e) {
+			assertThat(e.getClass()).isEqualTo(JsonException.class);
+		}
+		TestJsonData d = new TestJsonData();
+		d.setCreate_time(new Date());
+		d.setUser_name("user_name");
+		data = json.toJson(d);
+		System.out.println("data:"+data);
+		TestJsonData2 dd = JsonMapper.ignoreNull().fromJson(data, TestJsonData2.class);
+		assertThat(dd.getUser_name()).isEqualTo(d.getUser_name());
+		
+		Map<String, TestJsonData> maps = new HashMap<>();
+		maps.put("key1", u1);
+		maps.put("key2", d);
+		Object mapdata = maps;
+		String jsondata = json.toJson(mapdata);
+		System.out.println("json: " + jsondata);
 	}
 	
 	@Test
@@ -162,6 +223,11 @@ public class JsonMapperTest {
 		Assert.assertTrue(json.contains("birth_day2"));
 		Assert.assertTrue(json.contains("1984-01-01"));
 		System.out.println("testJson2: " + json);
+		
+		SubUserEntity subUser = jsonMapper.fromJson(json, SubUserEntity.class);
+		assertThat(subUser.getBirthDay()).isNull();
+		assertThat(DateUtils.formatDate(subUser.getBirthDay2())).isEqualTo("1984-01-01");
+		assertThat(subUser.getEmail()).isEqualTo(user.getEmail());
 	}
 	
 	@Test
@@ -239,7 +305,7 @@ public class JsonMapperTest {
 		String json = "{id:200,'userName':\"userNameJsonTest\",\"email\":null,\"age\":11,\"birthDay\":\"2012-07-02 15:26:10\"}";
 		System.out.println("testJsonIgnoreEmpty: " + json);
 		
-		Map<String, String> map = JsonMapper.defaultMapper().fromJson(json, Map.class);
+		Map<String, String> map = JsonMapper.defaultMapper().allowSingleQuotes().fromJson(json, Map.class);
 		System.out.println("map: " + map);
 		Assert.assertEquals(Integer.valueOf(200), map.get("id"));
 		Assert.assertEquals("userNameJsonTest", map.get("userName"));

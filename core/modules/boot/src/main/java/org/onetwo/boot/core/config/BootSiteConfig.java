@@ -6,20 +6,21 @@ import java.util.stream.Stream;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.web.filter.DefaultSiteConfig;
+import org.onetwo.common.web.filter.SiteConfigProvider;
+import org.onetwo.common.web.utils.RequestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.filter.DefaultSiteConfig;
-import org.onetwo.common.web.filter.SiteConfigProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
 /***
@@ -45,7 +46,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_CSS = "path.css";
 	public static final String PATH_IMAGE = "path.image";*/
 
-	public static final String ENABLE_UPLOAD_PREFIX = "site.upload.fileStorePath";
+	public static final String ENABLE_UPLOAD_VIEW = "site.upload.view";
 	public static final String ENABLE_STORETYPE_PROPERTY = "site.upload.storeType";
 //	public static final String ENABLE_KINDEDITOR_UPLOADSERVICE = "site.kindeditor.uploadService";
 	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compressImage.enable";
@@ -74,7 +75,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	
 	//uploaded file access path
 
-	@Autowired
+	@Autowired(required=false)
 	private BootSpringConfig bootSpringConfig;
 	
 	@Getter
@@ -217,17 +218,45 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		String basePath;
 		boolean useLoadBalance;
 		int serverCount = 2;
+		
+		public String getBasePath(){
+			if(StringUtils.isNotBlank(basePath)){
+				return basePath;
+			}
+			String path = getBaseURL();
+			return path;
+		}
+		public void setBasePath(String basePath){
+			this.basePath = basePath;
+		}
+		
+		public String getImageFullPath(String subPath){
+			if (subPath==null || RequestUtils.isHttpPath(subPath)) {
+				return subPath;
+			}
+			if(!basePath.endsWith("/") && !subPath.startsWith("/")){
+				basePath += "/";
+			}
+			return basePath + subPath;
+		}
 	}
 
 	//move to jfishConfig?
 	@Data
-	public class UploadConfig {
-		
+	static public class UploadConfig {
+		/***
+		 * 如果设置了值，则会把上传目录映射到对应的访问路径，如：/upload/**
+		 */
+		String accessPathPatterns;
 //		StoreType storeType = StoreType.LOCAL;
+		/***
+		 * 如果是local存储，可以写绝对路径，如：/data/upload/cms；
+		 * 如果是云存储，可以看做是系统模块名称，如：cms
+		 */
 		String fileStorePath;
-		boolean fileStorePathToResourceHandler = true;
+//		boolean fileStorePathToResourceHandler = true;
 		Integer resourceCacheInDays = 30;
-		String appContextDir;
+//		String appContextDir;
 		//multipartProperties
 //		int maxUploadSize = BootStandardServletMultipartResolver.DEFAULT_MAX_UPLOAD_SIZE;
 		boolean storeFileMetaToDatabase;
@@ -245,6 +274,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		public Integer getResourceCacheInDays() {
 			return resourceCacheInDays;
 		}
+		
+		/*public String getAppContextDir() {
+			return appContextDir;
+		}*/
 
 		/*public int getMaxUploadSize(){
 			return maxUploadSize;
@@ -260,10 +293,17 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		//超过了配置值就启用自动压缩功能，比如：5KB
 		//少于0则一律不压缩
 		String thresholdSize;
+		/***
+		 * 缩放，0到无穷大（不包含)
+		 */
 		Double scale;
+		/***
+		 * 压缩质量0到1
+		 */
 		Double quality;
 		Integer width;
 		Integer height;
+		@Builder.Default
 		List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 	}
 	

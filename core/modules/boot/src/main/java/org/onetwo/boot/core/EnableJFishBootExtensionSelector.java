@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.onetwo.boot.core.EnableJFishBootExtension.AppcationType;
+import org.onetwo.boot.core.cors.CorsFilterConfiguration;
 import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.shutdown.GraceKillConfiguration;
@@ -24,6 +25,8 @@ import org.onetwo.boot.module.poi.ExcelViewConfiguration;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
+import org.onetwo.boot.module.session.BootSpringSessionConfiguration;
+import org.onetwo.boot.module.swagger.SwaggerConfiguration;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.context.AbstractImportSelector;
@@ -44,11 +47,16 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 	@Override
 	protected List<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		List<String> classNames = new ArrayList<String>();
+
+		//store 在BootCommonServiceConfig之前初始化，因为BootCommonService依赖filestore来加载
+		classNames.add(OssConfiguration.class.getName());
+		classNames.add(CosConfiguration.class.getName());
 		
 		if(attributes.getBoolean("enableCommonService")){
 			classNames.add(BootCommonServiceConfig.class.getName());
 		}
 		
+		classNames.add(BootFixedConfiguration.class.getName());
 		AppcationType appcationType = (AppcationType)attributes.get("appcationType");
 		if(appcationType==AppcationType.WEB_SERVICE){
 			classNames.add(BootMSContextAutoConfig.class.getName());
@@ -57,6 +65,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		}
 		
 		classNames.add(ExcelViewConfiguration.class.getName());
+		classNames.add(CorsFilterConfiguration.class.getName());
 		
 		classNames.add(BootDbmConfiguration.class.getName());
 		classNames.add(ErrorHandleConfiguration.class.getName());
@@ -75,12 +84,15 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		classNames.add(SpringCacheConfiguration.class.getName());
 		classNames.add(RedissonConfiguration.class.getName());
 		
-		//store
-		classNames.add(OssConfiguration.class.getName());
-		classNames.add(CosConfiguration.class.getName());
+		
+		//swagger
+		classNames.add(SwaggerConfiguration.class.getName());
 		
 		//activemq
 		classNames.add("org.onetwo.boot.module.activemq.ActivemqConfiguration");
+		
+		//session
+		classNames.add(BootSpringSessionConfiguration.class.getName());
 		
 		Collection<String> exts = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(this.annotationClass, this.beanClassLoader));
 		for(String extClassName : exts){

@@ -26,7 +26,7 @@ spring 4.0+
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-cloud</artifactId>
-    <version>4.7.1-SNAPSHOT</version>
+    <version>4.7.2-SNAPSHOT</version>
 </dependency>
 
 ```
@@ -42,6 +42,7 @@ public class Application{
 - 可自定义feign client调用时传递当前请求头
 - 重新定义了feign client的errorCoder，远程调用返回错误时，直接抛异常
 - 支持feign client远程调用转本地调用
+- feign接口支持直接在参数里定义MultipartFile对象
 
 
 ## 配置
@@ -119,3 +120,22 @@ jfish:
             checkTokenAccess: permitAll #checkTokenAccess权限
 
 ```
+
+### 灰度发布支持
+服务配置：
+```yaml
+eureka:
+    instance:
+        metadata-map:
+            # x-client-tag
+            canary.filters.client-tag: v1.3 //匹配client-tag的规则
+            canary.filters.ip: 192.168.1.11 //匹配ip的规则
+jfish: 
+    cloud: 
+        hystrix: 
+            shareRequestContext: true
+```
+调用的时候增加header：
+x-canary: SMOOTHNESS // 强制匹配版本，否则出错; 值为 SMOOTHNESS，则表示平滑处理，匹配不到版本就走默认策略
+x-client-tag: v1.3 
+
