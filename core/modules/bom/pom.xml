@@ -116,17 +116,17 @@
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-server</artifactId>
-        <version>1.4.3</version>
+        <version>1.5.7</version>
     </dependency>
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-server-ui</artifactId>
-        <version>1.4.3</version>
+        <version>1.5.7</version>
     </dependency>
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-starter-client</artifactId>
-        <version>1.4.3</version>
+        <version>1.5.7</version>
     </dependency>
     
     <!-- spring session -->
