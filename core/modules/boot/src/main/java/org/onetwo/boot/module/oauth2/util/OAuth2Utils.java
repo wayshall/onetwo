@@ -1,16 +1,13 @@
 package org.onetwo.boot.module.oauth2.util;
 
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.module.oauth2.clientdetails.ClientDetails;
 import org.onetwo.boot.module.oauth2.clientdetails.ClientDetailsObtainService;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.Springs;
-import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.security.core.Authentication;
@@ -34,7 +31,7 @@ public abstract class OAuth2Utils {
 	
 	private static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 
-	private static final NamedThreadLocal<ClientDetails> CURRENT_CLIENTS = new NamedThreadLocal<>("oauth2 context");
+//	private static final NamedThreadLocal<ClientDetails> CURRENT_CLIENTS = new NamedThreadLocal<>("oauth2 context");
 	private static final NamedThreadLocal<String> CURRENT_TOKENS = new NamedThreadLocal<>("oauth2 token");
 //	private TokenExtractor tokenExtractor = new BearerTokenExtractor();
 	
@@ -65,7 +62,18 @@ public abstract class OAuth2Utils {
 		return Optional.ofNullable(CURRENT_TOKENS.get());
 	}
 
-	@SuppressWarnings("unchecked")
+	/*public static void setCurrentToken(String token) {
+		Optional<HttpServletRequest> req = WebHolder.getRequest();
+		if (req.isPresent()) {
+			return service.get().getTokenValue(req.get());
+		}
+		CURRENT_TOKENS.set(token);
+	}
+	public static void removeCurrentToken() {
+		CURRENT_TOKENS.remove();
+	}*/
+
+	/*@SuppressWarnings("unchecked")
 	public static <T extends ClientDetails> Optional<T> getCurrentClientDetails() {
 		// 线程变量优先
 		T data = (T)CURRENT_CLIENTS.get();
@@ -77,9 +85,9 @@ public abstract class OAuth2Utils {
 			return Optional.empty();
 		}
 		return getClientDetails(req.get());
-	}
+	}*/
 	
-	public static void runInContext(ClientDetails clientDetail, Runnable runnalbe) {
+	/*public static void runInContext(ClientDetails clientDetail, Runnable runnalbe) {
 		try {
 			CURRENT_CLIENTS.set(clientDetail);
 			runnalbe.run();
@@ -146,19 +154,12 @@ public abstract class OAuth2Utils {
 		} finally {
 			removeCurrentToken();
 		}
-	}
-
-	public static void setCurrentToken(String token) {
-		CURRENT_TOKENS.set(token);
-	}
-	public static void removeCurrentToken() {
-		CURRENT_TOKENS.remove();
-	}
+	}*/
 	/*public static Optional<String> getCurrentToken() {
 		return Optional.ofNullable(CURRENT_TOKENS.get());
 	}*/
 	
-	public static Runnable runInThread(final Runnable runnable){
+	/*public static Runnable runInThread(final Runnable runnable){
 		Optional<ClientDetails> clientDetail = getCurrentClientDetails();
 		if (!clientDetail.isPresent()) {
 			throw new BaseException("oauth client detail not found in current context");
@@ -166,7 +167,7 @@ public abstract class OAuth2Utils {
 		return ()->{
 			runInContext(clientDetail.get(), runnable);
 		};
-	}
+	}*/
 	
 	public static <T extends ClientDetails> Optional<T> getClientDetails(HttpServletRequest request) {
 		return getOrSetClientDetails(request, null);

@@ -16,7 +16,7 @@ public class CanaryProperties {
 	
 	public static final String PREFIX = "jfish.cloud.cannary";
 	
-	CanaryMode defaultMode = CanaryMode.DISABLED;
+	CanaryMode defaultMode = CanaryMode.SMOOTHNESS;
 	CanaryServerNotFoundActions serverNotFoundAction = CanaryServerNotFoundActions.SMOOTHNESS;
 
 }
