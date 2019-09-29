@@ -31,8 +31,8 @@ public abstract class OAuth2Utils {
 	
 	private static final String CLIENT_DETAILS_ATTR_KEY = "__CLIENT_DETAILS__";
 
-//	private static final NamedThreadLocal<ClientDetails> CURRENT_CLIENTS = new NamedThreadLocal<>("oauth2 context");
-	private static final NamedThreadLocal<String> CURRENT_TOKENS = new NamedThreadLocal<>("oauth2 token");
+	private static final NamedThreadLocal<ClientDetails> CURRENT_CLIENTS = new NamedThreadLocal<>("oauth2 context");
+//	private static final NamedThreadLocal<String> CURRENT_TOKENS = new NamedThreadLocal<>("oauth2 token");
 //	private TokenExtractor tokenExtractor = new BearerTokenExtractor();
 	
 
@@ -53,14 +53,14 @@ public abstract class OAuth2Utils {
 		return getClientDetailsObtainService().isPresent();
 	}
 	
-	public static Optional<String> getCurrentToken() {
+	/*public static Optional<String> getCurrentToken() {
 		Optional<HttpServletRequest> req = WebHolder.getRequest();
 		Optional<ClientDetailsObtainService> service = getClientDetailsObtainService();
 		if(req.isPresent() && service.isPresent()){
 			return service.get().getTokenValue(req.get());
 		}
 		return Optional.ofNullable(CURRENT_TOKENS.get());
-	}
+	}*/
 
 	/*public static void setCurrentToken(String token) {
 		Optional<HttpServletRequest> req = WebHolder.getRequest();
@@ -73,7 +73,7 @@ public abstract class OAuth2Utils {
 		CURRENT_TOKENS.remove();
 	}*/
 
-	/*@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public static <T extends ClientDetails> Optional<T> getCurrentClientDetails() {
 		// 线程变量优先
 		T data = (T)CURRENT_CLIENTS.get();
@@ -85,9 +85,9 @@ public abstract class OAuth2Utils {
 			return Optional.empty();
 		}
 		return getClientDetails(req.get());
-	}*/
+	}
 	
-	/*public static void runInContext(ClientDetails clientDetail, Runnable runnalbe) {
+	public static void runInContext(ClientDetails clientDetail, Runnable runnalbe) {
 		try {
 			CURRENT_CLIENTS.set(clientDetail);
 			runnalbe.run();
@@ -95,6 +95,8 @@ public abstract class OAuth2Utils {
 			CURRENT_CLIENTS.remove();
 		}
 	}
+	
+	/*
 	
 	public static <T> T runInContext(ClientDetails clientDetail, Supplier<T> supplier) {
 		if (clientDetail==null) {
