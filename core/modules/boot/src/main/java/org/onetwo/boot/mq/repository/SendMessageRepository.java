@@ -14,8 +14,10 @@ import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
  */
 public interface SendMessageRepository {
 
+	void batchSave(Collection<SendMessageContext<?>> ctxs);
 	void save(SendMessageContext<?> ctx);
 
+	void batchUpdateToSent(Collection<SendMessageContext<?>> ctxs);
 	void updateToSent(SendMessageContext<?> ctx);
 	void updateToSent(SendMessageEntity messageEntity);
 

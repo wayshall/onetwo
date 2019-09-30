@@ -33,6 +33,8 @@ public class MQTaskConfiguration {
 		DeleteTaskProps deleteProps = mqProperties.getTransactional().getDeleteTask();
 		if(deleteProps.getLock()==TaskLocks.REDIS){
 			task.setUseReidsLock(true);
+		} else if (deleteProps.getLock()==TaskLocks.DB) {
+			task.setUseReidsLock(false);
 		}
 		task.setDeleteBeforeAt(deleteProps.getDeleteBeforeAt());
 		task.setRedisLockTimeout(deleteProps.getRedisLockTimeout());

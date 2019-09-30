@@ -35,6 +35,7 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 	
 //	private NamedThreadLocal<Set<SendMessageContext>> messageStorer = new NamedThreadLocal<>("rmq message thread storer");
 
+	
 //	@Transactional(propagation=Propagation.MANDATORY)
 	@Override
 	public void save(SendMessageContext<?> ctx){
@@ -116,7 +117,23 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		return messages;
 	}
 
+	@Override
+	public void batchSave(Collection<SendMessageContext<?>> ctxs) {
+		List<SendMessageEntity> messages = ctxs.stream().map(ctx -> ctx.getMessageEntity()).collect(Collectors.toList());
+		getBaseEntityManager().getSessionFactory().getSession().batchInsert(messages);
+	}
 
+
+	@Override
+	public void batchUpdateToSent(Collection<SendMessageContext<?>> ctxs) {
+		List<SendMessageEntity> messages = ctxs.stream().map(ctx -> {
+			SendMessageEntity e = ctx.getMessageEntity();
+			e.setState(SendStates.SENT);
+			return e;
+		}).collect(Collectors.toList());
+		getBaseEntityManager().getSessionFactory().getSession().batchUpdate(messages);
+	}
+	
 	public BaseEntityManager getBaseEntityManager() {
 		return baseEntityManager;
 	}

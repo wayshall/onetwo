@@ -1,7 +1,6 @@
 package org.onetwo.ext.ons;
 
 import org.onetwo.boot.mq.MQProperties;
-import org.onetwo.boot.mq.MQProperties.SendMode;
 import org.onetwo.boot.mq.MQTransactionalConfiguration;
 import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.repository.SendMessageRepository;
@@ -91,12 +90,13 @@ public class ONSConfiguration {
 	@ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
 	public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
 		OnsDatabaseTransactionMessageInterceptor interceptor = new OnsDatabaseTransactionMessageInterceptor();
-		SendMode sendMode = mqProperties.getTransactional().getSendMode();
+		/*SendMode sendMode = mqProperties.getTransactional().getSendMode();
 		if(sendMode==SendMode.ASYNC){
 			interceptor.setUseAsync(true);
 		}else{
 			interceptor.setUseAsync(false);
-		}
+		}*/
+		interceptor.setTransactionalProps(mqProperties.getTransactional());
 		interceptor.setSendMessageRepository(sendMessageRepository);
 		return interceptor;
 	}

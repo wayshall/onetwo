@@ -1,6 +1,5 @@
 package org.onetwo.boot.mq;
 
-import org.onetwo.boot.mq.MQProperties.SendMode;
 import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.interceptor.SimpleDatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.repository.DbmSendMessageRepository;
@@ -32,12 +31,13 @@ public class MQTransactionalConfiguration {
 	@ConditionalOnMissingBean(DatabaseTransactionMessageInterceptor.class)
 	public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
 		SimpleDatabaseTransactionMessageInterceptor interceptor = new SimpleDatabaseTransactionMessageInterceptor();
-		SendMode sendMode = mqProperties.getTransactional().getSendMode();
+		/*SendMode sendMode = mqProperties.getTransactional().getSendMode();
 		if(sendMode==SendMode.ASYNC){
 			interceptor.setUseAsync(true);
 		}else{
 			interceptor.setUseAsync(false);
-		}
+		}*/
+		interceptor.setTransactionalProps(mqProperties.getTransactional());
 		interceptor.setSendMessageRepository(sendMessageRepository);
 		return interceptor;
 	}

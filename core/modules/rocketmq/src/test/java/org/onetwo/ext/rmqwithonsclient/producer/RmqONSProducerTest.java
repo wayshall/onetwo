@@ -94,6 +94,16 @@ public class RmqONSProducerTest {
 		assertThat(messageCount).isEqualTo(1);
 //		LangUtils.CONSOLE.exitIf("test");
 	}
+
+	@Autowired
+	BatchDataBaseProducerServiceImpl batchDataBaseProducerService;
+	@Test
+	public void testBatch1(){
+		baseEntityManager.removeAll(SendMessageEntity.class);
+		batchDataBaseProducerService.sendMessage();
+		int messageCount = baseEntityManager.countRecord(SendMessageEntity.class).intValue();
+		assertThat(messageCount).isEqualTo(1);
+	}
 	
 	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
 	@Configuration
@@ -121,6 +131,10 @@ public class RmqONSProducerTest {
 		@Bean
 		public DataBaseProducerServiceImpl dataBaseProducerService(){
 			return new DataBaseProducerServiceImpl();
+		}
+		@Bean
+		public BatchDataBaseProducerServiceImpl batchDataBaseProducerService(){
+			return new BatchDataBaseProducerServiceImpl();
 		}
 
 		@Bean
