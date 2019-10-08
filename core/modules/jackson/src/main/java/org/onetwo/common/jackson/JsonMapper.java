@@ -164,11 +164,19 @@ public class JsonMapper {
 		return this;
 	}
 	
-	/*public JsonMapper addMixInAnnotations(Class<?> target, Class<?> mixinSource){
-		this.objectMapper.getSerializationConfig().addMixInAnnotations(target, mixinSource);
-		this.objectMapper.getDeserializationConfig().addMixInAnnotations(target, mixinSource);
+	/****
+	 * 为指定target的类，使用mixinSource的规则
+	 * @author weishao zeng
+	 * @param target
+	 * @param mixinSource
+	 * @return
+	 */
+	public JsonMapper addMixIns(Class<?> mixinSource, Class<?>... targets){
+		for(Class<?> target : targets) {
+			this.objectMapper.addMixIn(target, mixinSource);
+		}
 		return this;
-	}*/
+	}
 	
 	public JsonMapper defaultFiler(PropertyFilter bpf){
 //		this.filterProvider.setDefaultFilter(bpf);
