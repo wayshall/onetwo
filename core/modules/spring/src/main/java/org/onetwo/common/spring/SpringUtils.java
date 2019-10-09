@@ -242,6 +242,13 @@ final public class SpringUtils {
 		})
 		.collect(Collectors.toList());
 	}
+	
+	public static <T> T getBeanWithAnnotation(ApplicationContext applicationContext, Class<? extends Annotation> annotationType) {
+		List<T> beans = (List<T>)getBeansWithAnnotation(applicationContext, annotationType).stream().map(d -> {
+			return d.getBean();
+		}).collect(Collectors.toList());
+		return LangUtils.isEmpty(beans)?null:beans.get(0);
+	}
 
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);

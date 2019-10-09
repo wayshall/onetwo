@@ -41,7 +41,7 @@ public class RequestContextConcurrencyStrategy extends AbstractContextConcurrenc
 //			this.authEnv = AuthEnvs.getCurrent();
 			AuthEnv env = AuthEnvs.getCurrent();
 			if (env==null) {
-				env = authEnvs.createWebAuthEnv(true);
+				env = authEnvs.createWebAuthEnv(false);
 			}
 			this.authEnv = env;
 		}
@@ -50,7 +50,7 @@ public class RequestContextConcurrencyStrategy extends AbstractContextConcurrenc
 		public T call() throws Exception {
 			RequestAttributes existRequestAttributes = RequestContextHolder.getRequestAttributes();
 			//当前线程的attrs和代理的不一致，则需要重置
-			boolean reset = authEnv.getRequestAttributes()!=null && !authEnv.getRequestAttributes().equals(existRequestAttributes);
+			boolean needToSetContext = authEnv!=null && authEnv.getRequestAttributes()!=null && !authEnv.getRequestAttributes().equals(existRequestAttributes);
 //			boolean hasOauth2Ctx = StringUtils.isNotBlank(authorizationToken);
 			try {
 				/*RequestContextHolder.setRequestAttributes(delegateRequestAttributes);
@@ -58,21 +58,23 @@ public class RequestContextConcurrencyStrategy extends AbstractContextConcurrenc
 					OAuth2Utils.setCurrentToken(authorizationToken);
 				}
 				AuthEnvs.setCurrent(authEnv);*/
-				if (authEnv.getRequestAttributes()!=null) {
-					RequestContextHolder.setRequestAttributes(authEnv.getRequestAttributes());
+				if (authEnv!=null) {
+					if (needToSetContext) {
+						RequestContextHolder.setRequestAttributes(authEnv.getRequestAttributes());
+					}
+					AuthEnvs.setCurrent(authEnv);
 				}
-				AuthEnvs.setCurrent(authEnv);
 				return this.delegate.call();
 			} finally {
 				/*if (hasOauth2Ctx) {
 					OAuth2Utils.removeCurrentToken();
 				}
 				*/
-				AuthEnvs.removeCurrent();
-				if (reset){
+				if (authEnv!=null) {
+					AuthEnvs.removeCurrent();
+				}
+				if (needToSetContext){
 					RequestContextHolder.setRequestAttributes(existRequestAttributes);
-				} else {
-					RequestContextHolder.resetRequestAttributes();
 				}
 			}
 		}
