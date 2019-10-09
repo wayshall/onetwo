@@ -36,6 +36,7 @@ final public class CanaryUtils {
         return request;*/
 //		request.setAttribute(CanaryUtils.ATTR_CANARYCONTEXT, ctx);
 	}
+	
 	public static Optional<HttpServletRequest> getHttpServletRequestOptional(){
 		ServletRequestAttributes attrs = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
 		if(attrs==null){
