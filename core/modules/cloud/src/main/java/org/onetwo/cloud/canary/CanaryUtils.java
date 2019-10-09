@@ -24,13 +24,25 @@ final public class CanaryUtils {
 	public static final String ATTR_CANARYCONTEXT = "__JFISH_CANARYCONTEXT__";
 	
 	public static HttpServletRequest getHttpServletRequest(){
-		ServletRequestAttributes attrs = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+		return getHttpServletRequestOptional().orElseThrow(() -> {
+			return new BaseException("ServletRequestAttributes not found, you may missing config [jfish.cloud.hystrix.shareRequestContext=true], "
+					+ "or invoked in not web environment");
+		});
+		/*ServletRequestAttributes attrs = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
 		if(attrs==null){
 			throw new BaseException("ServletRequestAttributes not found, you may missing config [jfish.cloud.hystrix.shareRequestContext=true]");
 		}
         final HttpServletRequest request = attrs.getRequest();
-        return request;
+        return request;*/
 //		request.setAttribute(CanaryUtils.ATTR_CANARYCONTEXT, ctx);
+	}
+	public static Optional<HttpServletRequest> getHttpServletRequestOptional(){
+		ServletRequestAttributes attrs = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+		if(attrs==null){
+			return  Optional.empty();
+		}
+        final HttpServletRequest request = attrs.getRequest();
+        return Optional.ofNullable(request);
 	}
 	
 	public static void storeCanaryContext(CanaryContext ctx){
