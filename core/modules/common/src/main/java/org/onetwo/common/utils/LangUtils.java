@@ -804,7 +804,7 @@ public class LangUtils {
 
 	public static byte[] hex2Bytes(String str){
 		byte[] bytes = null;
-		char[] chars = str.toCharArray();
+		char[] chars = str.toUpperCase().toCharArray();
 
 		int numb1;
 		int numb2;
@@ -818,7 +818,7 @@ public class LangUtils {
 	}
 	
 	public static boolean isHexString(String str){
-		char[] chars = str.toCharArray();
+		char[] chars = str.toUpperCase().toCharArray();
 		int index = -1;
 		for(char ch : chars){
 			index = HEX_CHAR.indexOf(ch);
