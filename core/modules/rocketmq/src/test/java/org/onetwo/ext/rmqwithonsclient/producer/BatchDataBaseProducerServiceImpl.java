@@ -23,21 +23,7 @@ public class BatchDataBaseProducerServiceImpl {
 	@Autowired
 	ProducerService onsProducerService;
 	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
-	int batchCount = 10;
-
-	public void sendDelayMessage(String deliverTime){
-		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
-				  .topic(RmqONSProducerTest.TOPIC)
-				  .tags(RmqONSProducerTest.ORDER_CANCEL)
-				  .key("test_"+idGenerator.nextId())
-				  .deliverAtString(deliverTime)
-				  .body(OrderTestMessage.builder()
-			  				.orderId(2L)
-			  				.title("取消")
-			  				.build())
-				  .build(), SendMessageFlags.EnableDatabaseTransactional);
-		System.out.println("res: " + res);
-	}
+	public static int batchCount = 10;
 
 	public void sendMessage(){
 		for(int i=0; i<batchCount; i++) {
@@ -63,30 +49,10 @@ public class BatchDataBaseProducerServiceImpl {
 	}
 
 	public void sendMessageWithException(){
-		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
-																	  .topic(RmqONSProducerTest.TOPIC)
-																	  .tags(RmqONSProducerTest.ORDER_PAY)
-																	  .key("test_"+idGenerator.nextId())
-																	  .body(OrderTestMessage.builder()
-																			  				.orderId(1L)
-																			  				.title("支付")
-																			  				.build())
-																	  .build(), SendMessageFlags.EnableDatabaseTransactional);
-		System.out.println("res: " + res);
-		
-		res = onsProducerService.sendMessage(SimpleMessage.builder()
-				  .topic(RmqONSProducerTest.TOPIC)
-				  .tags(RmqONSProducerTest.ORDER_CANCEL)
-				  .key("test_"+idGenerator.nextId())
-				  .body(OrderTestMessage.builder()
-			  				.orderId(1L)
-			  				.title("取消")
-			  				.build())
-				  .build(), SendMessageFlags.EnableDatabaseTransactional);
-		System.out.println("res: " + res);
-		
-		if(true){
+		this.sendMessage();
+		if (true) {
 			throw new ServiceException("发消息后出错！");
 		}
 	}
+
 }

@@ -34,6 +34,10 @@ public class OnsBatchDatabaseTransactionMessageInterceptor extends OnsDatabaseTr
 		this.storeSendMessage(ctx);
 	}
 	
+	public boolean useBatchMode() {
+		return true;
+	}
+	
 	protected void save(SendMessageContext<?> ctx) {
 		CURRENT_MESSAGES.get().getSendMessageContexts().add(ctx);
 	}
@@ -41,6 +45,7 @@ public class OnsBatchDatabaseTransactionMessageInterceptor extends OnsDatabaseTr
 	@TransactionalEventListener(phase=TransactionPhase.BEFORE_COMMIT)
 	public void beforeCommit(SendMessageEvent event) {
 		this.getSendMessageRepository().batchSave(event.getSendMessageContexts());
+		CURRENT_MESSAGES.remove();
 	}
 
 	@Override
