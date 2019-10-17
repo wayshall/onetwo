@@ -13,7 +13,7 @@ spring-boot技术交流群：  604158262
 - Spring Cloud Edgware (cloud模块要求)
 
 ## maven   
-当前snapshot版本：**4.7.2-SNAPSHOT**   
+当前snapshot版本：**4.7.4-SNAPSHOT**   
 
 若使用snapshot版本，请添加snapshotRepository仓储：   
 ```xml   
@@ -24,7 +24,7 @@ spring-boot技术交流群：  604158262
         <enabled>true</enabled>
     </snapshots>
 </repository>   
-```   
+```
 
 ## 示例项目   
 基于zifish的web示例项目：
@@ -38,14 +38,14 @@ spring-boot技术交流群：  604158262
 
 ## [spring模块](https://github.com/wayshall/onetwo/tree/master/core/modules/spring)
 依赖到spring相关的封装
-   
+
 
 ## [内嵌tomcat模块](https://github.com/wayshall/onetwo/tree/master/core/modules/tomcat)
 简单的内嵌tomcat容器实现
 
 ## [poi模块](https://github.com/wayshall/onetwo/tree/master/core/modules/poi)
 基于poi，对操作excel的简单封装。
-   
+
 ## [dbm模块](https://github.com/wayshall/onetwo/tree/master/core/modules/dbm)
 
 基于spring jdbc实现的简单orm   
@@ -55,14 +55,14 @@ spring-boot技术交流群：  604158262
 
 ## [security模块](https://github.com/wayshall/onetwo/tree/master/core/modules/security)
 基于spring security实现的动态 RBAC 权限管理  
-   
+
 
 ## [boot模块](https://github.com/wayshall/onetwo/tree/master/core/modules/boot)
 boot模块：
 - 基于boot之上封装插件机制
 - freemarker增加插件路径分派支持
 - 封装第三方库使用
-   
+  
 
 ## [zifish-plugins插件项目](https://github.com/wayshall/zifish-plugins)
 包含了基于本框架开发的插件。

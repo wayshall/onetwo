@@ -35,6 +35,10 @@ public interface DatabaseTransactionMessageInterceptor extends SendMessageInterc
 	@Builder
 	static public class SendMessageEvent {
 		private final List<SendMessageContext<?>> sendMessageContexts;
+		/***
+		 * 是否批量模式
+		 */
+		private boolean batchMode;
 
 		public boolean isDebug() {
 			return getSendMessageContext().isDebug();

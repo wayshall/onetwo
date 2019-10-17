@@ -23,27 +23,39 @@ import lombok.Data;
 @Data
 @Builder
 public class ConsumerMeta {
-	final private String consumerId;
-	final private String topic;
-	final private String subExpression;
-	final private MessageModel messageModel;
-	final private ConsumeFromWhere consumeFromWhere;
-	final private long ignoreOffSetThreshold;
-	final private ListenerType listenerType;
-	final private Object consumerAction;
-	final private String consumerBeanName;
+	private String consumerId;
+	private String topic;
+	private String subExpression;
+
+	private ListenerType listenerType;
+	private Object consumerAction;
+	private String consumerBeanName;
+	
+	@Builder.Default
+	private MessageModel messageModel = MessageModel.CLUSTERING;
+	@Builder.Default
+	private ConsumeFromWhere consumeFromWhere = ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET;
+	@Builder.Default
+	private long ignoreOffSetThreshold = -1;
 	/***
 	 * 
 	 */
-	final private int maxReconsumeTimes;
+	@Builder.Default
+	private int maxReconsumeTimes = -1;
 	private Properties comsumerProperties;
-	
-	private boolean autoDeserialize;
-	
-	private IdempotentType idempotentType;
+
+	@Builder.Default
+	private boolean autoDeserialize = true;
+
+	@Builder.Default
+	private IdempotentType idempotentType = IdempotentType.NONE;
 	
 	public boolean shouldWithTransational() {
 		return getIdempotentType()==IdempotentType.DATABASE;
+	}
+	
+	public Object getConsumerAction() {
+		return consumerAction;
 	}
 
 }

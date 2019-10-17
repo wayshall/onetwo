@@ -41,6 +41,6 @@ public abstract class AbstractMethodInterceptor<M extends AbstractMethodResolver
 		return doInvoke(invocation, invokeMethod);
 	}
 	
-	abstract protected Object doInvoke(MethodInvocation invocation, M invokeMethod);
+	abstract protected Object doInvoke(MethodInvocation invocation, M invokeMethod) throws Throwable ;
 	
 }

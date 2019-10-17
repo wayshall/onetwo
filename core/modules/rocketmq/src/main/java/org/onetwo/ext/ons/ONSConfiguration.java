@@ -9,9 +9,9 @@ import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.consumer.DbmReceiveMessageRepository;
 import org.onetwo.ext.ons.consumer.DelegateMessageService;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
+import org.onetwo.ext.ons.consumer.ONSSubscribeProcessor;
 import org.onetwo.ext.ons.consumer.ReceiveMessageRepository;
 import org.onetwo.ext.ons.consumer.StoreConsumerListener;
-import org.onetwo.ext.ons.producer.OnsBatchDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.producer.OnsDatabaseTransactionMessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -34,6 +34,11 @@ public class ONSConfiguration {
 	private ONSProperties onsProperties;
 	@Autowired
 	private MQProperties mqProperties;
+	
+	@Bean
+	public ONSSubscribeProcessor onsSubscribeProcessor() {
+		return new ONSSubscribeProcessor();
+	}
 	
 	@Bean
 	public ONSPushConsumerStarter onsPushConsumerStarter(DelegateMessageService delegateMessageService){
@@ -102,14 +107,14 @@ public class ONSConfiguration {
 		return interceptor;
 	}
 	
-	@Bean
+	/*@Bean
 	@ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
 	public OnsBatchDatabaseTransactionMessageInterceptor batchDatabaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
 		OnsBatchDatabaseTransactionMessageInterceptor interceptor = new OnsBatchDatabaseTransactionMessageInterceptor();
 		interceptor.setTransactionalProps(mqProperties.getTransactional());
 		interceptor.setSendMessageRepository(sendMessageRepository);
 		return interceptor;
-	}
+	}*/
 	
 	/*@Configuration
 	@ConditionalOnProperty(ONSProperties.TRANSACTIONAL_ENABLED_KEY)

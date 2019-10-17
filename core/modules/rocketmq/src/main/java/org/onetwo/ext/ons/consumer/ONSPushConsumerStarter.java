@@ -1,38 +1,24 @@
 package org.onetwo.ext.ons.consumer;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.ListenerType;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.annotation.ONSConsumer;
-import org.onetwo.ext.ons.annotation.ONSSubscribe;
-import org.onetwo.ext.ons.annotation.ONSSubscribe.ConsumerProperty;
 import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
 import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 import com.aliyun.openservices.ons.api.Consumer;
 import com.aliyun.openservices.ons.api.MessageListener;
@@ -62,6 +48,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	
 //	private ONSConsumerListenerComposite consumerListenerComposite;
 	private DelegateMessageService delegateMessageService;
+	@Autowired
+	private List<ConsumerProcessor> consumerProcessors;
 	
 
 	public ONSPushConsumerStarter(/*MessageDeserializer messageDeserializer*/) {
@@ -87,7 +75,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 //		Assert.notNull(messageDeserializer);
 //		Assert.notNull(consumerListenerComposite);
 
-		ConsumerScanner scanner = new ConsumerScanner(applicationContext);
+		ConsumerScanner scanner = new ConsumerScanner(applicationContext, this.consumerProcessors);
 		Map<String, ConsumerMeta> consumers = scanner.findConsumers();
 
 		consumers.entrySet().parallelStream().forEach(e->{
@@ -100,7 +88,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		
 	}
 	
-	private String resloveValue(String value){
+	protected String resloveValue(String value){
 		return SpringUtils.resolvePlaceholders(applicationContext, value);
 	}
 	
@@ -210,109 +198,26 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	}
 
 	public class ConsumerScanner {
-		private ApplicationContext applicationContext;
+//		private ApplicationContext applicationContext;
+		private List<ConsumerProcessor> consumerProcessors;
 		
-		public ConsumerScanner(ApplicationContext applicationContext) {
+		public ConsumerScanner(ApplicationContext applicationContext, List<ConsumerProcessor> consumerProcessors) {
 			super();
-			this.applicationContext = applicationContext;
+//			this.applicationContext = applicationContext;
+			this.consumerProcessors = consumerProcessors;
 		}
 
 		public Map<String, ConsumerMeta> findConsumers() {
 			Map<String, ConsumerMeta> consumers = Maps.newHashMap();
-			for(ListenerType type : ListenerType.values()){
+			
+			consumerProcessors.forEach(processor -> {
+				processor.parse(consumers);
+			});
+			/*for(ListenerType type : ListenerType.values()){
 				buildConsumerMeta(consumers, type);
 			}
-			buildAnnotationConsumers(consumers);
+			buildAnnotationConsumers(consumers);*/
 			return consumers;
-		}
-		
-		public void buildAnnotationConsumers(Map<String, ConsumerMeta> consumers) {
-			Map<String, ?> onsListeners = applicationContext.getBeansWithAnnotation(ONSConsumer.class);
-			onsListeners.forEach((name, bean)->{
-				//one bean multip methods
-				findConsumerMethods(bean).forEach(method->{
-					ONSSubscribe subscribe = AnnotationUtils.findAnnotation(method, ONSSubscribe.class);
-					DelegateCustomONSConsumer delegate = new DelegateCustomONSConsumer(bean, method);
-					ConsumerMeta meta = buildConsumerMeta(subscribe, ListenerType.CUSTOM, delegate, name);
-					if(consumers.containsKey(meta.getConsumerId())){
-						throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
-																		.put("add listener", name)
-																		.put("exists listener", consumers.get(meta.getConsumerId()).getConsumerBeanName());
-					}
-					consumers.put(meta.getConsumerId(), meta);
-				});
-			});
-		}
-		
-		private List<Method> findConsumerMethods(Object bean){
-			Class<?> targetClass = AopUtils.getTargetClass(bean);
-			List<Method> consumerMethods = Lists.newArrayList();
-			ReflectionUtils.doWithMethods(targetClass, m->consumerMethods.add(m), m->{
-				if(AnnotationUtils.findAnnotation(m, ONSSubscribe.class)!=null){
-					Parameter[] parameters = m.getParameters();
-					if(parameters.length==0 || parameters.length>2){
-						throw new BaseException("the maximum parameter of consumer method[" + m.toGenericString() + "]  is two.");
-					}
-					if(parameters[0].getType()!=ConsumContext.class){
-						throw new BaseException("the first parameter type of the consumer method[" + m.toGenericString() + "] must be: "+ConsumContext.class);
-					}
-					return true;
-				}
-				return false;
-			});
-			return consumerMethods;
-		}
-		
-		private void buildConsumerMeta(Map<String, ConsumerMeta> consumers, ListenerType listenerType){
-			Map<String, ?> onsListeners = applicationContext.getBeansOfType(listenerType.getListenerClass());
-			onsListeners.forEach((name, bean)->{
-				Class<?> targetClass = AopUtils.getTargetClass(bean);
-				ONSSubscribe subscribe = AnnotationUtils.findAnnotation(targetClass, ONSSubscribe.class);
-				ConsumerMeta meta = buildConsumerMeta(subscribe, listenerType, bean, name);
-				
-				if(consumers.containsKey(meta.getConsumerId())){
-					throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
-																	.put("add listener", name)
-																	.put("exists listener", consumers.get(meta.getConsumerId()).getConsumerBeanName());
-				}
-				consumers.put(meta.getConsumerId(), meta);
-			});
-		}
-
-		private ConsumerMeta buildConsumerMeta(ONSSubscribe subscribe, ListenerType listenerType, Object listener, String listernName){
-			String subExpression = null;
-			if(StringUtils.isBlank(subscribe.subExpression())){
-				if(!LangUtils.isEmpty(subscribe.tags())){
-					Collection<String> tags = Stream.of(subscribe.tags()).map(tag->resloveValue(tag)).collect(Collectors.toSet());
-					subExpression = StringUtils.join(tags, " || ");
-				}
-			}else{
-				subExpression = subscribe.subExpression();
-			}
-			String topic = resloveValue(subscribe.topic());
-			String consumerId = resloveValue(subscribe.consumerId());
-			
-			ConsumerProperty[] onsProperties = subscribe.properties();
-			Map<String, String> props = Stream.of(onsProperties).collect(Collectors.toMap(prop->prop.name(), prop->resloveValue(prop.value())));
-			Properties properties = new Properties();
-			properties.putAll(props);
-			
-			ConsumerMeta meta = ConsumerMeta.builder()
-					.consumerId(consumerId)
-					.topic(topic)
-					.subExpression(subExpression)
-					.messageModel(subscribe.messageModel())
-					.consumeFromWhere(subscribe.consumeFromWhere())
-					.maxReconsumeTimes(subscribe.maxReconsumeTimes())
-					.ignoreOffSetThreshold(subscribe.ignoreOffSetThreshold())//ONS类型的listener不支持
-					.listenerType(listenerType)
-					.consumerAction(listener)
-					.consumerBeanName(listernName)
-					.autoDeserialize(subscribe.autoDeserialize())
-					.idempotentType(subscribe.idempotent())
-					.comsumerProperties(properties)
-					.build();
-			return meta;
 		}
 		
 	}

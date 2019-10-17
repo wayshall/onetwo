@@ -1,7 +1,6 @@
 package org.onetwo.boot.mq;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
@@ -55,16 +54,15 @@ public enum SendMessageFlags implements InterceptorPredicate {
 			}
 			return true;
 		}
-	},
+	}
 	
 	/****
 	 * 批量模式
 	 * 基于线程变量实现，不适用于复杂的事务模式如嵌套事务
-	 */
+	 * 
+	 * 显示启用事务时，强制检测是否有DatabaseTransactionMessageInterceptor拦截器
+	 
 	EnableBatchTransactional(){
-		/***
-		 * 显示启用事务时，强制检测是否有DatabaseTransactionMessageInterceptor拦截器
-		 */
 		@Override
 		public boolean isApply(SendMessageInterceptor inter) {
 			if(Springs.getInstance().isInitialized()){
@@ -84,7 +82,7 @@ public enum SendMessageFlags implements InterceptorPredicate {
 			}
 			return true;
 		}
-	}
+	}*/
 	
 	;
 	

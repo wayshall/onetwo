@@ -33,15 +33,20 @@ public interface PluginMeta {
 	
 	static PluginMeta by(Class<? extends WebPlugin> webPluginClass, String version, String sperator){
 		String clsName = webPluginClass.getSimpleName();
+		String pluginName = null;
+		if (StringUtils.isNotBlank(sperator)) {
+			pluginName = StringUtils.convertWithSeperator(clsName, sperator);
+		} else {
+			pluginName = StringUtils.uncapitalize(clsName);
+		}
+		return by(pluginName, webPluginClass, version, sperator);
+	}
+	static PluginMeta by(String pluginName, Class<? extends WebPlugin> webPluginClass, String version, String sperator){
+		String clsName = webPluginClass.getSimpleName();
 		if(clsName.endsWith(PLUGIN_POSTFIX)){
 			clsName = StringUtils.substringBefore(clsName, PLUGIN_POSTFIX);
 		}
-		if (StringUtils.isNotBlank(sperator)) {
-			clsName = StringUtils.convertWithSeperator(clsName, sperator);
-		} else {
-			clsName = StringUtils.uncapitalize(clsName);
-		}
-		return new SimplePluginMeta(clsName, version);
+		return new SimplePluginMeta(pluginName, version);
 	}
 
 	public static String resolvePluginContextPath(ApplicationContext applicationContext, final String pluginContextPath){

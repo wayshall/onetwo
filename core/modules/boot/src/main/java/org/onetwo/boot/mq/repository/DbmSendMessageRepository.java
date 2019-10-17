@@ -125,6 +125,7 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 
 
 	@Override
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void batchUpdateToSent(Collection<SendMessageContext<?>> ctxs) {
 		List<SendMessageEntity> messages = ctxs.stream().map(ctx -> {
 			SendMessageEntity e = ctx.getMessageEntity();

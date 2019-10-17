@@ -41,8 +41,9 @@ public class BatchDataBaseProducerServiceImpl {
 								  				.orderId(Long.valueOf(i))
 								  				.title("支付" + i)
 								  				.build()
-					  ).build(), 
-					  SendMessageFlags.EnableBatchTransactional);// 启动消息本地事务，以保持一致性
+					  ).build() 
+//					  ,SendMessageFlags.EnableBatchTransactional
+					  );// 启动消息本地事务，以保持一致性
 			
 			System.out.println("sendResult: " + sendResult);
 		}

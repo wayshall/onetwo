@@ -23,6 +23,7 @@ public class OnsBatchDatabaseTransactionMessageInterceptor extends OnsDatabaseTr
 		if (event==null) {
 			event = SendMessageEvent.builder()
 								 .sendMessageContexts(new ArrayList<>())
+								 .batchMode(true)
 								 .build();
 			CURRENT_MESSAGES.set(event);
 			applicationEventPublisher.publishEvent(event);
@@ -44,8 +45,10 @@ public class OnsBatchDatabaseTransactionMessageInterceptor extends OnsDatabaseTr
 	
 	@TransactionalEventListener(phase=TransactionPhase.BEFORE_COMMIT)
 	public void beforeCommit(SendMessageEvent event) {
-		this.getSendMessageRepository().batchSave(event.getSendMessageContexts());
-		CURRENT_MESSAGES.remove();
+		if (event.isBatchMode()) {
+			this.getSendMessageRepository().batchSave(event.getSendMessageContexts());
+			CURRENT_MESSAGES.remove();
+		}
 	}
 
 	@Override
@@ -55,14 +58,16 @@ public class OnsBatchDatabaseTransactionMessageInterceptor extends OnsDatabaseTr
 	}
 	
 	protected void commitMessages(SendMessageEvent event){
-		event.getSendMessageContexts().forEach(ctx -> {
-			ctx.getChain().invoke();
-		});
-//		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
-		getSendMessageRepository().batchUpdateToSent(event.getSendMessageContexts());
-		Logger log = getLogger();
-		if(event.isDebug() && log.isInfoEnabled()){
-			log.info("batch committed transactional message in thread[{}]...", Thread.currentThread().getId());
+		if (event.isBatchMode()) {
+			event.getSendMessageContexts().forEach(ctx -> {
+				ctx.getChain().invoke();
+			});
+//			sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
+			getSendMessageRepository().batchUpdateToSent(event.getSendMessageContexts());
+			Logger log = getLogger();
+			if(event.isDebug() && log.isInfoEnabled()){
+				log.info("batch committed transactional message in thread[{}]...", Thread.currentThread().getId());
+			}
 		}
 	}
 	

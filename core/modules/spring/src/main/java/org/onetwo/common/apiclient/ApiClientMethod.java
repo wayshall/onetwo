@@ -1,6 +1,5 @@
 package org.onetwo.common.apiclient;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -30,10 +29,8 @@ import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.slf4j.Logger;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.Resource;
@@ -188,14 +185,14 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	 * @author weishao zeng
 	 * @param annoClass
 	 * @return
-	 */
+	
 	public <T extends Annotation> T findAnnotation(Class<T> annoClass) {
 		T annoInst = AnnotatedElementUtils.getMergedAnnotation(getMethod(), annoClass);
 		if (annoInst==null) {
 			annoInst = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), annoClass);
 		}
 		return annoInst;
-	}
+	} */
 	
 	private void initHandlers() {
 		// 需要加@Inherited才能继承
@@ -223,24 +220,6 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	protected ApiErrorHandler obtainDefaultApiErrorHandler() {
 		return null;
-	}
-	
-	private <T> T createAndInitComponent(Class<T> clazz) {
-		T component = null;
-		if (Springs.getInstance().isInitialized()){
-			component = Springs.getInstance().getBean(clazz);
-			if (component==null) {
-				component = ReflectUtils.newInstance(clazz);
-				SpringUtils.injectAndInitialize(Springs.getInstance().getAppContext(), component);
-			}
-		} else {
-			Logger logger = ApiClientUtils.getApiclientlogger();
-			if (logger.isWarnEnabled()) {
-				logger.warn("spring application not initialized, use reflection to create component: {}", clazz);
-			}
-			component = ReflectUtils.newInstance(clazz);
-		}
-		return component;
 	}
 	
 	public CustomResponseHandler<?> getCustomResponseHandler() {
