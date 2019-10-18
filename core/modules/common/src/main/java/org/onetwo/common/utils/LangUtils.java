@@ -1872,4 +1872,5 @@ public class LangUtils {
 		unsensitive = org.apache.commons.lang3.StringUtils.rightPad(unsensitive, sensitive.length(), replaceStr);
 		return unsensitive;
 	}
+	
 }
