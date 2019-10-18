@@ -39,7 +39,7 @@ public class JsonMessageDeserializer implements MessageDeserializer {
 			if(compatibilityTypeMappings.containsKey(typeName)){
 				typeName = compatibilityTypeMappings.get(typeName);
 			}
-			return jsonMapper.fromJson(body, ClassUtils.forName(typeName, null), true);
+			return jsonMapper.fromJson(body, ClassUtils.forName(typeName, null));
 		} catch (Exception e) {
 			throw new BaseException("deserialize message error for type: " + typeName, e);
 		}
