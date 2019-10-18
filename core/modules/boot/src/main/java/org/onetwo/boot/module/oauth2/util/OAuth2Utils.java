@@ -84,6 +84,7 @@ public abstract class OAuth2Utils {
 		if(!req.isPresent()){
 			return Optional.empty();
 		}
+//		String header = req.get().getHeader("Authorization");
 		return getClientDetails(req.get());
 	}
 	
@@ -171,8 +172,11 @@ public abstract class OAuth2Utils {
 		};
 	}*/
 	
+	@SuppressWarnings("unchecked")
 	public static <T extends ClientDetails> Optional<T> getClientDetails(HttpServletRequest request) {
-		return getOrSetClientDetails(request, null);
+		ClientDetailsObtainService clientDetailService = getClientDetailsObtainService().get();
+		return (Optional<T>)clientDetailService.resolveAndStoreClientDetails(request);
+//		return getOrSetClientDetails(request, null);
 	}
 	
 	@SuppressWarnings("unchecked")
