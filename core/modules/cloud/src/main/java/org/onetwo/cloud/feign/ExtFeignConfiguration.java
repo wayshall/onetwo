@@ -33,6 +33,7 @@ import org.springframework.core.convert.ConversionService;
 import feign.Contract;
 import feign.Feign;
 import feign.Logger;
+import feign.Retryer;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import okhttp3.Interceptor;
@@ -139,6 +140,24 @@ public class ExtFeignConfiguration implements InitializingBean {
 			simpleLoggerManager.changeLevels("DEBUG", apiNames.toArray(new String[0]));
 		}
 		return level;
+	}
+	
+	@Configuration
+	protected static class FeignRetryConfiguration {
+		
+		@Bean
+		@ConditionalOnProperty(value=FeignProperties.RETRYER_KEY, havingValue=FeignProperties.RETRYER_NEVER_RETRY, matchIfMissing=true)
+		public Retryer neverRetryer() {
+			Retryer retryer = Retryer.NEVER_RETRY;
+			return retryer;
+		}
+		
+		@Bean
+		@ConditionalOnProperty(value=FeignProperties.RETRYER_KEY, havingValue=FeignProperties.RETRYER_FEIGN_DEFAULT)
+		public Retryer feignRetryer() {
+			Retryer retryer = new Retryer.Default();
+			return retryer;
+		}
 	}
 	
 	@Configuration

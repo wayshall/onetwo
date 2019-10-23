@@ -20,6 +20,10 @@ public class FeignProperties {
 	public static final String PROPERTIES_PREFIX = "jfish.cloud.feign";
 	public static final String ENABLE_KEY = PROPERTIES_PREFIX + ".enabled";
 	
+	public static final String RETRYER_KEY = PROPERTIES_PREFIX + ".retryer";
+	public static final String RETRYER_NEVER_RETRY = "never";
+	public static final String RETRYER_FEIGN_DEFAULT = "feign_default";
+	
 //	public static final String LOCAL_ENABLE_KEY = PROPERTIES_PREFIX + ".local.enabled";
 	
 	/***
