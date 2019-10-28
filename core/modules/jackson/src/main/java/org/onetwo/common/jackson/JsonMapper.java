@@ -316,6 +316,7 @@ public class JsonMapper {
 			return null;
 		Assert.notNull(objType);
 		Object obj = null;
+		String jsonstr = "";
 		try {
 			if(json instanceof InputStream){
 				obj = this.objectMapper.readValue((InputStream)json, (Class<?>)objType);
@@ -324,7 +325,7 @@ public class JsonMapper {
 			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
 				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else{
-				String jsonstr = json.toString();
+				jsonstr = json.toString();
 				if(StringUtils.isBlank(jsonstr)){
 					return null;
 				}
@@ -332,7 +333,9 @@ public class JsonMapper {
 			}
 		} catch (Exception e) {
 			if (parseAsStringIfError) {
-				String jsonstr = fromJson(json, String.class, false);
+				if (json instanceof byte[]) {
+					jsonstr = LangUtils.newString((byte[])obj);
+				}
 				throw new JsonException("parse json to ["+objType+"] error, json: " + jsonstr, e);
 			} else {
 				throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.google.common.collect.Lists;
@@ -82,6 +83,28 @@ public class JsonMapperTest {
 		list.add(storeDetailVo);
 		String s = mapper.writeValueAsString(list);
 		System.out.println(s);
+		
+		byte[] bytes = jsonMapper.toJsonBytes(list);
+		List<StoreDetailVo> list2 = jsonMapper.fromJson(bytes, new TypeReference<List<StoreDetailVo>>() {
+		});
+		
+		assertThat(list2).isEqualTo(list2);
+		String str1 = LangUtils.newString(bytes);
+		System.out.println("json str1: " + str1);
+		
+
+		TestJsonData u1 = new TestJsonData();
+		u1.setCreate_time(new Timestamp(new Date().getTime()));
+		u1.setUser_name("user_name");
+		String str = jsonMapper.toJson(u1);
+		System.out.println("json str: " + str);
+		bytes = jsonMapper.toJsonBytes(u1);
+		
+		String str2 = LangUtils.newString(bytes);
+		System.out.println("json str2: " + str2);
+		
+		/*Map jsonstr = jsonMapper.fromJson(bytes, Map.class);
+		System.out.println("json map: " + jsonstr);*/
 	}
 	
 	@Test

@@ -140,12 +140,12 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		message.setTag(tag);
 		
 		MessageSerializer messageSerializer = getMessageSerializer(onsMessage);
+		configMessage(message, onsMessage);
 		if(needSerialize(body)){
 			message.setBody(messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
 		}else{
 			message.setBody((byte[])body);
 		}
-		configMessage(message, onsMessage);
 		
 		return sendRawMessage(message, interceptorPredicate);
 	}
