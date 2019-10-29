@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
  * <br/>
  */
 public class TypingJsonDataSerializer extends JsonSerializer<Object> {
-	private JsonMapper jsonMapper = JsonMapper.ignoreEmpty().enableTyping(); 
+	private JsonMapper jsonMapper = JsonMapper.defaultMapper().enableTyping(); 
 
 	@Override
 	public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {

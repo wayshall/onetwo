@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
  * <br/>
  */
 public class TypingJsonDataDeserializer extends JsonDeserializer<Object> {
-	private JsonMapper jsonMapper = JsonMapper.ignoreEmpty().enableTyping();
+	private JsonMapper jsonMapper = JsonMapper.defaultMapper().enableTyping();
 
 	@Override
 	public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {

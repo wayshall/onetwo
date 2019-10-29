@@ -14,8 +14,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -61,6 +63,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.MethodIntrospector;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -78,6 +81,7 @@ import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils.MethodFilter;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -778,6 +782,16 @@ final public class SpringUtils {
 														.enableFieldNameAnnotation()
 														.build();
 		return convertor;
+	}
+	
+
+	public static Set<Method> selectMethodsByParameterTypes(Class<?> targetClass, String targetMethod, Method sourceMethod) {
+		Set<Method> methods = MethodIntrospector.selectMethods(targetClass, (MethodFilter)method -> {
+			return method.getName().equals(targetMethod) && 
+					method.getParameterCount()==sourceMethod.getParameterCount() &&
+					Objects.deepEquals(method.getParameterTypes(), sourceMethod.getParameterTypes());
+		});
+		return methods;
 	}
 	
 }
