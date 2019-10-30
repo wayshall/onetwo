@@ -23,6 +23,8 @@ public class BootJfishCloudConfig {
 	
 	public static final String EUREKA_EMBEDDED_KEY = "jfish.cloud.eureka.embedded";
 	
+	public static final String HYSTRIX_SHARE_REQUEST_CONTEXT = "jfish.cloud.hystrix.shareRequestContext";
+	
 	ZuulConfig zuul = new ZuulConfig();
 	
 	@Data

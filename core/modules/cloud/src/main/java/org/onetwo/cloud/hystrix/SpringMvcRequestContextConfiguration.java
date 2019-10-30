@@ -1,5 +1,6 @@
 package org.onetwo.cloud.hystrix;
 
+import org.onetwo.cloud.core.BootJfishCloudConfig;
 import org.onetwo.cloud.hystrix.SpringMvcRequestContextConfiguration.SpringMvcRequestContextCondition;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -34,7 +35,7 @@ public class SpringMvcRequestContextConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(name = "jfish.cloud.hystrix.shareRequestContext", matchIfMissing=true)
+		@ConditionalOnProperty(name = BootJfishCloudConfig.HYSTRIX_SHARE_REQUEST_CONTEXT, matchIfMissing=true)
 		static class ShareRequestContext {
 		}
 

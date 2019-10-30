@@ -34,18 +34,20 @@ public interface PluginMeta {
 	static PluginMeta by(Class<? extends WebPlugin> webPluginClass, String version, String sperator){
 		String clsName = webPluginClass.getSimpleName();
 		String pluginName = null;
+		
 		if (StringUtils.isNotBlank(sperator)) {
 			pluginName = StringUtils.convertWithSeperator(clsName, sperator);
 		} else {
 			pluginName = StringUtils.uncapitalize(clsName);
 		}
+		
+		if(pluginName.endsWith(PLUGIN_POSTFIX)){
+			pluginName = StringUtils.substringBefore(pluginName, PLUGIN_POSTFIX);
+		}
+		
 		return by(pluginName, webPluginClass, version, sperator);
 	}
 	static PluginMeta by(String pluginName, Class<? extends WebPlugin> webPluginClass, String version, String sperator){
-		String clsName = webPluginClass.getSimpleName();
-		if(clsName.endsWith(PLUGIN_POSTFIX)){
-			clsName = StringUtils.substringBefore(clsName, PLUGIN_POSTFIX);
-		}
 		return new SimplePluginMeta(pluginName, version);
 	}
 
