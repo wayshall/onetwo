@@ -48,7 +48,16 @@ public class SimpleInterceptorChain<T extends Interceptor> implements Intercepto
 		this.targetMethod = targetMethod;
 		this.targetArgs = targetArgs;
 		this.interceptors = new LinkedList<>(interceptors);
-		this.actualInvoker = actualInvoker;
+		if (actualInvoker==null) {
+			this.actualInvoker = () -> {
+				if (!targetMethod.isAccessible()){
+					targetMethod.setAccessible(true);
+				}
+				return targetMethod.invoke(targetObject, targetArgs);
+			};
+		} else {
+			this.actualInvoker = actualInvoker;
+		}
 	}
 	
 	private void checkState(String msg){
@@ -106,7 +115,7 @@ public class SimpleInterceptorChain<T extends Interceptor> implements Intercepto
 	}
 	
 
-	public Object invoke() throws Throwable {
+	public Object invoke() {
 		if(state==STATE_INIT){
 			state = STATE_EXECUTING;
 			this.iterator = this.interceptors.iterator();
@@ -115,7 +124,7 @@ public class SimpleInterceptorChain<T extends Interceptor> implements Intercepto
 			T interceptor = iterator.next();
 			result = interceptor.intercept(this);
 		}else{
-			if(actualInvoker!=null){
+			/*if(actualInvoker!=null){
 				result = actualInvoker.invoke();
 			}else{
 				if (!targetMethod.isAccessible()){
@@ -129,23 +138,31 @@ public class SimpleInterceptorChain<T extends Interceptor> implements Intercepto
 					throwable = e;
 					throw convertRuntimeException(e);
 				}
+			}*/
+			try {
+				result = this.actualInvoker.invoke();
+				state = STATE_FINISH;
+			} catch (Throwable e) { 
+				// IllegalAccessException | IllegalArgumentException | InvocationTargetException e
+				state = STATE_EXCEPTION;
+				throwable = e;
+				throw convertRuntimeException(e);
 			}
 		}
 		return result;
 	}
 	
-	private RuntimeException convertRuntimeException(Exception e){
-		if(e instanceof InvocationTargetException){
+	private RuntimeException convertRuntimeException(Throwable e){
+		if (e instanceof InvocationTargetException) {
 			InvocationTargetException ite = (InvocationTargetException)e;
 			Throwable target = ite.getTargetException();
 			if(target instanceof NestedRuntimeException){
 				throw (NestedRuntimeException)ite.getTargetException();
 			}
+		} else if ( e instanceof RuntimeException) {
+			throw (RuntimeException) e;
 		}
 		
-		if (e instanceof BaseException) {
-			throw (BaseException) e;
-		}
 		return new BaseException("invoke method error, targetMethod: " + targetMethod, e);
 	}
 
