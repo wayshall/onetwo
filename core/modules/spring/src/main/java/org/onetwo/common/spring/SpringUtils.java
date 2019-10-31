@@ -9,7 +9,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -257,7 +256,7 @@ final public class SpringUtils {
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
-			return Collections.emptyList();
+			return new ArrayList<>();
 		List<T> list = new ArrayList<T>(beanMaps.values());
 		AnnotationAwareOrderComparator.sort(list);
 		return list;

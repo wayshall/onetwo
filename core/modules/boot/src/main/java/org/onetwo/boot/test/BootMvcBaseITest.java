@@ -3,12 +3,9 @@ package org.onetwo.boot.test;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-public class BootMvcBaseITest {
+public class BootMvcBaseITest implements BootMvcBaseITestable {
 
 	@Autowired
 	protected WebApplicationContext webApplicationContext;
@@ -16,21 +13,10 @@ public class BootMvcBaseITest {
 	
 	@Before
 	public void initMockMvc(){
-		this.mockMvc = buildMockMvc();
-	}
-	protected MockMvc buildMockMvc(){
-		return MockMvcBuilders.webAppContextSetup(webApplicationContext)
-								.build();
+		this.mockMvc = buildMockMvc(webApplicationContext);
 	}
 
-	protected ResultActions perform(RequestBuilder requestBuilder){
-		try {
-			return mockMvc().perform(requestBuilder);
-		} catch (Exception e) {
-			throw new RuntimeException("mockMvc perform error: "+e.getMessage(), e);
-		}
-	}
-	protected MockMvc mockMvc() {
+	public MockMvc mockMvc() {
 		return mockMvc;
 	}
 
