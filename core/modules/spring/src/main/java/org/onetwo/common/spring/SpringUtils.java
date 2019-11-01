@@ -110,6 +110,20 @@ final public class SpringUtils {
 	private SpringUtils(){
 	}
 
+	public static int higherThan(int order) {
+		return higherThan(order, 10);
+	}
+	public static int higherThan(int order, int step) {
+		return order - step;
+	}
+
+	public static int lowerThan(int order) {
+		return lowerThan(order, 10);
+	}
+	public static int lowerThan(int order, int step) {
+		return order + step;
+	}
+
 	public static FormattingConversionService getFormattingConversionService(){
 		return CONVERSION_SERVICE;
 	}

@@ -76,7 +76,7 @@ public class RedisConfiguration {
 	}*/
 	
 	@Bean
-	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
+//	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
 	@ConditionalOnClass({RedisLockRegistry.class})
 	public RedisLockRegistry redisLockRegistry(@Autowired JedisConnectionFactory jedisConnectionFactory){
 		LockRegistryProperties lockRegistryProperties = redisProperties.getLockRegistry();

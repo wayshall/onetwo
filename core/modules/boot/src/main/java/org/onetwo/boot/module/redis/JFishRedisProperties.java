@@ -17,7 +17,7 @@ public class JFishRedisProperties {
 
 	public static final String ENABLED_KEY = "jfish.redis.enabled";
 	public static final String SERIALIZER_KEY = "jfish.redis.serializer";
-	public static final String ENABLED_LOCK_REGISTRY = "jfish.redis.lockRegistry.key";
+//	public static final String ENABLED_LOCK_REGISTRY = "jfish.redis.lockRegistry.key";
 	private static final String LOCK_PREFX_KEY = "Zifish:RedisLock:";
 
 	/*String hostName = "localhost";
@@ -40,8 +40,11 @@ public class JFishRedisProperties {
 	
 	@Data
 	public static class LockRegistryProperties {
-		String key;
-		long expireAfter = 60000;
+		String key = "DEFAULT:";
+		/***
+		 * default is 2 min
+		 */
+		long expireAfter = 120000;
 		
 		public String getKey(){
 			return LOCK_PREFX_KEY + key;
