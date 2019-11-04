@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  */
 //@Transactional
 public class CompensationSendMessageTask implements InitializingBean {
-	public static final String LOCK_KEY = "locker:ons:send_message_task";
+	public static final String LOCK_KEY = "ons:send_message_task";
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
@@ -128,7 +128,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 	
 
 	private RedisLockRunner getRedisLockRunner(){
-		RedisLockRunner redisLockRunner = RedisLockRunner.createLoker(redisLockRegistry, LOCK_KEY, redisLockTimeout);
+		RedisLockRunner redisLockRunner = RedisLockRunner.createLocker(redisLockRegistry, LOCK_KEY, redisLockTimeout);
 		return redisLockRunner;
 	}
 
