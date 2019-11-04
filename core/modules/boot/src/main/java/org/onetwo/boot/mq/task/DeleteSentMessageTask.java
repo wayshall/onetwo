@@ -45,8 +45,7 @@ public class DeleteSentMessageTask implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(useReidsLock){
-			Assert.notNull(redisLockRegistry, "redisLockRegistry not found! "
-					+ "you should config the key[" + JFishRedisProperties.ENABLED_LOCK_REGISTRY + "] to enabled redisLockRegistry!");
+			Assert.notNull(redisLockRegistry, "redisLockRegistry not found! ");
 		}
 	}
 

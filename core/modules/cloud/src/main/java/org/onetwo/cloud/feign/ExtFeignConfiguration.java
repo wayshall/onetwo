@@ -139,6 +139,14 @@ public class ExtFeignConfiguration implements InitializingBean {
 									.collect(Collectors.toSet());
 			simpleLoggerManager.changeLevels("DEBUG", apiNames.toArray(new String[0]));
 		}
+		/*if(level!=Logger.Level.NONE && feignProperties.getLogger().isAutoChangeLevel()){
+			Set<String> apiNames = SpringUtils.getBeansWithAnnotation(applicationContext, FeignClient.class)
+											.stream().map(d -> {
+												return d.getName();
+											})
+											.collect(Collectors.toSet());
+			simpleLoggerManager.changeLevels("DEBUG", apiNames.toArray(new String[0]));
+		}*/
 		return level;
 	}
 	
