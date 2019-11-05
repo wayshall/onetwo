@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.redis;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -40,13 +41,13 @@ public class JFishRedisProperties {
 	
 	@Data
 	public static class LockRegistryProperties {
-		String key = "DEFAULT:";
+		public static final String DEFAULT_LOCK_KEY = "${"+BootJFishConfig.PREFIX+".redis.lockRegistry.key:${spring.application.name}}";
 		/***
 		 * default is 2 min
 		 */
 		long expireAfter = 120000;
 		
-		public String getKey(){
+		public String getLockKey(String key){
 			return LOCK_PREFX_KEY + key;
 		}
 	}
