@@ -65,7 +65,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 	 * @author wayshall
 	 */
 //	@Scheduled(cron="${"+ONSProperties.TRANSACTIONAL_TASK_CRON_KEY+":0 0/1 * * * *}")
-	@Scheduled(fixedRateString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY+":30000}", initialDelay=30000)
+	@Scheduled(fixedDelayString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_CONFIG_KEY+":30000}", initialDelay=30000)
 	public void scheduleCheckSendMessage(){
 		SendTaskProps taskProps = this.mqProperties.getTransactional().getSendTask();
 		int ignoreCreateAtRecently = (int)LangOps.timeToSeconds(taskProps.getIgnoreCreateAtRecently(), 30);
