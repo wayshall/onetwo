@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -58,7 +59,7 @@ public class ExtResponseEntityDecoder implements Decoder {
 				res = decodeByType(response, type);
 			}else{
 				SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
-				if(isCutoutError(response, dr)){
+				/*if(isCutoutError(response, dr)){
 					ServiceException cause = new ServiceException(dr.getMessage(), dr.getCode());
 					String message = "cutoutError, remote service error:"+dr.getMessage();
 					JFishLoggerFactory.findMailLogger().error(message);
@@ -67,8 +68,10 @@ public class ExtResponseEntityDecoder implements Decoder {
 				}else if(dr.isError()){
 					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 				}
-				res = dr.getData();
+				res = dr.getData();*/
+				res = dr;
 			}
+			res = handleDataResult(response, res);
 		} catch (HttpMessageNotReadableException e) {
 			if(log.isErrorEnabled()){
 				String msg = String.format("decode error, try to use[%s] to decode again, error message: %s", SimpleDataResult.class.getSimpleName(), e.getMessage());
@@ -90,7 +93,25 @@ public class ExtResponseEntityDecoder implements Decoder {
 		return res;
 	}
 	
-	protected boolean isCutoutError(FeignResponseAdapter response, SimpleDataResult<?> dr){
+	protected Object handleDataResult(FeignResponseAdapter response, Object res) {
+		Object result = res;
+		if (result instanceof DataResult) {
+			DataResult<?> dr = (DataResult<?>) result;
+			if(isCutoutError(response, dr)){
+				ServiceException cause = new ServiceException(dr.getMessage(), dr.getCode());
+				String message = "cutoutError, remote service error:"+dr.getMessage();
+				JFishLoggerFactory.findMailLogger().error(message);
+				
+				throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
+			}else if(!dr.isSuccess()){
+				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+			}
+			res = dr.getData();
+		}
+		return result;
+	}
+	
+	protected boolean isCutoutError(FeignResponseAdapter response, DataResult<?> dr){
 		//TODO dr.getCode().startWith("SHORTCIRCUIT_")，暂时不需要
 		return false;
 	}
