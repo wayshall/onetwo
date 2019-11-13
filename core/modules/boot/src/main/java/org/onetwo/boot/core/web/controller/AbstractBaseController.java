@@ -339,9 +339,13 @@ abstract public class AbstractBaseController {
 				throw new NotLoginException();
 			}
 			return null;*/
-			throw new BaseException("current login UserDetails can not cast to the target class: " + clazz);
+			if (throwIfNotFound) {
+				throw new BaseException("current login UserDetails can not cast to the target class: " + clazz);
+			}
+			return null;
+		} else {
+			return clazz.cast(user);
 		}
-		return clazz.cast(user);
 	}
 	
 	@ModelAttribute(name=UserDetail.USER_DETAIL_KEY)
