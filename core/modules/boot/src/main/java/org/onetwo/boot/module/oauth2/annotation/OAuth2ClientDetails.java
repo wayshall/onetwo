@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.oauth2.clientdetails;
+package org.onetwo.boot.module.oauth2.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

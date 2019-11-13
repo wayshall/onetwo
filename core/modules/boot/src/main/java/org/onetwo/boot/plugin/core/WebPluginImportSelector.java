@@ -51,6 +51,10 @@ public class WebPluginImportSelector extends EnabledKeyCondition
 		return factories.toArray(new String[factories.size()]);
 	}*/
 
+	protected String getMainEnabledKey(Environment environment, AnnotationAttributes attrubutes) {
+		return PLUGIN_KEY + "enabled";
+	}
+	
 	@Override
 	protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes) {
 		PluginMeta meta = parsePlugin(attrubutes).getPluginMeta();

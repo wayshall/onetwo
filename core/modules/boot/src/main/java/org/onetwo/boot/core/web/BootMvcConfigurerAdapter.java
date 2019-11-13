@@ -34,6 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -44,6 +45,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentResolverAdapter;
 
 /****
  * 有关web mvc的一些扩展配置
@@ -62,6 +64,12 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Autowired
 	private List<HandlerMethodArgumentResolver> argumentResolverList;
+	/***
+	 * WebArgumentResolver实际上会通过ServletWebArgumentResolverAdapter适配为HandlerMethodArgumentResolver
+	 * 而这个适配实际上调用了两次WebArgumentResolver#resolveArgument，完全没必要，建议不要使用WebArgumentResolver接口
+	 */
+	@Autowired(required=false)
+	private List<WebArgumentResolver> webArgumentResolverList;
 	
 	@Autowired(required=false)
 	private ExtJackson2HttpMessageConverter jackson2HttpMessageConverter;
@@ -74,6 +82,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Autowired
 	private List<HandlerInterceptor> interceptorList;
+//	@Autowired
+//	private ApplicationContext applicationContext;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
@@ -139,6 +149,13 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 			argumentResolverList.forEach(arg->{
 				if(arg.getClass().getAnnotation(BootMvcArgumentResolver.class)!=null){
 					argumentResolvers.add(arg);
+				}
+			});
+		}
+		if(this.webArgumentResolverList!=null){
+			webArgumentResolverList.forEach(arg->{
+				if(arg.getClass().getAnnotation(BootMvcArgumentResolver.class)!=null){
+					argumentResolvers.add(new ServletWebArgumentResolverAdapter(arg));
 				}
 			});
 		}
