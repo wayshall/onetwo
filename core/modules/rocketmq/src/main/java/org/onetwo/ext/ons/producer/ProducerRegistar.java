@@ -44,6 +44,8 @@ public class ProducerRegistar extends BaseImportRegistrar<EnableONSClient> {
 			definition.addPropertyValue("producerId", producerId);
 //			definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 			BeanDefinitionHolder holder = new BeanDefinitionHolder(definition.getBeanDefinition(), beanName);
+			holder.getBeanDefinition().setPrimary(producer.getBoolean("primary"));
+			
 			BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
 			if(logger.isInfoEnabled()){
 				logger.info("register producer {}: {}", producerClass.getSimpleName(), beanName);
