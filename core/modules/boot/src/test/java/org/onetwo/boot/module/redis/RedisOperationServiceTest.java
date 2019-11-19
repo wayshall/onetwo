@@ -32,14 +32,32 @@ public class RedisOperationServiceTest extends RedisBaseTest {
 		String testValue = "testValue";
 		stringRedisTemplate.opsForValue().set(key, testValue);
 		assertThat(stringRedisTemplate.opsForValue().get(key)).isEqualTo(testValue);
-		value = ops.getAndDel(key);
+		
+		String cacheKeyPrefix = redisOperationService.getCacheKeyPrefix();
+		redisOperationService.setCacheKeyPrefix("");
+		value = ops.getAndDelString(key);
 		assertThat(value).isEqualTo(testValue);
 		assertThat(stringRedisTemplate.opsForValue().get(key)).isNull();
+		
+		redisOperationService.setCacheKeyPrefix(cacheKeyPrefix);
+	}
+	
+	@Test
+	public void testSetNX() {
+		String key = "testSetNX";
+		String testValue = "testValue";
+		
+		boolean result = redisOperationService.setNX(key, testValue, 3);
+		assertThat(result).isTrue();
+		
+		result = redisOperationService.setNX(key, testValue, 3);
+		assertThat(result).isFalse();
 	}
 	
 	@Test
 	public void testCache() {
 		SimpleLoggerManager.getInstance().changeLevel(Level.DEBUG, RedisLockRunner.class);
+		SimpleLoggerManager.getInstance().changeLevel(Level.DEBUG, SimpleRedisOperationService.class);
 		
 		String key = "testCache";
 		redisOperationService.getCacheStatis().setEnabled(true);
@@ -54,7 +72,7 @@ public class RedisOperationServiceTest extends RedisBaseTest {
 		
 		cacheUser = this.redisOperationService.getCache(key, ()->CacheData.<UserEntity>builder().value(user).build());
 		assertThat(cacheUser).isEqualTo(user);
-		cacheUser = this.redisOperationService.getCacheIfPreset(key, UserEntity.class).get();
+		cacheUser = this.redisOperationService.getCacheIfPresent(key, UserEntity.class).get();
 		assertThat(cacheUser).isEqualTo(user);
 		assertThat(statis.getMissCount().get()).isEqualTo(1);
 		assertThat(statis.getHitCount().get()).isEqualTo(2);

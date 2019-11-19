@@ -39,7 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/boot</module>
+                <module>../../onetwo-tcc/core</module>
 			</modules>
            <build>
               <plugins>
@@ -84,6 +84,9 @@
                 <module>../../zifish-plugins/parent</module>
                 <module>../../zifish-plugins/web-admin</module>
                 <module>../../zifish-plugins/swaggerext</module>
+                
+                <module>../../onetwo-tcc/parent</module>
+                <module>../../onetwo-tcc/core</module>
         </modules>
       </profile>
      
