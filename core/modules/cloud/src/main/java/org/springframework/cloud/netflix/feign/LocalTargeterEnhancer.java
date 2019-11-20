@@ -5,76 +5,35 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.onetwo.cloud.feign.EnhanceFeignClient;
-import org.onetwo.cloud.feign.FeignProperties;
 import org.onetwo.common.spring.aop.Proxys;
 import org.onetwo.common.spring.aop.Proxys.SpringBeanMethodInterceptor;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.util.ClassUtils;
 
-import feign.Feign;
-import feign.Target;
 import lombok.extern.slf4j.Slf4j;
 
-
 /**
- * 参考 HystrixFeignTargeterConfiguration 
- * 
- * @author wayshall
+ * @author weishao zeng
  * <br/>
  */
 @Slf4j
-public class LocalTargeter implements Targeter, ApplicationContextAware, InitializingBean {
-
-	public final static String CLASS_HYSTRIX_FEIGN = "feign.hystrix.HystrixFeign";
-	
-	private ApplicationContext applicationContext;
-	private Targeter defaultTargeter;
+public class LocalTargeterEnhancer implements TargeterEnhancer {
 	@Autowired
-	private FeignProperties feignProperties;
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (ClassUtils.isPresent(CLASS_HYSTRIX_FEIGN, ClassUtils.getDefaultClassLoader())) {
-			defaultTargeter = new HystrixTargeter();
-		} else {
-			defaultTargeter = new DefaultTargeter();
-		}
-	}
-	
-	private <T> T defaultTargeter(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
-		/*String name = factory.getName();
-		if (RequestUtils.isHttpPath(name)) {
-			factory.setUrl(name);
-			factory.setName("");
-		}*/
-		return defaultTargeter.target(factory, feign, context, target);
-	}
+	private ApplicationContext appContext;
 
-	@Override
-	public <T> T target(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
-		if (!feignProperties.getLocal().isEnabled()) {
-			return defaultTargeter(factory, feign, context, target);
-		}
-		
-		return getTarget(applicationContext, factory, ()->{
-			return (T)getTarget(applicationContext.getParent(), factory, ()->{
-				return defaultTargeter(factory, feign, context, target);
+	public <T> T enhanceTargeter(FeignClientFactoryBean factory, Supplier<T> defaultTarget) {
+		return enhanceTargeter0(appContext, factory, ()->{
+			return (T)enhanceTargeter0(appContext.getParent(), factory, ()->{
+				return defaultTarget.get();
 			});
 		});
-		/*return getTarget(applicationContext.getParent(), factory, ()->{
-			return hystrixTargeter.target(factory, feign, context, target);
-		});*/
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T> T getTarget(ApplicationContext appContext, FeignClientFactoryBean factory, Supplier<T> defaultTarget) {
+	public <T> T enhanceTargeter0(ApplicationContext appContext, FeignClientFactoryBean factory, Supplier<T> defaultTarget) {
 		BeanDefinitionRegistry bdr = (BeanDefinitionRegistry) appContext;
 		
 		Class<?> fallbackType = factory.getFallback();
@@ -111,10 +70,5 @@ public class LocalTargeter implements Targeter, ApplicationContextAware, Initial
 		}
 		return localProxy;
 	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-
 }
+

@@ -46,7 +46,7 @@ spring-boot技术交流群：  604158262
 ## [poi模块](https://github.com/wayshall/onetwo/tree/master/core/modules/poi)
 基于poi，对操作excel的简单封装。
 
-## [dbm模块](https://github.com/wayshall/onetwo/tree/master/core/modules/dbm)
+## [dbm模块](https://github.com/wayshall/dbm)
 
 基于spring jdbc实现的简单orm   
 
