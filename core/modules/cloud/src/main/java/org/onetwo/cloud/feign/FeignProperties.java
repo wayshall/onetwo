@@ -57,7 +57,7 @@ public class FeignProperties {
 	@Data
 	public static class ServiceProps {
 		String basePath;
-		String url;
+//		String url;
 	}
 	/***
 	 * 

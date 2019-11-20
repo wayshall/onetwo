@@ -10,6 +10,7 @@ import org.onetwo.common.spring.aop.Proxys.SpringBeanMethodInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.cloud.netflix.feign.ExtTargeter.FeignTargetContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -24,10 +25,10 @@ public class LocalTargeterEnhancer implements TargeterEnhancer {
 	@Autowired
 	private ApplicationContext appContext;
 
-	public <T> T enhanceTargeter(FeignClientFactoryBean factory, Supplier<T> defaultTarget) {
-		return enhanceTargeter0(appContext, factory, ()->{
-			return (T)enhanceTargeter0(appContext.getParent(), factory, ()->{
-				return defaultTarget.get();
+	public <T> T enhanceTargeter(FeignTargetContext<T> ctx) {
+		return enhanceTargeter0(appContext, ctx.getFeignClientfactory(), ()->{
+			return (T)enhanceTargeter0(appContext.getParent(), ctx.getFeignClientfactory(), ()->{
+				return ctx.createTargeter();
 			});
 		});
 	}

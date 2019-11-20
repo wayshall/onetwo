@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ClassUtils;
 
 import feign.Feign;
+import feign.Feign.Builder;
 import feign.Target;
+import feign.Target.HardCodedTarget;
+import lombok.Data;
 
 
 /**
@@ -18,7 +21,7 @@ public class ExtTargeter implements Targeter, InitializingBean {
 
 	public final static String CLASS_HYSTRIX_FEIGN = "feign.hystrix.HystrixFeign";
 	
-	private Targeter defaultTargeter;
+	private Targeter cloudTargeter;
 	/*private ApplicationContext applicationContext;
 	@Autowired
 	private FeignProperties feignProperties;*/
@@ -28,27 +31,23 @@ public class ExtTargeter implements Targeter, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (ClassUtils.isPresent(CLASS_HYSTRIX_FEIGN, ClassUtils.getDefaultClassLoader())) {
-			defaultTargeter = new HystrixTargeter();
+			cloudTargeter = new HystrixTargeter();
 		} else {
-			defaultTargeter = new DefaultTargeter();
+			cloudTargeter = new DefaultTargeter();
 		}
 	}
 	
-	private <T> T defaultTargeter(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
-		/*String name = factory.getName();
-		if (RequestUtils.isHttpPath(name)) {
-			factory.setUrl(name);
-			factory.setName("");
-		}*/
-		return defaultTargeter.target(factory, feign, context, target);
-	}
+	/*private <T> T defaultTargeter(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
+		return cloudTargeter.target(factory, feign, context, target);
+	}*/
 
 	@Override
 	public <T> T target(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
+		FeignTargetContext<T> ctx = new FeignTargetContext<>(factory, feign, context, target, cloudTargeter);
 		if (targeterEnhancer!=null) {
-			return targeterEnhancer.enhanceTargeter(factory, ()->defaultTargeter(factory, feign, context, target));
+			return targeterEnhancer.enhanceTargeter(ctx);
 		}
-		return defaultTargeter(factory, feign, context, target);
+		return ctx.createTargeter();
 		/*if (!feignProperties.getLocal().isEnabled()) {
 			return targeterEnhancer.enhanceTargeter(applicationContext, factory, ()->{
 				return defaultTargeter(factory, feign, context, target);
@@ -64,6 +63,34 @@ public class ExtTargeter implements Targeter, InitializingBean {
 		/*return getTarget(applicationContext.getParent(), factory, ()->{
 			return hystrixTargeter.target(factory, feign, context, target);
 		});*/
+	}
+	
+	@Data
+	public static class FeignTargetContext<T> {
+		private FeignClientFactoryBean feignClientfactory;
+		private Feign.Builder feign;
+		private FeignContext context;
+		private Target.HardCodedTarget<T> hardeCodetarget;
+		private Targeter cloudTargeter;
+		
+		public FeignTargetContext(FeignClientFactoryBean feignClientfactory, Builder feign, FeignContext context,
+				HardCodedTarget<T> hardeCodetarget, Targeter cloudTargeter) {
+			super();
+			this.feignClientfactory = feignClientfactory;
+			this.feign = feign;
+			this.context = context;
+			this.hardeCodetarget = hardeCodetarget;
+			this.cloudTargeter = cloudTargeter;
+		}
+		
+		public T createTargeter() {
+			/*String name = factory.getName();
+			if (RequestUtils.isHttpPath(name)) {
+				factory.setUrl(name);
+				factory.setName("");
+			}*/
+			return cloudTargeter.target(feignClientfactory, feign, context, hardeCodetarget);
+		}
 	}
 	
 }

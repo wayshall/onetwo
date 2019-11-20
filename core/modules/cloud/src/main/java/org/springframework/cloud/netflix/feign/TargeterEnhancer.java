@@ -1,6 +1,6 @@
 package org.springframework.cloud.netflix.feign;
 
-import java.util.function.Supplier;
+import org.springframework.cloud.netflix.feign.ExtTargeter.FeignTargetContext;
 
 /**
  * @author weishao zeng
@@ -8,7 +8,7 @@ import java.util.function.Supplier;
  */
 public interface TargeterEnhancer {
 
-	<T> T enhanceTargeter(FeignClientFactoryBean factory, Supplier<T> defaultTarget);
+	<T> T enhanceTargeter(FeignTargetContext<T> ctx);
 	
 }
 
