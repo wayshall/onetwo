@@ -24,6 +24,10 @@ public class PageRequest {
 		this.page = page;
 	}
 
+	public void setPageNo(int pageNo) {
+		this.page = pageNo;
+	}
+
 	public int getPageSize() {
 		return pageSize;
 	}
