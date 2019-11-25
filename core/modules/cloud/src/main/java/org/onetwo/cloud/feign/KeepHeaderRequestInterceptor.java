@@ -39,18 +39,7 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 		
 		AuthEnv env = AuthEnvs.getCurrent();
 		if (env!=null) { // 主要用于非web环境调用
-			env.getHeaders().forEach(header -> {
-				String value = header.getValue();
-				if (StringUtils.isNotBlank(value)){
-					if (OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER.equals(header.getName())) {
-						value = StringUtils.appendStartWith(value, OAuth2Utils.BEARER_TYPE + " ");
-					}
-					template.header(header.getName(), value);
-					if(log.isDebugEnabled()){
-						log.debug("set current env header[{}] to feign request...", header);
-					}
-				}
-			});
+			fillAuthEnvHeaders(env, template);
 		} else {
 			WebHolder.getRequest().ifPresent(request->{
 				authEnvs.getKeepHeaders().forEach(header->{
@@ -83,6 +72,27 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 				}
 			});
 		});*/
+	}
+	
+	/***
+	 * 填充环境变量到header
+	 * @author weishao zeng
+	 * @param env
+	 * @param template
+	 */
+	public static void fillAuthEnvHeaders(AuthEnv env, RequestTemplate template) {
+		env.getHeaders().forEach(header -> {
+			String value = header.getValue();
+			if (StringUtils.isNotBlank(value)){
+				if (OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER.equals(header.getName())) {
+					value = StringUtils.appendStartWith(value, OAuth2Utils.BEARER_TYPE + " ");
+				}
+				template.header(header.getName(), value);
+				if(log.isDebugEnabled()){
+					log.debug("set current env header[{}] to feign request...", header);
+				}
+			}
+		});
 	}
 
 //	public void setKeepHeaders(Set<String> keepHeaders) {
