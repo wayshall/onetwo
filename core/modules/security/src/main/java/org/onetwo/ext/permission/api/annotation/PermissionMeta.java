@@ -24,6 +24,14 @@ public @interface PermissionMeta {
 	 */
 	PermissionType permissionType() default PermissionType.MENU;
 	
+	/***
+	 * 是否隐藏
+	 * 
+	 * 可以通过此属性控制是否出现在菜单栏里
+	 * 
+	 * @author weishao zeng
+	 * @return
+	 */
 	boolean hidden() default false;
 	
 	String url() default "";

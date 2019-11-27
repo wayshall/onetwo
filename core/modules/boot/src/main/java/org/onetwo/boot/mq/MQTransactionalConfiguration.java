@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * <br/>
  */
 @Configuration
-@ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
+@ConditionalOnProperty(value=MQProperties.TRANSACTIONAL_ENABLED_KEY, matchIfMissing=true)
 @EnableConfigurationProperties(MQProperties.class)
 public class MQTransactionalConfiguration {
 

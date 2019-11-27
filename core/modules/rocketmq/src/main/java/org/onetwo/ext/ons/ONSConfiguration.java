@@ -93,7 +93,7 @@ public class ONSConfiguration {
 	
 
 	@Bean
-	@ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
+	@ConditionalOnProperty(value=MQProperties.TRANSACTIONAL_ENABLED_KEY, matchIfMissing=true)
 	public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
 		OnsDatabaseTransactionMessageInterceptor interceptor = new OnsDatabaseTransactionMessageInterceptor();
 		/*SendMode sendMode = mqProperties.getTransactional().getSendMode();
