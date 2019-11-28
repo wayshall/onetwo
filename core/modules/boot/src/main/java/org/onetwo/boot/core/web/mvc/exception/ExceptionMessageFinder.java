@@ -237,14 +237,8 @@ public interface ExceptionMessageFinder {
 			errorMsg = cause.getMessage();
 		}
 		
-		Map<String, Integer> statusMapping = getExceptionMessageFinderConfig().getExceptionsStatusMapping();
-		if (statusMapping.containsKey(ex.getClass().getName())) {
-			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ex.getClass().getName())));
-		} else if (statusMapping.containsKey(ex.getClass().getSimpleName())) {
-			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ex.getClass().getSimpleName())));
-		} else if (statusMapping.containsKey(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)) {
-			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)));
-		}
+		// 根据配置设置status code
+		processExceptionMappingStatus(error, ex);
 		
 		//防止远程调用时，方法返回null，且异常定义的httpstatus也为200时，尽管在responsebody里返回error相关数据，
 		//但feign客户端判断200且返回类型为null时，不解释response boyd，从而忽略了错误
@@ -280,6 +274,17 @@ public interface ExceptionMessageFinder {
 //		error.setViewName(viewName);
 //		error.setAuthentic(authentic);
 		return error;
+	}
+	
+	default public void processExceptionMappingStatus(ErrorMessage error, Exception ex) {
+		Map<String, Integer> statusMapping = getExceptionMessageFinderConfig().getExceptionsStatusMapping();
+		if (statusMapping.containsKey(ex.getClass().getName())) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ex.getClass().getName())));
+		} else if (statusMapping.containsKey(ex.getClass().getSimpleName())) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ex.getClass().getSimpleName())));
+		} else if (statusMapping.containsKey(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)) {
+			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)));
+		}
 	}
 	
 	default String findMessage(boolean findMsgByCode, ErrorMessage error, Object[] errorArgs){
