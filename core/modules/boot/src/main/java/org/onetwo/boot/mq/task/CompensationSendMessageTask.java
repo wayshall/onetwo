@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  */
 //@Transactional
 public class CompensationSendMessageTask implements InitializingBean {
-	public static final String LOCK_KEY = "ons:send_message_task";
+	public static final String LOCK_KEY = "mq:send_message_task";
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
