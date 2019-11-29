@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  */
 //@Transactional
 public class CompensationSendMessageTask implements InitializingBean {
-	public static final String LOCK_KEY = "mq:send_message_task";
+	public static final String LOCK_KEY = "mq:SendMessageTask";
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
@@ -77,15 +77,15 @@ public class CompensationSendMessageTask implements InitializingBean {
 	 * 可扩展为其它类型锁
 	 * @author wayshall
 	 */
-	protected void doCheckSendMessage(int deleteCountPerTask, int ignoreCreateAtRecently){
+	protected void doCheckSendMessage(int sendCountPerTask, int ignoreCreateAtRecently){
 		log.info("start to check unsend message...");
 		if(useReidsLock){
 			getRedisLockRunner().tryLock(()->{
-				findAndProcessUnsendMessage(deleteCountPerTask, ignoreCreateAtRecently);
+				findAndProcessUnsendMessage(sendCountPerTask, ignoreCreateAtRecently);
 				return null;
 			});
 		}else{
-			this.findAndProcessUnsendMessage(deleteCountPerTask, ignoreCreateAtRecently);
+			this.findAndProcessUnsendMessage(sendCountPerTask, ignoreCreateAtRecently);
 		}
 		log.info("finish check unsend message...");
 	}

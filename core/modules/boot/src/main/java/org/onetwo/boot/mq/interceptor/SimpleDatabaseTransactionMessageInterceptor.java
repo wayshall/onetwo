@@ -160,11 +160,12 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 		if (LangUtils.isEmpty(event.getSendMessageContexts())) {
 			return ;
 		}
-		if(isUseAsync()){
+		/*if(isUseAsync()){
 			asyncTaskDelegateService.run(()->rollbackMessages(event));
 		}else{
 			this.rollbackMessages(event);
-		}
+		}*/
+		this.rollbackMessages(event);
 	}
 	
 	public void rollbackMessages(SendMessageEvent event){
