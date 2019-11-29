@@ -70,6 +70,7 @@ public interface DefaultProducerService extends TraceableProducer {
 			}
 			message.putUserProperties(TracableMessage.OCCUR_ON_KEY, String.valueOf(tracableMessage.getOccurOn().getTime()));
 			message.putUserProperties(TracableMessage.SERIALIZER_KEY, tracableMessage.getSerializer());
+			message.putUserProperties(TracableMessage.DEBUG_KEY, String.valueOf(tracableMessage.isDebug()));
 
 			TracableMessageKey key = ONSUtils.toKey(message.getTopic(), message.getTag(), tracableMessage);
 			if (StringUtils.isBlank(message.getKey())) {

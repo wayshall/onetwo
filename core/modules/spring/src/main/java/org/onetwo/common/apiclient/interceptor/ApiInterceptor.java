@@ -6,6 +6,6 @@ package org.onetwo.common.apiclient.interceptor;
  */
 public interface ApiInterceptor {
 
-	Object intercept(ApiInterceptorChain chain);
+	Object intercept(ApiInterceptorChain chain) throws Throwable ;
 
 }

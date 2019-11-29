@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
  * <br/>
  */
 @RestApiClient(url="${"+ClientDetailsResolverProps.AUTHORIZATION_BASE_URL+"}")
+//@RequestMapping("/oauth")
 public interface OAuth2TokenClient {
 	
 	@PostMapping(path="/oauth/token", consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE)

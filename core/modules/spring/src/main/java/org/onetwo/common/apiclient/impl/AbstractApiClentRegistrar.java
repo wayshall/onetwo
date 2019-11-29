@@ -2,10 +2,13 @@ package org.onetwo.common.apiclient.impl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import org.onetwo.common.apiclient.RestExecutorFactory;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.context.AbstractImportRegistrar;
 import org.onetwo.common.spring.context.AnnotationMetadataHelper;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -14,7 +17,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author wayshall
@@ -76,9 +79,23 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 
 
 	final protected String resolveUrl(AnnotationAttributes tagAttributes) {
+		return resolveUrl(tagAttributes, null);
+	}
+	
+	final protected String resolveUrl(AnnotationAttributes tagAttributes, AnnotationMetadata annotationMetadata) {
 		String url = resolve(tagAttributes.getString(ATTRS_URL));
-		if(!StringUtils.hasText(url) && annotationMetadataHelper!=null){
+		if (!StringUtils.hasText(url) && annotationMetadataHelper!=null){
 			url = resolve(annotationMetadataHelper.getAttributes().getString(ATTRS_BASE_URL));
+		}
+		// 解释类上的RequestMapping作为base
+		if (annotationMetadata!=null) {
+			Map<String, Object> requestMapping = annotationMetadata.getAnnotationAttributes(RequestMapping.class.getName());
+			if (requestMapping!=null) {
+				String[] values = (String[])requestMapping.get("value");
+				if (values!=null && values.length>0) {
+					url = StringUtils.trimEndWith(url, FileUtils.SLASH) + StringUtils.appendStartWithSlash(resolve(values[0]));
+				}
+			}
 		}
 		if (StringUtils.hasText(url)) {
 			if (!url.contains("://")) {

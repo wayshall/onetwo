@@ -46,6 +46,17 @@ public class DelegateCustomONSConsumer implements CustomONSConsumer {
 	public Class<?> getMessageBodyClass(ConsumContext consumContext) {
 		return messageBodyClass;
 	}
-	
+
+	public void setMessageBodyClass(Class<?> messageBodyClass) {
+		this.messageBodyClass = messageBodyClass;
+	}
+
+	public Object getTarget() {
+		return target;
+	}
+
+	public Method getConsumerMethod() {
+		return consumerMethod;
+	}
 	
 }

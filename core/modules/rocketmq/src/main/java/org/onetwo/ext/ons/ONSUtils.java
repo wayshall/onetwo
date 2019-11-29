@@ -3,11 +3,13 @@ package org.onetwo.ext.ons;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.slf4j.Logger;
 
+import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageConst;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
@@ -30,6 +32,16 @@ final public class ONSUtils {
 	
 	public static Logger getONSLogger(){
 		return JFishLoggerFactory.getLogger(LOGGER_NAME);
+	}
+	
+	static public boolean isDebugMessage(Message message) {
+		String debug = message.getUserProperties(TracableMessage.DEBUG_KEY);
+		return Types.asValue(debug, boolean.class, false);
+	}
+	
+	static public boolean isDebugMessage(MessageExt message) {
+		String debug = message.getUserProperty(TracableMessage.DEBUG_KEY);
+		return Types.asValue(debug, boolean.class, false);
 	}
 	
 	public static String getMessageId(MessageExt message){

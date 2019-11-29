@@ -21,6 +21,7 @@ import org.onetwo.boot.core.web.utils.ResponseFlow;
 import org.onetwo.common.data.AbstractDataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.data.DataResult;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.NotLoginException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -334,12 +335,17 @@ abstract public class AbstractBaseController {
 			return targetUser;
 		}
 		if (!clazz.isInstance(user)) {
-			if(throwIfNotFound){
+			/*if(throwIfNotFound){
 				throw new NotLoginException();
 			}
+			return null;*/
+			if (throwIfNotFound) {
+				throw new BaseException("current login UserDetails can not cast to the target class: " + clazz);
+			}
 			return null;
+		} else {
+			return clazz.cast(user);
 		}
-		return clazz.cast(user);
 	}
 	
 	@ModelAttribute(name=UserDetail.USER_DETAIL_KEY)

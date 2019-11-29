@@ -2,10 +2,12 @@ package org.onetwo.boot.module.redis;
 
 import org.onetwo.boot.module.redis.JFishRedisProperties.LockRegistryProperties;
 import org.onetwo.boot.module.redis.JFishRedisProperties.OnceTokenProperties;
+import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,10 +27,14 @@ public class RedisConfiguration {
 	
 //	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";
 
-//    @Autowired
-//    private ApplicationContext applicationContext;
+    @Autowired
+    private ApplicationContext applicationContext;
     @Autowired
     private JFishRedisProperties redisProperties;
+    
+    /*@Value(LockRegistryProperties.DEFAULT_LOCK_KEY)
+    private String lockKey;*/
+	
     
 	/*@Bean
     @ConditionalOnMissingBean(name=BEAN_REDISCONNECTIONFACTORY)
@@ -76,12 +82,14 @@ public class RedisConfiguration {
 	}*/
 	
 	@Bean
-	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
+//	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
 	@ConditionalOnClass({RedisLockRegistry.class})
 	public RedisLockRegistry redisLockRegistry(@Autowired JedisConnectionFactory jedisConnectionFactory){
 		LockRegistryProperties lockRegistryProperties = redisProperties.getLockRegistry();
+		String lockKey = SpringUtils.resolvePlaceholders(applicationContext, LockRegistryProperties.DEFAULT_LOCK_KEY);
+		String realLockKey = lockRegistryProperties.getLockKey(lockKey);
 		RedisLockRegistry lockRegistry = new RedisLockRegistry(jedisConnectionFactory, 
-																lockRegistryProperties.getKey(), 
+																realLockKey, 
 																lockRegistryProperties.getExpireAfter());
 		return lockRegistry;
 	}

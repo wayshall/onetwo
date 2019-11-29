@@ -1,5 +1,7 @@
 package org.onetwo.common.xml;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +15,7 @@ import org.onetwo.common.utils.CUtils;
 import com.google.common.collect.Lists;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -22,10 +25,28 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 public class XmlUtilsTest {
 	
+	static enum Gender implements XStreamEnumValueMapper {
+		MALE(1),
+		FEMAIL(-1);
+		
+		private Integer value;
+
+		private Gender(int value) {
+			this.value = value;
+		}
+
+		public String getEnumValue() {
+			return value.toString();
+		}
+
+	}
+	
 	static class TestPerson {
 		private String userName;
 		private Integer age;
 		private TestPerson parent;
+		@XStreamConverter(XStreamEnumSingleValueConverter.class)
+		private Gender gender;
 		public String getUserName() {
 			return userName;
 		}
@@ -43,6 +64,12 @@ public class XmlUtilsTest {
 		}
 		public void setParent(TestPerson parent) {
 			this.parent = parent;
+		}
+		public Gender getGender() {
+			return gender;
+		}
+		public void setGender(Gender gender) {
+			this.gender = gender;
 		}
 		
 	}
@@ -196,6 +223,8 @@ public class XmlUtilsTest {
 		TestPerson person = XmlUtils.toBean(xml, "person", TestPerson.class);
 //		System.out.println("person:" + LangUtils.toString(person));
 		Assert.assertEquals(30, person.getAge());
+		assertThat(person.getGender()).isEqualTo(Gender.MALE);
+		assertThat(person.getParent().getGender()).isEqualTo(Gender.FEMAIL);
 		
 		
 		path = this.getClass().getResource("test_list.xml").getFile();
@@ -205,6 +234,9 @@ public class XmlUtilsTest {
 		
 		Collection<TestPerson> list = XmlUtils.toBean(xml, "personlist", List.class, "person", TestPerson.class);
 //		System.out.println("person:" + LangUtils.toString(person));
-		Assert.assertEquals(30, list.iterator().next().getAge());
+		TestPerson p = list.iterator().next();
+		Assert.assertEquals(30, p.getAge());
+		assertThat(p.getGender()).isEqualTo(Gender.MALE);
+		assertThat(p.getParent().getGender()).isEqualTo(Gender.FEMAIL);
 	}
 }

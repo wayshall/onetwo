@@ -9,13 +9,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.MethodIntrospector;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -78,6 +80,7 @@ import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils.MethodFilter;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -105,6 +108,20 @@ final public class SpringUtils {
 	public static final Expression DOLOR = ExpressionFacotry.newExpression("${", "}");
 	
 	private SpringUtils(){
+	}
+
+	public static int higherThan(int order) {
+		return higherThan(order, 10);
+	}
+	public static int higherThan(int order, int step) {
+		return order - step;
+	}
+
+	public static int lowerThan(int order) {
+		return lowerThan(order, 10);
+	}
+	public static int lowerThan(int order, int step) {
+		return order + step;
 	}
 
 	public static FormattingConversionService getFormattingConversionService(){
@@ -242,11 +259,18 @@ final public class SpringUtils {
 		})
 		.collect(Collectors.toList());
 	}
+	
+	public static <T> T getBeanWithAnnotation(ApplicationContext applicationContext, Class<? extends Annotation> annotationType) {
+		List<T> beans = (List<T>)getBeansWithAnnotation(applicationContext, annotationType).stream().map(d -> {
+			return d.getBean();
+		}).collect(Collectors.toList());
+		return LangUtils.isEmpty(beans)?null:beans.get(0);
+	}
 
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
-			return Collections.emptyList();
+			return new ArrayList<>();
 		List<T> list = new ArrayList<T>(beanMaps.values());
 		AnnotationAwareOrderComparator.sort(list);
 		return list;
@@ -771,6 +795,16 @@ final public class SpringUtils {
 														.enableFieldNameAnnotation()
 														.build();
 		return convertor;
+	}
+	
+
+	public static Set<Method> selectMethodsByParameterTypes(Class<?> targetClass, String targetMethod, Method sourceMethod) {
+		Set<Method> methods = MethodIntrospector.selectMethods(targetClass, (MethodFilter)method -> {
+			return method.getName().equals(targetMethod) && 
+					method.getParameterCount()==sourceMethod.getParameterCount() &&
+					Objects.deepEquals(method.getParameterTypes(), sourceMethod.getParameterTypes());
+		});
+		return methods;
 	}
 	
 }

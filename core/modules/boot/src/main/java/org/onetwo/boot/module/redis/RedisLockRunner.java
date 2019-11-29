@@ -24,7 +24,21 @@ import lombok.Builder;
  */
 public class RedisLockRunner {
 	
+	/****
+	 * 
+	 * @deprecated 写错了单词……
+	 * @author weishao zeng
+	 * @param redisLockRegistry
+	 * @param lockkey
+	 * @param lockerTimeout
+	 * @return
+	 */
+	@Deprecated
 	public static RedisLockRunner createLoker(RedisLockRegistry redisLockRegistry, String lockkey, String lockerTimeout) {
+		return createLocker(redisLockRegistry, lockkey, lockerTimeout);
+	}
+	
+	public static RedisLockRunner createLocker(RedisLockRegistry redisLockRegistry, String lockkey, String lockerTimeout) {
 		Pair<Integer, TimeUnit> timeout = null;
 		if (StringUtils.isNotBlank(lockerTimeout)) {
 			timeout = LangOps.parseTimeUnit(lockerTimeout);
@@ -33,7 +47,12 @@ public class RedisLockRunner {
 														 .lockKey(lockkey)
 														 .time(timeout==null?null:timeout.getKey().longValue())
 														 .unit(timeout==null?null:timeout.getValue())
-														 .errorHandler(e->new BaseException("no error hanlder!", e))
+														 .errorHandler(e->{
+															 if (e instanceof RuntimeException) {
+																 throw (RuntimeException) e;
+															 }
+															 throw new BaseException("execute task in redislock error!", e);
+														 })
 														 .redisLockRegistry(redisLockRegistry)
 														 .build();
 		return redisLockRunner;

@@ -35,7 +35,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  * @author wayshall
  *
  */
-public class AbstractSwaggerConfig {
+abstract public class AbstractSwaggerConfig {
 	@Autowired
     private TypeResolver typeResolver;
 	

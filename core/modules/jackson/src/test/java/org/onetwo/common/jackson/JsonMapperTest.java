@@ -2,6 +2,8 @@ package org.onetwo.common.jackson;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,8 +22,10 @@ import org.onetwo.common.utils.Page;
 import org.onetwo.common.utils.map.ParamMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.google.common.collect.Lists;
@@ -79,6 +83,28 @@ public class JsonMapperTest {
 		list.add(storeDetailVo);
 		String s = mapper.writeValueAsString(list);
 		System.out.println(s);
+		
+		byte[] bytes = jsonMapper.toJsonBytes(list);
+		List<StoreDetailVo> list2 = jsonMapper.fromJson(bytes, new TypeReference<List<StoreDetailVo>>() {
+		});
+		
+		assertThat(list2).isEqualTo(list2);
+		String str1 = LangUtils.newString(bytes);
+		System.out.println("json str1: " + str1);
+		
+
+		TestJsonData u1 = new TestJsonData();
+		u1.setCreate_time(new Timestamp(new Date().getTime()));
+		u1.setUser_name("user_name");
+		String str = jsonMapper.toJson(u1);
+		System.out.println("json str: " + str);
+		bytes = jsonMapper.toJsonBytes(u1);
+		
+		String str2 = LangUtils.newString(bytes);
+		System.out.println("json str2: " + str2);
+		
+		/*Map jsonstr = jsonMapper.fromJson(bytes, Map.class);
+		System.out.println("json map: " + jsonstr);*/
 	}
 	
 	@Test
@@ -428,5 +454,63 @@ public class JsonMapperTest {
 		String json = JsonMapper.IGNORE_EMPTY.toJson(v);
 		System.out.println("json: " + json);
 		Assert.assertEquals("{\"field\":\"fieldValue\",\"intField\":11,\"type\":\"FINISHED\"}", json);;
+	}
+	
+	@Test
+	public void testMixins() {
+		JsonMapper printMapper = JsonMapper.defaultMapper();
+		
+		TestJsonDataWithIOClass data = new TestJsonDataWithIOClass();
+		data.setUserName("testUserName");
+		String json = printMapper.toJson(data);
+		System.out.println("json: " + json);
+		assertThat(json).isEqualTo("{\"userName\":\"testUserName\",\"createAt\":1570464000000,\"file\":\"d:\\\\test\\\\test.jpg\"}");
+		
+		printMapper = JsonMapper.defaultMapper()
+				.addMixIns(IgnoreIOClassForTestMixin.class,
+						File.class, 
+						InputStream.class);
+		json = printMapper.toJson(data);
+		System.out.println("json: " + json);
+		assertThat(json).isEqualTo("{\"userName\":\"testUserName\",\"createAt\":1570464000000}");
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("userName", "testUserName");
+		map.put("test", new File("d:/test/test.jpg"));
+		json = printMapper.toJson(map);
+		System.out.println("json: " + json);
+		assertThat(json).isEqualTo("{\"test\":\"d:\\\\test\\\\test.jpg\",\"userName\":\"testUserName\"}");
+	}
+	
+	@JsonIgnoreType
+	static public interface IgnoreIOClassForTestMixin {
+
+	}
+	
+
+	public static class TestJsonDataWithIOClass {
+		private String userName;
+		private Date createAt = DateUtils.parse("2019-10-08");
+		private File file = new File("d:/test/test.jpg");
+		
+		public String getUserName() {
+			return userName;
+		}
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
+		public Date getCreateAt() {
+			return createAt;
+		}
+		public void setCreateAt(Date createAt) {
+			this.createAt = createAt;
+		}
+		public File getFile() {
+			return file;
+		}
+		public void setFile(File file) {
+			this.file = file;
+		}
+		
 	}
 }

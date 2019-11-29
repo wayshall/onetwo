@@ -2,6 +2,7 @@ package org.onetwo.boot.core.condition;
 
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -28,6 +29,12 @@ abstract public class EnabledKeyCondition extends SpringBootCondition implements
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes attrubutes = getAnnotationAttributes(metadata);
+		
+		String mainKey = getMainEnabledKey(context.getEnvironment(), attrubutes);
+		if(StringUtils.isNotBlank(mainKey) && !isEnabled(context.getEnvironment(), mainKey)){
+			return ConditionOutcome.noMatch("main property ["+mainKey+"] is not enabled");
+		}
+		
 		String key = getEnabledKey(context.getEnvironment(), attrubutes);
 		if(!isEnabled(context.getEnvironment(), key)){
 			return ConditionOutcome.noMatch("property ["+key+"] is not enabled");
@@ -35,6 +42,24 @@ abstract public class EnabledKeyCondition extends SpringBootCondition implements
 		return ConditionOutcome.match("property ["+key+"] is enabled");
 	}
 
+	/****
+	 * 主开关
+	 * @author weishao zeng
+	 * @param environment
+	 * @param attrubutes
+	 * @return
+	 */
+	protected String getMainEnabledKey(Environment environment, AnnotationAttributes attrubutes) {
+		return "";
+	}
+	
+	/***
+	 * 次开关
+	 * @author weishao zeng
+	 * @param environment
+	 * @param attrubutes
+	 * @return
+	 */
 	abstract protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes);
 	
 	protected boolean isEnabled(Environment environment, String key){

@@ -238,9 +238,16 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 		perm.setPermissionType(parser.getPermissionType());
 		if(parser.getPermissionType()==PermissionType.MENU){
 			P menu = perm;
+			
 			Map<?, ?> param = parser.getParams();//getFieldValue(permissionClass, MenuMetaFields.PARAMS, Map.class, Collections.EMPTY_MAP);
 			ParamMap casualmap = new ParamMap().addMapWithFilter(param);
 			menu.setUrl(casualmap.toParamString());
+			
+			String url = parser.getUrl();
+			if (StringUtils.isNotBlank(url)) {
+				menu.setUrl(url);
+			}
+			
 			parser.setOptionFieldValue(menu, PermClassParser.MENU_CSS_CLASS, String.class, "");
 			parser.setOptionFieldValue(menu, PermClassParser.MENU_SHOW_PROPS, String.class, "");
 			perm = menu;

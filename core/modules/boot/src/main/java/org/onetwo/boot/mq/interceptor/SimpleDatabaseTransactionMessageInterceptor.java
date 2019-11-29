@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.onetwo.boot.core.web.async.AsyncTaskDelegateService;
+import org.onetwo.boot.mq.MQProperties.SendMode;
+import org.onetwo.boot.mq.MQProperties.TransactionalProps;
 import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageContext;
 import org.onetwo.boot.mq.entity.SendMessageEntity;
@@ -13,6 +15,7 @@ import org.onetwo.boot.mq.repository.SendMessageRepository;
 import org.onetwo.boot.mq.serializer.MessageBodyStoreSerializer;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,18 +39,20 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	protected ApplicationEventPublisher applicationEventPublisher;
 	@Autowired(required=false)
 	private AsyncTaskDelegateService asyncTaskDelegateService;
-	private boolean useAsync = false;
+//	private boolean useAsync = false;
 	private SendMessageRepository sendMessageRepository;
 	@Autowired
 	private MessageBodyStoreSerializer messageBodyStoreSerializer;
 	
+	private TransactionalProps transactionalProps;
+	
 	public boolean isUseAsync() {
-		return useAsync;
+		return transactionalProps!=null && transactionalProps.getSendMode()==SendMode.ASYNC;
 	}
 
-	public void setUseAsync(boolean useAsync) {
+	/*public void setUseAsync(boolean useAsync) {
 		this.useAsync = useAsync;
-	}
+	}*/
 
 	protected Logger getLogger(){
 		return JFishLoggerFactory.getLogger(getClass());
@@ -73,7 +78,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(useAsync){
+		if(isUseAsync()){
 			Assert.notNull(asyncTaskDelegateService, "asyncTaskDelegateService not found!");
 		}
 	}
@@ -81,7 +86,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	protected void storeAndPublishSendMessageEvent(SendMessageContext<?> ctx){
 		this.storeSendMessage(ctx);
 		SendMessageEvent event = SendMessageEvent.builder()
-												 .sendMessageContext(ctx)
+												 .sendMessageContexts(Arrays.asList(ctx))
 												 .build();
 		applicationEventPublisher.publishEvent(event);
 
@@ -92,7 +97,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 		}
 	}
 
-	protected void storeSendMessage(SendMessageContext<?> ctx){
+	protected SendMessageEntity storeSendMessage(SendMessageContext<?> ctx){
 		Serializable message = ctx.getMessage();
 		String key = ctx.getKey();
 		if(StringUtils.isBlank(key)){
@@ -102,6 +107,16 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 		}
 		SendMessageEntity send = createSendMessageEntity(key, message);
 		ctx.setMessageEntity(send);
+		save(ctx);
+		return send;
+	}
+	
+	/****
+	 * 保存消息
+	 * @author weishao zeng
+	 * @param ctx
+	 */
+	protected void save(SendMessageContext<?> ctx) {
 		this.getSendMessageRepository().save(ctx);
 	}
 	
@@ -116,38 +131,47 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 
 	@Override
 	public void afterCommit(SendMessageEvent event){
-		if(useAsync){
-			asyncTaskDelegateService.run(()->doAfterCommit(event));
+		if (LangUtils.isEmpty(event.getSendMessageContexts())) {
+			return ;
+		}
+		if(isUseAsync()){
+			asyncTaskDelegateService.run(()->commitMessages(event));
 		}else{
-			this.doAfterCommit(event);
+			this.commitMessages(event);
 		}
 	}
 	
-	protected void doAfterCommit(SendMessageEvent event){
-		boolean debug = event.getSendMessageContext().isDebug();
-		event.getSendMessageContext().getChain().invoke();
+	protected void commitMessages(SendMessageEvent event){
+		event.getSendMessageContexts().forEach(ctx -> sendMessage(ctx));
+	}
+	
+	protected void sendMessage(SendMessageContext<?> msgContext){
+		msgContext.getChain().invoke();
 //		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
-		getSendMessageRepository().updateToSent(event.getSendMessageContext());
+		getSendMessageRepository().updateToSent(msgContext);
 		Logger log = getLogger();
-		if(debug && log.isInfoEnabled()){
+		if(msgContext.isDebug() && log.isInfoEnabled()){
 			log.info("committed transactional message in thread[{}]...", Thread.currentThread().getId());
 		}
-//		sendMessageRepository.clearInCurrentContext();
 	}
 	
 	@Override
 	public void afterRollback(SendMessageEvent event){
-		if(useAsync){
-			asyncTaskDelegateService.run(()->doAfterRollback(event));
-		}else{
-			this.doAfterRollback(event);
+		if (LangUtils.isEmpty(event.getSendMessageContexts())) {
+			return ;
 		}
+		/*if(isUseAsync()){
+			asyncTaskDelegateService.run(()->rollbackMessages(event));
+		}else{
+			this.rollbackMessages(event);
+		}*/
+		this.rollbackMessages(event);
 	}
-	public void doAfterRollback(SendMessageEvent event){
-		boolean debug = event.getSendMessageContext().isDebug();
-		getSendMessageRepository().remove(Arrays.asList(event.getSendMessageContext()));
+	
+	public void rollbackMessages(SendMessageEvent event){
+//		getSendMessageRepository().remove(event.getSendMessageContexts());
 		Logger log = getLogger();
-		if(debug && log.isInfoEnabled()){
+		if(event.isDebug() && log.isInfoEnabled()){
 			log.info("rollback transactional message in thread[{}]...", Thread.currentThread().getId());
 		}
 //		sendMessageRepository.clearInCurrentContext();
@@ -169,5 +193,8 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 		return applicationEventPublisher;
 	}
 
+	public void setTransactionalProps(TransactionalProps transactionalProps) {
+		this.transactionalProps = transactionalProps;
+	}
 
 }

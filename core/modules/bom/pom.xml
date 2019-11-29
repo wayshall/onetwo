@@ -29,7 +29,7 @@
 	<jcifs.version>1.2.19</jcifs.version>
 	
 	<javatuples.version>1.2</javatuples.version>
-	<jackson.version>2.8.11</jackson.version>
+	<jackson.version>2.10.1</jackson.version>
 	
 	<validation.version>1.1.0.Final</validation.version>
 	<dozer.version>5.4.0</dozer.version>
@@ -116,17 +116,17 @@
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-server</artifactId>
-        <version>1.4.3</version>
+        <version>1.5.7</version>
     </dependency>
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-server-ui</artifactId>
-        <version>1.4.3</version>
+        <version>1.5.7</version>
     </dependency>
     <dependency>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-starter-client</artifactId>
-        <version>1.4.3</version>
+        <version>1.5.7</version>
     </dependency>
     
     <!-- spring session -->

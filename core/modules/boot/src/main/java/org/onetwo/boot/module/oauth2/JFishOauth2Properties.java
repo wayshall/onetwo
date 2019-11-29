@@ -115,6 +115,7 @@ public class JFishOauth2Properties {
 	public static class ClientDetailsResolverProps {
 		public static final String ENABLED_KEY = CONFIG_PREFIX + ".clientDetailsResolver.enabled";
 		public static final String AUTHORIZATION_BASE_URL = CONFIG_PREFIX +".client.authorization.baseUrl";
+		public static final String AUTHORIZATION_SERVICE_ID = CONFIG_PREFIX +".client.authorization.service-id";
 	}
 
 

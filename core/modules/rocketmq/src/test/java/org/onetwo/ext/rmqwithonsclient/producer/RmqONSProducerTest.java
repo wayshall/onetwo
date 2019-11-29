@@ -58,8 +58,10 @@ public class RmqONSProducerTest {
 	@Test
 	public void test1SendMessage(){
 		baseEntityManager.removeAll(SendMessageEntity.class);
-		dataBaseProducerService.sendMessage();
 		int messageCount = baseEntityManager.countRecord(SendMessageEntity.class).intValue();
+		assertThat(messageCount).isEqualTo(0);
+		dataBaseProducerService.sendMessage();
+		messageCount = baseEntityManager.countRecord(SendMessageEntity.class).intValue();
 		assertThat(messageCount).isEqualTo(1);
 //		LangUtils.CONSOLE.exitIf("test");
 	}
@@ -94,7 +96,7 @@ public class RmqONSProducerTest {
 		assertThat(messageCount).isEqualTo(1);
 //		LangUtils.CONSOLE.exitIf("test");
 	}
-	
+
 	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
 	@Configuration
 	@PropertySource("classpath:rmqwithonsclient-test.properties")
@@ -136,7 +138,7 @@ public class RmqONSProducerTest {
 		@Override
 		public void afterCommit(SendMessageEvent event){
 			if(throwWhenExecuteSendMessage){
-				throw new ServiceException("send error");
+				throw new ServiceException("send error afterCommit");
 			}
 			super.afterCommit(event);
 		}

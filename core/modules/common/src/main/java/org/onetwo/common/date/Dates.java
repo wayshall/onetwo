@@ -53,13 +53,25 @@ final public class Dates {
 	public static LocalDate toLocalDate(Date date) {
 	    return toZonedDateTime(date).toLocalDate();
 	}
+	
+	public static LocalDate toLocalDate(Long millis) {
+	    return toZonedDateTime(millis).toLocalDate();
+	}
 
 	public static LocalDateTime toLocalDateTime(Date date) {
 		return toZonedDateTime(date).toLocalDateTime();
 	}
 
+	public static LocalDateTime toLocalDateTime(Long millis) {
+		return toZonedDateTime(millis).toLocalDateTime();
+	}
+
 	public static LocalTime toLocalTime(Date date) {
 		return toZonedDateTime(date).toLocalTime();
+	}
+
+	public static LocalTime toLocalTime(Long millis) {
+		return toZonedDateTime(millis).toLocalTime();
 	}
 
 	public static ZonedDateTime toZonedDateTime(Date date) {

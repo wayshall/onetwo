@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * 不使用MQProperties.TRANSACTIONAL_SEND_TASK_ENABLED_KEY 配置控制是否激活mq的定时任务，
+ * 不使用 MQProperties#TRANSACTIONAL_SEND_TASK_ENABLED_KEY 配置控制是否激活mq的定时任务，
  * 而直接使用代码配置的方式激活mq的定时任务
  * 
  * @author weishao zeng

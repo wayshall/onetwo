@@ -1,6 +1,8 @@
 package org.onetwo.common.spring.rest;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -19,6 +21,8 @@ import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.slf4j.Logger;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -56,6 +60,12 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	private AtomicLong requestIdGenerator = new AtomicLong(0);
 	
 	private Charset charset = FormHttpMessageConverter.DEFAULT_CHARSET;
+	
+	private JsonMapper printMapper = JsonMapper.defaultMapper()
+												.addMixIns(IgnoreIOClassMixin.class,
+														File.class, 
+														FileSystemResource.class,
+														InputStream.class);
 
 	public ExtRestTemplate(){
 		this(RestUtils.isOkHttp3Present()?new OkHttp3ClientHttpRequestFactory():null);
@@ -171,15 +181,32 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	}
 	
 	private void logData(Object requestBody) {
-		if(requestBody!=null && logger.isDebugEnabled()){
+		if(isLogableObject(requestBody) && logger.isDebugEnabled()){
 			//打印时不能使用toJson，会破坏某些特殊对象，比如resource
 			try {
-				logger.debug("requestBody for json: {}", JsonMapper.IGNORE_NULL.toJson(requestBody));
+				if (requestBody instanceof MultiValueMap) {
+					MultiValueMap<?, ?> mm = (MultiValueMap<?, ?>) requestBody;
+					boolean logable = mm.entrySet().stream().flatMap(entry -> entry.getValue().stream()).allMatch(obj -> {
+						return isLogableObject(obj);
+					});
+					if (!logable) {
+						logger.debug("requestBody is not printable!");
+						return ;
+					}
+				}
+				logger.debug("requestBody for json: {}", printMapper.toJson(requestBody));
 			} catch (Exception e) {
 				// ignore
 				logger.debug("requestBody {} : {}", requestBody.getClass(), requestBody);
 			}
 		}
+	}
+	
+	protected boolean isLogableObject(Object body) {
+		return body!=null && 
+				!Resource.class.isInstance(body) && 
+				!File.class.isInstance(body) && 
+				!InputStream.class.isInstance(body);
 	}
 	
 	@Override

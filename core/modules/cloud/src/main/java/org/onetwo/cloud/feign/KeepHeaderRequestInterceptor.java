@@ -4,6 +4,7 @@ import org.onetwo.boot.core.web.utils.RemoteClientUtils;
 import org.onetwo.boot.core.web.utils.RemoteClientUtils.ClientTypes;
 import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.cloud.env.AuthEnvs;
+import org.onetwo.cloud.env.AuthEnvs.AuthEnv;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
 
@@ -25,31 +26,39 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 	
 	@Override
 	public void apply(RequestTemplate template) {
-		OAuth2Utils.getCurrentToken().ifPresent(token -> {
+		/*OAuth2Utils.getCurrentToken().ifPresent(token -> {
 			if(log.isDebugEnabled()){
 				log.debug("set current context header[{}] to feign ...", token);
 			}
 			if (StringUtils.isNotBlank(token)) {
 				template.header(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, StringUtils.appendStartWith(token, OAuth2Utils.BEARER_TYPE + " "));
 			}
-		});
+		});*/
 		// always add feign client type header
 		template.header(RemoteClientUtils.HEADER_CLIENT_TYPE, ClientTypes.FEIGN.name());
-		WebHolder.getRequest().ifPresent(request->{
-//			keepHeaders.forEach(header->{
-			authEnvs.getKeepHeaders().forEach(header->{
-				String value = request.getHeader(header);
-				if(StringUtils.isNotBlank(value)){
-					template.header(header, value);
-					if(log.isDebugEnabled()){
-						log.debug("set current request header[{}] to feign request...", header);
+		
+		AuthEnv env = AuthEnvs.getCurrent();
+		if (env!=null) { // 主要用于非web环境调用
+			fillAuthEnvHeaders(env, template);
+		} else {
+			WebHolder.getRequest().ifPresent(request->{
+				authEnvs.getKeepHeaders().forEach(header->{
+					String value = request.getHeader(header);
+					if(StringUtils.isNotBlank(value)){
+						if (OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER.equals(header)) {
+							value = StringUtils.appendStartWith(value, OAuth2Utils.BEARER_TYPE + " ");
+						}
+						template.header(header, value);
+						if(log.isDebugEnabled()){
+							log.debug("set current env header[{}] to feign request...", header);
+						}
 					}
-				}
+				});
 			});
-		});
+		}
 		
 		// 如果调用了runInCurrentWebEnvs，则会执行，并覆盖
-		AuthEnvs.getCurrentOptional().ifPresent(authEnv -> {
+		/*AuthEnvs.getCurrentOptional().ifPresent(authEnv -> {
 			authEnv.getHeaders().forEach(header -> {
 				String value = header.getValue();
 				if (StringUtils.isNotBlank(value)){
@@ -62,6 +71,27 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 					}
 				}
 			});
+		});*/
+	}
+	
+	/***
+	 * 填充环境变量到header
+	 * @author weishao zeng
+	 * @param env
+	 * @param template
+	 */
+	public static void fillAuthEnvHeaders(AuthEnv env, RequestTemplate template) {
+		env.getHeaders().forEach(header -> {
+			String value = header.getValue();
+			if (StringUtils.isNotBlank(value)){
+				if (OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER.equals(header.getName())) {
+					value = StringUtils.appendStartWith(value, OAuth2Utils.BEARER_TYPE + " ");
+				}
+				template.header(header.getName(), value);
+				if(log.isDebugEnabled()){
+					log.debug("set current env header[{}] to feign request...", header);
+				}
+			}
 		});
 	}
 

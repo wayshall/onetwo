@@ -76,7 +76,7 @@ public class TokenValidator {
     	String storeKey = getStoreKey(key);
     	/*ValueOperations<String, String> ops = redisOperationService.getStringRedisTemplate().opsForValue();
     	String value = ops.get(storeKey);*/
-    	Optional<String> valueOpt = this.redisOperationService.getCacheIfPreset(storeKey, String.class);
+    	Optional<String> valueOpt = this.redisOperationService.getCacheIfPresent(storeKey, String.class);
     	if (valueOpt.isPresent()) {
     		throw new ServiceException(TokenValidatorErrors.TOKEN_NOT_EXPIRED)
     								.put("key", storeKey)
@@ -154,7 +154,7 @@ public class TokenValidator {
     	String storeKey = getStoreKey(key);
     	/*StringRedisTemplate stringRedisTemplate = redisOperationService.getStringRedisTemplate();
     	String storeValue = stringRedisTemplate.boundValueOps(storeKey).get();*/
-    	Optional<String> storeValue = this.redisOperationService.getCacheIfPreset(storeKey, String.class);
+    	Optional<String> storeValue = this.redisOperationService.getCacheIfPresent(storeKey, String.class);
     	if (log.isDebugEnabled()) {
     		log.debug("smscode check, request code: {}, store code: {}", value, storeValue.orElse(""));
     	}

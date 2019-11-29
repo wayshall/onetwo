@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.function.Supplier;
 
-import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.utils.LangUtils;
 
 /**
@@ -14,16 +12,20 @@ import org.onetwo.common.utils.LangUtils;
  * <br/>
  */
 public class ApiInterceptorChain {
+	
+	public static interface ActionInvoker {
+		Object invoke() throws Throwable;
+	}
 
-	final private RequestContextData requestContext;
-	final private Supplier<Object> actualInvoker;
+	final private Object requestContext;
+	final private ActionInvoker actualInvoker;
 	private Collection<ApiInterceptor> interceptors;
 	private Iterator<ApiInterceptor> iterator;
 	private Object result;
 	private Throwable throwable;
 	
 
-	public ApiInterceptorChain(Collection<ApiInterceptor> interceptors, RequestContextData context, Supplier<Object> actualInvoker) {
+	public ApiInterceptorChain(Collection<ApiInterceptor> interceptors, Object context, ActionInvoker actualInvoker) {
 		super();
 		if (LangUtils.isNotEmpty(interceptors)) {
 //			AnnotationAwareOrderComparator.sort(interceptors);
@@ -35,7 +37,7 @@ public class ApiInterceptorChain {
 		this.requestContext = context;
 	}
 
-	public Object invoke(){
+	public Object invoke() throws Throwable {
 		if(iterator==null){
 			this.iterator = this.interceptors.iterator();
 		}
@@ -43,7 +45,8 @@ public class ApiInterceptorChain {
 			ApiInterceptor interceptor = iterator.next();
 			result = interceptor.intercept(this);
 		}else{
-			result = actualInvoker.get();
+//			result = actualInvoker.get();
+			result = actualInvoker.invoke();
 		}
 		return result;
 	}
@@ -56,7 +59,7 @@ public class ApiInterceptorChain {
 		return throwable;
 	}
 
-	public RequestContextData getRequestContext() {
+	public Object getRequestContext() {
 		return requestContext;
 	}
 }

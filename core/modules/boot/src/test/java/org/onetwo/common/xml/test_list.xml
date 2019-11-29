@@ -2,9 +2,11 @@
   <person>
     <userName>hanhan</userName>
     <age>30</age>
+    <gender>1</gender>
     <parent>
       <userName>hanrenjun</userName>
       <age>60</age>
+      <gender>-1</gender>
     </parent>
   </person>
 </personlist>

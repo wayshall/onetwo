@@ -25,7 +25,7 @@ public class GeneircApiClentRegistrar<IMPORT extends Annotation, COMPONENT exten
 		String className = annotationMetadata.getClassName();
 		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(DefaultApiClientFactoryBean.class);
 
-		definition.addPropertyValue("url", resolveUrl(attributes));
+		definition.addPropertyValue("url", resolveUrl(attributes, annotationMetadata));
 		definition.addPropertyValue("path", resolvePath(attributes));
 		definition.addPropertyValue("interfaceClass", className);
 		definition.addPropertyValue("responseHandler", responseHandler);

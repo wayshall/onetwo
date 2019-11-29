@@ -3,6 +3,7 @@ package org.onetwo.ext.alimq;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.onetwo.ext.ons.ONSUtils;
 
 import com.aliyun.openservices.ons.api.Message;
 
@@ -26,6 +27,10 @@ public interface MessageSerializer {
 
 		public String getUserProperties(String key) {
 			return message.getUserProperties(key);
+		}
+		
+		public boolean isDebug() {
+			return ONSUtils.isDebugMessage(message);
 		}
 	}
 }

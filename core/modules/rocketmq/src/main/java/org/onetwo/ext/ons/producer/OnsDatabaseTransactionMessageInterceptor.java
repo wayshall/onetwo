@@ -3,6 +3,7 @@ package org.onetwo.ext.ons.producer;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.onetwo.boot.mq.SendMessageContext;
 import org.onetwo.boot.mq.entity.SendMessageEntity;
 import org.onetwo.boot.mq.interceptor.SimpleDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.ons.ONSProperties;
@@ -22,16 +23,16 @@ public class OnsDatabaseTransactionMessageInterceptor extends SimpleDatabaseTran
 	private ONSProperties onsProperties;
 
 	@Override
-	protected void doAfterCommit(SendMessageEvent event){
-		Message onsMessage = (Message)event.getSendMessageContext().getMessage();
+	protected void sendMessage(SendMessageContext<?> msgContext) {
+		Message onsMessage = (Message)msgContext.getMessage();
 		//延迟消息，提交事务后也不发送
 		if(onsMessage.getStartDeliverTime()>0){
 			return ;
 		}
-		boolean debug = event.getSendMessageContext().isDebug();
-		event.getSendMessageContext().getChain().invoke();
-//		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
-		getSendMessageRepository().updateToSent(event.getSendMessageContext());
+		boolean debug = msgContext.isDebug();
+		msgContext.getChain().invoke();
+//		sendMessageRepository.remove(Arrays.asList(msgContext));
+		getSendMessageRepository().updateToSent(msgContext);
 		Logger log = getLogger();
 		if(debug && log.isInfoEnabled()){
 			log.info("committed transactional message in thread[{}]...", Thread.currentThread().getId());
@@ -55,6 +56,10 @@ public class OnsDatabaseTransactionMessageInterceptor extends SimpleDatabaseTran
 			}
 		}
 		return send;
+	}
+
+	public ONSProperties getOnsProperties() {
+		return onsProperties;
 	}
 
 }

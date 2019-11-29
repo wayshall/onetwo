@@ -4,13 +4,17 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.api.annotation.MenuMapping;
+import org.onetwo.ext.permission.api.annotation.PermissionMeta;
 import org.onetwo.ext.permission.api.annotation.ProxyMenu;
+import org.springframework.core.annotation.AnnotationUtils;
 
 public class PermClassParser {
 	public static final String APP_CODE = "appCode";
@@ -37,29 +41,42 @@ public class PermClassParser {
 	
 	private final Class<?> permissionClass;
 	private final Class<?> parentPermissionClass;
+	private final PermissionMeta permissionMeta;
+//	private final AnnotationAttributes permissionMetaAttrs;
 	
 	private PermClassParser(Class<?> permClass, Class<?> parentPermissionClass) {
 		super();
 		this.permissionClass = permClass;
 		this.parentPermissionClass = parentPermissionClass;
+
+		permissionMeta = AnnotationUtils.getAnnotation(getActualPermissionClass(), PermissionMeta.class);
+		/*if (permissionMeta!=null) {
+			permissionMetaAttrs = AnnotationUtils.getAnnotationAttributes(getActualPermissionClass(), permissionMeta);
+		} else {
+			permissionMetaAttrs = null;
+		}*/
 	}
 	
 	public Class<?> getPermissionClass() {
 		return permissionClass;
 	}
 	
-	public Class<?> getActualPermissionClass() {
+	final public Class<?> getActualPermissionClass() {
 		return isProxyMenu()?getProxyPermClass():permissionClass;
 	}
 
 	public String getName(){
-		Object nameValue = ReflectUtils.getFieldValue(getActualPermissionClass(), NAME, true);
+		if (permissionMeta!=null) {
+			return permissionMeta.name();
+		}
+		return getFieldValue(NAME, String.class, "");
+		/*Object nameValue = ReflectUtils.getFieldValue(getActualPermissionClass(), NAME, true);
 		String name = nameValue==null?"":nameValue.toString();
-		return name;
+		return name;*/
 	}
 	
 	public String getAppCode(){
-		return getFieldValue(APP_CODE, String.class, permissionClass.getSimpleName());
+		return getFieldValue(APP_CODE, String.class, getActualPermissionClass().getSimpleName());
 	}
 	
 	public String generatedSimpleCode(){
@@ -108,6 +125,9 @@ public class PermClassParser {
 	}
 	
 	protected Class<?>[] getChildren(){
+		if (permissionMeta!=null) {
+			return permissionMeta.children();
+		}
 		return getFieldValue(CHILDREN, Class[].class);
 	}
 	
@@ -133,37 +153,70 @@ public class PermClassParser {
 	}
 	
 	public Number getSort(){
+		if (permissionMeta!=null) {
+			return permissionMeta.sort();
+		}
 		return getFieldValue(SORT, Number.class);
 	}
 	
 	public PermissionType getPermissionType(){
+		if (permissionMeta!=null) {
+			return permissionMeta.permissionType();
+		}
 		return getFieldValue(PERMISSION_TYPE, PermissionType.class, PermissionType.MENU);
 	}
 	
 	public Boolean isHidden(){
+		if (permissionMeta!=null) {
+			return permissionMeta.hidden();
+		}
 		return getFieldValue(HIDDEN, Boolean.class, false);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getMeta(){
+		if (permissionMeta!=null) {
+			String json = permissionMeta.meta();
+			if (StringUtils.isNotBlank(json)) {
+				return JsonMapper.DEFAULT_MAPPER.fromJson(json, Map.class);
+			}
+		}
 		return (Map<String, Object>)getFieldValue(META, Map.class, null);
 	}
 	public String getUrl(){
+		if (permissionMeta!=null) {
+			return permissionMeta.url();
+		}
 		return getFieldValue(URL, String.class, null);
 	}
 	public String getResourcesPattern(){
+		if (permissionMeta!=null) {
+			return permissionMeta.resourcesPattern();
+		}
 		return getFieldValue(RESOURCES_PATTERN, String.class, null);
 	}
 	
 	public String getMenuCssClass(){
+		/*if (permissionMeta!=null) {
+			return permissionMeta.cssClass();
+		}*/
 		return getFieldValue(MENU_CSS_CLASS, String.class, "");
 	}
 	
 	public String getMenuShowProps(){
+		/*if (permissionMeta!=null) {
+			return permissionMeta.showProps();
+		}*/
 		return getFieldValue(MENU_SHOW_PROPS, String.class, "");
 	}
 	
 	public Map<?, ?> getParams(){
+		if (permissionMeta!=null) {
+			String json = permissionMeta.params();
+			if (StringUtils.isNotBlank(json)) {
+				return JsonMapper.DEFAULT_MAPPER.fromJson(json, Map.class);
+			}
+		}
 		return getFieldValue(PARAMS, Map.class, Collections.EMPTY_MAP);
 	}
 	
@@ -173,6 +226,7 @@ public class PermClassParser {
 	
 	@SuppressWarnings("unchecked")
 	public <T> T getFieldValue(String fieldName, Class<T> fieldType, T def) {
+		Class<?> permissionClass = this.permissionClass;
 		Field pageElementField = ReflectUtils.findField(permissionClass, fieldName);
 		T fieldValue = def;
 		if(pageElementField!=null){

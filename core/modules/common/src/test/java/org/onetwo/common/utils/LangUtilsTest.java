@@ -401,5 +401,13 @@ public class LangUtilsTest {
 		System.out.println("key:" + key);
 	}
 	
+	@Test
+	public void testGetCRC32() {
+		String data = "测试一下阿斯顿发了水电费开始的";
+		long value = LangUtils.getCrc32(data);
+		System.out.println(Long.toString(value, 36));
+		assertThat(value).isEqualTo(4286944383L);
+	}
+	
 }
 

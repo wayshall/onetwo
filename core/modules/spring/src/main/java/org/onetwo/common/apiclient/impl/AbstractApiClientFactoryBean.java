@@ -188,7 +188,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			super(methodCache);
 		}
 		
-		protected Object doInvoke(MethodInvocation invocation, M invokeMethod) {
+		protected Object doInvoke(MethodInvocation invocation, M invokeMethod) throws Throwable {
 			Object[] args = processArgumentsBeforeRequest(invocation, invokeMethod);
 			invokeMethod.validateArgements(validatorWrapper, args);
 

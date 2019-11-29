@@ -18,6 +18,11 @@ public class SubmitConfiguration {
 	public SubmitTokenInterceptor submitTokenInterceptor() {
 		return new SubmitTokenInterceptor();
 	}
+	
+	@Bean
+	public SimpleFrequentlySubmitChecker simpleFrequentlySubmitChecker() {
+		return new SimpleFrequentlySubmitChecker();
+	}
 
 }
 
