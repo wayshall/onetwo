@@ -48,8 +48,10 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		}
 		SendMessageEntity send = createSendMessageEntity(key, message);*/
 		
-		ctx.getMessageEntity().setLocker("");
-		baseEntityManager.persist(ctx.getMessageEntity());
+		SendMessageEntity messageEntity= ctx.getMessageEntity();
+		messageEntity.setLocker("");
+		
+		baseEntityManager.persist(messageEntity);
 //		ctx.setMessageEntity(send);
 
 //		storeInCurrentContext(ctx);

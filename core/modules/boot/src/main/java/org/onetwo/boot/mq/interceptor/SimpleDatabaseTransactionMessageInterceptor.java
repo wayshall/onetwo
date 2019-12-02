@@ -1,6 +1,5 @@
 package org.onetwo.boot.mq.interceptor;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -98,14 +97,14 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	}
 
 	protected SendMessageEntity storeSendMessage(SendMessageContext<?> ctx){
-		Serializable message = ctx.getMessage();
+//		Serializable message = ctx.getMessage();
 		String key = ctx.getKey();
 		if(StringUtils.isBlank(key)){
 //			key = String.valueOf(idGenerator.nextId());
 			//强制必填，可用于client做idempotent
 			throw new ServiceException("message key can not be blank!");
 		}
-		SendMessageEntity send = createSendMessageEntity(key, message);
+		SendMessageEntity send = createSendMessageEntity(ctx);
 		ctx.setMessageEntity(send);
 		save(ctx);
 		return send;
@@ -120,12 +119,13 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 		this.getSendMessageRepository().save(ctx);
 	}
 	
-	protected SendMessageEntity createSendMessageEntity(String key, Serializable message){
+	protected SendMessageEntity createSendMessageEntity(SendMessageContext<?> ctx){
 		SendMessageEntity send = new SendMessageEntity();
-		send.setKey(key);
+		send.setKey(ctx.getKey());
 		send.setState(SendStates.UNSEND);
-		send.setBody(messageBodyStoreSerializer.serialize(message));
+		send.setBody(messageBodyStoreSerializer.serialize(ctx.getMessage()));
 		send.setDeliverAt(new Date());
+		send.setDelay(ctx.isDelayMessage());
 		return send;
 	}
 

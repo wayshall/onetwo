@@ -43,5 +43,8 @@ public class SendMessageContext<M extends Serializable> {
 	public boolean isTransactional(){
 		return false;
 	}
-
+	
+	public boolean isDelayMessage() {
+		return false;
+	}
 }
