@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -29,10 +30,9 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.core.task.support.TaskExecutorAdapter;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.Assert;
@@ -49,7 +49,7 @@ import lombok.Data;
  * <br/>
  */
 //@Transactional
-public class DelayableSendMessageTask implements InitializingBean, SendMessageTask {
+public class DelayableSendMessageTask implements InitializingBean, DisposableBean, SendMessageTask {
 	public static final String LOCK_KEY = "mq:SendMessageTask";
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
@@ -74,7 +74,8 @@ public class DelayableSendMessageTask implements InitializingBean, SendMessageTa
 	private DelayQueue<DelayedMessage> delayedMessageQueue = new DelayQueue<>();
 	private Set<String> delayedMessageIds = ConcurrentHashMap.newKeySet();
 //	@Autowired(required=false)
-	private AsyncTaskExecutor asyncTaskExecutor;
+//	private AsyncTaskExecutor asyncTaskExecutor;
+	private ExecutorService executorService;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -84,7 +85,7 @@ public class DelayableSendMessageTask implements InitializingBean, SendMessageTa
 		if (mqProperties.getTransactional().getSendTask().isCheckMessageTable()) {
 			checkMessageTable();
 		}
-		asyncTaskExecutor = new TaskExecutorAdapter(Executors.newFixedThreadPool(1, newThreadFactory()));
+		executorService = Executors.newFixedThreadPool(1, newThreadFactory());
 		startDelayedTask();
 	}
 	
@@ -188,7 +189,7 @@ public class DelayableSendMessageTask implements InitializingBean, SendMessageTa
 	}
 
 	public void startDelayedTask() throws InterruptedException {
-		asyncTaskExecutor.execute(new Runnable() {
+		executorService.execute(new Runnable() {
 			@Override
 			public void run() {
 				while(true) {
@@ -221,6 +222,16 @@ public class DelayableSendMessageTask implements InitializingBean, SendMessageTa
 	public void setRedisLockTimeout(String redisLockTimeout) {
 		this.redisLockTimeout = redisLockTimeout;
 	}
+	
+
+	@Override
+	public void destroy() throws Exception {
+		if (executorService!=null) {
+			executorService.shutdown();
+		}
+	}
+
+
 
 	@Data
 	public static class DelayedMessage implements Delayed {
