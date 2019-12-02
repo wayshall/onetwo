@@ -65,7 +65,7 @@ public class OnsBatchDatabaseTransactionMessageInterceptor extends OnsDatabaseTr
 //			sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
 			getSendMessageRepository().batchUpdateToSent(event.getSendMessageContexts());
 			Logger log = getLogger();
-			if(event.isDebug() && log.isInfoEnabled()){
+			if(log.isInfoEnabled()){
 				log.info("batch committed transactional message in thread[{}]...", Thread.currentThread().getId());
 			}
 		}

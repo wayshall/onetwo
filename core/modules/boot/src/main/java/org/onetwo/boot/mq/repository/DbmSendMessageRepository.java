@@ -64,9 +64,13 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		boolean debug = ctx.isDebug();
 		SendMessageEntity messageEntity = ctx.getMessageEntity();
 		messageEntity.setState(SendStates.SENT);
+		if (!ctx.isDelayMessage()) {
+			// 非延迟消息，更新为实际发送时间
+			messageEntity.setDeliverAt(new Date());
+		}
 		baseEntityManager.update(messageEntity);
 		
-		if(debug && log.isInfoEnabled()){
+		if(debug){
 			log.info("update the state of message[{}] to : {}", ctx.getMessageEntity().getKey(), SendStates.SENT);
 		}
 	}
@@ -85,13 +89,13 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 		boolean debug = msgCtxs.iterator().next().isDebug();
 		List<String> keys = getSendMessageKeys(msgCtxs);
 		baseEntityManager.removeByIds(SendMessageEntity.class, keys.toArray(new String[0]));
-		if(debug && log.isInfoEnabled()){
+		if(debug){
 			log.info("remove message data from database: {}", keys);
 		}
 	}
 	
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, timeout=2000)
 	@Override
 	public int lockSendMessage(String locker, Date now, SendStates sendState) {
 		int count = baseEntityManager.createQuery(LOCK_MESSAGE_SQL, CUtils.asLinkedMap("locker", locker, 

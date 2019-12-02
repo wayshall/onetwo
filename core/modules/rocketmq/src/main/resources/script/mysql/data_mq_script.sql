@@ -1,11 +1,7 @@
 /*
- Navicat Premium Data Transfer
 
- Source Server         : 腾讯云-新测试
  Source Server Type    : MySQL
  Source Server Version : 50718
- Source Host           : gz-cdb-ll3xmnv3.sql.tencentcdb.com:61575
- Source Schema         : party
 
  Target Server Type    : MySQL
  Target Server Version : 50718

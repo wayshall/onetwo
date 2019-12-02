@@ -9,6 +9,7 @@ import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
@@ -86,44 +87,23 @@ public interface DefaultProducerService extends TraceableProducer {
 	default public SendResult sendRawMessage(Message message, final InterceptorPredicate interPredicate, Supplier<Object> actualInvoker){
 		final InterceptorPredicate interceptorPredicate = interPredicate==null?SendMessageFlags.Default:interPredicate;
 		
-		/*List<SendMessageInterceptor> messageInterceptors = Lists.newArrayList(sendMessageInterceptors);
-		List<SendMessageInterceptor> increasingInters = interceptorPredicate.getIncreasingInterceptors();
-		if(!increasingInters.isEmpty()){
-			messageInterceptors.addAll(interceptorPredicate.getIncreasingInterceptors());
-			AnnotationAwareOrderComparator.sort(messageInterceptors);
-		}
-		SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
-																			()->this.send(message), 
-																			interceptorPredicate);
-		
-		ONSSendMessageContext ctx = ONSSendMessageContext.builder()
-													.message(message)
-													.source(this)
-													.producer(this)
-													.chain(chain)
-													.debug(true)
-													.threadId(Thread.currentThread().getId())
-													.build();
-		chain.setSendMessageContext(ctx);
-		chain.setDebug(ctx.isDebug());
-		
-		return (SendResult)chain.invoke();*/
 		return getInterceptableMessageSender().sendIntercetableMessage(interPredicate, messageInterceptors->{
 			SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
 					interceptorPredicate,
 					actualInvoker);
 //					()->this.doSendRawMessage(message));
 			
+			boolean debug = Types.asValue(message.getUserProperties(TracableMessage.DEBUG_KEY), boolean.class, false);
 			ONSSendMessageContext ctx = ONSSendMessageContext.builder()
 															.message(message)
 															.source(this)
 //															.producer((ProducerBean)this)
 															.chain(chain)
-															.debug(true)
+															.debug(debug)
 															.threadId(Thread.currentThread().getId())
 															.build();
 			chain.setSendMessageContext(ctx);
-			chain.setDebug(ctx.isDebug());
+			chain.setDebug(debug);
 			
 			Object res = chain.invoke();
 			if(MQUtils.isSuspendResult(res)){
@@ -132,5 +112,6 @@ public interface DefaultProducerService extends TraceableProducer {
 			return (SendResult)res;
 		});
 	}
+	
 }
 

@@ -23,13 +23,16 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.Assert;
 
-/**
- * @author wayshall
- * <br/>
+/****
+ * 
+ * @author way
+ * @deprecated  be insteaded
+ * @see DelayableSendMessageTask
  */
 //@Transactional
-public class CompensationSendMessageTask implements InitializingBean {
-	public static final String LOCK_KEY = "mq:SendMessageTask";
+@Deprecated
+public class CompensationSendMessageTask implements InitializingBean, SendMessageTask {
+	public static final String LOCK_KEY = "mq:CompensationSendMessageTask";
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
@@ -61,11 +64,10 @@ public class CompensationSendMessageTask implements InitializingBean {
 	}
 
 	/***
-	 * 定时器运行时间，默认30秒一次
+	 * 定时器运行时间
 	 * @author wayshall
 	 */
-//	@Scheduled(cron="${"+ONSProperties.TRANSACTIONAL_TASK_CRON_KEY+":0 0/1 * * * *}")
-	@Scheduled(fixedDelayString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_CONFIG_KEY+":30000}", initialDelay=30000)
+	@Scheduled(fixedDelayString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_CONFIG_KEY+"}", initialDelay=5000)
 	public void scheduleCheckSendMessage(){
 		SendTaskProps taskProps = this.mqProperties.getTransactional().getSendTask();
 		int ignoreCreateAtRecently = (int)LangOps.timeToSeconds(taskProps.getIgnoreCreateAtRecently(), 30);

@@ -2,8 +2,8 @@ package org.onetwo.ext.rocketmq.config;
 
 import org.onetwo.boot.mq.MQProperties;
 import org.onetwo.boot.mq.MQTaskConfiguration;
-import org.onetwo.boot.mq.task.CompensationSendMessageTask;
 import org.onetwo.boot.mq.task.DeleteSentMessageTask;
+import org.onetwo.boot.mq.task.SendMessageTask;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.task.DeleteReceiveMessageTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ public class TransactionalMQTaskConfiguration extends MQTaskConfiguration {
 	}
 	
 	@Bean
-	public CompensationSendMessageTask compensationSendMessageTask(){
-		return super.createCompensationSendMessageTask();
+	public SendMessageTask compensationSendMessageTask(){
+		return super.createSendMessageTask();
 	}
 
 	@Bean

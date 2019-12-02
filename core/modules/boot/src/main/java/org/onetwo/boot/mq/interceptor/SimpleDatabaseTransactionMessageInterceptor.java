@@ -66,10 +66,9 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 		}
 				
 		boolean debug = ctx.isDebug();
-		if(debug && getLogger().isInfoEnabled()){
+		if(debug){
 			getLogger().info("start transactional message in thread[{}]...", ctx.getThreadId());
 		}
-		ctx.setDebug(debug);
 		
 		this.storeAndPublishSendMessageEvent(ctx);
 		return MQUtils.DEFAULT_SUSPEND;
@@ -91,7 +90,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 
 		boolean debug = ctx.isDebug();
 		Logger log = getLogger();
-		if(debug && log.isInfoEnabled()){
+		if(debug){
 			log.info("publish message event : {}", ctx.getMessageEntity().getKey());
 		}
 	}
@@ -150,7 +149,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 //		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
 		getSendMessageRepository().updateToSent(msgContext);
 		Logger log = getLogger();
-		if(msgContext.isDebug() && log.isInfoEnabled()){
+		if(msgContext.isDebug()){
 			log.info("committed transactional message in thread[{}]...", Thread.currentThread().getId());
 		}
 	}
@@ -171,7 +170,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	public void rollbackMessages(SendMessageEvent event){
 //		getSendMessageRepository().remove(event.getSendMessageContexts());
 		Logger log = getLogger();
-		if(event.isDebug() && log.isInfoEnabled()){
+		if(log.isInfoEnabled()){
 			log.info("rollback transactional message in thread[{}]...", Thread.currentThread().getId());
 		}
 //		sendMessageRepository.clearInCurrentContext();

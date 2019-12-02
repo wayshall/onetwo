@@ -34,7 +34,7 @@ public class SendMessageEntity extends BaseEntity {
 	private String locker;
 	private Date deliverAt;
 	@Column(name="is_delay")
-	private boolean delay;
+	private Boolean delay;
 	
 	public static enum SendStates {
 		UNSEND,

@@ -5,8 +5,8 @@ import org.onetwo.boot.mq.interceptor.SimpleDatabaseTransactionMessageIntercepto
 import org.onetwo.boot.mq.repository.DbmSendMessageRepository;
 import org.onetwo.boot.mq.repository.SendMessageRepository;
 import org.onetwo.boot.mq.serializer.MessageBodyStoreSerializer;
-import org.onetwo.boot.mq.task.CompensationSendMessageTask;
 import org.onetwo.boot.mq.task.DeleteSentMessageTask;
+import org.onetwo.boot.mq.task.SendMessageTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -69,9 +69,9 @@ public class MQTransactionalConfiguration {
 		
 		@Bean
 		@ConditionalOnProperty(value=MQProperties.TRANSACTIONAL_SEND_TASK_ENABLED_KEY, matchIfMissing=false)
-		@ConditionalOnMissingBean(CompensationSendMessageTask.class)
-		public CompensationSendMessageTask compensationSendMessageTask(){
-			return super.createCompensationSendMessageTask();
+		@ConditionalOnMissingBean(SendMessageTask.class)
+		public SendMessageTask compensationSendMessageTask(){
+			return super.createSendMessageTask();
 		}
 		
 		@Bean

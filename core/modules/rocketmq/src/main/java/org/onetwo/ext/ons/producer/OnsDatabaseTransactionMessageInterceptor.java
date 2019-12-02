@@ -33,7 +33,7 @@ public class OnsDatabaseTransactionMessageInterceptor extends SimpleDatabaseTran
 //		sendMessageRepository.remove(Arrays.asList(msgContext));
 		getSendMessageRepository().updateToSent(msgContext);
 		Logger log = getLogger();
-		if(debug && log.isInfoEnabled()){
+		if(debug){
 			log.info("committed transactional message in thread[{}]...", Thread.currentThread().getId());
 		}
 	}
@@ -43,15 +43,13 @@ public class OnsDatabaseTransactionMessageInterceptor extends SimpleDatabaseTran
 		Message onsMessage = (Message)ctx.getMessage();
 		SendMessageEntity send = super.createSendMessageEntity(ctx);
 		
-		if(onsProperties.getServerType()==MqServerTypes.ONS){
-			//ons本身支持延迟消息，所以直接把deliver时间设置当前即可
-			send.setDeliverAt(new Date());
-		}else{
-			//开源版rocketmq仅支持18个级别的延迟消息，故使用数据库实现
-			if(ctx.isDelayMessage()){
-				send.setDeliverAt(new Date(onsMessage.getStartDeliverTime()));
-			}else{
+		if(ctx.isDelayMessage()){
+			if(onsProperties.getServerType()==MqServerTypes.ONS){
+				//ons本身支持延迟消息，所以直接把deliver时间设置当前即可
 				send.setDeliverAt(new Date());
+			} else {
+				//开源版rocketmq仅支持18个级别的延迟消息，故使用数据库实现
+				send.setDeliverAt(new Date(onsMessage.getStartDeliverTime()));
 			}
 		}
 		return send;

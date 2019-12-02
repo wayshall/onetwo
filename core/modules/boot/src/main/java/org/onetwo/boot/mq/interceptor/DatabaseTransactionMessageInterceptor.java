@@ -40,10 +40,10 @@ public interface DatabaseTransactionMessageInterceptor extends SendMessageInterc
 		 */
 		private boolean batchMode;
 
-		public boolean isDebug() {
+		/*public boolean isDebug() {
 			return getSendMessageContext().isDebug();
-		}
-		private SendMessageContext<?> getSendMessageContext() {
+		}*/
+		public SendMessageContext<?> getFirstSendMessageContext() {
 			SendMessageContext<?> sendMessageContext = LangUtils.isEmpty(sendMessageContexts)?null:sendMessageContexts.get(0);
 			return sendMessageContext;
 		}
