@@ -27,16 +27,21 @@ final public class Types {
 		}
 	}
 
-
-	public static <T> T asLong(Object source) {
+	/***
+	 * source为null，则返回默认值0
+	 * @author weishao zeng
+	 * @param source
+	 * @return
+	 */
+	public static Long asLong(Object source) {
 		return convertor().convert(source, Long.class);
 	}
 
-	public static <T> T asInteger(Object source) {
+	public static Integer asInteger(Object source) {
 		return convertor().convert(source, Integer.class);
 	}
 
-	public static <T> T asString(Object source) {
+	public static String asString(Object source) {
 		return convertor().convert(source, String.class);
 	}
 	

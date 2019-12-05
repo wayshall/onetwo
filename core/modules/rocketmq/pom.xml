@@ -50,7 +50,6 @@
     <dependency>
 	   <groupId>com.aliyun.openservices</groupId>
 	   <artifactId>ons-client</artifactId>
-       <optional>true</optional>
 	</dependency>
 	
     <dependency>

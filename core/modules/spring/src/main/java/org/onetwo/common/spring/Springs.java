@@ -247,7 +247,7 @@ public class Springs {
 		buf.append("\n=================================== spring beans ===================================\n");
 		int index = 0;
 		for (String bn : beanNames) {
-			buf.append("["+(++index)+"]" + bn ).append("\n");
+			buf.append("[").append(++index).append("]").append(bn).append("\n");
 		}
 		buf.append("=================================== spring beans ===================================\n");
 		if(logger.isInfoEnabled()){
@@ -266,13 +266,19 @@ public class Springs {
 	*/
 
 	public ValidatorWrapper getValidator(){
-		if(this.validatorWrapper!=null)
+		if(this.validatorWrapper!=null) {
 			return validatorWrapper;
+		}
 		
-		this.validatorWrapper = getBean(ValidatorWrapper.class);
-		 if(validatorWrapper==null)
-			 throw new BaseException("no ValidatorWrapper found!");
-		 return validatorWrapper;
+		synchronized (appContext) {
+			ValidatorWrapper validatorWrapper = getBean(ValidatorWrapper.class);
+			 if(validatorWrapper==null) {
+				 throw new BaseException("ValidatorWrapper not found!");
+			 }
+			 this.validatorWrapper = validatorWrapper;
+		}
+		
+		return validatorWrapper;
 	}
 
 	public ContextHolder getContextHolder() {

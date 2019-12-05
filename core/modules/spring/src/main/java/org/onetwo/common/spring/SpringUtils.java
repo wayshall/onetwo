@@ -53,6 +53,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
@@ -465,33 +466,22 @@ final public class SpringUtils {
 		return bean;
 	}
 	
-
-	/*public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
-		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
-		return registerBeanDefinition(bdr, beanName, beanClass, params);
-	}
-	public static BeanDefinition registerBeanDefinition(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
-		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
-		return registerBeanDefinition(bdr, beanName, beanClass, params);
-	}*/
-	
-
-	/*public static BeanDefinitionRegistry getBeanDefinitionRegistry(Object context, boolean throwIfNull){
-		BeanDefinitionRegistry bdr = null;
-		if(ApplicationContext.class.isInstance(context)){
-			BeanFactory bf = ((ApplicationContext)context).getAutowireCapableBeanFactory();
-			if(BeanDefinitionRegistry.class.isInstance(bf))
-				bdr = (BeanDefinitionRegistry) bf;
-		}else if(BeanDefinitionRegistry.class.isInstance(context)){
-			bdr = (BeanDefinitionRegistry) context;
-		}else{
-			//
+	/****
+	 * 注册可解释的依赖
+	 * @author weishao zeng
+	 * @param applicationContext
+	 * @param dependencyType
+	 * @param autowiredValue 一般是ObjectFactory对象
+	 */
+	public static void registerResolvableDependency(ApplicationContext applicationContext, Class<?> dependencyType, Object autowiredValue) {
+		ConfigurableListableBeanFactory clbf = null;
+		if (applicationContext instanceof ConfigurableListableBeanFactory) {
+			clbf = (ConfigurableListableBeanFactory) applicationContext;
+		} else if (applicationContext instanceof AbstractApplicationContext) {
+			clbf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
 		}
-
-		if(bdr==null && throwIfNull)
-			throw new BaseException("this context can not rigister spring bean : " + context);
-		return bdr;
-	}*/
+		clbf.registerResolvableDependency(dependencyType, autowiredValue);
+	}
 	
 	/****
 	 * 注册bean定义
