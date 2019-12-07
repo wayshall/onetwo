@@ -25,11 +25,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 
 /**
- * 应该第一个调用拦截
+ * 应该是最后一个调用拦截
  * @author wayshall
  * <br/>
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class SimpleDatabaseTransactionMessageInterceptor implements InitializingBean, SendMessageInterceptor, DatabaseTransactionMessageInterceptor {
 
 	

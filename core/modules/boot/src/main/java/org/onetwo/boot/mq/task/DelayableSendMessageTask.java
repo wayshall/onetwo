@@ -52,7 +52,7 @@ import lombok.Data;
 public class DelayableSendMessageTask implements InitializingBean, DisposableBean, SendMessageTask {
 	public static final String LOCK_KEY = "mq:SendMessageTask";
 	
-	protected Logger log = JFishLoggerFactory.getLogger(getClass());
+	final protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
 	@Autowired(required=false)
 	private RedisLockRegistry redisLockRegistry;
@@ -192,13 +192,23 @@ public class DelayableSendMessageTask implements InitializingBean, DisposableBea
 		executorService.execute(new Runnable() {
 			@Override
 			public void run() {
+				// https://www.ibm.com/developerworks/cn/java/j-jtp05236.html#不可取消的任务
+				boolean interrupted = false;
 				while(true) {
 					try {
 						DelayedMessage delayed = delayedMessageQueue.take();
 						sendMessage(delayed.getMessage());
 						delayedMessageIds.remove(delayed.getMessage().getKey());
 					} catch (InterruptedException e) {
-						throw new BaseException("delayed message queue has interrupted", e);
+//						throw new BaseException("delayed message queue has interrupted", e);
+						log.error("delayed message queue has interrupted", e);
+						interrupted = true;
+					} catch (Exception e) {
+						log.error("send delay message error", e);
+					} finally {
+						if (interrupted) {
+							Thread.currentThread().interrupt();
+						}
 					}
 				}
 			}

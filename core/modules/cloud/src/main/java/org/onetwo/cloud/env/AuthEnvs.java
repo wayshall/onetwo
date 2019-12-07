@@ -25,6 +25,7 @@ import com.google.common.collect.Sets;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -136,7 +137,7 @@ final public class AuthEnvs {
 	
 	public <T> Consumer<T> decorate(Consumer<T> action) {
 		if (!WebHolder.getRequest().isPresent()) {
-			return action;
+			throw new BaseException("web environment not found!");
 		}
 		AuthEnv webAuthEnv = createWebAuthEnv(true);
 		return data -> {
@@ -150,7 +151,7 @@ final public class AuthEnvs {
 	}
 	public Runnable decorate(Runnable runnable) {
 		if (!WebHolder.getRequest().isPresent()) {
-			return runnable;
+			throw new BaseException("web environment not found!");
 		}
 		AuthEnv webAuthEnv = createWebAuthEnv(true);
 		return () -> {
@@ -165,7 +166,7 @@ final public class AuthEnvs {
 	
 	public <T> Supplier<T> decorate(Supplier<T> supplier) {
 		if (!WebHolder.getRequest().isPresent()) {
-			return supplier;
+			throw new BaseException("web environment not found!");
 		}
 		AuthEnv webAuthEnv = createWebAuthEnv(true);
 		return () -> {
@@ -195,7 +196,7 @@ final public class AuthEnvs {
 	private AuthEnv create(Map<String, String> map) {
 		return create(name -> map.get(name));
 	}
-	private AuthEnv create(Function<String, String> contextExtractor) {
+	public AuthEnv create(Function<String, String> contextExtractor) {
 		AuthEnv authEnv = createAuthEnv();
 		keepHeaders.forEach(header -> {
 			if(log.isDebugEnabled()){
@@ -230,6 +231,9 @@ final public class AuthEnvs {
 			}
 			String value = sattr.getRequest().getHeader(header);
 			if(StringUtils.isNotBlank(value)){
+				if (OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER.equals(header)) {
+					value = StringUtils.appendStartWith(value, OAuth2Utils.BEARER_TYPE + " ");
+				}
 				authEnv.getHeaders().add(new AuthEnvHeader(header, value));
 			}
 		});
@@ -253,7 +257,7 @@ final public class AuthEnvs {
 		this.keepHeaders = keepHeaders;
 	}
 
-
+	@ToString
 	public static class AuthEnv {
 		final private List<AuthEnvHeader> headers = Lists.newArrayList();
 		final private RequestAttributes requestAttributes;

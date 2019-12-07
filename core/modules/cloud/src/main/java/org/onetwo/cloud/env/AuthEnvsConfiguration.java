@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableSet;
  */
 @Configuration
 @EnableConfigurationProperties(EnvProperties.class)
+//@Import(RmqAuthEnvsConfiguration.class)
 public class AuthEnvsConfiguration {
 	@Autowired
 	private EnvProperties envProperties;
@@ -31,4 +32,5 @@ public class AuthEnvsConfiguration {
 		}
 		return authEnvs;
 	}
+	
 }

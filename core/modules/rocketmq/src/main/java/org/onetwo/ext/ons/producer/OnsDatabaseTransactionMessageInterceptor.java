@@ -9,6 +9,8 @@ import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.MqServerTypes;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 import com.aliyun.openservices.ons.api.Message;
 
@@ -16,6 +18,7 @@ import com.aliyun.openservices.ons.api.Message;
  * @author wayshall
  * <br/>
  */
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class OnsDatabaseTransactionMessageInterceptor extends SimpleDatabaseTransactionMessageInterceptor {
 
 	@Autowired
