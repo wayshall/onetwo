@@ -7,6 +7,7 @@ import org.onetwo.cloud.env.AuthEnvs;
 import org.onetwo.cloud.env.AuthEnvs.AuthEnv;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -23,6 +24,8 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 //	private Set<String> keepHeaders; // = DEFAULT_HEADER_NAMES;
 
 	private AuthEnvs authEnvs;
+	@Autowired
+	private FeignProperties feignProperties;
 	
 	@Override
 	public void apply(RequestTemplate template) {
@@ -55,6 +58,12 @@ public class KeepHeaderRequestInterceptor implements RequestInterceptor {
 					}
 				});
 			});
+		}
+		
+		String fixBearerHeader = feignProperties.getOauth2().getBearerHeader();
+//		if (!template.headers().containsKey(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER) && StringUtils.isNotBlank(fixAuthorization)) {
+		if (StringUtils.isNotBlank(fixBearerHeader)) {
+			template.header(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, fixBearerHeader);
 		}
 		
 		// 如果调用了runInCurrentWebEnvs，则会执行，并覆盖

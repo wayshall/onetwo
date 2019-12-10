@@ -4,7 +4,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.common.utils.LangOps;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Maps;
@@ -47,6 +49,8 @@ public class FeignProperties {
 	LocalProps local = new LocalProps();
 	Map<String, ServiceProps> services = Maps.newHashMap();
 	
+	OAuth2Props oauth2 = new OAuth2Props();
+	
 	@Data
 	public static class LocalProps {
 		public static final String ENABLE_KEY = PROPERTIES_PREFIX + ".local.enabled";
@@ -58,6 +62,19 @@ public class FeignProperties {
 	public static class ServiceProps {
 		String basePath;
 //		String url;
+	}
+
+	@Data
+	public static class OAuth2Props {
+		String authorization;
+		
+		public String getBearerHeader() {
+			if (StringUtils.isBlank(authorization)) {
+				return authorization;
+			} else {
+				return StringUtils.appendStartWith(authorization, OAuth2Utils.BEARER_TYPE + " ");
+			}
+		}
 	}
 	/***
 	 * 

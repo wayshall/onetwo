@@ -52,9 +52,9 @@ public class ExtResponseEntityDecoder implements Decoder {
 	@SuppressWarnings({ "rawtypes" })
 	protected Object decode(FeignResponseAdapter response, Type type) throws IOException, FeignException {
 		Object res = null;
-		List<String> headerValues = response.getHeaders().get(BootWebExceptionHandler.ERROR_RESPONSE_HEADER);
+		List<String> errorHeaders = response.getHeaders().get(BootWebExceptionHandler.ERROR_RESPONSE_HEADER);
 		try {
-			if(LangUtils.isEmpty(headerValues)){
+			if(LangUtils.isEmpty(errorHeaders)){
 				//没有错误
 				res = decodeByType(response, type);
 			}else{
