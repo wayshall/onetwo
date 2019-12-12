@@ -162,17 +162,17 @@ public class NiceDate {
 		return nextDay(1);
 	}
 	
-	public NiceDate thisYear(){
+	public NiceDate preciseAtYear(){
 		precise(DateType.year);
 		return this;
 	}
 	
-	public NiceDate thisMonth(){
+	public NiceDate preciseAtMonth(){
 		precise(DateType.month);
 		return this;
 	}
 	
-	public NiceDate thisHour(){
+	public NiceDate preciseAtHour(){
 		precise(DateType.hour);
 		return this;
 	}
@@ -182,34 +182,31 @@ public class NiceDate {
 	 * @see #preciseDate
 	 * @return
 	 */
-	public NiceDate thisDate(){
+	public NiceDate preciseAtDate(){
 		precise(DateType.date);
 		return this;
 	}
 	
-	/****
-	 * 精确到日，不要时分秒
-	 * @return
-	 */
-	public NiceDate preciseDate(){
-		precise(DateType.date);
-		return this;
-	}
 	
-	public NiceDate thisMin(){
+	public NiceDate preciseAtMin(){
 		precise(DateType.min);
 		return this;
 	}
 	
-	public NiceDate thisSec(){
+	public NiceDate preciseAtSec(){
 		precise(DateType.sec);
 		return this;
 	}
 	
-	public NiceDate thisMisec(){
+	/***
+	 * 精确到毫秒
+	 * @author weishao zeng
+	 * @return
+	
+	public NiceDate preciseAtMisec(){
 		precise(DateType.misec);
 		return this;
-	}
+	} */
 	
 
 	public NiceDate atTheBeginning(){

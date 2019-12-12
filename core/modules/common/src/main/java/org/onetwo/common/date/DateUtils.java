@@ -412,8 +412,9 @@ abstract public class DateUtils {
 			return ;
 
 		for (DateType d : DateType.values()) {
-			if (d.getField() <= dt.getField())
+			if (d.getField() <= dt.getField()) {
 				continue;
+			}
 			calendar.set(d.getField(), calendar.getActualMinimum(d.getField()));
 		}
 //		return calendar.getTime();
