@@ -7,7 +7,6 @@ import org.onetwo.common.date.DateUtils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -23,10 +22,10 @@ public class JsonDateOnlySerializer extends JsonSerializer<Date>{
 
 	@Override
 	public void serializeWithType(Date value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-//		typeSer.writeTypePrefixForScalar(value, gen);
-		typeSer.writeTypePrefix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
+		typeSer.writeTypePrefixForScalar(value, gen);
+//		typeSer.writeTypePrefix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
 		serialize(value, gen, serializers);
-		typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
-//		typeSer.writeTypeSuffixForScalar(value, gen);
+//		typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
+		typeSer.writeTypeSuffixForScalar(value, gen);
 	}
 }
