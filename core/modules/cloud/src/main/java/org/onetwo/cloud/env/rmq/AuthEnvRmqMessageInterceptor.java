@@ -46,8 +46,13 @@ public class AuthEnvRmqMessageInterceptor implements SendMessageInterceptor {
 					message.putUserProperties(header.getName(), value);
 				}
 			});
+			
+			return AuthEnvs.runInCurrent(env, () -> {
+				return chain.invoke();
+			});
+		} else {
+			return chain.invoke();
 		}
-		return chain.invoke();
 	}
 
 }

@@ -45,11 +45,15 @@ final public class AuthEnvs {
 		if (authEnv==null) {
 			throw new IllegalArgumentException("authEnv can not be null");
 		}
+		AuthEnv existEnv = getCurrent();
 		setCurrent(authEnv);
 		try {
 			return supplier.get();
 		} finally {
 			removeCurrent();
+			if (existEnv!=null) {
+				setCurrent(existEnv);
+			}
 		}
 	}
 
