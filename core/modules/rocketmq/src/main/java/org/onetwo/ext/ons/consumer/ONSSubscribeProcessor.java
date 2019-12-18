@@ -44,7 +44,14 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 			ConsumerProcessor.findConsumerBeanMethods(bean, ONSSubscribe.class).forEach(method->{
 				ONSSubscribe subscribe = AnnotationUtils.findAnnotation(method, ONSSubscribe.class);
 				DelegateCustomONSConsumer delegate = new DelegateCustomONSConsumer(bean, method);
-				ConsumerMeta meta = buildConsumerMeta(subscribe, ListenerType.CUSTOM, delegate, name);
+//				ConsumerMeta meta = buildConsumerMeta(subscribe, ListenerType.CUSTOM, delegate, name);
+				ConsumerMeta meta;
+				try {
+					meta = buildConsumerMeta(subscribe, ListenerType.CUSTOM, delegate, name);
+				} catch (Exception e) {
+					throw new BaseException("build consumer["+name+","+method.getDeclaringClass().getName()+"] error: "+e.getMessage(), e);
+				}
+				
 				if(consumers.containsKey(meta.getConsumerId())){
 					throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
 																	.put("add listener", name)
@@ -61,7 +68,13 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 		onsListeners.forEach((name, bean)->{
 			Class<?> targetClass = AopUtils.getTargetClass(bean);
 			ONSSubscribe subscribe = AnnotationUtils.findAnnotation(targetClass, ONSSubscribe.class);
-			ConsumerMeta meta = buildConsumerMeta(subscribe, listenerType, bean, name);
+			
+			ConsumerMeta meta;
+			try {
+				meta = buildConsumerMeta(subscribe, listenerType, bean, name);
+			} catch (Exception e) {
+				throw new BaseException("build consumer["+name+","+targetClass.getName()+"] error: "+e.getMessage(), e);
+			}
 			
 			if(consumers.containsKey(meta.getConsumerId())){
 				throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
