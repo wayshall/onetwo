@@ -70,9 +70,6 @@ public class AuthEnvRmqMessageInterceptor implements SendMessageInterceptor {
 	}
 	
 	private void fillMessageAuthEnvs(AuthEnv env, SendMessageInterceptorChain chain) {
-		if(logger.isInfoEnabled()){
-			logger.info("send message[{}] with AuthEnvs header: {}", chain.getSendMessageContext().getKey(), env);
-		}
 		Message message = (Message)chain.getSendMessageContext().getMessage();
 		env.getHeaders().forEach(header -> {
 			// 排除auth
@@ -82,6 +79,9 @@ public class AuthEnvRmqMessageInterceptor implements SendMessageInterceptor {
 			String value = header.getValue();
 			if (StringUtils.isNotBlank(value)){
 				message.putUserProperties(header.getName(), value);
+				if(logger.isInfoEnabled()){
+					logger.info("send message[{}] with header: {}", chain.getSendMessageContext().getKey(), header.getName());
+				}
 			}
 		});
 	}
