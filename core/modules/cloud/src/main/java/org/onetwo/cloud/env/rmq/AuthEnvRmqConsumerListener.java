@@ -1,5 +1,9 @@
 package org.onetwo.cloud.env.rmq;
 
+import java.util.Optional;
+
+import org.onetwo.boot.module.oauth2.clientdetails.ClientDetails;
+import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.cloud.env.AuthEnvs;
 import org.onetwo.cloud.env.AuthEnvs.AuthEnv;
 import org.onetwo.ext.alimq.ConsumContext;
@@ -26,8 +30,8 @@ public class AuthEnvRmqConsumerListener implements ConsumerListener {
 			return context.getMessage().getUserProperty(header);
 		});
 
-		if(logger.isDebugEnabled()){
-			logger.debug("group[{}] message[{}] AuthEnvs header: {}", consumerMeta.getConsumerId(), context.getMessage().getKeys(), env);
+		if(logger.isInfoEnabled()){
+			logger.info("consume group[{}] message[{}] AuthEnvs header: {}", consumerMeta.getConsumerId(), context.getMessage().getKeys(), env);
 		}
 		AuthEnvs.setCurrent(env);
 	}

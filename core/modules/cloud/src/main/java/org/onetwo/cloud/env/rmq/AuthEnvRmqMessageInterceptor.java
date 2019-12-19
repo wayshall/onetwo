@@ -28,6 +28,19 @@ public class AuthEnvRmqMessageInterceptor implements SendMessageInterceptor {
 	@Override
 	public Object intercept(SendMessageInterceptorChain chain) {
 		AuthEnv env = AuthEnvs.getCurrent();
+		if (env!=null) {
+			fillMessageAuthEnvs(env, chain);
+			return chain.invoke();
+		}
+		env = authEnvs.createWebAuthEnv(false);
+		if (env!=null) {
+			fillMessageAuthEnvs(env, chain);
+			return AuthEnvs.runInCurrent(env, () -> {
+				return chain.invoke();
+			});
+		}
+		return chain.invoke();
+		/*AuthEnv env = AuthEnvs.getCurrent();
 		if (env==null) {
 			env = authEnvs.createWebAuthEnv(false);
 		}
@@ -50,9 +63,27 @@ public class AuthEnvRmqMessageInterceptor implements SendMessageInterceptor {
 			return AuthEnvs.runInCurrent(env, () -> {
 				return chain.invoke();
 			});
+			return chain.invoke();
 		} else {
 			return chain.invoke();
+		}*/
+	}
+	
+	private void fillMessageAuthEnvs(AuthEnv env, SendMessageInterceptorChain chain) {
+		if(logger.isInfoEnabled()){
+			logger.info("send message[{}] with AuthEnvs header: {}", chain.getSendMessageContext().getKey(), env);
 		}
+		Message message = (Message)chain.getSendMessageContext().getMessage();
+		env.getHeaders().forEach(header -> {
+			// 排除auth
+			if (config!=null && header.getName().equals(config.getJwt().getAuthHeader())) {
+				return ;
+			}
+			String value = header.getValue();
+			if (StringUtils.isNotBlank(value)){
+				message.putUserProperties(header.getName(), value);
+			}
+		});
 	}
 
 }

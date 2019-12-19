@@ -14,6 +14,7 @@ import org.onetwo.cloud.canary.CanaryUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.web.context.request.RequestAttributes;
@@ -33,12 +34,13 @@ import lombok.extern.slf4j.Slf4j;
  * <br/>
  */
 @Slf4j
-final public class AuthEnvs {
+final public class AuthEnvs implements InitializingBean {
 
 	final public static Set<String> DEFAULT_HEADER_NAMES = Sets.newHashSet(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, "auth", CanaryUtils.HEADER_CLIENT_TAG);//
 	private static final NamedThreadLocal<AuthEnv> CURRENT_ENVS = new NamedThreadLocal<>("auth env");
 	private static final String AUTH_ENV_KEY = "__AUTH_WEB_ENV__";
 
+	private static AuthEnvs instance;
 
 	
 	public static <T> T runInCurrent(AuthEnv authEnv, Supplier<T> supplier) {
@@ -72,11 +74,16 @@ final public class AuthEnvs {
 	
 	public static AuthEnv getCurrent() {
 		RequestAttributes req = RequestContextHolder.getRequestAttributes();
+		AuthEnv env = null;
 		if (req!=null) {
-			return (AuthEnv) req.getAttribute(AUTH_ENV_KEY, RequestAttributes.SCOPE_REQUEST);
+			env = (AuthEnv) req.getAttribute(AUTH_ENV_KEY, RequestAttributes.SCOPE_REQUEST);
 		} else {
-			return CURRENT_ENVS.get();
+			env = CURRENT_ENVS.get();
 		}
+		if (env==null && instance!=null) {
+			env = instance.createWebAuthEnv(false);
+		}
+		return env;
 	}
 	
 	public static void removeCurrent() {
@@ -122,6 +129,11 @@ final public class AuthEnvs {
 		return runInCurrentEnvs(authEnv, ()->action.apply(authEnv));
 	}*/
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		instance = this;
+	}
+
 	/****
 	 * 
 	 * @author weishao zeng

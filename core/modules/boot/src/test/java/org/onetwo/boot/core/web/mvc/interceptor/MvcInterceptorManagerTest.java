@@ -20,7 +20,6 @@ import org.onetwo.boot.core.web.mvc.annotation.Interceptor;
 import org.onetwo.boot.core.web.mvc.annotation.InterceptorDisabled;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager.MvcInterceptorMeta;
 import org.onetwo.boot.core.web.view.XResponseView;
-import org.onetwo.boot.module.oauth2.clientdetails.ClientDetailsMvcInterceptor;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.annotation.Property;
 import org.onetwo.common.utils.LangUtils;
@@ -48,7 +47,7 @@ public class MvcInterceptorManagerTest {
 		assertThat(attrs).size().isEqualTo(1);
 		AnnotationAttributes attr = LangUtils.getFirst(attrs);
 		MvcInterceptorMeta meta = mvcInterceptorMgr.asMvcInterceptorMeta(attr);
-		assertThat(meta.getInterceptorType()).isEqualTo(ClientDetailsMvcInterceptor.class);
+		assertThat(meta.getInterceptorType()).isEqualTo(ClientDetailsMvcInterceptorTest.class);
 	}
 	
 	/***
@@ -63,7 +62,7 @@ public class MvcInterceptorManagerTest {
 		List<AnnotationAttributes> attrs = new ArrayList<AnnotationAttributes>(mvcInterceptorMgr.findInterceptorAnnotationAttrsList(hm));
 		assertThat(attrs).size().isEqualTo(2);
 		//父类的@TenentClientAuthTest
-		boolean match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==ClientDetailsMvcInterceptor.class);
+		boolean match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==ClientDetailsMvcInterceptorTest.class);
 		assertThat(match).isTrue();
 		//自身的@AnonymousOrUserAuthTest
 		match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==AnonymousOrUserJwtMvcInterceptor.class);
@@ -101,7 +100,7 @@ public class MvcInterceptorManagerTest {
 		boolean match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==JwtMvcInterceptor.class);
 		assertThat(match).isTrue();
 
-		match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==ClientDetailsMvcInterceptor.class);
+		match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==ClientDetailsMvcInterceptorTest.class);
 		assertThat(match).isTrue();
 	}
 	
@@ -160,15 +159,18 @@ public class MvcInterceptorManagerTest {
 		boolean match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==JwtMvcInterceptor.class);
 		assertThat(match).isTrue();
 
-		match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==ClientDetailsMvcInterceptor.class);
+		match = attrs.stream().anyMatch(attr->mvcInterceptorMgr.asMvcInterceptorMeta(attr).getInterceptorType()==ClientDetailsMvcInterceptorTest.class);
 		assertThat(match).isTrue();
 	}
 
 	@Target({ElementType.TYPE, ElementType.METHOD})
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
-	@Interceptor(value=ClientDetailsMvcInterceptor.class)
+	@Interceptor(value=ClientDetailsMvcInterceptorTest.class)
 	static @interface TenentClientAuthTest {
+	}
+	
+	public static class ClientDetailsMvcInterceptorTest extends MvcInterceptorAdapter {
 	}
 	
 	@Target({ElementType.TYPE, ElementType.METHOD})
