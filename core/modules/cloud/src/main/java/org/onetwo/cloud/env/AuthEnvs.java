@@ -254,7 +254,7 @@ final public class AuthEnvs implements InitializingBean {
 			}
 		});
 		
-		setCurrent(authEnv);
+//		setCurrent(authEnv);
 		
 		return authEnv;
 	}
