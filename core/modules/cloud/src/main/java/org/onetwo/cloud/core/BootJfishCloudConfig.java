@@ -1,14 +1,15 @@
 package org.onetwo.cloud.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import lombok.Data;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -41,6 +42,9 @@ public class BootJfishCloudConfig {
 		Map<String, Pattern> patterns = null;
 		
 		public Map<String, Pattern> getPatterns(){
+			if (matcher!=PathMatcher.REGEX) {
+				return Collections.emptyMap();
+			}
 			Map<String, Pattern> patterns = this.patterns;
 			if(patterns==null || patterns.isEmpty()){
 				patterns = pathPatterns.stream().collect(Collectors.toMap(path->path, path->Pattern.compile(path)));
