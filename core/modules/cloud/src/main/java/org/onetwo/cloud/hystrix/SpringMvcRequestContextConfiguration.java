@@ -1,6 +1,7 @@
 package org.onetwo.cloud.hystrix;
 
 import org.onetwo.cloud.core.BootJfishCloudConfig;
+import org.onetwo.cloud.env.AuthEnvsConfiguration;
 import org.onetwo.cloud.hystrix.SpringMvcRequestContextConfiguration.SpringMvcRequestContextCondition;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -8,6 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import com.netflix.hystrix.Hystrix;
 
@@ -17,6 +19,7 @@ import com.netflix.hystrix.Hystrix;
  */
 @Configuration
 @Conditional(SpringMvcRequestContextCondition.class)
+@Import(AuthEnvsConfiguration.class)
 public class SpringMvcRequestContextConfiguration {
 
 	@Bean

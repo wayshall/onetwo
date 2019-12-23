@@ -1,44 +1,36 @@
-package org.onetwo.cloud.core;
+package org.onetwo.boot.module.oauth2.bearer;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
 import org.onetwo.boot.utils.PathMatcher;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import com.google.common.collect.Maps;
 
 import lombok.Data;
 
 /**
- * @author wayshall
+ * @author weishao zeng
  * <br/>
  */
-@ConfigurationProperties(prefix=BootJfishCloudConfig.CONFIG_PREFIX)
+@ConfigurationProperties(BearerTokenProperties.BEARER_TOKEN_KEY)
 @Data
-public class BootJfishCloudConfig {
+public class BearerTokenProperties {
 	
-	public static final String CONFIG_PREFIX = "jfish.cloud"; 
-	public static final String ZUUL_FIXHEADERS_ENABLED = CONFIG_PREFIX + ".zuul.endabledFixHeader";
+	public static final String BEARER_TOKEN_KEY = JFishOauth2Properties.CONFIG_PREFIX + ".bearerToken";
+
+	Map<String, BearerHeadersConfig> headers = Maps.newHashMap();
+	boolean debug;
 	
-	public static final String EUREKA_EMBEDDED_KEY = "jfish.cloud.eureka.embedded";
-	
-	public static final String HYSTRIX_SHARE_REQUEST_CONTEXT = "jfish.cloud.hystrix.shareRequestContext";
-	
-	ZuulConfig zuul = new ZuulConfig();
-	
-	@Data
-	public class ZuulConfig {
-		List<FixHeadersConfig> fixHeaders = new ArrayList<>();
-		boolean debug;
-	}
 
 	@Data
-	static public class FixHeadersConfig {
+	static public class BearerHeadersConfig {
 		List<String> pathPatterns;
-		String header;
 		String value;
 		PathMatcher matcher = PathMatcher.ANT;
 		Map<String, Pattern> patterns = null;
@@ -54,9 +46,6 @@ public class BootJfishCloudConfig {
 			return patterns;
 		}
 	}
-	
-	/*public static enum PathMatcher {
-		ANT,
-		REGEX
-	}*/
+
 }
+

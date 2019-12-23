@@ -30,7 +30,8 @@ public class EnableJFishCloudExtensionSelector extends AbstractImportSelector<En
 		List<String> classNames = new ArrayList<String>();
 		
 		classNames.add(BootCloudConfigration.class.getName());
-		classNames.add(AuthEnvsConfiguration.class.getName());
+//		classNames.add(AuthEnvsConfiguration.class.getName());
+		
 		classNames.add(RmqAuthEnvsConfiguration.class.getName());
 		classNames.add(ErrorHandleConfiguration.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
