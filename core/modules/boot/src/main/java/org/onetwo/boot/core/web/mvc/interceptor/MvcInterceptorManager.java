@@ -222,6 +222,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 
 //	@SuppressWarnings("unchecked")
 	protected MvcInterceptor getMvcInterceptor(MvcInterceptorMeta attr){
+		// 如果配置了AlwaysCreate和其它属性配置，则通过反射创建和注入
 		if(attr.isAlwaysCreate()){
 			MvcInterceptor interInst = createInterceptorInstance(attr);
 			return interInst;
@@ -238,6 +239,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		@SuppressWarnings("unchecked")
 		List<MvcInterceptor> inters = (List<MvcInterceptor>)SpringUtils.getBeans(applicationContext, cls);
 		if(LangUtils.isEmpty(inters)){
+			// 如果在容器内找不到，则通过反射创建和注入
 //			throw new BaseException("MvcInterceptor not found for : " + cls);
 			MvcInterceptor interInst = createInterceptorInstance(attr);
 			return interInst;
