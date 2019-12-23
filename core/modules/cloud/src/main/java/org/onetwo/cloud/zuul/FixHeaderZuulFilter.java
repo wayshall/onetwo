@@ -76,6 +76,8 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 
 	@Override
 	public Object run() {
+		boolean debug = this.cloudConfig.getZuul().isDebug();
+		
 		List<FixHeadersConfig> fixHeaders = new ArrayList<>();
 		fixHeaders.addAll(this.cloudConfig.getZuul().getFixHeaders());
 		
@@ -87,7 +89,14 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 				fc.setPathPatterns(conf.getPathPatterns());
 				fc.setValue(StringUtils.appendStartWith(conf.getValue(), OAuth2Utils.BEARER_TYPE + " "));
 				fixHeaders.add(fc);
+				if (debug) {
+					log.info("fixHeaders add bearer header: {}", fc);
+				}
 			});
+		}
+		
+		if (debug) {
+			log.info("fixHeaders: {}", fixHeaders);
 		}
 		
 		if(LangUtils.isEmpty(fixHeaders)){
