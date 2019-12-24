@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -90,13 +91,13 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 				fc.setValue(StringUtils.appendStartWith(conf.getValue(), OAuth2Utils.BEARER_TYPE + " "));
 				fixHeaders.add(fc);
 				if (debug) {
-					log.info("fixHeaders add bearer header: {}", fc);
+					log.info("fixHeaders add bearer header: {}", fc.getHeader());
 				}
 			});
 		}
 		
 		if (debug) {
-			log.info("fixHeaders: {}", fixHeaders);
+			log.info("fixHeaders: {}", fixHeaders.stream().map(h -> h.getHeader()).collect(Collectors.toList()));
 		}
 		
 		if(LangUtils.isEmpty(fixHeaders)){
