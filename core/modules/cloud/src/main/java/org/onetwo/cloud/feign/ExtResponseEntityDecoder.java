@@ -105,6 +105,7 @@ public class ExtResponseEntityDecoder implements Decoder {
 				throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
 			}else if(!dr.isSuccess()){
 				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//				throw new ServiceException(dr.getMessage(), dr.getCode());
 			}
 			res = dr.getData();
 		}

@@ -58,6 +58,10 @@ public interface ExceptionMessageFinder {
 	//TODO: 必要时加上serviceName头，一边追踪，待实现
 	public String ERROR_JSERVICE_HEADER = "X-Response-JService";
 	
+	/*interface ServiceExceptionResolver {
+		ServiceException resolve(Exception ex);
+	}*/
+	
 	interface ExceptionMessageFinderConfig {
 		String OTHER_MAPPING_KEY = "*";
 		/***
@@ -72,7 +76,9 @@ public interface ExceptionMessageFinder {
 		default boolean isInternalError(Exception ex){
 			if(BootUtils.isHystrixErrorPresent()){
 				String name = ex.getClass().getName();
-				return name.endsWith("HystrixRuntimeException") || name.endsWith("HystrixBadRequestException");
+				return name.endsWith("HystrixRuntimeException") || 
+						name.endsWith("HystrixBadRequestException") || 
+						name.equals("feign.codec.DecodeException");
 			}
 			return false;
 		}
