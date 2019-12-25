@@ -302,7 +302,7 @@ abstract public class AbstractBaseController {
 	}
 	
 	/*****
-	 * 检查当前登录用户，如果没有找到则抛出异常，如果找到，返回登录信息
+	 * 检查当前登录用户，如果没有找到，或者当前登录模式是游客模式，则抛出异常，否则返回登录用户的信息
 	 * @return
 	 */
 	protected UserDetail checkAndGetCurrentLoginUser(){
@@ -362,7 +362,7 @@ abstract public class AbstractBaseController {
 			return clazz.cast(user);
 		}
 	}
-	
+	// 获取当前登录的用户信息，但是没有登录，或者游客模式，也不会抛错
 	@ModelAttribute(name=UserDetail.USER_DETAIL_KEY)
 	public UserDetail getCurrentLoginUser(){
 		return checkAndGetCurrentLoginUser(false);
