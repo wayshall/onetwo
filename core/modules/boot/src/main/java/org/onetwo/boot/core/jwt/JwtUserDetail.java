@@ -1,9 +1,10 @@
 package org.onetwo.boot.core.jwt;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.common.web.userdetails.UserDetail;
+
+import com.google.common.collect.Maps;
 
 import io.jsonwebtoken.Claims;
 
@@ -12,23 +13,41 @@ import io.jsonwebtoken.Claims;
  * <br/>
  */
 public class JwtUserDetail implements UserDetail {
+	public static final String ANONYMOUS_LOGIN_KEY = "anonymousLogin";
+	
 	private long userId;
 	private String userName;
 	/***
 	 * 把userdetail对象解释为token时，扩展属性properties会存储到claim，然后解释为token
 	 */
-	private Map<String, Object> properties;
+	private Map<String, Object> properties = Maps.newHashMap();
 	
 	/***
 	 * 从token解释为Claims对象
 	 */
 	private Claims claims;
 	private JwtTokenInfo newToken;
+//	private boolean anonymousLogin;
 	
 	public JwtUserDetail(long userId, String userName) {
+		this(userId, userName, null);
+	}
+	public JwtUserDetail(long userId, String userName, Boolean anonymousLogin) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
+//		this.anonymousLogin = anonymousLogin;
+		if (anonymousLogin!=null) {
+			this.properties.put(ANONYMOUS_LOGIN_KEY, anonymousLogin);
+		}
+	}
+
+	public boolean isAnonymousLogin() {
+		Boolean anonymousLogin = (Boolean)properties.get(ANONYMOUS_LOGIN_KEY);
+		if (anonymousLogin==null) {
+			return false;
+		}
+		return anonymousLogin;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -40,9 +59,9 @@ public class JwtUserDetail implements UserDetail {
 		return val;
 	}
 	
-	public Map<String, Object> getProperties() {
+	final public Map<String, Object> getProperties() {
 		if(properties==null){
-			return Collections.emptyMap();
+			return Maps.newHashMap();
 		}
 		return properties;
 	}
@@ -81,5 +100,6 @@ public class JwtUserDetail implements UserDetail {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+
 
 }

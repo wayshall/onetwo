@@ -45,6 +45,10 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 		if(!userOpt.isPresent()){
 			throw new ServiceException(JwtErrors.CM_NOT_LOGIN);
 		}
+		JwtUserDetail userDetail = userOpt.get();
+		if (userDetail.isAnonymousLogin() && !canBeAnonymous) {
+			throw new ServiceException(JwtErrors.CM_NOT_LOGIN);
+		}
 		return true;
 	}
 

@@ -14,6 +14,7 @@ import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.jwt.JwtErrors;
 import org.onetwo.boot.core.jwt.JwtUserDetail;
 import org.onetwo.boot.core.jwt.JwtUtils;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -327,12 +328,26 @@ abstract public class AbstractBaseController {
 			}
 			return null;
 		}
-		if(user==null && throwIfNotFound){
+		if (user==null && throwIfNotFound){
 			throw new NotLoginException();
 		}
-		if (!clazz.isInterface() && user instanceof JwtUserDetail) {
-			T targetUser = JwtUtils.createUserDetail((JwtUserDetail)user, clazz);
-			return targetUser;
+		/*if (clazz.isInterface()) {
+			throw new BaseException("can not convert user info to interface: " + clazz.getSimpleName()).put("clazz", clazz);
+		}*/
+		if (user instanceof JwtUserDetail) {
+			JwtUserDetail jwtUser = (JwtUserDetail)user;
+			if (jwtUser.isAnonymousLogin()) {
+				if (throwIfNotFound) {
+//					throw new BaseException("current login user is anonymous").put("userName", jwtUser.getUserName());
+					throw new NotLoginException(JwtErrors.CM_ANONYMOUS_USER);
+				} else if (JwtUserDetail.class==clazz) {
+					return clazz.cast(jwtUser);
+				}
+			}
+			if (!clazz.isInterface()) {
+				T targetUser = JwtUtils.createUserDetail(jwtUser, clazz);
+				return targetUser;
+			}
 		}
 		if (!clazz.isInstance(user)) {
 			/*if(throwIfNotFound){

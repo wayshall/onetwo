@@ -58,7 +58,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		Map<String, Object> props = beanToMap.toFlatMap(userDetail);
 		Long userId = (Long)props.remove(JwtUtils.CLAIM_USER_ID);
 		String userName = (String)props.remove(JwtUtils.CLAIM_USER_NAME);
-		JwtUserDetail jwtDetail = new JwtUserDetail(userId, userName);
+		JwtUserDetail jwtDetail = new JwtUserDetail(userId, userName, null);
 		jwtDetail.setProperties(props);
 		return generateToken(jwtDetail);
 	}
@@ -132,7 +132,8 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 												.filter(entry->isPropertyKey(entry.getKey()))
 												.collect(Collectors.toMap(entry->getProperty(entry.getKey()), entry->entry.getValue()));
 		Long userId = Long.parseLong(claims.get(JwtSecurityUtils.CLAIM_USER_ID).toString());
-		JwtUserDetail userDetail = buildJwtUserDetail(userId, claims.getSubject(), properties);
+		Boolean anonymousLogin = (Boolean)properties.get(JwtUserDetail.ANONYMOUS_LOGIN_KEY);
+		JwtUserDetail userDetail = buildJwtUserDetail(anonymousLogin, userId, claims.getSubject(), properties);
 		userDetail.setClaims(claims);
 
 		long remainingSeconds = (claims.getExpiration().getTime() - System.currentTimeMillis())/1000;
@@ -147,8 +148,8 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		return userDetail;
 	}
 
-	protected JwtUserDetail buildJwtUserDetail(Long userId, String userName, Map<String, Object> properties){
-		JwtUserDetail userDetail = new JwtUserDetail(userId, userName);
+	protected JwtUserDetail buildJwtUserDetail(Boolean anonymousLogin, Long userId, String userName, Map<String, Object> properties){
+		JwtUserDetail userDetail = new JwtUserDetail(userId, userName, anonymousLogin);
 		userDetail.setProperties(properties);
 		return userDetail;
 	}

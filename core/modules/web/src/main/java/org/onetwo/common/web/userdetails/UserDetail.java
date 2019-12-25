@@ -15,4 +15,8 @@ public interface UserDetail extends UserRoot {
 	
 	public long getUserId();
 	
+	/*default boolean isAnonymousLogin() {
+		return false;
+	}*/
+	
 }
