@@ -67,7 +67,7 @@ public class JwtUserDetail implements UserDetail {
 	}
 
 	public void setProperties(Map<String, Object> properties) {
-		this.properties = properties;
+		this.getProperties().putAll(properties);
 	}
 
 
