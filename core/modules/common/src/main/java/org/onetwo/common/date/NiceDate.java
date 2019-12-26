@@ -219,6 +219,32 @@ public class NiceDate {
 		return this;
 	}
 	
+	public NiceDate clearMillis(){
+		this.calendar.clear(Calendar.MILLISECOND);
+		return this;
+	}
+	
+	public NiceDate clearSeconds(){
+		this.calendar.clear(Calendar.SECOND);
+		return this;
+	}
+	
+	public NiceDate clearMinute(){
+		this.calendar.clear(Calendar.MINUTE);
+		return this;
+	}
+	
+	/*public NiceDate clearHourOfDay(){
+		this.calendar.clear(Calendar.HOUR_OF_DAY);
+		return this;
+	}*/
+	
+	public NiceDate clearHour(){
+		this.calendar.clear(Calendar.HOUR);
+		return this;
+	}
+	
+	
 	public boolean isBetween(Date start, Date end){
 		long t = this.calendar.getTime().getTime();
 		return start.getTime() <= t && t < end.getTime();

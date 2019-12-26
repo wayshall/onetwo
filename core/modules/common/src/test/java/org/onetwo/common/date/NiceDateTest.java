@@ -67,5 +67,15 @@ public class NiceDateTest {
 		res = NiceDate.New().preciseAtDate().atTheEnd().formatDateTimeMillis();
 		System.out.println("res: " + res);
 		
+
+		Date date = NiceDate.New("2019-12-26 10:38:38").preciseAtDate().atTheEnd().clearMillis().getTime();
+		assertThat(date).isEqualTo(DateUtils.parse("2019-12-26 23:59:59"));
+
+		date = NiceDate.New("2019-12-26 10:38:38").preciseAtDate().clearMillis().clearSeconds().clearMinute().clearHour().getTime();
+		assertThat(date).isEqualTo(DateUtils.parse("2019-12-26"));
+		
+		date = NiceDate.New("2019-12-26 10:38:38").preciseAtDate().clearHour().getTime();
+		assertThat(date).isEqualTo(DateUtils.parse("2019-12-26"));
+
 	}
 }
