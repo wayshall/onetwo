@@ -63,7 +63,11 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	}
 
 	public ServiceException(ErrorType exceptionType, Throwable cause) {
-		super(exceptionType.getErrorMessage(), cause);
+		this(exceptionType, cause, null);
+	}
+	
+	public ServiceException(ErrorType exceptionType, Throwable cause, String message) {
+		super(exceptionType.getErrorMessage() + StringUtils.emptyIfNull(message), cause);
 		initErrorCode(exceptionType.getErrorCode());
 		this.statusCode = exceptionType.getStatusCode();
 		this.exceptionType = exceptionType;

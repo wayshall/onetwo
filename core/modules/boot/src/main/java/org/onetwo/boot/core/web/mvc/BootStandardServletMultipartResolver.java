@@ -57,7 +57,8 @@ public class BootStandardServletMultipartResolver extends StandardServletMultipa
 		} catch (MultipartException e) {
 			FileSizeLimitExceededException fsee = LangUtils.getCauseException(e, FileSizeLimitExceededException.class);
 			if (fsee!=null) {
-				throw new UploadFileSizeLimitExceededException(fsee);
+				double kbsize = Math.round(fsee.getActualSize()/1024.0);
+				throw new UploadFileSizeLimitExceededException(fsee, "当前文件大小：" + kbsize + "kb");
 			} else {
 				throw new BaseException(WebErrors.UPLOAD, e);
 			}

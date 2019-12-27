@@ -17,5 +17,9 @@ public class UploadFileSizeLimitExceededException extends ServiceException {
 	public UploadFileSizeLimitExceededException(Throwable cause) {
 		super(WebErrors.UPLOAD_FILE_SIZE_LIMIT_EXCEEDED, cause);
 	}
+
+	public UploadFileSizeLimitExceededException(Throwable cause, String message) {
+		super(WebErrors.UPLOAD_FILE_SIZE_LIMIT_EXCEEDED, cause, message);
+	}
 }
 
