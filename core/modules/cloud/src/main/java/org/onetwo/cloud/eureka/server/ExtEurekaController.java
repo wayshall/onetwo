@@ -104,7 +104,7 @@ public class ExtEurekaController extends EurekaController {
 		String auth = RequestUtils.getCookieValue(request, authHeaderName);
 		HttpHeaders headers = RestUtils.createHeader(MediaType.APPLICATION_JSON_UTF8);
 		if (StringUtils.isNotBlank(auth)) {
-//			headers.set("auth", auth);
+//			headers.set("auth", auth); // for manager
 			headers.set("Cookie", authHeaderName+"="+auth);
 		}
 

@@ -93,11 +93,10 @@ public class AnnotationInfo {
 		return annotationFinder.getAnnotation(annotatedElement, annoClass);
 //		return annoClass.cast(LangUtils.getFirst(getAnnotations(annoClass)));
 	}
-	/*public <T extends Annotation> Set<T> getAnnotations(Class<T> annoClass) {
-		Assert.notNull(annoClass, "annotation class can not be null");
-		return annotationFinder.getAnnotations(annotatedElement, annoClass);
-	}*/
-
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return annotatedElement;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
