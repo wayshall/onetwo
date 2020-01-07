@@ -66,7 +66,7 @@ public class PermClassParser {
 	}
 
 	public String getName(){
-		if (permissionMeta!=null) {
+		if (permissionMeta!=null && StringUtils.isNotBlank(permissionMeta.name())) {
 			return permissionMeta.name();
 		}
 		return getFieldValue(NAME, String.class, "");
