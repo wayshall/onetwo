@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.service.impl.SettingsManager;
+import org.onetwo.boot.module.dbm.DbmStatisController;
 import org.onetwo.boot.module.swagger.ScanPluginAsGroupSwaggerConfig;
 import org.onetwo.boot.plugin.core.EnabledByPluginNameProperty;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;

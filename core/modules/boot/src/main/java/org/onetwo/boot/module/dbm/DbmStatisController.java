@@ -1,10 +1,9 @@
-package org.onetwo.boot.webmgr;
+package org.onetwo.boot.module.dbm;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
-import org.onetwo.boot.module.dbm.BootDbmConfig;
 import org.onetwo.dbm.stat.SqlExecutedStatis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
