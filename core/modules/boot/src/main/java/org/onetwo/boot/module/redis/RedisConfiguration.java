@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.redis.util.RedisLockRegistry;
@@ -19,7 +20,7 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
  * <br/>
  */
 @EnableConfigurationProperties({JFishRedisProperties.class})
-@ConditionalOnClass({JedisConnectionFactory.class, RedisTemplate.class})
+@ConditionalOnClass({RedisConnectionFactory.class, RedisTemplate.class})
 @ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true", matchIfMissing=true)
 //@ConditionalOnBean(JedisConnectionFactory.class)
 //@AutoConfigureBefore(RedisAutoConfiguration.class)

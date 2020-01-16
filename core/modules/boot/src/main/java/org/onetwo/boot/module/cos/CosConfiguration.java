@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import com.qcloud.cos.COSClient;
 
@@ -17,6 +18,7 @@ import com.qcloud.cos.COSClient;
 @ConditionalOnClass(COSClient.class)
 @Configuration
 @EnableConfigurationProperties(CosProperties.class)
+@Lazy
 public class CosConfiguration {
 	
 	@Autowired

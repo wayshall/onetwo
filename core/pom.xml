@@ -40,6 +40,8 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/common</module>
+                <module>../../onetwo-wechat</module>
+                <module>../../dbm</module>
 			</modules>
            <build>
               <plugins>

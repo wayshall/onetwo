@@ -21,6 +21,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * @author wayshall
@@ -41,6 +42,7 @@ public class ONSConfiguration {
 	}
 	
 	@Bean
+	@Lazy
 	public ONSPushConsumerStarter onsPushConsumerStarter(DelegateMessageService delegateMessageService){
 		ONSPushConsumerStarter starter = new ONSPushConsumerStarter();
 		starter.setOnsProperties(onsProperties);

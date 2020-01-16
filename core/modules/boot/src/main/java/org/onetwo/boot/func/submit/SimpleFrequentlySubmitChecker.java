@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author weishao zeng
  * <br/>
  */
-public class SimpleFrequentlySubmitChecker implements InitializingBean {
+public class SimpleFrequentlySubmitChecker implements InitializingBean, FrequentlySubmitChecker {
 	
 	@Autowired
 	private RedisOperationService redisOperationService;
@@ -20,6 +20,7 @@ public class SimpleFrequentlySubmitChecker implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 	}
 	
+	@Override
 	public void checkActionKey(String key) {
 		boolean result = redisOperationService.setNX(key, true, 3);
 		if (!result) {
