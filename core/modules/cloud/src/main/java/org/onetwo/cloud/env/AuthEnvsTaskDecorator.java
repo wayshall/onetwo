@@ -1,6 +1,6 @@
 package org.onetwo.cloud.env;
 
-import org.onetwo.boot.core.web.async.SimpleTaskDecorator.AsyncTaskDecorator;
+import org.onetwo.boot.core.web.async.DelegateTaskDecorator.AsyncTaskDecorator;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 

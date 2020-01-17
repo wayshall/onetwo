@@ -9,7 +9,7 @@ import org.springframework.core.task.TaskDecorator;
  * @author weishao zeng
  * <br/>
  */
-public class SimpleTaskDecorator implements TaskDecorator {
+public class DelegateTaskDecorator implements TaskDecorator {
 	
 	@Autowired
 	private ApplicationContext applicationContext;
