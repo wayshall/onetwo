@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.utils.SpringMergedAnnotationFinder;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ReflectionUtils;
 
 import com.google.common.collect.Lists;
@@ -30,7 +31,7 @@ public interface ConsumerProcessor {
 	public static List<Method> findConsumersMethods(Class<?> targetClass, Class<? extends Annotation> consumerAnnotation){
 		List<Method> consumerMethods = Lists.newArrayList();
 		ReflectionUtils.doWithMethods(targetClass, m->consumerMethods.add(m), m->{
-			if(AnnotationUtils.findAnnotation(m, consumerAnnotation)!=null){
+			if(SpringMergedAnnotationFinder.INSTANCE.getAnnotation(m, consumerAnnotation)!=null){
 				Parameter[] parameters = m.getParameters();
 				if(parameters.length==0 || parameters.length>2){
 					throw new BaseException("the maximum parameter of consumer method[" + m.toGenericString() + "]  is two.");

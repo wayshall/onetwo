@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.onetwo.common.apiclient.ApiClientTestSuite;
+import org.onetwo.common.spring.AnnotationUtilsTest;
 import org.onetwo.common.spring.SpringUtilsTest;
 import org.onetwo.common.spring.rest.RestUtilsTest;
 import org.onetwo.common.spring.utils.MapToBeanConvertorTest;
@@ -17,7 +18,8 @@ import org.onetwo.common.spring.utils.MapToBeanConvertorTest;
 	ApiClientTestSuite.class,
 	RestUtilsTest.class,
 	SpringUtilsTest.class,
-	MapToBeanConvertorTest.class
+	MapToBeanConvertorTest.class,
+	AnnotationUtilsTest.class
 })
 public class SpringTestCase {
 

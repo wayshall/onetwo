@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.utils.SpringMergedAnnotationFinder;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.ons.ListenerType;
@@ -42,7 +43,7 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 		onsListeners.forEach((name, bean)->{
 			//one bean multip methods
 			ConsumerProcessor.findConsumerBeanMethods(bean, ONSSubscribe.class).forEach(method->{
-				ONSSubscribe subscribe = AnnotationUtils.findAnnotation(method, ONSSubscribe.class);
+				ONSSubscribe subscribe = SpringMergedAnnotationFinder.INSTANCE.getAnnotation(method, ONSSubscribe.class);
 				DelegateCustomONSConsumer delegate = new DelegateCustomONSConsumer(bean, method);
 //				ConsumerMeta meta = buildConsumerMeta(subscribe, ListenerType.CUSTOM, delegate, name);
 				ConsumerMeta meta;
@@ -97,6 +98,10 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 		}
 		String topic = resloveValue(subscribe.topic());
 		String consumerId = resloveValue(subscribe.consumerId());
+		if (StringUtils.isBlank(consumerId) && listener instanceof DelegateCustomONSConsumer) {
+			DelegateCustomONSConsumer d = (DelegateCustomONSConsumer) listener;
+			consumerId = AopUtils.getTargetClass(d.getTarget()).getSimpleName();
+		}
 		
 		ConsumerProperty[] onsProperties = subscribe.properties();
 		Map<String, String> props = Stream.of(onsProperties).collect(Collectors.toMap(prop->prop.name(), prop->resloveValue(prop.value())));
