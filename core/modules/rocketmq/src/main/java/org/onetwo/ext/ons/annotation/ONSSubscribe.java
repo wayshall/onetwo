@@ -21,7 +21,7 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartb
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ONSSubscribe {
 
-	String consumerId();
+	String consumerId() default "";
 	String topic();
 	String subExpression() default "";
 	String[] tags() default {};
