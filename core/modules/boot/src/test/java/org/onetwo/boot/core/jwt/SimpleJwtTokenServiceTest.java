@@ -21,7 +21,7 @@ public class SimpleJwtTokenServiceTest {
 		SimpleUserDetail userDetail = new SimpleUserDetail();
 		userDetail.setUserId(111L);
 		userDetail.setUserName("test");
-		userDetail.setToken("testTOken");
+//		userDetail.setToken("testTOken");
 		JwtTokenInfo tokenInfo = tokenService.generateToken(userDetail);
 		System.out.println("tokenInfo:"+tokenInfo);
 		
@@ -29,7 +29,7 @@ public class SimpleJwtTokenServiceTest {
 		assertThat(ud).isNotNull();
 		assertThat(ud.getUserId()).isEqualTo(userDetail.getUserId());
 		assertThat(ud.getUserName()).isEqualTo(userDetail.getUserName());
-		assertThat(ud.getToken()).isEqualTo(userDetail.getToken());
+//		assertThat(ud.getToken()).isEqualTo(userDetail.getToken());
 	}
 
 }

@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
+import org.onetwo.cloud.hystrix.exception.HystrixBadRequestCodeException;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.ServiceException;
@@ -27,7 +28,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 
-import com.netflix.hystrix.exception.HystrixBadRequestException;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
 
@@ -83,9 +83,11 @@ public class ExtResponseEntityDecoder implements Decoder {
 			SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 			if(dr.isError()){
 				if(StringUtils.isNotBlank(dr.getCode())){
-					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+					throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 				}else{
-					throw new HystrixBadRequestException(e.getMessage(), new ServiceException("decode error", e));
+//					throw new HystrixBadRequestException(e.getMessage(), new ServiceException("decode error", e));
+					throw new HystrixBadRequestCodeException(e.getMessage(), new ServiceException("decode error", e));
 				}
 			}
 			res = dr.getData();
@@ -104,7 +106,8 @@ public class ExtResponseEntityDecoder implements Decoder {
 				
 				throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
 			}else if(!dr.isSuccess()){
-				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+				throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 //				throw new ServiceException(dr.getMessage(), dr.getCode());
 			}
 			res = dr.getData();
@@ -129,7 +132,8 @@ public class ExtResponseEntityDecoder implements Decoder {
 			SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 			if(dr.isError()){
 //				throw new ServiceException(dr.getMessage(), dr.getCode());
-				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+				throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 			}
 			res = dr.getData();
 		}
