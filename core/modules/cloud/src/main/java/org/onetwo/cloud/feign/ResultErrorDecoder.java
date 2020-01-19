@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.io.IOUtils;
+import org.onetwo.cloud.hystrix.exception.HystrixBadRequestCodeException;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
@@ -20,10 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 
-import com.netflix.hystrix.exception.HystrixBadRequestException;
-
 import feign.Response;
 import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
 
 /** 除了2xx和404，都算错误，会调用，详见：
  * SynchronousMethodHandler#executeAndDecode
@@ -52,7 +50,8 @@ public class ResultErrorDecoder implements ErrorDecoder {
 				log.error("method[{}], error code: {}, result: {}", methodKey, response.status(), result);
 				//防止普通异常也被熔断,如果不转为 HystrixBadRequestException 并且 fallback 也抛了异常, it will be enabled short-circuited get "Hystrix circuit short-circuited and is OPEN" when client frequently invoke
 				if(result!=null){
-					return new HystrixBadRequestException(result.getMessage(), new ServiceException(result.getMessage(), result.getCode()));
+//					return new HystrixBadRequestException(result.getMessage(), new ServiceException(result.getMessage(), result.getCode()));
+					return new HystrixBadRequestCodeException(result.getMessage(), new ServiceException(result.getMessage(), result.getCode()));
 				}
 			} catch (IOException e) {
 				throw new BaseException("error feign response : " + e.getMessage(), e);
