@@ -19,6 +19,8 @@ import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
+import org.onetwo.common.spring.converter.StringToJackson2ObjectNodeConverterFactory;
+import org.onetwo.common.spring.converter.StringToMapConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
 import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.mvc.args.WebAttributeArgumentResolver;
@@ -185,11 +187,12 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
-		
 		registry.removeConvertible(String.class, Enum.class);
 		registry.addConverterFactory(new IntStringValueToEnumConverterFactory());
-		
 		registry.addConverterFactory(new IntegerToEnumConverterFactory());
+		
+		registry.addConverterFactory(new StringToMapConverterFactory());
+		registry.addConverterFactory(new StringToJackson2ObjectNodeConverterFactory());
 	}
 
 	/***

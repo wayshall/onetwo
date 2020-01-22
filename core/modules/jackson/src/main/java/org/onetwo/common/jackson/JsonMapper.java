@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -308,6 +309,10 @@ public class JsonMapper {
 
 	public <T> T fromJson(final Object json, Type objType){
 		return fromJson(json, objType, false);
+	}
+	
+	public ObjectNode fromJson(final Object json) {
+		return fromJson(json, ObjectNode.class);
 	}
 	
 	@SuppressWarnings("unchecked")

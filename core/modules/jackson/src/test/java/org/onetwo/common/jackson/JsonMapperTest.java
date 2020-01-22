@@ -28,6 +28,7 @@ import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 
 public class JsonMapperTest {
@@ -254,6 +255,23 @@ public class JsonMapperTest {
 		assertThat(subUser.getBirthDay()).isNull();
 		assertThat(DateUtils.formatDate(subUser.getBirthDay2())).isEqualTo("1984-01-01");
 		assertThat(subUser.getEmail()).isEqualTo(user.getEmail());
+	}
+	
+	
+	@Test
+	public void testAsNodeObject() throws Exception{
+		UserEntity user = createUser();
+		user.setBirthDay(DateUtils.parse("2019-01-22 17:47:00"));
+		String json = JsonMapper.defaultMapper().toJson(user);
+		System.out.println("testAsNodeObject: " + json);
+		ObjectNode objectNode = JsonMapper.defaultMapper().fromJson(json);
+		assertThat(objectNode.get("id").longValue()).isEqualTo(user.getId());
+		assertThat(objectNode.get("userName").asText()).isEqualTo(user.getUserName());
+		
+		json = JsonMapper.ignoreNull().toJson(objectNode);
+		System.out.println("json: " + json);
+		String res = "{\"id\":100,\"userName\":\"勺子\",\"status\":null,\"email\":\"userNameJsonTest@163.com\",\"age\":11,\"birthDay\":\"2019-01-22 09:47:00\",\"height\":0.0}";
+		assertThat(json).isEqualTo(res);
 	}
 	
 	@Test
