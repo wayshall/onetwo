@@ -150,20 +150,19 @@ public class JsonMapperTest {
 	
 	@Test
 	public void testSimple(){
-		JsonMapper mapper = JsonMapper.IGNORE_NULL;
 		
-		String jsonTest = mapper.toJson("test string");
+		String jsonTest = JsonMapper.toJsonString("test string");
 		System.out.println("jsonTest:"+jsonTest);
 		
 		Object data = "child1-aa";
-		String json = mapper.toJson(data);
-		Object rs = mapper.fromJson(json, String.class);
+		String json = JsonMapper.toJsonString(data);
+		Object rs = JsonMapper.fromJsonString(json, String.class);
 		System.out.println("json: " + json + ", rs: " + rs);
 		Assert.assertEquals(data, rs);
 		
 		data = Integer.valueOf(12123123);
-		json = mapper.toJson(data);
-		rs = mapper.fromJson(json, Integer.class);
+		json = JsonMapper.toJsonString(data);
+		rs = JsonMapper.fromJsonString(json, Integer.class);
 		System.out.println("json: " + json + ", rs: " + rs);
 		Assert.assertEquals(data, rs);
 		

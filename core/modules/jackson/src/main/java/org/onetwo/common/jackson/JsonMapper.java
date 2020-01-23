@@ -66,6 +66,13 @@ public class JsonMapper {
 	 */
 	public static final JsonMapper IGNORE_EMPTY = ignoreEmpty();
 	
+	public static String toJsonString(Object object) {
+		return IGNORE_NULL.toJson(object);
+	}
+	
+	public static <T> T fromJsonString(String json, Class<T> targetType) {
+		return IGNORE_NULL.fromJson(json, targetType);
+	}
 
 	public static SimpleFilterProvider exceptFilter(String id, String...properties){
 		SimpleFilterProvider filterProvider = new SimpleFilterProvider();

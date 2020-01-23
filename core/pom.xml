@@ -74,6 +74,7 @@
                 <module>modules/web</module>
                 <module>modules/security</module>
                 <module>modules/boot</module>
+                <module>modules/dui</module>
                 <module>modules/test</module>
                 <module>../../onetwo-wechat</module>
                 <module>modules/cloud</module>
@@ -104,6 +105,7 @@
                 <module>modules/web</module>
                 <module>modules/security</module>
                 <module>modules/boot</module>
+                <module>modules/dui</module>
                 <module>modules/test</module>
                 <module>../../onetwo-wechat</module>
                 <module>modules/cloud</module>
