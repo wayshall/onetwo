@@ -11,8 +11,6 @@ import org.onetwo.dbm.ui.spi.DUIMetaManager;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /**
@@ -20,14 +18,14 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  * <br/>
  */
 @SuppressWarnings("serial")
-public class ObjectNodeSerializer extends StdSerializer<ObjectNode> {
+abstract public class CustomerWriterBaseSerializer<T> extends StdSerializer<T> {
 
-    public ObjectNodeSerializer() {
-        super(ObjectNode.class);
+    public CustomerWriterBaseSerializer(Class<T> clazz) {
+        super(clazz);
     }
     
 	@Override
-	public void serialize(ObjectNode value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+	public void serialize(T value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
 		if (value==null) {
 			return ;
 		}
@@ -41,9 +39,9 @@ public class ObjectNodeSerializer extends StdSerializer<ObjectNode> {
 		Optional<DUIEntityMeta> meta = getDUIMetaManager().find(object.getClass());
 		if (meta.isPresent()) {
 			DUIFieldMeta field = meta.get().getField(fieldName);
-			if (field.getInput().hasValueWriter()) {
-				DUIJsonValueWriter transfer = Springs.getInstance().getBean(field.getInput().getValueWriter());
-				transfer.write(value, field, jgen);
+			Optional<DUIJsonValueWriter<T>> transfer = getDUIJsonValueWriter(field);
+			if (transfer.isPresent()) {
+				transfer.get().write(value, field, jgen);
 			} else {
 				writeObject(jgen, value);
 			}
@@ -53,7 +51,9 @@ public class ObjectNodeSerializer extends StdSerializer<ObjectNode> {
 		
 	}
 	
-	private void writeObject(JsonGenerator jgen, Object value) throws IOException {
+	abstract protected Optional<DUIJsonValueWriter<T>> getDUIJsonValueWriter(DUIFieldMeta field);
+	
+	protected void writeObject(JsonGenerator jgen, T value) throws IOException {
 		jgen.writeStartObject();
 		jgen.writeObject(value);
 		jgen.writeEndObject();
@@ -62,9 +62,9 @@ public class ObjectNodeSerializer extends StdSerializer<ObjectNode> {
 	protected DUIMetaManager getDUIMetaManager() {
 		return Springs.getInstance().getBean(DUIMetaManager.class);
 	}
-	
-	@JsonSerialize(using=ObjectNodeSerializer.class)
-	public static class ObjectNodeMixin {
-		
+
+	protected <W extends DUIJsonValueWriter<T>> W getDUIJsonValueWriter(Class<W> writerClass) {
+		return writerClass.cast(Springs.getInstance().getBean(writerClass));
 	}
+	
 }

@@ -45,4 +45,17 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
                                 .toQuery()
                                 .page(page);
     }
+    
+    
+    @Transactional
+    @Override
+    public ${entityClassName} removeById(${idType} id) {
+    <#if DUIEntityMeta?? && DUIEntityMeta.editableEntities??>
+      <#list DUIEntityMeta.editableEntities as editableEntity>
+        baseEntityManager.removeById(${editableEntity.entityClass.name}.class, id);
+      </#list>
+    </#if>
+        return super.removeById(id);
+    }
+    
 }

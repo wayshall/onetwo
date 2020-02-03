@@ -5,10 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.onetwo.dbm.ui.meta.DUIFieldMeta;
 import org.onetwo.dbm.ui.spi.DUIJsonValueWriter;
-
-import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @author weishao zeng
@@ -21,16 +18,7 @@ public @interface DUIInput {
 	
 	InputTypes type() default InputTypes.TEXT;
 	
-	Class<? extends DUIJsonValueWriter> valueWriter() default NullDUIJsonValueWriter.class;
-	
-	final public class NullDUIJsonValueWriter implements DUIJsonValueWriter {
-
-		@Override
-		public void write(Object value, DUIFieldMeta field, JsonGenerator jgen) {
-			throw new UnsupportedOperationException();
-		}
-		
-	}
+	Class<? extends DUIJsonValueWriter<?>> valueWriter() default NullDUIJsonValueWriter.class;
 	
 	public enum InputTypes {
 		TEXT,

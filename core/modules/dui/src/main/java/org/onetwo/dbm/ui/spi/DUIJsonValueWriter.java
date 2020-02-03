@@ -10,8 +10,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @author weishao zeng
  * <br/>
  */
-public interface DUIJsonValueWriter {
+public interface DUIJsonValueWriter<T> {
 	
-	void write(Object value, DUIFieldMeta field, JsonGenerator jgen) throws IOException ;
+	void write(T value, DUIFieldMeta field, JsonGenerator jgen) throws IOException ;
 
 }

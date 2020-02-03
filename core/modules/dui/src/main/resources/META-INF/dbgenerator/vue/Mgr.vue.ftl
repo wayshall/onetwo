@@ -90,7 +90,9 @@ export default {
     return {
       queryFormModel: {
   <#list searchableFields as field>
+    <#if !field.column.primaryKey>
         ${field.column.javaName}: '',
+    </#if>
   </#list>
         ${table.primaryKey.javaName}: null
       },

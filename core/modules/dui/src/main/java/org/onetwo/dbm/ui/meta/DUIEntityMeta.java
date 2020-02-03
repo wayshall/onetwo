@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.ui.annotation.DUICascadeEditable;
+import org.onetwo.dbm.ui.annotation.NullDUIJsonValueWriter;
 import org.onetwo.dbm.ui.exception.DbmUIException;
+import org.onetwo.dbm.ui.spi.DUIJsonValueWriter;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -95,6 +97,11 @@ public class DUIEntityMeta {
 		return getFields().stream().filter(f -> f.isInsertable() || f.isUpdatable()).collect(Collectors.toList());
 	}
 
+
+	public static boolean hasValueWriter(Class<? extends DUIJsonValueWriter> valueWriter) {
+		return valueWriter!=null && valueWriter!=NullDUIJsonValueWriter.class;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

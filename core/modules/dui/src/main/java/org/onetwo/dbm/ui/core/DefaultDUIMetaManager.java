@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet;
@@ -197,8 +198,10 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 		DUIFieldMeta uifieldMeta = DUIFieldMeta.builder()
 										.name(field.getName())
 										.listField(uifield.listField())
+//										.listValueWriter(uifield.listValueWriter())
 										.label(uifield.label())
 										.insertable(uifield.insertable())
+										.notnull(field.getPropertyInfo().hasAnnotation(NotNull.class))
 										.listable(uifield.listable())
 										.updatable(uifield.updatable())
 										.searchable(uifield.searchable())
@@ -252,7 +255,7 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			if (uiselect.cascadeEntity()!=Void.class) {
 				uiselectMeta.setCascadeEntity(uiselect.cascadeEntity());
 				if (uiselect.cascadeQueryFields().length==0) {
-					uiselectMeta.setCascadeQueryFields(new String[] {uifieldMeta.getListField()});
+					uiselectMeta.setCascadeQueryFields(new String[] {uiselect.labelField()});
 				} else {
 					uiselectMeta.setCascadeQueryFields(uiselect.cascadeQueryFields());
 				}

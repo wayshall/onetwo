@@ -7,7 +7,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.ui.core.DefaultDUIMetaManager;
 import org.onetwo.dbm.ui.core.DefaultUISelectDataProviderService;
 import org.onetwo.dbm.ui.json.DUIObjectMapperCustomizer;
-import org.onetwo.dbm.ui.json.StringValueWriter;
+import org.onetwo.dbm.ui.json.ObjectNodeToStringValueWriter;
 import org.onetwo.dbm.ui.spi.DUIMetaManager;
 import org.onetwo.dbm.ui.spi.DUISelectDataProviderService;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +58,7 @@ public class DbmUIConfiguration implements ImportAware {
 	}
 	
 	@Bean
-	public StringValueWriter stringValueWriter() {
-		return new StringValueWriter();
+	public ObjectNodeToStringValueWriter stringValueWriter() {
+		return new ObjectNodeToStringValueWriter();
 	}
 }

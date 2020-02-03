@@ -7,15 +7,16 @@ import org.onetwo.dbm.ui.meta.DUIFieldMeta;
 import org.onetwo.dbm.ui.spi.DUIJsonValueWriter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author weishao zeng
  * <br/>
  */
-public class StringValueWriter implements DUIJsonValueWriter {
+public class ObjectNodeToStringValueWriter implements DUIJsonValueWriter<ObjectNode> {
 
 	@Override
-	public void write(Object value, DUIFieldMeta field, JsonGenerator jgen) throws IOException {
+	public void write(ObjectNode value, DUIFieldMeta field, JsonGenerator jgen) throws IOException {
 		jgen.writeString(JsonMapper.toJsonString(value));
 	}
 

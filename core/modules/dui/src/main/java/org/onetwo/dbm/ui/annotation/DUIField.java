@@ -21,6 +21,7 @@ public @interface DUIField {
 	 */
 	String label();
 	String listField() default "";
+	
 	boolean searchable() default false;
 	boolean listable() default true;
 	boolean insertable() default true;

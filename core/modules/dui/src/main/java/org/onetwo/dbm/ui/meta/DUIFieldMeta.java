@@ -3,7 +3,6 @@ package org.onetwo.dbm.ui.meta;
 import org.onetwo.common.db.generator.meta.ColumnMeta;
 import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.ui.annotation.DUIInput.InputTypes;
-import org.onetwo.dbm.ui.annotation.DUIInput.NullDUIJsonValueWriter;
 import org.onetwo.dbm.ui.annotation.DUISelect.NoEnums;
 import org.onetwo.dbm.ui.annotation.DUISelect.NoProvider;
 import org.onetwo.dbm.ui.core.UISelectDataProvider;
@@ -28,11 +27,15 @@ public class DUIFieldMeta {
 	
 	String name;
 	String label;
+	
+	boolean notnull;
 	/***
 	 * 列表时显示的字段
 	 * 如果枚举时应显示对应的label
 	 */
 	String listField;
+//	Class<? extends DUIJsonValueWriter<?>> listValueWriter;
+	
 	boolean listable;
 	boolean insertable;
 	boolean updatable;
@@ -42,6 +45,7 @@ public class DUIFieldMeta {
 	DUISelectMeta select;
 	DUIInputMeta input;
 	
+
 	public String getFormDisabledValue() {
 		if (insertable && updatable) {
 			return "false";
@@ -58,14 +62,14 @@ public class DUIFieldMeta {
 	public class DUIInputMeta {
 		InputTypes type;
 		
-		Class<? extends DUIJsonValueWriter> valueWriter;
+		Class<? extends DUIJsonValueWriter<?>> valueWriter;
 		
 		public String getTypeName() {
 			return type.name().toLowerCase();
 		}
 		
 		public boolean hasValueWriter() {
-			return valueWriter!=null && valueWriter!=NullDUIJsonValueWriter.class;
+			return DUIEntityMeta.hasValueWriter(valueWriter);
 		}
 	}
 

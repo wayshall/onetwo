@@ -9,7 +9,8 @@
 <#assign idName="${table.primaryKey.javaName}"/>
 <template>
   <div v-loading="dataLoading">
-    <el-form ref="${dataFormName}"
+    <el-form
+      ref="${dataFormName}"
       :rules="rules"
       :model="dataModel"
       label-position="right"
@@ -106,10 +107,10 @@ export default {
   data() {
     return {
       rules: {
-<#list table.columns as column>
-    <#if !column.nullable && !column.primaryKey>
-        ${column.javaName}: [
-          { required: true, trigger: 'blur', message: '${(column.commentName)!''}是必须的' }
+<#list DUIEntityMeta.formFields as field>
+    <#if field.notnull && !field.column.primaryKey>
+        ${field.name}: [
+          { required: true, trigger: 'blur', message: '${(field.label)!field.column.commentName}是必须的' }
         ],
     </#if>
 </#list>
@@ -136,6 +137,9 @@ export default {
   },
   methods: {
     getData() {
+      if (!this.dataId) {
+        return
+      }
       this.dataLoading = true
       ${apiName}.get(this.dataId).then(res => {
         this.dataModel = res.data.data || this.initDataModel()
@@ -187,9 +191,11 @@ export default {
         }
       })
     },
+<#if !DUIEntityMeta.editableEntity>
     handleAddData() {
       return ${apiName}.add(this.dataModel)
     },
+</#if>
     handleEditData() {
       console.log('edit data.....')
       this.dataModel.${idName} = this.dataId
