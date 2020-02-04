@@ -36,7 +36,7 @@
 	<lombok.version>1.18.6</lombok.version>
 	<mail.version>1.4.5</mail.version>
 	
-	<shiro.version>1.2.3</shiro.version>
+	<shiro.version>1.5.0</shiro.version>
     <jjwt.version>0.7.0</jjwt.version>
 	<groovy.version>2.3.10</groovy.version>
 	
