@@ -7,6 +7,7 @@
 <#assign formComponentName="${table.propertyName}Form"/>
 <#assign moduleName="${_globalConfig.getModuleName()}"/>
 <#assign idName="${table.primaryKey.javaName}"/>
+<#assign formFields=DUIEntityMeta.formFields/>
 <template>
   <div v-loading="dataLoading">
     <el-form
@@ -16,7 +17,7 @@
       label-position="right"
       label-width="40%"
       style="width: 60%; margin-left:50px;">
-   <#list DUIEntityMeta.formFields as field>
+   <#list formFields as field>
      <@helper.makeVueFormField field=field/>
    </#list>
     </el-form>
@@ -57,15 +58,13 @@ export default {
   data() {
     return {
       rules: {
-<#list DUIEntityMeta.formFields as field>
-    <#if field.notnull && !field.column.primaryKey>
+<#list formFields as field>
+    <#if field.notnull>
         ${field.name}: [
           { required: true, trigger: 'blur', message: '${(field.label)!field.column.commentName}是必须的' }
-        ],
+        ]<#if field?counter != formFields.size()>,</#if>
     </#if>
 </#list>
-        ${table.primaryKey.javaName}: [
-        ]
       },
       dataModel: this.initDataModel(),
       savingLoading: false,

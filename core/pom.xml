@@ -39,30 +39,9 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/bom</module>
-                
-                <module>modules/parent</module>
                 <module>modules/common</module>
-                <module>modules/jackson</module>
-                <module>modules/spring</module>
                 <module>../../dbm</module>
-                <module>modules/web</module>
-                <module>modules/security</module>
-                <module>modules/boot</module>
                 <module>modules/dui</module>
-                <module>modules/test</module>
-                <module>../../onetwo-wechat</module>
-                <module>modules/cloud</module>
-                
-                <module>modules/poi</module>
-                <module>modules/rocketmq</module>
-                
-                <module>../../zifish-plugins/parent</module>
-                <module>../../zifish-plugins/web-admin</module>
-                
-                <module>../../onetwo-tcc/parent</module>
-                <module>../../onetwo-tcc/core</module>
-
 			</modules>
            <build>
               <plugins>
