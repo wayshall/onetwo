@@ -1,3 +1,5 @@
+<#import "../webadmin/helper.ftl" as helper>
+
 <#assign apiName="${table.propertyName}Api"/>
 <#assign formComponentName="${table.propertyName}Form"/>
 <#assign moduleName="${_globalConfig.getModuleName()}"/>
@@ -16,9 +18,7 @@
   <#if searchableFields.isEmpty()==false>
       <template slot="queryForm">
     <#list searchableFields as field>
-        <el-form-item label="${(field.label)!''}">
-          <el-input v-model="queryFormModel.${field.column.javaName}" placeholder="${(field.label)!''}"/>
-        </el-form-item>
+        <@helper.makeVueFormField field=field modelPrefix="queryFormModel" spaces="  "/>
     </#list>
       </template>
   </#if>

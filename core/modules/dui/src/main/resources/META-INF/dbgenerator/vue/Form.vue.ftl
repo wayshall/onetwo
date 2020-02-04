@@ -17,58 +17,8 @@
       label-width="40%"
       style="width: 60%; margin-left:50px;">
    <#list DUIEntityMeta.formFields as field>
-      <el-form-item
-        label="${(field.label)!''}"
-        prop="${field.column.javaName}">
-      <#if field.select??>
-        <dui-select
-          v-model="dataModel.${field.column.javaName}"
-          entity="${DUIEntityMeta.name}"
-          field="${field.name}"/>
-        <#assign hasSelectType=true/>
-      <#elseif field.column.mapping.isNumberType()==true>
-        <el-input-number
-          v-model="dataModel.${field.column.javaName}"
-          :min="1" :max="10"
-          label="${(field.label)!''}"
-          :disabled="${field.formDisabledValue}"
-          <#if field.column.mapping.isSqlFloat()==true> :precision="2"</#if>/>
-      <#elseif field.column.mapping.isSqlTimestamp()==true>
-        <el-date-picker
-          v-model="dataModel.${field.column.javaName}"
-          type="datetime"
-          placeholder="选择日期时间">
-        </el-date-picker>
-      <#elseif field.column.mapping.isSqlTime()==true>
-        <el-time-picker
-          v-model="dataModel.${field.column.javaName}"
-          placeholder="选择时间>
-       </el-time-picker>
-      <#elseif field.column.mapping.isSqlDate()==true>
-        <el-date-picker
-          v-model="dataModel.${field.column.javaName}"
-          type="date"
-          placeholder="选择日期">
-        </el-date-picker>
-      <#elseif field.column.mapping.isBooleanType()==true>
-        <el-switch
-          v-model="dataModel.${field.column.javaName}"
-          active-color="#13ce66"
-          inactive-color="#ff4949">
-        </el-switch>
-      <#elseif field.column.isFileType()==true>
-        <file-input v-model="dataModel.${field.column.javaName}File"/>
-        <#assign hasFileType=true/>
-      <#elseif field.column.isAssociationType()==true>
-        <el-input v-model="dataModel.${field.column.javaName}" placeholder="请输入${(field.label)!''}"/>
-      <#else>
-        <el-input
-          v-model="dataModel.${field.column.javaName}"
-          type="${field.input.typeName}"
-          placeholder="请输入${(field.label)!''}"/>
-      </#if>
-      </el-form-item>
-  </#list>
+     <@helper.makeVueFormField field=field/>
+   </#list>
     </el-form>
     <div class="formButton">
       <el-button type="primary" @click="handleSave" :loading="savingLoading">保存</el-button>

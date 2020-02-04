@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.ui.exception.DbmUIException;
 import org.onetwo.dbm.ui.meta.DUIEntityMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta;
@@ -48,11 +49,22 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 	
 	public Object getListValue(DUISelectMeta uiselect, Object value) {
 		List<EnumDataVO> list = getDatas(uiselect, value, true);
+		
+		Object compareValue = getCompareValue(uiselect, value);		
 		return list.stream()
-				.filter(d -> d.getValue().equals(value))
+				.filter(d -> d.getValue().equals(compareValue))
 				.findAny()
 				.map(d -> d.getLabel())
 				.orElse("");
+	}
+	
+	protected Object getCompareValue(DUISelectMeta uiselect, Object value) {
+		Object compareValue = value;
+		if (uiselect.useEnumData()) {
+			DbmMappedField dbmField = uiselect.getField().getDbmField();
+			compareValue = dbmField.getEnumType().forStore(dbmField, compareValue);
+		}
+		return compareValue;
 	}
 	
 	public List<EnumDataVO> getDatas(DUISelectMeta uiselect, String query) {

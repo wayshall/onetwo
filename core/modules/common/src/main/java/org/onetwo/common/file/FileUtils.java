@@ -68,6 +68,7 @@ public class FileUtils {
 	public static final String PACKAGE = "package";
 	public static final String PATH = "#path:";
 	public static final String SLASH = "/";
+	public static final String CLASSPATH_URL_PREFIX = "classpath:"; // ResourceUtils.CLASSPATH_URL_PREFIX
 	public static final char SLASH_CHAR = '/';
 	public static final char BACK_SLASH_CHAR = '\\';
 	public static final char DOT_CHAR = '.';
@@ -278,12 +279,20 @@ public class FileUtils {
 		if(fileName.startsWith(PATH)){
 			return fileName.substring(PATH.length());
 		}
-		if(fileName.indexOf(":")!=-1)
+		if(fileName.indexOf(":")!=-1) { // windows: c:/aa/bb
 			return fileName;
+		}
 		
+		if (fileName.startsWith(SLASH)) { // /aa/bb
+			return fileName;
+		}
+		if (fileName.startsWith(CLASSPATH_URL_PREFIX)) { // /aa/bb
+			fileName = StringUtils.substringAfter(fileName, CLASSPATH_URL_PREFIX);
+		}
 
-		if(cld==null)
+		if(cld==null) {
 			cld = ClassUtils.getDefaultClassLoader();
+		}
 		
 		String realPath = null;
 		URL path = cld.getResource(fileName);
