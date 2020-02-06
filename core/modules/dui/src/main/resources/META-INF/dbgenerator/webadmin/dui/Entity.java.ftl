@@ -21,6 +21,7 @@ import org.hibernate.validator.constraints.SafeHtml;
 
 import org.onetwo.dbm.annotation.SnowflakeId;
 import org.onetwo.dbm.jpa.BaseEntity;
+import org.onetwo.dbm.ui.annotation.DUIField;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -57,6 +58,7 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     <#elseif column.isUrlType()>
     @URL
     </#if>
+    @DUIField(label = "${(column.comments[0])!''}", order = ${counter})
     ${column.mappingJavaClassLabel} ${column.propertyName};
     
 </#if>
