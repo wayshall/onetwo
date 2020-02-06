@@ -19,7 +19,7 @@ import org.springframework.util.Assert;
  */
 public class LimiterManager {
 	
-	private LimiterCreator limiterCreator = LimiterCreator.INSTANCE;
+	private LimiterCreator limiterCreator = new LimiterCreator();
 	private List<LimiterConfig> limiterConfigs;
 	private Map<String, InvokeLimiter> limiters;
 	
