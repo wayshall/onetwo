@@ -20,7 +20,13 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartb
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ONSSubscribe {
-
+	
+	/****
+	 * 若不指定，则默认使用消费者类的simpleName+"_"+方法名称 作为消费者id
+	 * 
+	 * @author weishao zeng
+	 * @return
+	 */
 	String consumerId() default "";
 	String topic();
 	String subExpression() default "";

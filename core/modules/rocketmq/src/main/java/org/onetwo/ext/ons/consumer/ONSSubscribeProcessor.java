@@ -100,7 +100,7 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 		String consumerId = resloveValue(subscribe.consumerId());
 		if (StringUtils.isBlank(consumerId) && listener instanceof DelegateCustomONSConsumer) {
 			DelegateCustomONSConsumer d = (DelegateCustomONSConsumer) listener;
-			consumerId = AopUtils.getTargetClass(d.getTarget()).getSimpleName();
+			consumerId = AopUtils.getTargetClass(d.getTarget()).getSimpleName() + "_" + d.getConsumerMethod().getName();
 		}
 		
 		ConsumerProperty[] onsProperties = subscribe.properties();
