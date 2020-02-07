@@ -11,6 +11,7 @@ import org.onetwo.dbm.ui.meta.DUIEntityMeta;
 
 public interface DUIMetaManager {
 
+	Optional<DUIEntityMeta> findByTable(String tableName);
 	DUIEntityMeta getByTable(String tableName);
 	DUIEntityMeta get(String entityName);
 	DUIEntityMeta get(Class<?> entityClass);

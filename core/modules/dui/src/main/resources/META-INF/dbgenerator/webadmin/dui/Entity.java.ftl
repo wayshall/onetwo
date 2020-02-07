@@ -58,7 +58,7 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     <#elseif column.isUrlType()>
     @URL
     </#if>
-    @DUIField(label = "${(column.comments[0])!''}", order = ${counter})
+    @DUIField(label = "${(column.comments[0])!''}", order = ${column?counter})
     ${column.mappingJavaClassLabel} ${column.propertyName};
     
 </#if>

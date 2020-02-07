@@ -99,6 +99,15 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 		return get(uiclass);
 	}
 
+
+	public Optional<DUIEntityMeta> findByTable(String tableName) {
+		try {
+			return Optional.of(getByTable(tableName));
+		} catch (Exception e) {
+		}
+		return Optional.empty();
+	}
+
 	public DUIEntityMeta get(String uiname) {
 		if (!duiEntityClassMap.containsKey(uiname)) {
 			throw new DbmUIException("dui entity class not found for name: " + uiname);

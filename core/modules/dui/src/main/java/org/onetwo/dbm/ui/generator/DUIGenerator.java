@@ -3,6 +3,7 @@ package org.onetwo.dbm.ui.generator;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -193,8 +194,8 @@ public class DUIGenerator {
 	public WebadminGenerator webadminGenerator(String tableName){
 		DbTableGenerator tableGenerator = dbGenerator.table(tableName);
 		
-		DUIEntityMeta duiEntityMeta = getDUIEntityMeta(tableName);
-		if (duiEntityMeta!=null) {
+		Optional<DUIEntityMeta> duiEntityMeta = getDUIEntityMeta(tableName);
+		if (duiEntityMeta.isPresent()) {
 			tableGenerator.context().put("DUIEntityMeta", duiEntityMeta);
 		}
 		
@@ -232,8 +233,8 @@ public class DUIGenerator {
 		return meta;
 	}
 
-	private DUIEntityMeta getDUIEntityMeta(String tableName) {
-		DUIEntityMeta meta = getDUIMetaManager().getByTable(tableName);
+	private Optional<DUIEntityMeta> getDUIEntityMeta(String tableName) {
+		Optional<DUIEntityMeta> meta = getDUIMetaManager().findByTable(tableName);
 		return meta;
 	}
 	
