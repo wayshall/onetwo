@@ -71,6 +71,10 @@ public class DUIFieldMeta {
 		public boolean hasValueWriter() {
 			return DUIEntityMeta.hasValueWriter(valueWriter);
 		}
+		
+		public boolean isFileType() {
+			return type!=null && type==InputTypes.FILE;
+		}
 	}
 
 	@Data

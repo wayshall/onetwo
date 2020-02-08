@@ -226,7 +226,7 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 		input.setType(InputTypes.TEXT);
 		DUIInput inputAnno = field.getPropertyInfo().getAnnotation(DUIInput.class);
 		if (inputAnno!=null) {
-			input.setType(InputTypes.TEXTAREA);
+			input.setType(inputAnno.type());
 			input.setValueWriter(inputAnno.valueWriter());
 		}
 		uifieldMeta.setInput(input);

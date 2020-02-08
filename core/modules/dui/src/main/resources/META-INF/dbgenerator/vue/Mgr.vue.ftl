@@ -59,6 +59,7 @@
             :data-id="dataForm.dataId"
             @finishHandle="on${_tableContext.className}Finish"/>
         </el-tab-pane>
+    <#if DUIEntityMeta.editableEntities??>    
       <#list DUIEntityMeta.editableEntities as editableEntity>
         <el-tab-pane label="${editableEntity.label}" v-if="dataForm.status === 'Edit'">
           <${editableEntity.table.horizontalBarName}-form
@@ -66,6 +67,7 @@
             :data-id="dataForm.row['${editableEntity.cascadeField}'] || ''"/>
         </el-tab-pane>
       </#list>
+    </#if>
       </el-tabs>
     </el-dialog>
   </div>
@@ -74,16 +76,20 @@
 <script>
 import * as ${apiName} from '@/api/${vueModuleName}/${apiName}'
 import ${formComponentName} from './${formComponentName}'
+<#if DUIEntityMeta.editableEntities??>    
 <#list DUIEntityMeta.editableEntities as editableEntity>
 import ${editableEntity.table.propertyName}Form from './${editableEntity.table.propertyName}Form'
 </#list>
+</#if>
 
 export default {
   name: '${_tableContext.className}',
   components: {
+<#if DUIEntityMeta.editableEntities??>   
 <#list DUIEntityMeta.editableEntities as editableEntity>
     ${editableEntity.table.propertyName}Form,
 </#list>
+</#if>
     ${formComponentName}
   },
   data() {

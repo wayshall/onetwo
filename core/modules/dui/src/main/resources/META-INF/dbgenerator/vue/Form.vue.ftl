@@ -1,6 +1,5 @@
 <#import "../webadmin/helper.ftl" as helper>
 
-<#assign hasFileType=false/>
 <#assign hasSelectType=false/>
 <#assign dataFormName="dataForm"/>
 <#assign apiName="${table.propertyName}Api"/>
@@ -29,17 +28,11 @@
 
 <script>
 import * as ${apiName} from '@/api/${vueModuleName}/${apiName}'
-<#if hasFileType>
-import fileInput from '@/components/xui/fileInput'
-</#if>
 //  import { exchangeLinebreak } from '@/filters'
 
 export default {
   name: '${_tableContext.className}Form',
   components: {
-<#if hasFileType>
-    fileInput,
-</#if>
   },
   props: {
     statusMode: {

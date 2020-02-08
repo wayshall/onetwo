@@ -14,6 +14,7 @@
 <#assign mapperPropertyName="${_tableContext.propertyName}Mapper"/>
 <#assign idName="${table.primaryKey.javaName}"/>
 <#assign idType="${table.primaryKey.javaType.simpleName}"/>
+<#assign formFields=DUIEntityMeta.formFields/>
 
 
 package ${_globalConfig.getJavaLocalPackage(_tableContext.localPackage)};
@@ -24,19 +25,23 @@ import org.onetwo.common.utils.PageRequest;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.api.annotation.PermissionMeta;
+import org.onetwo.boot.core.web.service.BootCommonService;
 
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.Result;
+import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -45,7 +50,7 @@ import org.onetwo.common.spring.validator.ValidatorUtils.ValidGroup.ValidAnyTime
 import org.onetwo.common.spring.validator.ValidatorUtils.ValidGroup.ValidWhenEdit;
 import org.onetwo.common.spring.validator.ValidatorUtils.ValidGroup.ValidWhenNew;
 
-<#if DUIEntityMeta?? && DUIEntityMeta.editableEntity>
+<#if DUIEntityMeta?? && DUIEntityMeta.editableEntity==true>
 import ${_globalConfig.getJavaLocalPackage(_tableContext.localPackage)}.${DUIEntityMeta.parent.table.className}MgrController.${DUIEntityMeta.parent.table.className}Mgr.Edit${DUIEntityMeta.table.className};
 </#if>
 import ${entityPackage}.${entityClassName};
@@ -57,8 +62,12 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
 
     @Autowired
     private ${serviceImplClassName} ${serviceImplPropertyName};
+<#if DUIEntityMeta?? && DUIEntityMeta.hasFileField()==true>
+    @Autowired
+    private BootCommonService bootCommonService;
+</#if>
     
-<#if DUIEntityMeta?? && DUIEntityMeta.editableEntity>
+<#if DUIEntityMeta?? && DUIEntityMeta.editableEntity==true>
     @ByPermissionClass(Edit${DUIEntityMeta.table.className}.class)
     @GetMapping(value="{${idName}}")
     public ${entityClassName} get(@PathVariable("${idName}") ${idType} ${idName}){
@@ -84,8 +93,21 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     
     @ByPermissionClass(${_tableContext.className}Mgr.Create.class)
     @PostMapping
-    public DataResult<${entityClassName}> create(@Validated ${entityClassName} ${_tableContext.propertyName}, BindingResult br){
+    public DataResult<${entityClassName}> create(<#list formFields as field><#rt>
+                                                  <#if field.input.isFileType()==true><#t>
+                                                    <#lt><#if !field.column.nullable>@RequestParam </#if>MultipartFile ${field.name}File, 
+                                                  </#if><#t>
+                                                </#list><#t>
+                                                @Validated ${entityClassName} ${_tableContext.propertyName},
+                                                BindingResult br
+                                                ){
         ValidatorUtils.throwIfHasErrors(br, true);
+    <#list formFields as field><#t>
+      <#if field.input.isFileType()==true><#t>
+        FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName}", ${field.name}File);
+        ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
+      </#if><#t>
+    </#list><#t>
         ${serviceImplPropertyName}.save(${_tableContext.propertyName});
         return DataResults.<${entityClassName}>success("保存成功！").data(${_tableContext.propertyName}).build();
     }
@@ -99,9 +121,22 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     
     @ByPermissionClass(${_tableContext.className}Mgr.Update.class)
     @PutMapping(value="{${idName}}")
-    public DataResult<${entityClassName}> update(@PathVariable("${idName}") ${idType} ${idName}, @Validated({ValidAnyTime.class, ValidWhenEdit.class}) ${entityClassName} ${_tableContext.propertyName}, BindingResult br){
+    public DataResult<${entityClassName}> update(@PathVariable("${idName}") ${idType} ${idName}, 
+                                                <#list formFields as field><#t>
+                                                  <#if field.input.isFileType()==true><#t>
+                                                    <#if !field.column.nullable>@RequestParam </#if>MultipartFile ${field.name}File, 
+                                                  </#if><#t>
+                                                </#list><#t>
+                                                    @Validated ${entityClassName} ${_tableContext.propertyName}, 
+                                                    BindingResult br){
         ValidatorUtils.throwIfHasErrors(br, true);
         ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
+    <#list formFields as field><#t>
+      <#if field.input.isFileType()==true><#t>
+        FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName}", ${field.name}File);
+        ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
+      </#if><#t>
+    </#list><#t>
         ${serviceImplPropertyName}.update(${_tableContext.propertyName});
         return DataResults.<${entityClassName}>success("保存成功！").data(${_tableContext.propertyName}).build();
     }

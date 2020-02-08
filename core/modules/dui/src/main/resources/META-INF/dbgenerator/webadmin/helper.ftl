@@ -39,8 +39,8 @@
           ${spaces}active-color="#13ce66"
           ${spaces}inactive-color="#ff4949">
         ${spaces}</el-switch>
-      <#elseif field.column.isFileType()==true>
-        ${spaces}<file-input v-model="${modelPrefix}.${field.column.javaName}File"/>
+      <#elseif field.input.isFileType()==true>
+        ${spaces}<file-input v-model="${modelPrefix}.${field.name}File"/>
         <#assign hasFileType=true/>
       <#elseif field.column.isAssociationType()==true>
         ${spaces}<el-input v-model="${modelPrefix}.${field.column.javaName}" placeholder="请输入${(field.label)!''}"/>

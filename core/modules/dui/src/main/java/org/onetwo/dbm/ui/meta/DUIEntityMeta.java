@@ -54,6 +54,13 @@ public class DUIEntityMeta {
 		return this.mappedEntry.getEntityClass();
 	}
 	
+	public boolean hasFileField() {
+		return getFormFields().stream()
+							.filter(f -> f.getInput().isFileType())
+							.findAny()
+							.isPresent();
+	}
+	
 	public void addEditableEntity(DUIEntityMeta entityMeta) {
 		if (this.editableEntities==null) {
 			this.editableEntities = Sets.newHashSet();

@@ -138,7 +138,7 @@ public class DUIGenerator {
 				.resourceDir(resourceDir)
 				.javaSrcDir(javaSrcDir)
 				.javaBasePackage(javaBasePackage)
-				.moduleName(moduleName)
+				.moduleName("")
 //				.defaultTableContexts()
 //				.end()
 			.end();
@@ -180,8 +180,9 @@ public class DUIGenerator {
 	}
 
 	public DUIGenerator moduleName(String moduleName) {
-		this.checkConfigured("moduleName");
+//		this.checkConfigured("moduleName");
 		this.moduleName = moduleName;
+		this.context.put("moduleName", moduleName);
 		return this;
 	}
 
@@ -196,7 +197,7 @@ public class DUIGenerator {
 		
 		Optional<DUIEntityMeta> duiEntityMeta = getDUIEntityMeta(tableName);
 		if (duiEntityMeta.isPresent()) {
-			tableGenerator.context().put("DUIEntityMeta", duiEntityMeta);
+			tableGenerator.context().put("DUIEntityMeta", duiEntityMeta.get());
 		}
 		
 		WebadminGenerator webadmin = new WebadminGenerator();

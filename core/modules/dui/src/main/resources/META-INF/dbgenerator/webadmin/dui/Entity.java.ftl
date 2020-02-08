@@ -21,7 +21,11 @@ import org.hibernate.validator.constraints.SafeHtml;
 
 import org.onetwo.dbm.annotation.SnowflakeId;
 import org.onetwo.dbm.jpa.BaseEntity;
+import org.onetwo.dbm.ui.annotation.DUIEntity;
 import org.onetwo.dbm.ui.annotation.DUIField;
+import org.onetwo.dbm.ui.annotation.DUIInput;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,6 +38,10 @@ import lombok.EqualsAndHashCode;
 @Table(name="${table.name}")
 @Data
 @EqualsAndHashCode(callSuper=true)
+@DUIEntity(
+        name = "${_tableContext.className}", 
+        label = "${(table.comments[0])!''}"
+)
 public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass}<#else>BaseEntity</#if> {
 
     @SnowflakeId
@@ -57,6 +65,9 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     @Email
     <#elseif column.isUrlType()>
     @URL
+    <#elseif column.isFileType>
+    @DUIInput(type=DUIInput.InputTypes.FILE)
+    @JsonSerialize(using=ImageUrlJsonSerializer.class)
     </#if>
     @DUIField(label = "${(column.comments[0])!''}", order = ${column?counter})
     ${column.mappingJavaClassLabel} ${column.propertyName};

@@ -22,6 +22,7 @@ public @interface DUIInput {
 	
 	public enum InputTypes {
 		TEXT,
-		TEXTAREA
+		TEXTAREA,
+		FILE
 	}
 }
