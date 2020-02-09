@@ -40,7 +40,7 @@
           ${spaces}inactive-color="#ff4949">
         ${spaces}</el-switch>
       <#elseif field.input.isFileType()==true>
-        ${spaces}<file-input v-model="${modelPrefix}.${field.name}File"/>
+        ${spaces}<file-input v-model="${modelPrefix}.${field.name}File" :exist-file-path="${modelPrefix}.${field.name}"/>
         <#assign hasFileType=true/>
       <#elseif field.column.isAssociationType()==true>
         ${spaces}<el-input v-model="${modelPrefix}.${field.column.javaName}" placeholder="请输入${(field.label)!''}"/>

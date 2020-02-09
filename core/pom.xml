@@ -39,7 +39,6 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>../../dbm</module>
                 <module>modules/dui</module>
 			</modules>
            <build>

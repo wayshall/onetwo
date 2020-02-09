@@ -118,6 +118,9 @@ export default {
                 resposne: res
               })
               this.savingLoading = false
+              // 保存后清除表单并重新加载数据
+              this.$refs.dataForm.resetFields()
+              this.getData()
             })
           }).catch(err => {
             console.log(`execute ${'$'}{methodName} error: ${'$'}{err}`)
