@@ -8,7 +8,11 @@ export function get(${idName}) {
 }
 
 export function update(data) {
-  return request.post(`${requestPath}/${'$'}{data.${idName}}`, data)
+  return request.post(`${requestPath}/${'$'}{data.${idName}}`, data<#if DUIEntityMeta.hasFileField()==true>, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }</#if>)
 }
 <#else>
 import qs from 'qs'
@@ -28,11 +32,19 @@ export function get(${idName}) {
 }
 
 export function update(data) {
-  return request.put(`${requestPath}/${'$'}{data.${idName}}`, data)
+  return request.put(`${requestPath}/${'$'}{data.${idName}}`, data<#if DUIEntityMeta.hasFileField()==true>, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }</#if>)
 }
 
 export function add(data) {
-  return request.post('${requestPath}.json', data)
+  return request.post('${requestPath}.json', data<#if DUIEntityMeta.hasFileField()==true>, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }</#if>)
 }
 
 export function remove(${idName}s) {

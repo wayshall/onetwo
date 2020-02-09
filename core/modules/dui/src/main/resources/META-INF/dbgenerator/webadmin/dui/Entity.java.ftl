@@ -53,7 +53,7 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     /***
      * ${(column.comments[0])!''}
      */
-    <#if !column.nullable>
+    <#if column.primaryKey == false && !column.nullable>
     @NotNull
     </#if>
     <#if column.isJsonType()>

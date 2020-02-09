@@ -1,7 +1,9 @@
 package org.onetwo.dbm.ui.core;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -13,11 +15,13 @@ import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
+import org.onetwo.common.spring.utils.SpringAnnotationUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.mapping.MappedEntryManager;
+import org.onetwo.dbm.ui.EnableDbmUI;
 import org.onetwo.dbm.ui.annotation.DUICascadeEditable;
 import org.onetwo.dbm.ui.annotation.DUIEntity;
 import org.onetwo.dbm.ui.annotation.DUIField;
@@ -33,7 +37,7 @@ import org.onetwo.dbm.ui.spi.DUILabelEnum;
 import org.onetwo.dbm.ui.spi.DUIMetaManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+import org.springframework.context.ApplicationContext;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -56,13 +60,17 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 	private String[] packagesToScan;
 	private Map<String, String> duiEntityClassMap = Maps.newConcurrentMap();
 	private Map<String, String> duiEntityTableMap = Maps.newConcurrentMap();
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notEmpty(packagesToScan, "packagesToScan can not be empty");
+//		Assert.notEmpty(packagesToScan, "packagesToScan can not be empty");
 		this.mappedEntryManager = dbmSessionFactory.getMappedEntryManager();
 		this.databaseMetaDialet = new DelegateDatabaseMetaDialet(dbmSessionFactory.getDataSource());
+		
+		Set<String> packsages = this.scanEnableDbmUIPackages();
 		
 		resourcesScanner.scan((metadataReader, res, index)->{
 			if( metadataReader.getAnnotationMetadata().hasAnnotation(DUIEntity.class.getName()) ){
@@ -85,7 +93,15 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 				}
 			}
 			return null;
-		}, packagesToScan);
+		}, packsages.toArray(new String[0]));
+	}
+	
+	private Set<String> scanEnableDbmUIPackages(){
+		Set<String> packageNames = SpringAnnotationUtils.scanAnnotationPackages(applicationContext, EnableDbmUI.class);
+		if (!LangUtils.isEmpty(packagesToScan)) {
+			packageNames.addAll(Arrays.asList(packagesToScan));
+		}
+		return packageNames;
 	}
 	
 

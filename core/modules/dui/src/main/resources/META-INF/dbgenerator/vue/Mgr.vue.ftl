@@ -37,6 +37,8 @@
           <span>{{ scope.row.${field.column.javaName} | formatDateInMillis }}</span>
         </template>
       </el-table-column>
+    <#elseif field.input.isFileType()==true>
+      <image-popover-column prop="${field.listField}" label="${(field.label)!''}"/>
     <#else>
       <el-table-column align="center" label="${(field.label)!''}" prop="${field.listField}" <#if field?counter != DUIEntityMeta.listableFields.size()>width="100"</#if>/>
     </#if>
