@@ -1,6 +1,7 @@
 package org.onetwo.cloud.hystrix.exception;
 
 import java.io.PrintStream;
+import java.util.Optional;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
@@ -21,16 +22,16 @@ public class HystrixBadRequestCodeException extends HystrixBadRequestException i
 
 	@Override
 	public Object[] getArgs() {
-		return getCuaseServiceException().getArgs();
+		return getCuaseServiceException().map(e -> e.getArgs()).orElse(null);
 	}
 
 	@Override
 	public String getCode() {
-		return getCuaseServiceException().getCode();
+		return getCuaseServiceException().map(e -> e.getCode()).orElse("");
 	}
 	
-	public ServiceException getCuaseServiceException() {
-		return (ServiceException) getCause();
+	public Optional<ServiceException> getCuaseServiceException() {
+		return Optional.ofNullable((ServiceException)getCause());
 	}
 
     public void printStackTrace(PrintStream s) {
