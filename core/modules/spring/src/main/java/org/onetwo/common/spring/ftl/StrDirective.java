@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.utils.GuavaUtils;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;
@@ -54,29 +55,33 @@ public class StrDirective implements NamedDirective {
 			return ;
 		}
 
-		final String sql = buffer.toString().toLowerCase();
+		final String sql = buffer.toString().trim().toLowerCase();
 		
 		trimPrefixs(buffer, sql, trimPrefixs);
 		trimSuffixs(buffer, sql, trimSuffixs);
 		
 		buffer.insert(0, " ");
-		buffer.insert(0, insertPrefix);
+		if (StringUtils.isNotBlank(insertPrefix)) {
+			buffer.insert(0, insertPrefix);
+		}
 		env.getOut().append(buffer);
 	}
 	
 	protected String getInsertPrefix(Map params) {
-		return FtlUtils.getRequiredParameterByString(params, PARAMS_INSERT_PREFIX);
+		return FtlUtils.getParameterByString(params, PARAMS_INSERT_PREFIX, "");
 	}
 	
 	protected List<String> getTrimPrefixs(Map params) {
 		String trimPrefixs = FtlUtils.getParameterByString(params, PARAMS_TRIM_PREFIXS, "");
-		List<String> trimPrefixList = Arrays.asList(StringUtils.split(trimPrefixs.toLowerCase(), SPLIT_CHAR));
+//		List<String> trimPrefixList = Arrays.asList(StringUtils.split(trimPrefixs.toLowerCase(), SPLIT_CHAR));
+		List<String> trimPrefixList = Arrays.asList(GuavaUtils.split(trimPrefixs.toLowerCase(), SPLIT_CHAR));
 		return trimPrefixList;
 	}
 	
 	protected List<String> getTrimSuffixs(Map params) {
 		String trimSuffixs = FtlUtils.getParameterByString(params, PARAMS_TRIM_SUFFIXS, "");
-		List<String> trimSuffixList = Arrays.asList(StringUtils.split(trimSuffixs.toLowerCase(), SPLIT_CHAR));
+//		List<String> trimSuffixList = Arrays.asList(StringUtils.split(trimSuffixs.toLowerCase(), SPLIT_CHAR));
+		List<String> trimSuffixList = Arrays.asList(GuavaUtils.split(trimSuffixs.toLowerCase(), SPLIT_CHAR));
 		return trimSuffixList;
 	}
 	

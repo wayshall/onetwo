@@ -96,6 +96,7 @@ export default {
   },
   data() {
     return {
+<#if searchableFields.isEmpty()==false>
       queryFormModel: {
   <#list searchableFields as field>
     <#if !field.column.primaryKey>
@@ -104,6 +105,7 @@ export default {
   </#list>
         ${table.primaryKey.javaName}: null
       },
+</#if>
       dataForm: {
         status: '',
         dataId: '',
