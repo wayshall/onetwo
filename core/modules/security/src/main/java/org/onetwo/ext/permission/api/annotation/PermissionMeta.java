@@ -36,6 +36,13 @@ public @interface PermissionMeta {
 	
 	String url() default "";
 	
+	/****
+	 * 前端组件路径
+	 * @author weishao zeng
+	 * @return
+	 */
+	String componentViewPath();
+	
 	String resourcesPattern() default "";
 	
 	String name() default "";

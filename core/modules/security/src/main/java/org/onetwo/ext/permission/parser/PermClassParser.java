@@ -10,6 +10,7 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.api.annotation.MenuMapping;
 import org.onetwo.ext.permission.api.annotation.PermissionMeta;
@@ -27,6 +28,7 @@ public class PermClassParser {
 	public static final String NAME = "name";
 	public static final String CHILDREN = "children";
 	public static final String META = "meta";
+	public static final String COMPONENT_VIEW_PATH = IPermission.COMPONENT_VIEW_PATH;
 	
 	//menu option
 	public static final String MENU_CSS_CLASS = "cssClass";
@@ -73,6 +75,13 @@ public class PermClassParser {
 		/*Object nameValue = ReflectUtils.getFieldValue(getActualPermissionClass(), NAME, true);
 		String name = nameValue==null?"":nameValue.toString();
 		return name;*/
+	}
+	
+	public String getComponentViewPath() {
+		if (permissionMeta!=null && StringUtils.isNotBlank(permissionMeta.componentViewPath())) {
+			return permissionMeta.componentViewPath();
+		}
+		return getFieldValue(COMPONENT_VIEW_PATH, String.class, "");
 	}
 	
 	public String getAppCode(){
