@@ -2,18 +2,20 @@ package org.onetwo.ext.permission.parser;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.api.annotation.MenuMapping;
 import org.onetwo.ext.permission.api.annotation.PermissionMeta;
+import org.onetwo.ext.permission.api.annotation.PermissionMetaData;
 import org.onetwo.ext.permission.api.annotation.ProxyMenu;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -28,7 +30,7 @@ public class PermClassParser {
 	public static final String NAME = "name";
 	public static final String CHILDREN = "children";
 	public static final String META = "meta";
-	public static final String COMPONENT_VIEW_PATH = IPermission.COMPONENT_VIEW_PATH;
+//	public static final String COMPONENT_VIEW_PATH = IPermission.COMPONENT_VIEW_PATH;
 	
 	//menu option
 	public static final String MENU_CSS_CLASS = "cssClass";
@@ -45,6 +47,7 @@ public class PermClassParser {
 	private final Class<?> parentPermissionClass;
 	private final PermissionMeta permissionMeta;
 //	private final AnnotationAttributes permissionMetaAttrs;
+	private Map<String, Object> meta;
 	
 	private PermClassParser(Class<?> permClass, Class<?> parentPermissionClass) {
 		super();
@@ -77,12 +80,12 @@ public class PermClassParser {
 		return name;*/
 	}
 	
-	public String getComponentViewPath() {
+	/*public String getComponentViewPath() {
 		if (permissionMeta!=null && StringUtils.isNotBlank(permissionMeta.componentViewPath())) {
 			return permissionMeta.componentViewPath();
 		}
 		return getFieldValue(COMPONENT_VIEW_PATH, String.class, "");
-	}
+	}*/
 	
 	public String getAppCode(){
 		return getFieldValue(APP_CODE, String.class, getActualPermissionClass().getSimpleName());
@@ -184,14 +187,35 @@ public class PermClassParser {
 	
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getMeta(){
+		if (this.meta!=null) {
+			return this.meta;
+		}
 		if (permissionMeta!=null) {
 			String json = permissionMeta.meta();
 			if (StringUtils.isNotBlank(json)) {
-				return JsonMapper.DEFAULT_MAPPER.fromJson(json, Map.class);
+				meta = JsonMapper.DEFAULT_MAPPER.fromJson(json, Map.class);
+				return meta;
 			}
 		}
-		return (Map<String, Object>)getFieldValue(META, Map.class, null);
+		
+		this.meta = new HashMap<String, Object>();
+		Map<String, Object> map = (Map<String, Object>)getFieldValue(META, Map.class, null);
+		if (map!=null) {
+			this.meta.putAll(map);
+		}
+		Intro.wrap(permissionClass).getAllFields().stream().filter(field -> {
+			return field.getAnnotation(PermissionMetaData.class)!=null;
+		}).forEach(field -> {
+			try {
+				Object val = field.get(permissionClass);
+				this.meta.put(field.getName(), val);
+			} catch (Exception e) {
+				throw new BaseException("get @PermissionMetaData field value error, field:+"+field.getName()+", message: " + e.getMessage());
+			}
+		});
+		return this.meta;
 	}
+	
 	public String getUrl(){
 		if (permissionMeta!=null) {
 			return permissionMeta.url();

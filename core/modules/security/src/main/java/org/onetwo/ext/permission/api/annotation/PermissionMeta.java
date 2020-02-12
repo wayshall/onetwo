@@ -41,8 +41,13 @@ public @interface PermissionMeta {
 	 * @author weishao zeng
 	 * @return
 	 */
-	String componentViewPath();
+//	String componentViewPath() default "";
 	
+	/***
+	 * 权限验证拦截的url模式
+	 * @author weishao zeng
+	 * @return
+	 */
 	String resourcesPattern() default "";
 	
 	String name() default "";

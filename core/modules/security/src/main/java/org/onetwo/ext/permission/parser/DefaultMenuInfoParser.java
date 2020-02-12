@@ -267,15 +267,21 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 		perm.setHidden(parser.isHidden());
 		perm.setAppCode(syscode);
 		perm.setMeta(parser.getMeta());
-		perm.setComponentViewPath(parser.getComponentViewPath());
+//		perm.setComponentViewPath(parser.getComponentViewPath());
 
-		if(parser.getParentPermissionClass()!=null){
+		if (isRootMenuClassParser(parser)) {
+			perm.setParentCode(null);
+		} else if (parser.getParentPermissionClass()!=null) {
 			String parentCode = parseCode(getPermClassParser(parser.getParentPermissionClass()));
 			perm.setParentCode(parentCode);
 		}
 		this.permissionMap.put(perm.getCode(), perm);
 		this.permissionMapByClass.put(permissionClass, perm);
 		return perm;
+	}
+	
+	private boolean isRootMenuClassParser(PermClassParser parser) {
+		return parser.getPermissionClass()==this.rootMenuParser.getPermissionClass();
 	}
 	
 
