@@ -59,6 +59,7 @@
           label="${DUIEntityMeta.label}编辑"
           name="dataFormTab">
           <${table.propertyName}-form
+            ref="${table.propertyName}Form"
             :status-mode="dataForm.status"
             :data-id="dataForm.dataId"
             @finishHandle="on${_tableContext.className}Finish"/>
@@ -146,7 +147,7 @@ export default {
   methods: {
     handleClose() {
       // 清除验证信息
-      // this.$refs.dataForm.resetFields()
+      this.$refs.${table.propertyName}Form.$refs.dataForm.resetFields()
       this.dataForm.visible = false
       return true
     },

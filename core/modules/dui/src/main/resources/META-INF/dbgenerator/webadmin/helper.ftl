@@ -50,7 +50,7 @@
       <#else>
         ${spaces}<el-input
           ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
-          ${spaces}type="${field.input.typeName}"
+          ${spaces}type="${field.input.typeName?lower_case}"
           ${spaces}placeholder="请输入${(field.label)!''}"/>
       </#if>
       ${spaces}</el-form-item>
