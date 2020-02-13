@@ -165,8 +165,12 @@ public class PermClassParser {
 	}
 	
 	public Number getSort(){
+		int sort = Integer.MIN_VALUE;
 		if (permissionMeta!=null) {
-			return permissionMeta.sort();
+			sort = permissionMeta.sort();
+		}
+		if (sort!=Integer.MIN_VALUE) {
+			return sort;
 		}
 		return getFieldValue(SORT, Number.class);
 	}

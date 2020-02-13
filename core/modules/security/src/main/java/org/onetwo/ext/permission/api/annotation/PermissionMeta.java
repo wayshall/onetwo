@@ -15,7 +15,7 @@ public @interface PermissionMeta {
 	 * @author weishao zeng
 	 * @return
 	 */
-	int sort() default 0;
+	int sort() default Integer.MIN_VALUE;
 	
 	/****
 	 * 权限类型
