@@ -24,16 +24,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+<#if DUIEntityMeta.isTree()==true>
+import java.util.List;
+import java.util.stream.Collectors;
+import org.onetwo.common.tree.DefaultTreeModel;
+import org.onetwo.common.tree.TreeBuilder;
+import org.onetwo.common.tree.TreeModelCreator;
+import org.onetwo.common.tree.TreeUtils;
+</#if>
+
 import ${entityPackage}.${entityClassName};
 
 @Service
 @Transactional
 public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassName}, ${idType}> {
+<#if DUIEntityMeta.isTree()==true>
+    private static TreeModelCreator<DefaultTreeModel, ${entityClassName}> TREE_MODEL_CREATER = data -> {
+        DefaultTreeModel tm = new DefaultTreeModel(data.get${idName?cap_first}(), data.getName(), data.getParent${idName?cap_first}());
+        return tm;
+    };
+</#if>
     
     @Autowired
     public ${serviceImplClassName}(BaseEntityManager baseEntityManager) {
         super(baseEntityManager);
     }
+    
+<#if DUIEntityMeta.isTree()==true>
+    public List<DefaultTreeModel> loadAsTree() {
+        List<${entityClassName}> treeList = this.baseEntityManager.findAll(${entityClassName}.class);
+        TreeBuilder<DefaultTreeModel> treeBuilder = TreeUtils.newBuilder(treeList, TREE_MODEL_CREATER);
+        treeBuilder.rootIds(0);
+        return treeBuilder.buidTree();
+    }
+    
+    public List<DefaultTreeModel> loadTreeDatas(${entityClassName} ${_tableContext.propertyName}) {
+        List<RegionEntity> treeList = this.baseEntityManager.from(${entityClassName}.class)
+                                                            .where()
+                                                                .addFields(${_tableContext.propertyName})
+                                                            .end()
+                                                            .toQuery()
+                                                            .list();
+        List<DefaultTreeModel> treeModels = treeList.stream().map(d -> {
+            return TREE_MODEL_CREATER.createTreeModel(d);
+        }).collect(Collectors.toList());
+        return treeModels;
+    }
+</#if>
     
     @Transactional(readOnly=true)
     public Page<${entityClassName}> findPage(Page<${entityClassName}> page, ${entityClassName} example) {

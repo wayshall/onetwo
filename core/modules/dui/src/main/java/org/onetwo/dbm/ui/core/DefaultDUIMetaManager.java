@@ -28,11 +28,13 @@ import org.onetwo.dbm.ui.annotation.DUIField;
 import org.onetwo.dbm.ui.annotation.DUIInput;
 import org.onetwo.dbm.ui.annotation.DUIInput.InputTypes;
 import org.onetwo.dbm.ui.annotation.DUISelect;
+import org.onetwo.dbm.ui.annotation.DUITreeGrid;
 import org.onetwo.dbm.ui.exception.DbmUIException;
 import org.onetwo.dbm.ui.meta.DUIEntityMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta.DUIInputMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta.DUISelectMeta;
+import org.onetwo.dbm.ui.meta.DUITreeGridMeta;
 import org.onetwo.dbm.ui.spi.DUILabelEnum;
 import org.onetwo.dbm.ui.spi.DUIMetaManager;
 import org.springframework.beans.factory.InitializingBean;
@@ -208,6 +210,15 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 				entityMeta.addField(uifield);
 			});
 		});
+		
+		DUITreeGrid treeGridAnno = uiEntityClass.getAnnotation(DUITreeGrid.class);
+		if (treeGridAnno!=null) {
+			DUITreeGridMeta treeGrid = new DUITreeGridMeta();
+			DUIFieldMeta parentField = entityMeta.getField(treeGridAnno.parentField());
+			treeGrid.setParentField(parentField);
+			treeGrid.setRootId(treeGridAnno.rootId());
+			entityMeta.setTreeGrid(treeGrid);
+		}
 		
 		DUICascadeEditable[] editableEntities = uiclassAnno.cascadeEditableEntities();
 		entityMeta.setCascadeEditableList(editableEntities);

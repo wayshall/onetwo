@@ -48,7 +48,14 @@ public class DUIEntityMeta {
 	private DUIEntityMeta parent;
 	private boolean editableEntity;
 	
+	
 	private String cascadeField;
+	
+	private DUITreeGridMeta treeGrid;
+	
+	public boolean isTree() {
+		return treeGrid!=null;
+	}
 	
 	public Class<?> getEntityClass() {
 		return this.mappedEntry.getEntityClass();
@@ -97,7 +104,8 @@ public class DUIEntityMeta {
 	}
 	
 	public Collection<DUIFieldMeta> getSearchableFields() {
-		return getFields().stream().filter(f -> f.isSearchable()).collect(Collectors.toList());
+		List<DUIFieldMeta> fields = getFields().stream().filter(f -> f.isSearchable()).collect(Collectors.toList());
+		return fields;
 	}
 	
 	public Collection<DUIFieldMeta> getFormFields() {

@@ -39,6 +39,18 @@ export function update(data) {
   }</#if>)
 }
 
+<#if DUIEntityMeta.isTree()==true>
+export function getTree() {
+  return request.get('${requestPath}Tree')
+}
+
+export function loadTree(data) {
+  return request.get('${requestPath}LoadTree', {
+    params: data
+  })
+}
+</#if>
+
 export function add(data) {
   return request.post('${requestPath}.json', data<#if DUIEntityMeta.hasFileField()==true>, {
     headers: {

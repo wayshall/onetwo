@@ -17,6 +17,8 @@ public @interface DUIEntity {
 	String name() default "";
 	String label();
 	
+//	UIStype style() default UIStype.GRID;
+	
 	boolean listPage() default true;
 	boolean editPage() default true;
 	

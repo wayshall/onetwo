@@ -15,6 +15,7 @@
 <#assign idName="${table.primaryKey.javaName}"/>
 <#assign idType="${table.primaryKey.javaType.simpleName}"/>
 <#assign formFields=DUIEntityMeta.formFields/>
+<#assign hasFileFormField=false/>
 
 
 package ${_globalConfig.getJavaLocalPackage(_tableContext.localPackage)};
@@ -31,6 +32,14 @@ import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.Result;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.spring.mvc.utils.DataResults;
+
+<#if DUIEntityMeta.isTree()==true>
+import java.util.List;
+import org.onetwo.common.tree.DefaultTreeModel;
+import org.onetwo.common.tree.TreeBuilder;
+import org.onetwo.common.tree.TreeModelCreator;
+import org.onetwo.common.tree.TreeUtils;
+</#if>
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,7 +66,6 @@ import ${entityPackage}.${entityClassName};
 import ${serviceImplPackage}.${serviceImplClassName};
 
 @RestController
-@RequestMapping("${requestPath}")
 public class ${_tableContext.className}MgrController extends ${pluginBaseController} implements DateInitBinder {
 
     @Autowired
@@ -69,14 +77,14 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     
 <#if DUIEntityMeta?? && DUIEntityMeta.editableEntity==true>
     @ByPermissionClass(Edit${DUIEntityMeta.table.className}.class)
-    @GetMapping(value="{${idName}}")
+    @GetMapping(value="${requestPath}/{${idName}}")
     public ${entityClassName} get(@PathVariable("${idName}") ${idType} ${idName}){
         ${entityClassName} ${_tableContext.propertyName} = ${serviceImplPropertyName}.findById(${idName});
         return ${_tableContext.propertyName};
     }
     
     @ByPermissionClass(Edit${DUIEntityMeta.table.className}.class)
-    @PostMapping(value="{${idName}}")
+    @PostMapping(value="${requestPath}/{${idName}}")
     public DataResult<${entityClassName}> save(@PathVariable("${idName}") ${idType} ${idName}, @Validated ${entityClassName} ${_tableContext.propertyName}, BindingResult br){
         ValidatorUtils.throwIfHasErrors(br, true);
         ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
@@ -84,21 +92,43 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
         return DataResults.<${entityClassName}>success("保存成功！").data(${_tableContext.propertyName}).build();
     }
 <#else>
+<#if DUIEntityMeta.isTree()==true>
+    @ByPermissionClass(value=${_tableContext.className}Mgr.class, overrideMenuUrl=false)
+<#else>
     @ByPermissionClass(${_tableContext.className}Mgr.class)//在菜单类新建 ${_tableContext.className}Mgr 类后用import
-    @GetMapping
+</#if>
+    @GetMapping("${requestPath}")
     public Page<${entityClassName}> list(PageRequest pageRequest, ${entityClassName} ${_tableContext.propertyName}){
         Page<${entityClassName}> page = ${serviceImplPropertyName}.findPage(pageRequest.toPageObject(), ${_tableContext.propertyName});
         return page;
     }
     
+  <#if DUIEntityMeta.isTree()==true>
+    // 非懒加载
+    @ByPermissionClass(${_tableContext.className}Mgr.class)
+    @GetMapping(value="${requestPath}Tree")
+    public List<DefaultTreeModel> tree(){
+        List<DefaultTreeModel> trees = ${serviceImplPropertyName}.loadAsTree();
+        return trees;
+    }
+    
+    @ByPermissionClass(${_tableContext.className}Mgr.class)
+    @GetMapping(value="${requestPath}LoadTree")
+    public List<DefaultTreeModel> loadTree(${entityClassName} ${_tableContext.propertyName}){
+        List<DefaultTreeModel> trees = regionService.loadTreeDatas(${_tableContext.propertyName});
+        return trees;
+    }
+  </#if>
+    
     @ByPermissionClass(${_tableContext.className}Mgr.Create.class)
-    @PostMapping
+    @PostMapping("${requestPath}")
     public DataResult<${entityClassName}> create(<#list formFields as field><#rt>
                                                   <#if field.input.isFileType()==true><#t>
                                                     <#lt><#if !field.column.nullable>@RequestParam </#if>MultipartFile ${field.name}File, 
+                                                        <#assign hasFileFormField=true/><#t>
                                                   </#if><#t>
                                                 </#list><#t>
-                                                @Validated ${entityClassName} ${_tableContext.propertyName},
+                                                @Validated ${entityClassName} ${_tableContext.propertyName},<#if hasFileFormField==false><#lt></#if>
                                                 BindingResult br
                                                 ){
         ValidatorUtils.throwIfHasErrors(br, true);
@@ -113,14 +143,14 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     }
 
     @ByPermissionClass(${_tableContext.className}Mgr.class)
-    @GetMapping(value="{${idName}}")
+    @GetMapping(value="${requestPath}/{${idName}}")
     public ${entityClassName} get(@PathVariable("${idName}") ${idType} ${idName}){
         ${entityClassName} ${_tableContext.propertyName} = ${serviceImplPropertyName}.findById(${idName});
         return ${_tableContext.propertyName};
     }
     
     @ByPermissionClass(${_tableContext.className}Mgr.Update.class)
-    @PutMapping(value="{${idName}}")
+    @PutMapping(value="${requestPath}/{${idName}}")
     public DataResult<${entityClassName}> update(@PathVariable("${idName}") ${idType} ${idName}, 
                                                 <#list formFields as field><#t>
                                                   <#if field.input.isFileType()==true><#t>
@@ -137,13 +167,13 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
         ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
       </#if><#t>
     </#list><#t>
-        ${serviceImplPropertyName}.update(${_tableContext.propertyName});
+        ${serviceImplPropertyName}.dymanicUpdate(${_tableContext.propertyName});
         return DataResults.<${entityClassName}>success("保存成功！").data(${_tableContext.propertyName}).build();
     }
     
     
     @ByPermissionClass(${_tableContext.className}Mgr.Delete.class)
-    @DeleteMapping
+    @DeleteMapping("${requestPath}")
     public Result deleteBatch(${idType}[] ${idName}s){
         ${serviceImplPropertyName}.removeByIds(${idName}s);
         return DataResults.success("删除成功！").build();

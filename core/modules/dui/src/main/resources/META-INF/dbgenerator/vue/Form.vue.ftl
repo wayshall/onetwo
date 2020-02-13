@@ -56,6 +56,10 @@ export default {
         ${field.name}: [
           { required: true, trigger: 'blur', message: '${(field.label)!field.column.commentName}是必须的' }
         ]<#if field?counter != formFields.size()>,</#if>
+    <#else>
+        ${field.name}: [
+          { required: false }
+        ]<#if field?counter != formFields.size()>,</#if>
     </#if>
 </#list>
       },

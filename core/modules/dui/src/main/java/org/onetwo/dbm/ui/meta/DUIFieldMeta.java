@@ -1,7 +1,9 @@
 package org.onetwo.dbm.ui.meta;
 
 import org.onetwo.common.db.generator.meta.ColumnMeta;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.mapping.DbmMappedField;
+import org.onetwo.dbm.ui.annotation.DUIInput;
 import org.onetwo.dbm.ui.annotation.DUIInput.InputTypes;
 import org.onetwo.dbm.ui.annotation.DUISelect.NoEnums;
 import org.onetwo.dbm.ui.annotation.DUISelect.NoProvider;
@@ -45,7 +47,15 @@ public class DUIFieldMeta {
 	DUISelectMeta select;
 	DUIInputMeta input;
 	
-
+	/***
+	 * 横杠分割的名称
+	 * @author weishao zeng
+	 * @return
+	 */
+	public String getHorizontalBarName(){
+		return StringUtils.convertWithSeperator(getName(), "-");
+	}
+	
 	public String getFormDisabledValue() {
 		if (insertable && updatable) {
 			return "false";
@@ -65,7 +75,7 @@ public class DUIFieldMeta {
 		Class<? extends DUIJsonValueWriter<?>> valueWriter;
 		
 		public String getTypeName() {
-			return type.name().toLowerCase();
+			return type.name();
 		}
 		
 		public boolean hasValueWriter() {
@@ -75,6 +85,7 @@ public class DUIFieldMeta {
 		public boolean isFileType() {
 			return type!=null && type==InputTypes.FILE;
 		}
+		
 	}
 
 	@Data

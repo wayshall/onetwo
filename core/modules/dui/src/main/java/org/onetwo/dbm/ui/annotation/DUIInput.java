@@ -22,7 +22,12 @@ public @interface DUIInput {
 	
 	public enum InputTypes {
 		TEXT,
-		TEXTAREA,
-		FILE
+		TEXT_AREA,
+		FILE,
+		NUMBER,
+		DATE,
+		TIME,
+		DATE_TIME,
+		SWITCH
 	}
 }

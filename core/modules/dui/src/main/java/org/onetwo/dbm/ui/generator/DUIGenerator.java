@@ -424,6 +424,9 @@ public class DUIGenerator {
 		
 		public VuePageGenerator generateVueCrud(){
 			this.generateVueJsApi();
+			if (duiEntityMeta.isTree()) {
+				this.generateVueTree();
+			}
 			this.generateVueMgr();
 			this.generateVueMgrForm();
 			return this;
@@ -431,6 +434,12 @@ public class DUIGenerator {
 		
 		public VuePageGenerator generateVueMgr(){
 			String mgrPath = templateName+"/Mgr.vue.ftl";
+			tableGenerator.pageTemplate(mgrPath, vueFileNameFuncCreator.apply(mgrPath));
+			return this;
+		}
+		
+		public VuePageGenerator generateVueTree(){
+			String mgrPath = templateName+"/Tree.vue.ftl";
 			tableGenerator.pageTemplate(mgrPath, vueFileNameFuncCreator.apply(mgrPath));
 			return this;
 		}

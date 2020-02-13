@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +79,9 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 
 		@Override
 		public boolean isRootNode(T node, Map<Object, T> nodeMap) {
-			return rootIds.contains(node.getId()) || node.getParentId()==null;
+			return rootIds.contains(node.getId()) || 
+					node.getParentId()==null || 
+					(Number.class.isInstance(node.getParentId()) && ((Number)node.getParentId()).intValue()==0);
 		}
 		
 	}
@@ -145,10 +149,10 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 
 	public TreeBuilder<TM> rootIds(Object...objects) {
 //		this.rootIds = Arrays.asList(objects);
-		Collection<?> ids = CUtils.stripNull(Lists.newArrayList(objects));
-		if(ids.isEmpty())
+//		Collection<?> ids = CUtils.stripNull(Lists.newArrayList(objects));
+		if(LangUtils.isEmpty(objects))
 			return this;
-		this.rootNodeFunc = new RootIdsFunc<TM>(ids);
+		this.rootNodeFunc = new RootIdsFunc<TM>(objects);
 		return this;
 	}
 	

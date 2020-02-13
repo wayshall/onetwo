@@ -65,9 +65,25 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     @Email
     <#elseif column.isUrlType()>
     @URL
-    <#elseif column.isFileType>
-    @DUIInput(type=DUIInput.InputTypes.FILE)
+    <#elseif column.isFileType()>
     @JsonSerialize(using=ImageUrlJsonSerializer.class)
+    </#if>
+    <#if column.isFileType()==true>
+    @DUIInput(type=DUIInput.InputTypes.FILE)
+    <#elseif column.mapping.isSqlTimestamp()==true>
+    @DUIInput(type=DUIInput.InputTypes.DATE_TIME)
+    <#elseif column.mapping.isSqlTime()==true>
+    @DUIInput(type=DUIInput.InputTypes.TIME)
+    <#elseif column.mapping.isSqlDate()==true>
+    @DUIInput(type=DUIInput.InputTypes.DATE)
+    <#elseif column.mapping.isBooleanType()==true>
+    @DUIInput(type=DUIInput.InputTypes.SWITCH)
+    <#elseif column.mapping.isNumberType()==true>
+    @DUIInput(type=DUIInput.InputTypes.NUMBER)
+    <#else>
+        <#if column.columnSize gt 255>
+    @DUIInput(type=DUIInput.InputTypes.TEXT_AREA)
+        </#if>
     </#if>
     @DUIField(label = "${(column.comments[0])!''}", order = ${column?counter})
     ${column.mappingJavaClassLabel} ${column.propertyName};

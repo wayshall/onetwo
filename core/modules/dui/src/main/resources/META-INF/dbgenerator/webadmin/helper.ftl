@@ -9,38 +9,41 @@
           ${spaces}entity="${DUIEntityMeta.name}"
           ${spaces}field="${field.name}"/>
         <#assign hasSelectType=true/>
-      <#elseif field.column.mapping.isNumberType()==true>
+      <#elseif field.input.typeName=='NUMBER'>
         ${spaces}<el-input-number
           ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
-          ${spaces}:min="1" :max="10"
+          ${spaces}:min="1"
+          ${spaces}:max="10"
           ${spaces}label="${(field.label)!''}"
-          ${spaces}:disabled="${field.formDisabledValue}"
-          <#if field.column.mapping.isSqlFloat()==true> :precision="2"</#if>/>
-      <#elseif field.column.mapping.isSqlTimestamp()==true>
+          <#if field.column.mapping.isSqlFloat()==true>${spaces}:precision="2"</#if>
+          ${spaces}:disabled="${field.formDisabledValue}"/>
+      <#elseif field.input.typeName=='DATE_TIME'>
         ${spaces}<el-date-picker
           ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
           ${spaces}type="datetime"
          ${spaces} placeholder="选择日期时间">
         ${spaces}</el-date-picker>
-      <#elseif field.column.mapping.isSqlTime()==true>
+      <#elseif field.input.typeName=='TIME'>
         ${spaces}<el-time-picker
           ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
           ${spaces}placeholder="选择时间>
        ${spaces}</el-time-picker>
-      <#elseif field.column.mapping.isSqlDate()==true>
+      <#elseif field.input.typeName=='DATE'>
         ${spaces}<el-date-picker
           ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
           ${spaces}type="date"
           ${spaces}placeholder="选择日期">
         ${spaces}</el-date-picker>
-      <#elseif field.column.mapping.isBooleanType()==true>
+      <#elseif field.input.typeName=='SWITCH'>
         ${spaces}<el-switch
           ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
           ${spaces}active-color="#13ce66"
           ${spaces}inactive-color="#ff4949">
         ${spaces}</el-switch>
       <#elseif field.input.isFileType()==true>
-        ${spaces}<file-input v-model="${modelPrefix}.${field.name}File" :exist-file-path="${modelPrefix}.${field.name}"/>
+        ${spaces}<file-input
+                   ${spaces}v-model="${modelPrefix}.${field.name}File"
+                   ${spaces}:exist-file-path="${modelPrefix}.${field.name}"/>
         <#assign hasFileType=true/>
       <#elseif field.column.isAssociationType()==true>
         ${spaces}<el-input v-model="${modelPrefix}.${field.column.javaName}" placeholder="请输入${(field.label)!''}"/>

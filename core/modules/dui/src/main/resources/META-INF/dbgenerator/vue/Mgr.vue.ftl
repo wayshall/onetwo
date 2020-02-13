@@ -11,7 +11,9 @@
       ref="listTable"
       id-property="${table.primaryKey.javaName}"
       :list-api="listApi"
+<#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true>
       :query-form-model="queryFormModel"
+</#if>
       :refresh.sync="refreshTable"
       :delete-api="deleteApi"
       :operations="operations">
@@ -94,10 +96,22 @@ export default {
 </#if>
     ${formComponentName}
   },
+<#if DUIEntityMeta.isTree()==true>
+  props: {
+    ${DUIEntityMeta.treeGrid.parentField.name}: {
+      type: String,
+      required: false,
+      default: '${DUIEntityMeta.treeGrid.rootId}'
+    }
+  },
+</#if>
   data() {
     return {
-<#if searchableFields.isEmpty()==false>
+<#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true>
       queryFormModel: {
+  <#if DUIEntityMeta.isTree()==true>
+        ${DUIEntityMeta.treeGrid.parentField.name}: '',
+  </#if>
   <#list searchableFields as field>
     <#if !field.column.primaryKey>
         ${field.column.javaName}: '',
@@ -119,6 +133,14 @@ export default {
       ]
     }
   },
+<#if DUIEntityMeta.isTree()==true>
+  watch: {
+    ${DUIEntityMeta.treeGrid.parentField.name}: function(newValue) {
+      this.queryFormModel.${DUIEntityMeta.treeGrid.parentField.name} = newValue
+      this.refreshTable = true
+    }
+  },
+</#if>
   mounted: function() {
   },
   methods: {

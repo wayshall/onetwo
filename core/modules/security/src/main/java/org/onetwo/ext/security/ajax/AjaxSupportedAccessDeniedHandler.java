@@ -70,7 +70,7 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			
 			DataResult<?> rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).build();
 			String text = mapper.toJson(rs);
-			logger.info("[] AccessDenied, render json: {}", url, text);
+			logger.info("[{}] AccessDenied, render json: {}", url, text);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else if(!response.isCommitted() && StringUtils.isNotBlank(redirectErrorUrl)) {
 			String rurl = redirectErrorUrl;
