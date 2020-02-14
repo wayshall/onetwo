@@ -214,7 +214,7 @@ public abstract class StringUtils {
 	 * @author weishao zeng
 	 * @param str
 	 * @param op
-	 * @param isFirstUpper
+	 * @param isFirstUpper 是否把第一个字符转为大写
 	 * @return
 	 */
 	public static String toCamelWithoutConvert2LowerCase(String str, char op, boolean isFirstUpper) {
