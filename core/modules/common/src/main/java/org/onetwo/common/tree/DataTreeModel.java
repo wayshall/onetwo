@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @SuppressWarnings("serial")
 @JsonIgnoreProperties({"parent", "level", "index", "first", "last"})
-public class DataTreeModel extends DefaultTreeModel {
+public class DataTreeModel extends AbstractTreeModel<DataTreeModel> {
 	
 	private Object data;
 
