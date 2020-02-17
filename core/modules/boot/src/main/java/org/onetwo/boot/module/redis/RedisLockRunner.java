@@ -143,7 +143,7 @@ public class RedisLockRunner {
 			if(!locked){
 				if(lockFailAction!=null){
 					if(logger.isDebugEnabled()){
-						logger.debug("lock failed with key : {}. execute lockFailAction", lockKey);
+						logger.debug("try lock failed with key : {}. execute lockFailAction", lockKey);
 					}
 					return lockFailAction.get();
 				}
@@ -152,7 +152,7 @@ public class RedisLockRunner {
 				return null;
 			}
 			if(logger.isDebugEnabled()){
-				logger.debug("lock with key : {}, execute lock action", lockKey);
+				logger.debug("try lock success with key : {}, execute lock action", lockKey);
 			}
 			result = action.get();
 		} catch (Exception e) {
@@ -168,6 +168,28 @@ public class RedisLockRunner {
 		return result;
 	}
 
+	public <T> T lock(Supplier<T> action){
+		Lock lock = redisLockRegistry.obtain(lockKey);
+		T result = null;
+		try {
+			if(logger.isDebugEnabled()){
+				logger.debug("lock with key : {}", lockKey);
+			}
+			lock.lock();
+			if(logger.isDebugEnabled()){
+				logger.debug("locked with key : {}", lockKey);
+			}
+			result = action.get();
+		} catch (Exception e) {
+			handleException(e);
+		} finally{
+			lock.unlock();
+			if(logger.isDebugEnabled()){
+				logger.debug("unlock with key : {}", lockKey);
+			}
+		}
+		return result;
+	}
 	protected void handleException(Exception e){
 		if(errorHandler!=null){
 			errorHandler.accept(e);

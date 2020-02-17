@@ -132,7 +132,7 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	
 	
 	protected <T> CacheData<T> getCacheData(BoundValueOperations<Object, Object> ops, String cacheKey, Supplier<CacheData<T>> cacheLoader) {
-		return this.getRedisLockRunnerByKey(cacheKey).tryLock(() -> {
+		return this.getRedisLockRunnerByKey(cacheKey).tryLock(30L, TimeUnit.SECONDS, () -> {
 			//double check...
 			Object value = ops.get();
 			if (value!=null) {
@@ -155,15 +155,7 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 			}
 			
 			return cacheData;
-		}/*, ()->{
-			//如果锁定失败，则休息1秒，然后递归……
-			int retryLockInSeconds = 1;
-			if(logger.isWarnEnabled()){
-				logger.warn("obtain redis lock error, sleep {} seconds and retry...", retryLockInSeconds);
-			}
-			LangUtils.await(retryLockInSeconds);
-			return getCacheData(ops, cacheKey, cacheLoader);
-		}*/);
+		}, null);
 	}
 	
 
