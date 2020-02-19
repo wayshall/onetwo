@@ -1,6 +1,7 @@
 package org.onetwo.boot.core.web.service.impl;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.onetwo.boot.core.web.utils.SimpleMultipartFile;
@@ -42,7 +43,7 @@ public class SimpleBootCommonServiceTest {
 		CosFileStore storer = new CosFileStore(wrapper, cos);
 		SimpleBootCommonService common = new SimpleBootCommonService();
 		common.setFileStoreBaseDir("/test");
-		common.setFileStorer(storer);
+		common.setFileStorers(Arrays.asList(storer));
 		
 		SimpleMultipartFile upfile = new SimpleMultipartFile("test.png", file);
 		UploadOptions opts = UploadOptions.builder()		

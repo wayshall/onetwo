@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.web.service.impl.BootStoringFileContext;
 import org.onetwo.boot.module.alioss.OssClientWrapper.ObjectOperation;
 import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
@@ -20,6 +21,8 @@ import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
+ * Content-Type: application/octet-stream
+ * Content-Disposition: filename
  * @author wayshall
  * <br/>
  */
@@ -34,6 +37,11 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		this.wrapper = wrapper;
 		this.ossProperties = ossProperties;
 //		this.bucketName = ossProperties.getBucketName();
+	}
+	
+
+	public String getStoreType() {
+		return StoreType.ALIOSS.name().toLowerCase();
 	}
 
 	@Override

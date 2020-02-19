@@ -23,6 +23,10 @@ public class SimpleFileStorer implements FileStorer {
 	private String storeBaseDir;
 	private String appContextDir;
 	
+	public String getStoreType() {
+		return "local";
+	}
+	
 	@Override
 	public SimpleFileStoredMeta write(StoringFileContext context) {
 		SimpleFileStoredMeta meta = getStoreDir(context);

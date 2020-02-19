@@ -3,8 +3,11 @@ package org.onetwo.boot.core.web.service.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
+import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.FileStorerListener;
 import org.onetwo.boot.core.web.utils.UploadOptions;
@@ -26,7 +29,7 @@ public class SimpleBootCommonService implements BootCommonService {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
-	private FileStorer fileStorer;
+	private List<FileStorer> fileStorers;
 	
 	@Autowired(required=false)
 	private FileStorerListener fileStorerListener;
@@ -40,6 +43,8 @@ public class SimpleBootCommonService implements BootCommonService {
 	//少于等于0则一律不压缩
 //	private int compressThresholdSize = -1;
 	private CompressConfig compressConfig;
+	@Autowired
+	private BootSiteConfig siteConfig;
 	
 	/***
 	 * 上传的根目录
@@ -50,8 +55,22 @@ public class SimpleBootCommonService implements BootCommonService {
 		this.fileStoreBaseDir = fileStoreBaseDir;
 	}
 
-	public void setFileStorer(FileStorer fileStorer) {
-		this.fileStorer = fileStorer;
+//	public void setFileStorer(FileStorer fileStorer) {
+//		this.fileStorer = fileStorer;
+//	}
+
+	
+	protected FileStorer getFileStorer() {
+		StoreType type = siteConfig.getUpload().getStoreType();
+		return this.getFileStorer(type);
+	}
+	
+	protected FileStorer getFileStorer(StoreType storeType) {
+		return this.fileStorers.stream().filter(st -> {
+			return st.getStoreType().equals(storeType.name().toLowerCase());
+		}).findAny().orElseThrow(()-> {
+			return new BaseException("file store not found: " + storeType.name());
+		});
 	}
 
 
@@ -131,7 +150,12 @@ public class SimpleBootCommonService implements BootCommonService {
 //		context.setStoreFilePathStrategy(storeFilePathStrategy);
 		context.setKey(options.getKey());
 		context.setWaterMaskConfig(options.getWaterMaskConfig());
-		FileStoredMeta meta = fileStorer.write(context);
+		
+		StoreType type = options.getStoreType();
+		if (type==null) {
+			type = siteConfig.getUpload().getStoreType();
+		}
+		FileStoredMeta meta = getFileStorer(type).write(context);
 		if(fileStorerListener!=null){
 			fileStorerListener.afterFileStored(meta);
 		}
@@ -140,15 +164,19 @@ public class SimpleBootCommonService implements BootCommonService {
 	
 	
 	public void readFileTo(String accessablePath, OutputStream output){
-		this.fileStorer.readFileTo(accessablePath, output);
+		this.getFileStorer().readFileTo(accessablePath, output);
 	}
 	
 	public void delete(String key) {
-		this.fileStorer.delete(key);
+		this.getFileStorer().delete(key);
 	}
 
 	public void setCompressConfig(CompressConfig compressConfig) {
 		this.compressConfig = compressConfig;
+	}
+
+	public void setFileStorers(List<FileStorer> fileStorers) {
+		this.fileStorers = fileStorers;
 	}
 	
 }

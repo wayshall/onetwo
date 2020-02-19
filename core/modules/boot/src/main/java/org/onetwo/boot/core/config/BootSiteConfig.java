@@ -248,7 +248,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		 * 如果设置了值，则会把上传目录映射到对应的访问路径，如：/upload/**
 		 */
 		String accessPathPatterns;
-//		StoreType storeType = StoreType.LOCAL;
+		StoreType storeType = StoreType.LOCAL;
 		/***
 		 * 如果是local存储，可以写绝对路径，如：/data/upload/cms；
 		 * 如果是云存储，可以看做是系统模块名称，如：cms
@@ -323,7 +323,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static enum StoreType {
 		LOCAL,
 		FTP,
-		ALI_OSS;
+		ALIOSS,
+		COS;
 		
 		public static StoreType of(String str){
 			if(StringUtils.isBlank(str)){

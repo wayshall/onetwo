@@ -8,6 +8,8 @@ import org.onetwo.common.utils.StringUtils;
 
 public interface FileStorer {
 	
+	String getStoreType();
+	
 	default String defaultStoreKey(StoringFileContext context) {
 		String dir = StringUtils.emptyIfNull(context.getFileStoreBaseDir());
 		if (StringUtils.isNotBlank(context.getModule())) {

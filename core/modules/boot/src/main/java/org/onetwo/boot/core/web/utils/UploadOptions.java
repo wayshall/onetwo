@@ -1,6 +1,7 @@
 package org.onetwo.boot.core.web.utils;
 
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +48,10 @@ public class UploadOptions {
 	 * 如果指定了key，会覆盖
 	 */
 	final private String key;
+
+	@Setter
+	@Getter
+	StoreType storeType;
 	
 	public UploadOptions(String module, MultipartFile multipartFile) {
 		this(null, module, multipartFile);

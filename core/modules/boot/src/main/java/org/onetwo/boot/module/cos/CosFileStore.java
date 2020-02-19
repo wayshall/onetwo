@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
@@ -30,6 +31,11 @@ public class CosFileStore implements FileStorer, InitializingBean {
 		this.bucketName = ossProperties.getAppBucketName();
 	}
 
+
+	public String getStoreType() {
+		return StoreType.COS.name().toLowerCase();
+	}
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.wrapper.createBucketIfNotExists(cosProperties.getAppBucketName());
