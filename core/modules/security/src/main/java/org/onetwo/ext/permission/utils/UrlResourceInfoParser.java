@@ -16,6 +16,9 @@ import com.google.common.collect.Lists;
 
 public class UrlResourceInfoParser {
 	
+	public static final String URL_JOINER = ",";
+	public static final String METHOD_URL_SPILITOR = "|";
+	
 	private Expression pathParamExpression = new SimpleExpression("{", "}", new ValueProvider() {
 		@Override
 		public String findString(String var) {
@@ -32,7 +35,7 @@ public class UrlResourceInfoParser {
 		if(StringUtils.isBlank(source))
 			return Lists.newArrayList();
 		
-		Iterable<String> it = Splitter.on(",")
+		Iterable<String> it = Splitter.on(URL_JOINER)
 										.trimResults()
 										.omitEmptyStrings()
 										.split(source);
@@ -48,8 +51,8 @@ public class UrlResourceInfoParser {
 	 * @return
 	 */
 	private UrlResourceInfo parseToUrlResourceInfo(String source){
-		Assert.hasText(source);
-		Iterable<String> it = Splitter.on("|")
+		Assert.hasText(source, "source must has text");
+		Iterable<String> it = Splitter.on(METHOD_URL_SPILITOR)
 								.trimResults()
 								.omitEmptyStrings()
 								.split(source);
@@ -68,7 +71,7 @@ public class UrlResourceInfoParser {
 		List<String> list = urlResourceInfo.stream()
 							.map(res->parseToString(res))
 							.collect(Collectors.toList());
-		return Joiner.on(", ").join(list);
+		return Joiner.on(URL_JOINER).join(list);
 	}
 
 	private String parseToString(UrlResourceInfo info) {
@@ -76,7 +79,7 @@ public class UrlResourceInfoParser {
 		if(StringUtils.isBlank(info.getMethod())){
 			return url;
 		}
-		return info.getMethod() + "|" + appendStarPostfix(url);
+		return info.getMethod() + METHOD_URL_SPILITOR + appendStarPostfix(url);
 	}
 
 	private String appendStarPostfix(String url){

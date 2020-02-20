@@ -263,6 +263,10 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		private List<UrlResourceInfo> urlResourceInfo;
 		private Integer sort;
 		private String authorityName;
+		
+		public List<UrlResourceInfo> getUrlResourceInfo() {
+			return this.urlResourceInfo;
+		}
 	}
 
 	@Data

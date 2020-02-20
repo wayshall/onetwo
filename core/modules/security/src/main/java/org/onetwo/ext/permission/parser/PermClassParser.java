@@ -10,6 +10,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.ext.permission.api.PermissionType;
@@ -17,6 +18,7 @@ import org.onetwo.ext.permission.api.annotation.MenuMapping;
 import org.onetwo.ext.permission.api.annotation.PermissionMeta;
 import org.onetwo.ext.permission.api.annotation.PermissionMetaData;
 import org.onetwo.ext.permission.api.annotation.ProxyMenu;
+import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 import org.springframework.core.annotation.AnnotationUtils;
 
 public class PermClassParser {
@@ -228,9 +230,14 @@ public class PermClassParser {
 	}
 	public String getResourcesPattern(){
 		if (permissionMeta!=null) {
-			return permissionMeta.resourcesPattern();
+			String resourcePatterns = GuavaUtils.join(permissionMeta.resourcesPattern(), UrlResourceInfoParser.URL_JOINER);
+			return resourcePatterns;
 		}
-		return getFieldValue(RESOURCES_PATTERN, String.class, null);
+		String[] resourcePatterns = getFieldValue(RESOURCES_PATTERN, String[].class, null);
+		if (resourcePatterns==null || resourcePatterns.length==0) {
+			return null;
+		}
+		return GuavaUtils.join(permissionMeta.resourcesPattern(), UrlResourceInfoParser.URL_JOINER);
 	}
 	
 	public String getMenuCssClass(){

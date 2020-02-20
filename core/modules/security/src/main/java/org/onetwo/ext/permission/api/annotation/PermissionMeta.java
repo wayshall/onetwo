@@ -48,7 +48,7 @@ public @interface PermissionMeta {
 	 * @author weishao zeng
 	 * @return
 	 */
-	String resourcesPattern() default "";
+	String[] resourcesPattern() default {};
 	
 	String name() default "";
 	
