@@ -81,6 +81,7 @@ public class DUIGenerator {
 	private Map<String, Object> context = Maps.newHashMap();
 	
 	private boolean configured;
+	private boolean overrideExistFile = true;
 	
 	public DUIGenerator(DbGenerator dbGenerator) {
 		super();
@@ -134,6 +135,7 @@ public class DUIGenerator {
 			dbGenerator.stripTablePrefix(stripTablePrefix)
 			.globalConfig()
 				.projectPath(projectPath)
+				.overrideExistFile(overrideExistFile)
 //				.pageFileBaseDir(pageFileBaseDir)
 				.resourceDir(resourceDir)
 				.javaSrcDir(javaSrcDir)
@@ -189,6 +191,11 @@ public class DUIGenerator {
 	public DUIGenerator stripTablePrefix(String stripTablePrefix) {
 		this.checkConfigured("stripTablePrefix");
 		this.stripTablePrefix = stripTablePrefix;
+		return this;
+	}
+	public DUIGenerator overrideExistFile(boolean overrideExistFile) {
+		this.checkConfigured("overrideExistFile");
+		this.overrideExistFile = overrideExistFile;
 		return this;
 	}
 

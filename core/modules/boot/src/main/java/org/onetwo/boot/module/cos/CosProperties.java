@@ -1,13 +1,13 @@
 package org.onetwo.boot.module.cos;
 
-import lombok.Data;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.region.Region;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -82,10 +82,12 @@ public class CosProperties {
 
 	public static String buildUrl(boolean https, String endpoint, String bucketName, String key){
 		StringBuilder url = new StringBuilder(https?"https":"http");
-		url.append("://")
-			.append(bucketName)
-			.append(".")
-			.append(endpoint)
+		url.append("://");
+		if (!endpoint.startsWith(bucketName)) {
+			url.append(bucketName)
+				.append(".");
+		}
+		url.append(endpoint)
 			.append(key);
 		return url.toString();
 	}

@@ -49,8 +49,8 @@ export function loadTree(data) {
     params: data
   })
 }
-</#if>
 
+</#if>
 export function add(data) {
   return request.post('${requestPath}.json', data<#if DUIEntityMeta.hasFileField()==true>, {
     headers: {

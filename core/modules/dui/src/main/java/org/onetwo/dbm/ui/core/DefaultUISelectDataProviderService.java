@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.mapping.DbmEnumValueMapping;
 import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.ui.exception.DbmUIException;
 import org.onetwo.dbm.ui.meta.DUIEntityMeta;
@@ -62,7 +63,15 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		Object compareValue = value;
 		if (uiselect.useEnumData()) {
 			DbmMappedField dbmField = uiselect.getField().getDbmField();
-			compareValue = dbmField.getEnumType().forStore(dbmField, compareValue);
+			BeanWrapper bw = SpringUtils.newBeanWrapper(value);
+			if (dbmField.getEnumType()!=null) {
+				compareValue = dbmField.getEnumType().forStore(dbmField, compareValue);
+			} else if (value instanceof DbmEnumValueMapping) {
+				compareValue = ((DbmEnumValueMapping<?>)value).getEnumMappingValue();
+				
+			} else if (bw.isReadableProperty("value")) {
+				compareValue = bw.getPropertyValue("value");
+			}
 		}
 		return compareValue;
 	}
