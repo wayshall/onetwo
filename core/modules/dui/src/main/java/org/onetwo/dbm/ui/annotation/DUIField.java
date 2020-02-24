@@ -26,5 +26,5 @@ public @interface DUIField {
 	boolean listable() default true;
 	boolean insertable() default true;
 	boolean updatable() default true;
-	int order() default 1;
+	int order() default 100;
 }

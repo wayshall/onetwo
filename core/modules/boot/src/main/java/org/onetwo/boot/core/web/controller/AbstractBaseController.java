@@ -339,7 +339,7 @@ abstract public class AbstractBaseController {
 			if (jwtUser.isAnonymousLogin()) {
 				if (throwIfNotFound) {
 //					throw new BaseException("current login user is anonymous").put("userName", jwtUser.getUserName());
-					throw new NotLoginException(JwtErrors.CM_ANONYMOUS_USER);
+					throw new NotLoginException(JwtErrors.CM_NOT_LOGIN_ANONYMOUS);
 				} else if (JwtUserDetail.class==clazz) {
 					return clazz.cast(jwtUser);
 				}
