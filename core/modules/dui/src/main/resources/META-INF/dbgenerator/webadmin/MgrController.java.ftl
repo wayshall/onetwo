@@ -115,7 +115,7 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     @ByPermissionClass(${_tableContext.className}Mgr.class)
     @GetMapping(value="${requestPath}LoadTree")
     public List<DefaultTreeModel> loadTree(${entityClassName} ${_tableContext.propertyName}){
-        List<DefaultTreeModel> trees = regionService.loadTreeDatas(${_tableContext.propertyName});
+        List<DefaultTreeModel> trees = ${serviceImplPropertyName}.loadTreeDatas(${_tableContext.propertyName});
         return trees;
     }
   </#if>

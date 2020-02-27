@@ -217,6 +217,7 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			DUIFieldMeta parentField = entityMeta.getField(treeGridAnno.parentField());
 			treeGrid.setParentField(parentField);
 			treeGrid.setRootId(treeGridAnno.rootId());
+			treeGrid.setStyle(treeGridAnno.style());
 			entityMeta.setTreeGrid(treeGrid);
 		}
 		
@@ -241,6 +242,7 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 										.listable(uifield.listable())
 										.updatable(uifield.updatable())
 										.searchable(uifield.searchable())
+										.defaultValue(uifield.defaultValue())
 										.dbmField(field)
 										.order(uifield.order())
 										.build();

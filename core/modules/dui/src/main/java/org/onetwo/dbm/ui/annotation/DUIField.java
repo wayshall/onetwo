@@ -27,4 +27,6 @@ public @interface DUIField {
 	boolean insertable() default true;
 	boolean updatable() default true;
 	int order() default 100;
+	
+	String defaultValue() default "";
 }

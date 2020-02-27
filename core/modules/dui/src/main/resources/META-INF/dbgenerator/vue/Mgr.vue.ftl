@@ -10,6 +10,7 @@
     <layout-table
       ref="listTable"
       id-property="${table.primaryKey.javaName}"
+      @batchDeleted="onBatchDeleted"
       :list-api="listApi"
 <#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true>
       :query-form-model="queryFormModel"
@@ -150,6 +151,9 @@ export default {
       this.$refs.${table.propertyName}Form.$refs.dataForm.resetFields()
       this.dataForm.visible = false
       return true
+    },
+    onBatchDeleted(ids) {
+      this.$emit('batchDeleted', ids)
     },
     on${_tableContext.className}Finish() {
       this.refreshTable = true

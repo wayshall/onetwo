@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.db.generator.meta.TableMeta;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.ui.annotation.DUICascadeEditable;
 import org.onetwo.dbm.ui.annotation.NullDUIJsonValueWriter;
@@ -110,6 +111,10 @@ public class DUIEntityMeta {
 	
 	public Collection<DUIFieldMeta> getFormFields() {
 		return getFields().stream().filter(f -> f.isInsertable() || f.isUpdatable()).collect(Collectors.toList());
+	}
+	
+	public Collection<DUIFieldMeta> getHasDefaultFields() {
+		return getFields().stream().filter(f -> StringUtils.isNotBlank(f.getDefaultValue())).collect(Collectors.toList());
 	}
 
 

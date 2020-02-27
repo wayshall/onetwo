@@ -16,4 +16,19 @@ public @interface DUITreeGrid {
 	
 	String parentField() default "";
 	String rootId() default "0";
+	
+	TreeStyles style() default TreeStyles.CHIDREN_ON_RIGHT;
+	
+	public enum TreeStyles {
+		/***
+		 * 右边显示当前节点的子节点列表
+		 */
+		CHIDREN_ON_RIGHT,
+		/***
+		 * 右边显示当前节点的级联数据列表
+		 */
+		CASCADE_ON_RIGHT,
+		
+	}
+	
 }
