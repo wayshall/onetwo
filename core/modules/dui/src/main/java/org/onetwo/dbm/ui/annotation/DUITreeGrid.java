@@ -19,6 +19,8 @@ public @interface DUITreeGrid {
 	
 	TreeStyles style() default TreeStyles.CHIDREN_ON_RIGHT;
 	
+	Class<?> cascadeEntity() default void.class;
+	
 	public enum TreeStyles {
 		/***
 		 * 右边显示当前节点的子节点列表

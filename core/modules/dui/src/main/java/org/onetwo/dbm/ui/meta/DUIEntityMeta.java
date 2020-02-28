@@ -53,9 +53,17 @@ public class DUIEntityMeta {
 	private String cascadeField;
 	
 	private DUITreeGridMeta treeGrid;
+	String stripPrefix;
 	
 	public boolean isTree() {
 		return treeGrid!=null;
+	}
+	
+	public void setStripPrefix(String stripPrefix) {
+		this.stripPrefix = stripPrefix;
+		if (this.table!=null) {
+			this.table.setStripPrefix(stripPrefix);
+		}
 	}
 	
 	public Class<?> getEntityClass() {

@@ -16,8 +16,15 @@ public class DUITreeGridMeta {
 	
 	TreeStyles style;
 	
+	Class<?> cascadeEntity;
+	DUIEntityMeta cascadeEntityMeta;
+	
 	public boolean isCascadeOnRightStyle() {
 		return style!=null && style==TreeStyles.CASCADE_ON_RIGHT;
+	}
+	
+	public boolean hasCascadeEntity() {
+		return cascadeEntity!=null;
 	}
 	
 }

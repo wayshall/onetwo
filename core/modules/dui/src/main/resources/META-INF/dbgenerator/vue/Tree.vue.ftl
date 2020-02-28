@@ -64,6 +64,7 @@ import * as ${apiName} from '@/api/${vueModuleName}/${apiName}'
 import ${_tableContext.propertyName} from './${_tableContext.propertyName}'
 <#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
 import ${_tableContext.propertyName}Form from './${_tableContext.propertyName}Form'
+import ${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName}List from './${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName}List'
 </#if>
 
 export default {
@@ -71,6 +72,7 @@ export default {
   components: {
 <#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
     ${_tableContext.propertyName}Form,
+    ${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName}List,
 </#if>
     ${_tableContext.propertyName}
   },
