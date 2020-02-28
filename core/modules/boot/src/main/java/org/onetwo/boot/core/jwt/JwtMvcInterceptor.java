@@ -39,7 +39,7 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 			if(e instanceof ServiceException){
 				throw (ServiceException)e;
 			}
-			throw new ServiceException(JwtErrors.CM_LOGIN_UNKNOW_ERR, e);
+			throw new ServiceException(JwtErrors.CM_NOT_LOGIN_UNKNOW, e);
 		}
 		
 		if(!userOpt.isPresent()){

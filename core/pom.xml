@@ -39,9 +39,15 @@
        <profile>
            <id>microcloud</id>
 			<modules>
+<<<<<<< HEAD
                 <module>modules/boot</module>
                 <module>../../dbm</module>
                 <module>modules/dui</module>
+=======
+                <module>../../dbm</module>
+                <module>modules/dui</module>
+                <module>../../onetwo-wechat</module>
+>>>>>>> 9db93dcb5077dd046971e7df9cfa0f30676420bd
 			</modules>
            <build>
               <plugins>

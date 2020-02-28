@@ -48,65 +48,16 @@
   </#list>
     </layout-table>
 
-    <el-dialog
-      title="${DUIEntityMeta.label}管理"
-      :visible.sync="dataForm.visible"
-      :close-on-click-modal="false"
-      :before-close="handleClose">
-      <el-tabs
-        type="border-card"
-        v-model="currentTabName">
-        <el-tab-pane
-          label="${DUIEntityMeta.label}编辑"
-          name="dataFormTab">
-          <${table.propertyName}-form
-            ref="${table.propertyName}Form"
-            :status-mode="dataForm.status"
-            :data-id="dataForm.dataId"
-            @finishHandle="on${_tableContext.className}Finish"/>
-        </el-tab-pane>
-    <#if DUIEntityMeta.editableEntities??>    
-      <#list DUIEntityMeta.editableEntities as editableEntity>
-        <el-tab-pane label="${editableEntity.label}" v-if="dataForm.status === 'Edit'">
-          <${editableEntity.table.horizontalBarName}-form
-            :status-mode="dataForm.status"
-            :data-id="dataForm.row['${editableEntity.cascadeField}'] || ''"/>
-        </el-tab-pane>
-      </#list>
-    </#if>
-      </el-tabs>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import * as ${apiName} from '@/api/${vueModuleName}/${apiName}'
-import ${formComponentName} from './${formComponentName}'
-<#if DUIEntityMeta.editableEntities??>    
-<#list DUIEntityMeta.editableEntities as editableEntity>
-import ${editableEntity.table.propertyName}Form from './${editableEntity.table.propertyName}Form'
-</#list>
-</#if>
 
 export default {
-  name: '${_tableContext.className}',
+  name: '${_tableContext.className}List',
   components: {
-<#if DUIEntityMeta.editableEntities??>   
-<#list DUIEntityMeta.editableEntities as editableEntity>
-    ${editableEntity.table.propertyName}Form,
-</#list>
-</#if>
-    ${formComponentName}
   },
-<#if DUIEntityMeta.isTree()==true>
-  props: {
-    ${DUIEntityMeta.treeGrid.parentField.name}: {
-      type: String,
-      required: false,
-      default: '${DUIEntityMeta.treeGrid.rootId}'
-    }
-  },
-</#if>
   data() {
     return {
 <#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true>
@@ -130,9 +81,7 @@ export default {
       },
       refreshTable: false,
       currentTabName: 'dataFormTab',
-      operations: [
-        { action: 'edit', text: '编辑', handler: this.handleEdit }
-      ]
+      operations: null
     }
   },
 <#if DUIEntityMeta.isTree()==true>
@@ -169,20 +118,6 @@ export default {
       } else if (command === 'delete') {
         this.$refs.listTable.handleDelete([data.row.${table.primaryKey.javaName}])
       }
-    },
-    handleAdd() {
-      this.dataForm.status = 'Add'
-      this.dataForm.visible = true
-      this.dataForm.row = {}
-      this.dataForm.dataId = ''
-      this.currentTabName = 'dataFormTab'
-    },
-    handleEdit(row) {
-      this.dataForm.status = 'Edit'
-      this.dataForm.visible = true
-      this.dataForm.row = row
-      this.dataForm.dataId = row.${table.primaryKey.javaName}
-      this.currentTabName = 'dataFormTab'
     }
   }
 }

@@ -53,9 +53,6 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     /***
      * ${(column.comments[0])!''}
      */
-    <#if column.primaryKey == false && !column.nullable>
-    @NotNull
-    </#if>
     <#if column.isJsonType()>
     @org.onetwo.dbm.annotation.DbmJsonField
     <#elseif column.mapping.isStringType()>

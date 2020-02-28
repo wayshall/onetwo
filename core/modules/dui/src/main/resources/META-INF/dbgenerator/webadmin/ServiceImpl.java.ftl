@@ -17,6 +17,7 @@
 
 package ${_globalConfig.getJavaLocalPackage(_tableContext.localPackage)};
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.utils.Page;
 import org.onetwo.dbm.core.internal.DbmCrudServiceImpl;
@@ -59,7 +60,7 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
     }
     
     public List<DefaultTreeModel> loadTreeDatas(${entityClassName} ${_tableContext.propertyName}) {
-        List<RegionEntity> treeList = this.baseEntityManager.from(${entityClassName}.class)
+        List<${entityClassName}> treeList = this.baseEntityManager.from(${entityClassName}.class)
                                                             .where()
                                                                 .addFields(${_tableContext.propertyName})
                                                             .end()
@@ -83,6 +84,15 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
                                 .page(page);
     }
     
+    public ${entityClassName} save(${entityClassName} entity) {
+      <#list DUIEntityMeta.hasDefaultFields as field>
+        if (entity.get${field.column.capitalizePropertyName}()==null) {
+            entity.set${field.column.capitalizePropertyName}(Types.asValue("${field.defaultValue}", ${field.column.mappingJavaClassLabel}.class));
+        }
+      </#list>
+        baseEntityManager.persist(entity);
+        return entity;
+    }
     
     @Transactional
     @Override

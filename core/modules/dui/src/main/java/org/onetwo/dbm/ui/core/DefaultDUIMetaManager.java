@@ -157,6 +157,10 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			if (!LangUtils.isEmpty(cascadeEditableList)) {
 				buildEditableEntities(entityMeta);
 			}
+			if (entityMeta.getTreeGrid()!=null && entityMeta.getTreeGrid().hasCascadeEntity()) {
+				DUIEntityMeta editableMeta = get(entityMeta.getTreeGrid().getCascadeEntity());
+				entityMeta.getTreeGrid().setCascadeEntityMeta(editableMeta);
+			}
 			return entityMeta;
 		} catch (Exception e) {
 			if (e.getCause() instanceof BaseException) {
@@ -217,6 +221,10 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			DUIFieldMeta parentField = entityMeta.getField(treeGridAnno.parentField());
 			treeGrid.setParentField(parentField);
 			treeGrid.setRootId(treeGridAnno.rootId());
+			treeGrid.setStyle(treeGridAnno.style());
+			if (treeGridAnno.cascadeEntity()!=void.class) {
+				treeGrid.setCascadeEntity(treeGridAnno.cascadeEntity());
+			}
 			entityMeta.setTreeGrid(treeGrid);
 		}
 		
@@ -241,6 +249,7 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 										.listable(uifield.listable())
 										.updatable(uifield.updatable())
 										.searchable(uifield.searchable())
+										.defaultValue(uifield.defaultValue())
 										.dbmField(field)
 										.order(uifield.order())
 										.build();

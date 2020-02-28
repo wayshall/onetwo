@@ -201,14 +201,16 @@ public class DUIGenerator {
 
 	public WebadminGenerator webadminGenerator(String tableName){
 		DbTableGenerator tableGenerator = dbGenerator.table(tableName);
+		WebadminGenerator webadmin = new WebadminGenerator();
 		
 		Optional<DUIEntityMeta> duiEntityMeta = getDUIEntityMeta(tableName);
 		if (duiEntityMeta.isPresent()) {
-			tableGenerator.context().put("DUIEntityMeta", duiEntityMeta.get());
+			webadmin.duiEntityMeta = duiEntityMeta.get();
+			webadmin.duiEntityMeta.setStripPrefix(stripTablePrefix);
 		}
 		
-		WebadminGenerator webadmin = new WebadminGenerator();
 		webadmin.tableGenerator = tableGenerator;
+		webadmin.initGenerator();
 		this.webadmins.add(webadmin);
 		return webadmin;
 	}
@@ -300,8 +302,10 @@ public class DUIGenerator {
 		}
 		
 		public void generate(Map<String, Object> context){
-			if(context!=DUIGenerator.this.context){
-				DUIGenerator.this.context.putAll(context);
+			Map<String, Object> gcontext = Maps.newHashMap();
+			gcontext.putAll(DUIGenerator.this.context);
+			if (context!=null) {
+				gcontext.putAll(context);
 			}
 			if(!webadmins.isEmpty()){
 				List<GeneratedResult<File>> resullt = dbGenerator.generate(context);
@@ -313,7 +317,14 @@ public class DUIGenerator {
 	public class WebadminGenerator {
 		private String templateName = templateBasePath + "webadmin";
 		private DbTableGenerator tableGenerator;
+		private DUIEntityMeta duiEntityMeta;
 //		private VuePageGenerator vueGenerator;
+		
+		public void initGenerator() {
+			if (duiEntityMeta!=null) {
+				tableGenerator.context().put("DUIEntityMeta", duiEntityMeta);
+			}
+		}
 		
 		public WebadminGenerator generateServiceImpl(){
 			tableGenerator.serviceImplTemplate(templateName+"/ServiceImpl.java.ftl");
@@ -374,6 +385,8 @@ public class DUIGenerator {
 		String vueModuleName;
 		DUIEntityMeta duiEntityMeta;
 		
+//		VuePageGenerator cascadeEntityGenerator;
+		
 		public void initGenerator() {
 			tableGenerator.context().put("vueModuleName", vueModuleName);
 			tableGenerator.context().put("DUIEntityMeta", duiEntityMeta);
@@ -433,6 +446,11 @@ public class DUIGenerator {
 			this.generateVueJsApi();
 			if (duiEntityMeta.isTree()) {
 				this.generateVueTree();
+				if (duiEntityMeta.getTreeGrid().isCascadeOnRightStyle()) {
+					VuePageGenerator cascadeEntityGenerator = vueGenerator(duiEntityMeta.getTreeGrid().getCascadeEntity(), vueModuleName);
+					cascadeEntityGenerator.generateVueJsApi()
+										.generateVueList();
+				}
 			}
 			this.generateVueMgr();
 			this.generateVueMgrForm();
@@ -441,6 +459,12 @@ public class DUIGenerator {
 		
 		public VuePageGenerator generateVueMgr(){
 			String mgrPath = templateName+"/Mgr.vue.ftl";
+			tableGenerator.pageTemplate(mgrPath, vueFileNameFuncCreator.apply(mgrPath));
+			return this;
+		}
+		
+		public VuePageGenerator generateVueList(){
+			String mgrPath = templateName+"/List.vue.ftl";
 			tableGenerator.pageTemplate(mgrPath, vueFileNameFuncCreator.apply(mgrPath));
 			return this;
 		}

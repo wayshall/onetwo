@@ -15,7 +15,7 @@
           ${spaces}:min="1"
           ${spaces}:max="10"
           ${spaces}label="${(field.label)!''}"
-          <#if field.column.mapping.isSqlFloat()==true>${spaces}:precision="2"</#if>
+          <#if field.column.mapping.isSqlFloat()==true>${spaces}:precision="2"</#if><#t/>
           ${spaces}:disabled="${field.formDisabledValue}"/>
       <#elseif field.input.typeName=='DATE_TIME'>
         ${spaces}<el-date-picker

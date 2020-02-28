@@ -3,7 +3,6 @@ package org.onetwo.dbm.ui.meta;
 import org.onetwo.common.db.generator.meta.ColumnMeta;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.mapping.DbmMappedField;
-import org.onetwo.dbm.ui.annotation.DUIInput;
 import org.onetwo.dbm.ui.annotation.DUIInput.InputTypes;
 import org.onetwo.dbm.ui.annotation.DUISelect.NoEnums;
 import org.onetwo.dbm.ui.annotation.DUISelect.NoProvider;
@@ -43,6 +42,8 @@ public class DUIFieldMeta {
 	boolean updatable;
 	boolean searchable;
 	int order;
+	
+	String defaultValue;
 	
 	DUISelectMeta select;
 	DUIInputMeta input;

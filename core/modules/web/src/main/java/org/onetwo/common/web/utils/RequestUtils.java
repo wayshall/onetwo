@@ -127,21 +127,17 @@ public final class RequestUtils {
 	public static String getRemoteAddr(HttpServletRequest request) {
 
 		String ip = request.getHeader("X-Real-IP");
-		
+
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("X-Forwarded-For");
-		}
-		
-		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
-			ip = request.getHeader("X-Forwarded-Host");//
 		}
 
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
-
+		
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
-			ip = request.getHeader("WL-Proxy-Client-IP");
+			ip = request.getHeader("X-Forwarded-Host");//
 		}
 
 		if (StringUtils.isBlank(ip)|| UNKNOWN.equalsIgnoreCase(ip)) {
