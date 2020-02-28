@@ -448,8 +448,7 @@ public class DUIGenerator {
 				this.generateVueTree();
 				if (duiEntityMeta.getTreeGrid().isCascadeOnRightStyle()) {
 					VuePageGenerator cascadeEntityGenerator = vueGenerator(duiEntityMeta.getTreeGrid().getCascadeEntity(), vueModuleName);
-					cascadeEntityGenerator.generateVueJsApi()
-										.generateVueList();
+					cascadeEntityGenerator.generateVueCrud();
 				}
 			}
 			this.generateVueMgr();

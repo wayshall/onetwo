@@ -5,74 +5,66 @@
 <#assign moduleName="${_globalConfig.getModuleName()}"/>
 <#assign searchableFields=DUIEntityMeta.searchableFields/>
 <template>
-  <div class="app-container">
-    <el-row :gutter="20">
-      <el-col :span="8">
-        <el-container>
-          <el-header>
-            ${DUIEntityMeta.label}管理
-            <el-dropdown @command="handleDropMenu">
-              <i class="el-icon-setting" style="margin-right: 15px"></i>
-              <el-dropdown-menu slot="dropdown">
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-header>
-          <el-main>
-            <el-tree
-              :data="treeList"
-              @node-click="handleNodeClick"
-              node-key="${table.primaryKey.propertyName}"
-              lazy
-            <#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
-              :render-content="renderTreeNodeButton"
-            </#if>
-              :load="loadTree"
-              :expand-on-click-node="false"
-              :default-expand-all="false">
-            </el-tree>
-          </el-main>
-        </el-container>
-      </el-col>
-      <el-col :span="16">
-        <el-container>
-          <el-header>{{ detailTitle }}</el-header>
-          <el-main>
-            <${table.horizontalBarName}
-              :${DUIEntityMeta.treeGrid.parentField.horizontalBarName}="queryModel.${DUIEntityMeta.treeGrid.parentField.name}"
-              @batchDeleted="onNodeDatasBatchDeleted"/>
-          </el-main>
-        </el-container>
-      </el-col>
-    </el-row>
+  <el-container style="height: 500px; border: 1px solid #eee">
+
+    <el-aside
+      width="200px"
+      style="margin-top:20px;background-color: rgb(238, 241, 246)">
+      <el-tree
+        :data="treeList"
+        @node-click="handleNodeClick"
+        node-key="${table.primaryKey.propertyName}"
+        lazy
+      <#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
+        :render-content="renderTreeNodeButton"
+      </#if>
+        :load="loadTree"
+        :expand-on-click-node="false"
+        :default-expand-all="false">
+      </el-tree>
+    </el-aside>
+
+    <el-container>
+      <el-main>
+      <#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
+        <${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.horizontalBarName}
+          :${DUIEntityMeta.treeGrid.cascadeFieldBarName}="currentNodedata.${table.primaryKey.propertyName}"/>
+      <#else>
+        <${table.horizontalBarName}
+          :${DUIEntityMeta.treeGrid.parentField.horizontalBarName}="queryModel.${DUIEntityMeta.treeGrid.parentField.name}"
+          @batchDeleted="onNodeDatasBatchDeleted"/>
+      </#if>
+      </el-main>
+    </el-container>
 
     <el-dialog
-      title="机构部门管理"
+      title="${DUIEntityMeta.label}编辑"
       :visible.sync="dataForm.visible"
       :close-on-click-modal="false"
       :before-close="handleNodeDataFormClose">
-      <department-form
-        ref="departmentForm"
+      <${DUIEntityMeta.table.horizontalBarName}-form
+        ref="${DUIEntityMeta.table.propertyName}Form"
         :status-mode="dataForm.status"
         :data-id="dataForm.dataId"/>
     </el-dialog>
 
-  </div>
+  </el-container>
 </template>
 
 <script>
 import * as ${apiName} from '@/api/${vueModuleName}/${apiName}'
 import ${_tableContext.propertyName} from './${_tableContext.propertyName}'
-<#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
 import ${_tableContext.propertyName}Form from './${_tableContext.propertyName}Form'
-import ${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName}List from './${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName}List'
+<#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
+import ${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName} from './${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName}'
 </#if>
 
 export default {
   name: '${_tableContext.className}Tree',
   components: {
-<#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
     ${_tableContext.propertyName}Form,
-    ${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName}List,
+<#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
+    ${DUIEntityMeta.treeGrid.cascadeEntityMeta.table.propertyName},
 </#if>
     ${_tableContext.propertyName}
   },
@@ -91,7 +83,9 @@ export default {
         visible: false
       },
 </#if>
-      currentNodedata: null
+      currentNodedata: {
+        ${table.primaryKey.propertyName}: ''
+      }
     }
   },
   mounted: function() {

@@ -217,11 +217,12 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 		
 		DUITreeGrid treeGridAnno = uiEntityClass.getAnnotation(DUITreeGrid.class);
 		if (treeGridAnno!=null) {
-			DUITreeGridMeta treeGrid = new DUITreeGridMeta();
+			DUITreeGridMeta treeGrid = new DUITreeGridMeta(entityMeta);
 			DUIFieldMeta parentField = entityMeta.getField(treeGridAnno.parentField());
 			treeGrid.setParentField(parentField);
 			treeGrid.setRootId(treeGridAnno.rootId());
 			treeGrid.setStyle(treeGridAnno.style());
+			treeGrid.setCascadeField(treeGridAnno.cascadeField());
 			if (treeGridAnno.cascadeEntity()!=void.class) {
 				treeGrid.setCascadeEntity(treeGridAnno.cascadeEntity());
 			}

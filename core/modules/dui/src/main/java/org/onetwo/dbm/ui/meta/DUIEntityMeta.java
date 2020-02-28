@@ -53,6 +53,12 @@ public class DUIEntityMeta {
 	private String cascadeField;
 	
 	private DUITreeGridMeta treeGrid;
+
+	/****
+	 * 如果父组件是树形组件，则不为null
+	 */
+	private DUIEntityMeta treeParent;
+	
 	String stripPrefix;
 	
 	public boolean isTree() {

@@ -106,6 +106,14 @@ export default {
       default: '${DUIEntityMeta.treeGrid.rootId}'
     }
   },
+<#elseif DUIEntityMeta.treeParent??>
+  props: {
+    ${DUIEntityMeta.treeParent.treeGrid.cascadeField}: {
+      type: String,
+      required: false,
+      default: ''
+    }
+  },
 </#if>
   data() {
     return {
@@ -139,6 +147,13 @@ export default {
   watch: {
     ${DUIEntityMeta.treeGrid.parentField.name}: function(newValue) {
       this.queryFormModel.${DUIEntityMeta.treeGrid.parentField.name} = newValue
+      this.refreshTable = true
+    }
+  },
+<#elseif DUIEntityMeta.treeParent??>
+  watch: {
+    ${DUIEntityMeta.treeParent.treeGrid.cascadeField}: function(newValue) {
+      this.queryFormModel.${DUIEntityMeta.treeParent.treeGrid.cascadeField} = newValue
       this.refreshTable = true
     }
   },

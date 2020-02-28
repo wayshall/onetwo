@@ -20,6 +20,12 @@ public @interface DUITreeGrid {
 	TreeStyles style() default TreeStyles.CHIDREN_ON_RIGHT;
 	
 	Class<?> cascadeEntity() default void.class;
+	/*** 
+	 * 及联实体的字段
+	 * @author weishao zeng
+	 * @return
+	 */
+	String cascadeField() default "id";
 	
 	public enum TreeStyles {
 		/***
