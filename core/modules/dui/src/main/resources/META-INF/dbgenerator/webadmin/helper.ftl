@@ -1,43 +1,72 @@
 
-<#macro makeVueFormField field modelPrefix='dataModel' spaces="">
+<#macro makeVueFormField field modelPrefix='dataModel' spaces="" isEditFormField=true>
       ${spaces}<el-form-item
         ${spaces}label="${(field.label)!''}"
-        ${spaces}prop="${field.column.javaName}">
-      <#if field.select??>
-        ${spaces}<dui-select
-          ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
+        ${spaces}prop="${field.name}">
+    <#if field.select??>
+     <#if field.select.treeSelect==true>
+        ${spaces}<dui-tree-select
+          ${spaces}v-model="${modelPrefix}.${field.name}"
           ${spaces}entity="${DUIEntityMeta.name}"
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
           ${spaces}field="${field.name}"/>
+     <#else>
+        ${spaces}<dui-select
+          ${spaces}v-model="${modelPrefix}.${field.name}"
+          ${spaces}entity="${DUIEntityMeta.name}"
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
+          ${spaces}field="${field.name}"/>
+     </#if>
         <#assign hasSelectType=true/>
       <#elseif field.input.typeName=='NUMBER'>
         ${spaces}<el-input-number
-          ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
+          ${spaces}v-model="${modelPrefix}.${field.name}"
           ${spaces}:min="1"
           ${spaces}:max="10"
-          ${spaces}label="${(field.label)!''}"
-          <#if field.column.mapping.isSqlFloat()==true>${spaces}:precision="2"</#if><#t/>
-          ${spaces}:disabled="${field.formDisabledValue}"/>
+        <#if field.column.mapping.isSqlFloat()==true>
+          ${spaces}:precision="2"
+        </#if>
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
+          ${spaces}label="${(field.label)!''}"/>
       <#elseif field.input.typeName=='DATE_TIME'>
         ${spaces}<el-date-picker
-          ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
+          ${spaces}v-model="${modelPrefix}.${field.name}"
           ${spaces}type="datetime"
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
          ${spaces} placeholder="选择日期时间">
         ${spaces}</el-date-picker>
       <#elseif field.input.typeName=='TIME'>
         ${spaces}<el-time-picker
-          ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
+          ${spaces}v-model="${modelPrefix}.${field.name}"
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
           ${spaces}placeholder="选择时间>
        ${spaces}</el-time-picker>
       <#elseif field.input.typeName=='DATE'>
         ${spaces}<el-date-picker
-          ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
+          ${spaces}v-model="${modelPrefix}.${field.name}"
           ${spaces}type="date"
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
           ${spaces}placeholder="选择日期">
         ${spaces}</el-date-picker>
       <#elseif field.input.typeName=='SWITCH'>
         ${spaces}<el-switch
-          ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
+          ${spaces}v-model="${modelPrefix}.${field.name}"
           ${spaces}active-color="#13ce66"
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
           ${spaces}inactive-color="#ff4949">
         ${spaces}</el-switch>
       <#elseif field.input.isFileType()==true>
@@ -46,11 +75,19 @@
                    ${spaces}:exist-file-path="${modelPrefix}.${field.name}"/>
         <#assign hasFileType=true/>
       <#elseif field.column.isAssociationType()==true>
-        ${spaces}<el-input v-model="${modelPrefix}.${field.column.javaName}" placeholder="请输入${(field.label)!''}"/>
+        ${spaces}<el-input
+          ${spaces}v-model="${modelPrefix}.${field.name}"
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
+          ${spaces}placeholder="请输入${(field.label)!''}"/>
       <#else>
         ${spaces}<el-input
-          ${spaces}v-model="${modelPrefix}.${field.column.javaName}"
+          ${spaces}v-model="${modelPrefix}.${field.name}"
           ${spaces}type="${field.input.typeName?lower_case}"
+        <#if isEditFormField>
+          ${spaces}:disabled="${field.formDisabledValue}"
+        </#if>
           ${spaces}placeholder="请输入${(field.label)!''}"/>
       </#if>
       ${spaces}</el-form-item>

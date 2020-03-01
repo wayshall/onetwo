@@ -45,7 +45,6 @@ import lombok.EqualsAndHashCode;
 public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass}<#else>BaseEntity</#if> {
 
     @SnowflakeId
-    @NotNull
     ${table.primaryKey.javaType.simpleName} ${table.primaryKey.propertyName};
     
 <#list table.columns as column>

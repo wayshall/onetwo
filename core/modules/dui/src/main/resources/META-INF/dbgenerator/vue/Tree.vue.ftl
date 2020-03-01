@@ -8,20 +8,25 @@
   <el-container style="height: 500px; border: 1px solid #eee">
 
     <el-aside
-      width="200px"
-      style="margin-top:20px;background-color: rgb(238, 241, 246)">
-      <el-tree
-        :data="treeList"
-        @node-click="handleNodeClick"
-        node-key="${table.primaryKey.propertyName}"
-        lazy
+      width="300px"
+      style="margin-top:10px;background-color: rgb(238, 241, 246)">
+      <div style="margin: 5px;">
+        <el-button type="primary" plain @click="handleAdd">添加</el-button>
+      </div>
+      <div>
+        <el-tree
+          :data="treeList"
+          @node-click="handleNodeClick"
+          node-key="${table.primaryKey.propertyName}"
+          lazy
       <#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
-        :render-content="renderTreeNodeButton"
+          :render-content="renderTreeNodeButton"
       </#if>
-        :load="loadTree"
-        :expand-on-click-node="false"
-        :default-expand-all="false">
-      </el-tree>
+          :load="loadTree"
+          :expand-on-click-node="false"
+          :default-expand-all="false">
+        </el-tree>
+      </div>
     </el-aside>
 
     <el-container>
@@ -129,8 +134,7 @@ export default {
         <span>
           <span>{node.label} </span>
           <span>
-            <el-button size='mini' type='text' on-click={ (e) => this.handleEdit(e, data) }>查看</el-button>
-            <el-button size='mini' type='text' on-click={ (e) => this.handleAdd(e) }>添加子节点</el-button>
+            <el-button size='mini' type='text' on-click={ (e) => this.handleEdit(e, data) }>编辑</el-button>
           </span>
         </span>
       )

@@ -21,7 +21,7 @@
   <#if searchableFields.isEmpty()==false>
       <template slot="queryForm">
     <#list searchableFields as field>
-        <@helper.makeVueFormField field=field modelPrefix="queryFormModel" spaces="  "/>
+        <@helper.makeVueFormField field=field modelPrefix="queryFormModel" spaces="  " isEditFormField=false/>
     </#list>
       </template>
   </#if>
@@ -34,7 +34,7 @@
 
       <el-table-column align="center" width="80" type="selection"/>
   <#list DUIEntityMeta.listableFields as field>
-    <#if field.column.isDateType()>
+    <#if field.input.isDateType()==true>
       <el-table-column align="center" label="${(field.label)!''}" <#if field?counter != DUIEntityMeta.listableFields.size()>width="100"</#if>>
         <template slot-scope="scope">
           <span>{{ scope.row.${field.column.javaName} | formatDateInMillis }}</span>
@@ -121,6 +121,8 @@ export default {
       queryFormModel: {
   <#if DUIEntityMeta.isTree()==true>
         ${DUIEntityMeta.treeGrid.parentField.name}: '',
+  <#elseif DUIEntityMeta.treeParent??>
+        ${DUIEntityMeta.treeParent.treeGrid.cascadeField}: '',
   </#if>
   <#list searchableFields as field>
     <#if !field.column.primaryKey>
@@ -163,7 +165,7 @@ export default {
   methods: {
     handleClose() {
       // 清除验证信息
-      this.$refs.${table.propertyName}Form.$refs.dataForm.resetFields()
+      // this.$refs.${table.propertyName}Form.$refs.dataForm.resetFields()
       this.dataForm.visible = false
       return true
     },

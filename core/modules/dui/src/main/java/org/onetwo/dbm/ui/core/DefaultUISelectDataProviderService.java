@@ -48,9 +48,20 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		return getDatas(uiselect, request.getQuery());
 	}
 	
+	/***
+	 * 获取列表显示时的值
+	 * @author weishao zeng
+	 * @param uiselect
+	 * @param value
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
 	public Object getListValue(DUISelectMeta uiselect, Object value) {
-		List<EnumDataVO> list = getDatas(uiselect, value, true);
+		if (uiselect.isTreeSelect()) {
+			return "";
+		}
 		
+		List<EnumDataVO> list = (List<EnumDataVO>)getDatas(uiselect, value, true);
 		Object compareValue = getCompareValue(uiselect, value);		
 		return list.stream()
 				.filter(d -> d.getValue().equals(compareValue))
@@ -76,11 +87,11 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		return compareValue;
 	}
 	
-	public List<EnumDataVO> getDatas(DUISelectMeta uiselect, String query) {
+	public List<?> getDatas(DUISelectMeta uiselect, String query) {
 		return getDatas(uiselect, query, false);
 	}
 	
-	public List<EnumDataVO> getDatas(DUISelectMeta uiselect, Object query, boolean loadById) {
+	public List<?> getDatas(DUISelectMeta uiselect, Object query, boolean loadById) {
 		if (uiselect.useEnumData()) {
 			Enum<?>[] values = (Enum<?>[]) uiselect.getDataEnumClass().getEnumConstants();
 //			DataBase[] vals = DataBase.class.getEnumConstants();
@@ -93,9 +104,13 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		} else if (uiselect.useDataProvider()) {
 			Class<? extends UISelectDataProvider> dataProviderClass = uiselect.getDataProvider();
 			UISelectDataProvider dataProvider = (UISelectDataProvider)SpringUtils.getBean(applicationContext, dataProviderClass);
-			return dataProvider.findDatas(query.toString())
+			if (uiselect.isTreeSelect()) {
+				return dataProvider.findDatas(query.toString());
+			} else {
+				return dataProvider.findDatas(query.toString())
 								.stream().map(d -> toEnumDataVO(uiselect, d))
 								.collect(Collectors.toList());
+			}
 			
 		} else if (uiselect.getCascadeEntity()!=null) {
 			if (loadById) {

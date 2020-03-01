@@ -48,6 +48,11 @@ public class DUIFieldMeta {
 	DUISelectMeta select;
 	DUIInputMeta input;
 	
+	
+	public boolean isIdField() {
+		return this.column!=null && this.column.isPrimaryKey();
+	}
+	
 	/***
 	 * 横杠分割的名称
 	 * @author weishao zeng
@@ -87,6 +92,10 @@ public class DUIFieldMeta {
 			return type!=null && type==InputTypes.FILE;
 		}
 		
+		public boolean isDateType() {
+			return type!=null && (type==InputTypes.DATE || type==InputTypes.DATE_TIME || type==InputTypes.TIME);
+		}
+		
 	}
 
 	@Data
@@ -99,6 +108,8 @@ public class DUIFieldMeta {
 		
 		String labelField = "label";
 		String valueField = "value";
+		
+		boolean treeSelect;
 		
 		public boolean useEnumData() {
 			return dataEnumClass!=null && dataEnumClass!=NoEnums.class;

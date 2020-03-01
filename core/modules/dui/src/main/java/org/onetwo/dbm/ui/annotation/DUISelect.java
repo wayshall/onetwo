@@ -27,6 +27,8 @@ public @interface DUISelect {
 	String labelField() default "label";
 	String valueField() default "value";
 	
+	boolean treeSelect() default false;
+	
 //	String remoteUrl() default "/web-admin/dbm/uiselect/dataProvider";
 	
 	public enum NoEnums {

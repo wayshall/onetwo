@@ -1,6 +1,7 @@
 package org.onetwo.dbm.ui.core;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -9,6 +10,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.NotBlank;
 import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet;
 import org.onetwo.common.db.generator.dialet.DelegateDatabaseMetaDialet;
 import org.onetwo.common.db.generator.meta.TableMeta;
@@ -207,10 +209,13 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 		entityMeta.setMappedEntry(entry);
 		entityMeta.setTable(table);
 		
-		entry.getFields().forEach(field -> {
+		Collection<DbmMappedField> fields = entry.getFields();
+		fields.forEach(field -> {
 			buildField(field).ifPresent(uifield -> {
 				uifield.setClassMeta(entityMeta);
-				uifield.setColumn(table.getColumn(field.getColumn().getName()));
+				if (uifield.getDbmField().getColumn()!=null) {
+					uifield.setColumn(table.getColumn(field.getColumn().getName()));
+				}
 				entityMeta.addField(uifield);
 			});
 		});
@@ -246,7 +251,8 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 //										.listValueWriter(uifield.listValueWriter())
 										.label(uifield.label())
 										.insertable(uifield.insertable())
-										.notnull(field.getPropertyInfo().hasAnnotation(NotNull.class))
+										.notnull(field.getPropertyInfo().hasAnnotation(NotNull.class) 
+												|| field.getPropertyInfo().hasAnnotation(NotBlank.class))
 										.listable(uifield.listable())
 										.updatable(uifield.updatable())
 										.searchable(uifield.searchable())
@@ -306,6 +312,7 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 					uiselectMeta.setCascadeQueryFields(uiselect.cascadeQueryFields());
 				}
 			}
+			uiselectMeta.setTreeSelect(uiselect.treeSelect());
 		}
 		return uiselectMeta;
 	}

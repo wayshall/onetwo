@@ -217,6 +217,7 @@ public class DUIGenerator {
 
 	public VuePageGenerator vueGenerator(Class<?> pageClass, String vueModuleName){
 		DUIEntityMeta duiEntityMeta = getDUIEntityMeta(pageClass);
+		duiEntityMeta.setStripPrefix(this.stripTablePrefix);
 
 		DbTableGenerator tableGenerator = dbGenerator.table(duiEntityMeta.getTable().getName());
 		

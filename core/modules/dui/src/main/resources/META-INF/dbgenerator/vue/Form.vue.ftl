@@ -97,11 +97,11 @@ export default {
     initDataModel() {
       return {
   <#list DUIEntityMeta.formFields as field>
-    <#if !field.column.primaryKey>
-      <#if field.column.isFileType()>
-        ${field.column.javaName}File: null,
+    <#if field.isIdField()==true>
+      <#if field.input.isFileType()>
+        ${field.name}File: null,
       <#else>
-        ${field.column.javaName}: '',
+        ${field.name}: '',
       </#if>
     </#if>
   </#list>
