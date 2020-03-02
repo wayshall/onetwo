@@ -111,5 +111,11 @@ public class RedisConfiguration {
 		token.setRedisOperationService(redisOperationService);
 		return token;
 	}
+	
+	@Bean
+	@Autowired
+	public RedisLockService redisLockService(RedisLockRegistry redisLockRegistry) {
+		return new RedisLockService(redisLockRegistry);
+	}
     
 }
