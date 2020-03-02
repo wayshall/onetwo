@@ -3,7 +3,6 @@ package org.onetwo.boot.module.redis;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
@@ -29,7 +28,6 @@ public interface RedisOperationService {
 
 	String getAndDelString(String key);
 	<T> T getAndDel(String key);
-	boolean setNX(String key, Object value, int seconds);
 	
 	Long clear(String key);
 
@@ -38,5 +36,11 @@ public interface RedisOperationService {
 	StringRedisTemplate getStringRedisTemplate();
 
 	CacheStatis getCacheStatis();
+	
+
+	boolean setStringNX(String key, String value, int seconds);
+	boolean setStringNXEX(String key, String value, int seconds);
+	String getString(String key);
+	void setString(String key, String value, Long expireInSeconds);
 
 }

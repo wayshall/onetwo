@@ -218,26 +218,25 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	
 	/****
 	 * 如果不存在，则设置
+	 * 非原子操作
 	 * @author weishao zeng
 	 * @param key
 	 * @param value
 	 * @param seconds
 	 * @return 设置成功，则返回所设置的值，否则返回已存在的值
 	 */
-	public boolean setNX(String key, Object value, int seconds) {
+	public boolean setStringNX(String key, String value, int seconds) {
 		final String cacheKey = getCacheKey(key);
-		Boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
+		RedisSerializer<String> keySerializer = this.stringRedisTemplate.getStringSerializer();
+		Boolean result = stringRedisTemplate.execute(new RedisCallback<Boolean>() {
 
 			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
-    			byte[] rawKey = getKeySerializer().serialize(cacheKey);
-    			byte[] rawValue = getValueSerializer().serialize(value);
+    			byte[] rawKey = keySerializer.serialize(cacheKey);
+    			byte[] rawValue = keySerializer.serialize(value);
     			Boolean setOp = connection.setNX(rawKey, rawValue);
     			if (setOp!=null && setOp) {
     				connection.expire(rawKey, seconds);
-    			}/* else {
-    				rawValue = connection.get(rawKey);
-    			}*/
-//    			return (T)getValueSerializer().deserialize(rawValue);
+    			}
     			return setOp;
     		}
     		
@@ -245,6 +244,51 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
     	return result;
     }
 	
+	/****
+	 * 实现下面命令：
+	 * SET key value NX EX expireTime
+	 * 原子操作
+	 * @author weishao zeng
+	 * @param key
+	 * @param value
+	 * @param seconds
+	 * @return
+	 */
+    public boolean setStringNXEX(String key, String value, int seconds) {
+		final String cacheKey = getCacheKey(key);
+		RedisSerializer<String> keySerializer = this.stringRedisTemplate.getStringSerializer();
+		Boolean result = this.stringRedisTemplate.execute(new RedisCallback<Boolean>() {
+				public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+	   			byte[] rawValue = keySerializer.serialize(value);
+	   			byte[][] actualArgs = {
+	   					keySerializer.serialize(cacheKey),
+	   					rawValue,
+	   					keySerializer.serialize("NX"),
+	   					keySerializer.serialize("EX"),
+	   					keySerializer.serialize(String.valueOf(seconds))
+	   			};
+				return connection.execute("SET", actualArgs) != null;
+			}
+   		
+		});
+        return result;
+    }
+    
+    public String getString(String key) {
+		final String cacheKey = getCacheKey(key);
+		String result = this.stringRedisTemplate.boundValueOps(cacheKey).get();
+        return result;
+    }
+    
+    public void setString(String key, String value, Long expireInSeconds) {
+		final String cacheKey = getCacheKey(key);
+		if (expireInSeconds!=null) {
+			this.stringRedisTemplate.boundValueOps(cacheKey).set(value, expireInSeconds, TimeUnit.SECONDS);
+		} else {
+			this.stringRedisTemplate.boundValueOps(cacheKey).set(value);
+		}
+    }
+
 	/* (non-Javadoc)
 	 * @see org.onetwo.boot.module.redis.RedisOperationService#clear(java.lang.String)
 	 */
