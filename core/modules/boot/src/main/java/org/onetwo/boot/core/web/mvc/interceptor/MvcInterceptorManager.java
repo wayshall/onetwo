@@ -30,6 +30,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -66,6 +67,9 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 																					});
 	private ApplicationContext applicationContext;
 	private PropertyAnnotationReader propertyAnnotationReader = PropertyAnnotationReader.INSTANCE;
+	/*
+	 * @Autowired private BootSiteConfig siteConfig;
+	 */
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -150,6 +154,11 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	
 	private Optional<HandlerMethodInterceptorMeta> getInterceptorMeta(Method method){
 		HandlerMethodInterceptorMeta meta = this.interceptorMetaCaces.getIfPresent(method);
+		/*
+		 * if (siteConfig.isDev()) { List<? extends MvcInterceptor> interceptors =
+		 * findMvcInterceptors(meta.getHandlerMethod());
+		 * meta.setInterceptors(interceptors); }
+		 */
 		return Optional.ofNullable(meta);
 	}
 
@@ -335,6 +344,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	}*/
 	
 	/***
+	 * 先在方法上查找，找不到则在类上查找
 	 * 直接查找Interceptor
 	 * @author wayshall
 	 * @param hm
@@ -349,7 +359,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 			return Collections.emptyList();
 		}
 		Collection<AnnotationAttributes> attrs = inters.stream()
-														.map(inter->org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes(null, inter))
+														.map(inter->AnnotationUtils.getAnnotationAttributes(null, inter))
 														.collect(Collectors.toSet());
 		boolean hasDisabledFlag = attrs.stream()
 										.anyMatch(attr->asMvcInterceptorMeta(attr).getInterceptorType()==DisableMvcInterceptor.class);
@@ -400,7 +410,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	
 	static class HandlerMethodInterceptorMeta {
 		final private HandlerMethod handlerMethod;
-		final private List<? extends MvcInterceptor> interceptors;
+		private List<? extends MvcInterceptor> interceptors;
 		public HandlerMethodInterceptorMeta(HandlerMethod handlerMethod, List<? extends MvcInterceptor> interceptors) {
 			super();
 			this.handlerMethod = handlerMethod;
@@ -412,6 +422,10 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		public List<? extends MvcInterceptor> getInterceptors() {
 			return interceptors;
 		}
+		public void setInterceptors(List<? extends MvcInterceptor> interceptors) {
+			this.interceptors = interceptors;
+		}
+		
 	}
 	
 
