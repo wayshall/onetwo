@@ -21,7 +21,7 @@ import lombok.Data;
 @Data
 public class OssProperties {
 	public static final String PREFIX = BootJFishConfig.PREFIX + ".alioss";
-	public static final String ENABLED_KEY = PREFIX + ".bucket-name";
+	public static final String ENABLED_KEY = PREFIX + ".bucketName";
 	
 	String downloadEndPoint;
 	String endpoint;
