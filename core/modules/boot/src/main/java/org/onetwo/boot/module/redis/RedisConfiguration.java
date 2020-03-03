@@ -114,8 +114,9 @@ public class RedisConfiguration {
 	
 	@Bean
 	@Autowired
-	public RedisLockService redisLockService(RedisLockRegistry redisLockRegistry) {
-		return new RedisLockService(redisLockRegistry);
+	@ConditionalOnClass({RedisLockRegistry.class})
+	public RedisLockService redisLockService(@Autowired JedisConnectionFactory jedisConnectionFactory) {
+		return new RedisLockService(redisLockRegistry(jedisConnectionFactory));
 	}
     
 }

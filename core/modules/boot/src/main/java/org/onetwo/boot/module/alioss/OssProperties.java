@@ -3,6 +3,7 @@ package org.onetwo.boot.module.alioss;
 import java.util.Arrays;
 import java.util.List;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.module.alioss.image.WatermarkAction.WatermarkFonts;
 import org.onetwo.boot.module.alioss.video.SnapshotProperties;
 import org.onetwo.common.utils.StringUtils;
@@ -16,9 +17,12 @@ import lombok.Data;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties("jfish.alioss")
+@ConfigurationProperties(OssProperties.PREFIX)
 @Data
 public class OssProperties {
+	public static final String PREFIX = BootJFishConfig.PREFIX + ".alioss";
+	public static final String ENABLED_KEY = PREFIX + ".bucket-name";
+	
 	String downloadEndPoint;
 	String endpoint;
     String accessKeyId;
