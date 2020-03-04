@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.onetwo.common.file.FileUtils;
@@ -23,7 +22,7 @@ public class ProjectRefactor {
 	
 	final private String baseDir;
 	private String charset = FileUtils.DEFAULT_CHARSET;
-	private List<BaseFileRefactor<?>> fileRefactors = Lists.newArrayList();
+	private List<BaseFileProcessor<?>> fileRefactors = Lists.newArrayList();
 
 	public ProjectRefactor(String baseDir) {
 		super();
@@ -53,45 +52,8 @@ public class ProjectRefactor {
 		});
 	}
 	
-	abstract class BaseFileRefactor<R extends BaseFileRefactor<R>> {
-		final protected String baseDir;
-		protected Predicate<File> fileMatcher;
-		
-		public BaseFileRefactor(String baseDir) {
-			super();
-			this.baseDir = baseDir;
-		}
-
-		@SuppressWarnings("unchecked")
-		public R fileMatcher(Predicate<File> fileMatcher){
-			this.fileMatcher = fileMatcher;
-			return (R)this;
-		}
-		
-		public R orFileMatcher(Predicate<File> matcher){
-			return fileMatcher(this.fileMatcher==null?matcher:this.fileMatcher.or(matcher));
-		}
-		
-		public R andFileMatcher(Predicate<File> matcher){
-			return fileMatcher(this.fileMatcher==null?matcher:this.fileMatcher.and(matcher));
-		}
-
-		public void process(){
-			File dirFile = new File(baseDir);
-			FileUtils.list(dirFile, fileMatcher, true)
-					 .forEach(file->{
-						 doRefactor(file);
-					 });
-		}
-		
-		abstract protected void doRefactor(File file);
-		
-		public ProjectRefactor end(){
-			return ProjectRefactor.this;
-		}
-	}
 	
-	public class FileReplacementsRefactor extends BaseFileRefactor<FileReplacementsRefactor> {
+	public class FileReplacementsRefactor extends BaseFileProcessor<FileReplacementsRefactor> {
 
 		private Map<String, String> textReplacements = Maps.newLinkedHashMap();
 		private String charset = FileUtils.DEFAULT_CHARSET;
@@ -110,7 +72,7 @@ public class ProjectRefactor {
 		}
 
 		@Override
-		protected void doRefactor(File file) {
+		protected void fileProcess(File file) {
 			if(file.isDirectory()){
 				return ;
 			}
@@ -122,10 +84,14 @@ public class ProjectRefactor {
 			FileUtils.writeStringToFile(file, charset, text);
 		}
 		
+		public ProjectRefactor end(){
+			return ProjectRefactor.this;
+		}
+		
 	}
 	
 
-	public class FileDeleteRefactor extends BaseFileRefactor<FileDeleteRefactor> {
+	public class FileDeleteRefactor extends BaseFileProcessor<FileDeleteRefactor> {
 		
 		public FileDeleteRefactor(String baseDir) {
 			super(baseDir);
@@ -158,12 +124,16 @@ public class ProjectRefactor {
 		}
 
 		@Override
-		protected void doRefactor(File file) {
+		protected void fileProcess(File file) {
 			if(FileUtils.delete(file, true)){
 				logger.info("delete succeed: {}", file.getPath());
 			}else{
 				logger.info("delete failed : {}", file.getPath());
 			}
+		}
+		
+		public ProjectRefactor end(){
+			return ProjectRefactor.this;
 		}
 		
 	}
