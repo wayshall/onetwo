@@ -80,6 +80,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils.MethodFilter;
 import org.springframework.util.ResourceUtils;
@@ -795,6 +796,29 @@ final public class SpringUtils {
 					Objects.deepEquals(method.getParameterTypes(), sourceMethod.getParameterTypes());
 		});
 		return methods;
+	}
+	
+	public static String readAsBase64(MultipartFile resource) {
+		return Base64Utils.encodeToString(readAsBytes(resource));
+	}
+	
+	public static byte[] readAsBytes(MultipartFile resource) {
+		try {
+			return IOUtils.toByteArray(resource.getInputStream());
+		} catch (IOException e) {
+			throw new BaseException("read resource error: " + e.getMessage());
+		}
+	}
+	public static String readAsBase64(Resource resource) {
+		return Base64Utils.encodeToString(readAsBytes(resource));
+	}
+	
+	public static byte[] readAsBytes(Resource resource) {
+		try {
+			return IOUtils.toByteArray(resource.getInputStream());
+		} catch (IOException e) {
+			throw new BaseException("read resource error: " + e.getMessage());
+		}
 	}
 	
 }

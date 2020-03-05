@@ -3,8 +3,8 @@ package org.onetwo.common.apiclient;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onetwo.common.apiclient.ApicientBaseTests.ApiclientBaseTestInnerContextConfig;
-import org.onetwo.common.apiclient.ApicientBaseTests.YsApiclientBaseTestInnerContextConfig;
+import org.onetwo.common.apiclient.ApiClientBaseTests.ApiclientBaseTestInnerContextConfig;
+import org.onetwo.common.apiclient.ApiClientBaseTests.YsApiclientBaseTestInnerContextConfig;
 import org.onetwo.common.apiclient.annotation.EnableRestApiClient;
 import org.onetwo.common.apiclient.api.simple.WeatherClient;
 import org.onetwo.common.apiclient.api.simple2.EnableSimpleApiClient;
@@ -22,7 +22,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(loader=AnnotationConfigContextLoader.class, classes= {ApiclientBaseTestInnerContextConfig.class, YsApiclientBaseTestInnerContextConfig.class})
 @ActiveProfiles(Environment.TEST)
-public class ApicientBaseTests {
+public class ApiClientBaseTests {
 	
 	@BeforeClass
 	public static void setupClass(){

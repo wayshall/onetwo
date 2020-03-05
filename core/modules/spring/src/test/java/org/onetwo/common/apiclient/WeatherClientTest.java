@@ -12,7 +12,7 @@ import org.springframework.http.HttpHeaders;
  * @author wayshall
  * <br/>
  */
-public class WeatherClientTest extends ApicientBaseTests {
+public class WeatherClientTest extends ApiClientBaseTests {
 	
 	@Autowired
 	WeatherClient weatherClient;
