@@ -3,6 +3,7 @@ package org.onetwo.ext.ons.consumer;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
@@ -11,6 +12,8 @@ import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.exception.ConsumeException;
+import org.onetwo.ext.ons.exception.DeserializeMessageException;
+import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.springframework.util.Assert;
 
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * @author wayshall
@@ -79,7 +83,8 @@ public class DelegateMessageService implements InitializingBean {
 				if (bodyClass!=null) {
 					message.putUserProperty(JsonMessageSerializer.PROP_BODY_TYPE, bodyClass.getName());
 				}
-				body = messageDeserializer.deserialize(message.getBody(), message);
+//				body = messageDeserializer.deserialize(message.getBody(), message);
+				body = deserializeMessage(messageDeserializer, message);
 				currentConetxt = ConsumContext.builder()
 												.messageId(msgId)
 												.message(message)
@@ -109,6 +114,26 @@ public class DelegateMessageService implements InitializingBean {
 			}
 		}
 		return currentConetxt;
+	}
+	
+	private Object deserializeMessage(MessageDeserializer messageDeserializer, MessageExt message) {
+		try {
+			Object body = messageDeserializer.deserialize(message.getBody(), message);
+			return body;
+		} catch (Exception e) {
+			String msgId = ONSUtils.getMessageId(message);
+			String msg = "deserialize message error, msgId: " + msgId + ", msg: " + e.getMessage();
+			
+			// 如果json不能解释，包装成新的异常，不再消费
+			JsonMappingException jsonFetal = LangUtils.getCauseException(e, JsonMappingException.class);
+			if (jsonFetal!=null) {
+				throw new ImpossibleConsumeException(msg, jsonFetal);
+			} else if (e instanceof RuntimeException) {
+				throw (RuntimeException) e;
+			} else {
+				throw new DeserializeMessageException(msg, e);
+			}
+		}
 	}
 
 	private void consumeMessage(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
