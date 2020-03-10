@@ -122,15 +122,16 @@ public class DelegateMessageService implements InitializingBean {
 			return body;
 		} catch (Exception e) {
 			String msgId = ONSUtils.getMessageId(message);
-			String msg = "deserialize message error, msgId: " + msgId + ", msg: " + e.getMessage();
 			
 			// 如果json不能解释，包装成新的异常，不再消费
 			JsonMappingException jsonFetal = LangUtils.getCauseException(e, JsonMappingException.class);
 			if (jsonFetal!=null) {
-				throw new ImpossibleConsumeException(msg, jsonFetal);
+				String msg = "deserialize message error, ignore consume. msgId: " + msgId + ", msg: " + e.getMessage();
+				throw new ImpossibleConsumeException(msg, e);
 			} else if (e instanceof RuntimeException) {
 				throw (RuntimeException) e;
 			} else {
+				String msg = "deserialize message error, msgId: " + msgId + ", msg: " + e.getMessage();
 				throw new DeserializeMessageException(msg, e);
 			}
 		}
