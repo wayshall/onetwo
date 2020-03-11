@@ -39,7 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/rocketmq</module>
+                <module>../../zifish-plugins/web-admin</module>
 			</modules>
            <build>
               <plugins>
