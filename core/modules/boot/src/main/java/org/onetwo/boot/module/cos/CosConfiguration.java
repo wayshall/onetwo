@@ -1,6 +1,5 @@
 package org.onetwo.boot.module.cos;
 
-import org.onetwo.boot.core.config.BootSiteConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,21 +18,22 @@ import com.qcloud.cos.COSClient;
 @Configuration
 @EnableConfigurationProperties(CosProperties.class)
 @Lazy
+@ConditionalOnProperty(name=CosProperties.ENABLED_KEY)
 public class CosConfiguration {
 	
 	@Autowired
 	private CosProperties cosProperties;
 
 	@Bean
-	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="cos")
-	public CosFileStore cosFileStore(@Autowired CosClientWrapper wrapper){
-		CosFileStore storer = new CosFileStore(wrapper, cosProperties);
+//	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="cos")
+	public CosFileStore cosFileStore(){
+		CosFileStore storer = new CosFileStore(cosClientWrapper(), cosProperties);
 		return storer;
 	}
 	
 	@Bean
-	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="cos")
-	public CosClientWrapper OssClientWrapper(){
+//	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="cos")
+	public CosClientWrapper cosClientWrapper(){
 		CosClientWrapper wrapper = new CosClientWrapper(cosProperties);
 		return wrapper;
 	}

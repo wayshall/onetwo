@@ -111,5 +111,12 @@ public class RedisConfiguration {
 		token.setRedisOperationService(redisOperationService);
 		return token;
 	}
+	
+	@Bean
+	@Autowired
+	@ConditionalOnClass({RedisLockRegistry.class})
+	public RedisLockService redisLockService(@Autowired JedisConnectionFactory jedisConnectionFactory) {
+		return new RedisLockService(redisLockRegistry(jedisConnectionFactory));
+	}
     
 }

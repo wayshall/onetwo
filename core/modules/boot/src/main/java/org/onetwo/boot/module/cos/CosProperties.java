@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.cos;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -13,9 +14,12 @@ import lombok.Data;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties("jfish.cos")
+@ConfigurationProperties(CosProperties.PREFIX)
 @Data
 public class CosProperties {
+	public static final String PREFIX = BootJFishConfig.PREFIX + ".cos";
+	public static final String ENABLED_KEY = PREFIX + ".bucketName";
+	
 	String downloadEndPoint;
 	String uploadEndPoint;
 	String endPoint;

@@ -488,6 +488,34 @@ public class FileUtils {
 		return datas;
 	}
 
+	public static void readLines(File file, String charset, LineProcessor callback){
+		BufferedReader br = null;
+		try{
+			br = asBufferedReader(new FileInputStream(file), charset);
+			String line;
+			LineContext ctx = new LineContext();
+			while((line = br.readLine())!=null){
+				ctx.line = line;
+				if (!callback.proccess(ctx)) {
+					break;
+				}
+				ctx.lineIndex++;
+			}
+		}catch(Exception e){
+			LangUtils.throwBaseException("read file["+file.getPath()+"] error : " + e.getMessage(), e);
+		}finally{
+			close(br);
+		}
+	}
+
+	public static interface LineProcessor {
+		boolean proccess(LineContext ctx);
+	}
+	
+	public static class LineContext {
+		public String line;
+		public int lineIndex = 0;
+	}
 
 	public static String readAsString(String fileName){
 		return readAsString(fileName, DEFAULT_CHARSET);
@@ -601,6 +629,18 @@ public class FileUtils {
 	public static String replaceBackSlashToSlash(String path){
 		Assert.hasText(path);
 		path = path.indexOf(BACK_SLASH_CHAR)!=-1?path.replace(BACK_SLASH_CHAR, SLASH_CHAR):path;
+		return path;
+	}
+
+	/****
+	 * 
+	 * @see replaceBackSlashToSlash
+	 * @author weishao zeng
+	 * @param path
+	 * @return
+	 */
+	public static String fixPath(String path){
+		path = replaceBackSlashToSlash(path);
 		return path;
 	}
 

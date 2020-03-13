@@ -1,6 +1,8 @@
 package org.onetwo.boot.func.submit;
 
 import org.onetwo.boot.module.redis.JFishRedisProperties;
+import org.onetwo.boot.module.redis.RedisOperationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +25,9 @@ public class SubmitConfiguration {
 	}
 	
 	@Bean
-	public FrequentlySubmitChecker frequentlySubmitChecker() {
-		return new SimpleFrequentlySubmitChecker();
+	@Autowired
+	public RedisRateLimiter simpleRedisRateLimiter(RedisOperationService redisOperationService) {
+		return new SimpleRedisRateLimiter(redisOperationService);
 	}
 
 }

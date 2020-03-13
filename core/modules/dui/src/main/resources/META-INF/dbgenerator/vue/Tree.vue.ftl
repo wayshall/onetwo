@@ -10,9 +10,11 @@
     <el-aside
       width="300px"
       style="margin-top:10px;background-color: rgb(238, 241, 246)">
+<#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
       <div style="margin: 5px;">
         <el-button type="primary" plain @click="handleAdd">添加</el-button>
       </div>
+</#if>
       <div>
         <el-tree
           :data="treeList"
@@ -41,7 +43,7 @@
       </#if>
       </el-main>
     </el-container>
-
+<#if DUIEntityMeta.treeGrid.isCascadeOnRightStyle()==true>
     <el-dialog
       title="${DUIEntityMeta.label}编辑"
       :visible.sync="dataForm.visible"
@@ -52,6 +54,7 @@
         :status-mode="dataForm.status"
         :data-id="dataForm.dataId"/>
     </el-dialog>
+</#if>
 
   </el-container>
 </template>

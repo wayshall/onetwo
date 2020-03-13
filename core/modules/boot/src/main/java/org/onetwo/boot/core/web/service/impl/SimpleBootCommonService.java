@@ -67,7 +67,7 @@ public class SimpleBootCommonService implements BootCommonService {
 	
 	protected FileStorer getFileStorer(StoreType storeType) {
 		return this.fileStorers.stream().filter(st -> {
-			return st.getStoreType().equals(storeType.name().toLowerCase());
+			return st.getStoreType().equalsIgnoreCase(storeType.name());
 		}).findAny().orElseThrow(()-> {
 			return new BaseException("file store not found: " + storeType.name());
 		});
