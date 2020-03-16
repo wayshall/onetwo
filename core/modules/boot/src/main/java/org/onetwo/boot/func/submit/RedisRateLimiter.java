@@ -20,7 +20,7 @@ public interface RedisRateLimiter {
 	 * 直接限制为每三秒只能操作一次
 	 * @author weishao zeng
 	 * @param actionKey
-	 * @deprecated 这个方法是限制前端表单提交的频率
+	 *  这个方法是限制前端表单提交的频率
 	 */
 	default public void checkAction(String actionKey) {
 		ActionContext actionContext = new ActionContext();

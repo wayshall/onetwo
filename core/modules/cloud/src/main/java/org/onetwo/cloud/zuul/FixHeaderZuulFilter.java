@@ -89,6 +89,7 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 				fc.setMatcher(conf.getMatcher());
 				fc.setPathPatterns(conf.getPathPatterns());
 				fc.setValue(StringUtils.appendStartWith(conf.getValue(), OAuth2Utils.BEARER_TYPE + " "));
+				fc.setOverride(conf.isOverride());
 				fixHeaders.add(fc);
 				if (debug) {
 					log.info("fixHeaders add bearer header: {}", fc.getHeader());
@@ -122,10 +123,22 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 			return pathMatcher.match(pattern, path);
 		});
 		if(match){
+			HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
+			String headerValue = request.getHeader(fix.getHeader());
 			if(cloudConfig.getZuul().isDebug()){
-				log.info("add header[{}] for path {}", fix.getHeader(), path);
+				log.info("header[{}] in current request is: {}", fix.getHeader(), headerValue);
 			}
+			if (StringUtils.isNotBlank(headerValue) && !fix.isOverride()) {
+				if(cloudConfig.getZuul().isDebug()){
+					log.info("header[{}] has exist, ignore override for ant path: {}", fix.getHeader(), path);
+				}
+				return ;
+			}
+			
 			RequestContext.getCurrentContext().addZuulRequestHeader(fix.getHeader(), fix.getValue());
+			if(cloudConfig.getZuul().isDebug()){
+				log.info("add header[{}] for ant path {}", fix.getHeader(), path);
+			}
 		}
 	}
 	
@@ -134,6 +147,18 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 			Matcher matcher = entry.getValue().matcher(path);
 			boolean isMatch = matcher.matches();
 			if(isMatch){
+				HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
+				String headerValue = request.getHeader(fix.getHeader());
+				if(cloudConfig.getZuul().isDebug()){
+					log.info("header[{}] in current request is: {}", fix.getHeader(), headerValue);
+				}
+				if (StringUtils.isNotBlank(headerValue) && !fix.isOverride()) {
+					if(cloudConfig.getZuul().isDebug()){
+						log.info("header[{}] has exist, ignore override for path: {}", fix.getHeader(), path);
+					}
+					return ;
+				}
+				
 				int count = matcher.groupCount();
 				List<String> groups = new ArrayList<>(count);
 				for (int i = 0; i <= count; i++) {

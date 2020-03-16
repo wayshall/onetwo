@@ -34,6 +34,11 @@ public class BearerTokenProperties {
 		String value;
 		PathMatcher matcher = PathMatcher.ANT;
 		Map<String, Pattern> patterns = null;
+		/***
+		 * 如果当前请求已有对应的header，是否强制覆盖
+		 * 默认为false，与zuulFixHeader默认值相反
+		 */
+		boolean override = false;
 		
 		public Map<String, Pattern> getPatterns(){
 			if (matcher!=PathMatcher.REGEX) {

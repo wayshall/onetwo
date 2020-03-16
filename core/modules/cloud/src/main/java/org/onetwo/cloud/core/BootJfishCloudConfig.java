@@ -42,6 +42,11 @@ public class BootJfishCloudConfig {
 		String value;
 		PathMatcher matcher = PathMatcher.ANT;
 		Map<String, Pattern> patterns = null;
+		/***
+		 * 如果当前请求已有对应的header，是否强制覆盖
+		 * 默认为true
+		 */
+		boolean override = true;
 		
 		public Map<String, Pattern> getPatterns(){
 			if (matcher!=PathMatcher.REGEX) {
