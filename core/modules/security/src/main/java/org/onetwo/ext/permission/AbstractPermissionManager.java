@@ -170,6 +170,9 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	public void syncMenuToDatabase(MenuInfoParser<P> menuInfoParser){
 //		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
+		if (logger.isInfoEnabled()) {
+			logger.info("synchronizing menu class: {} ...", menuInfoParser.getRootMenuCode());
+		}
 		Optional<P> rootPermissionOpt = menuInfoParser.getRootMenu();
 		if(!rootPermissionOpt.isPresent()){
 			this.removeRootMenu(menuInfoParser);

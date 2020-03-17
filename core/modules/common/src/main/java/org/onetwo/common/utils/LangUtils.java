@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -1568,6 +1569,11 @@ public class LangUtils {
 			actualValue = value;
 		}
 		return actualValue;
+	}
+	
+	public static BigDecimal roundHalfUp(BigDecimal number) {
+		number.setScale(2, BigDecimal.ROUND_HALF_UP);
+		return number;
 	}
 
 	public static String format(Number num, String pattern) {
