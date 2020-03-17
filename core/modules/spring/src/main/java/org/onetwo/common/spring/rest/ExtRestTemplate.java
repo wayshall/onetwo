@@ -17,7 +17,7 @@ import org.onetwo.common.apiclient.convertor.ApiclientJackson2XmlMessageConverte
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
-import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
+import org.onetwo.common.spring.utils.EnhanceBeanToMapConvertor.EnhanceBeanToMapBuilder;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ParamUtils;
 import org.slf4j.Logger;
@@ -51,7 +51,11 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	
 	static private final Logger logger = JFishLoggerFactory.getLogger(ExtRestTemplate.class);
 	
-	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().enableUnderLineStyle().build();
+//	private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder().enableUnderLineStyle().build();
+	private BeanToMapConvertor beanToMapConvertor = EnhanceBeanToMapBuilder.enhanceBuilder()
+																		.enableUnderLineStyle()
+																		.enableJsonPropertyAnnotation()
+																		.build();
 	
 	@SuppressWarnings("rawtypes")
 	private ExtRestErrorHandler extErrorHandler;

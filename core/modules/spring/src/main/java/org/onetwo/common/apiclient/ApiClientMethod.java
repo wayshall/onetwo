@@ -30,6 +30,7 @@ import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.rest.RestUtils;
+import org.onetwo.common.spring.utils.EnhanceBeanToMapConvertor.EnhanceBeanToMapBuilder;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -78,8 +79,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return beanToMapConvertor;
 	}
 
-	final static private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
+	final static private BeanToMapConvertor beanToMapConvertor = EnhanceBeanToMapBuilder.enhanceBuilder()
 																	.enableFieldNameAnnotation()
+																	.enableJsonPropertyAnnotation()
 																	.valueConvertor(new ValueConvertor())
 																	.flatableObject(obj->{
 																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
@@ -89,6 +91,17 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 																				!MultipartFile.class.isInstance(obj);
 																	})
 																	.build();
+//	final static private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
+//			.enableFieldNameAnnotation()
+//			.valueConvertor(new ValueConvertor())
+//			.flatableObject(obj->{
+//				boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
+//				return  flatable &&
+//						!Resource.class.isInstance(obj) &&
+//						!byte[].class.isInstance(obj) &&
+//						!MultipartFile.class.isInstance(obj);
+//			})
+//			.build();
 	
 //	final private AnnotationAttributes requestMappingAttributes;
 	private RequestMethod requestMethod;
