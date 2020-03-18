@@ -1,6 +1,7 @@
 package org.onetwo.dbm.ui.json;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.onetwo.common.spring.Springs;
@@ -24,7 +25,21 @@ public class DUISelectFieldJsonSerializer extends JsonSerializer<Object> {
 			return ;
 		}
     	
-    	jgen.writeString(value.toString());
+    	if (value instanceof Boolean) {
+    		jgen.writeBoolean((Boolean)value);
+    	} else if (value instanceof BigDecimal) {
+    		jgen.writeNumber((BigDecimal)value);
+    	} else if (value instanceof Double) {
+    		jgen.writeNumber((Double)value);
+    	} else if (value instanceof Float) {
+    		jgen.writeNumber((Float)value);
+    	} else if (value instanceof Long) {
+    		jgen.writeNumber((Long)value);
+    	} else if (value instanceof Integer) {
+    		jgen.writeNumber((Integer)value);
+    	} else {
+    		jgen.writeString(value.toString());
+    	}
 		
 		Object object = jgen.getOutputContext().getCurrentValue();
 		String fieldName = jgen.getOutputContext().getCurrentName();

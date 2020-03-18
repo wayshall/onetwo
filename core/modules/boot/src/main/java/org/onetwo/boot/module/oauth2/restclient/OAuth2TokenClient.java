@@ -56,8 +56,8 @@ public interface OAuth2TokenClient {
 	public class Auth2TokenResult {
 		@JsonProperty("access_token")
 		String accessToken;
-		@JsonProperty("expiresIn")
-		Long expires_in;
+		@JsonProperty("expires_in")
+		Long expiresIn;
 	}
 }
 
