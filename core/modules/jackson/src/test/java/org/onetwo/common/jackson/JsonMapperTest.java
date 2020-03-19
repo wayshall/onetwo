@@ -504,6 +504,18 @@ public class JsonMapperTest {
 
 	}
 	
+	@Test
+	public void testTypeingData() {
+		StoreDetailResponse data = new StoreDetailResponse();
+		data.setStoreName("test name");
+		data.setSlidePictureUrls(new String[] {"test"});
+		data.setErrorWithList(Lists.newArrayList("test list"));
+		JsonMapper json = JsonMapper.ignoreNull();
+		json.getObjectMapper().enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+		String str = json.toJson(data);
+		System.out.println("str: " + str);
+	}
+	
 
 	public static class TestJsonDataWithIOClass {
 		private String userName;
