@@ -105,6 +105,7 @@ public class BootWebCommonAutoConfig {
 	
 	/***
 	 * 异常解释
+	 * BootWebExceptionHandler 无法拦截在spring拦截器里抛出的异常，所以这里配置自定义的HandlerExceptionResolver进行拦截
 	 * @return
 	 */
 	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)

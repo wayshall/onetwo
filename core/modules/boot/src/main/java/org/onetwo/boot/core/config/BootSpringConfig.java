@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.onetwo.common.propconf.Env;
-import org.onetwo.common.spring.Springs;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 
 import lombok.Data;
 
@@ -26,6 +27,9 @@ public class BootSpringConfig {
 	public static final String SYSTEM_APP_ENV_KEY = "app.env";
 //	private ProfilesConfig profiles = new ProfilesConfig();
 	private ApplicationProperties application = new ApplicationProperties();
+	
+	@Autowired
+	private ApplicationContext applicationContext;
 	
     public boolean isEnv(Env env){
     	String envString = env.name().toLowerCase();
@@ -49,7 +53,7 @@ public class BootSpringConfig {
 	}
 	
 	public List<String> getActiveProfiles() {
-		return Arrays.asList(Springs.getInstance().getAppContext().getEnvironment().getActiveProfiles());
+		return Arrays.asList(applicationContext.getEnvironment().getActiveProfiles());
 	}
 	
 	/*@Data
