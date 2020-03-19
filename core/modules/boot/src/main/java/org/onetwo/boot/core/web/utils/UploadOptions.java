@@ -19,9 +19,10 @@ import lombok.Setter;
  */
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class UploadOptions {
-	final private String module;
-	final private MultipartFile multipartFile;
+	private String module;
+	private MultipartFile multipartFile;
 	/***
 	 * 上传的时候是否压缩图片本身，统一实现
 	 */
@@ -47,7 +48,7 @@ public class UploadOptions {
 	/**
 	 * 如果指定了key，会覆盖
 	 */
-	final private String key;
+	private String key;
 
 	@Setter
 	@Getter

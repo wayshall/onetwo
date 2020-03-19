@@ -183,7 +183,7 @@ final public class SpringUtils {
 		public void put(String k, Object v, PropertyContext ctx) {
 			Object value = v;
 			TypeDescriptor sourceType = null;
-			if(v.getClass()!=String.class){
+			if(v!=null && v.getClass()!=String.class){
             	Field field = ctx.getField();
             	if(field!=null && (field.getAnnotation(DateTimeFormat.class)!=null || field.getAnnotation(NumberFormat.class)!=null) ){
     	            sourceType = new TypeDescriptor(field);

@@ -41,6 +41,8 @@
 			<modules>
                 <module>modules/common</module>
                 <module>modules/spring</module>
+                <module>modules/boot</module>
+                <module>modules/dui</module>
                 <module>../../onetwo-wechat</module>
 			</modules>
            <build>
