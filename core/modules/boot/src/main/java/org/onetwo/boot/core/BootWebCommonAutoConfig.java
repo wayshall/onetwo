@@ -9,8 +9,6 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
-import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
-import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
@@ -19,7 +17,7 @@ import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvide
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
-import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
+import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
@@ -31,7 +29,6 @@ import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.boot.dsrouter.DsRouterConfiguration;
 import org.onetwo.common.file.FileStorer;
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
@@ -43,7 +40,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.MultipartProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -52,8 +48,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,8 +75,11 @@ public class BootWebCommonAutoConfig {
 	@Autowired
 	protected BootSiteConfig bootSiteConfig;
 
+//	@Autowired
+//	private MultipartProperties multipartProperties;
+	
 	@Autowired
-	private MultipartProperties multipartProperties;
+	private BootJsonView jsonView;
 	
 	@PostConstruct
 	public void init(){
@@ -110,12 +107,17 @@ public class BootWebCommonAutoConfig {
 	 * 异常解释
 	 * @return
 	 */
-//	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
-	/*@Bean
-	public ResponseEntityExceptionHandler responseEntityExceptionHandler(){
-		BootWebExceptionHandler handler = new BootWebExceptionHandler();
-		return handler;
-	}*/
+	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
+//	@ConditionalOnMissingBean({BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
+//	@Autowired
+	@ConditionalOnMissingBean({BootWebExceptionResolver.class})
+	public BootWebExceptionResolver bootWebExceptionResolver(){
+		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
+//		resolver.setExceptionMessage(exceptionMessage);
+		resolver.setJfishConfig(bootJfishConfig);
+		resolver.setErrorView(jsonView);
+		return resolver;
+	}
 	
 	@Bean
 	public FilterRegistrationBean requestContextFilter(){

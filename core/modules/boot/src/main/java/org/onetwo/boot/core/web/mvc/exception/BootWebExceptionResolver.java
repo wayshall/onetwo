@@ -23,6 +23,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -57,8 +58,8 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	
 //	@Autowired
 //	private BootSiteConfig bootSiteConfig;
-	@Autowired
-	private BootJFishConfig bootJFishConfig;
+//	@Autowired
+	private BootJFishConfig jfishConfig;
 
 	@Autowired(required=false)
 	private ExceptionMessageAccessor exceptionMessageAccessor;
@@ -69,6 +70,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	 */
 	@Autowired(required=false)
 	private WebRequest webRequest;
+	private View errorView;
 	
 //	protected String defaultRedirect;
 	
@@ -106,7 +108,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		if(BootWebUtils.isAjaxRequest(request) || BootWebUtils.isAjaxHandlerMethod(handlerMethod)){
 			DataResult<?> result = DataResults.error(errorMessage.getMesage()).build();
 			model.put(AJAX_RESULT_PLACEHOLDER, result);
-			ModelAndView mv = new ModelAndView("error", model);
+			ModelAndView mv = new ModelAndView(errorView, model);
 			beforeReturnModelAndView(request, handlerMethod, mv, errorMessage);
 			return mv;
 //			BootWebUtils.webHelper(request).setAjaxErrorResult(result);// for  BootWebExceptionHandler
@@ -168,8 +170,8 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 		if (viewName != null) {
 			mv = getModelAndView(viewName, ex, request);
 			mv.addObject("statusCode", statusCode);
-		} else if (StringUtils.isNotBlank(bootJFishConfig.getErrorView()) && isResponsePage(request)){
-			mv = getModelAndView(bootJFishConfig.getErrorView(), ex, request);
+		} else if (StringUtils.isNotBlank(jfishConfig.getErrorView()) && isResponsePage(request)){
+			mv = getModelAndView(jfishConfig.getErrorView(), ex, request);
 			mv.addObject("statusCode", statusCode);
 		} else {
 			//will forward next HandlerExceptionResolver, see DispatcherServlet#processHandlerException
@@ -194,7 +196,7 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	}
 
 	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
-		errorMessage.setNotifyThrowables(bootJFishConfig.getNotifyThrowables());
+		errorMessage.setNotifyThrowables(jfishConfig.getNotifyThrowables());
 		logError(request, errorMessage);
 	}
 
@@ -208,8 +210,15 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	}
 
 	public ExceptionMessageFinderConfig getExceptionMessageFinderConfig() {
-		return this.bootJFishConfig;
+		return this.jfishConfig;
 	}
 
+	public void setJfishConfig(BootJFishConfig jfishConfig) {
+		this.jfishConfig = jfishConfig;
+	}
+
+	public void setErrorView(View errorView) {
+		this.errorView = errorView;
+	}
 
 }

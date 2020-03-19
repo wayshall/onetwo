@@ -94,7 +94,7 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
     	if(logErrorDetail!=null){
     		return logErrorDetail;
     	}
-    	return !bootSpringConfig.isProduct();
+    	return bootSpringConfig!=null && !bootSpringConfig.isProduct();
     }
 
 	public void setLogErrorDetail(Boolean logErrorDetail) {

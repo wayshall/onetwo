@@ -1927,6 +1927,9 @@ public class ReflectUtils {
 	
 	public static FieldName getFieldNameAnnotation(Class<?> clazz, String name){
 		PropertyDescriptor property = getPropertyDescriptor(clazz, name);
+		if (property==null || property.getReadMethod()==null) {
+			return null;
+		}
 		FieldName fn = property.getReadMethod().getAnnotation(FieldName.class);
 		if(fn!=null){
 			return fn;

@@ -10,7 +10,6 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.web.filter.CorsFilter;
-import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.view.ViewResolverConfiguration;
 import org.onetwo.boot.plugin.PluginContextConfig;
 import org.onetwo.boot.plugin.ftl.WebFtlsContextConfig;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -58,20 +56,6 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	}*/
 	
 
-	/***
-	 * 异常解释
-	 * @return
-	 */
-	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
-//	@ConditionalOnMissingBean({BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
-//	@Autowired
-	@ConditionalOnMissingBean({BootWebExceptionResolver.class})
-	public BootWebExceptionResolver bootWebExceptionResolver(){
-		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
-//		resolver.setExceptionMessage(exceptionMessage);
-		return resolver;
-	}
-	
 	/****
 	 * CorsFilter 须在所有filter之前，包括security的filter
 	 * 否则会抛 No 'Access-Control-Allow-Origin' header is present on the requested resource
