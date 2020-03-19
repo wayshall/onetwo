@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.security.config;
 
 import org.onetwo.boot.core.BootWebCommonAutoConfig;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.mvc.DefaultExceptionMessageFinder;
@@ -8,6 +9,7 @@ import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.BootSecurityExceptionMessager;
 import org.onetwo.boot.module.security.handler.BootSecurityAccessDeniedHandler;
@@ -46,6 +48,11 @@ public class BootSecurityCommonContextConfig{
 	private ExceptionMessageAccessor exceptionMessageAccessor;
 	@Autowired
 	private SecurityConfig securityConfig;
+
+	@Autowired
+	protected BootJFishConfig jfishConfig;
+	@Autowired
+	private BootJsonView jsonView;
 
 	/*@Autowired
 	private BootSecurityConfig bootSecurityConfig;
@@ -101,7 +108,10 @@ public class BootSecurityCommonContextConfig{
 //	@ConditionalOnMissingBean(name=BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER, value={BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
 	@ConditionalOnMissingBean(name=BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER, value={BootWebExceptionResolver.class})
 	public SecurityWebExceptionResolver bootWebExceptionResolver(){
-		return new SecurityWebExceptionResolver();
+		SecurityWebExceptionResolver r = new SecurityWebExceptionResolver();
+		r.setJfishConfig(jfishConfig);
+		r.setErrorView(jsonView);
+		return r;
 	}
 
 	@ConditionalOnProperty(name="hostName", prefix="jfish.security.redis")
