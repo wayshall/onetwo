@@ -17,7 +17,6 @@ import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvide
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
-import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
@@ -79,7 +78,7 @@ public class BootWebCommonAutoConfig {
 //	private MultipartProperties multipartProperties;
 	
 	@Autowired
-	private BootJsonView jsonView;
+	protected BootJsonView jsonView;
 	
 	@PostConstruct
 	public void init(){
@@ -102,23 +101,6 @@ public class BootWebCommonAutoConfig {
 	public SpringMultipartFilterProxy springMultipartFilterProxy() {
 		return new SpringMultipartFilterProxy();
 	}*/
-	
-	/***
-	 * 异常解释
-	 * BootWebExceptionHandler 无法拦截在spring拦截器里抛出的异常，所以这里配置自定义的HandlerExceptionResolver进行拦截
-	 * @return
-	 */
-	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
-//	@ConditionalOnMissingBean({BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
-//	@Autowired
-	@ConditionalOnMissingBean({BootWebExceptionResolver.class})
-	public BootWebExceptionResolver bootWebExceptionResolver(){
-		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
-//		resolver.setExceptionMessage(exceptionMessage);
-		resolver.setJfishConfig(bootJfishConfig);
-		resolver.setErrorView(jsonView);
-		return resolver;
-	}
 	
 	@Bean
 	public FilterRegistrationBean requestContextFilter(){
