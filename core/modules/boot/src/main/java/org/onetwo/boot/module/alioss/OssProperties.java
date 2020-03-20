@@ -47,6 +47,15 @@ public class OssProperties {
 		}
 		return endpoint;
 	}
+	
+	/***
+	 * 兼容
+	 * @author weishao zeng
+	 * @param endPoint
+	 */
+	public void setEndPoint(String endPoint) {
+		this.endpoint = endPoint;
+	}
 
 	public static String buildUrl(boolean https, String endpoint, String bucketName, String key){
 		StringBuilder url = new StringBuilder(https?"https":"http");
