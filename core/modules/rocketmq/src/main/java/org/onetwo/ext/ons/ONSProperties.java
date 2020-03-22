@@ -39,6 +39,7 @@ public class ONSProperties implements InitializingBean {
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
 	Map<String, Properties> consumers = Maps.newHashMap();
+	String consumerPrefix;
 	
 	DeleteReceiveTask deleteReceiveTask = new DeleteReceiveTask();
 	

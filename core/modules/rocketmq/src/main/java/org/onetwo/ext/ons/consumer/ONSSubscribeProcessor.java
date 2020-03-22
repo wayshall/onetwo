@@ -12,6 +12,7 @@ import org.onetwo.common.spring.utils.SpringMergedAnnotationFinder;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.ons.ListenerType;
+import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.annotation.ONSSubscribe.ConsumerProperty;
@@ -28,6 +29,8 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private ONSProperties onsProperties;
 	
 
 	@Override
@@ -101,6 +104,10 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 		if (StringUtils.isBlank(consumerId) && listener instanceof DelegateCustomONSConsumer) {
 			DelegateCustomONSConsumer d = (DelegateCustomONSConsumer) listener;
 			consumerId = AopUtils.getTargetClass(d.getTarget()).getSimpleName() + "_" + d.getConsumerMethod().getName();
+		}
+		String consumerPrefix = onsProperties.getConsumerPrefix();
+		if (StringUtils.isNotBlank(consumerPrefix)) {
+			consumerId = consumerPrefix + "_" +consumerId;
 		}
 		
 		ConsumerProperty[] onsProperties = subscribe.properties();
