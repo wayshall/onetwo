@@ -1,9 +1,9 @@
 package org.onetwo.boot.module.poi;
 
-import lombok.Data;
-
 import org.onetwo.common.file.FileUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -17,6 +17,7 @@ public class PoiProperties {
 	
 	boolean writeToLocal;
 	String localDir;
+	boolean cacheTemplate;
 
 	public void setLocalDir(String dir){
 		this.localDir = FileUtils.convertDir(dir);

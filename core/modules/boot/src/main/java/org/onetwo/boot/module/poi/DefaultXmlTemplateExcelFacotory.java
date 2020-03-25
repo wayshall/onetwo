@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.poi;
 
+import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.ext.poi.excel.generator.AbstractWorkbookTemplateFactory;
 import org.onetwo.ext.poi.excel.generator.ModelGeneratorFactory;
@@ -28,11 +29,21 @@ public class DefaultXmlTemplateExcelFacotory extends AbstractWorkbookTemplateFac
 	private String baseTemplateDir = "classpath:";
 	@Autowired
 	private ApplicationContext appContext;
+	@Autowired
+	private BootSpringConfig springConfig;
+	@Autowired
+	private PoiProperties poiProperties;
 	
 	public DefaultXmlTemplateExcelFacotory(){
 		super(true);
 	}
-	
+
+	public boolean isCacheTemplate() {
+		if (poiProperties.isCacheTemplate()) {
+			return true;
+		}
+		return springConfig.isProduct();
+	}
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {

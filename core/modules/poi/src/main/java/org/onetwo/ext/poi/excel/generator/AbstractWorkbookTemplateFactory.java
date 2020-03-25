@@ -24,7 +24,7 @@ abstract public class AbstractWorkbookTemplateFactory implements XmlTemplateGene
 	@Override
 	public TemplateGenerator create(String template, Map<String, Object> context) {
 //		return DefaultExcelGeneratorFactory.createWorkbookGenerator(template, context);
-		return create(getWorkbookModel(template, cacheTemplate), context);
+		return create(getWorkbookModel(template, isCacheTemplate()), context);
 	}
 	
 	@Override
