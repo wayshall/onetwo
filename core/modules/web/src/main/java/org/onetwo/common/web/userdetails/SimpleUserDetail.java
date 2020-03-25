@@ -7,6 +7,7 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 	
 	private long userId;
 	private String userName;
+	private String nickName;
 //	private String token;
 
 	public SimpleUserDetail(){ 
@@ -37,5 +38,13 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 	public boolean isSystemRootUser() {
 		return UserRoot.ROOT_USER_ID==getUserId();
 	}
-	
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
 }
