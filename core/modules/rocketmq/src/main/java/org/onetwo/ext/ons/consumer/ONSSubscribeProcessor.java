@@ -103,11 +103,11 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 		String consumerId = resloveValue(subscribe.consumerId());
 		if (StringUtils.isBlank(consumerId) && listener instanceof DelegateCustomONSConsumer) {
 			DelegateCustomONSConsumer d = (DelegateCustomONSConsumer) listener;
-			consumerId = AopUtils.getTargetClass(d.getTarget()).getSimpleName() + "_" + d.getConsumerMethod().getName();
+			consumerId = AopUtils.getTargetClass(d.getTarget()).getSimpleName() + "-" + d.getConsumerMethod().getName();
 		}
 		String consumerPrefix = onsProperties.getConsumerPrefix();
-		if (StringUtils.isNotBlank(consumerPrefix)) {
-			consumerId = consumerPrefix + "_" +consumerId;
+		if (StringUtils.isNotBlank(consumerPrefix) && !consumerId.startsWith(consumerPrefix)) {
+			consumerId = consumerPrefix + "-" +consumerId;
 		}
 		
 		ConsumerProperty[] onsProperties = subscribe.properties();
