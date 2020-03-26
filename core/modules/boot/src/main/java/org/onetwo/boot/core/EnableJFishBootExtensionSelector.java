@@ -26,6 +26,7 @@ import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
 import org.onetwo.boot.module.session.BootSpringSessionConfiguration;
+import org.onetwo.boot.module.sftp.SftpConfiguration;
 import org.onetwo.boot.module.swagger.SwaggerConfiguration;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.exception.BaseException;
@@ -51,6 +52,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		//store 在BootCommonServiceConfig之前初始化，因为BootCommonService依赖filestore来加载
 		classNames.add(OssConfiguration.class.getName());
 		classNames.add(CosConfiguration.class.getName());
+		classNames.add(SftpConfiguration.class.getName());
 		
 		if(attributes.getBoolean("enableCommonService")){
 			classNames.add(BootCommonServiceConfig.class.getName());

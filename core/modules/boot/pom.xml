@@ -109,6 +109,13 @@
             <artifactId>mail</artifactId>
         </dependency>
         
+        <!-- ssh -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
         <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>

@@ -2,6 +2,7 @@ package org.onetwo.boot.core.config;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletContext;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import com.google.common.collect.Maps;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -219,6 +222,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		boolean useLoadBalance;
 		int serverCount = 2;
 		
+		Map<String, String> pathTags = Maps.newHashMap();
+		
 		public String getBasePath(){
 			if(StringUtils.isNotBlank(basePath)){
 				return basePath;
@@ -323,6 +328,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static enum StoreType {
 		LOCAL,
 		FTP,
+		SFTP,
 		ALIOSS,
 		COS;
 		

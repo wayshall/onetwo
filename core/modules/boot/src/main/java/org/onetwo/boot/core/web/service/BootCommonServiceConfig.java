@@ -7,6 +7,7 @@ import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.service.impl.DbmFileStorerListener;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
+import org.onetwo.boot.core.web.utils.PathTagResolver;
 import org.onetwo.boot.utils.ImageCompressor;
 import org.onetwo.boot.utils.ImageCompressor.ImageCompressorConfig;
 import org.onetwo.common.db.spi.BaseEntityManager;
@@ -85,6 +86,11 @@ public class BootCommonServiceConfig {
 	public SimpleLoggerManager simpleLoggerManager(){
 		return SimpleLoggerManager.getInstance();
 	}
-
+	
+	@Bean
+	public PathTagResolver pathTagResolver() {
+		PathTagResolver resolver = new PathTagResolver();
+		return resolver;
+	}
 
 }

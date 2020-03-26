@@ -614,6 +614,14 @@
        <artifactId>ons-client</artifactId>
        <version>1.7.0.Final</version>
     </dependency>
+        
+    <!-- ssh -->
+    <dependency>
+        <groupId>com.jcraft</groupId>
+        <artifactId>jsch</artifactId>
+        <version>0.1.54</version>
+        <optional>true</optional>
+    </dependency>
     
     <!-- tencent -->
     <dependency>
