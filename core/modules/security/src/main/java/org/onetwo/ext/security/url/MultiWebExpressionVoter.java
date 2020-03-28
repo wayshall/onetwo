@@ -64,15 +64,15 @@ public class MultiWebExpressionVoter implements AccessDecisionVoter<FilterInvoca
 		return result;
 	}
 
-	private CodeSecurityConfig findConfigAttribute(
-			Collection<ConfigAttribute> attributes) {
-		for (ConfigAttribute attribute : attributes) {
-			if (attribute instanceof CodeSecurityConfig) {
-				return (CodeSecurityConfig) attribute;
-			}
-		}
-		return null;
-	}
+//	private CodeSecurityConfig findConfigAttribute(
+//			Collection<ConfigAttribute> attributes) {
+//		for (ConfigAttribute attribute : attributes) {
+//			if (attribute instanceof CodeSecurityConfig) {
+//				return (CodeSecurityConfig) attribute;
+//			}
+//		}
+//		return null;
+//	}
 
 	public boolean supports(ConfigAttribute attribute) {
 		return attribute instanceof CodeSecurityConfig;
