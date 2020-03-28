@@ -190,7 +190,8 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		if(originRequestMap!=null && !originRequestMap.isEmpty()){
 			this.requestMap.putAll(originRequestMap);
 		}
-		DefaultFilterInvocationSecurityMetadataSource fism = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
+//		DefaultFilterInvocationSecurityMetadataSource fism = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
+		MatchAllFilterInvocationSecurityMetadataSource fism = new MatchAllFilterInvocationSecurityMetadataSource(requestMap);
 		this.filterSecurityInterceptor.setSecurityMetadataSource(fism);
 	}
 	

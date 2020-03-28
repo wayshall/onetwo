@@ -28,6 +28,9 @@ import redis.clients.jedis.JedisPoolConfig;
 @Data
 @ToString
 public class SecurityConfig {
+	/***
+	 * 不做任何配置
+	 */
 	public static final String ANY_REQUEST_NONE = "none";
 	
 	public static final String LOGIN_PATH = "/login";
@@ -76,8 +79,12 @@ public class SecurityConfig {
 	
 	private Map<String[], String> intercepterUrls = Maps.newHashMap();
 	private List<InterceptersConfig> intercepters = Lists.newArrayList();
+	/***
+	 * 是否检查：/** -> permitAll
+	 */
+	private boolean checkAnyUrlpermitAll = true;
 	
-	private String anyRequest;
+	private String anyRequest = SecurityConfig.ANY_REQUEST_NONE;
 	private boolean ignoringDefautStaticPaths = true;
 	private String[] ignoringUrls;
 	
