@@ -17,6 +17,7 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 		super();
 		this.userId = userId;
 		this.userName = userName;
+		this.nickName = userName;
 	}
 
 	public long getUserId() {
