@@ -54,6 +54,9 @@ public class MatchAllFilterInvocationSecurityMetadataSource implements FilterInv
 				}
 				continue;
 			}
+//			if (entry.getKey().toString().contains("/productCategory/treeList*")) {
+//				System.out.println("test");
+//			}
 			if (entry.getKey().matches(request)) {
 				auths.addAll(entry.getValue());
 			}
