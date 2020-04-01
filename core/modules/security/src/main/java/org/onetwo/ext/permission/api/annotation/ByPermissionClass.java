@@ -9,6 +9,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ByPermissionClass {
 
-	Class<?>[] value();
+	Class<?>[] value() default FullyAuthenticated.class;
+	
 	boolean overrideMenuUrl() default true;
+	
+	
+	/*
+	 * public interface Authenticated { }
+	 */
 }

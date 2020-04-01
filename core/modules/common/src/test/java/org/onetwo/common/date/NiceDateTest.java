@@ -29,6 +29,9 @@ public class NiceDateTest {
 		Date d = sdf.parse(str);
 		System.out.println("parse:"+d.toLocaleString());
 		
+		str = NiceDate.Now().nextDay(1).atTheBeginning().formatAsDateTime();
+		System.out.println("next date: " + str);
+		
 	}
 
 	@Test

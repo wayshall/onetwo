@@ -14,6 +14,7 @@ import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.onetwo.ext.permission.api.PermissionType;
+import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
 import org.onetwo.ext.permission.api.annotation.MenuMapping;
 import org.onetwo.ext.permission.api.annotation.PermissionMeta;
 import org.onetwo.ext.permission.api.annotation.PermissionMetaData;
@@ -90,7 +91,14 @@ public class PermClassParser {
 	}*/
 	
 	public String getAppCode(){
+		if (isFullyAuthenticated()) {
+			return FullyAuthenticated.AUTH_CODE;
+		}
 		return getFieldValue(APP_CODE, String.class, getActualPermissionClass().getSimpleName());
+	}
+	
+	public boolean isFullyAuthenticated() {
+		return this.parentPermissionClass == FullyAuthenticated.class;
 	}
 	
 	public String generatedSimpleCode(){

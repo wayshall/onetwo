@@ -22,8 +22,8 @@ import org.onetwo.ext.permission.api.DataFrom;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.api.PermissionType;
+import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
 import org.onetwo.ext.permission.api.annotation.MenuMapping;
-import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -121,8 +121,8 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 		} catch (Exception e) {
 			throw new BaseException("parse tree error: " + e.getMessage(), e);
 		}
-		if(!PermissionUtils.isMenu(perm))
-			throw new BaseException("root must be a menu node : " + perm.getCode());
+//		if(!PermissionUtils.isMenu(perm))
+//			throw new BaseException("root must be a menu node : " + perm.getCode());
 		rootMenu = perm;
 		
 		String[] childMenuPackages = permissionConfig.getChildMenuPackages();
@@ -266,7 +266,9 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 		perm.setSort(sort==null?firstNodeSort+permClassParserMap.size():sort.intValue());
 		perm.setHidden(parser.isHidden());
 		perm.setAppCode(syscode);
-		perm.setMeta(parser.getMeta());
+		if (!parser.getMeta().isEmpty()) {
+			perm.setMeta(parser.getMeta());
+		}
 //		perm.setComponentViewPath(parser.getComponentViewPath());
 
 		if (isRootMenuClassParser(parser)) {
@@ -308,6 +310,9 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 	@Override
 	public String getCode(Class<?> menuClass){
 		PermClassParser menuClassParser = getPermClassParser(menuClass);
+		if (menuClassParser.isFullyAuthenticated()) {
+			return FullyAuthenticated.AUTH_CODE;
+		}
 //		P p = permissionMapByClass.get(menuClass);
 		Class<?> actualMenuClass = menuClassParser.getActualPermissionClass();
 		P p = permissionMapByClass.get(actualMenuClass);
@@ -327,6 +332,9 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 	}*/
 	
 	public String parseCode(PermClassParser parser){
+		if (parser.isFullyAuthenticated()) {
+			return FullyAuthenticated.AUTH_CODE;
+		}
 		String code = parser.generatedSimpleCode();
 		PermClassParser parent = parser;
 		while(parent.getParentPermissionClass()!=null){

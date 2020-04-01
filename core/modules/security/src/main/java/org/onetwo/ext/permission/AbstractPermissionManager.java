@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.permission.api.IPermission;
+import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.slf4j.Logger;
@@ -146,6 +147,9 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 											.collect(Collectors.toSet());
 		Set<String> deleteRootCodes = Sets.difference(getDatabaseRootCodes(), memoryRootCodes);
 		deleteRootCodes.stream().forEach(rootCode -> {
+			if (isReversePermissions(rootCode)) {
+				return;
+			}
 			this.removeUnusedRootMenu(rootCode);
 		});
 		
@@ -153,7 +157,10 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 			securityMetadataSourceBuilder.buildSecurityMetadataSource();
 		}
 	}
-
+	
+	protected boolean isReversePermissions(String code) {
+		return code.equalsIgnoreCase(FullyAuthenticated.AUTH_CODE);
+	}
 	
 	protected void removeUnusedRootMenu(String rootCode) {
 		this.removePermission(rootCode, true);
@@ -189,6 +196,8 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		Set<P> adds = Sets.difference(memoryPermissions, dbPermissions);
 		Set<P> deletes = Sets.difference(dbPermissions, memoryPermissions);
 		Set<P> intersections = Sets.intersection(memoryPermissions, dbPermissions);
+		
+//		filterReversePermissions(deletes);
 		
 		this.updatePermissions(rootPermission, dbPermissionMap, adds, deletes, intersections);
 
