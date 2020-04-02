@@ -2,9 +2,8 @@ package org.onetwo.ext.security.utils;
 
 import java.util.Set;
 
-import lombok.Getter;
-
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.matcher.MutipleRequestMatcher;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -18,9 +17,11 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.google.common.collect.ImmutableSet;
 
+import lombok.Getter;
+
 final public class SecurityUtils {
 //	private static final Logger logger = JFishLoggerFactory.getLogger(SecurityUtils.class);
-	private static final Set<String> KEYWORDS = ImmutableSet.of("permitAll", "denyAll", "is", "has");
+	private static final Set<String> KEYWORDS = ImmutableSet.of("permitAll", "authenticated", "fullyAuthenticated", "denyAll", "is", "has");
 	
 	public static final RequestMatcher READ_METHOD_MATCHER = new CommonReadMethodMatcher();
 	
@@ -49,7 +50,8 @@ final public class SecurityUtils {
 	}
 	
 	protected static boolean isKeyword(String authority){
-		return KEYWORDS.stream().filter(key->authority.startsWith(key))
+		String auth = StringUtils.uncapitalize(authority);
+		return KEYWORDS.stream().filter(key->auth.startsWith(key))
 						.findAny().isPresent();
 	}
 
