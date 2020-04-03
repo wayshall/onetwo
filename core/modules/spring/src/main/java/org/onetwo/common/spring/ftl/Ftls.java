@@ -29,5 +29,12 @@ public abstract class Ftls {
 		TemplateParser parser = new DefaultTemplateParser(freemarkerTemplateConfigurer);
 		return parser;
 	}
+	
+	static public TemplateParser createDynamicParser(StringTemplateProvider templateProvider) {
+		DynamicStringFreemarkerTemplateConfigurer freemarkerTemplateConfigurer = new DynamicStringFreemarkerTemplateConfigurer(templateProvider);
+		freemarkerTemplateConfigurer.initialize();
+		TemplateParser parser = new DefaultTemplateParser(freemarkerTemplateConfigurer);
+		return parser;
+	}
 
 }

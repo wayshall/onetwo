@@ -1,13 +1,14 @@
 package org.onetwo.common.spring.ftl;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.LangUtils;
+
+import com.google.common.collect.Maps;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -77,7 +78,7 @@ public class StringFreemarkerTemplateConfigurer extends DynamicFreemarkerTemplat
 		
 		private DefaultStringTemplateProvider(Map<String, StringTemplate> mapper) {
 			super();
-			this.mapper = LangUtils.isEmpty(mapper)?new HashMap<String, StringTemplate>():mapper;
+			this.mapper = LangUtils.isEmpty(mapper)?Maps.newConcurrentMap():mapper;
 		}
 
 		@Override

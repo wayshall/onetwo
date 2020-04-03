@@ -16,7 +16,7 @@ public class PasswordEncoderTest {
 	
 	@Test
 	public void testBcrypt(){
-		String pwd = "jfish";
+		String pwd = "test";
 		String salt = "keys$-_^测";
 		byte[] saltbytes = salt.getBytes();
 		int strength = 4; //指定SecureRandom后，只要符合范围，没什么用
@@ -28,7 +28,7 @@ public class PasswordEncoderTest {
 
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		result = encoder.encode(pwd);
-		System.out.println("result: " + result);
+		System.out.println("BCryptPasswordEncoder result: " + result);
 		assertThat(saltEncoder.matches(pwd, result));
 
 		result = saltEncoder.encode(pwd);
