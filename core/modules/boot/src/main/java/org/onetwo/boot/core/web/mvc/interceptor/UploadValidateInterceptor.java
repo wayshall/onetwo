@@ -20,6 +20,11 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
+/****
+ * https://github.com/wayshall/onetwo/issues/29
+ * @author way
+ *
+ */
 public class UploadValidateInterceptor extends WebInterceptorAdapter {
 
 	public static final String[] DEFAULT_ALLOW_FILE_TYPES = {"jpg", "jpeg", "gif", "png", "bmp", "xls", "xlsx", "pdf", "doc", "txt"};
