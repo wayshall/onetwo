@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
  */
 @AllArgsConstructor
 public enum WebErrors implements ErrorType {
-	UPLOAD_FILE_SIZE_LIMIT_EXCEEDED("单个文件上传超过了限制!"),
+	UPLOAD_FILE_SIZE_LIMIT_EXCEEDED("单个文件上传超过了限制"),
 	UPLOAD("上传错误");
 
 	private final String message;

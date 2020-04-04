@@ -190,4 +190,5 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	public class GraceKillConfig {
 		Collection<String> signals;
 	}
+	
 }

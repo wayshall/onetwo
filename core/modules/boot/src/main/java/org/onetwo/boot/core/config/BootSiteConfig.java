@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.filter.DefaultSiteConfig;
 import org.onetwo.common.web.filter.SiteConfigProvider;
@@ -275,6 +276,23 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 //		String ftpBaseDir;
 		
 		CompressConfig compressImage = new CompressConfig();
+		
+		/****
+		 * 单个文件最大上传
+		 */
+		String maxFileUploadSize;
+		
+		/***
+		 * -1为没有配置
+		 * @author weishao zeng
+		 * @return
+		 */
+		public int getMaxFileUploadSizeInBytes() {
+			if (StringUtils.isBlank(maxFileUploadSize)) {
+				return -1;
+			}
+			return FileUtils.parseSize(maxFileUploadSize);
+		}
 
 		public Integer getResourceCacheInDays() {
 			return resourceCacheInDays;
