@@ -23,6 +23,8 @@ public @interface UploadFileValidator {
 	 * spring.http.multipart.maxFileSize
 	 * spring.http.multipart.maxRequestSize
 	 * 
+	 * -1为不检查
+	 * 
 	 * @author wayshall
 	 * @return
 	 */

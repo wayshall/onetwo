@@ -75,8 +75,9 @@ public class UploadValidateInterceptor extends WebInterceptorAdapter {
 	protected void checkFileTypes(List<MultipartFile> fileItems, UploadFileValidator validator){
 		List<String> allowed = validator!=null?Arrays.asList(validator.allowedPostfix()):Arrays.asList(DEFAULT_ALLOW_FILE_TYPES);
 		int configMaxUploadSize= this.siteConfig.getUpload().getMaxFileUploadSizeInBytes();
-		int maxUploadSize = validator.maxUploadSize();
-		String configKey = validator.maxUploadSizeConfigKey();
+		
+		int maxUploadSize = validator==null?configMaxUploadSize:validator.maxUploadSize();
+		String configKey = validator==null?null:validator.maxUploadSizeConfigKey();
 		if (StringUtils.isNotBlank(configKey)) {
 			if (this.applicationContext.getEnvironment().containsProperty(configKey)) {
 				configKey = this.applicationContext.getEnvironment().getProperty(configKey);
@@ -107,7 +108,7 @@ public class UploadValidateInterceptor extends WebInterceptorAdapter {
 				}
 			}
 			// 再检查注解的配置
-			if (item.getSize()>maxUploadSize) {
+			if (maxUploadSize!=-1 && item.getSize()>maxUploadSize) {
 				throw new UploadFileSizeLimitExceededException(maxUploadSize, item.getSize());
 			}
 //				throw new MaxUploadSizeExceededException(validator.maxUploadSize());
