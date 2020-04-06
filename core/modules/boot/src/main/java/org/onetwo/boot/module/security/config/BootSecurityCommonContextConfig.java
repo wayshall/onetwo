@@ -51,7 +51,7 @@ public class BootSecurityCommonContextConfig{
 
 	@Autowired
 	protected BootJFishConfig jfishConfig;
-	@Autowired
+	@Autowired(required=false)
 	private BootJsonView jsonView;
 
 	/*@Autowired
