@@ -61,7 +61,7 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 				if (ArrayUtils.contains(entry.getKey(), "/**") && 
 						("permitAll".equals(entry.getValue()) || "authenticated".equals(entry.getValue()))
 					) {
-					throw new BaseException("do not config /** -> permitAll, it's very danger!");
+					throw new BaseException("do not config /** -> permitAll or authenticated, it's very danger!");
 				}
 			}
 		}
