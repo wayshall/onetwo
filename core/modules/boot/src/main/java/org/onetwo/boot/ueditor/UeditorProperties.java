@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class UeditorProperties {
 	public static final String UEDITOR = BootJFishConfig.PREFIX + ".ueditor";
-	public static final String UEDITOR_UPLOAD_PATH = UEDITOR + ".upload.path";
+	public static final String UEDITOR_UPLOAD_PATH = UEDITOR + ".upload.path"; // jfish.ueditor.upload.path: /web-admin/ueditor
 	
 	UeditorConfig config = new UeditorConfig();
 	

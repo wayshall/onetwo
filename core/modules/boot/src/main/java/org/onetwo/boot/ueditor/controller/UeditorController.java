@@ -13,6 +13,7 @@ import org.onetwo.boot.ueditor.vo.UeditorUploadResponse;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.web.utils.ResponseUtils;
+import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
  * <br/>
  */
 //@RestController
-@RequestMapping("${"+UeditorProperties.UEDITOR_UPLOAD_PATH + ":/ueditor}")
+@RequestMapping("${"+UeditorProperties.UEDITOR_UPLOAD_PATH + ":/web-admin/ueditor}")
 public class UeditorController extends AbstractBaseController {
 	@Autowired
 	private UeditorProperties ueditorProperties;
@@ -36,6 +37,7 @@ public class UeditorController extends AbstractBaseController {
 	
 	@GetMapping(params="action=config")
 	@ResponseBody
+	@ByPermissionClass
 	public UeditorConfig config() {
 		UeditorConfig config = ueditorProperties.getConfig();
 		config.setImageUrlPrefix(bootSiteConfig.getImageServer().getBasePath());
@@ -44,7 +46,7 @@ public class UeditorController extends AbstractBaseController {
 	
 	@PostMapping(params="action="+UeditorConfig.IMAGE_ACTION_NAME)
     @UploadFileValidator(allowedPostfix = {"jpg", "jpeg", "gif", "png", "bmp"}, maxUploadSize = 1024 * 1024 * 10)
-//	@ResponseBody
+	@ByPermissionClass
 	public void uploadimage(MultipartFile upfile, HttpServletResponse response) {
 //		WebHolder.getResponse().get().setHeader("Access-Control-Allow-Origin", "*");
 		FileStoredMeta meta = this.bootCommonService.uploadFile(UploadOptions.builder()
