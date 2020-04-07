@@ -6,6 +6,7 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadFileValidator;
 import org.onetwo.boot.core.web.service.BootCommonService;
+import org.onetwo.boot.core.web.utils.PathTagResolver;
 import org.onetwo.boot.core.web.utils.UploadOptions;
 import org.onetwo.boot.ueditor.UeditorProperties;
 import org.onetwo.boot.ueditor.UeditorProperties.UeditorConfig;
@@ -34,13 +35,15 @@ public class UeditorController extends AbstractBaseController {
 	private BootCommonService bootCommonService;
 	@Autowired
 	private BootSiteConfig bootSiteConfig;
+	@Autowired
+	private PathTagResolver pathTagResolver;
 	
 	@GetMapping(params="action=config")
 	@ResponseBody
 	@ByPermissionClass
 	public UeditorConfig config() {
 		UeditorConfig config = ueditorProperties.getConfig();
-		config.setImageUrlPrefix(bootSiteConfig.getImageServer().getBasePath());
+//		config.setImageUrlPrefix(bootSiteConfig.getImageServer().getBasePath());
 		return config;
 	}
 	
@@ -60,9 +63,13 @@ public class UeditorController extends AbstractBaseController {
 													                .multipartFile(upfile)
 													                .key(key)
 													                .build());
+
+		// 解释后的地址已经包含前缀，此时不需要配置 imageUrlPrefix 属性
+		String path = pathTagResolver.parsePathTag(meta.getAccessablePath());
+		
 		UeditorUploadResponse res = UeditorUploadResponse.builder()
 						.state("SUCCESS")
-						.url(meta.getAccessablePath())
+						.url(path)
 						.original(meta.getOriginalFilename())
 						.title(meta.getOriginalFilename())
 						.build();
