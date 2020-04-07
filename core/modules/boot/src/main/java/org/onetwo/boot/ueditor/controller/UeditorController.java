@@ -2,7 +2,6 @@ package org.onetwo.boot.ueditor.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadFileValidator;
 import org.onetwo.boot.core.web.service.BootCommonService;
@@ -33,8 +32,8 @@ public class UeditorController extends AbstractBaseController {
 	private UeditorProperties ueditorProperties;
 	@Autowired
 	private BootCommonService bootCommonService;
-	@Autowired
-	private BootSiteConfig bootSiteConfig;
+//	@Autowired
+//	private BootSiteConfig bootSiteConfig;
 	@Autowired
 	private PathTagResolver pathTagResolver;
 	

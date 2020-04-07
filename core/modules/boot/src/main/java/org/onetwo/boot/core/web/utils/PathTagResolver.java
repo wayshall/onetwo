@@ -69,6 +69,9 @@ public class PathTagResolver implements InitializingBean {
 	 * @return
 	 */
 	public String parsePathTag(String subPath) {
+		if(siteConfig==null || siteConfig.getImageServer()==null){
+			return subPath;
+		}
 		ImageServer server = siteConfig.getImageServer();
 		Optional<String> pathTagOpt = findPathTag(subPath, false);
 		String path = null;

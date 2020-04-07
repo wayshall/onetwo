@@ -3,8 +3,6 @@ package org.onetwo.boot.utils;
 import java.util.Arrays;
 import java.util.List;
 
-import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.config.BootSiteConfig.ImageServer;
 import org.onetwo.boot.core.web.utils.PathTagResolver;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.jackson.serializer.UrlJsonSerializer;
@@ -27,12 +25,12 @@ public class ImageUrlJsonSerializer extends UrlJsonSerializer {
 		}
 
 		
-		BootSiteConfig config = Springs.getInstance().getBean(BootSiteConfig.class);
-		if(config==null || config.getImageServer()==null){
-			return subPath;
-		}
+//		BootSiteConfig config = Springs.getInstance().getBean(BootSiteConfig.class);
+//		if(config==null || config.getImageServer()==null){
+//			return subPath;
+//		}
 
-		ImageServer server = config.getImageServer();
+//		ImageServer server = config.getImageServer();
 		
 		PathTagResolver pathTagResolver = Springs.getInstance().getBean(PathTagResolver.class);
 //		Optional<String> pathTag = pathTagResolver.findPathTag(subPath, false);
