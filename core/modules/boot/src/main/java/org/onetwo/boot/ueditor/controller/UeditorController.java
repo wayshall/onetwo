@@ -49,10 +49,16 @@ public class UeditorController extends AbstractBaseController {
 	@ByPermissionClass
 	public void uploadimage(MultipartFile upfile, HttpServletResponse response) {
 //		WebHolder.getResponse().get().setHeader("Access-Control-Allow-Origin", "*");
+		String key = null;
+		UeditorConfig config = ueditorProperties.getConfig();
+		if (config.isFormatPath()) {
+			key = config.formatImagePath(upfile.getOriginalFilename());
+		}
 		FileStoredMeta meta = this.bootCommonService.uploadFile(UploadOptions.builder()
-                													.compressConfig(ueditorProperties.getImageCompress())
-													                .module(UeditorProperties.UEDITOR)
+                													.compressConfig(ueditorProperties.isCompressEnabled()?ueditorProperties.getImageCompress():null)
+													                .module(ueditorProperties.getBizModule())
 													                .multipartFile(upfile)
+													                .key(key)
 													                .build());
 		UeditorUploadResponse res = UeditorUploadResponse.builder()
 						.state("SUCCESS")
