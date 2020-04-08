@@ -740,23 +740,23 @@ abstract public class DateUtils {
 	 * @return
 	 */
 	public static String matchPattern(String dateStr){
-		if(isYyyy(dateStr)){
-			return YEAR_ONLY;
-		}else if(isYyyy_MM(dateStr)){
-			return YEAR_MONTH;
-		}else if(isYyyy_MM_dd(dateStr)){
-			return DATE_ONLY;
-		}else if(isYyyy_MM_dd_HH(dateStr)){
-			return "yyyy-MM-dd HH";
-		}else if(isYyyy_MM_dd_HH_mm(dateStr)){
-			return "yyyy-MM-dd HH:mm";
-		}else if(isYyyy_MM_dd_HH_mm_ss(dateStr)){
+		if(isYyyy_MM_dd_HH_mm_ss(dateStr)){
 			return DATE_TIME;
-		}else if(isHH_mm(dateStr)){
+		} else if (isYyyy_MM_dd_HH_mm(dateStr)){
+			return DATE_SHORT_TIME;
+		} else if (isYyyy_MM_dd(dateStr)){
+			return DATE_ONLY;
+		} else if (isYyyy(dateStr)){
+			return YEAR_ONLY;
+		} else if (isYyyy_MM(dateStr)){
+			return YEAR_MONTH;
+		} else if (isYyyy_MM_dd_HH(dateStr)){
+			return "yyyy-MM-dd HH";
+		}else if (isHH_mm(dateStr)){
 			return "HH:mm";
-		}else if(isHH_mm_ss(dateStr)){
+		} else if (isHH_mm_ss(dateStr)){
 			return "HH:mm:ss";
-		}else{
+		} else {
 			return DATE_TIME_MILLS;
 		}
 	}
