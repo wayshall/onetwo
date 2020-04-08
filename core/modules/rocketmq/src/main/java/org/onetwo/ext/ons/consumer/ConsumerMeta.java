@@ -59,6 +59,8 @@ public class ConsumerMeta {
 	@Builder.Default
 	private IdempotentType idempotentType = IdempotentType.NONE;
 	
+	private boolean appendConsumerPrefix;
+	
 	public boolean shouldWithTransational() {
 		return getIdempotentType()==IdempotentType.DATABASE;
 	}
