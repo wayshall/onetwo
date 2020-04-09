@@ -95,4 +95,20 @@ public class CosProperties {
 			.append(key);
 		return url.toString();
 	}
+
+	public void setEndPoint(String endPoint) {
+		this.endPoint = endPoint;
+	}
+	
+	public String getEndPoint() {
+		return this.endPoint;
+	}
+	
+	public String getEndpoint() {
+		return endPoint;
+	}
+
+	public void setEndpoint(String endpoint) {
+		this.endPoint = endpoint;
+	}
 }

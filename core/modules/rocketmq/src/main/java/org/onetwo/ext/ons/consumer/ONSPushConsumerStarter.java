@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -176,7 +177,13 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					} else {
 						logger.warn("message has been consumed and will skip: " + e.getMessage());
 					}
-				} catch(ImpossibleConsumeException e) {
+				} catch(MessageOnlyServiceException e) {
+					// 不可能被消费，记录错误并发送提醒
+					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
+					logger.error(errorMsg, e);
+					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+//					applicationContext.publishEvent(event);
+				}  catch(ImpossibleConsumeException e) {
 					// 不可能被消费，记录错误并发送提醒
 					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
 					logger.error(errorMsg, e);
