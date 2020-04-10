@@ -18,9 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.google.common.cache.Cache;
 
 /**
  * @author wayshall
@@ -28,15 +26,15 @@ import com.google.common.cache.LoadingCache;
  */
 abstract public class BaseApiClientFactoryBean<P extends BaseMethodParameter, M extends BaseApiClientMethod<P>> implements FactoryBean<Object>, InitializingBean, ApplicationContextAware {
 
-	final protected LoadingCache<Method, M> apiMethodCaches = CacheBuilder.newBuilder()
-																.build(new CacheLoader<Method, M>() {
-																	@Override
-																	public M load(Method method) throws Exception {
-																		M apiMethod = createApiMethod(method);
-																		return apiMethod;
-																	}
-																});
-	
+//	final protected LoadingCache<Method, M> apiMethodCaches = CacheBuilder.newBuilder()
+//																.build(new CacheLoader<Method, M>() {
+//																	@Override
+//																	public M load(Method method) throws Exception {
+//																		M apiMethod = createApiMethod(method);
+//																		return apiMethod;
+//																	}
+//																});
+//	
 	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	protected Class<?> interfaceClass;
@@ -68,9 +66,7 @@ abstract public class BaseApiClientFactoryBean<P extends BaseMethodParameter, M 
 	
 	abstract protected M createApiMethod(Method method);
 	
-	protected MethodInterceptor createApiMethodInterceptor() {
-		return new SimpleApiMethodInterceptor(apiMethodCaches);
-	}
+	abstract protected MethodInterceptor createApiMethodInterceptor();
 	
 	abstract protected Object interceptMethod(MethodInvocation invocation, M invokeMethod) throws Throwable;
 
@@ -103,7 +99,7 @@ abstract public class BaseApiClientFactoryBean<P extends BaseMethodParameter, M 
 	
 	public class SimpleApiMethodInterceptor extends AbstractMethodInterceptor<M> {
 
-		public SimpleApiMethodInterceptor(LoadingCache<Method, M> methodCache) {
+		public SimpleApiMethodInterceptor(Cache<Method, M> methodCache) {
 			super(methodCache);
 		}
 
@@ -114,6 +110,11 @@ abstract public class BaseApiClientFactoryBean<P extends BaseMethodParameter, M 
 			});
 			return chain.invoke();
 			
+		}
+		
+
+		protected M createMethod(Method method) {
+			return createApiMethod(method);
 		}
 	}
 
