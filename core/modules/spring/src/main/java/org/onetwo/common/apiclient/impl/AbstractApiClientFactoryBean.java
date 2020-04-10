@@ -36,7 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.google.common.cache.LoadingCache;
+import com.google.common.cache.Cache;
 
 /**
  * @author wayshall
@@ -184,7 +184,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	
 	public class DefaultApiMethodInterceptor extends AbstractMethodInterceptor<M> {
 
-		public DefaultApiMethodInterceptor(LoadingCache<Method, M> methodCache) {
+		public DefaultApiMethodInterceptor(Cache<Method, M> methodCache) {
 			super(methodCache);
 		}
 		
