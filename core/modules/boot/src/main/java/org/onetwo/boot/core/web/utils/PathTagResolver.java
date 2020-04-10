@@ -85,8 +85,8 @@ public class PathTagResolver implements InitializingBean {
 			if (!server.getPathTags().containsKey(pathTag)) {
 				throw new BaseException("pathTag baseUrl not found: " + pathTag);
 			}
-			String configPathTag = server.getPathTags().get(pathTag);
-			subPath = configPathTag + trimPathTag(subPath);
+			path = server.getPathTags().get(pathTag);
+			subPath = trimPathTag(subPath);
 		}
 		path = fixPath(path, subPath);
 		return path;
