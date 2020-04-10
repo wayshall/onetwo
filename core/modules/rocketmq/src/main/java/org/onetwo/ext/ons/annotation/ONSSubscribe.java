@@ -33,6 +33,20 @@ public @interface ONSSubscribe {
 	String[] tags() default {};
 	MessageModel messageModel() default MessageModel.CLUSTERING;
 	ConsumeFromWhere consumeFromWhere() default ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET ;
+
+	// DefaultMQPushConsumer#consumeTimestamp
+	/***
+	 * 格式：yyyyMMddhhmmss 
+	 */
+	String consumeTimestamp() default "";
+	
+	/***
+	 * 是否自动加上配置文件里的消费组前缀
+	 * @author weishao zeng
+	 * @return
+	 */
+	boolean appendConsumerPrefix() default true;
+	
 	long ignoreOffSetThreshold() default -1;
 	int maxReconsumeTimes() default -1;
 	boolean autoDeserialize() default true;

@@ -106,7 +106,9 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 			consumerId = AopUtils.getTargetClass(d.getTarget()).getSimpleName() + "-" + d.getConsumerMethod().getName();
 		}
 		String consumerPrefix = onsProperties.getConsumerPrefix();
-		if (StringUtils.isNotBlank(consumerPrefix) && !consumerId.startsWith(consumerPrefix)) {
+		if (StringUtils.isNotBlank(consumerPrefix) && 
+				!consumerId.startsWith(consumerPrefix) && 
+				subscribe.appendConsumerPrefix()) {
 			consumerId = consumerPrefix + "-" +consumerId;
 		}
 		
@@ -126,8 +128,10 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 				.listenerType(listenerType)
 				.consumerAction(listener)
 				.consumerBeanName(listernName)
+				.consumeTimestamp(subscribe.consumeTimestamp())
 				.autoDeserialize(subscribe.autoDeserialize())
 				.idempotentType(subscribe.idempotent())
+				.appendConsumerPrefix(subscribe.appendConsumerPrefix())
 				.comsumerProperties(properties)
 				.build();
 		return meta;

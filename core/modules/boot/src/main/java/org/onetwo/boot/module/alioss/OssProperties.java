@@ -56,6 +56,18 @@ public class OssProperties {
 	public void setEndPoint(String endPoint) {
 		this.endpoint = endPoint;
 	}
+	
+	public String getEndPoint() {
+		return this.endpoint;
+	}
+	
+	public String getEndpoint() {
+		return endpoint;
+	}
+
+	public void setEndpoint(String endpoint) {
+		this.endpoint = endpoint;
+	}
 
 	public static String buildUrl(boolean https, String endpoint, String bucketName, String key){
 		StringBuilder url = new StringBuilder(https?"https":"http");
@@ -67,7 +79,7 @@ public class OssProperties {
 			.append(key);
 		return url.toString();
 	}
-	
+
 	@lombok.Data
 	public static class WaterMaskProperties {
 		boolean enabled;

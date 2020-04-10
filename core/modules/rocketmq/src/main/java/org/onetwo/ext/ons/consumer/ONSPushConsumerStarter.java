@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.ListenerType;
 import org.onetwo.ext.ons.ONSProperties;
@@ -108,19 +110,30 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		if (meta.getMaxReconsumeTimes()>0){
 			comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
 		}
+		
+		if (meta.getComsumerProperties()!=null) {
+			comsumerProperties.putAll(meta.getComsumerProperties());
+		}
+		// 配置覆盖注解
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
 		if (customProps!=null){
 			comsumerProperties.putAll(customProps);
-		}
-		// 注解覆盖配置
-		if (meta.getComsumerProperties()!=null) {
-			comsumerProperties.putAll(meta.getComsumerProperties());
 		}
 //		rawConsumer.setMessageModel(meta.getMessageModel());
 		
 		Consumer consumer = createConsumer(comsumerProperties);
 		DefaultMQPushConsumer rawConsumer = (DefaultMQPushConsumer)ReflectUtils.getFieldValue(consumer, "defaultMQPushConsumer");
 		rawConsumer.setConsumeFromWhere(meta.getConsumeFromWhere());
+		
+		if (StringUtils.isNotBlank(comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY))) {
+			String timestamp = ONSUtils.reformatTimestamp(comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY));
+			rawConsumer.setConsumeTimestamp(timestamp);
+			
+		} else if (StringUtils.isNotBlank(meta.getConsumeTimestamp())) {
+			String timestamp = ONSUtils.reformatTimestamp(meta.getConsumeTimestamp());
+			rawConsumer.setConsumeTimestamp(timestamp);
+		}
+		
 		meta.setComsumerProperties(comsumerProperties);
 		
 //		consumer.subscribe(meta.getTopic(), meta.getSubExpression(), listener);
@@ -164,7 +177,13 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					} else {
 						logger.warn("message has been consumed and will skip: " + e.getMessage());
 					}
-				} catch(ImpossibleConsumeException e) {
+				} catch(MessageOnlyServiceException e) {
+					// 不可能被消费，记录错误并发送提醒
+					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
+					logger.error(errorMsg, e);
+//					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+//					applicationContext.publishEvent(event);
+				}  catch(ImpossibleConsumeException e) {
 					// 不可能被消费，记录错误并发送提醒
 					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
 					logger.error(errorMsg, e);

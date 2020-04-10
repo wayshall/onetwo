@@ -6,14 +6,19 @@ package org.onetwo.boot.core.web.utils;
 
 import java.util.Optional;
 
+import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.ImageServer;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PathTagResolver implements InitializingBean {
 	private String start = "{";
 	private String end = "}";
 
+	@Autowired
+	private BootSiteConfig siteConfig;
 	
 	public PathTagResolver() {
 	}
@@ -55,6 +60,43 @@ public class PathTagResolver implements InitializingBean {
 		} else {
 			return Optional.of(path.substring(startIndex+1, endIndex));
 		}
+	}
+	
+	/***
+	 * 解释特殊的路径标记，如：{sftp}/aa/bb/cc.jpg -> /sftp_real_path/aa/bb/cc.jpg
+	 * @author weishao zeng
+	 * @param subPath
+	 * @return
+	 */
+	public String parsePathTag(String subPath) {
+		if(siteConfig==null || siteConfig.getImageServer()==null){
+			return subPath;
+		}
+		ImageServer server = siteConfig.getImageServer();
+		Optional<String> pathTagOpt = findPathTag(subPath, false);
+		String path = null;
+		if (!pathTagOpt.isPresent()) {
+			if(StringUtils.isBlank(server.getBasePath())){
+				return subPath;
+			}
+			path = server.getBasePath();
+		} else {
+			String pathTag = pathTagOpt.get();
+			if (!server.getPathTags().containsKey(pathTag)) {
+				throw new BaseException("pathTag baseUrl not found: " + pathTag);
+			}
+			String configPathTag = server.getPathTags().get(pathTag);
+			subPath = configPathTag + trimPathTag(subPath);
+		}
+		path = fixPath(path, subPath);
+		return path;
+	}
+
+	static public String fixPath(String basePath, String subPath){
+		if(!basePath.endsWith("/") && !subPath.startsWith("/")){
+			basePath += "/";
+		}
+		return basePath + subPath;
 	}
 	
 	public void checkPathTag(String pathTag) {

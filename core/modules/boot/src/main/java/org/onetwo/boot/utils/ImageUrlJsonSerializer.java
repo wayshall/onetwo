@@ -2,13 +2,8 @@ package org.onetwo.boot.utils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-import org.onetwo.boot.core.config.BootSiteConfig;
-import org.onetwo.boot.core.config.BootSiteConfig.ImageServer;
 import org.onetwo.boot.core.web.utils.PathTagResolver;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.jackson.serializer.UrlJsonSerializer;
 import org.onetwo.common.spring.Springs;
@@ -30,33 +25,34 @@ public class ImageUrlJsonSerializer extends UrlJsonSerializer {
 		}
 
 		
-		BootSiteConfig config = Springs.getInstance().getBean(BootSiteConfig.class);
-		if(config==null || config.getImageServer()==null){
-			return subPath;
-		}
+//		BootSiteConfig config = Springs.getInstance().getBean(BootSiteConfig.class);
+//		if(config==null || config.getImageServer()==null){
+//			return subPath;
+//		}
 
-		ImageServer server = config.getImageServer();
+//		ImageServer server = config.getImageServer();
 		
 		PathTagResolver pathTagResolver = Springs.getInstance().getBean(PathTagResolver.class);
-		Optional<String> pathTag = pathTagResolver.findPathTag(subPath, false);
-		String path = null;
-		if (pathTag.isPresent()) {
-			if (!server.getPathTags().containsKey(pathTag.get())) {
-				throw new BaseException("pathTag baseUrl not found: " + pathTag.get());
-			}
-			path = server.getPathTags().get(pathTag.get());
-			subPath = pathTagResolver.trimPathTag(subPath);
-		} else {
-			if(StringUtils.isBlank(server.getBasePath())){
-				return subPath;
-			}
-			path = server.getBasePath();
-		}
-		
-		if(server.isUseLoadBalance()){
-			path = path.replace("[serverIndex]", getServerIndex(subPath, server.getServerCount())+"");
-		}
-		path = fixPath(path, subPath);
+//		Optional<String> pathTag = pathTagResolver.findPathTag(subPath, false);
+//		String path = null;
+//		if (pathTag.isPresent()) {
+//			if (!server.getPathTags().containsKey(pathTag.get())) {
+//				throw new BaseException("pathTag baseUrl not found: " + pathTag.get());
+//			}
+//			path = server.getPathTags().get(pathTag.get());
+//			subPath = pathTagResolver.trimPathTag(subPath);
+//		} else {
+//			if(StringUtils.isBlank(server.getBasePath())){
+//				return subPath;
+//			}
+//			path = server.getBasePath();
+//		}
+//		
+//		if(server.isUseLoadBalance()){
+//			path = path.replace("[serverIndex]", getServerIndex(subPath, server.getServerCount())+"");
+//		}
+//		path = fixPath(path, subPath);
+		String path = pathTagResolver.parsePathTag(subPath);
 		return path;
 	}
 

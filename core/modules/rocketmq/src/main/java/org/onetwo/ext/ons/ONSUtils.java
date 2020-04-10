@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.convert.Types;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
@@ -29,6 +30,18 @@ final public class ONSUtils {
 	}
 	
 	public static final String LOGGER_NAME = "org.onetwo.ext.ons.ONSMessageLog";
+	
+	/****
+	 * 把普通格式的日期字符串重新格式化为rocketmq要求的格式字符串：yyyyMMddHHmmss
+	 * @author weishao zeng
+	 * @param datestr
+	 * @return
+	 */
+	public static String reformatTimestamp(String datestr) {
+		Date date = DateUtils.parse(datestr);
+		String timestamp = DateUtils.format(DateUtils.DATETIME, date);
+		return timestamp;
+	}
 	
 	public static Logger getONSLogger(){
 		return JFishLoggerFactory.getLogger(LOGGER_NAME);

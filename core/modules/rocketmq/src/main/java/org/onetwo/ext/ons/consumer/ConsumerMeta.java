@@ -23,6 +23,8 @@ import lombok.Data;
 @Data
 @Builder
 public class ConsumerMeta {
+	public static final String CONSUME_TIMESTAMP_KEY = "consumeTimestamp";
+	
 	private String consumerId;
 	private String topic;
 	private String subExpression;
@@ -35,6 +37,13 @@ public class ConsumerMeta {
 	private MessageModel messageModel = MessageModel.CLUSTERING;
 	@Builder.Default
 	private ConsumeFromWhere consumeFromWhere = ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET;
+	
+	// DefaultMQPushConsumer#consumeTimestamp
+	/***
+	 * 格式：yyyyMMddhhmmss 
+	 */
+	private String consumeTimestamp;
+	
 	@Builder.Default
 	private long ignoreOffSetThreshold = -1;
 	/***
@@ -49,6 +58,8 @@ public class ConsumerMeta {
 
 	@Builder.Default
 	private IdempotentType idempotentType = IdempotentType.NONE;
+	
+	private boolean appendConsumerPrefix;
 	
 	public boolean shouldWithTransational() {
 		return getIdempotentType()==IdempotentType.DATABASE;

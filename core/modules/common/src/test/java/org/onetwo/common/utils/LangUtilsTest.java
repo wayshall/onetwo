@@ -21,6 +21,15 @@ import org.onetwo.common.utils.list.JFishList;
 public class LangUtilsTest {
 	
 	@Test
+	public void testReplace() {
+		String url = "aaa\\bb?cc*dd|ee\"ff";
+		System.out.println("source: " + url);
+		url = url.replaceAll("\\\\|:|\\*|\\?|\"|<|>|\\|", "");
+		System.out.println("url: " + url);
+		assertThat(url).isEqualTo("aaabbccddeeff");
+	}
+	
+	@Test
 	public void testFormatValue(){
 		Assert.assertTrue(Double.valueOf("335.00")==335);
 		long dec = LangUtils.hexToLong("BC092A11");

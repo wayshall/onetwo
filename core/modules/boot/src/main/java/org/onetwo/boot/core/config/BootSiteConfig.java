@@ -38,9 +38,11 @@ import lombok.NoArgsConstructor;
  *
  */
 //@ConfigurationProperties(prefix="jfish.siteConfig")
-@ConfigurationProperties(prefix="site")
+@ConfigurationProperties(prefix=BootSiteConfig.PREFIX)
 //@Data
 public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvider<BootSiteConfig> {
+	public static final String PREFIX = "site";
+	
 	/*public static final String BASEURL = "baseURL";
 	public static final String APP_NAME = "name";
 	public static final String APP_CODE = "code";*/
