@@ -3,6 +3,7 @@ package org.onetwo.ext.ons.consumer;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
@@ -147,6 +148,9 @@ public class DelegateMessageService implements InitializingBean {
 						"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys();
 			logger.error(msg, e);
 			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+			if (e instanceof MessageOnlyServiceException) {
+				throw e;
+			}
 			throw new ConsumeException(msg, e);
 		}
 		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);

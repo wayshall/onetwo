@@ -3,6 +3,7 @@ package org.onetwo.boot.utils;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.utils.PathTagResolver;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.jackson.serializer.UrlJsonSerializer;
@@ -16,6 +17,9 @@ public class ImageUrlJsonSerializer extends UrlJsonSerializer {
 	protected List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 
 	protected String getServerFullPath(String subPath){
+		if (StringUtils.isBlank(subPath)) {
+			return subPath;
+		}
 		if(isHttpPath(subPath)){
 			return subPath;
 		}

@@ -180,8 +180,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				} catch(MessageOnlyServiceException e) {
 					// 不可能被消费，记录错误并发送提醒
 					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
-					logger.error(errorMsg, e);
-//					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+//					logger.error(errorMsg, e);
+					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
 //					applicationContext.publishEvent(event);
 				}  catch(ImpossibleConsumeException e) {
 					// 不可能被消费，记录错误并发送提醒

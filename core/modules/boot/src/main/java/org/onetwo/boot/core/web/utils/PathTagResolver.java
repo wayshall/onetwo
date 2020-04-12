@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.ImageServer;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,10 @@ public class PathTagResolver implements InitializingBean {
 	}
 
 	static public String fixPath(String basePath, String subPath){
+		if (StringUtils.isBlank(basePath)) {
+			JFishLoggerFactory.getCommonLogger().warn("basepath is blank!");
+			return subPath;
+		}
 		if(!basePath.endsWith("/") && !subPath.startsWith("/")){
 			basePath += "/";
 		}
