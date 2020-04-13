@@ -129,6 +129,7 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 				.consumerAction(listener)
 				.consumerBeanName(listernName)
 				.consumeTimestamp(subscribe.consumeTimestamp())
+				.consumeTimeoutInMinutes(subscribe.consumeTimeoutInMinutes())
 				.autoDeserialize(subscribe.autoDeserialize())
 				.idempotentType(subscribe.idempotent())
 				.appendConsumerPrefix(subscribe.appendConsumerPrefix())

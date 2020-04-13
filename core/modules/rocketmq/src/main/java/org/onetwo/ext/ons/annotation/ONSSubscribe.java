@@ -40,6 +40,18 @@ public @interface ONSSubscribe {
 	 */
 	String consumeTimestamp() default "";
 	
+	/****
+	 * PropertyKeyConst.ConsumeTimeout
+	 * 
+	 * 少于0表示使用rocketmq默认时间，rmq默认为15分钟
+	 * 可通过下面配置覆盖：
+	 * jfish.ons.consumers.consumerId.consumeTimeout: 15
+	 * 
+	 * @author weishao zeng
+	 * @return
+	 */
+	int consumeTimeoutInMinutes() default -1;
+	
 	/***
 	 * 是否自动加上配置文件里的消费组前缀
 	 * @author weishao zeng

@@ -110,6 +110,9 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		if (meta.getMaxReconsumeTimes()>0){
 			comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
 		}
+		if (meta.getConsumeTimeoutInMinutes()>0) {
+			comsumerProperties.setProperty(PropertyKeyConst.ConsumeTimeout, meta.getConsumeTimeoutInMinutes()+"");
+		}
 		
 		if (meta.getComsumerProperties()!=null) {
 			comsumerProperties.putAll(meta.getComsumerProperties());

@@ -38,6 +38,10 @@ public class ONSProperties implements InitializingBean {
 	MessageSerializerType serializer =  MessageSerializerType.JSON;
 	Properties commons = new Properties();
 	Map<String, Properties> producers = Maps.newHashMap();
+	/***
+	 * 配置方式：
+	 * jfish.ons.consumers.consumerId.consumeTimeout: 15
+	 */
 	Map<String, Properties> consumers = Maps.newHashMap();
 	String consumerPrefix;
 	

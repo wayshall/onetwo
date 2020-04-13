@@ -44,6 +44,15 @@ public class ConsumerMeta {
 	 */
 	private String consumeTimestamp;
 	
+	/***
+	 * 
+	 * PropertyKeyConst.ConsumeTimeout
+	 * 
+	 * 少于等于0表示使用rocketmq默认时间，rmq默认为15分钟
+	 */
+	@Builder.Default
+	private int consumeTimeoutInMinutes = -1;
+	
 	@Builder.Default
 	private long ignoreOffSetThreshold = -1;
 	/***
