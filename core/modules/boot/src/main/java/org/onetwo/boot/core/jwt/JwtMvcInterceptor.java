@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorAdapter;
 import org.onetwo.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,17 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 	private String authHeaderName = JwtUtils.DEFAULT_HEADER_KEY;
 	@Autowired
 	private JwtTokenService jwtTokenService;
-	private boolean canBeAnonymous;
+	@Autowired
+	private BootJFishConfig jfishConfig;
+//	private boolean canBeNotLogin;
+//	private boolean canBeAnonymous;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
 		String token = request.getHeader(authHeaderName);
-		if(StringUtils.isBlank(token) && canBeAnonymous){
+		// 如果token为空，并且有允许不登录，直接返回true
+		boolean canBeNotLogin = jfishConfig.getJwt().isCanBeNotLogin();
+		if(StringUtils.isBlank(token) && canBeNotLogin){
 			return true;
 		}
 		Optional<JwtUserDetail> userOpt = Optional.empty();
@@ -45,9 +51,11 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 		if(!userOpt.isPresent()){
 			throw new ServiceException(JwtErrors.CM_NOT_LOGIN);
 		}
+		
 		JwtUserDetail userDetail = userOpt.get();
+		boolean canBeAnonymous = jfishConfig.getJwt().isCanBeAnonymous();
 		if (userDetail.isAnonymousLogin() && !canBeAnonymous) {
-			throw new ServiceException(JwtErrors.CM_NOT_LOGIN);
+			throw new ServiceException(JwtErrors.CM_NOT_LOGIN_ANONYMOUS);
 		}
 		return true;
 	}
@@ -56,9 +64,13 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 		this.authHeaderName = authHeaderName;
 	}
 
-	public void setCanBeAnonymous(boolean canBeAnonymous) {
-		this.canBeAnonymous = canBeAnonymous;
-	}
+	/*
+	 * public void setCanBeAnonymous(boolean canBeAnonymous) { this.canBeAnonymous =
+	 * canBeAnonymous; }
+	 * 
+	 * public void setCanBeNotLogin(boolean canBeNotLogin) { this.canBeNotLogin =
+	 * canBeNotLogin; }
+	 */
 
 	@Override
 	public int getOrder() {
