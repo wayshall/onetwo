@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.jwt.JwtErrors;
 import org.onetwo.boot.core.jwt.JwtUserDetail;
@@ -65,6 +66,8 @@ abstract public class AbstractBaseController {
 
 	@Resource
 	private BootSiteConfig bootSiteConfig;
+	@Autowired
+	private BootJFishConfig jfishConfig;
 
 	/*
 	 * @Autowired(required = false) private FileStorer fileStorer;
@@ -342,7 +345,7 @@ abstract public class AbstractBaseController {
 		if (user instanceof JwtUserDetail) {
 			JwtUserDetail jwtUser = (JwtUserDetail) user;
 			if (jwtUser.isAnonymousLogin()) {
-				if (throwIfNotFound) {
+				if (!jfishConfig.getJwt().isCanBeAnonymous() && throwIfNotFound) {
 //					throw new BaseException("current login user is anonymous").put("userName", jwtUser.getUserName());
 					throw new NotLoginException(JwtErrors.CM_NOT_LOGIN_ANONYMOUS);
 				} else if (JwtUserDetail.class == clazz) {

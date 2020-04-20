@@ -24,7 +24,7 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 	@Autowired
 	private BootJFishConfig jfishConfig;
 //	private boolean canBeNotLogin;
-//	private boolean canBeAnonymous;
+	private Boolean canBeAnonymous;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
@@ -53,24 +53,33 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 		}
 		
 		JwtUserDetail userDetail = userOpt.get();
-		boolean canBeAnonymous = jfishConfig.getJwt().isCanBeAnonymous();
+		boolean canBeAnonymous = canBeAnonymous();
 		if (userDetail.isAnonymousLogin() && !canBeAnonymous) {
 			throw new ServiceException(JwtErrors.CM_NOT_LOGIN_ANONYMOUS);
 		}
 		return true;
+	}
+	
+	/****
+	 * 是否可以匿名登录
+	 * @author weishao zeng
+	 * @return
+	 */
+	public boolean canBeAnonymous() {
+		if (canBeAnonymous!=null) {
+			return canBeAnonymous;
+		}
+		return jfishConfig.getJwt().isCanBeAnonymous();
 	}
 
 	public void setAuthHeaderName(String authHeaderName) {
 		this.authHeaderName = authHeaderName;
 	}
 
-	/*
-	 * public void setCanBeAnonymous(boolean canBeAnonymous) { this.canBeAnonymous =
-	 * canBeAnonymous; }
-	 * 
-	 * public void setCanBeNotLogin(boolean canBeNotLogin) { this.canBeNotLogin =
-	 * canBeNotLogin; }
-	 */
+
+	public void setCanBeAnonymous(Boolean canBeAnonymous) {
+		this.canBeAnonymous = canBeAnonymous;
+	}
 
 	@Override
 	public int getOrder() {
@@ -79,8 +88,7 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 
 	@Override
 	public String toString() {
-		return "JwtMvcInterceptor [authHeaderName=" + authHeaderName
-				+ ", canBeAnonymous=" + canBeAnonymous + "]";
+		return "JwtMvcInterceptor [authHeaderName=" + authHeaderName + "]";
 	}
 
 }
