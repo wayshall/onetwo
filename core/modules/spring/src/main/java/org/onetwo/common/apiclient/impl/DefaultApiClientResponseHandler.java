@@ -3,6 +3,7 @@ package org.onetwo.common.apiclient.impl;
 import java.beans.PropertyDescriptor;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestClientException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 
@@ -69,10 +71,23 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 		BeanWrapper bw = SpringUtils.newBeanWrapper(bean);
 		for(PropertyDescriptor pd : bw.getPropertyDescriptors()){
 			if(props.containsKey(pd.getName())){
-				Object value = props.get(pd.getName());
+				Object value = props.remove(pd.getName());
 				bw.setPropertyValue(pd.getName(), value);
 			}else{
 				JFishProperty jproperty = new JFishPropertyInfoImpl(pd);
+				
+//				if (pd.getName().contains("promotionDetail")) {
+//					System.out.println("test");
+//				}
+				if (jproperty.hasAnnotation(JsonIgnore.class)) {
+					continue;
+				} else {
+					Optional<JFishProperty> jfield = jproperty.getCorrespondingJFishProperty();
+					if (!jfield.isPresent() || jfield.get().hasAnnotation(JsonIgnore.class)) {
+						continue;
+					}
+				}
+				
 				JsonProperty jsonProperty = jproperty.getAnnotation(JsonProperty.class);
 				if(jsonProperty==null){
 					jsonProperty = jproperty.getCorrespondingJFishProperty()
@@ -80,7 +95,7 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 											.orElse(null);
 				}
 				if(jsonProperty!=null && props.containsKey(jsonProperty.value())){
-					Object value = props.get(jsonProperty.value());
+					Object value = props.remove(jsonProperty.value());
 					bw.setPropertyValue(pd.getName(), value);
 				}
 			}

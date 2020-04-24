@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -24,6 +25,8 @@ import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
+import com.google.common.collect.Sets;
+
 /*****
  * see also spring utils toFlatMap
  * @author way
@@ -31,6 +34,7 @@ import org.onetwo.common.utils.StringUtils;
  */
 public class BeanToMapConvertor implements Cloneable {
 	private static final String GROOVY_META = "groovy.lang.MetaClass";
+	private static final Set<String> KEYWORD_PROPS = Sets.newHashSet("empty", "class");
 
 	static public class DefaultPropertyAcceptor implements PropertyAcceptor {
 
@@ -365,6 +369,8 @@ public class BeanToMapConvertor implements Cloneable {
 					flatObject(mapPrefixName+entry.getKey(), entry.getValue(), valuePutter, mapCtx);
 				}
 			}
+			// 如果对象本身继承了map，除了处理map逻辑，还应该继续处理作为一个Bean的逻辑
+			handleBean(mapPrefixName, obj, valuePutter, keyContext, KEYWORD_PROPS);
 		}else if(isMultiple(obj)){
 			List<Object> list = LangUtils.asList(obj);
 			int index = 0;
@@ -380,37 +386,46 @@ public class BeanToMapConvertor implements Cloneable {
 				index++;
 			}
 		}else{
-			/*if(flatableObject==null || !flatableObject.apply(obj)){
-				valuePutter.put(prefixName, obj);
-				return ;
-			}*/
-			ObjectWrapper ow = objectWrapper(obj);
-			Stream.of(ow.desribProperties()).forEach(prop -> {
-//			ReflectUtils.listProperties(obj.getClass(), prop-> {
-//				Object val = ReflectUtils.getProperty(obj, prop);
-				Object val = ow.getPropertyValue(prop);
-//				System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
-				ObjectPropertyContext propContext = createPropertyContext(obj, prop, keyContext);
-				if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
-					/*if(isMapObject(val) || isMultiple(val)){
-						//no convert
-					}else if(valueConvertor!=null){
-						Object newVal = valueConvertor.apply(prop, val);
-						val = (newVal!=null?newVal:val);
-					}else if(val instanceof Enum){
-						val = ((Enum<?>)val).name();
-					}*/
-					
-					if(StringUtils.isBlank(prefixName)){
-						flatObject(propContext.getConvertedName(), val, valuePutter, propContext);
-					}else{
-						String prefix = prefixName+propertyAccesor;
-						propContext.setPrefix(prefix);
-						flatObject(prefix+propContext.getConvertedName(), val, valuePutter, propContext);
-					}
-				}
-			});
+			handleBean(prefixName, obj, valuePutter, keyContext, null);
 		}
+	}
+	
+	protected void handleBean(String prefixName, final Object obj, ValuePutter valuePutter, PropertyContext keyContext, Set<String> keywrodProps) {
+		/*if(flatableObject==null || !flatableObject.apply(obj)){
+			valuePutter.put(prefixName, obj);
+			return ;
+		}*/
+		ObjectWrapper ow = objectWrapper(obj);
+		Stream.of(ow.desribProperties()).forEach(prop -> {
+//		ReflectUtils.listProperties(obj.getClass(), prop-> {
+//			Object val = ReflectUtils.getProperty(obj, prop);
+			Object val = ow.getPropertyValue(prop);
+//			System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
+			
+			if(keywrodProps!=null && keywrodProps.contains(prop.getName())) {
+				return ;
+			}
+			
+			ObjectPropertyContext propContext = createPropertyContext(obj, prop, keyContext);
+			if (propertyAcceptor==null || propertyAcceptor.apply(propContext, val)){
+				/*if(isMapObject(val) || isMultiple(val)){
+					//no convert
+				}else if(valueConvertor!=null){
+					Object newVal = valueConvertor.apply(prop, val);
+					val = (newVal!=null?newVal:val);
+				}else if(val instanceof Enum){
+					val = ((Enum<?>)val).name();
+				}*/
+				
+				if(StringUtils.isBlank(prefixName)){
+					flatObject(propContext.getConvertedName(), val, valuePutter, propContext);
+				}else{
+					String prefix = prefixName+propertyAccesor;
+					propContext.setPrefix(prefix);
+					flatObject(prefix+propContext.getConvertedName(), val, valuePutter, propContext);
+				}
+			}
+		});
 	}
 	
 	private Object convertValue(PropertyDescriptor prop, Object val){
