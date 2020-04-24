@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
  */
 public class BeanToMapConvertor implements Cloneable {
 	private static final String GROOVY_META = "groovy.lang.MetaClass";
-	private static final Set<String> KEYWORD_PROPS = Sets.newHashSet("empty", "class");
+	public static final Set<String> KEYWORD_PROPS = Sets.newHashSet("empty", "class");
 
 	static public class DefaultPropertyAcceptor implements PropertyAcceptor {
 
@@ -370,7 +370,8 @@ public class BeanToMapConvertor implements Cloneable {
 				}
 			}
 			// 如果对象本身继承了map，除了处理map逻辑，还应该继续处理作为一个Bean的逻辑
-			handleBean(mapPrefixName, obj, valuePutter, keyContext, KEYWORD_PROPS);
+			// 若支付继承了map，会导致支付响应有问题，暂时屏蔽
+//			handleBean(mapPrefixName, obj, valuePutter, keyContext, KEYWORD_PROPS);
 		}else if(isMultiple(obj)){
 			List<Object> list = LangUtils.asList(obj);
 			int index = 0;

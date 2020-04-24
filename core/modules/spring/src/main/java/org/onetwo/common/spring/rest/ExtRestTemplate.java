@@ -14,6 +14,7 @@ import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.convertor.ApiclientJackson2HttpMessageConverter;
 import org.onetwo.common.apiclient.convertor.ApiclientJackson2XmlMessageConverter;
+import org.onetwo.common.jackson.JacksonXmlMapper;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.BeanToMapConvertor;
@@ -170,7 +171,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 //			Object requestBody = context.getRequestBodySupplier().get();
 //			Object requestBody = context.getRequestBodySupplier().getRequestBody(context);
 			Object requestBody = context.getRequestBody();
-			logData(requestBody);
+			logData(requestBody, headers);
 			requestEntity = new HttpEntity<>(requestBody, headers);
 			
 			rc = super.httpEntityCallback(requestEntity, context.getResponseType());
@@ -184,7 +185,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
 	}
 	
-	private void logData(Object requestBody) {
+	private void logData(Object requestBody, HttpHeaders headers) {
 		if(isLogableObject(requestBody) && logger.isDebugEnabled()){
 			//打印时不能使用toJson，会破坏某些特殊对象，比如resource
 			try {
@@ -198,7 +199,14 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 						return ;
 					}
 				}
-				logger.debug("requestBody for json: {}", printMapper.toJson(requestBody));
+				
+				MediaType ct = headers.getContentType();
+				if (ct.isCompatibleWith(MediaType.APPLICATION_XML)) {
+					JacksonXmlMapper printMapper = JacksonXmlMapper.defaultMapper();
+					logger.debug("requestBody for xml: {}", printMapper.toXml(requestBody));
+				} else {
+					logger.debug("requestBody for json: {}", printMapper.toJson(requestBody));
+				}
 			} catch (Exception e) {
 				// ignore
 				logger.debug("requestBody {} : {}", requestBody.getClass(), requestBody);

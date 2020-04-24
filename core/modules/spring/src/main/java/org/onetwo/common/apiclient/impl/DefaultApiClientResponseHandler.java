@@ -71,7 +71,7 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 		BeanWrapper bw = SpringUtils.newBeanWrapper(bean);
 		for(PropertyDescriptor pd : bw.getPropertyDescriptors()){
 			if(props.containsKey(pd.getName())){
-				Object value = props.remove(pd.getName());
+				Object value = props.get(pd.getName());
 				bw.setPropertyValue(pd.getName(), value);
 			}else{
 				JFishProperty jproperty = new JFishPropertyInfoImpl(pd);
@@ -95,7 +95,7 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 											.orElse(null);
 				}
 				if(jsonProperty!=null && props.containsKey(jsonProperty.value())){
-					Object value = props.remove(jsonProperty.value());
+					Object value = props.get(jsonProperty.value());
 					bw.setPropertyValue(pd.getName(), value);
 				}
 			}
