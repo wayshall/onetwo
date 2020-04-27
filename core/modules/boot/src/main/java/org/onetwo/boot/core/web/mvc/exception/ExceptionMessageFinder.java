@@ -2,7 +2,6 @@ package org.onetwo.boot.core.web.mvc.exception;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -12,8 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.onetwo.boot.core.web.async.Asyncs;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -62,37 +63,6 @@ public interface ExceptionMessageFinder {
 		ServiceException resolve(Exception ex);
 	}*/
 	
-	interface ExceptionMessageFinderConfig {
-		String OTHER_MAPPING_KEY = "*";
-		/***
-		 * 是否一只显示详细log
-		 * @author weishao zeng
-		 * @return
-		 */
-		boolean isAlwaysLogErrorDetail();
-		
-		Map<String, Integer> getExceptionsStatusMapping();
-
-		default boolean isInternalError(Exception ex){
-			if(BootUtils.isHystrixErrorPresent()){
-				String name = ex.getClass().getName();
-				return name.endsWith("HystrixRuntimeException") || 
-						name.endsWith("HystrixBadRequestException") || 
-						name.equals("feign.codec.DecodeException");
-			}
-			return false;
-		}
-		
-		ExceptionMessageFinderConfig DEFAULT = new ExceptionMessageFinderConfig() {
-			public boolean isAlwaysLogErrorDetail() {
-				return false;
-			}
-			public Map<String, Integer> getExceptionsStatusMapping() {
-				return Collections.emptyMap();
-			}
-		};
-	}
-	
 	default ExceptionMessageFinderConfig getExceptionMessageFinderConfig() {
 		return ExceptionMessageFinderConfig.DEFAULT;
 	}
@@ -119,7 +89,14 @@ public interface ExceptionMessageFinder {
 		}else{
 			logger.error(msg + "[{}] error: code[{}], message[{}]", handlerMethod, LangUtils.getBaseExceptonCode(ex), ex.getMessage());
 		}
-		JFishLoggerFactory.mailLog(errorMessage.getNotifyThrowables(), ex, msg);
+		
+		if (errorMessage.isNotify()) {
+			String logMsg = msg;
+			Asyncs.tryAsyncRun(() -> {
+				JFishLoggerFactory.findMailLogger().error(logMsg, ex);
+			});
+		}
+//		JFishLoggerFactory.mailLog(errorMessage.getNotifyThrowables(), ex, msg);
 	}
 	
 	default boolean isInternalError(Exception ex) {
@@ -127,16 +104,11 @@ public interface ExceptionMessageFinder {
 	}
 	
 	default ErrorMessage getErrorMessage(Exception throwable){
-		String errorCode = "";
-		String errorMsg = "";
-		Object[] errorArgs = null;
 		
 //		String defaultViewName = ExceptionView.UNDEFINE;
-		boolean detail = true;
 //		boolean authentic = false;
 		ErrorMessage error = new ErrorMessage(throwable);
 		
-		boolean findMsgByCode = true;
 
 		Exception ex = throwable;
 		//内部调用失败
@@ -152,6 +124,70 @@ public interface ExceptionMessageFinder {
 			errorCode = MAX_UPLOAD_SIZE_ERROR;//MvcError.MAX_UPLOAD_SIZE_ERROR;
 //			errorArgs = new Object[]{this.mvcSetting.getMaxUploadSize()};
 		}else */
+		
+		// 优先查找配置
+		Optional<ExceptionMapping> mappingOpt = getExceptionMapping(error, ex);
+		if (mappingOpt.isPresent()) {
+			ExceptionMapping mapping = mappingOpt.get();
+			if (mapping.getHttpStatus()!=null) {
+				error.setHttpStatus(HttpStatus.valueOf(mapping.getHttpStatus()));
+			}
+			error.setDetail(mapping.isDetail());
+			error.setMesage(mapping.getMesage());
+			error.setNotify(mapping.isNotify());
+			error.setViewName(mapping.getViewName());
+			error.setCode(mapping.getCode());
+		} else {
+			defaultProcessException(error, ex);
+		}
+		
+		
+		//防止远程调用时，方法返回null，且异常定义的httpstatus也为200时，尽管在responsebody里返回error相关数据，
+		//但feign客户端判断200且返回类型为null时，不解释response boyd，从而忽略了错误
+		//即使不是feign调用，而是普通请求，如果不返回任何数据，http status又是200，实际上调用方（浏览器）也无法判断这个调用是否成功，除非它总是解释response body
+		if(error.getHttpStatus()==HttpStatus.OK && RemoteClientUtils.isFeign()){
+			HandlerMethod hm = BootWebUtils.currentHandlerMethod();
+			if(hm!=null && hm.isVoid()){
+				error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		
+		//for web
+		if(ex instanceof HeaderableException){
+			Optional<HttpServletResponse> reponse = WebHolder.getResponse();
+			HeaderableException he = (HeaderableException)ex;
+			if(reponse.isPresent() && he.getHeaders().isPresent()){
+				he.getHeaders().get().forEach((name, value)->{
+					reponse.get().setHeader(name, value.toString());
+				});
+			}
+		}
+		WebHolder.getResponse().ifPresent(response->{
+			response.setHeader(ERROR_RESPONSE_HEADER, error.getCode());
+		});
+		WebHolder.getRequest().ifPresent(request->{
+			BootWebUtils.webHelper(request).setErrorMessage(error);
+		});
+
+//		error.setDetail(detail);
+//		error.setViewName(viewName);
+//		error.setAuthentic(authentic);
+		return error;
+	}
+	
+	/***
+	 * 找不到对应配置时，默认处理异常的流程
+	 * @author weishao zeng
+	 * @param error
+	 * @param ex
+	 */
+	default public void defaultProcessException(ErrorMessage error, Exception ex) {
+		String errorCode = "";
+		String errorMsg = "";
+		Object[] errorArgs = null;
+		boolean detail = true;
+		boolean findMsgByCode = true;
+		
 		if(ex instanceof ExceptionCodeMark){//serviceException && businessException
 			ExceptionCodeMark codeMark = (ExceptionCodeMark) ex;
 			errorCode = codeMark.getCode();
@@ -203,7 +239,14 @@ public interface ExceptionMessageFinder {
 			detail = false;
 			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
-		}/*else if(ex instanceof ObjectOptimisticLockingFailureException){
+		}else if(ex instanceof ValidationException){
+			//处理 ModelAttributeMethodProcessor#resolveArgument的BindException异常, 避免在没有定义Errors（BindingResult）参数的情况下直接显示BindException异常
+			ValidationException ve = (ValidationException) ex;
+			errorMsg = ve.getMessage();
+			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
+			error.setHttpStatus(HttpStatus.BAD_REQUEST);
+		}
+		/*else if(ex instanceof ObjectOptimisticLockingFailureException){
 			errorCode = ObjectOptimisticLockingFailureException.class.getSimpleName();
 		}*//*else if(BeanCreationException.class.isInstance(ex)){
 			
@@ -246,40 +289,10 @@ public interface ExceptionMessageFinder {
 		// 根据配置设置status code
 		processExceptionMappingStatus(error, ex);
 		
-		//防止远程调用时，方法返回null，且异常定义的httpstatus也为200时，尽管在responsebody里返回error相关数据，
-		//但feign客户端判断200且返回类型为null时，不解释response boyd，从而忽略了错误
-		//即使不是feign调用，而是普通请求，如果不返回任何数据，http status又是200，实际上调用方（浏览器）也无法判断这个调用是否成功，除非它总是解释response body
-		if(error.getHttpStatus()==HttpStatus.OK && RemoteClientUtils.isFeign()){
-			HandlerMethod hm = BootWebUtils.currentHandlerMethod();
-			if(hm!=null && hm.isVoid()){
-				error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
-		
-		//for web
-		if(ex instanceof HeaderableException){
-			Optional<HttpServletResponse> reponse = WebHolder.getResponse();
-			HeaderableException he = (HeaderableException)ex;
-			if(reponse.isPresent() && he.getHeaders().isPresent()){
-				he.getHeaders().get().forEach((name, value)->{
-					reponse.get().setHeader(name, value.toString());
-				});
-			}
-		}
-		WebHolder.getResponse().ifPresent(response->{
-			response.setHeader(ERROR_RESPONSE_HEADER, error.getCode());
-		});
-		WebHolder.getRequest().ifPresent(request->{
-			BootWebUtils.webHelper(request).setErrorMessage(error);
-		});
-
 		error.setCode(errorCode);
 //		detail = product?detail:true;
 		error.setMesage(errorMsg);
-//		error.setDetail(detail);
-//		error.setViewName(viewName);
-//		error.setAuthentic(authentic);
-		return error;
+		
 	}
 	
 	default public void processExceptionMappingStatus(ErrorMessage error, Exception ex) {
@@ -291,6 +304,17 @@ public interface ExceptionMessageFinder {
 		} else if (statusMapping.containsKey(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)) {
 			error.setHttpStatus(HttpStatus.valueOf(statusMapping.get(ExceptionMessageFinderConfig.OTHER_MAPPING_KEY)));
 		}
+	}
+	
+	default public Optional<ExceptionMapping> getExceptionMapping(ErrorMessage error, Exception ex) {
+		Map<String, ExceptionMapping> statusMapping = getExceptionMessageFinderConfig().getExceptionsMapping();
+		ExceptionMapping mapping = null;
+		if (statusMapping.containsKey(ex.getClass().getName())) {
+			mapping = statusMapping.get(ex.getClass().getName());
+		} else if (statusMapping.containsKey(ex.getClass().getSimpleName())) {
+			mapping = statusMapping.get(ex.getClass().getSimpleName());
+		}
+		return Optional.ofNullable(mapping);
 	}
 	
 	default String findMessage(boolean findMsgByCode, ErrorMessage error, Object[] errorArgs){
@@ -377,7 +401,8 @@ public interface ExceptionMessageFinder {
 		
 		@Setter
 		@Getter
-		private List<String> notifyThrowables;
+//		private List<String> notifyThrowables;
+		boolean notify;
 		
 		
 		public ErrorMessage(Exception throwable) {

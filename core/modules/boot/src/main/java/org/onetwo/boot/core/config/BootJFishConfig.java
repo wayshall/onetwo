@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.boot.core.jwt.JwtConfig;
-import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ExceptionMessageFinderConfig;
+import org.onetwo.boot.core.web.mvc.exception.ExceptionMapping;
+import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinderConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -89,6 +90,11 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 			pluginContextPathModes = PluginContextPathModes.NO_APPEND;
 		}
 	}
+	
+	public boolean isNotifyThrowable(Throwable t) {
+		return this.notifyThrowables.contains(t.getClass().getName()) ||
+				this.notifyThrowables.contains(t.getClass().getSimpleName());
+	}
 
     public boolean isLogErrorDetail(){
     	if(logErrorDetail!=null){
@@ -109,6 +115,11 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	@Override
 	public Map<String, Integer> getExceptionsStatusMapping() {
 		return getMvc().getExceptionsStatusMapping();
+	}
+
+	@Override
+	public Map<String, ExceptionMapping> getExceptionsMapping() {
+		return getMvc().getExceptionsMapping();
 	}
 
 	@Data
@@ -135,6 +146,7 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 		private AutoWrapResultConfig autoWrapResult = new AutoWrapResultConfig();*/
 
 		private Map<String, Integer> exceptionsStatusMapping = Maps.newHashMap();
+		private Map<String, ExceptionMapping> exceptionsMapping = Maps.newHashMap();
 
 		public MvcConfig() {
 			this.mediaTypes = new Properties();

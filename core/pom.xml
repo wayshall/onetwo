@@ -40,8 +40,6 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/common</module>
-                <module>modules/spring</module>
-                <module>../../onetwo-wechat</module>
 			</modules>
            <build>
               <plugins>

@@ -196,7 +196,8 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	}
 
 	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
-		errorMessage.setNotifyThrowables(jfishConfig.getNotifyThrowables());
+//		errorMessage.setNotifyThrowables(jfishConfig.getNotifyThrowables());
+		errorMessage.setNotify(jfishConfig.isNotifyThrowable(errorMessage.getException()));
 		logError(request, errorMessage);
 	}
 

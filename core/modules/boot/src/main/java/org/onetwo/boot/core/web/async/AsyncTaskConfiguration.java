@@ -18,7 +18,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * <br/>
  */
 @Configuration
-@ConditionalOnProperty(AsyncTaskProperties.ENABLE_KEY)
+@ConditionalOnProperty(value = AsyncTaskProperties.ENABLE_KEY)
 @EnableConfigurationProperties(AsyncTaskProperties.class)
 @ConditionalOnClass(EnableAsync.class)
 @EnableAsync
