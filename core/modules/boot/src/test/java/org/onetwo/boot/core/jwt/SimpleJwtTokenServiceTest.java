@@ -16,6 +16,7 @@ public class SimpleJwtTokenServiceTest {
 		SimpleJwtTokenService tokenService = new SimpleJwtTokenService();
 		JwtConfig jwtConfig = new JwtConfig();
 		jwtConfig.setSigningKey("test");
+		jwtConfig.setExpiration("1d");
 		tokenService.setJwtConfig(jwtConfig);
 		
 		SimpleUserDetail userDetail = new SimpleUserDetail();
@@ -25,7 +26,8 @@ public class SimpleJwtTokenServiceTest {
 		JwtTokenInfo tokenInfo = tokenService.generateToken(userDetail);
 		System.out.println("tokenInfo:"+tokenInfo);
 		
-		SimpleUserDetail ud = tokenService.createUserDetail(tokenInfo.getToken(), SimpleUserDetail.class);
+		String token = tokenInfo.getToken();
+		SimpleUserDetail ud = tokenService.createUserDetail(token, SimpleUserDetail.class);
 		assertThat(ud).isNotNull();
 		assertThat(ud.getUserId()).isEqualTo(userDetail.getUserId());
 		assertThat(ud.getUserName()).isEqualTo(userDetail.getUserName());
