@@ -42,5 +42,14 @@ public interface RedisOperationService {
 	boolean setStringNXEX(String key, String value, int seconds);
 	String getString(String key);
 	void setString(String key, String value, Long expireInSeconds);
+	
+	/***
+	 * 直接设置缓存
+	 * @author weishao zeng
+	 * @param key
+	 * @param value
+	 */
+	void setCache(String key, Object value);
+	void setCache(String key, Supplier<CacheData<?>> cacheLoader);
 
 }

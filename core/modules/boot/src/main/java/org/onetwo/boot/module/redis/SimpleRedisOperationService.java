@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
@@ -108,11 +109,12 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	@Override
 	public <T> Optional<T> getCacheIfPresent(String key, Class<T> clazz) {
 		T value = getCache(key, null);
-		return Optional.ofNullable(clazz.cast(value));
+		return Optional.ofNullable(Types.convertValue(value, clazz, null));
 	}
 	/* (non-Javadoc)
 	 * @see org.onetwo.boot.module.redis.RedisOperationService#getCache(java.lang.String, java.util.function.Supplier)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getCache(String key, Supplier<CacheData<T>> cacheLoader) {
 		String cacheKey = getCacheKey(key);
@@ -129,8 +131,28 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		}
 		return (T)value;
 	}
+
+	public void setCache(String key, Object value) {
+		setCache(key, () -> {
+			return CacheData.builder()
+							.value(value)
+							.build();
+		});
+	}
+	
+	public void setCache(String key, Supplier<CacheData<?>> cacheLoader) {
+		String cacheKey = getCacheKey(key);
+		BoundValueOperations<Object, Object> ops = boundValueOperations(cacheKey);
+		
+		CacheData<?> cacheData = cacheLoader.get();
+		if(logger.isInfoEnabled()){
+			logger.info("set cache for key: {}", cacheKey);
+		}
+		configCacheData(ops, cacheKey, cacheData);
+	}
 	
 	
+	@SuppressWarnings("unchecked")
 	protected <T> CacheData<T> getCacheData(BoundValueOperations<Object, Object> ops, String cacheKey, Supplier<CacheData<T>> cacheLoader) {
 		return this.getRedisLockRunnerByKey(cacheKey).tryLock(30L, TimeUnit.SECONDS, () -> {
 			//double check...
@@ -144,18 +166,29 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 			if(logger.isInfoEnabled()){
 				logger.info("run cacheLoader for key: {}", cacheKey);
 			}
-			if (cacheData.getExpire()!=null && cacheData.getExpire()>0) {
-//				ops.expire(cacheData.getExpire(), cacheData.getTimeUnit());
-				ops.set(cacheData.getValue(), cacheData.getExpire(), cacheData.getTimeUnit());
-			} else if (this.expires.containsKey(cacheKey)) {
-				Long expireInSeconds = this.expires.get(cacheKey);
-				ops.set(cacheData.getValue(), expireInSeconds, TimeUnit.SECONDS);
-			} else {
-				ops.set(cacheData.getValue());
-			}
+			configCacheData(ops, cacheKey, cacheData);
 			
 			return cacheData;
 		}, null);
+	}
+	
+	/***
+	 * 设置cache超时
+	 * @author weishao zeng
+	 * @param ops
+	 * @param cacheKey
+	 * @param cacheData
+	 */
+	private void configCacheData(BoundValueOperations<Object, Object> ops, String cacheKey, CacheData<?> cacheData) {
+		if (cacheData.getExpire()!=null && cacheData.getExpire()>0) {
+//			ops.expire(cacheData.getExpire(), cacheData.getTimeUnit());
+			ops.set(cacheData.getValue(), cacheData.getExpire(), cacheData.getTimeUnit());
+		} else if (this.expires.containsKey(cacheKey)) {
+			Long expireInSeconds = this.expires.get(cacheKey);
+			ops.set(cacheData.getValue(), expireInSeconds, TimeUnit.SECONDS);
+		} else {
+			ops.set(cacheData.getValue());
+		}
 	}
 	
 
