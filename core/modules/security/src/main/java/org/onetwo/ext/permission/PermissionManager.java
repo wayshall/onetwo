@@ -1,9 +1,12 @@
 package org.onetwo.ext.permission;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.permission.api.IPermission;
+
+import com.google.common.collect.Multimap;
 
 public interface PermissionManager<P extends IPermission> {
 
@@ -39,5 +42,7 @@ public interface PermissionManager<P extends IPermission> {
 	/*
 	public List<P> findPermissionByCodes(String appCode, String[] permissionCodes);*/
 	
+	Multimap<Method, IPermission> getMethodPermissionMapping();
+	void setMethodPermissionMapping(Multimap<Method, IPermission> methodPermissionMapping);
 	
 }

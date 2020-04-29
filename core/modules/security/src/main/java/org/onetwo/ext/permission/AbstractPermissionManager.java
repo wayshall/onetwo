@@ -1,5 +1,6 @@
 package org.onetwo.ext.permission;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 abstract public class AbstractPermissionManager<P extends IPermission> implements PermissionManager<P> {
@@ -36,6 +38,8 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	private Multimap<Method, IPermission> methodPermissionMapping;
 	
 	@PostConstruct
 	public void initParsers(){
@@ -216,8 +220,17 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		this.securityMetadataSourceBuilder = securityMetadataSourceBuilder;
 	}
 
+	public Multimap<Method, IPermission> getMethodPermissionMapping() {
+		return methodPermissionMapping;
+	}
+
+	public void setMethodPermissionMapping(Multimap<Method, IPermission> methodPermissionMapping) {
+		this.methodPermissionMapping = methodPermissionMapping;
+	}
+
 	/*@Override
 	public String parseCode(Class<?> permClass) {
 		return menuInfoParser.getCode(permClass);
 	}*/
+	
 }
