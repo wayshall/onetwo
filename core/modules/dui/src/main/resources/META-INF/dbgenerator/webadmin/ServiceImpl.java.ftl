@@ -6,7 +6,7 @@
 <#assign daoPackage="${_globalConfig.javaModulePackage}.dao"/>
 <#assign entityPackage="${_globalConfig.javaModulePackage}.entity"/>
 
-<#assign entityClassName="${_tableContext.className}Entity"/>
+<#assign entityClassName="${entityClassName!(_tableContext.className+'Entity')}"/>
 <#assign entityClassName2="${_tableContext.className}"/>
 <#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
 <#assign serviceImplPropertyName="${_tableContext.propertyName}ServiceImpl"/>

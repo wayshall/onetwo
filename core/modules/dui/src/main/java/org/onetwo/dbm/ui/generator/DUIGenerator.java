@@ -327,6 +327,11 @@ public class DUIGenerator {
 			}
 		}
 		
+		public WebadminGenerator set(String name, Object value) {
+			tableGenerator.context().put(name, value);
+			return this;
+		}
+		
 		public WebadminGenerator generateServiceImpl(){
 			tableGenerator.serviceImplTemplate(templateName+"/ServiceImpl.java.ftl");
 			return this;

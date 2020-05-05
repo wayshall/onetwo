@@ -6,7 +6,7 @@
 <#assign daoPackage="${_globalConfig.javaModulePackage}.dao"/>
 <#assign entityPackage="${_globalConfig.javaModulePackage}.entity"/>
 
-<#assign entityClassName="${_tableContext.className}Entity"/>
+<#assign entityClassName="${entityClassName!(_tableContext.className+'Entity')}"/>
 <#assign entityClassName2="${_tableContext.className}"/>
 <#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
 <#assign serviceImplPropertyName="${_tableContext.propertyName}Service"/>
@@ -134,7 +134,7 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
         ValidatorUtils.throwIfHasErrors(br, true);
     <#list formFields as field><#t>
       <#if field.input.isFileType()==true><#t>
-        FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName}", ${field.name}File);
+        FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
         ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
       </#if><#t>
     </#list><#t>
@@ -163,7 +163,7 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
         ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
     <#list formFields as field><#t>
       <#if field.input.isFileType()==true><#t>
-        FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName}", ${field.name}File);
+        FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
         ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
       </#if><#t>
     </#list><#t>

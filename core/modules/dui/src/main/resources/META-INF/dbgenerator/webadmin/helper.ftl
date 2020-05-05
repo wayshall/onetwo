@@ -71,8 +71,8 @@
         ${spaces}</el-switch>
       <#elseif field.input.isFileType()==true>
         ${spaces}<file-input
-                   ${spaces}v-model="${modelPrefix}.${field.name}File"
-                   ${spaces}:exist-file-path="${modelPrefix}.${field.name}"/>
+          ${spaces}v-model="${modelPrefix}.${field.name}File"
+          ${spaces}:exist-file-path="${modelPrefix}.${field.name}"/>
         <#assign hasFileType=true/>
       <#elseif field.column.isAssociationType()==true>
         ${spaces}<el-input

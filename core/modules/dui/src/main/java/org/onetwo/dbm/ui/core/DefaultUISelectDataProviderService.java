@@ -104,6 +104,9 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		} else if (uiselect.useDataProvider()) {
 			Class<? extends UISelectDataProvider> dataProviderClass = uiselect.getDataProvider();
 			UISelectDataProvider dataProvider = (UISelectDataProvider)SpringUtils.getBean(applicationContext, dataProviderClass);
+			if (dataProvider==null) {
+				throw new DbmUIException("UISelectDataProvider not found for class: " + dataProviderClass);
+			}
 			if (uiselect.isTreeSelect()) {
 				return dataProvider.findDatas(query.toString());
 			} else {
