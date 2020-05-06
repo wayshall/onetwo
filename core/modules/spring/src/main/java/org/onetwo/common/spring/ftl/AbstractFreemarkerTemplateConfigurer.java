@@ -99,7 +99,7 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		try {
 			template = getConfiguration().getTemplate(name);
 		}catch (ParseException e) {
-			throw new BaseException("sql tempalte["+name+"] syntax error : " + e.getMessage());
+			throw new BaseException("freemark tempalte["+name+"] syntax error : " + e.getMessage());
 		} catch (Exception e) {
 			throw new BaseException("get tempalte["+name+"] error : " + e.getMessage(), e);
 		}
