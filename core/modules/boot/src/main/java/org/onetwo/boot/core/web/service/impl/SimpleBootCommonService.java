@@ -155,7 +155,9 @@ public class SimpleBootCommonService implements BootCommonService {
 		if (type==null) {
 			type = siteConfig.getUpload().getStoreType();
 		}
-		FileStoredMeta meta = getFileStorer(type).write(context);
+		
+		FileStorer fileStorer = getFileStorer(type);
+		FileStoredMeta meta = fileStorer.write(context);
 		if(fileStorerListener!=null){
 			fileStorerListener.afterFileStored(meta);
 		}

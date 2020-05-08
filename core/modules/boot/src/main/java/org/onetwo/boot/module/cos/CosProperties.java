@@ -1,5 +1,8 @@
 package org.onetwo.boot.module.cos;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,6 +43,11 @@ public class CosProperties {
     boolean enabledAsyncUpload = false;
 
 	ClientConfig client = new ClientConfig(null);
+	
+	/***
+	 * 此功能需要配置腾讯云mps工作流，设置触发目录和任务
+	 */
+	VideoConfig video = new VideoConfig();
 	
 	public String getDownloadEndPoint() {
 		if(StringUtils.isBlank(downloadEndPoint)){
@@ -110,5 +118,19 @@ public class CosProperties {
 
 	public void setEndpoint(String endpoint) {
 		this.endPoint = endpoint;
+	}
+	
+	@Data
+	public static class VideoConfig {
+		boolean enabled = false;
+		/***
+		 * 腾讯云可以截取多张图片，_0表示的是第一张截图
+		 */
+		String snapshotFileName = "{filename}-cover_0.jpg";
+		String waterMaskFileName = "{filename}wm.{format}";
+		/***
+		 * 上传以下后缀的文件时，触发返回的文件名称处理
+		 */
+		List<String> postfix = Arrays.asList("mp4", "flv");
 	}
 }

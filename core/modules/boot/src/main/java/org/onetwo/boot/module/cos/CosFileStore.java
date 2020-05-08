@@ -3,16 +3,24 @@ package org.onetwo.boot.module.cos;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
+import org.onetwo.boot.module.cos.CosProperties.VideoConfig;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.StoringFileContext;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author wayshall
@@ -66,6 +74,33 @@ public class CosFileStore implements FileStorer, InitializingBean {
 		meta.setStoredServerLocalPath(key);
 		meta.setBizModule(context.getModule());
 		meta.setSotredFileName(key);
+		
+		int lastDot = accessablePath.lastIndexOf(FileUtils.DOT_CHAR);
+		String filename = accessablePath.substring(0, lastDot);
+		String format = accessablePath.substring(lastDot+1);
+		VideoConfig videoConfig = cosProperties.getVideo();
+		if (videoConfig.isEnabled() && videoConfig.getPostfix().contains(format)) {
+			Map<String, String> parseCtx = ImmutableMap.of("filename", filename, "format", format);
+			
+			String snapshotFileName = ExpressionFacotry.BRACE.parseByProvider(videoConfig.getSnapshotFileName(), parseCtx);
+			SimpleFileStoredMeta cutMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), snapshotFileName);
+			cutMeta.setSotredFileName(snapshotFileName);
+			cutMeta.setAccessablePath(snapshotFileName);
+			meta.setSnapshotStoredMeta(cutMeta);
+			
+			// 覆盖非水印视频
+			String waterMaskFileName = ExpressionFacotry.BRACE.parseByProvider(videoConfig.getWaterMaskFileName(), parseCtx);
+			meta.setSotredFileName(waterMaskFileName);
+			meta.setAccessablePath(waterMaskFileName);
+			meta.setFullAccessablePath(cosProperties.getDownloadUrl(waterMaskFileName));
+			
+			// 轮询……
+			Logger logger = JFishLoggerFactory.getCommonLogger();
+			while(!wrapper.getCosClient().doesObjectExist(bucketName, key)) {
+				logger.info("正在检查转码后的视频是否存在, key: {} ……", key);
+			}
+			logger.info("获取转码后的时间成功, key: {} ", key);
+		}
 		
 		return meta;
 	}
