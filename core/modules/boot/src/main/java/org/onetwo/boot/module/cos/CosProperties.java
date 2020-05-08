@@ -46,6 +46,7 @@ public class CosProperties {
 	
 	/***
 	 * 此功能需要配置腾讯云mps工作流，设置触发目录和任务
+	 * 文档见：https://cloud.tencent.com/document/product/862/36400
 	 */
 	VideoConfig video = new VideoConfig();
 	
