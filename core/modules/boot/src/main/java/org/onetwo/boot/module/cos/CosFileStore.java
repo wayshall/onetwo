@@ -16,6 +16,7 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -98,6 +99,7 @@ public class CosFileStore implements FileStorer, InitializingBean {
 			Logger logger = JFishLoggerFactory.getCommonLogger();
 			while(!wrapper.getCosClient().doesObjectExist(bucketName, key)) {
 				logger.info("正在检查转码后的视频是否存在, key: {} ……", key);
+				LangUtils.awaitInMillis(300);
 			}
 			logger.info("获取转码后的时间成功, key: {} ", key);
 		}
