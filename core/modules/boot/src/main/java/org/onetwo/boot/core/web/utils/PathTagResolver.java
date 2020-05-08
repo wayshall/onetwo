@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.ImageServer;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -90,7 +91,19 @@ public class PathTagResolver implements InitializingBean {
 			subPath = trimPathTag(subPath);
 		}
 		path = fixPath(path, subPath);
+		
+		path = parseUrlTemplate(server, path);
+		
 		return path;
+	}
+	
+	private String parseUrlTemplate(ImageServer server, String url) {
+		String urlTemplate = server.getUrlTemplate();
+		if (StringUtils.isBlank(urlTemplate)) {
+			return url;
+		}
+		String newUrl = ExpressionFacotry.BRACE.parse(urlTemplate, "url", url);
+		return newUrl;
 	}
 
 	static public String fixPath(String basePath, String subPath){

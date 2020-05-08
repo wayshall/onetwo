@@ -121,14 +121,21 @@ public class UploadOptions {
 		Integer size;
 		String type;
 		String image;
+		
+		/***
+		 * 样式名称
+		 * 如果腾讯云cos，可以在控制台配置好样式，在程序里配置样式名称即可
+		 */
+//		String style;
 
 		@Builder
-		public WaterMaskConfig(String text, Integer size, String type, String image) {
+		public WaterMaskConfig(String text, Integer size, String type, String image/* , String style */) {
 			super();
 			this.text = text;
 			this.size = size;
 			this.type = type;
 			this.image = image;
+//			this.style = style;
 		}
 		
 		

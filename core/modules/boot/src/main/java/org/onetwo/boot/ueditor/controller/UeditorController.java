@@ -42,7 +42,7 @@ public class UeditorController extends AbstractBaseController {
 	@ByPermissionClass
 	public UeditorConfig config() {
 		UeditorConfig config = ueditorProperties.getConfig();
-//		config.setImageUrlPrefix(bootSiteConfig.getImageServer().getBasePath());
+//		config.setImageUrlPrefix(bootSiteConfig.getImageServer().getBasePath()); 通过pathTagResolver解释地址，不再需要配置这个
 		return config;
 	}
 	

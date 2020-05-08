@@ -227,6 +227,11 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		
 		Map<String, String> pathTags = Maps.newHashMap();
 		
+		/***
+		 * 用urlTemplate重新解释url
+		 */
+		String urlTemplate;
+		
 		public String getBasePath(){
 			if(StringUtils.isNotBlank(basePath)){
 				return basePath;
