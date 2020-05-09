@@ -76,6 +76,18 @@ public class CosFileStore implements FileStorer, InitializingBean {
 		meta.setBizModule(context.getModule());
 		meta.setSotredFileName(key);
 		
+		processVideo(meta);
+		
+		return meta;
+	}
+	
+	/***
+	 * 处理视频，如水印、截图
+	 * @author weishao zeng
+	 * @param meta
+	 */
+	private void processVideo(SimpleFileStoredMeta meta) {
+		String accessablePath = meta.getAccessablePath();
 		int lastDot = accessablePath.lastIndexOf(FileUtils.DOT_CHAR);
 		String filename = accessablePath.substring(0, lastDot);
 		String format = accessablePath.substring(lastDot+1);
@@ -97,14 +109,12 @@ public class CosFileStore implements FileStorer, InitializingBean {
 			
 			// 轮询……
 			Logger logger = JFishLoggerFactory.getCommonLogger();
-			while(!wrapper.getCosClient().doesObjectExist(bucketName, key)) {
-				logger.info("正在检查转码后的视频是否存在, key: {} ……", key);
+			while(!wrapper.getCosClient().doesObjectExist(bucketName, accessablePath)) {
+				logger.info("正在检查转码后的视频是否存在, accessablePath: {} ……", accessablePath);
 				LangUtils.awaitInMillis(300);
 			}
-			logger.info("获取转码后的时间成功, key: {} ", key);
+			logger.info("获取转码后的时间成功, accessablePath: {} ", accessablePath);
 		}
-		
-		return meta;
 	}
 	
 	@Override
