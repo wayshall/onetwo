@@ -88,14 +88,19 @@ public class CosFileStore implements FileStorer, InitializingBean {
 	 */
 	private void processVideo(SimpleFileStoredMeta meta) {
 		String accessablePath = meta.getAccessablePath();
-		int lastDot = accessablePath.lastIndexOf(FileUtils.DOT_CHAR);
-		String filename = accessablePath.substring(0, lastDot);
-		String format = accessablePath.substring(lastDot+1);
+//		int lastDot = accessablePath.lastIndexOf(FileUtils.DOT_CHAR);
+//		String filename = accessablePath.substring(0, lastDot);
+//		String format = accessablePath.substring(lastDot+1).toLowerCase();
+		String filename = FileUtils.getFileNameWithoutExt(accessablePath);
+		String format = FileUtils.getExtendName(accessablePath).toLowerCase();
 		VideoConfig videoConfig = cosProperties.getVideo();
-		if (videoConfig.isEnabled() && videoConfig.getPostfix().contains(format)) {
+		if (videoConfig.isEnabled() 
+				&& accessablePath.startsWith(videoConfig.getTriggerDir())
+				&& videoConfig.getPostfix().contains(format)) {
 			Map<String, String> parseCtx = ImmutableMap.of("filename", filename, "format", format);
 			
 			String snapshotFileName = ExpressionFacotry.BRACE.parseByProvider(videoConfig.getSnapshotFileName(), parseCtx);
+			snapshotFileName = videoConfig.getOutputDir() + snapshotFileName;
 			SimpleFileStoredMeta cutMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), snapshotFileName);
 			cutMeta.setSotredFileName(snapshotFileName);
 			cutMeta.setAccessablePath(snapshotFileName);
@@ -103,17 +108,21 @@ public class CosFileStore implements FileStorer, InitializingBean {
 			
 			// 覆盖非水印视频
 			String waterMaskFileName = ExpressionFacotry.BRACE.parseByProvider(videoConfig.getWaterMaskFileName(), parseCtx);
+			waterMaskFileName = videoConfig.getOutputDir() + waterMaskFileName;
 			meta.setSotredFileName(waterMaskFileName);
 			meta.setAccessablePath(waterMaskFileName);
 			meta.setFullAccessablePath(cosProperties.getDownloadUrl(waterMaskFileName));
 			
-			// 轮询……
-			Logger logger = JFishLoggerFactory.getCommonLogger();
-			while(!wrapper.getCosClient().doesObjectExist(bucketName, accessablePath)) {
-				logger.info("正在检查转码后的视频是否存在, accessablePath: {} ……", accessablePath);
-				LangUtils.awaitInMillis(300);
+			// 是否轮询异步结果，默认为1000毫秒……
+			int checkInMillis = videoConfig.getCheckTaskInMillis();
+			if (checkInMillis > 0) {
+				Logger logger = JFishLoggerFactory.getCommonLogger();
+				while(!wrapper.getCosClient().doesObjectExist(bucketName, waterMaskFileName)) {
+					logger.info("正在检查转码后的视频是否存在, waterMaskFileName: {} ……", waterMaskFileName);
+					LangUtils.awaitInMillis(checkInMillis);
+				}
+				logger.info("获取转码后的视频成功, waterMaskFileName: {} ", waterMaskFileName);
 			}
-			logger.info("获取转码后的时间成功, accessablePath: {} ", accessablePath);
 		}
 	}
 	

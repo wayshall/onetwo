@@ -126,12 +126,36 @@ public class CosProperties {
 		boolean enabled = false;
 		/***
 		 * 腾讯云可以截取多张图片，_0表示的是第一张截图
+		 * 对应配置：
+		 * {inputName}-cover.{format}
 		 */
-		String snapshotFileName = "{filename}-cover_0.jpg";
+		String snapshotFileName = "{filename}-cover.jpg";
+		/***
+		 * 对应配置：
+		 * {inputName}wm
+		 */
 		String waterMaskFileName = "{filename}wm.{format}";
 		/***
-		 * 上传以下后缀的文件时，触发返回的文件名称处理
+		 * 上传以下后缀的文件时，触发处理
 		 */
 		List<String> postfix = Arrays.asList("mp4", "flv");
+		
+		/***
+		 * 触发目录
+		 * 对应腾讯云mps工作流配置的触发目录
+		 */
+		String triggerDir = "/video/";
+		
+		/***
+		 * 输出目录
+		 * 对应腾讯云mps工作流配置的输出目录
+		 */
+		String outputDir = "/video/";
+		/***
+		 * 每隔多少毫秒检查是否转换成功
+		 * 因为腾讯云的加水印功能是异步的
+		 * 少于0表示不轮询检查异步转换结果
+		 */
+		int checkTaskInMillis = 1000;
 	}
 }
