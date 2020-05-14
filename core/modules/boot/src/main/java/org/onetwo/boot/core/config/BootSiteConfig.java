@@ -227,10 +227,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		
 		Map<String, String> pathTags = Maps.newHashMap();
 		
-		/***
-		 * 用urlTemplate重新解释url
-		 */
-		String urlTemplate;
+		WaterMaskConfig watermask = new WaterMaskConfig();
 		
 		public String getBasePath(){
 			if(StringUtils.isNotBlank(basePath)){
@@ -252,6 +249,16 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 			}
 			return basePath + subPath;
 		}
+	}
+	
+	@Data
+	public static class WaterMaskConfig {
+		boolean enabled;
+		/***
+		 * 用urlTemplate重新解释url
+		 */
+		String urlTemplate;
+		List<String> applyPostfixList = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 	}
 
 	//move to jfishConfig?

@@ -8,8 +8,10 @@ import java.util.Optional;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.ImageServer;
+import org.onetwo.boot.core.config.BootSiteConfig.WaterMaskConfig;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.ExpressionFacotry;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -92,13 +94,20 @@ public class PathTagResolver implements InitializingBean {
 		}
 		path = fixPath(path, subPath);
 		
-		path = parseUrlTemplate(server, path);
+		path = parseUrlTemplate(server.getWatermask(), path);
 		
 		return path;
 	}
 	
-	private String parseUrlTemplate(ImageServer server, String url) {
-		String urlTemplate = server.getUrlTemplate();
+	private String parseUrlTemplate(WaterMaskConfig watermask, String url) {
+		if (!watermask.isEnabled()) {
+			return url;
+		}
+		String postfix = FileUtils.getExtendName(url);
+		if (!watermask.getApplyPostfixList().contains(postfix)) {
+			return url;
+		}
+		String urlTemplate = watermask.getUrlTemplate();
 		if (StringUtils.isBlank(urlTemplate)) {
 			return url;
 		}

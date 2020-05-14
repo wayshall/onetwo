@@ -123,6 +123,9 @@ public class CosFileStore implements FileStorer, InitializingBean {
 				}
 				logger.info("获取转码后的视频成功, waterMaskFileName: {} ", waterMaskFileName);
 			}
+		} else {
+			Logger logger = JFishLoggerFactory.getCommonLogger();
+			logger.info("忽略处理视频：enabled: {}, accessablePath: {}, format: {}", videoConfig.isEnabled(), accessablePath, format);
 		}
 	}
 	
