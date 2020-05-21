@@ -1,5 +1,6 @@
 package org.onetwo.boot.func.submit;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import lombok.AllArgsConstructor;
@@ -40,6 +41,7 @@ public interface RedisRateLimiter {
 	@AllArgsConstructor
 	@Builder
 	public static class ActionContext {
+		
 		/***
 		 * 若要限制某个方法某个用户一个周期内只能调用1次
 		 * 则actionKey=方法的key+用户id
@@ -63,6 +65,11 @@ public interface RedisRateLimiter {
 
 		@Builder.Default
 		String errorMessage = "It's too frequent";
+		
+		// 根据开始和结束时间计算
+		Date startTime;
+		Date endTime;
+//		String timePattern;
 		
 	}
 

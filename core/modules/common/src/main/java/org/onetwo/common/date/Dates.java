@@ -42,6 +42,11 @@ final public class Dates {
 		return LocalDateTime.parse(dateTimeStr, DATE_TIME);
 	}
 	
+	public static Date toDate(LocalDate localDate, LocalTime localTime){
+		LocalDateTime newDate = localTime.atDate(localDate);
+		return Date.from(newDate.atZone(ZoneId.systemDefault()).toInstant());
+	}
+	
 	public static Date toDate(LocalDate localDate){
 		return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
