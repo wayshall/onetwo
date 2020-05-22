@@ -56,7 +56,7 @@ public class BootCommonServiceConfig {
 	public BootCommonService bootCommonService(){
 		SimpleBootCommonService service = new SimpleBootCommonService();
 		service.setCompressConfig(bootSiteConfig.getUpload().getCompressImage());
-		service.setFileStoreBaseDir(bootSiteConfig.getUpload().getFileStorePath());
+//		service.setFileStoreBaseDir(bootSiteConfig.getUpload().getFileStorePath());
 		return service;
 	}
 	

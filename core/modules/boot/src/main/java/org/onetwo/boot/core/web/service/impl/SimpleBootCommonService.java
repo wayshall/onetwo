@@ -49,11 +49,11 @@ public class SimpleBootCommonService implements BootCommonService {
 	/***
 	 * 上传的根目录
 	 */
-	private String fileStoreBaseDir = "";
+//	private String fileStoreBaseDir = "";
 	
-	public void setFileStoreBaseDir(String fileStoreBaseDir) {
-		this.fileStoreBaseDir = fileStoreBaseDir;
-	}
+//	public void setFileStoreBaseDir(String fileStoreBaseDir) {
+//		this.fileStoreBaseDir = fileStoreBaseDir;
+//	}
 
 //	public void setFileStorer(FileStorer fileStorer) {
 //		this.fileStorer = fileStorer;
@@ -146,7 +146,7 @@ public class SimpleBootCommonService implements BootCommonService {
 																in, 
 																options.getMultipartFile().getOriginalFilename());
 		context.setResizeConfig(options.getResizeConfig());
-		context.setFileStoreBaseDir(fileStoreBaseDir);
+		context.setFileStoreBaseDir(siteConfig.getUpload().getFileStorePath());
 //		context.setStoreFilePathStrategy(storeFilePathStrategy);
 		context.setKey(options.getKey());
 		context.setWaterMaskConfig(options.getWaterMaskConfig());

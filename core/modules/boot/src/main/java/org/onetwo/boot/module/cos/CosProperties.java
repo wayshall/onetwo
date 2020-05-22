@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootJFishConfig;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -94,11 +95,14 @@ public class CosProperties {
 	
 
 	public static String buildUrl(boolean https, String endpoint, String bucketName, String key){
-		StringBuilder url = new StringBuilder(https?"https":"http");
-		url.append("://");
-		if (!endpoint.startsWith(bucketName)) {
-			url.append(bucketName)
-				.append(".");
+		StringBuilder url = new StringBuilder(200);
+		if (!RequestUtils.isHttpPath(endpoint)) {
+			url.append(https?"https":"http");
+			url.append("://");
+			if (!endpoint.startsWith(bucketName)) {
+				url.append(bucketName)
+					.append(".");
+			}
 		}
 		url.append(endpoint)
 			.append(key);
@@ -157,5 +161,9 @@ public class CosProperties {
 		 * 少于0表示不轮询检查异步转换结果
 		 */
 		int checkTaskInMillis = 1000;
+		/***
+		 * 最大等待时间，默认30秒
+		 */
+		int totalTaskInMillis = 30000;
 	}
 }

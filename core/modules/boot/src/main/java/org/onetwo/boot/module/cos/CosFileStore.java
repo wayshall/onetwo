@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableMap;
  * <br/>
  */
 public class CosFileStore implements FileStorer, InitializingBean {
+	private Logger logger = JFishLoggerFactory.getLogger(getClass());
 	
 	private CosClientWrapper wrapper;
 	private CosProperties cosProperties;
@@ -69,14 +70,15 @@ public class CosFileStore implements FileStorer, InitializingBean {
 		meta.setSotredFileName(key);
 		meta.setAccessablePath(accessablePath);
 		meta.setFullAccessablePath(cosProperties.getDownloadUrl(accessablePath));
-		if(cosProperties.isAlwaysStoreFullPath()){
-			meta.setAccessablePath(meta.getFullAccessablePath());
-		}
 		meta.setStoredServerLocalPath(key);
 		meta.setBizModule(context.getModule());
 		meta.setSotredFileName(key);
 		
 		processVideo(meta);
+		
+		if(cosProperties.isAlwaysStoreFullPath()){
+			meta.setAccessablePath(meta.getFullAccessablePath());
+		}
 		
 		return meta;
 	}
@@ -104,6 +106,10 @@ public class CosFileStore implements FileStorer, InitializingBean {
 			SimpleFileStoredMeta cutMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), snapshotFileName);
 			cutMeta.setSotredFileName(snapshotFileName);
 			cutMeta.setAccessablePath(snapshotFileName);
+			cutMeta.setFullAccessablePath(cosProperties.getDownloadUrl(snapshotFileName));
+			if(cosProperties.isAlwaysStoreFullPath()){
+				cutMeta.setAccessablePath(cutMeta.getFullAccessablePath());
+			}
 			meta.setSnapshotStoredMeta(cutMeta);
 			
 			// 覆盖非水印视频
@@ -115,16 +121,21 @@ public class CosFileStore implements FileStorer, InitializingBean {
 			
 			// 是否轮询异步结果，默认为1000毫秒……
 			int checkInMillis = videoConfig.getCheckTaskInMillis();
+			int totalInMillis = 0;
 			if (checkInMillis > 0) {
-				Logger logger = JFishLoggerFactory.getCommonLogger();
 				while(!wrapper.getCosClient().doesObjectExist(bucketName, waterMaskFileName)) {
 					logger.info("正在检查转码后的视频是否存在, waterMaskFileName: {} ……", waterMaskFileName);
 					LangUtils.awaitInMillis(checkInMillis);
+					totalInMillis += checkInMillis;
+					if (totalInMillis>=videoConfig.getTotalTaskInMillis()) {
+						logger.info("获取转码后的视频达到最大时间, waterMaskFileName: {} ", waterMaskFileName);
+						break;
+					}
 				}
 				logger.info("获取转码后的视频成功, waterMaskFileName: {} ", waterMaskFileName);
 			}
+			logger.info("上传视频成功, 视频: {}, 水印: {} ", waterMaskFileName, snapshotFileName);
 		} else {
-			Logger logger = JFishLoggerFactory.getCommonLogger();
 			logger.info("忽略处理视频：enabled: {}, accessablePath: {}, format: {}", videoConfig.isEnabled(), accessablePath, format);
 		}
 	}

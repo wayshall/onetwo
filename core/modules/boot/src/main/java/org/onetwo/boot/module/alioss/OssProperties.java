@@ -7,6 +7,7 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.module.alioss.image.WatermarkAction.WatermarkFonts;
 import org.onetwo.boot.module.alioss.video.SnapshotProperties;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.aliyun.oss.ClientConfiguration;
@@ -70,12 +71,16 @@ public class OssProperties {
 	}
 
 	public static String buildUrl(boolean https, String endpoint, String bucketName, String key){
-		StringBuilder url = new StringBuilder(https?"https":"http");
-		url.append("://")
-			.append(bucketName)
-			.append(".")
-			.append(endpoint)
-			.append("/")
+		StringBuilder url = new StringBuilder(200);
+		if (!RequestUtils.isHttpPath(endpoint)) {
+			url.append(https?"https":"http");
+			url.append("://");
+			if (!endpoint.startsWith(bucketName)) {
+				url.append(bucketName)
+					.append(".");
+			}
+		}
+		url.append(endpoint)
 			.append(key);
 		return url.toString();
 	}
