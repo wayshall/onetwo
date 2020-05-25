@@ -2,6 +2,8 @@ package org.onetwo.dbm.ui.core;
 
 import java.util.List;
 
+import lombok.Data;
+
 /**
  * @author weishao zeng
  * <br/>
@@ -9,6 +11,12 @@ import java.util.List;
 
 public interface UISelectDataProvider {
 	
-	List<?> findDatas(String query);
+	List<?> findDatas(SelectQueryRequest request);
+	
+	@Data
+	public class SelectQueryRequest {
+		String query;
+		String selectedValue;
+	}
 
 }

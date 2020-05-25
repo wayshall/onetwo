@@ -6,7 +6,6 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.onetwo.boot.core.web.utils.SimpleMultipartFile;
 import org.onetwo.boot.core.web.utils.UploadOptions;
-import org.onetwo.boot.core.web.utils.UploadOptions.ResizeConfig;
 import org.onetwo.boot.module.cos.CosClientWrapper;
 import org.onetwo.boot.module.cos.CosFileStore;
 import org.onetwo.boot.module.cos.CosProperties;
@@ -42,7 +41,7 @@ public class SimpleBootCommonServiceTest {
 		
 		CosFileStore storer = new CosFileStore(wrapper, cos);
 		SimpleBootCommonService common = new SimpleBootCommonService();
-		common.setFileStoreBaseDir("/test");
+//		common.setFileStoreBaseDir("/test");
 		common.setFileStorers(Arrays.asList(storer));
 		
 		SimpleMultipartFile upfile = new SimpleMultipartFile("test.png", file);

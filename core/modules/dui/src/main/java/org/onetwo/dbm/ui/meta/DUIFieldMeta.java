@@ -73,7 +73,7 @@ public class DUIFieldMeta {
 			return "true";
 		}
 	}
-
+	
 	@Data
 	public class DUIInputMeta {
 		InputTypes type;

@@ -1,6 +1,9 @@
 
 <#macro makeVueFormField field modelPrefix='dataModel' spaces="" isEditFormField=true>
       ${spaces}<el-form-item
+    <#if field.insertable==false>
+        ${spaces}v-if="statusMode!=='Add'"
+    </#if>
         ${spaces}label="${(field.label)!''}"
         ${spaces}prop="${field.name}">
     <#if field.select??>

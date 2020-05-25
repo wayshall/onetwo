@@ -71,7 +71,7 @@ private OssProperties ossProperties;
 		Resource resource = SpringUtils.classpath("data/test.jpg");
 		
 		SimpleBootCommonService common = new SimpleBootCommonService();
-		common.setFileStoreBaseDir("/test");
+//		common.setFileStoreBaseDir("/test");
 		common.setFileStorers(Arrays.asList(storer));
 		
 		SimpleMultipartFile upfile = new SimpleMultipartFile("test.jpg", resource.getFile());
@@ -99,7 +99,7 @@ private OssProperties ossProperties;
 		ossProperties.setWatermask(watermask);
 		storer = new OssFileStore(wraper, ossProperties);
 		SimpleBootCommonService common = new SimpleBootCommonService();
-		common.setFileStoreBaseDir("/test");
+//		common.setFileStoreBaseDir("/test");
 		common.setFileStorers(Arrays.asList(storer));
 		
 		SimpleMultipartFile upfile = new SimpleMultipartFile("test.jpg", resource.getFile());

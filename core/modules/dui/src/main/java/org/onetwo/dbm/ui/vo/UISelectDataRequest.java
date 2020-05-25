@@ -20,6 +20,7 @@ public class UISelectDataRequest {
 	String entity;
 	@NotNull
 	String field; 
-	String query; 
+	String query;
+	String selectedValue;
 	
 }

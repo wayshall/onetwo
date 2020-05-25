@@ -35,7 +35,7 @@ public @interface DUISelect {
 	}
 	public class NoProvider implements UISelectDataProvider {
 		@Override
-		public List<?> findDatas(String query) {
+		public List<?> findDatas(SelectQueryRequest query) {
 			throw new UnsupportedOperationException();
 		}
 	}

@@ -9,6 +9,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.mapping.DbmEnumValueMapping;
 import org.onetwo.dbm.mapping.DbmMappedField;
+import org.onetwo.dbm.ui.core.UISelectDataProvider.SelectQueryRequest;
 import org.onetwo.dbm.ui.exception.DbmUIException;
 import org.onetwo.dbm.ui.meta.DUIEntityMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta;
@@ -45,7 +46,7 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		if (uiselect==null) {
 			throw new DbmUIException("ui select not found, entity name: " + request.getEntity() + ", field: " + request.getField());
 		}
-		return getDatas(uiselect, request.getQuery());
+		return getDatas(uiselect, request);
 	}
 	
 	/***
@@ -61,7 +62,10 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 			return "";
 		}
 		
-		List<EnumDataVO> list = (List<EnumDataVO>)getDatas(uiselect, value, true);
+		UISelectDataRequest request = new UISelectDataRequest();
+//		request.setQuery(value==null?null:value.toString());
+		request.setSelectedValue(value==null?null:value.toString());
+		List<EnumDataVO> list = (List<EnumDataVO>)getDatas(uiselect, request);
 		Object compareValue = getCompareValue(uiselect, value);		
 		return list.stream()
 				.filter(d -> d.getValue().equals(compareValue))
@@ -87,11 +91,8 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		return compareValue;
 	}
 	
-	public List<?> getDatas(DUISelectMeta uiselect, String query) {
-		return getDatas(uiselect, query, false);
-	}
-	
-	public List<?> getDatas(DUISelectMeta uiselect, Object query, boolean loadById) {
+//	public List<?> getDatas(DUISelectMeta uiselect, Object query, boolean loadById) {
+	public List<?> getDatas(DUISelectMeta uiselect, UISelectDataRequest request) {
 		if (uiselect.useEnumData()) {
 			Enum<?>[] values = (Enum<?>[]) uiselect.getDataEnumClass().getEnumConstants();
 //			DataBase[] vals = DataBase.class.getEnumConstants();
@@ -107,19 +108,23 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 			if (dataProvider==null) {
 				throw new DbmUIException("UISelectDataProvider not found for class: " + dataProviderClass);
 			}
+			
+			SelectQueryRequest queryRequest = new SelectQueryRequest();
+			queryRequest.setQuery(request.getQuery());
+			queryRequest.setSelectedValue(request.getSelectedValue());
 			if (uiselect.isTreeSelect()) {
-				return dataProvider.findDatas(query.toString());
+				return dataProvider.findDatas(queryRequest);
 			} else {
-				return dataProvider.findDatas(query.toString())
+				return dataProvider.findDatas(queryRequest)
 								.stream().map(d -> toEnumDataVO(uiselect, d))
 								.collect(Collectors.toList());
 			}
 			
 		} else if (uiselect.getCascadeEntity()!=null) {
-			if (loadById) {
-				return _this.findByValueField(uiselect, query);
+			if (StringUtils.isNotBlank(request.getSelectedValue())) {
+				return _this.findByValueField(uiselect, request.getSelectedValue());
 			} else {
-				return _this.queryFromCascade(uiselect, StringUtils.emptyIfNull(query));
+				return _this.queryFromCascade(uiselect, StringUtils.emptyIfNull(request.getQuery()));
 			}
 		}else {
 			throw new DbmUIException("Neither enum nor dataProvider, field: " + uiselect.getField().getName());
