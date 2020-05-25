@@ -128,14 +128,16 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
                                                         <#assign hasFileFormField=true/><#t>
                                                   </#if><#t>
                                                 </#list><#t>
-                                                @Validated ${entityClassName} ${_tableContext.propertyName},<#if hasFileFormField==false><#lt></#if>
+                                                    @Validated ${entityClassName} ${_tableContext.propertyName},<#if hasFileFormField==false><#lt></#if>
                                                 BindingResult br
                                                 ){
         ValidatorUtils.throwIfHasErrors(br, true);
     <#list formFields as field><#t>
       <#if field.input.isFileType()==true><#t>
-        FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
-        ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
+        if (${field.name}File!=null) {
+            FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
+            ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
+        }
       </#if><#t>
     </#list><#t>
         ${serviceImplPropertyName}.save(${_tableContext.propertyName});
@@ -163,8 +165,10 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
         ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
     <#list formFields as field><#t>
       <#if field.input.isFileType()==true><#t>
-        FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
-        ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
+        if (${field.name}File!=null) {
+            FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
+            ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
+        }
       </#if><#t>
     </#list><#t>
         ${serviceImplPropertyName}.dymanicUpdate(${_tableContext.propertyName});
