@@ -118,6 +118,10 @@ public class DUIEntityMeta {
 		return getFields().stream().filter(f -> f.isListable()).collect(Collectors.toList());
 	}
 	
+	public Collection<DUIFieldMeta> getSelectableFields() {
+		return getFields().stream().filter(f -> f.getSelect()!=null).collect(Collectors.toList());
+	}
+	
 	public Collection<DUIFieldMeta> getSearchableFields() {
 		List<DUIFieldMeta> fields = getFields().stream().filter(f -> f.isSearchable()).collect(Collectors.toList());
 		return fields;

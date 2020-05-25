@@ -7,6 +7,7 @@
 <#assign moduleName="${_globalConfig.getModuleName()}"/>
 <#assign idName="${table.primaryKey.javaName}"/>
 <#assign formFields=DUIEntityMeta.formFields/>
+<#assign selectableFields=DUIEntityMeta.selectableFields/>
 <template>
   <div v-loading="dataLoading">
     <el-form
@@ -67,6 +68,18 @@ export default {
       savingLoading: false,
       dataLoading: false
     }
+  },
+  computed: {
+<#if selectableFields.isEmpty()==false>
+  <#list selectableFields as field>
+    ${field.name}Datas() {
+      if (this.dataModel.${field.name}) {
+        return [{ value: this.dataModel.${field.name}, label: this.dataModel.${field.listField} }]
+      }
+      return []
+    }<#if field?is_last==false>,</#if>
+  </#list>
+</#if>
   },
   watch: {
     dataId: function(newDataId) {

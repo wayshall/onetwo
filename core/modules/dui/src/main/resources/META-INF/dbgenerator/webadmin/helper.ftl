@@ -1,7 +1,7 @@
 
 <#macro makeVueFormField field modelPrefix='dataModel' spaces="" isEditFormField=true>
       ${spaces}<el-form-item
-    <#if field.insertable==false>
+    <#if isEditFormField && field.insertable==false>
         ${spaces}v-if="statusMode!=='Add'"
     </#if>
         ${spaces}label="${(field.label)!''}"
@@ -18,6 +18,9 @@
      <#else>
         ${spaces}<dui-select
           ${spaces}v-model="${modelPrefix}.${field.name}"
+    <#if isEditFormField>
+          :data="${field.name}Datas"
+    </#if>
           ${spaces}entity="${DUIEntityMeta.name}"
         <#if isEditFormField>
           ${spaces}:disabled="${field.formDisabledValue}"

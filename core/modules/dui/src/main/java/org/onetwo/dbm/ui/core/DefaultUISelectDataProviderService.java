@@ -121,7 +121,9 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 			}
 			
 		} else if (uiselect.getCascadeEntity()!=null) {
-			if (StringUtils.isNotBlank(request.getSelectedValue())) {
+			boolean loadById = (StringUtils.isBlank(request.getQuery()) || "__init__".equals(request.getQuery())) && 
+								StringUtils.isNotBlank(request.getSelectedValue());
+			if (loadById) {
 				return _this.findByValueField(uiselect, request.getSelectedValue());
 			} else {
 				return _this.queryFromCascade(uiselect, StringUtils.emptyIfNull(request.getQuery()));

@@ -4,6 +4,7 @@
 <#assign formComponentName="${table.propertyName}Form"/>
 <#assign moduleName="${_globalConfig.getModuleName()}"/>
 <#assign searchableFields=DUIEntityMeta.searchableFields/>
+<#assign selectableFields=DUIEntityMeta.selectableFields/>
 <template>
   <div class="app-container">
 
