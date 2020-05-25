@@ -18,6 +18,7 @@ import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -138,6 +139,23 @@ public class CosFileStore implements FileStorer, InitializingBean {
 		} else {
 			logger.info("忽略处理视频：enabled: {}, accessablePath: {}, format: {}", videoConfig.isEnabled(), accessablePath, format);
 		}
+	}
+	
+	public boolean isObjectExist(String objectPath) {
+		String key = objectPath;
+		if (!RequestUtils.isHttpPath(cosProperties.getDownloadEndPoint())) {
+			if (objectPath.startsWith(RequestUtils.HTTP_KEY)) {
+				key = StringUtils.substringAfter(key, RequestUtils.HTTP_KEY);
+			} else if (objectPath.startsWith(RequestUtils.HTTPS_KEY)) {
+				key = StringUtils.substringAfter(key, RequestUtils.HTTPS_KEY);
+			}
+		}
+		if (key.startsWith(cosProperties.getDownloadEndPoint())) {
+			key = StringUtils.substringAfter(key, cosProperties.getDownloadEndPoint());
+		}
+		key = StringUtils.trimStartWith(key, "/");
+		boolean exist = wrapper.getCosClient().doesObjectExist(bucketName, key);
+		return exist;
 	}
 	
 	@Override

@@ -32,6 +32,9 @@ public interface FileStorer {
 	default void delete(String key) {
 		throw new UnsupportedOperationException();
 	}
+	default boolean isObjectExist(String objectPath) {
+		throw new UnsupportedOperationException();
+	}
 
 	void readFileTo(final String accessablePath, final OutputStream output);
 	InputStream readFileStream(final String accessablePath);

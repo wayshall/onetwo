@@ -18,6 +18,7 @@ import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -53,6 +54,23 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		key = StringUtils.trimStartWith(key, FileUtils.SLASH);
 		ObjectOperation operation = wrapper.objectOperation(ossProperties.getBucketName(), key);
 		operation.delete();
+	}
+	
+	public boolean isObjectExist(String objectPath) {
+		String key = objectPath;
+		if (!RequestUtils.isHttpPath(ossProperties.getDownloadEndPoint())) {
+			if (objectPath.startsWith(RequestUtils.HTTP_KEY)) {
+				key = StringUtils.substringAfter(key, RequestUtils.HTTP_KEY);
+			} else if (objectPath.startsWith(RequestUtils.HTTPS_KEY)) {
+				key = StringUtils.substringAfter(key, RequestUtils.HTTPS_KEY);
+			}
+		}
+		if (key.startsWith(ossProperties.getDownloadEndPoint())) {
+			key = StringUtils.substringAfter(key, ossProperties.getDownloadEndPoint());
+		}
+		key = StringUtils.trimStartWith(key, "/");
+		boolean exist = wrapper.getOssClient().doesObjectExist(ossProperties.getBucketName(), key);
+		return exist;
 	}
 
 	@Override
