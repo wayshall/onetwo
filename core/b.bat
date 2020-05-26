@@ -26,4 +26,9 @@ cd ../zifish-plugins
 call %*
 @echo:
 
+cd ../onetwo-tcc
+@echo run in dir: %cd%
+call %*
+@echo:
+
 cd %~dp0
