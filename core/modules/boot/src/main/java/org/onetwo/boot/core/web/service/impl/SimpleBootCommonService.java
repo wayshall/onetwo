@@ -165,6 +165,15 @@ public class SimpleBootCommonService implements BootCommonService {
 	}
 	
 	
+	@Override
+	public boolean isObjectExist(StoreType type, String objectPath) {
+		if (type==null) {
+			type = siteConfig.getUpload().getStoreType();
+		}
+		FileStorer fileStorer = getFileStorer(type);
+		return fileStorer.isObjectExist(objectPath);
+	}
+
 	public void readFileTo(String accessablePath, OutputStream output){
 		this.getFileStorer().readFileTo(accessablePath, output);
 	}
