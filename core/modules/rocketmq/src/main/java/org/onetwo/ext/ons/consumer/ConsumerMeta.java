@@ -61,6 +61,12 @@ public class ConsumerMeta {
 	@Builder.Default
 	private int maxReconsumeTimes = -1;
 	private Properties comsumerProperties;
+	
+	/***
+	 * 配置说明：批量消费的最大消息条数.默认值：1
+	 */
+	@Builder.Default
+	private int consumeMessageBatchMaxSize = 1;
 
 	@Builder.Default
 	private boolean autoDeserialize = true;

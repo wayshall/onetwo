@@ -127,6 +127,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		Consumer consumer = createConsumer(comsumerProperties);
 		DefaultMQPushConsumer rawConsumer = (DefaultMQPushConsumer)ReflectUtils.getFieldValue(consumer, "defaultMQPushConsumer");
 		rawConsumer.setConsumeFromWhere(meta.getConsumeFromWhere());
+		rawConsumer.setConsumeMessageBatchMaxSize(meta.getConsumeMessageBatchMaxSize());
 		
 		if (StringUtils.isNotBlank(comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY))) {
 			String timestamp = ONSUtils.reformatTimestamp(comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY));
@@ -158,6 +159,9 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 
 	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
 		rawConsumer.registerMessageListener(new MessageListenerConcurrently() {
+			
+			// 里面的消息是一个集合List而不是单独的msg，这个consumeMessageBatchMaxSize就是控制这个集合的最大大小。
+			// 而由于拉取到的一批消息会立刻拆分成N（取决于consumeMessageBatchMaxSize）批消费任务，所以集合中msgs的最大大小是consumeMessageBatchMaxSize和pullBatchSize的较小值。
 			@Override
 			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
 //				return delegateMessageService.processMessages(meta, msgs, context);

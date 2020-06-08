@@ -133,6 +133,7 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 				.autoDeserialize(subscribe.autoDeserialize())
 				.idempotentType(subscribe.idempotent())
 				.appendConsumerPrefix(subscribe.appendConsumerPrefix())
+				.consumeMessageBatchMaxSize(subscribe.consumeMessageBatchMaxSize())
 				.comsumerProperties(properties)
 				.build();
 		return meta;

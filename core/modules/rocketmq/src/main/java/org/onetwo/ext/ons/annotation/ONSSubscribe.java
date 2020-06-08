@@ -64,6 +64,13 @@ public @interface ONSSubscribe {
 	boolean autoDeserialize() default true;
 	IdempotentType idempotent() default IdempotentType.NONE;
 	
+	/***
+	 * 批量消费的最大消息条数，默认为1
+	 * @author weishao zeng
+	 * @return
+	 */
+	int consumeMessageBatchMaxSize() default 1;
+	
 	//consumeTimeoutInMinutes
 	//properties: field=vlaue
 	
