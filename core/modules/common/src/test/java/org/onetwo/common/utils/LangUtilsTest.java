@@ -22,6 +22,13 @@ public class LangUtilsTest {
 	
 	@Test
 	public void testReplace() {
+		String str = "waypc.mshome.net|8888";
+		String[] strs = str.split("\\|");
+		System.out.println("str: " + LangUtils.toString(strs));
+		str = "127.0.0.1|8888";
+		strs = str.split("|");
+		System.out.println("str: " + LangUtils.toString(strs));
+		
 		String url = "aaa\\bb?cc*dd|ee\"ff";
 		System.out.println("source: " + url);
 		url = url.replaceAll("\\\\|:|\\*|\\?|\"|<|>|\\|", "");

@@ -3,6 +3,8 @@ package org.onetwo.ext.ons;
 import java.util.Map;
 import java.util.Properties;
 
+import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.date.NiceDate;
 import org.onetwo.ext.alimq.JsonMessageDeserializer;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
@@ -12,6 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.google.common.collect.Maps;
 
 import lombok.Data;
@@ -45,10 +48,19 @@ public class ONSProperties implements InitializingBean {
 	Map<String, Properties> consumers = Maps.newHashMap();
 	String consumerPrefix;
 	
+	/***
+	 * 用于特殊情况下，统一把所有consumer从某个时间段开始订阅
+	 */
+	ConsumeFromWhereProps specialConsume = new ConsumeFromWhereProps();
+	
 	DeleteReceiveTask deleteReceiveTask = new DeleteReceiveTask();
 	
 //	Map<String, String> jsonDeserializerCompatibilityTypeMappings = Maps.newHashMap();	
-
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		
+	}
 	public Map<String, Properties> getProducers() {
 		return producers;
 	}
@@ -77,12 +89,21 @@ public class ONSProperties implements InitializingBean {
 		return baseConfig;
 	}
 	
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		
+	/***
+	 * 用于特殊情况下，统一把所有consumer从某个时间段开始订阅……
+	 * @author way
+	 *
+	 */
+	@Data
+	public static class ConsumeFromWhereProps {
+		boolean enabled;
+		ConsumeFromWhere consumeFromWhere = ConsumeFromWhere.CONSUME_FROM_TIMESTAMP;
+		/***
+		 * 默认为启动时间
+		 */
+		String consumeTimestamp = NiceDate.Now().format(DateUtils.DATETIME);
 	}
-
+	
 	@Data
 	public static class DeleteReceiveTask {
 		/***

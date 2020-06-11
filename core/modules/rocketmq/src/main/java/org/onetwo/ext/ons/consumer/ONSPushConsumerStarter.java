@@ -12,6 +12,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.ListenerType;
 import org.onetwo.ext.ons.ONSProperties;
+import org.onetwo.ext.ons.ONSProperties.ConsumeFromWhereProps;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
 import org.onetwo.ext.ons.exception.MessageConsumedException;
@@ -130,15 +131,16 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		rawConsumer.setConsumeMessageBatchMaxSize(meta.getConsumeMessageBatchMaxSize());
 		
 		if (StringUtils.isNotBlank(comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY))) {
-			String timestamp = ONSUtils.reformatTimestamp(comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY));
+			String timestamp = comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY);
 			rawConsumer.setConsumeTimestamp(timestamp);
-			
 		} else if (StringUtils.isNotBlank(meta.getConsumeTimestamp())) {
-			String timestamp = ONSUtils.reformatTimestamp(meta.getConsumeTimestamp());
+			String timestamp = meta.getConsumeTimestamp();
 			rawConsumer.setConsumeTimestamp(timestamp);
 		}
 		
 		meta.setComsumerProperties(comsumerProperties);
+		
+		configSpecialConsume(rawConsumer);
 		
 //		consumer.subscribe(meta.getTopic(), meta.getSubExpression(), listener);
 		ListenerType listenerType = meta.getListenerType(); 
@@ -155,6 +157,15 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			consumer.start();
 		}
 		logger.info("ONSConsumer[{}] started! meta: {}", meta.getConsumerId(), meta);
+	}
+	
+	private void configSpecialConsume(DefaultMQPushConsumer rawConsumer) {
+		ConsumeFromWhereProps specialConsume = this.onsProperties.getSpecialConsume();
+		if (!specialConsume.isEnabled()) {
+			return ;
+		}
+		rawConsumer.setConsumeFromWhere(specialConsume.getConsumeFromWhere());
+		rawConsumer.setConsumeTimestamp(specialConsume.getConsumeTimestamp());
 	}
 
 	private void registerONSConsumerListener(DefaultMQPushConsumer rawConsumer, ConsumerMeta meta) throws MQClientException{
