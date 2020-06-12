@@ -22,6 +22,10 @@ public class LangUtilsTest {
 	
 	@Test
 	public void testReplace() {
+		int val = 127;
+		int val2 = 0xFF;
+		System.out.println("val:" +val+", " + Integer.toHexString(val)+", " + Integer.toBinaryString(val));
+		System.out.println("val2:" +val2);
 		String str = "waypc.mshome.net|8888";
 		String[] strs = str.split("\\|");
 		System.out.println("str: " + LangUtils.toString(strs));
