@@ -29,8 +29,8 @@ public class AsyncTaskConfiguration {
 	private AsyncTaskProperties asyncTaskProperties;
 	
 	@Bean(ASYNC_TASK_BEAN_NAME)
-	@ConditionalOnMissingBean(AsyncTaskExecutor.class)
-    public AsyncTaskExecutor mvcAsyncTaskExecutor(DelegateTaskDecorator delegateTaskDecorator) {
+//	@ConditionalOnMissingBean(AsyncTaskExecutor.class)
+    public AsyncTaskExecutor asyncTaskExecutor(DelegateTaskDecorator delegateTaskDecorator) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(asyncTaskProperties.getCorePoolSize());
         executor.setMaxPoolSize(asyncTaskProperties.getMaxPoolSize());
@@ -47,8 +47,9 @@ public class AsyncTaskConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(AsyncTaskConfigurer.class)
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	public AsyncTaskConfigurer asyncTaskConfigurer(){
-		return new AsyncTaskConfigurer();
+	public AsyncTaskConfigurer asyncTaskConfigurer(DelegateTaskDecorator delegateTaskDecorator){
+		AsyncTaskConfigurer configurer = new AsyncTaskConfigurer(asyncTaskExecutor(delegateTaskDecorator));
+		return configurer;
 	}
 	
 	@Bean
