@@ -2,17 +2,53 @@ package org.onetwo.common.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.utils.Assert;
 
 public class ZipUtils {
 //	private static final Logger logger = MyLoggerFactory.getLogger(ZipUtils.class);
 
+	public static interface ZipFileFilter {
+		boolean isFileWillZip(File file, String subFileName);
+	}
+	
+	public static interface ZipEntryName {
+		String entryName(File file);
+	}
+	
+	/***
+	 * 
+	 * @author weishao zeng
+	 * @param targetZipFilePath 目标文件，若目标文件不包含父目录，则以baseDir为父目录
+	 * @param baseDir
+	 * @param filter
+	 * @return
+	 */
+	public static File zipfiles(String targetZipFilePath, String baseDir, ZipFileFilter filter){
+		File baseDirFile = new File(baseDir);
+		String baseDirPath = baseDirFile.getPath() + File.separator;
+		List<File> files = FileUtils.listFile(baseDirFile, file -> {
+			String subFileName = StringUtils.substringAfter(file.getPath(), baseDirPath);
+			return filter.isFileWillZip(file, subFileName);
+		});
+		if (files.isEmpty()) {
+			throw new BaseException("no file will be zip!");
+		}
+		File targetZipFile = new File(targetZipFilePath);
+		if (targetZipFile.getParentFile()==null) {
+			targetZipFilePath = baseDirPath + targetZipFilePath;
+		}
+		return zipfileList(targetZipFilePath, FileUtils.UTF8, files, f -> {
+			String subFileName = StringUtils.substringAfter(f.getPath(), baseDirPath);
+			return subFileName;
+		});
+	}
+	
 	public static File zipfile(String targetZipFilePath, File file){
 		return zipfile(targetZipFilePath, file, file.isFile());
 	}
@@ -34,7 +70,12 @@ public class ZipUtils {
 	public static File zipfiles(String targetZipFilePath, File...files){
 		return zipfiles(targetZipFilePath, FileUtils.UTF8, files);
 	}
+	
 	public static File zipfiles(String targetZipFilePath, String encoding, File...files){
+		return zipfileList(targetZipFilePath, encoding, Arrays.asList(files), null);
+	}
+	
+	public static File zipfileList(String targetZipFilePath, String encoding, List<File> files, ZipEntryName zipEntryName){
 		Assert.notEmpty(files);
 		File zipfile = new File(targetZipFilePath);
 		FileUtils.makeDirs(zipfile, true);
@@ -44,6 +85,9 @@ public class ZipUtils {
 			zipout.setEncoding(encoding);
 			for(File f : files){
 				String entryName = f.getName();
+				if (zipEntryName!=null) {
+					entryName = zipEntryName.entryName(f);
+				}
 				ZipEntry zipentry = new ZipEntry(entryName);
 //				logger.info("put entry: " + entryName);
 				zipout.putNextEntry(zipentry);

@@ -120,7 +120,7 @@ public class CosFileStore implements FileStorer, InitializingBean {
 			meta.setAccessablePath(waterMaskFileName);
 			meta.setFullAccessablePath(cosProperties.getDownloadUrl(waterMaskFileName));
 			
-			// 是否轮询异步结果，默认为1000毫秒……
+			// 是否轮询异步结果，默认为不轮训……
 			int checkInMillis = videoConfig.getCheckTaskInMillis();
 			int totalInMillis = 0;
 			if (checkInMillis > 0) {
@@ -134,8 +134,9 @@ public class CosFileStore implements FileStorer, InitializingBean {
 					}
 				}
 				logger.info("获取转码后的视频成功, waterMaskFileName: {} ", waterMaskFileName);
+			} else {
+				logger.info("上传视频成功, 不轮训异步转码结果.  视频: {}, 水印: {} ", waterMaskFileName, snapshotFileName);
 			}
-			logger.info("上传视频成功, 视频: {}, 水印: {} ", waterMaskFileName, snapshotFileName);
 		} else {
 			logger.info("忽略处理视频：enabled: {}, accessablePath: {}, format: {}", videoConfig.isEnabled(), accessablePath, format);
 		}

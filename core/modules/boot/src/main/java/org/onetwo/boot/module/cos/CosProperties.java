@@ -160,7 +160,7 @@ public class CosProperties {
 		 * 因为腾讯云的加水印功能是异步的
 		 * 少于0表示不轮询检查异步转换结果
 		 */
-		int checkTaskInMillis = 1000;
+		int checkTaskInMillis = -1;
 		/***
 		 * 最大等待时间，默认30秒
 		 */
