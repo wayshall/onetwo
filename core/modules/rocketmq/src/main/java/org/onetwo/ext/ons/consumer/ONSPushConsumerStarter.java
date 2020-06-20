@@ -129,11 +129,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		rawConsumer.setConsumeFromWhere(meta.getConsumeFromWhere());
 		
 		if (StringUtils.isNotBlank(comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY))) {
-			String timestamp = ONSUtils.reformatTimestamp(comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY));
+			String timestamp = comsumerProperties.getProperty(ConsumerMeta.CONSUME_TIMESTAMP_KEY);
 			rawConsumer.setConsumeTimestamp(timestamp);
-			
 		} else if (StringUtils.isNotBlank(meta.getConsumeTimestamp())) {
-			String timestamp = ONSUtils.reformatTimestamp(meta.getConsumeTimestamp());
+			String timestamp = meta.getConsumeTimestamp();
 			rawConsumer.setConsumeTimestamp(timestamp);
 		}
 		
