@@ -71,6 +71,11 @@ public class NiceDate {
 		calendar.setTime(date);
 	}
 	
+	public NiceDate(Calendar calendar) {
+		super();
+		this.calendar = calendar;
+	}
+
 	protected void precise(DateType dateType) {
 		this.dateType = dateType;
 		atTheBeginning();
@@ -337,6 +342,12 @@ public class NiceDate {
 		long distance = date.getTimeInMillis() - this.getTimeInMillis();
 		Duration duration = Duration.ofMillis(Math.abs(distance));
 		return duration;
+	}
+	
+	public NiceDate clone(){
+		NiceDate date = new NiceDate(this.calendar);
+		date.dateType = this.dateType;
+		return date;
 	}
 	
 	public static void main(String[] args){
