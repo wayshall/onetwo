@@ -17,7 +17,7 @@ import com.tencent.cloud.CosStsClient;
  */
 @ConditionalOnClass(COSClient.class)
 @Configuration
-@EnableConfigurationProperties(CosProperties.class)
+@EnableConfigurationProperties({CosProperties.class, QCloudBaseProperties.class})
 @Lazy
 @ConditionalOnProperty(name=CosProperties.ENABLED_KEY)
 public class CosConfiguration {
