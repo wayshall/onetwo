@@ -3,6 +3,7 @@ package org.onetwo.boot.module.cos;
 import java.util.TreeMap;
 
 import org.json.JSONObject;
+import org.onetwo.boot.module.cos.CosStsData.CredentialsData;
 import org.onetwo.common.exception.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +20,7 @@ public class CosStsService {
 	@Autowired
 	private QCloudBaseProperties baseProperties;
 	
-	public JSONObject getCredential() {
+	public CosStsData getCredential() {
 		TreeMap<String, Object> config = new TreeMap<String, Object>();
 
 		try {
@@ -57,7 +58,21 @@ public class CosStsService {
 
 			JSONObject credential = CosStsClient.getCredential(config);
 //			System.out.println(credential.toString(4));
-			return credential;
+			CosStsData stsData = new CosStsData();
+			stsData.setExpiration(credential.getString("expiration"));
+			stsData.setStartTime(credential.getLong("startTime"));
+			stsData.setExpiredTime(credential.getLong("expiredTime"));
+
+			JSONObject cred = credential.getJSONObject("credentials");
+			
+			if (cred!=null) {
+				CredentialsData credentials = new CredentialsData();
+				credentials.setSessionToken(cred.getString("sessionToken"));
+				credentials.setTmpSecretId(cred.getString("tmpSecretId"));
+				credentials.setTmpSecretKey(cred.getString("tmpSecretKey"));
+				stsData.setCredentials(credentials);
+			}
+			return stsData;
 		} catch (Exception e) {
 			throw new BaseException("生成cos临时秘钥错误！", e);
 		}
