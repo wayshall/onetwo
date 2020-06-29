@@ -629,6 +629,12 @@
         <artifactId>cos_api</artifactId>
         <version>5.2.4</version>
     </dependency>
+        
+    <dependency>
+        <groupId>com.tencent.cloud</groupId>
+        <artifactId>cos-sts-java</artifactId>
+        <version>3.0.8</version>
+    </dependency>
     
     <dependency>
 	  <groupId>org.liquibase</groupId>

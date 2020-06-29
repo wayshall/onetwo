@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 import com.qcloud.cos.COSClient;
+import com.tencent.cloud.CosStsClient;
 
 /**
  * @author wayshall
@@ -36,5 +37,16 @@ public class CosConfiguration {
 	public CosClientWrapper cosClientWrapper(){
 		CosClientWrapper wrapper = new CosClientWrapper(cosProperties);
 		return wrapper;
+	}
+	
+	@Configuration
+	@ConditionalOnClass(CosStsClient.class)
+	protected static class CosStsConfiguration {
+
+		@Bean
+		public CosStsService cosStsService() {
+			CosStsService sts = new CosStsService();
+			return sts;
+		}
 	}
 }

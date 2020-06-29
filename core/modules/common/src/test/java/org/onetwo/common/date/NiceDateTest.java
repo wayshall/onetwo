@@ -18,6 +18,10 @@ public class NiceDateTest {
 
 	@Test
 	public void test() throws ParseException{
+		NiceDate start = NiceDate.Now().nextMinute(-4);
+		System.out.println(start.formatAsDateTime());
+		System.out.println(start.nextMinute(2).formatAsDateTime());
+		
 		LocalDateTime date = LocalDateTime.of(2015, 11, 11, 11, 11, 11, 510000000);
 		String format = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS"));
 //		System.out.println("format: " + format);
