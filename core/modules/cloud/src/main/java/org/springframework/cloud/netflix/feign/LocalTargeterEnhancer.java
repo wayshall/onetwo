@@ -5,14 +5,13 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.onetwo.cloud.feign.EnhanceFeignClient;
-import org.onetwo.common.spring.aop.Proxys;
-import org.onetwo.common.spring.aop.Proxys.SpringBeanMethodInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.cloud.netflix.feign.ExtTargeter.FeignTargetContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LocalTargeterEnhancer implements TargeterEnhancer {
 	@Autowired
 	private ApplicationContext appContext;
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	public <T> T enhanceTargeter(FeignTargetContext<T> ctx) {
 		return enhanceTargeter0(appContext, ctx.getFeignClientfactory(), ()->{
@@ -38,7 +39,7 @@ public class LocalTargeterEnhancer implements TargeterEnhancer {
 		BeanDefinitionRegistry bdr = (BeanDefinitionRegistry) appContext;
 		
 		Class<?> fallbackType = factory.getFallback();
-		Class<?> clientInterface = factory.getType();
+		Class<T> clientInterface = (Class<T>)factory.getType();
 //		EnhanceFeignClient enhanceAnno = clientInterface.getAnnotation(EnhanceFeignClient.class);
 		EnhanceFeignClient enhanceAnno = AnnotatedElementUtils.findMergedAnnotation(clientInterface, EnhanceFeignClient.class);
 		if(enhanceAnno==null || enhanceAnno.local()==void.class){
@@ -65,11 +66,12 @@ public class LocalTargeterEnhancer implements TargeterEnhancer {
 			return defaultTarget.get();
 		}
 
-		T localProxy = (T)Proxys.interceptInterface(clientInterface, new SpringBeanMethodInterceptor(appContext, localBeanNameOpt.get()));
+//		T localProxy = (T)Proxys.interceptInterface(clientInterface, new SpringBeanMethodInterceptor(appContext, localBeanNameOpt.get()));
+		LocalFeignDelegateBean<T> localProxy = new LocalFeignDelegateBean<T>(appContext, clientInterface, localBeanNameOpt.get());
 		if(log.isInfoEnabled()){
 			log.info("local implement has been found for feign interface: {}, use local bean: {}", apiInterface, localBeanNameOpt.get());
 		}
-		return localProxy;
+		return localProxy.createProxy();
 	}
 }
 

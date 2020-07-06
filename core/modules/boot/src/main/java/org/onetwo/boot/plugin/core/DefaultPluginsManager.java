@@ -27,15 +27,15 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	private final Map<String, WebPlugin> pluginMapping = Maps.newHashMap();
-	private final Map<Class<? extends WebPlugin>, WebPlugin> pluginClassMapping = Maps.newHashMap();
+	private final Map<String, WebPlugin> pluginMapping = Maps.newConcurrentMap();
+	private final Map<Class<? extends WebPlugin>, WebPlugin> pluginClassMapping = Maps.newConcurrentMap();
 	private final PluginNameParser pluginNameParser = new PluginNameParser();
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		List<WebPlugin> plugins = SpringUtils.getBeans(applicationContext, WebPlugin.class);
 //		logger.info("find plugins : {} ", plugins);
-		plugins.stream().forEach(plugin->{
+		plugins.parallelStream().forEach(plugin->{
 			registerPlugin(plugin);
 			logger.info("register plugin : {} ", plugin);
 		});
