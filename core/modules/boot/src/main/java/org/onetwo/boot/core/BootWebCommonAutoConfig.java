@@ -14,6 +14,7 @@ import org.onetwo.boot.core.init.ConfigServletContextInitializer;
 import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.boot.core.json.ObjectMapperProvider;
 import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvider;
+import org.onetwo.boot.core.listener.BootApplicationReadyListener;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
@@ -27,6 +28,7 @@ import org.onetwo.boot.core.web.view.MvcViewRender;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
 import org.onetwo.boot.core.web.view.XResponseViewManager;
 import org.onetwo.boot.dsrouter.DsRouterConfiguration;
+import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.file.FileStorer;
 import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
@@ -36,6 +38,7 @@ import org.onetwo.common.spring.Springs;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -57,7 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Import({DsRouterConfiguration.class, ApiClientConfiguration.class})
-public class BootWebCommonAutoConfig {
+public class BootWebCommonAutoConfig implements DisposableBean {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -92,6 +95,16 @@ public class BootWebCommonAutoConfig {
 		return new BootServletContainerCustomizer();
 	}*/
 	
+	@Override
+	public void destroy() throws Exception {
+		BootUtils.sutdownAsyncInitor();
+	}
+	
+	@Bean
+	public BootApplicationReadyListener bootApplicationReadyListener() {
+		return new BootApplicationReadyListener();
+	}
+
 	@Bean
 	public MvcViewRender mvcViewRender(){
 		return new MvcViewRender();

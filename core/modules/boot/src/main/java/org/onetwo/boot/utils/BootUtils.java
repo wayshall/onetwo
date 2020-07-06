@@ -2,6 +2,8 @@ package org.onetwo.boot.utils;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -21,11 +23,25 @@ final public class BootUtils {
 	
 	public static final int WEBAPP_INITIALIZER_ORDER = -1000;
 //	private static final Locale DEFAULT_LOCAL = Locale.CHINA;
+	private static ExecutorService asyncInitor = Executors.newFixedThreadPool(2);
 	
 
 	private BootUtils(){
 	}
+
+	public static void asyncInit(Runnable task){
+		asyncInitor.submit(task);
+	}
 	
+	public static void sutdownAsyncInitor() {
+		if (asyncInitor!=null) {
+			asyncInitor.shutdown();
+			JFishLoggerFactory.getCommonLogger().info("asyncInitor has been shutdown!");
+			asyncInitor = null;
+		}
+	}
+
+
 	public static boolean isHystrixErrorPresent() {
 		return isHystrixErrorPresent;
 	}
