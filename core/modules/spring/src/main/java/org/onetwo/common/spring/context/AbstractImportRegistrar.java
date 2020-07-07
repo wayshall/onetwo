@@ -131,8 +131,16 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 	protected void registerComponent(BeanDefinitionRegistry registry, AnnotationMetadata annotationMetadata, AnnotationAttributes tagAttributes) {
 		String className = annotationMetadata.getClassName();
 		String beanName = resolveName(tagAttributes, className);
-		if(logger.isInfoEnabled()){
-			logger.info("register api client beanName: {}, class: {}", beanName, className);
+		
+		if (registry.containsBeanDefinition(beanName)) {
+			if(logger.isInfoEnabled()){
+				logger.info("api client has registed, ingored. beanName: {}, class: {}", beanName, className);
+			}
+			return ;
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("register api client beanName: {}, class: {}", beanName, className);
+			}
 		}
 		
 		BeanDefinitionBuilder definition = createComponentFactoryBeanBuilder(annotationMetadata, tagAttributes);

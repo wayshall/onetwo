@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.onetwo.boot.plugin.ftl.PluginNameParser;
 import org.onetwo.boot.plugin.mvc.PluginContextHolder;
 import org.onetwo.boot.plugin.mvc.annotation.WebPluginController;
+import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
@@ -35,9 +36,13 @@ public class DefaultPluginsManager implements InitializingBean, PluginManager {
 	public void afterPropertiesSet() throws Exception {
 		List<WebPlugin> plugins = SpringUtils.getBeans(applicationContext, WebPlugin.class);
 //		logger.info("find plugins : {} ", plugins);
-		plugins.parallelStream().forEach(plugin->{
-			registerPlugin(plugin);
-			logger.info("register plugin : {} ", plugin);
+		BootUtils.asyncInit(() -> {
+			StringBuilder log = new StringBuilder("register plugin: \n");
+			plugins.forEach(plugin->{
+				registerPlugin(plugin);
+				log.append("register plugin : ").append(plugin).append("\n");
+			});
+			logger.info(log.toString());
 		});
 //		logger.info("find plugins : {} ", pluginMapping);
 	}
