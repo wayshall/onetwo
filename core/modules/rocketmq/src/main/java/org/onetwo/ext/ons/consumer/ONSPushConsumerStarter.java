@@ -83,7 +83,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			ConsumerScanner scanner = new ConsumerScanner(applicationContext, this.consumerProcessors);
 			Map<String, ConsumerMeta> consumers = scanner.findConsumers();
 
-			consumers.entrySet().parallelStream().forEach(e->{
+			consumers.entrySet().forEach(e->{
 				try {
 					this.initializeConsumers(e.getValue());
 				} catch (MQClientException | InterruptedException ex) {

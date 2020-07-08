@@ -47,8 +47,8 @@ public class ActivemqConfiguration implements InitializingBean {
 	
 	/*@Autowired
 	private ActiveMQConnectionFactory activeMQConnectionFactory;*/
-	@Autowired
-	private ActivemqProperties activemqProperties;
+//	@Autowired
+//	private ActivemqProperties activemqProperties;
 	
 	
 	

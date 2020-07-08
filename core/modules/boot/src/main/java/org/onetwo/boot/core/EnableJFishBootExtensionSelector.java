@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.apache.activemq.camel.component.ActiveMQConfiguration;
 import org.onetwo.boot.core.EnableJFishBootExtension.AppcationType;
 import org.onetwo.boot.core.cors.CorsFilterConfiguration;
 import org.onetwo.boot.core.jwt.JwtContextConfig;
@@ -17,6 +18,7 @@ import org.onetwo.boot.core.web.mvc.EnhanceRequestMappingConfiguration;
 import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
+import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTConfiguration;
 import org.onetwo.boot.module.alioss.OssConfiguration;
 import org.onetwo.boot.module.cache.SpringCacheConfiguration;
 import org.onetwo.boot.module.cos.CosConfiguration;
@@ -109,6 +111,11 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 			}
 			classNames.add(extClassName);
 		}
+		
+		//activemq
+		classNames.add(ActiveMQConfiguration.class.getName());
+		//activemq mqtt
+		classNames.add(ActiveMQTTConfiguration.class.getName());
 		
 		
 		return classNames;
