@@ -4,6 +4,7 @@ import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.InBoundClientPr
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.OutBoundClientProps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -23,6 +24,7 @@ import org.springframework.util.Assert;
  */
 @Configuration
 @ConditionalOnProperty(value = ActiveMQTTProperties.SERVER_URLS_KEY)
+@EnableConfigurationProperties(ActiveMQTTProperties.class)
 public class ActiveMQTTConfiguration {
 	
 	@Autowired
@@ -44,7 +46,7 @@ public class ActiveMQTTConfiguration {
 	
 	@Configuration
 	@ConditionalOnProperty(value = OutBoundClientProps.CLIENT_ID_KEY)
-	protected static class OutboudrConfiguration {
+	protected static class OutboundConfiguration {
 		@Autowired
 		private ActiveMQTTProperties activeMQTTProperties;
 //		@Value("${spring.application.name:''}")
@@ -105,6 +107,7 @@ public class ActiveMQTTConfiguration {
 			adapter.setQos(client.getQos());
 			adapter.setCompletionTimeout(client.getCompletionTimeout());
 			adapter.setConverter(new DefaultPahoMessageConverter());
+			adapter.setOutputChannel(mqttInputChannel());
 			
 			return adapter;
 		}
