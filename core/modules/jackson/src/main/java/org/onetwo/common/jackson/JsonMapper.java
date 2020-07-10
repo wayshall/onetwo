@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -457,6 +458,18 @@ public class JsonMapper {
 		if(StringUtils.isBlank(json))
 			return Collections.EMPTY_LIST;
 		return fromJson(json, new TypeReference<List<T>>(){});
+	}
+	
+    public <T> Collection<T> fromJsonAsCollection(String json, Class<Collection> ctype, Class<T> itemType){
+		if(StringUtils.isBlank(json))
+			return Collections.emptyList();
+		Collection<T> datas;
+		try {
+			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ctype, itemType));
+		} catch (Exception e) {
+			throw new JsonException("parse json to collection error : " + ctype + " => " + json, e);
+		}
+		return datas;
 	}
 	
 	public <T> T update(String jsonString, T object) {
