@@ -385,6 +385,7 @@ public class JsonMapper {
 		return obj;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public JavaType constructJavaType(Type objType){
 		JavaType javaType = null;
 		if(objType instanceof ParameterizedType){
@@ -459,8 +460,8 @@ public class JsonMapper {
 			return Collections.EMPTY_LIST;
 		return fromJson(json, new TypeReference<List<T>>(){});
 	}
-	
-    public <T> Collection<T> fromJsonAsCollection(String json, Class<Collection> ctype, Class<T> itemType){
+    @SuppressWarnings("rawtypes")
+	public <T> Collection<T> fromJsonAsCollection(String json, Class<Collection> ctype, Class<T> itemType){
 		if(StringUtils.isBlank(json))
 			return Collections.emptyList();
 		Collection<T> datas;
