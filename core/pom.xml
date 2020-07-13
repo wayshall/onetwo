@@ -39,8 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/jackson</module>
-                <module>../../dbm</module>
+                <module>../../onetwo-wechat</module>
 			</modules>
            <build>
               <plugins>
