@@ -77,7 +77,7 @@ public class CosProperties {
 		return client;
 	}
 
-	private String getBucketName(){
+	public String getBucketName(){
 		return bucketName;
 	}
 	

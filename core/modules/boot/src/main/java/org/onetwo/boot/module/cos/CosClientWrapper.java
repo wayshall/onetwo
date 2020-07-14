@@ -79,6 +79,9 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 		return getBucket(bucketName, true).get();
 	}
 
+	public CosProperties getCosProperties() {
+		return cosProperties;
+	}
 
 	public Optional<Bucket> getBucket(String bucketName, boolean createIfNotExist) {
 		Bucket bucket = null;
