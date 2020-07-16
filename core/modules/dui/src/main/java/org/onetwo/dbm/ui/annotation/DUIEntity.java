@@ -19,8 +19,18 @@ public @interface DUIEntity {
 	
 //	UIStype style() default UIStype.GRID;
 	
-	boolean listPage() default true;
-	boolean editPage() default true;
+	boolean deletable() default true;
+	
+	/****
+	 * 详情页模式
+	 * view：查看
+	 * edit：编辑
+	 * @author weishao zeng
+	 * @return
+	 */
+	DetailPages detailPage() default DetailPages.EDIT;
+//	boolean listPage() default true;
+//	boolean editPage() default true;
 	
 	/****
 	 * 级联编辑
@@ -28,4 +38,23 @@ public @interface DUIEntity {
 	 * @return
 	 */
 	DUICascadeEditable[] cascadeEditableEntities() default {};
+	
+	public enum DetailPages {
+		VIEW("查看"),
+		EDIT("编辑");
+		
+		final private String label;
+		
+		private DetailPages(String label) {
+			this.label = label;
+		}
+		
+		public String getDetailName() {
+			return name();
+		}
+
+		public String getLabel() {
+			return label;
+		}
+	}
 }

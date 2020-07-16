@@ -15,6 +15,7 @@ import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.ui.annotation.DUICascadeEditable;
+import org.onetwo.dbm.ui.annotation.DUIEntity.DetailPages;
 import org.onetwo.dbm.ui.annotation.NullDUIJsonValueWriter;
 import org.onetwo.dbm.ui.exception.DbmUIException;
 import org.onetwo.dbm.ui.spi.DUIJsonValueWriter;
@@ -60,6 +61,13 @@ public class DUIEntityMeta {
 	private DUIEntityMeta treeParent;
 	
 	String stripPrefix;
+	
+	private boolean deletable;
+	private DetailPages detailPage;
+	
+	public boolean isDetailPageEditable() {
+		return this.detailPage.equals(DetailPages.EDIT);
+	}
 	
 	public boolean isTree() {
 		return treeGrid!=null;

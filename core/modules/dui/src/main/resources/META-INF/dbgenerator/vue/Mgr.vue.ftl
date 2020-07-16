@@ -11,13 +11,15 @@
     <layout-table
       ref="listTable"
       id-property="${table.primaryKey.javaName}"
+<#if DUIEntityMeta.deletable>
       @batchDeleted="onBatchDeleted"
+      :delete-api="deleteApi"
+</#if>
       :list-api="listApi"
 <#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true>
       :query-form-model="queryFormModel"
 </#if>
       :refresh.sync="refreshTable"
-      :delete-api="deleteApi"
       :operations="operations">
   <#if searchableFields.isEmpty()==false>
       <template slot="queryForm">
@@ -58,7 +60,7 @@
         type="border-card"
         v-model="currentTabName">
         <el-tab-pane
-          label="${DUIEntityMeta.label}编辑"
+          label="${DUIEntityMeta.label}${DUIEntityMeta.detailPage.label}"
           name="dataFormTab">
           <${table.propertyName}-form
             ref="${table.propertyName}Form"
@@ -142,7 +144,7 @@ export default {
       refreshTable: false,
       currentTabName: 'dataFormTab',
       operations: [
-        { action: 'edit', text: '编辑', handler: this.handleEdit }
+        { action: 'edit', text: '${DUIEntityMeta.detailPage.label}', handler: this.handleEdit }
       ]
     }
   },

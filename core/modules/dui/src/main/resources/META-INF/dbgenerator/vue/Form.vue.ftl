@@ -21,9 +21,11 @@
      <@helper.makeVueFormField field=field/>
    </#list>
     </el-form>
+<#if DUIEntityMeta.detailPageEditable>
     <div class="formButton">
       <el-button type="primary" @click="handleSave" :loading="savingLoading">保存</el-button>
     </div>
+</#if>
   </div>
 </template>
 
@@ -121,6 +123,7 @@ export default {
         ${table.primaryKey.javaName}: null
       }
     },
+<#if DUIEntityMeta.detailPageEditable>
     handleSave() {
       this.$refs.dataForm.validate(valid => {
         if (valid) {
@@ -153,6 +156,7 @@ export default {
         }
       })
     },
+</#if>
 <#if !DUIEntityMeta.editableEntity>
     handleAddData() {
       return ${apiName}.add(this.dataModel)

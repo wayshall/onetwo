@@ -208,6 +208,8 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 		entityMeta.setName(entityName);
 		entityMeta.setMappedEntry(entry);
 		entityMeta.setTable(table);
+		entityMeta.setDeletable(uiclassAnno.deletable());
+		entityMeta.setDetailPage(uiclassAnno.detailPage());
 		
 		Collection<DbmMappedField> fields = entry.getFields();
 		fields.forEach(field -> {
