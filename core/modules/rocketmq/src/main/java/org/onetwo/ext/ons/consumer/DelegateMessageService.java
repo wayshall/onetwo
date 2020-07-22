@@ -142,18 +142,25 @@ public class DelegateMessageService implements InitializingBean {
 		consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 		try {
 			consumer.doConsume(currentConetxt);
-		} catch (Exception e) {
-			String msgId = ONSUtils.getMessageId(currentConetxt.getMessage());
-			String msg = "rmq-consumer["+meta.getConsumerId()+"] consumed message error. " + 
-						"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys();
-			logger.error(msg, e);
+		} catch (Throwable e) {
+			String msg = buildErrorMessage(meta, currentConetxt);
+//			logger.error(msg, e);
 			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+			ConsumeException consumeEx = new ConsumeException(msg, e);
 			if (e instanceof MessageOnlyServiceException) {
-				throw e;
+				currentConetxt.markWillSkipConsume();
 			}
-			throw new ConsumeException(msg, e);
+			throw consumeEx;
 		}
 		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
+	}
+	
+	public static String buildErrorMessage(ConsumerMeta meta, ConsumContext currentConetxt) {
+		String msgId = ONSUtils.getMessageId(currentConetxt.getMessage());
+		String msg = "rmq-consumer["+meta.getConsumerId()+"] consumed message error. " + 
+					"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys() +
+					"topic: " + currentConetxt.getTopic() + ", tags: " + currentConetxt.getTags();
+		return msg;
 	}
 
 	@Transactional

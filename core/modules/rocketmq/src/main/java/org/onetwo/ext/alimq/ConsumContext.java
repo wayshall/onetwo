@@ -22,6 +22,19 @@ public class ConsumContext {
 	@Builder.Default
 	Map<String, Object> datas = Maps.newHashMap();
 	
+
+	private boolean willSkipConsume;
+	
+
+
+	public boolean isWillSkipConsume() {
+		return willSkipConsume;
+	}
+
+	public void markWillSkipConsume() {
+		this.willSkipConsume = true;
+	}
+	
 	public void setValue(String name, Object data) {
 		this.datas.put(name, data);
 	}
