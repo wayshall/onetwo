@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.boot.utils.BootUtils;
-import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
