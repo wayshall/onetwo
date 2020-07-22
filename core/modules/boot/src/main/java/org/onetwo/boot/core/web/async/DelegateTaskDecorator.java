@@ -14,13 +14,17 @@ public class DelegateTaskDecorator implements TaskDecorator {
 //	private ApplicationContext applicationContext;
 	@Autowired(required=false)
 	private AsyncTaskDecorator asyncTaskDecorator;
+	/***
+	 * 默认注入web上下文
+	 */
+	private WebContextAsyncTaskDecorator defaultAsyncTaskDecorator = new WebContextAsyncTaskDecorator();
 	
 
 	@Override
 	public Runnable decorate(Runnable runnable) {
 		AsyncTaskDecorator asyncTaskDecorator = this.getAsyncTaskDecorator();
 		if (asyncTaskDecorator==null) {
-			return runnable;
+			return defaultAsyncTaskDecorator.decorate(runnable);
 		}
 		return asyncTaskDecorator.decorate(runnable);
 	}
