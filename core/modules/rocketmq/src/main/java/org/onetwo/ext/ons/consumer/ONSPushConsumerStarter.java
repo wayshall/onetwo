@@ -198,27 +198,27 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					} else {
 						logger.warn("message has been consumed and will skip: " + e.getMessage());
 					}
-				} catch(MessageOnlyServiceException e) {
+				} catch(ImpossibleConsumeException e) {
 					// 不可能被消费，记录错误并发送提醒
 					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
-//					logger.error(errorMsg, e);
-					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+					logAndMail(errorMsg, e);
 //					applicationContext.publishEvent(event);
-				}  catch(ImpossibleConsumeException e) {
+				} catch (Throwable e) {
+					String errorMsg = e.getMessage();
+//					if(currentConetxt!=null){
+////						consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+//						errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+
+//										", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
+//					}
+					
 					// 不可能被消费，记录错误并发送提醒
-					String errorMsg = "message can not be consumed and will skip: " + e.getMessage();
-					logger.error(errorMsg, e);
-					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
-//					applicationContext.publishEvent(event);
-				} catch (Exception e) {
-					String errorMsg = "consume message error.";
-					if(currentConetxt!=null){
-//						consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
-						errorMsg += "currentMessage id: "+currentConetxt.getMessageId()+", topic: "+currentConetxt.getMessage().getTopic()+
-										", tag: "+currentConetxt.getMessage().getTags()+", body: " + currentConetxt.getDeserializedBody();
+					if (currentConetxt.isWillSkipConsume()) {
+						errorMsg = "message will skip. " + errorMsg;
+						logAndMail(errorMsg, e);
+						return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 					}
-					logger.error(errorMsg, e);
-					JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+
+					logAndMail(errorMsg, e);
 					return ConsumeConcurrentlyStatus.RECONSUME_LATER;
 //					throw new BaseException(e);
 				}
@@ -227,6 +227,11 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 				return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 			}
 		});
+	}
+
+	private void logAndMail(String errorMsg, Throwable e) {
+		logger.error(errorMsg, e);
+		JFishLoggerFactory.findMailLogger().error(errorMsg, e);
 	}
 
 	@Override
