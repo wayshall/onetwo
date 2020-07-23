@@ -68,6 +68,7 @@ public class LocalTargeterEnhancer implements TargeterEnhancer {
 
 //		T localProxy = (T)Proxys.interceptInterface(clientInterface, new SpringBeanMethodInterceptor(appContext, localBeanNameOpt.get()));
 		LocalFeignDelegateBean<T> localProxy = new LocalFeignDelegateBean<T>(appContext, clientInterface, localBeanNameOpt.get());
+		localProxy.setTransactionManager(transactionManager);
 		if(log.isInfoEnabled()){
 			log.info("local implement has been found for feign interface: {}, use local bean: {}", apiInterface, localBeanNameOpt.get());
 		}

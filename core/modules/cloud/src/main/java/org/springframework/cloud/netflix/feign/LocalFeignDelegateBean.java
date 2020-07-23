@@ -6,7 +6,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.common.spring.aop.Proxys;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -26,7 +25,6 @@ public class LocalFeignDelegateBean<T> implements MethodInterceptor {
 	final private String localBeanName;
 	private Object localBean;
 	private ApplicationContext applicationContext;
-	@Autowired
 	private PlatformTransactionManager transactionManager;
 	
 	public LocalFeignDelegateBean(ApplicationContext applicationContext, Class<T> clientInterface, String localBeanName) {
@@ -73,5 +71,8 @@ public class LocalFeignDelegateBean<T> implements MethodInterceptor {
 		return AopUtils.invokeJoinpointUsingReflection(target, invocation.getMethod(), invocation.getArguments());
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 	
 }
