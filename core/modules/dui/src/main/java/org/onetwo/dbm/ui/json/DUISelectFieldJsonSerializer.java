@@ -1,7 +1,6 @@
 package org.onetwo.dbm.ui.json;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.onetwo.common.spring.Springs;
@@ -27,17 +26,18 @@ public class DUISelectFieldJsonSerializer extends JsonSerializer<Object> {
     	
     	if (value instanceof Boolean) {
     		jgen.writeBoolean((Boolean)value);
-    	} else if (value instanceof BigDecimal) {
-    		jgen.writeNumber((BigDecimal)value);
     	} else if (value instanceof Double) {
     		jgen.writeNumber((Double)value);
-    	} else if (value instanceof Float) {
-    		jgen.writeNumber((Float)value);
-    	} else if (value instanceof Long) {
-    		jgen.writeNumber((Long)value);
     	} else if (value instanceof Integer) {
     		jgen.writeNumber((Integer)value);
-    	} else {
+    	} else if (value instanceof Float) {
+    		jgen.writeNumber((Float)value);
+		} /*
+			 * else if (value instanceof Long) { jgen.writeNumber((Long)value); } else if
+			 * (value instanceof BigDecimal) { jgen.writeNumber((BigDecimal)value); }
+			 */ 
+    	else {
+    		// long 等类型的精度在前端js会丢失，统一序列化为string
     		jgen.writeString(value.toString());
     	}
 		
