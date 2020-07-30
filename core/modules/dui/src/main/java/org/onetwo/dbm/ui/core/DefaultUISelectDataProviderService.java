@@ -121,12 +121,12 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 			}
 			
 		} else if (uiselect.getCascadeEntity()!=null) {
-			boolean loadById = (StringUtils.isBlank(request.getQuery()) || "__init__".equals(request.getQuery())) && 
+			boolean loadById = (StringUtils.isBlank(request.getQuery()) || request.isInitQuery()) && 
 								StringUtils.isNotBlank(request.getSelectedValue());
 			if (loadById) {
 				return _this.findByValueField(uiselect, request.getSelectedValue());
 			} else {
-				return _this.queryFromCascade(uiselect, StringUtils.emptyIfNull(request.getQuery()));
+				return _this.queryFromCascade(uiselect, request.isInitQuery()?null:request.getQuery());
 			}
 		}else {
 			throw new DbmUIException("Neither enum nor dataProvider, field: " + uiselect.getField().getName());

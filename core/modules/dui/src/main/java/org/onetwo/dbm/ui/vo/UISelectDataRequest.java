@@ -23,4 +23,8 @@ public class UISelectDataRequest {
 	String query;
 	String selectedValue;
 	
+	public boolean isInitQuery() {
+		return "__init__".equals(query);
+	}
+	
 }
