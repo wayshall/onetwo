@@ -54,8 +54,8 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 	@ConditionalOnProperty(name=BootSecurityConfig.EXCEPTION_USER_CHECKER_ENABLE_KEY, matchIfMissing=true)
 	public ExceptionUserChecker exceptionUserChecker(){
 		ExceptionUserChecker checker = new ExceptionUserChecker();
-		checker.setDuration(securityConfig.getExceptionUserChecker().getDuration());
-		checker.setMaxLoginTimes(securityConfig.getExceptionUserChecker().getMaxLoginTimes());
+		checker.setExceptionUserCheckerConfig(securityConfig.getExceptionUserChecker());
+//		checker.setMaxLoginTimes(securityConfig.getExceptionUserChecker().getMaxLoginTimes());
 		return checker;
 	}
 	

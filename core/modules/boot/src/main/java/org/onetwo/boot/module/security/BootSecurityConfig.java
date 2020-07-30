@@ -6,6 +6,7 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.filter.WebContextConfigProvider;
+import org.onetwo.ext.security.utils.ExceptionUserCheckerConfig;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -86,12 +87,6 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	@Override
 	public Object getWebConfig(ServletContext servletContext) {
 		return this;
-	}
-
-	@Data
-	public static class ExceptionUserCheckerConfig {
-		private String duration = "1m";
-		private int maxLoginTimes = 5;
 	}
 
 }
