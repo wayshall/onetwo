@@ -48,6 +48,9 @@ public class ContentCheckConstraintValidator implements ConstraintValidator<Cont
 		}
 	}
 
+	/***
+	 * @param value 需要检测到字段内容
+	 */
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
 		if (StringUtils.isBlank(value)) {
