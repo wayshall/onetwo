@@ -111,12 +111,19 @@ public class JsonMapper {
 	public JsonMapper(Include include){
 		this(new ObjectMapper(), include);
 	}
+	
 	public JsonMapper(ObjectMapper objectMapper, Include include){
 		this(objectMapper, include, false);
 	}
 	
+	public JsonMapper(ObjectMapper objectMapper){
+		this(objectMapper, null, false);
+	}
+	
 	public JsonMapper(ObjectMapper objectMapper, Include include, boolean fieldVisibility){
-		objectMapper.setSerializationInclusion(include);
+		if (include!=null) {
+			objectMapper.setSerializationInclusion(include);
+		}
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 //		setDateFormat(DateUtils.DATE_TIME);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);

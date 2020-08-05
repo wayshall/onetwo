@@ -446,7 +446,7 @@ final public class SpringUtils {
 	}
 	
 
-	public static <T> T registerBean(BeanFactory context, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, Class<T> beanClass, Object...params){
 		return registerBean(context, StringUtils.uncapitalize(beanClass.getSimpleName()), beanClass, params);
 	}
 	
@@ -459,7 +459,7 @@ final public class SpringUtils {
 	 * @param params
 	 * @return
 	 */
-	public static <T> T registerBean(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, String beanName, Class<T> beanClass, Object...params){
 		registerBeanDefinition(context, beanName, beanClass, params);
 		T bean = (T) context.getBean(beanName);
 		if(bean==null)

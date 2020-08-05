@@ -1,11 +1,14 @@
 package org.onetwo.boot.module.activemq.mqtt;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.onetwo.boot.module.activemq.ActivemqProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.integration.mqtt.core.ConsumerStopAction;
+
+import com.google.common.collect.Maps;
 
 import lombok.Data;
 
@@ -17,6 +20,7 @@ import lombok.Data;
 @ConfigurationProperties(value=ActiveMQTTProperties.PREFIX_KEY)
 public class ActiveMQTTProperties {
 	public static final String PREFIX_KEY = ActivemqProperties.PREFIX_KEY + ".mqtt";
+	public static final String MESSAGE_CONVERTER_KEY = ActivemqProperties.PREFIX_KEY + ".messageConverter";
 	
 	/***
 	 * jfish.activemq.mqtt.server-urls
@@ -72,7 +76,8 @@ public class ActiveMQTTProperties {
 	
 	
 	OutBoundClientProps outbound = new OutBoundClientProps();
-	InBoundClientProps inbound = new InBoundClientProps();
+//	InBoundClientProps inbound = new InBoundClientProps();
+	Map<String, InBoundClientProps> inbounds = Maps.newHashMap();
 	
 	@Data
 	public static class OutBoundClientProps {
@@ -115,7 +120,8 @@ public class ActiveMQTTProperties {
 
 	@Data
 	public static class InBoundClientProps {
-		public static final String CLIENT_ID_KEY = ActiveMQTTProperties.PREFIX_KEY + ".inbound.clientId";
+//		public static final String ENABLED_KEY = ActiveMQTTProperties.PREFIX_KEY + ".inbounds";
+//		public static final String CLIENT_ID_KEY = ActiveMQTTProperties.PREFIX_KEY + ".inbound.clientId";
 		
 		String clientId;
 		
