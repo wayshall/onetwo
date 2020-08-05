@@ -4,7 +4,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.InBoundClientProps;
+import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverters;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.OutBoundClientProps;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,23 +52,23 @@ public class ActiveMQTTConfiguration {
 		return clientFactory;
 	}
 
-	@Bean
-//	@ConditionalOnMissingBean(MqttMessageConverter.class)
-	@ConditionalOnProperty(value = ActiveMQTTProperties.MESSAGE_CONVERTER_KEY, havingValue = "json")
-	public JsonPahoMessageConverter jsonPahoMessageConverter() {
-		OutBoundClientProps client = activeMQTTProperties.getOutbound();
-		return new JsonPahoMessageConverter(client.getDefaultQos(), client.isDefaultRetained());
-	}
+//	@Bean
+////	@ConditionalOnMissingBean(MqttMessageConverter.class)
+//	@ConditionalOnProperty(value = ActiveMQTTProperties.MESSAGE_CONVERTER_KEY, havingValue = "json")
+//	public JsonPahoMessageConverter jsonPahoMessageConverter() {
+//		OutBoundClientProps client = activeMQTTProperties.getOutbound();
+//		return new JsonPahoMessageConverter(client.getDefaultQos(), client.isDefaultRetained());
+//	}
 	
 	@Configuration
 	@ConditionalOnProperty(value = OutBoundClientProps.CLIENT_ID_KEY)
 	protected static class OutboundConfiguration {
 		@Autowired
 		private ActiveMQTTProperties activeMQTTProperties;
+		@Autowired
+		ApplicationContext context;
 //		@Value("${spring.application.name:''}")
 //		private String defaultClientId;
-		@Autowired(required = false)
-		MqttMessageConverter converter;
 		
 		@Bean(name = Mqtts.OUTBOUND_CHANNEL)
 		public MessageChannel mqttOutboundChannel() {
@@ -86,11 +88,26 @@ public class ActiveMQTTConfiguration {
 			handler.setDefaultQos(client.getDefaultQos());
 			handler.setDefaultRetained(client.isDefaultRetained());
 			handler.setCompletionTimeout(client.getCompletionTimeout());
-			if (converter!=null) {
+			
+			if (MessageConverters.JSON.equals(client.getConverter())) {
+				JsonPahoMessageConverter converter = jsonPahoMessageConverter(client.getDefaultQos(), client.isDefaultRetained());
 				handler.setConverter(converter);
 			}
 			
 			return handler;
+		}
+		
+		JsonPahoMessageConverter jsonPahoMessageConverter(int defaultQos, boolean defaultRetain) {
+			JsonPahoMessageConverter converter = SpringUtils.getBean(context, JsonPahoMessageConverter.class);
+			if (converter==null) {
+				converter = new JsonPahoMessageConverter(defaultQos, defaultRetain);
+				try {
+					converter.afterPropertiesSet();
+				} catch (Exception e) {
+					throw new BaseException("JsonPahoMessageConverter init error: " + e.getMessage(), e);
+				}
+			}
+			return converter;
 		}
 	}
 	

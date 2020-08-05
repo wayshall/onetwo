@@ -20,7 +20,7 @@ import lombok.Data;
 @ConfigurationProperties(value=ActiveMQTTProperties.PREFIX_KEY)
 public class ActiveMQTTProperties {
 	public static final String PREFIX_KEY = ActivemqProperties.PREFIX_KEY + ".mqtt";
-	public static final String MESSAGE_CONVERTER_KEY = ActivemqProperties.PREFIX_KEY + ".messageConverter";
+	public static final String MESSAGE_CONVERTER_KEY = PREFIX_KEY + ".messageConverter";
 	
 	/***
 	 * jfish.activemq.mqtt.server-urls
@@ -115,6 +115,7 @@ public class ActiveMQTTProperties {
 		 * 同步发送时（async=false），等待完成的超时时间，默认30秒
 		 */
 		int completionTimeout = 30000;
+		MessageConverters converter;
 	}
 	
 
@@ -138,6 +139,11 @@ public class ActiveMQTTProperties {
 		 * 默认30秒
 		 */
 		int completionTimeout = 30000;
+		
+	}
+	
+	public static enum MessageConverters {
+		JSON
 	}
 
 }

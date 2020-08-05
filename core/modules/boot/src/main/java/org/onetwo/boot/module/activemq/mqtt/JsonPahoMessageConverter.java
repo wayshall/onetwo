@@ -25,7 +25,7 @@ public class JsonPahoMessageConverter extends DefaultPahoMessageConverter implem
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.jsonMapper = JsonMapper.ignoreNull().enableTyping();
+		this.jsonMapper = Mqtts.getJsonMapper();
 	}
 
 	@Override
