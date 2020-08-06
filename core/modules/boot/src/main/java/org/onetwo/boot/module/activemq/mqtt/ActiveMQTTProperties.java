@@ -1,6 +1,6 @@
 package org.onetwo.boot.module.activemq.mqtt;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -8,7 +8,7 @@ import org.onetwo.boot.module.activemq.ActivemqProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.integration.mqtt.core.ConsumerStopAction;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 
 import lombok.Data;
 
@@ -77,7 +77,8 @@ public class ActiveMQTTProperties {
 	
 	OutBoundClientProps outbound = new OutBoundClientProps();
 //	InBoundClientProps inbound = new InBoundClientProps();
-	Map<String, InBoundClientProps> inbounds = Maps.newHashMap();
+//	Map<String, InBoundClientProps> inbounds = Maps.newHashMap();
+	List<InBoundClientProps> inbounds = Lists.newArrayList();
 	
 	@Data
 	public static class OutBoundClientProps {
@@ -124,10 +125,15 @@ public class ActiveMQTTProperties {
 //		public static final String ENABLED_KEY = ActiveMQTTProperties.PREFIX_KEY + ".inbounds";
 //		public static final String CLIENT_ID_KEY = ActiveMQTTProperties.PREFIX_KEY + ".inbound.clientId";
 		
+		/****
+		 * clientId和rmq的消费组类似
+		 * 如果一个clientId曾经订阅过两个topicA和topicB，那么即使后来修改为只订阅topicA，依然会收到topicB的消息
+		 */
 		String clientId;
 		
 		String[] topics;
 
+		String channelName;
 		/***
 		 * 最多一次（0）
 			最少一次（1）
@@ -140,10 +146,12 @@ public class ActiveMQTTProperties {
 		 */
 		int completionTimeout = 30000;
 		
+//		ChannelTypes channelType;
+		
 	}
 	
 	public static enum MessageConverters {
 		JSON
 	}
-
+	
 }

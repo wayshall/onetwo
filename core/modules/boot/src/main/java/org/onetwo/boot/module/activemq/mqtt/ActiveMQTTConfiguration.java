@@ -1,20 +1,22 @@
 package org.onetwo.boot.module.activemq.mqtt;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.InBoundClientProps;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverters;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.OutBoundClientProps;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
@@ -71,6 +73,7 @@ public class ActiveMQTTConfiguration {
 //		private String defaultClientId;
 		
 		@Bean(name = Mqtts.OUTBOUND_CHANNEL)
+		@ConditionalOnMissingBean(name = Mqtts.OUTBOUND_CHANNEL)
 		public MessageChannel mqttOutboundChannel() {
 			return new DirectChannel();
 		}
@@ -125,26 +128,35 @@ public class ActiveMQTTConfiguration {
 		
 		@Autowired
 		ApplicationContext context;
+		@Autowired
+		AsyncTaskExecutor asyncTaskExecutor;
 
 		@Override
 		public void afterPropertiesSet() throws Exception {
-			Map<String, InBoundClientProps> inbounds = activeMQTTProperties.getInbounds();
+			List<InBoundClientProps> inbounds = activeMQTTProperties.getInbounds();
 			if (inbounds.isEmpty()) {
 				return ;
 			}
 			
-			for (Entry<String, InBoundClientProps> entry : inbounds.entrySet()) {
-				MqttPahoMessageDrivenChannel drivenChannel = new MqttPahoMessageDrivenChannel(entry.getValue(), clientFactory);
+			for (InBoundClientProps props : inbounds) {
+				String channelName = props.getChannelName();
+				if (StringUtils.isBlank(channelName)) {
+					throw new BaseException("inbound output channel name can not blank!");
+				}
+				MqttPahoMessageDrivenChannel drivenChannel = new MqttPahoMessageDrivenChannel(props, clientFactory);
 				if (converter!=null) {
 					drivenChannel.setConverter(converter);
 				}
 				
-				DirectChannel channel = SpringUtils.getBean(context, entry.getKey());
-				if (channel==null) {
-					channel = SpringUtils.registerBean(context, entry.getKey(), DirectChannel.class);
-				}
-				drivenChannel.setOutputChannel(channel);
-				SpringUtils.registerSingleton(context, entry.getValue().getClientId(), drivenChannel);
+//				MessageChannel channel = null;
+//				if (!context.containsBean(channelName)) {
+//					channel = SpringUtils.registerBean(context, channelName, DirectChannel.class);
+//				} else {
+//					channel = SpringUtils.getBean(context, channelName);
+//				}
+//				drivenChannel.setOutputChannel(channel);
+				drivenChannel.setOutputChannelName(channelName);
+				SpringUtils.registerSingleton(context, props.getClientId(), drivenChannel);
 				SpringUtils.initializeBean(context, drivenChannel);
 			}
 		}
