@@ -328,7 +328,15 @@ public interface ExceptionMessageFinder {
 //			errorMsg = findMessageByThrowable(ex, errorArgs)+" "+LangUtils.getCauseServiceException(ex).getMessage();
 			errorMsg = LangUtils.getCauseServiceException(ex).getMessage();
 		}else if(SystemErrorCode.UNKNOWN.equals(errorCode)){
-			errorMsg = findMessageByThrowable(ex, errorArgs);
+			Throwable cause = ex;
+			while(StringUtils.isBlank(errorMsg) && cause!=null) {
+				errorMsg = findMessageByThrowable(cause, errorArgs);
+				if (!cause.equals(cause.getCause())) {
+					cause = cause.getCause();
+				} else {
+					cause = null;
+				}
+			}
 		}else{
 			errorMsg = findMessageByErrorCode(errorCode, errorArgs);
 		}
