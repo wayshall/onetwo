@@ -147,6 +147,7 @@ public class ActiveMQTTProperties {
 		int completionTimeout = 30000;
 		
 //		ChannelTypes channelType;
+		MessageConverters converter;
 		
 	}
 	

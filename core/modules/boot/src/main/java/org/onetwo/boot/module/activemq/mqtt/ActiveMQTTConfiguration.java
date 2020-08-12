@@ -22,7 +22,6 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
-import org.springframework.integration.mqtt.support.MqttMessageConverter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.util.Assert;
 
@@ -54,13 +53,23 @@ public class ActiveMQTTConfiguration {
 		return clientFactory;
 	}
 
-//	@Bean
-////	@ConditionalOnMissingBean(MqttMessageConverter.class)
+//	@ConditionalOnMissingBean(MqttMessageConverter.class)
 //	@ConditionalOnProperty(value = ActiveMQTTProperties.MESSAGE_CONVERTER_KEY, havingValue = "json")
-//	public JsonPahoMessageConverter jsonPahoMessageConverter() {
-//		OutBoundClientProps client = activeMQTTProperties.getOutbound();
-//		return new JsonPahoMessageConverter(client.getDefaultQos(), client.isDefaultRetained());
-//	}
+	@Bean
+	public JsonPahoMessageConverter jsonPahoMessageConverter() {
+		OutBoundClientProps client = activeMQTTProperties.getOutbound();
+		return new JsonPahoMessageConverter(client.getDefaultQos(), client.isDefaultRetained());
+	}
+
+	static JsonPahoMessageConverter jsonPahoMessageConverter(int defaultQos, boolean defaultRetain) {
+		JsonPahoMessageConverter converter = new JsonPahoMessageConverter(defaultQos, defaultRetain);
+		try {
+			converter.afterPropertiesSet();
+		} catch (Exception e) {
+			throw new BaseException("JsonPahoMessageConverter init error: " + e.getMessage(), e);
+		}
+		return converter;
+	}
 	
 	@Configuration
 	@ConditionalOnProperty(value = OutBoundClientProps.CLIENT_ID_KEY)
@@ -80,7 +89,7 @@ public class ActiveMQTTConfiguration {
 		
 		@Bean
 		@ServiceActivator(inputChannel = Mqtts.OUTBOUND_CHANNEL)
-		public MqttPahoMessageHandler mqttOutbound(MqttPahoClientFactory clientFactory) {
+		public MqttPahoMessageHandler mqttOutbound(MqttPahoClientFactory clientFactory, JsonPahoMessageConverter jsonPahoMessageConverter) {
 			OutBoundClientProps client = activeMQTTProperties.getOutbound();
 			String clientId = client.getClientId();
 			Assert.hasText(clientId, "Outbound clientId can not be blank!");
@@ -93,25 +102,13 @@ public class ActiveMQTTConfiguration {
 			handler.setCompletionTimeout(client.getCompletionTimeout());
 			
 			if (MessageConverters.JSON.equals(client.getConverter())) {
-				JsonPahoMessageConverter converter = jsonPahoMessageConverter(client.getDefaultQos(), client.isDefaultRetained());
+				JsonPahoMessageConverter converter = jsonPahoMessageConverter; //sonPahoMessageConverter(client.getDefaultQos(), client.isDefaultRetained());
 				handler.setConverter(converter);
 			}
 			
 			return handler;
 		}
 		
-		JsonPahoMessageConverter jsonPahoMessageConverter(int defaultQos, boolean defaultRetain) {
-			JsonPahoMessageConverter converter = SpringUtils.getBean(context, JsonPahoMessageConverter.class);
-			if (converter==null) {
-				converter = new JsonPahoMessageConverter(defaultQos, defaultRetain);
-				try {
-					converter.afterPropertiesSet();
-				} catch (Exception e) {
-					throw new BaseException("JsonPahoMessageConverter init error: " + e.getMessage(), e);
-				}
-			}
-			return converter;
-		}
 	}
 	
 
@@ -123,8 +120,8 @@ public class ActiveMQTTConfiguration {
 		@Autowired
 		MqttPahoClientFactory clientFactory;
 		
-		@Autowired(required = false)
-		MqttMessageConverter converter;
+		@Autowired
+		JsonPahoMessageConverter jsonPahoMessageConverter;
 		
 		@Autowired
 		ApplicationContext context;
@@ -143,11 +140,13 @@ public class ActiveMQTTConfiguration {
 				if (StringUtils.isBlank(channelName)) {
 					throw new BaseException("inbound output channel name can not blank!");
 				}
+				
 				MqttPahoMessageDrivenChannel drivenChannel = new MqttPahoMessageDrivenChannel(props, clientFactory);
-				if (converter!=null) {
+
+				if (MessageConverters.JSON.equals(props.getConverter())) {
+					JsonPahoMessageConverter converter = jsonPahoMessageConverter;
 					drivenChannel.setConverter(converter);
 				}
-				
 //				MessageChannel channel = null;
 //				if (!context.containsBean(channelName)) {
 //					channel = SpringUtils.registerBean(context, channelName, DirectChannel.class);
@@ -156,7 +155,8 @@ public class ActiveMQTTConfiguration {
 //				}
 //				drivenChannel.setOutputChannel(channel);
 				drivenChannel.setOutputChannelName(channelName);
-				SpringUtils.registerSingleton(context, props.getClientId(), drivenChannel);
+				String beanName = channelName + "Adapter";
+				SpringUtils.registerSingleton(context, beanName, drivenChannel);
 				SpringUtils.initializeBean(context, drivenChannel);
 			}
 		}
