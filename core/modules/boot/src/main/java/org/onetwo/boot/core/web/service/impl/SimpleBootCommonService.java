@@ -146,7 +146,11 @@ public class SimpleBootCommonService implements BootCommonService {
 																in, 
 																options.getMultipartFile().getOriginalFilename());
 		context.setResizeConfig(options.getResizeConfig());
-		context.setFileStoreBaseDir(siteConfig.getUpload().getFileStorePath());
+		if (options.getFileStoreBaseDir()==null) {
+			context.setFileStoreBaseDir(siteConfig.getUpload().getFileStorePath());
+		} else {
+			context.setFileStoreBaseDir(options.getFileStoreBaseDir());
+		}
 //		context.setStoreFilePathStrategy(storeFilePathStrategy);
 		context.setKey(options.getKey());
 		context.setWaterMaskConfig(options.getWaterMaskConfig());

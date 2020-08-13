@@ -53,6 +53,10 @@ public class UploadOptions {
 	@Setter
 	@Getter
 	StoreType storeType;
+
+	@Setter
+	@Getter
+	String fileStoreBaseDir;
 	
 	public UploadOptions(String module, MultipartFile multipartFile) {
 		this(null, module, multipartFile);
