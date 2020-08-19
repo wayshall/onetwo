@@ -410,6 +410,40 @@
             <optional>true</optional>
         </dependency>
         
+        <!-- rxtx -->
+        
+    <!-- https://mvnrepository.com/artifact/org.rxtx/rxtx -->
+	    <dependency>
+	        <groupId>org.rxtx</groupId>
+	        <artifactId>rxtx</artifactId>
+	        <version>2.2pre2</version>
+            <optional>true</optional>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.rxtx</groupId>
+	        <artifactId>rxtx</artifactId>
+	        <version>2.2pre2</version>
+	        <classifier>win64</classifier>
+	        <type>dll</type>
+            <optional>true</optional>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.rxtx</groupId>
+	        <artifactId>rxtx</artifactId>
+	        <version>2.2pre2</version>
+	        <classifier>linux64</classifier>
+	        <type>so</type>
+            <optional>true</optional>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.rxtx</groupId>
+	        <artifactId>rxtx</artifactId>
+	        <version>2.2pre2</version>
+	        <classifier>mac</classifier>
+	        <type>jnilib</type>
+            <optional>true</optional>
+	    </dependency>
+        
         <!-- <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>opencv</artifactId>
