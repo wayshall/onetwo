@@ -57,7 +57,10 @@ public class JSerialPort implements SerialPortEventListener {
 	
 	protected void configPort(SerialPort serialPort, int baudrate) {
 		configBaudrate(this.serialPort, baudrate);
-		addListener(this);
+		
+		if (publisher!=null) {
+			addListener(this);
+		}
 		// 设置当有数据到达时唤醒监听接收线程
 		this.serialPort.notifyOnDataAvailable(true);
 		// 设置当通信中断时唤醒中断线程

@@ -14,7 +14,7 @@ public class SimpleSerialPortEventPublisher implements SerialPortEventPublisher 
 
 	@Override
 	public void publish(JSerialEvent serialEvent) {
-		listener.serialEvent(serialEvent);
+		listener.onSerialEvent(serialEvent);
 	}
 
 }

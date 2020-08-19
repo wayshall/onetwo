@@ -2,8 +2,10 @@ package org.onetwo.boot.module.rxtx;
 
 import java.io.InputStream;
 
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
-import org.springframework.context.event.EventListener;
+import org.slf4j.Logger;
 
 import gnu.io.SerialPortEvent;
 
@@ -13,9 +15,11 @@ import gnu.io.SerialPortEvent;
  */
 
 public class SimpleSerialPortEventListener {
+	
+	protected final Logger logger = JFishLoggerFactory.getLogger(getClass());
 
-	@EventListener
-	public void serialEvent(JSerialEvent serialEvent) {
+//	@EventListener
+	public void onSerialEvent(JSerialEvent serialEvent) {
 		int eventType = serialEvent.getEvent().getEventType();
 		
 		JSerialPort port = serialEvent.getSource();
@@ -35,28 +39,39 @@ public class SimpleSerialPortEventListener {
 		case SerialPortEvent.DSR: // 4 待发送数据准备好了
 		case SerialPortEvent.RI: // 5 振铃指示
 		case SerialPortEvent.OUTPUT_BUFFER_EMPTY: // 2 输出缓冲区已清空
-			System.out.println("收到串口事件：" + eventType);
+			logger.info("收到串口事件：{}", eventType);
 			break;
 
 		case SerialPortEvent.DATA_AVAILABLE: // 1 串口存在可用数据
-			InputStream in = null;
-			try {
-				in = port.getSerialPort().getInputStream();
-				int size = in.available();
-				byte[] data = new byte[size];
-				while (size>0) {
-					in.read(data);
-					System.out.println("data: " + LangUtils.toHex(data));
-					size = in.available();
-				}
-			} catch (Exception e) {
-				port.close();
-				throw new RuntimeException("读取数据错误：" + e.getMessage(), e);
-			} finally {
-//				FileUtils.close(in);
-			}
+			onDataAvailable(port);
+			break;
+		default: 
+			logger.error("收到无法识别的串口事件：" + eventType);
 			break;
 		}
+	}
+	
+	protected void onDataAvailable(JSerialPort port) {
+		InputStream in = null;
+		try {
+			in = port.getSerialPort().getInputStream();
+			int size = in.available();
+			byte[] data = new byte[size];
+			while (size>0) {
+				in.read(data);
+				receiveData(data);
+				size = in.available();
+			}
+		} catch (Exception e) {
+			port.close();
+			throw new BaseException("读取数据错误：" + e.getMessage(), e);
+		} finally {
+//			FileUtils.close(in);
+		}
+	}
+	
+	protected void receiveData(byte[] data) {
+		logger.info("receiveData: ", LangUtils.toHex(data));
 	}
 	
 }
