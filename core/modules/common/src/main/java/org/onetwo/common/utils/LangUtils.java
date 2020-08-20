@@ -58,7 +58,7 @@ import org.onetwo.common.utils.func.ArgsReturnableClosure;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class LangUtils {
+abstract public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
 
@@ -799,6 +799,13 @@ public class LangUtils {
 			buf.append(HEX_CHAR.charAt((b >>> 4 & 0xf)));//high. symbol >>> is unsigned right shift 
 			buf.append(HEX_CHAR.charAt((b & 0xf)));//low
 		}
+		return buf.toString();
+	}
+	
+	public static String toHex(byte b){
+		StringBuilder buf = new StringBuilder();
+		buf.append(HEX_CHAR.charAt((b >>> 4 & 0xf)));//high. symbol >>> is unsigned right shift 
+		buf.append(HEX_CHAR.charAt((b & 0xf)));//low
 		return buf.toString();
 	}
 	

@@ -71,7 +71,7 @@ public class SimpleSerialPortEventListener {
 	}
 	
 	protected void receiveData(byte[] data) {
-		logger.info("receiveData: ", LangUtils.toHex(data));
+		logger.info("receiveData: {}", LangUtils.toHex(data));
 	}
 	
 }

@@ -61,10 +61,6 @@ public class JSerialPort implements SerialPortEventListener {
 		if (publisher!=null) {
 			addListener(this);
 		}
-		// 设置当有数据到达时唤醒监听接收线程
-		this.serialPort.notifyOnDataAvailable(true);
-		// 设置当通信中断时唤醒中断线程
-		this.serialPort.notifyOnBreakInterrupt(true);
 	}
 	
 	public void write(byte[] data) {
@@ -81,6 +77,7 @@ public class JSerialPort implements SerialPortEventListener {
 	
 	public void close() {
 		this.connected = false;
+		removeEventListener();
 		this.serialPort.close();
 		this.serialPort = null;
 	}
@@ -137,6 +134,10 @@ public class JSerialPort implements SerialPortEventListener {
 	public void addListener(SerialPortEventListener lisenner) {
 		try {
 			this.serialPort.addEventListener(lisenner);
+			// 设置当有数据到达时唤醒监听接收线程
+			this.serialPort.notifyOnDataAvailable(true);
+			// 设置当通信中断时唤醒中断线程
+			this.serialPort.notifyOnBreakInterrupt(true);
 		} catch (TooManyListenersException e) {
 			throw new RuntimeException("无法添加更多的串口监听器", e);
 		}
