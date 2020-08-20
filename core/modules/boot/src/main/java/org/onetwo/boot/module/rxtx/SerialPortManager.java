@@ -22,6 +22,9 @@ public class SerialPortManager implements InitializingBean {
 	
 	private SerialPortEventPublisher serialPortEventPublisher;
 	
+	public SerialPortManager() {
+		this(null);
+	}
 	public SerialPortManager(SerialPortEventPublisher serialPortEventPublisher) {
 		super();
 		this.serialPortEventPublisher = serialPortEventPublisher;
