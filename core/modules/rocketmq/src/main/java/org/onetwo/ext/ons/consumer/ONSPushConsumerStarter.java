@@ -211,7 +211,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 //					}
 					
 					// 不可能被消费，记录错误并发送提醒
-					if (currentConetxt.isWillSkipConsume()) {
+					if (currentConetxt!=null && currentConetxt.isWillSkipConsume()) {
 						errorMsg = "message will skip. " + errorMsg;
 						logAndMail(errorMsg, e);
 						return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
