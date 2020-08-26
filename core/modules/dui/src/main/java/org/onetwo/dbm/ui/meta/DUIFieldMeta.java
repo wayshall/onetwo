@@ -101,6 +101,7 @@ public class DUIFieldMeta {
 	@Data
 	public class DUISelectMeta {
 		Class<? extends Enum<?>> dataEnumClass;
+		String[] excludeEnumNames;
 		Class<? extends UISelectDataProvider> dataProvider;
 		
 		Class<?> cascadeEntity;

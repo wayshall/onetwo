@@ -78,7 +78,7 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     @DUIInput(type=DUIInput.InputTypes.NUMBER)
     <#else>
         <#if column.columnSize gt 255>
-    @DUIInput(type=DUIInput.InputTypes.TEXT_AREA)
+    @DUIInput(type=DUIInput.InputTypes.TEXTAREA)
         </#if>
     </#if>
     @DUIField(label = "${(column.comments[0])!''}", order = ${column?counter})

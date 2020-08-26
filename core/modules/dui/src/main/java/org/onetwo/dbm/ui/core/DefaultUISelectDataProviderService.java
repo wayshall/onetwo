@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -96,7 +97,9 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		if (uiselect.useEnumData()) {
 			Enum<?>[] values = (Enum<?>[]) uiselect.getDataEnumClass().getEnumConstants();
 //			DataBase[] vals = DataBase.class.getEnumConstants();
-			List<EnumDataVO> list = Stream.of(values).map(ev -> {
+			List<EnumDataVO> list = Stream.of(values).filter(ev -> {
+				return !ArrayUtils.contains(uiselect.getExcludeEnumNames(), ev.name());
+			}).map(ev -> {
 				EnumDataVO data = toEnumDataVO(uiselect, ev);
 				return data;
 			}).collect(Collectors.toList());

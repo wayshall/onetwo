@@ -16,8 +16,10 @@ import org.onetwo.dbm.ui.core.UISelectDataProvider;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DUISelect {
-	
+
 	Class<? extends Enum<?>> dataEnumClass() default NoEnums.class;
+	
+	String[] excludeEnumNames() default {"DELETE"};
 	
 	Class<? extends UISelectDataProvider> dataProvider() default NoProvider.class;
 

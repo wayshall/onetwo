@@ -308,10 +308,12 @@ public class DUIGenerator {
 			if (context!=null) {
 				gcontext.putAll(context);
 			}
-			if(!webadmins.isEmpty()){
-				List<GeneratedResult<File>> resullt = dbGenerator.generate(context);
-				System.out.println("generate result: " + resullt);
-			}
+//			if(!webadmins.isEmpty()){
+//				List<GeneratedResult<File>> resullt = dbGenerator.generate(context);
+//				System.out.println("generate result: " + resullt);
+//			}
+			List<GeneratedResult<File>> resullt = dbGenerator.generate(context);
+			System.out.println("generate result: " + resullt);
 		}
 	}
 	
