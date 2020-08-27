@@ -15,6 +15,7 @@ import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.dbm.mapping.DbmMappedEntry;
 import org.onetwo.dbm.ui.annotation.DUICascadeEditable;
+import org.onetwo.dbm.ui.annotation.DUIChildEntity;
 import org.onetwo.dbm.ui.annotation.DUIEntity.DetailPages;
 import org.onetwo.dbm.ui.annotation.NullDUIJsonValueWriter;
 import org.onetwo.dbm.ui.exception.DbmUIException;
@@ -44,14 +45,31 @@ public class DUIEntityMeta {
 	private DbmMappedEntry mappedEntry;
 	private TableMeta table;
 	
-	private DUICascadeEditable[] cascadeEditableList;
-	private Collection<DUIEntityMeta> editableEntities;
 	
+	
+	private DUICascadeEditable[] cascadeEditableList;
+	/***
+	 * 级联编辑的实体
+	 */
+	private Collection<DUIEntityMeta> editableEntities;
+
 	private DUIEntityMeta parent;
 	private boolean editableEntity;
-	
-	
 	private String cascadeField;
+	
+	
+	
+
+	private DUIChildEntity[] childEntities;
+	/****
+	 * 子实体
+	 */
+	private Collection<DUIEntityMeta> childrenEntities;
+	private String refParentField;
+	private boolean childEntity;
+	
+	
+	
 	
 	private DUITreeGridMeta treeGrid;
 
@@ -60,10 +78,14 @@ public class DUIEntityMeta {
 	 */
 	private DUIEntityMeta treeParent;
 	
-	String stripPrefix;
-	
 	private boolean deletable;
 	private DetailPages detailPage;
+	
+	/****
+	 * 在生成的上下文设置
+	 */
+	String stripPrefix;
+	String moduleName;
 	
 	public boolean isDetailPageEditable() {
 		return this.detailPage.equals(DetailPages.EDIT);
@@ -98,6 +120,15 @@ public class DUIEntityMeta {
 		entityMeta.setParent(this);
 		entityMeta.setEditableEntity(true);
 		this.editableEntities.add(entityMeta);
+	}
+	
+	public void addChildrenEntity(DUIEntityMeta entityMeta) {
+		if (this.childrenEntities==null) {
+			this.childrenEntities = Sets.newHashSet();
+		}
+		entityMeta.setParent(this);
+		entityMeta.setChildEntity(true);
+		this.childrenEntities.add(entityMeta);
 	}
 	
 	public Collection<DUIEntityMeta> getEditableEntities() {
@@ -143,8 +174,16 @@ public class DUIEntityMeta {
 	public Collection<DUIFieldMeta> getHasDefaultFields() {
 		return getFields().stream().filter(f -> StringUtils.isNotBlank(f.getDefaultValue())).collect(Collectors.toList());
 	}
-
-
+	
+	public String getComponentName() {
+		String componentName = StringUtils.capitalize(this.moduleName) + this.name;
+		return componentName;
+	}
+	
+	public String getRefParentFieldKebabCase() {
+		return StringUtils.convertWithSeperator(refParentField, "-");
+	}
+	
 	public static boolean hasValueWriter(Class<? extends DUIJsonValueWriter> valueWriter) {
 		return valueWriter!=null && valueWriter!=NullDUIJsonValueWriter.class;
 	}

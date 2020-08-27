@@ -34,7 +34,7 @@ import * as ${apiName} from '@/api/${vueModuleName}/${apiName}'
 //  import { exchangeLinebreak } from '@/filters'
 
 export default {
-  name: '${_tableContext.className}Form',
+  name: '${DUIEntityMeta.componentName}Form',
   components: {
   },
   props: {
@@ -46,6 +46,12 @@ export default {
       type: Boolean,
       default: false
     },
+<#if DUIEntityMeta.childEntity>
+    ${DUIEntityMeta.refParentField}: {
+      type: String,
+      required: true
+    },
+</#if>
     dataId: {
       type: String,
       required: true
@@ -159,11 +165,17 @@ export default {
 </#if>
 <#if !DUIEntityMeta.editableEntity>
     handleAddData() {
+<#if DUIEntityMeta.childEntity>
+      this.dataModel.${DUIEntityMeta.refParentField} = this.${DUIEntityMeta.refParentField}
+</#if>
       return ${apiName}.add(this.dataModel)
     },
 </#if>
     handleEditData() {
       console.log('edit data.....')
+<#if DUIEntityMeta.childEntity>
+      this.dataModel.${DUIEntityMeta.refParentField} = this.${DUIEntityMeta.refParentField}
+</#if>
       this.dataModel.${idName} = this.dataId
       return ${apiName}.update(this.dataModel)
     }

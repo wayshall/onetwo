@@ -25,6 +25,7 @@ import org.onetwo.dbm.mapping.DbmMappedField;
 import org.onetwo.dbm.mapping.MappedEntryManager;
 import org.onetwo.dbm.ui.EnableDbmUI;
 import org.onetwo.dbm.ui.annotation.DUICascadeEditable;
+import org.onetwo.dbm.ui.annotation.DUIChildEntity;
 import org.onetwo.dbm.ui.annotation.DUIEntity;
 import org.onetwo.dbm.ui.annotation.DUIField;
 import org.onetwo.dbm.ui.annotation.DUIInput;
@@ -159,6 +160,10 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			if (!LangUtils.isEmpty(cascadeEditableList)) {
 				buildEditableEntities(entityMeta);
 			}
+			DUIChildEntity[] childrenEntities = entityMeta.getChildEntities();
+			if (!LangUtils.isEmpty(childrenEntities)) {
+				buildChildrenEntities(entityMeta);
+			}
 			if (entityMeta.getTreeGrid()!=null && entityMeta.getTreeGrid().hasCascadeEntity()) {
 				DUIEntityMeta editableMeta = get(entityMeta.getTreeGrid().getCascadeEntity());
 				entityMeta.getTreeGrid().setCascadeEntityMeta(editableMeta);
@@ -181,6 +186,19 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			}
 			editableMeta.setCascadeField(cascadeEditable.cascadeField());
 			entityMeta.addEditableEntity(editableMeta);
+		}
+	}
+
+
+	protected void buildChildrenEntities(DUIEntityMeta entityMeta) {
+		for (DUIChildEntity child : entityMeta.getChildEntities()) {
+//				DUIEntityMeta editableMeta = get(editableEntityClass);
+			DUIEntityMeta editableMeta = get(child.entityClass());
+			if (editableMeta==null) {
+				continue;
+			}
+			editableMeta.setRefParentField(child.refParentField());
+			entityMeta.addChildrenEntity(editableMeta);
 		}
 	}
 	
@@ -238,6 +256,9 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 		
 		DUICascadeEditable[] editableEntities = uiclassAnno.cascadeEditableEntities();
 		entityMeta.setCascadeEditableList(editableEntities);
+
+		DUIChildEntity[] childrenEntities = uiclassAnno.childrenEntities();
+		entityMeta.setChildEntities(childrenEntities);
 		
 		return entityMeta;
 	}

@@ -39,6 +39,8 @@ public @interface DUIEntity {
 	 */
 	DUICascadeEditable[] cascadeEditableEntities() default {};
 	
+	DUIChildEntity[] childrenEntities() default {};
+	
 	public enum DetailPages {
 		VIEW("查看"),
 		EDIT("编辑");

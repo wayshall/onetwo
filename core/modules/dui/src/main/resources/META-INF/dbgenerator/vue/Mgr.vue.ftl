@@ -16,7 +16,7 @@
       :delete-api="deleteApi"
 </#if>
       :list-api="listApi"
-<#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true>
+<#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true || DUIEntityMeta.childEntity>
       :query-form-model="queryFormModel"
 </#if>
       :refresh.sync="refreshTable"
@@ -65,6 +65,9 @@
           <${table.propertyName}-form
             ref="${table.propertyName}Form"
             :status-mode="dataForm.status"
+<#if DUIEntityMeta.childEntity>
+            :${DUIEntityMeta.refParentFieldKebabCase}="${DUIEntityMeta.refParentField}"
+</#if>
             :data-id="dataForm.dataId"
             @finishHandle="on${_tableContext.className}Finish"/>
         </el-tab-pane>
@@ -86,18 +89,18 @@
 import * as ${apiName} from '@/api/${vueModuleName}/${apiName}'
 import ${formComponentName} from './${formComponentName}'
 <#if DUIEntityMeta.editableEntities??>    
-<#list DUIEntityMeta.editableEntities as editableEntity>
+  <#list DUIEntityMeta.editableEntities as editableEntity>
 import ${editableEntity.table.propertyName}Form from './${editableEntity.table.propertyName}Form'
-</#list>
+  </#list>
 </#if>
 
 export default {
-  name: '${_tableContext.className}',
+  name: '${DUIEntityMeta.componentName}',
   components: {
 <#if DUIEntityMeta.editableEntities??>   
-<#list DUIEntityMeta.editableEntities as editableEntity>
+  <#list DUIEntityMeta.editableEntities as editableEntity>
     ${editableEntity.table.propertyName}Form,
-</#list>
+  </#list>
 </#if>
     ${formComponentName}
   },
@@ -117,11 +120,22 @@ export default {
       default: ''
     }
   },
+<#elseif DUIEntityMeta.childEntity>
+  props: {
+    ${DUIEntityMeta.refParentField}: {
+      type: String,
+      required: false,
+      default: ''
+    }
+  },
 </#if>
   data() {
     return {
-<#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true>
+<#if searchableFields.isEmpty()==false || DUIEntityMeta.isTree()==true || DUIEntityMeta.childEntity>
       queryFormModel: {
+<#if DUIEntityMeta.childEntity>
+        ${DUIEntityMeta.refParentField}: this.${DUIEntityMeta.refParentField},
+</#if>
   <#if DUIEntityMeta.isTree()==true>
         ${DUIEntityMeta.treeGrid.parentField.name}: '',
   <#elseif DUIEntityMeta.treeParent??>
@@ -144,6 +158,11 @@ export default {
       refreshTable: false,
       currentTabName: 'dataFormTab',
       operations: [
+<#if DUIEntityMeta.childrenEntities??>   
+  <#list DUIEntityMeta.childrenEntities as childEntity>
+        { action: '${childEntity.name}Mgr', text: '${childEntity.label}管理', handler: this.handle${childEntity.name} },
+  </#list>
+</#if>
         { action: 'edit', text: '${DUIEntityMeta.detailPage.label}', handler: this.handleEdit }
       ]
     }
@@ -159,6 +178,13 @@ export default {
   watch: {
     ${DUIEntityMeta.treeParent.treeGrid.cascadeField}: function(newValue) {
       this.queryFormModel.${DUIEntityMeta.treeParent.treeGrid.cascadeField} = newValue
+      this.refreshTable = true
+    }
+  },
+<#elseif DUIEntityMeta.childEntity>
+  watch: {
+    ${DUIEntityMeta.refParentField}: function(newValue) {
+      this.queryFormModel.${DUIEntityMeta.refParentField} = this.${DUIEntityMeta.refParentField}
       this.refreshTable = true
     }
   },
@@ -197,6 +223,18 @@ export default {
       this.dataForm.dataId = ''
       this.currentTabName = 'dataFormTab'
     },
+<#if DUIEntityMeta.childrenEntities??>   
+  <#list DUIEntityMeta.childrenEntities as childEntity>
+    handle${childEntity.name}(row) {
+      this.$router.push({
+        name: '${childEntity.componentName}',
+        params: {
+          ${childEntity.refParentField}: row.${DUIEntityMeta.table.primaryKey.javaName}
+        }
+      })
+    },
+  </#list>
+</#if>
     handleEdit(row) {
       this.dataForm.status = 'Edit'
       this.dataForm.visible = true

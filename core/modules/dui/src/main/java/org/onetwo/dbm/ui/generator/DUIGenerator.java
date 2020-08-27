@@ -218,6 +218,7 @@ public class DUIGenerator {
 	public VuePageGenerator vueGenerator(Class<?> pageClass, String vueModuleName){
 		DUIEntityMeta duiEntityMeta = getDUIEntityMeta(pageClass);
 		duiEntityMeta.setStripPrefix(this.stripTablePrefix);
+//		duiEntityMeta.setModuleName(vueModuleName);
 
 		DbTableGenerator tableGenerator = dbGenerator.table(duiEntityMeta.getTable().getName());
 		
@@ -241,11 +242,15 @@ public class DUIGenerator {
 		if (meta==null) {
 			throw new DbmUIException("DUIEntityMeta not found: " + pageClass);
 		}
+		meta.setModuleName(moduleName);
 		return meta;
 	}
 
 	private Optional<DUIEntityMeta> getDUIEntityMeta(String tableName) {
 		Optional<DUIEntityMeta> meta = getDUIMetaManager().findByTable(tableName);
+		if (meta.isPresent()) {
+			meta.get().setModuleName(moduleName);
+		}
 		return meta;
 	}
 	
@@ -407,6 +412,16 @@ public class DUIGenerator {
 					VuePageGenerator vg = DUIGenerator.this.vueGenerator(editable.getEntityClass(), vueModuleName);
 					vg.generateVueMgrForm();
 					vg.generateVueJsApi();
+				});
+			}
+			
+			if (LangUtils.isNotEmpty(duiEntityMeta.getChildrenEntities())) {
+				duiEntityMeta.getChildrenEntities().forEach(child -> {
+					DUIGenerator.this.webadminGenerator(child.getTable().getName())
+										.generateVueController()
+										.generateServiceImpl();
+					VuePageGenerator vg = DUIGenerator.this.vueGenerator(child.getEntityClass(), vueModuleName);
+					vg.generateVueCrud();
 				});
 			}
 		}
