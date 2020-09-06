@@ -80,13 +80,6 @@
           ${spaces}v-model="${modelPrefix}.${field.name}File"
           ${spaces}:exist-file-path="${modelPrefix}.${field.name}"/>
         <#assign hasFileType=true/>
-      <#elseif field.column.isAssociationType()==true>
-        ${spaces}<el-input
-          ${spaces}v-model="${modelPrefix}.${field.name}"
-        <#if isEditFormField>
-          ${spaces}:disabled="${field.formDisabledValue}"
-        </#if>
-          ${spaces}placeholder="请输入${(field.label)!''}"/>
       <#else>
         ${spaces}<el-input
           ${spaces}v-model="${modelPrefix}.${field.name}"

@@ -124,7 +124,7 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     @PostMapping("${requestPath}")
     public DataResult<${entityClassName}> create(<#list formFields as field><#rt>
                                                   <#if field.input.isFileType()==true><#t>
-                                                    <#lt><#if !field.column.nullable>@RequestParam </#if>MultipartFile ${field.name}File, 
+                                                    <#lt><#if !field.column.nullable>@RequestParam(required=false) </#if>MultipartFile ${field.name}File, 
                                                         <#assign hasFileFormField=true/><#t>
                                                   </#if><#t>
                                                 </#list><#t>
@@ -156,7 +156,7 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     public DataResult<${entityClassName}> update(@PathVariable("${idName}") ${idType} ${idName}, 
                                                 <#list formFields as field><#t>
                                                   <#if field.input.isFileType()==true><#t>
-                                                    <#if !field.column.nullable>@RequestParam </#if>MultipartFile ${field.name}File, 
+                                                    <#if !field.column.nullable>@RequestParam(required=false) </#if>MultipartFile ${field.name}File, 
                                                   </#if><#t>
                                                 </#list><#t>
                                                     @Validated ${entityClassName} ${_tableContext.propertyName}, 
