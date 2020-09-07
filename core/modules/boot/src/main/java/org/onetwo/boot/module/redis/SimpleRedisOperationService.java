@@ -1,13 +1,17 @@
 package org.onetwo.boot.module.redis;
 
+import java.time.Duration;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.onetwo.common.convert.Types;
+import org.onetwo.common.date.Dates;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
@@ -19,12 +23,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
+import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
+import org.springframework.util.Assert;
 
 import lombok.Setter;
 
@@ -180,10 +187,17 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	 * @param cacheData
 	 */
 	private void configCacheData(BoundValueOperations<Object, Object> ops, String cacheKey, CacheData<?> cacheData) {
-		if (cacheData.getExpire()!=null && cacheData.getExpire()>0) {
+		if (cacheData.getExpireAt()!=null) {
+			TimeUnit unit = TimeUnit.SECONDS;
+			Duration d = Dates.between(new Date(), cacheData.getExpireAt());
+			Long timeout = d.getSeconds();
+			ops.set(cacheData.getValue(), timeout, unit);
+		} else if (cacheData.getExpire()!=null && cacheData.getExpire()>0) {
 //			ops.expire(cacheData.getExpire(), cacheData.getTimeUnit());
 			ops.set(cacheData.getValue(), cacheData.getExpire(), cacheData.getTimeUnit());
-		} else if (this.expires.containsKey(cacheKey)) {
+		}
+		
+		if (this.expires.containsKey(cacheKey)) {
 			Long expireInSeconds = this.expires.get(cacheKey);
 			ops.set(cacheData.getValue(), expireInSeconds, TimeUnit.SECONDS);
 		} else {
@@ -339,6 +353,47 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		});
     	return value;
     }
+	
+	public Long listPushToTail(String listName, Object data) {
+		Assert.hasText(listName, "list must be has text!");
+		BoundListOperations<Object, Object> ops = this.redisTemplate.boundListOps(listName);
+		return ops.rightPush(data);
+	}
+	
+	/***
+	 * Redis Zadd 命令用于将一个或多个成员元素及其分数值加入到有序集当中。
+如果某个成员已经是有序集的成员，那么更新这个成员的分数值，并通过重新插入这个成员元素，来保证该成员在正确的位置上。
+分数值可以是整数值或双精度浮点数。
+如果有序集合 key 不存在，则创建一个空的有序集并执行 ZADD 操作。
+当 key 存在但不是有序集类型时，返回一个错误。
+	 */
+	public Boolean zsetAdd(String setName, Object data, double score) {
+		Assert.hasText(setName, "set must be has text!");
+		BoundZSetOperations<Object, Object> ops = this.redisTemplate.boundZSetOps(setName);
+		return ops.add(data, score);
+	}
+
+	/***
+	 * Redis Zrange 返回有序集中，指定区间内的成员。
+其中成员的位置按分数值递增(从小到大)来排序。
+具有相同分数值的成员按字典序(lexicographical order )来排列。
+如果你需要成员按
+值递减(从大到小)来排列，请使用 ZREVRANGE 命令。
+下标参数 start 和 stop 都以 0 为底，也就是说，以 0 表示有序集第一个成员，以 1 表示有序集第二个成员，以此类推。
+你也可以使用负数下标，以 -1 表示最后一个成员， -2 表示倒数第二个成员，以此类推。
+	 * @author weishao zeng
+	 * @param setName
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> Set<T> zsetRange(String setName, long start, long end) {
+		Assert.hasText(setName, "setName must be has text!");
+		BoundZSetOperations<Object, T> ops = (BoundZSetOperations<Object, T>)this.redisTemplate.boundZSetOps(setName);
+		Set<T> datas = ops.range(start, end);
+		return datas;
+	}
 
 	@SuppressWarnings("unchecked")
 	protected final RedisSerializer<Object> getKeySerializer() {

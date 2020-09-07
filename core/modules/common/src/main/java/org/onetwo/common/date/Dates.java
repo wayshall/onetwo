@@ -1,5 +1,6 @@
 package org.onetwo.common.date;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,6 +86,20 @@ final public class Dates {
 
 	public static ZonedDateTime toZonedDateTime(Long millis) {
 		return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault());
+	}
+	
+	/***
+	 * 返回两个日期之间的时间段
+	 * @author weishao zeng
+	 * @param startInclusive
+	 * @param endExclusive
+	 * @return
+	 */
+	public static Duration between(Date startInclusive, Date endExclusive) {
+		LocalDateTime start = toLocalDateTime(startInclusive);
+		LocalDateTime end = toLocalDateTime(endExclusive);
+		Duration d = Duration.between(start, end);
+		return d;
 	}
   
 //	public static long sum(Iterable<T>)
