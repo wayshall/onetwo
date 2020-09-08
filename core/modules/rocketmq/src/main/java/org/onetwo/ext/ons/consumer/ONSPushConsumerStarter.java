@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.onetwo.boot.utils.BootUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -77,16 +78,16 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		logger.info("ons consumer init. namesrvAddr: {}", onsProperties.getOnsAddr());
 //		Assert.notNull(messageDeserializer);
 //		Assert.notNull(consumerListenerComposite);
+		ConsumerScanner scanner = new ConsumerScanner(applicationContext, this.consumerProcessors);
+		Map<String, ConsumerMeta> consumers = scanner.findConsumers();
 
 		BootUtils.asyncInit(()-> {
-			ConsumerScanner scanner = new ConsumerScanner(applicationContext, this.consumerProcessors);
-			Map<String, ConsumerMeta> consumers = scanner.findConsumers();
-
 			consumers.entrySet().forEach(e->{
 				try {
 					this.initializeConsumers(e.getValue());
 				} catch (MQClientException | InterruptedException ex) {
 					logger.error("mq consumer initialize error: " + ex.getMessage(), ex);
+					throw new BaseException("mq consumer initialize error: " + ex.getMessage(), ex);
 				}
 			});
 		});
