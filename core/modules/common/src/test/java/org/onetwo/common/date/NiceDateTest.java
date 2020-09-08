@@ -54,8 +54,10 @@ public class NiceDateTest {
 		
 		
 		
-		res = NiceDate.New("2019-12-12 10:38:38").preciseAtDate().atTheEnd().formatAsDateTime();
+		res = NiceDate.New("2019-12-12 10:38:38").atLastMomentOfDay().formatAsDateTime();
 		assertThat(res).isEqualTo("2019-12-12 23:59:59");
+		res = NiceDate.New("2019-12-12 10:38:38").atEarliestMomentOfDay().formatAsDateTime();
+		assertThat(res).isEqualTo("2019-12-12 00:00:00");
 		
 		res = NiceDate.New("2019-12-12 10:38:38").preciseAtHour().atTheEnd().formatAsDateTime();
 		assertThat(res).isEqualTo("2019-12-12 10:59:59");

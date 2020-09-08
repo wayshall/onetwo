@@ -11,7 +11,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.cloud.netflix.feign.ExtTargeter.FeignTargetContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +23,7 @@ public class LocalTargeterEnhancer implements TargeterEnhancer {
 	@Autowired
 	private ApplicationContext appContext;
 	@Autowired
-	private PlatformTransactionManager transactionManager;
+	private LocalFeignTransactionWrapper transactionWrapper;
 
 	public <T> T enhanceTargeter(FeignTargetContext<T> ctx) {
 		return enhanceTargeter0(appContext, ctx.getFeignClientfactory(), ()->{
@@ -68,7 +67,7 @@ public class LocalTargeterEnhancer implements TargeterEnhancer {
 
 //		T localProxy = (T)Proxys.interceptInterface(clientInterface, new SpringBeanMethodInterceptor(appContext, localBeanNameOpt.get()));
 		LocalFeignDelegateBean<T> localProxy = new LocalFeignDelegateBean<T>(appContext, clientInterface, localBeanNameOpt.get());
-		localProxy.setTransactionManager(transactionManager);
+		localProxy.setTransactionWrapper(transactionWrapper);
 		if(log.isInfoEnabled()){
 			log.info("local implement has been found for feign interface: {}, use local bean: {}", apiInterface, localBeanNameOpt.get());
 		}

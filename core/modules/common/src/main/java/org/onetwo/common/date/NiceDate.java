@@ -167,6 +167,18 @@ public class NiceDate {
 		return nextDay(1);
 	}
 	
+	public NiceDate atLastMomentOfDay() {
+		// 时间精确到天，的最后一刻
+		preciseAtDate().atTheEnd();
+		return this;
+	}
+	
+	public NiceDate atEarliestMomentOfDay() {
+		// 时间精确到天，的最后一刻
+		preciseAtDate().atTheBeginning();
+		return this;
+	}
+	
 	public NiceDate preciseAtYear(){
 		precise(DateType.year);
 		return this;

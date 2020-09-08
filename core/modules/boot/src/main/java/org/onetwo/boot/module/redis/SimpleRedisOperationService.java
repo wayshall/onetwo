@@ -158,7 +158,6 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		configCacheData(ops, cacheKey, cacheData);
 	}
 	
-	
 	@SuppressWarnings("unchecked")
 	protected <T> CacheData<T> getCacheData(BoundValueOperations<Object, Object> ops, String cacheKey, Supplier<CacheData<T>> cacheLoader) {
 		return this.getRedisLockRunnerByKey(cacheKey).tryLock(30L, TimeUnit.SECONDS, () -> {

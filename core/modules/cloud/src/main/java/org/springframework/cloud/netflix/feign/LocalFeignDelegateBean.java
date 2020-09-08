@@ -4,13 +4,10 @@ import java.util.Arrays;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.aop.Proxys;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 
@@ -25,7 +22,7 @@ public class LocalFeignDelegateBean<T> implements MethodInterceptor {
 	final private String localBeanName;
 	private Object localBean;
 	private ApplicationContext applicationContext;
-	private PlatformTransactionManager transactionManager;
+	private LocalFeignTransactionWrapper transactionWrapper;
 	
 	public LocalFeignDelegateBean(ApplicationContext applicationContext, Class<T> clientInterface, String localBeanName) {
 		super();
@@ -45,34 +42,34 @@ public class LocalFeignDelegateBean<T> implements MethodInterceptor {
 //	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		Object target = this.localBean;
-		if(target==null){
+		final Object target;
+		if (this.localBean==null) {
 			target = applicationContext.getBean(localBeanName);
 			this.localBean = target;
+		} else {
+			target = this.localBean;
 		}
 		
 		if (!TransactionSynchronizationManager.isActualTransactionActive()) {
 			return invokeTarget(target, invocation);
 		} else {
-			TransactionDefinition definition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			TransactionStatus status = transactionManager.getTransaction(definition);
-			try {
+			return transactionWrapper.wrapRequiresNew(() -> {
 				return invokeTarget(target, invocation);
-			} catch(Throwable t) {
-				transactionManager.rollback(status);
-				throw t;
-			} finally {
-				transactionManager.commit(status);
-			}
+			});
 		}
 	}
 	
-	private Object invokeTarget(Object target, MethodInvocation invocation) throws Throwable {
-		return AopUtils.invokeJoinpointUsingReflection(target, invocation.getMethod(), invocation.getArguments());
+	private Object invokeTarget(Object target, MethodInvocation invocation) {
+		try {
+			return AopUtils.invokeJoinpointUsingReflection(target, invocation.getMethod(), invocation.getArguments());
+		} catch (Throwable e) {
+			throw new BaseException("invoke local feign client error: " + e.getMessage(), e);
+		}
 	}
 
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
+	public void setTransactionWrapper(LocalFeignTransactionWrapper transactionWrapper) {
+		this.transactionWrapper = transactionWrapper;
 	}
+
 	
 }

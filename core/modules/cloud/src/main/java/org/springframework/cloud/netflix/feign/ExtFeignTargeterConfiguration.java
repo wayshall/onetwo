@@ -30,6 +30,10 @@ public class ExtFeignTargeterConfiguration {
 		return new LocalTargeterEnhancer();
 	}
 	
+	@Bean
+	public LocalFeignTransactionWrapper localFeignTransactionWrapper() {
+		return new LocalFeignTransactionWrapper();
+	}
 	/*@Bean
 	@ConditionalOnMissingBean(TargeterEnhancer.class)
 	public TargeterEnhancer targeterEnhancer() {
