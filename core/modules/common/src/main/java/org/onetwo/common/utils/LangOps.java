@@ -3,7 +3,9 @@ package org.onetwo.common.utils;
 import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -332,6 +334,11 @@ final public class LangOps {
 			return Collections.emptyList();
 		}
 		return Arrays.asList(values);
+	}
+    
+	public static <T extends Comparable<? super T>> T max(Collection<T> datas, T def) {
+		T max = datas.stream().max(Comparator.naturalOrder()).orElse(def);
+		return max;
 	}
 	
 	private LangOps(){}

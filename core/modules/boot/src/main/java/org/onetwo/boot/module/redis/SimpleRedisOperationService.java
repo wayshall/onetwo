@@ -29,6 +29,7 @@ import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.util.Assert;
@@ -393,6 +394,58 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		Set<T> datas = ops.range(start, end);
 		return datas;
 	}
+
+	/***
+	 * 查找少于startScore的数据，反方向，max为Double.NEGATIVE_INFINITY，
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> Set<T> zsetRevRangeByScore(String setName, double startScore, int offset, int count) {
+		Assert.hasText(setName, "setName must be has text!");
+		ZSetOperations<Object, T> ops = (ZSetOperations<Object, T>)this.redisTemplate.opsForZSet();
+		// 倒序，无穷小 Double.NEGATIVE_INFINITY
+		Set<T> datas = ops.reverseRangeByScore(setName, Double.NEGATIVE_INFINITY, startScore, 0, count);
+		return datas;
+	}
+
+	/***
+	 * 查找大于startScore的数据，正方向，max为Double.POSITIVE_INFINITY
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> Set<T> zsetRangeByScore(String setName, double startScore, int offset, int count) {
+		Assert.hasText(setName, "setName must be has text!");
+		ZSetOperations<Object, T> ops = (ZSetOperations<Object, T>)this.redisTemplate.opsForZSet();
+		// 倒序，无穷小 Double.NEGATIVE_INFINITY
+		Set<T> datas = ops.reverseRangeByScore(setName, startScore, Double.POSITIVE_INFINITY, 0, count);
+		return datas;
+	}
+	
+	public Long zsetCount(String setName, double minScore, double maxScore) {
+		Assert.hasText(setName, "setName must be has text!");
+		if (minScore > maxScore) {
+			throw new IllegalArgumentException("minScore can not be greater maxScore");
+		}
+		ZSetOperations<Object, Object> ops = this.redisTemplate.opsForZSet();
+		Long count = ops.count(setName, minScore, maxScore);
+		return count;
+	}
+
+	public Boolean expireAt(String key, Date expireAt) {
+		final String cacheKey = getCacheKey(key);
+		return this.redisTemplate.expireAt(cacheKey, expireAt);
+    }
+
+	public Long getExpire(String key, TimeUnit timeUnit) {
+		final String cacheKey = getCacheKey(key);
+		if (timeUnit==null) {
+			timeUnit = TimeUnit.SECONDS;
+		}
+		return this.redisTemplate.getExpire(cacheKey, timeUnit);
+    }
+
+	public Boolean expire(String key, final long timeout, final TimeUnit unit) {
+		final String cacheKey = getCacheKey(key);
+		return this.redisTemplate.expire(cacheKey, timeout, unit);
+    }
 
 	@SuppressWarnings("unchecked")
 	protected final RedisSerializer<Object> getKeySerializer() {

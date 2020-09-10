@@ -419,6 +419,8 @@ public class LangUtilsTest {
 		System.out.println("key:" + key);
 		key = "sport-"+RandomStringUtils.randomAlphanumeric(128);
 		System.out.println("key:" + key);
+		key = RandomStringUtils.randomAlphanumeric(32);
+		System.out.println("key:" + key);
 	}
 	
 	@Test

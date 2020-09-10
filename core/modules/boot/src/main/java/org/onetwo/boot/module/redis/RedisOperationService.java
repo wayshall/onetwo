@@ -1,7 +1,9 @@
 package org.onetwo.boot.module.redis;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -72,6 +74,32 @@ public interface RedisOperationService {
 	<T> Set<T> zsetRange(String setName, long start, long end);
 	
 	/***
+	 * < startScore
+	 * @author weishao zeng
+	 * @param <T>
+	 * @param setName
+	 * @param startScore
+	 * @param offset
+	 * @param count
+	 * @return
+	 */
+	<T> Set<T> zsetRevRangeByScore(String setName, double startScore, int offset, int count);
+	
+	/***
+	 * > startScore
+	 * @author weishao zeng
+	 * @param <T>
+	 * @param setName
+	 * @param startScore
+	 * @param offset
+	 * @param count
+	 * @return
+	 */
+	<T> Set<T> zsetRangeByScore(String setName, double startScore, int offset, int count);
+	
+	Long zsetCount(String setName, double minScore, double maxScore);
+	
+	/***
 	 * 直接设置缓存
 	 * @author weishao zeng
 	 * @param key
@@ -79,5 +107,11 @@ public interface RedisOperationService {
 	 */
 	void setCache(String key, Object value);
 	void setCache(String key, Supplier<CacheData<?>> cacheLoader);
+	
+	Boolean expireAt(String key, Date expireAt);
 
+	Boolean expire(String key, final long timeout, final TimeUnit unit);
+
+	Long getExpire(String key, TimeUnit timeUnit);
+	
 }
