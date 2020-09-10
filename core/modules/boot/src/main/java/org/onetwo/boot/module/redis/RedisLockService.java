@@ -22,25 +22,36 @@ public class RedisLockService {
 
 	public void tryLock(String lockKey, long timeInMillis, Runnable action) {
 		Lock locker = redisLockRegistry.obtain(lockKey);
+		boolean locked = false;
 		try {
-			locker.tryLock(timeInMillis, TimeUnit.MILLISECONDS);
-			action.run();
+			locked = locker.tryLock(timeInMillis, TimeUnit.MILLISECONDS);
+			if (locked) {
+				action.run();
+			}
 		} catch (InterruptedException e) {
 			throw new BaseException("lock[" + lockKey + "] has interrupted!");
 		} finally {
-			locker.unlock();
+			if (locked) {
+				locker.unlock();
+			}
 		}
 	}
 	
-	public <T> T lock(String lockKey, long timeInMillis, Supplier<T> action) {
+	public <T> T tryLock(String lockKey, long timeInMillis, Supplier<T> action) {
 		Lock locker = redisLockRegistry.obtain(lockKey);
+		boolean locked = false;
 		try {
-			locker.tryLock(timeInMillis, TimeUnit.MILLISECONDS);
-			return action.get();
+			locked = locker.tryLock(timeInMillis, TimeUnit.MILLISECONDS);
+			if (locked) {
+				return action.get();
+			}
+			return null;
 		} catch (InterruptedException e) {
 			throw new BaseException("lock[" + lockKey + "] has interrupted!");
 		} finally {
-			locker.unlock();
+			if (locked) {
+				locker.unlock();
+			}
 		}
 	}
 	
