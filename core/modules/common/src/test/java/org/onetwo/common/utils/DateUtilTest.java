@@ -31,7 +31,7 @@ public class DateUtilTest {
 		String str = DateUtils.formatDateTime(time);
 		System.out.println("time:"+DateUtils.format("h:mm a", new Date()));
 		System.out.println("time:"+str);
-		System.out.println("time:"+now.getTime());
+		System.out.println("now.getTime():"+now.getTime());
 		System.out.println("time:"+time.getTime());
 		System.out.println("nowTime:"+nowTime.getTime());
 		
