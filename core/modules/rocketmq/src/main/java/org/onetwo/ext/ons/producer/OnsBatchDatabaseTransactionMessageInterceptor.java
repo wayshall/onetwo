@@ -52,6 +52,7 @@ public class OnsBatchDatabaseTransactionMessageInterceptor extends OnsDatabaseTr
 	}
 
 	@Override
+	@TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT)
 	public void afterCommit(SendMessageEvent event){
 		CURRENT_MESSAGES.remove();
 		super.afterCommit(event);
@@ -72,6 +73,7 @@ public class OnsBatchDatabaseTransactionMessageInterceptor extends OnsDatabaseTr
 	}
 	
 	@Override
+	@TransactionalEventListener(phase=TransactionPhase.AFTER_ROLLBACK)
 	public void afterRollback(SendMessageEvent event){
 		CURRENT_MESSAGES.remove();
 		super.afterRollback(event);

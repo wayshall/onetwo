@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.util.Assert;
 
 /**
@@ -128,7 +130,12 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 		return send;
 	}
 
+	/****
+	 * 注意：
+	 * TransactionalEventListener 由 TransactionSynchronizationUtils#invokeAfterCompletion 触发，即使抛错了，也不会中止程序执行
+	 */
 	@Override
+	@TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT)
 	public void afterCommit(SendMessageEvent event){
 		if (LangUtils.isEmpty(event.getSendMessageContexts())) {
 			return ;
@@ -155,6 +162,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	}
 	
 	@Override
+	@TransactionalEventListener(phase=TransactionPhase.AFTER_ROLLBACK)
 	public void afterRollback(SendMessageEvent event){
 		if (LangUtils.isEmpty(event.getSendMessageContexts())) {
 			return ;

@@ -28,6 +28,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -136,6 +138,7 @@ public class RmqONSProducerTest {
 	public static class TestDatabaseTransactionMessageInterceptor extends OnsDatabaseTransactionMessageInterceptor {
 		private volatile boolean throwWhenExecuteSendMessage;
 		@Override
+		@TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT)
 		public void afterCommit(SendMessageEvent event){
 			if(throwWhenExecuteSendMessage){
 				throw new ServiceException("send error afterCommit");
