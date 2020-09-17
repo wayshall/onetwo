@@ -135,6 +135,7 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 				.appendConsumerPrefix(subscribe.appendConsumerPrefix())
 				.consumeMessageBatchMaxSize(subscribe.consumeMessageBatchMaxSize())
 				.comsumerProperties(properties)
+				.useBatchMode(subscribe.useBatchMode())
 				.build();
 		return meta;
 	}

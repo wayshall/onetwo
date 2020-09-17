@@ -10,6 +10,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.ext.alimq.BatchConsumContext;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.ListenerType;
 import org.onetwo.ext.ons.ONSProperties;
@@ -188,9 +189,10 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					}
 				}
 
-				ConsumContext currentConetxt = null;
+//				ConsumContext currentConetxt = null;
+				BatchConsumContext batch = null;
 				try {
-					currentConetxt = delegateMessageService.processMessages(meta, msgs, context);
+					batch = delegateMessageService.processMessages(meta, msgs, context);
 				} catch(MessageConsumedException e) {
 					// 忽略已消费异常
 					if (logger.isDebugEnabled()) {
@@ -204,6 +206,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					logAndMail(errorMsg, e);
 //					applicationContext.publishEvent(event);
 				} catch (Throwable e) {
+					ConsumContext currentConetxt = batch==null?null:batch.getCurrentContext();
 					String errorMsg = e.getMessage();
 //					if(currentConetxt!=null){
 ////						consumerListenerComposite.onConsumeMessageError(currentConetxt, e);

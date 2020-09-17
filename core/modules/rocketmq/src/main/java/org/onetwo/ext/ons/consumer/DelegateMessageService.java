@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.ext.alimq.BatchConsumContext;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
@@ -24,6 +25,7 @@ import org.springframework.util.Assert;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.collect.Lists;
 
 /**
  * @author wayshall
@@ -65,9 +67,12 @@ public class DelegateMessageService implements InitializingBean {
 	 * @return
 	 */
 //	@Transactional
-	public ConsumContext processMessages(ConsumerMeta meta, List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+	public BatchConsumContext processMessages(ConsumerMeta meta, List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
 		final CustomONSConsumer consumer = (CustomONSConsumer) meta.getConsumerAction();
 
+		List<ConsumContext> batchContexts = Lists.newArrayListWithExpectedSize(msgs.size());
+		BatchConsumContext batch = new BatchConsumContext(batchContexts);
+		
 		ConsumContext currentConetxt = null;
 		for(MessageExt message : msgs){
 			String msgId = ONSUtils.getMessageId(message);
@@ -103,18 +108,56 @@ public class DelegateMessageService implements InitializingBean {
 												.build();
 			}
 			
-			if (meta.shouldWithTransational()) {
-				delegateMessageService.consumeMessageWithTransactional(consumer, meta, currentConetxt);
+			if (meta.isUseBatchMode()) {
+				batchContexts.add(currentConetxt);
 			} else {
-				consumeMessage(consumer, meta, currentConetxt);
-			}
-			if (logger.isDebugEnabled()) {
-				logger.debug("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), currentConetxt.getDeserializedBody());
-			} else if(logger.isInfoEnabled()) {
-				logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
+				batch.setCurrentContext(currentConetxt);
+				if (meta.shouldWithTransational()) {
+					delegateMessageService.consumeMessageWithTransactional(consumer, meta, currentConetxt);
+				} else {
+					consumeMessage(consumer, meta, currentConetxt);
+				}
+				if (logger.isDebugEnabled()) {
+					logger.debug("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}, body: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags(), currentConetxt.getDeserializedBody());
+				} else if(logger.isInfoEnabled()) {
+					logger.info("rmq-consumer[{}] consumed message. id: {}, topic: {}, tag: {}", meta.getConsumerId(), msgId,  message.getTopic(), message.getTags());
+				}
 			}
 		}
-		return currentConetxt;
+		
+		// 批量消费
+		if (meta.isUseBatchMode()) {
+			consumeBatchMessages(consumer, meta, batch);
+		}
+		
+		return batch;
+	}
+	
+	private void consumeBatchMessages(CustomONSConsumer consumer, ConsumerMeta meta, BatchConsumContext batch) {
+		List<ConsumContext> batchContexts = batch.getContexts();
+		for (ConsumContext currentConetxt : batchContexts) {
+			consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
+		}
+		
+		try {
+			consumer.doConsumeBatch(batchContexts);
+		} catch (Throwable e) {
+			String msg = "rmq-batch-consumer["+meta.getConsumerId()+"] consumed message error. topic: " + meta.getTopic() + ", tags: " + meta.getSubExpression();
+			if (batch.getCurrentContext()!=null) {
+				msg = buildErrorMessage(meta, batch.getCurrentContext());
+			}
+			consumerListenerComposite.onBatchConsumeMessageError(batch, e);
+			ConsumeException consumeEx = new ConsumeException(msg, e);
+			throw consumeEx;
+		}
+		
+		for (ConsumContext currentConetxt : batchContexts) {
+			consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
+		}
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("rmq-batch-consumer[{}] consumed message. id: {}, topic: {}, tag: {}", meta.getConsumerId(), meta.getTopic(), meta.getSubExpression());
+		}
 	}
 	
 	private Object deserializeMessage(MessageDeserializer messageDeserializer, MessageExt message) {

@@ -75,6 +75,10 @@ public class ConsumerMeta {
 	private IdempotentType idempotentType = IdempotentType.NONE;
 	
 	private boolean appendConsumerPrefix;
+	/***
+	 * 是否使用批量消费模式
+	 */
+	private boolean useBatchMode;
 	
 	public boolean shouldWithTransational() {
 		return getIdempotentType()==IdempotentType.DATABASE;

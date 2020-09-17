@@ -76,6 +76,8 @@ public @interface ONSSubscribe {
 	
 	ConsumerProperty[] properties() default {};
 	
+	boolean useBatchMode() default false;
+	
 	public enum IdempotentType {
 		NONE,
 		DATABASE;
