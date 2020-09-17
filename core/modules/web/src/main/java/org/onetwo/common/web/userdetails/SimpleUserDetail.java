@@ -8,6 +8,8 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 	private long userId;
 	private String userName;
 	private String nickName;
+//  @ApiModelProperty("头像")
+	private String avatar;
 //	private String token;
 
 	public SimpleUserDetail(){ 
@@ -46,6 +48,14 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 
 }
