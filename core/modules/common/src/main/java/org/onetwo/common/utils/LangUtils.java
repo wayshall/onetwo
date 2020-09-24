@@ -1591,6 +1591,24 @@ abstract public class LangUtils {
 	public static String format(Number num) {
 		return new DecimalFormat("0.00").format(num);
 	}
+	
+	/***
+	 * 如果字符串超过指定长度，则填充省略号
+	 * @author weishao zeng
+	 * @param str
+	 * @param length
+	 * @return
+	 */
+	public static String ellipsis(String str, int length) {
+		if (StringUtils.isBlank(str)) {
+			return str;
+		}
+		if (str.length() <= length) {
+			return str;
+		}
+		String newStr = str.substring(0, length-3) + "...";
+		return newStr;
+	}
 
 	/*****
 	 * 填充字符串，如果s的长度少于taotalLength，则在左边填充(aleng-s.length)个append

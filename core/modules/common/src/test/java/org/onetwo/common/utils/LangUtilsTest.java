@@ -19,6 +19,25 @@ import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
+
+	@Test
+	public void testEllipsis() {
+		String str = "test";
+		String res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo(str);
+		
+		str = null;
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo(str);
+		
+		str = "12345676910";
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo("1234567...");
+		
+		str = "一二三四五六七八九十十一";
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo("一二三四五六七...");
+	}
 	
 	@Test
 	public void testReplace() {
