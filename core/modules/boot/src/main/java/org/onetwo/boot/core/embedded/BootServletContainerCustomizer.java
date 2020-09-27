@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.embedded;
 
+import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.onetwo.common.file.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,10 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
 	public void customize(ConfigurableEmbeddedServletContainer container) {
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
             TomcatEmbeddedServletContainerFactory tomcat = (TomcatEmbeddedServletContainerFactory) container;
+            if (tomcatProperties.isAprProtocol()) {
+            	tomcat.setProtocol("org.apache.coyote.http11.Http11AprProtocol");
+            	tomcat.addContextLifecycleListeners(new AprLifecycleListener());
+            }
             tomcat.addConnectorCustomizers(
                 (connector) -> {
                 	//connector 本身默认是 2 mb
