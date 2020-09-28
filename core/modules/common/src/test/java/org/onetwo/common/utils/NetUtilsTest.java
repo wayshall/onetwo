@@ -10,6 +10,12 @@ public class NetUtilsTest {
 		System.out.println("address:"+address);
 		address = NetUtils.getHostName();
 		System.out.println("address:"+address);
+		
+
+		address = NetUtils.getLocalHostLANIp();
+		System.out.println("getLocalHostLANIp:"+address);
 	}
+	
+	
 
 }
