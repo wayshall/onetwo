@@ -134,9 +134,16 @@ List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(
 ### 流式读取api
 
 
-4.7.3 后增加一个简单的流式api读取excel
+4.7.3 后增加了流式api读取excel
 
 ```Java
+@Data
+public class ImportBatchVO {
+    String title;
+    List<DetailImportData> dataList;
+}
+
+
 ImportBatchVO batch = new ImportBatchVO();
 WorkbookReaderFactory.streamReader()
 		.readSheet(0) //读取第一个表格
