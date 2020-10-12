@@ -5,11 +5,11 @@ import java.util.Optional;
 
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.dbm.ui.core.DefaultUISelectDataProviderService;
 import org.onetwo.dbm.ui.meta.DUIEntityMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta.DUISelectMeta;
 import org.onetwo.dbm.ui.spi.DUIMetaManager;
+import org.onetwo.dbm.ui.spi.DUISelectDataProviderService;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,7 +55,7 @@ public class DUISelectFieldJsonSerializer extends JsonSerializer<Object> {
 		DUIFieldMeta field = meta.get().getField(fieldName);
 		if (StringUtils.isNotBlank(field.getListField()) && field.getSelect()!=null) {
 			DUISelectMeta uiselect = field.getSelect();
-			Object label = getUISelectDataProviderService().getListValue(uiselect, value);
+			Object label = getUISelectDataProviderService(uiselect).getListValue(uiselect, value);
 			jgen.writeStringField(field.getListField(), label==null?"":label.toString());
 		}
     }
@@ -64,8 +64,9 @@ public class DUISelectFieldJsonSerializer extends JsonSerializer<Object> {
 		return Springs.getInstance().getBean(DUIMetaManager.class);
 	}
 	
-	protected DefaultUISelectDataProviderService getUISelectDataProviderService() {
-		return Springs.getInstance().getBean(DefaultUISelectDataProviderService.class);
+	protected DUISelectDataProviderService getUISelectDataProviderService(DUISelectMeta uiselect) {
+		DUISelectDataProviderService sdservice = Springs.getInstance().getBean(DUISelectDataProviderService.class);
+		return sdservice;
 	}
 
 }

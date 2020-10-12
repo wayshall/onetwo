@@ -118,7 +118,7 @@ export default {
     initDataModel() {
       return {
   <#list DUIEntityMeta.formFields as field>
-    <#if field.isIdField()==true>
+    <#if field.isIdField()==false>
       <#if field.input.isFileType()>
         ${field.name}File: null,
       <#else>
