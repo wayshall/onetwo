@@ -153,6 +153,10 @@ WorkbookReaderFactory.streamReader()
 			})
 			////读取第2行到结束
 			.row(1).toEnd().onData((row, index) -> {
+                 if (StringUtils.isBlank(row.getString(0))) {
+                     // 如果该行的第一列为空，则视为空行，忽略处理
+                     return ;
+                 }
 				DetailImportData detail = new DetailImportData();
 				detail.setRealName(row.getString(0));
 				detail.setUserName(row.getString(1));

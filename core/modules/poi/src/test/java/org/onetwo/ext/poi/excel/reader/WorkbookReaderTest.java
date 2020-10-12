@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.junit.Test;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.poi.excel.CardEntity;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 
@@ -22,6 +23,9 @@ public class WorkbookReaderTest {
 										})
 										.row(1).toEnd().onData((dataModel, row, index) -> {
 											System.out.println("rwo["+index+"]: " + row.getCell(0));
+											if (StringUtils.isBlank(row.getString(0))) {
+												return ;
+											}
 											if (row.getSheetIndex()==0) {
 												assertThat(row.getCellValue(0)).isEqualTo(String.valueOf(index));
 											}
