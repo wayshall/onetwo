@@ -249,6 +249,14 @@ public abstract class WorkbookReaderFactory {
 		return WORKBOOK_CACHES.get(key);
 	}*/
 	
+	/****
+	 * 创建excel读取器
+	 * @author weishao zeng
+	 * @param clazz 每一行excel数据映射的对象
+	 * @param dataRowStartIndex 数据行的索引，若第一行为标题行，第二行开始为数据行，则此参数为1
+	 * @param propertyMapper
+	 * @return
+	 */
 	@SuppressWarnings("rawtypes")
 	public static WorkbookReader createWorkbookReader(Class clazz, int dataRowStartIndex, Object...propertyMapper){
 		WorkbookReader wb = new DefaultRowMapperWorkbookReader(new BeanRowMapper(dataRowStartIndex, clazz, ExcelUtils.asMap(propertyMapper), convertors));

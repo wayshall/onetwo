@@ -8,6 +8,13 @@ import java.util.Map;
 
 public interface WorkbookReader {
 
+	/***
+	 * 读取第一个excel表格
+	 * @author weishao zeng
+	 * @param <T>
+	 * @param path
+	 * @return
+	 */
 	public <T> List<T> readFirstSheet(String path);
 	public <T> List<T> readFirstSheet(File file);
 	public <T> List<T> readFirstSheet(InputStream in);

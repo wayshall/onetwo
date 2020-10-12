@@ -1,15 +1,12 @@
 package org.onetwo.ext.poi.excel.reader;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
 import org.junit.Test;
 import org.onetwo.ext.poi.excel.CardEntity;
-import org.onetwo.ext.poi.excel.stream.ExcelStreamReader.ExcelStreamReaderBuilder;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 
 public class WorkbookReaderTest {
@@ -18,7 +15,7 @@ public class WorkbookReaderTest {
 	@Test
 	public void testExcelStreamReaderBuilder(){
 		String path = ExcelUtils.class.getClassLoader().getResource("").getPath()+"/org/onetwo/common/excel/test.xls";
-		new ExcelStreamReaderBuilder().readSheet(0).to(1)
+		WorkbookReaderFactory.streamReader().readSheet(0).to(1)
 										.row(0).onData((dataModel, row, index) -> {
 											System.out.println("rwo: " + row.getCell(0));
 											assertThat(row.getCellValue(0)).isEqualTo("主键");
@@ -50,18 +47,18 @@ public class WorkbookReaderTest {
 		mapper.map("密码", "cardPwd");
 		WorkbookReader reader = WorkbookReaderFactory.createWorkbookByMapper(mapper);
 		List<CardEntity> cards = reader.readFirstSheet(path);
-		assertThat(cards, notNullValue());
-		assertThat(cards.size(), is(10));
-		assertThat(cards.get(0).getId(), is(1L));
+		assertThat(cards).isNotNull();
+		assertThat(cards.size()).isEqualTo(10);
+		assertThat(cards.get(0).getId()).isEqualTo(1L);
 		
 		List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(CardEntity.class, 1, 
 																			"主键", "id", 
 																			"卡号", "cardNo", 
 																			"密码", "cardPwd")
-														.readFirstSheet(path);
-		assertThat(cardList, notNullValue());
-		assertThat(cardList.size(), is(10));
-		assertThat(cardList.get(0).getId(), is(1L));
+														.readFirstSheet(path); // 读取第一个excel表格
+		assertThat(cardList).isNotNull();
+		assertThat(cardList.size()).isEqualTo(10);
+		assertThat(cardList.get(0).getId()).isEqualTo(1L);
 	}
 
 	@Test
@@ -71,7 +68,7 @@ public class WorkbookReaderTest {
 																			"序号", "id", 
 																			"联系方式", "mobile")
 														.readFirstSheet(path);
-		assertThat(datalist, notNullValue());
+		assertThat(datalist).isNotNull();
 		for(UnprintData data : datalist){
 			//‭18377396337
 			int len = (data.getMobile()==null?0:data.getMobile().length());

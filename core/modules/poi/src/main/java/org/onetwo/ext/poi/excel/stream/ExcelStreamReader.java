@@ -63,6 +63,11 @@ public class ExcelStreamReader {
 	}
 	
 	public static interface SheeDataModelConsumer {
+		/****
+		 * 当整个sheet读取完毕时，触发此回调
+		 * @author weishao zeng
+		 * @param dataInst
+		 */
 		void onSheetReadCompleted(Object dataInst);
 	}
 	
@@ -203,6 +208,12 @@ public class ExcelStreamReader {
 				this.toIndex = -1;
 			}
 			
+			/***
+			 * 添加行消费者RowConsumer
+			 * @author weishao zeng
+			 * @param rowConsumer
+			 * @return
+			 */
 			public SheetStreamReaderBuilder<T> onData(RowConsumer<T> rowConsumer) {
 				this.check();
 				RowStreamReader<T> RowStreamReader = new RowStreamReader<>(fromIndex, toIndex, rowConsumer);
@@ -218,6 +229,14 @@ public class ExcelStreamReader {
 	}
 
 	static public interface RowConsumer<T> {
+		/***
+		 * 读取行数据时触发此回调
+		 * 若有空行，需要自行判断
+		 * @author weishao zeng
+		 * @param dataModel
+		 * @param row
+		 * @param rowIndex
+		 */
 		void onRow(T dataModel, RowData row, int rowIndex);
 	}
 	
