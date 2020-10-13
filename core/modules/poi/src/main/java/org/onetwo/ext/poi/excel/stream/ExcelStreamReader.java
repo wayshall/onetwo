@@ -1,8 +1,10 @@
 package org.onetwo.ext.poi.excel.stream;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -10,9 +12,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.convert.Types;
+import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.springframework.util.Assert;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author weishao zeng
@@ -101,6 +106,13 @@ public class ExcelStreamReader {
 		}
 		public void from(File file, SheeDataModelConsumer consumer) {
 			build().from(file, consumer);
+		}
+		public void from(MultipartFile dataFile) {
+			try {
+				build().from(dataFile.getInputStream(), null);
+			} catch (IOException e) {
+				throw new BaseException("import data file error: " + e.getMessage(), e);
+			}
 		}
 		public ExcelStreamReader build() {
 			ExcelStreamReader reader = new ExcelStreamReader(sheetReaders);
@@ -326,8 +338,25 @@ public class ExcelStreamReader {
 		public Integer getInt(int cellnum) {
 			return getCellValue(cellnum, Integer.class);
 		}
+		public Long getLong(int cellnum) {
+			return getCellValue(cellnum, Long.class);
+		}
+		public Double getDouble(int cellnum) {
+			return getCellValue(cellnum, Double.class);
+		}
+		public Float getFloat(int cellnum) {
+			return getCellValue(cellnum, Float.class);
+		}
+		public Boolean getBoolean(int cellnum) {
+			return getCellValue(cellnum, Boolean.class);
+		}
 		public <T> T getCellValue(int cellnum, Class<T> clazz) {
 			return getCellValue(cellnum, clazz, null);
+		}
+		public Date getDate(int cellnum, String pattern) {
+			String value = getString(cellnum);
+			Date date = DateUtils.parseByPatterns(value, pattern);
+			return date;
 		}
 		public <T> T getCellValue(int cellnum, Class<T> clazz, T def) {
 			Object value = getCellValue(cellnum);

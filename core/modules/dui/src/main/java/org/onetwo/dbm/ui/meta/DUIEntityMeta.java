@@ -168,7 +168,8 @@ public class DUIEntityMeta {
 	
 	public Collection<DUIFieldMeta> getFormFields() {
 //		return getFields().stream().filter(f -> f.isInsertable() || f.isUpdatable()).collect(Collectors.toList());
-		return getFields();
+		Collection<DUIFieldMeta> formFields = getFields();
+		return formFields;
 	}
 	
 	public Collection<DUIFieldMeta> getHasDefaultFields() {
