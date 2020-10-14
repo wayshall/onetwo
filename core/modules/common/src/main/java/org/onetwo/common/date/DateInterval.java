@@ -3,6 +3,7 @@ package org.onetwo.common.date;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.function.Consumer;
 
 import org.onetwo.common.date.DateUtils.DateType;
 import org.onetwo.common.utils.Assert;
@@ -119,19 +120,46 @@ public class DateInterval {
 	 * @return
 	 */
 	public DateIntervalList getInterval(DateType dt, int intevalNumb, boolean includeEnd){
+		DateIntervalList dates = new DateIntervalList();
+		generateIntervalDates(dt, intevalNumb, includeEnd, date -> {
+			dates.add(date);
+		});
+		return dates;
+//		Calendar start = getStartCalendar();
+//		Calendar end = getEndCalendar();
+//
+//		DateIntervalList dates = new DateIntervalList();
+//		while((!includeEnd && DateUtils.compareAccurateAt(end, start, dt)>0) ||
+//				(includeEnd && DateUtils.compareAccurateAt(end, start, dt)>=0)
+//				){
+////			System.out.println("stat:" + start.getTime().toLocaleString());
+//			dates.add(start.getTime());
+//			DateUtils.addByDateType(start, dt, intevalNumb);
+//		}
+//		return dates;
+	}
+
+	public NiceDateIntervalList getIntervalNiceDates(DateType dt, int intevalNumb, boolean includeEnd){
+		NiceDateIntervalList dates = new NiceDateIntervalList();
+		generateIntervalDates(dt, intevalNumb, includeEnd, date -> {
+			dates.add(NiceDate.New(date));
+		});
+		return dates;
+	}
+	
+	public void generateIntervalDates(DateType dt, int intevalNumb, boolean includeEnd, Consumer<Date> consumer){
 		Calendar start = getStartCalendar();
 		Calendar end = getEndCalendar();
 
-		DateIntervalList dates = new DateIntervalList();
 		while((!includeEnd && DateUtils.compareAccurateAt(end, start, dt)>0) ||
 				(includeEnd && DateUtils.compareAccurateAt(end, start, dt)>=0)
 				){
-//			System.out.println("stat:" + start.getTime().toLocaleString());
-			dates.add(start.getTime());
+//			dates.add(wrapper.apply(start.getTime()));
+			consumer.accept(start.getTime());
 			DateUtils.addByDateType(start, dt, intevalNumb);
 		}
-		return dates;
 	}
+	
 	public Date getStartDate() {
 		return new Date(startMillis);
 	}
@@ -180,8 +208,8 @@ public class DateInterval {
         return getMillis() / DateUtils.MILLIS_PER_SECOND;
     }
     
-    public class DateIntervalList extends JFishList<Date> {
-    	
+    @SuppressWarnings("serial")
+	static public class DateIntervalList extends JFishList<Date> {
     	private DateIntervalList(){
     	}
     	
@@ -202,6 +230,28 @@ public class DateInterval {
 			});
     		return list;
     	}
+    }
+    
+    @SuppressWarnings("serial")
+	static public class NiceDateIntervalList extends JFishList<NiceDate> {
+    	private NiceDateIntervalList(){
+    	}
+    	private NiceDateIntervalList(Collection<NiceDate> dates){
+    		super(dates);
+    	}
     	
+    	public JFishList<String> format(final String pattern){
+    		final JFishList<String> list = JFishList.create();
+    		each(new NoIndexIt<NiceDate>() {
+
+				@Override
+				protected void doIt(NiceDate date) throws Exception {
+					String rs = date.format(pattern);
+					list.add(rs);
+				}
+    			
+			});
+    		return list;
+    	}
     }
 }
