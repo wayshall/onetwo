@@ -78,6 +78,30 @@ BeanToMapBuilder.newBuilder()
 ### Types 简单的值转换
 ```java   
 Long val = Types.convertValue("1", Long.class);  
+
+// 枚举转换   
+public enum EnumValues {
+    NORMAL,
+    DELETE;
+}
+EnumValues enumValue = Types.convertValue("NORMAL", EnumValues.class);
+        
+实现 EnumerableTextLabel 接口，可实现通过定义text转换
+public enum EnumValues implements EnumerableTextLabel {
+    NORMAL("正常"),
+    DELETE("已删除");
+    final private String label;
+    private EnumerableTextLabelValues(String label) {
+        this.label = label;
+    }
+    public String getLabel() {
+        return label;
+    }
+}
+
+EnumValues enumValue = Types.convertValue("正常", EnumValues.class);
+
+    
 ```
 ### MoneyConvertUtils 金额转为大写中文
 ```java   

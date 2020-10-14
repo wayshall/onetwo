@@ -19,9 +19,22 @@ public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 			return ordinal>values.length?null:values[ordinal];
 		}else{
 	        String name = value.toString();
-	        if(StringUtils.isBlank(name))
+	        if(StringUtils.isBlank(name)) {
 	        	return null;
+	        }
 //	        return Enum.valueOf((Class)componentType, name);
+	        
+	        // 如果实现了EnumerableTextLabel接口，首先尝试通过text匹配
+	        if (EnumerableTextLabel.class.isAssignableFrom(componentType)) {
+				Enum<?>[] values = (Enum<?>[]) componentType.getEnumConstants();
+				for (Enum<?> ev : values) {
+					EnumerableTextLabel label = (EnumerableTextLabel) ev;
+					if (label.getLabel().equals(name)) {
+						return ev;
+					}
+				}
+	        }
+
 	        try {
 				return Enum.valueOf((Class)componentType, name.trim());
 			} catch (IllegalArgumentException e) {
