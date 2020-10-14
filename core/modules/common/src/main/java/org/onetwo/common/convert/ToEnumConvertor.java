@@ -1,5 +1,6 @@
 package org.onetwo.common.convert;
 
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 
@@ -14,15 +15,17 @@ public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 	@Override
 	public Enum<?> doConvert(Object value, Class<?> componentType) {
 		if(Integer.class.isInstance(value)){
-			Enum<?>[] values = (Enum<?>[]) componentType.getEnumConstants();
-			int ordinal = (Integer)value;
-			return ordinal>values.length?null:values[ordinal];
+			return ordinalToEnum(value, componentType);
 		}else{
 	        String name = value.toString();
 	        if(StringUtils.isBlank(name)) {
 	        	return null;
 	        }
 //	        return Enum.valueOf((Class)componentType, name);
+	        
+	        if (LangUtils.isNumeric(name)) {
+	        	return ordinalToEnum(Integer.parseInt(name), componentType);
+	        }
 	        
 	        // 如果实现了EnumerableTextLabel接口，首先尝试通过text匹配
 	        if (EnumerableTextLabel.class.isAssignableFrom(componentType)) {
@@ -33,7 +36,7 @@ public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 						return ev;
 					}
 				}
-	        }
+	        } 
 
 	        try {
 				return Enum.valueOf((Class)componentType, name.trim());
@@ -41,6 +44,12 @@ public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 				return Enum.valueOf((Class)componentType, name.trim().toUpperCase());
 			}
 		}
+	}
+	
+	private Enum<?> ordinalToEnum(Object value, Class<?> componentType) {
+		Enum<?>[] values = (Enum<?>[]) componentType.getEnumConstants();
+		int ordinal = (Integer)value;
+		return ordinal>values.length?null:values[ordinal];
 	}
 
 }

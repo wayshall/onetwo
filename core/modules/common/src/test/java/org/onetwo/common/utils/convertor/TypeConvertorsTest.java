@@ -165,7 +165,16 @@ public enum JNamedQueryKey {
 	@Test
 	public void testEnumerableTextLabel(){
 		String enumStr = "正常";
-		EnumerableTextLabelValues enumValue = Types.convertValue(enumStr, EnumerableTextLabelValues.class);
+		EnumerableTextLabelValues enumValue = Types.convertValue("正常", EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.NORMAL);
+		
+		enumValue = Types.convertValue("NORMAL", EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.NORMAL);
+		
+		enumValue = Types.convertValue("0", EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.NORMAL);
+		
+		enumValue = Types.convertValue(0, EnumerableTextLabelValues.class);
 		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.NORMAL);
 		
 		enumStr = "已删除";

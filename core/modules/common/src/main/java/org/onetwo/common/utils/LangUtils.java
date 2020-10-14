@@ -1786,13 +1786,23 @@ abstract public class LangUtils {
 			lock.unlock();
 		}
 	}
-	
+
+	/***
+	 * 是否正整数
+	 * @author weishao zeng
+	 * @param str
+	 * @return
+	 */
+	public static boolean isNumeric(String str){
+		return org.apache.commons.lang3.StringUtils.isNumeric(str);
+	}
 
 	public static boolean isNumberObject(Object val){
 		if(val==null)
 			return false;
 		return isNumberType(val.getClass());
 	}
+	
 	public static boolean isNumberType(Class<?> clazz){
 		if(clazz==null)
 			return false;

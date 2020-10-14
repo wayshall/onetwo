@@ -85,7 +85,10 @@ public enum EnumValues {
     DELETE;
 }
 EnumValues enumValue = Types.convertValue("NORMAL", EnumValues.class);
-        
+enumValue = Types.convertValue(0, EnumValues.class);
+enumValue = Types.convertValue("0", EnumValues.class);
+enumValue = Types.convertValue("正常", EnumValues.class); // 需要实现EnumerableTextLabel接口
+
 实现 EnumerableTextLabel 接口，可实现通过定义text转换
 public enum EnumValues implements EnumerableTextLabel {
     NORMAL("正常"),
@@ -98,8 +101,6 @@ public enum EnumValues implements EnumerableTextLabel {
         return label;
     }
 }
-
-EnumValues enumValue = Types.convertValue("正常", EnumValues.class);
 
     
 ```
