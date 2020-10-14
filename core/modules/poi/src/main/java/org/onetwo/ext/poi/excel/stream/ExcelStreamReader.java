@@ -330,7 +330,7 @@ public class ExcelStreamReader {
 		}
 		public Object getCellValue(int cellnum) {
 			Cell cell = getCell(cellnum);
-			return ExcelUtils.getCellValue(cell);
+			return ExcelUtils.getCellValue(cell, true);
 		}
 		public String getString(int cellnum) {
 			return getCellValue(cellnum, String.class);

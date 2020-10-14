@@ -64,7 +64,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <scope>optional</scope>
+      <scope>provided</scope>
     </dependency>
 	
 	<!-- excel begin -->
