@@ -357,7 +357,7 @@ public class NiceDate {
 	}
 	
 	public NiceDate clone(){
-		NiceDate date = new NiceDate(this.calendar);
+		NiceDate date = new NiceDate(this.calendar.getTime());
 		date.dateType = this.dateType;
 		return date;
 	}

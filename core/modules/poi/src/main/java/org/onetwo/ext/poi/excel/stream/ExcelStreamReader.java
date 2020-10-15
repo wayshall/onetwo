@@ -359,6 +359,11 @@ public class ExcelStreamReader {
 			Date date = DateUtils.parseByPatterns(value, pattern);
 			return date;
 		}
+		public <T extends Enum<?>> T getEnum(int cellnum, Class<T> enumClass) {
+			String value = getString(cellnum);
+			T enumValue = Types.convertValue(value, enumClass);
+			return enumValue;
+		}
 		public <T> T getCellValue(int cellnum, Class<T> clazz, T def) {
 			Object value = getCellValue(cellnum);
 			return Types.asValue(value, clazz, def);

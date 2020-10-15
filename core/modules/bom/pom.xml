@@ -67,6 +67,7 @@
     <embededTomcat.version>8.0.53</embededTomcat.version>
     <tomat-jdbc.version>8.5.0</tomat-jdbc.version>
     <rocketmq-client.version>3.5.3</rocketmq-client.version>
+    <qlexpress.version>3.2.4</qlexpress.version>
     
     
     <spring-retry.version>1.1.2.RELEASE</spring-retry.version>
@@ -600,6 +601,11 @@
         <groupId>com.alibaba.rocketmq</groupId>
         <artifactId>rocketmq-client</artifactId>
         <version>${rocketmq-client.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>QLExpress</artifactId>
+      <version>${qlexpress.version}</version>
     </dependency>
     
     <!-- aliyun oss -->

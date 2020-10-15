@@ -173,7 +173,10 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		BeanWrapper bw = SpringUtils.newBeanWrapper(beanData);
 		String label = (String)bw.getPropertyValue(uiselect.getLabelField());
 		
-		if (bw.isReadableProperty(uiselect.getValueField())) {
+		if (beanData instanceof DbmEnumValueMapping) {
+			Object value = ((DbmEnumValueMapping<?>)beanData).getEnumMappingValue();
+			enumData.setValue(value);
+		} else if (bw.isReadableProperty(uiselect.getValueField())) {
 			Object value = bw.getPropertyValue(uiselect.getValueField());
 			enumData.setValue(value);
 		} else if (beanData instanceof Enum<?>){

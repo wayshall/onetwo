@@ -91,7 +91,7 @@ public class StringFreemarkerTemplateConfigurer extends DynamicFreemarkerTemplat
 			}
 			StringTemplate p = mapper.get(name);
 			if(p==null)
-				throw new BaseException("no template found: " + name);
+				throw new BaseException("template not found: " + name);
 			return p.getTemplate();
 		}
 

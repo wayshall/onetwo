@@ -5,6 +5,7 @@ import java.util.Map;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.ui.core.DefaultDUIMetaManager;
+import org.onetwo.dbm.ui.core.DefaultUIEntityMetaService;
 import org.onetwo.dbm.ui.core.DefaultUISelectDataProviderService;
 import org.onetwo.dbm.ui.json.DUIObjectMapperCustomizer;
 import org.onetwo.dbm.ui.json.ObjectNodeToStringValueWriter;
@@ -50,6 +51,11 @@ public class DbmUIConfiguration implements ImportAware {
 	@Bean
 	public DUISelectDataProviderService duiSelectDataProviderService() {
 		return new DefaultUISelectDataProviderService();
+	}
+	
+	@Bean
+	public DefaultUIEntityMetaService duiEntityMetaService() {
+		return new DefaultUIEntityMetaService();
 	}
 	
 	@Bean

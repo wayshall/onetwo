@@ -30,6 +30,12 @@ public abstract class Ftls {
 		return parser;
 	}
 	
+	/****
+	 * 快速创建一个基于freemarker的模板解释器
+	 * @author weishao zeng
+	 * @param templateProvider
+	 * @return
+	 */
 	static public TemplateParser createDynamicParser(StringTemplateProvider templateProvider) {
 		DynamicStringFreemarkerTemplateConfigurer freemarkerTemplateConfigurer = new DynamicStringFreemarkerTemplateConfigurer(templateProvider);
 		freemarkerTemplateConfigurer.initialize();

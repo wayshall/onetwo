@@ -7,8 +7,8 @@ import org.onetwo.common.utils.StringUtils;
 
 public class ToBooleanConvertor extends AbstractTypeConvert<Boolean> {
 
-	public static final List<String> FALSE_VALUES = Arrays.asList("false", "no", "是");
-	public static final List<String> TRUE_VALUES = Arrays.asList("true", "yes", "否");
+	public static final List<String> FALSE_VALUES = Arrays.asList("false", "no", "否");
+	public static final List<String> TRUE_VALUES = Arrays.asList("true", "yes", "是");
 
 	
 	public ToBooleanConvertor() {

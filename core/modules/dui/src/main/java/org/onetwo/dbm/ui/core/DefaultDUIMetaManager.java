@@ -92,9 +92,11 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 				
 
 				Map<String, Object> tableAttrs = metadataReader.getAnnotationMetadata().getAnnotationAttributes(Table.class.getName());
-				String tableName = (String)tableAttrs.get("name");
-				if (StringUtils.isNotBlank(tableName)) {
-					duiEntityTableMap.put(tableName.toLowerCase(), metadataReader.getClassMetadata().getClassName());
+				if (tableAttrs!=null) {
+					String tableName = (String)tableAttrs.get("name");
+					if (StringUtils.isNotBlank(tableName)) {
+						duiEntityTableMap.put(tableName.toLowerCase(), metadataReader.getClassMetadata().getClassName());
+					}
 				}
 			}
 			return null;
@@ -209,10 +211,12 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			throw new DbmUIException("@DUIEntity not found on the ui class: " + uiEntityClass);
 		}
 		
-		DbmMappedEntry entry = mappedEntryManager.getEntry(uiEntityClass);
+		DbmMappedEntry entry = mappedEntryManager.findEntry(uiEntityClass);
 		if (entry==null) {
-//			return null;
-			throw new DbmUIException("ui class must be a dbm entity: " + uiEntityClass);
+			entry = mappedEntryManager.getReadOnlyEntry(uiEntityClass);
+			if (entry==null) {
+				throw new DbmUIException("ui class must be a dbm entity: " + uiEntityClass);
+			}
 		}
 		
 		String entityName = uiclassAnno.name();
@@ -220,21 +224,24 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			entityName = entry.getEntityName();
 		}
 		
-		TableMeta table = databaseMetaDialet.getTableMeta(entry.getTableInfo().getName());
 		DUIEntityMeta entityMeta = new DUIEntityMeta();
 		entityMeta.setLabel(uiclassAnno.label());
 		entityMeta.setName(entityName);
 		entityMeta.setMappedEntry(entry);
-		entityMeta.setTable(table);
 		entityMeta.setDeletable(uiclassAnno.deletable());
 		entityMeta.setDetailPage(uiclassAnno.detailPage());
+		
+		if (entry.getTableInfo()!=null) {
+			TableMeta table = databaseMetaDialet.getTableMeta(entry.getTableInfo().getName());
+			entityMeta.setTable(table);
+		}
 		
 		Collection<DbmMappedField> fields = entry.getFields();
 		fields.forEach(field -> {
 			buildField(field).ifPresent(uifield -> {
 				uifield.setClassMeta(entityMeta);
-				if (uifield.getDbmField().getColumn()!=null) {
-					uifield.setColumn(table.getColumn(field.getColumn().getName()));
+				if (uifield.getDbmField().getColumn()!=null && entityMeta.getTable()!=null) {
+					uifield.setColumn(entityMeta.getTable().getColumn(field.getColumn().getName()));
 				}
 				entityMeta.addField(uifield);
 			});
