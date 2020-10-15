@@ -16,7 +16,7 @@ import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 
-abstract public class AbstractFreemarkerTemplateConfigurer{
+abstract public class AbstractFreemarkerTemplateConfigurer {
 	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
 
 	static {
