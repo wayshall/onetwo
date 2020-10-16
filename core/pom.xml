@@ -41,6 +41,7 @@
 			<modules>
                 <module>modules/spring</module>
                 <module>../../dbm</module>
+                <module>../../zifish-plugins/web-admin</module>
 			</modules>
            <build>
               <plugins>
