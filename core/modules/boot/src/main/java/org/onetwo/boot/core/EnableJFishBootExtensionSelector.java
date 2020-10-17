@@ -24,6 +24,7 @@ import org.onetwo.boot.module.cache.SpringCacheConfiguration;
 import org.onetwo.boot.module.cos.CosConfiguration;
 import org.onetwo.boot.module.dbm.BootDbmConfiguration;
 import org.onetwo.boot.module.poi.ExcelViewConfiguration;
+import org.onetwo.boot.module.qlexpress.QLExpressConfigtion;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
 import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
@@ -116,6 +117,9 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		classNames.add(ActivemqConfiguration.class.getName());
 		//activemq mqtt
 		classNames.add(ActiveMQTTConfiguration.class.getName());
+		
+		//ali qlexpress
+		classNames.add(QLExpressConfigtion.class.getName());
 		
 		
 		return classNames;
