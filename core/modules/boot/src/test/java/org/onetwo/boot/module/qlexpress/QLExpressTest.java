@@ -15,6 +15,7 @@ import com.ql.util.express.ArraySwap;
 import com.ql.util.express.DefaultContext;
 import com.ql.util.express.ExpressRunner;
 import com.ql.util.express.IExpressContext;
+import com.ql.util.express.InstructionSet;
 import com.ql.util.express.InstructionSetContext;
 import com.ql.util.express.OperateData;
 import com.ql.util.express.Operator;
@@ -53,14 +54,22 @@ public class QLExpressTest {
 	}
 	
 	@Test
-	public void testAlias() throws Exception {
+	public void testCheckSyntax() throws Exception {
 		ExpressRunner runner = new ExpressRunner();
-		DefaultContext<String, Object> context = new DefaultContext<String, Object>();
-		context.put("月销量", 110);
 		String express = "月销量>10";
-		Object r = runner.execute(express, context, null, true, false);
+		boolean r = runner.checkSyntax(express);
 		assertThat(r).isEqualTo(true);
+
+		express = "用户.id==10";
+		InstructionSet iset = runner.parseInstructionSet(express);
+		System.out.println("iset: " + iset);
 		
+
+		DefaultContext<String, Object> context = new DefaultContext<String, Object>();
+		context.put("用户", 110);
+		express = "用户.id==10";
+		r = (boolean)runner.execute(express, context, null, true, true);
+		assertThat(r).isFalse();
 	}
 	
 	@Test

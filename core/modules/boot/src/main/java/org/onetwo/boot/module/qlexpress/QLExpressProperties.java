@@ -30,4 +30,6 @@ public class QLExpressProperties {
 	 */
 	boolean precise = true;
 	boolean cache = true;
+	
+	boolean showExpression = true;
 }
