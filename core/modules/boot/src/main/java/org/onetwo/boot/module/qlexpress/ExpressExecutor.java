@@ -29,7 +29,7 @@ public class ExpressExecutor {
 	public Object execute(String expressString, IExpressContext<String,Object> context) {
 //		DefaultContext<String, Object> ctx = new DefaultContext<String, Object>();
 		if (StringUtils.isBlank(expressString)) {
-			throw new BaseException("公式不能为空");
+			throw new IllegalArgumentException("公式不能为空");
 		}
 		Object result = null;
 		if (properties.isShowExpression()) {

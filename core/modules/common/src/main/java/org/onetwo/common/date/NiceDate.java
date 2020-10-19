@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.onetwo.common.date.DateUtils.DateType;
+import org.onetwo.common.date.NiceDateRange.QuarterDateRange;
 import org.onetwo.common.utils.Assert;
 
 public class NiceDate {
@@ -62,8 +63,6 @@ public class NiceDate {
 	
 	private Calendar calendar = Calendar.getInstance();
 	
-	private DateType dateType = DateType.date;
-	
 	public NiceDate(){
 	}
 	
@@ -75,10 +74,64 @@ public class NiceDate {
 		super();
 		this.calendar = calendar;
 	}
+	
+	/***
+	 * 当前季度，第一季度为0
+	 * @author weishao zeng
+	 * @return
+	 */
+	public QuarterDateRange getCurrentQuarter() {
+		int currentMonth = getMonth() + 1;
 
-	protected void precise(DateType dateType) {
-		this.dateType = dateType;
-		atTheBeginning();
+		int quarter = 0;
+		if (currentMonth >= 1 && currentMonth <= 3) {
+			quarter = 0;
+		} else if (currentMonth >= 4 && currentMonth <= 6) {
+			quarter = 1;
+		} else if (currentMonth >= 7 && currentMonth <= 9) {
+			quarter = 2;
+		} else if (currentMonth >= 10 && currentMonth <= 12) {
+			quarter = 3;
+		}
+		QuarterDateRange currentQuarter = getQuarter(quarter);
+		return currentQuarter;
+	}
+	
+	/***
+	 * @author weishao zeng
+	 * @param quarter 从0开始
+	 * @return
+	 */
+	public QuarterDateRange getQuarter(int quarter) {
+		QuarterDateRange currentQuarter = null;
+		if (quarter==0) {
+			currentQuarter = new QuarterDateRange(quarter, atMonth(0).preciseAtMonth().atTheBeginning(), 
+													atMonth(2).preciseAtMonth().atTheEnd());
+		} else if (quarter==1) {
+			currentQuarter = new QuarterDateRange(quarter, atMonth(3).preciseAtMonth().atTheBeginning(), 
+												atMonth(5).preciseAtMonth().atTheEnd());
+		} else if (quarter==2) {
+			currentQuarter = new QuarterDateRange(quarter, atMonth(6).preciseAtMonth().atTheBeginning(), 
+					atMonth(8).preciseAtMonth().atTheEnd());
+		} else if (quarter==3) {
+			currentQuarter = new QuarterDateRange(quarter, atMonth(9).preciseAtMonth().atTheBeginning(), 
+					atMonth(11).preciseAtMonth().atTheEnd());
+		} else {
+			throw new IllegalArgumentException("error quarter : " + quarter);
+		}
+		return currentQuarter;
+	}
+	
+	public NiceDate atMonth(int month) {
+		NiceDate d = clone();
+		d.calendar.set(Calendar.MONTH, month);
+		return d;
+	}
+
+	protected PreciseNiceDate precise(DateType dateType) {
+		return new PreciseNiceDate(this, dateType);
+//		this.dateType = dateType;
+//		atTheBeginning();
 	}
 	
 	public NiceDate setTimeByString(String timeString){
@@ -119,43 +172,61 @@ public class NiceDate {
 		calendar.setTime(time);
 	}
 	
-	public NiceDate today(){
-		calendar.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-		return this;
-	}
+//	public NiceDate today(){
+//		calendar.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+//		return this;
+//	}
 	
 	public NiceDate yesterday(){
 		return nextDay(-1);
 	}
 	
 	public NiceDate nextDay(int number){
-		DateUtils.increaseDay(calendar, number);
-		return this;
+		NiceDate d = clone();
+		DateUtils.increaseDay(d.calendar, number);
+		return d;
+//		DateUtils.increaseDay(calendar, number);
+//		return this;
 	}
 	
 	public NiceDate nextHour(int amount){
-		DateUtils.addHours(calendar, amount);
-		return this;
+		NiceDate d = clone();
+		DateUtils.addHours(d.calendar, amount);
+		return d;
+//		DateUtils.addHours(calendar, amount);
+//		return this;
 	}
 	
 	public NiceDate nextMonth(int amount){
-		DateUtils.addMonth(calendar, amount);
-		return this;
+		NiceDate d = clone();
+		DateUtils.addMonth(d.calendar, amount);
+		return d;
+//		DateUtils.addMonth(calendar, amount);
+//		return this;
 	}
 	
 	public NiceDate nextYear(int amount){
-		DateUtils.addYear(calendar, amount);
-		return this;
+		NiceDate d = clone();
+		DateUtils.addYear(d.calendar, amount);
+		return d;
+//		DateUtils.addYear(calendar, amount);
+//		return this;
 	}
 	
 	public NiceDate nextMinute(int amount){
-		calendar.add(Calendar.MINUTE, amount);
-		return this;
+		NiceDate d = clone();
+		d.calendar.add(Calendar.MINUTE, amount);
+		return d;
+//		calendar.add(Calendar.MINUTE, amount);
+//		return this;
 	}
 	
 	public NiceDate nextSecond(int amount){
-		calendar.add(Calendar.SECOND, amount);
-		return this;
+		NiceDate d = clone();
+		d.calendar.add(Calendar.SECOND, amount);
+		return d;
+//		calendar.add(Calendar.SECOND, amount);
+//		return this;
 	}
 	
 	/*public NiceDate increaseDay(int numb){
@@ -169,29 +240,28 @@ public class NiceDate {
 	
 	public NiceDate atLastMomentOfDay() {
 		// 时间精确到天，的最后一刻
-		preciseAtDate().atTheEnd();
-		return this;
+		return preciseAtDate().atTheEnd();
 	}
 	
 	public NiceDate atEarliestMomentOfDay() {
 		// 时间精确到天，的最后一刻
-		preciseAtDate().atTheBeginning();
-		return this;
+		return preciseAtDate().atTheBeginning();
+//		return this;
 	}
 	
-	public NiceDate preciseAtYear(){
-		precise(DateType.year);
-		return this;
+	public PreciseNiceDate preciseAtYear(){
+		return precise(DateType.year);
+//		return this;
 	}
 	
-	public NiceDate preciseAtMonth(){
-		precise(DateType.month);
-		return this;
+	public PreciseNiceDate preciseAtMonth(){
+		return precise(DateType.month);
+//		return this;
 	}
 	
-	public NiceDate preciseAtHour(){
-		precise(DateType.hour);
-		return this;
+	public PreciseNiceDate preciseAtHour(){
+		return precise(DateType.hour);
+//		return this;
 	}
 	
 	/***
@@ -199,20 +269,21 @@ public class NiceDate {
 	 * @see #preciseDate
 	 * @return
 	 */
-	public NiceDate preciseAtDate(){
-		precise(DateType.date);
-		return this;
+	public PreciseNiceDate preciseAtDate(){
+		return precise(DateType.date);
+//		precise(DateType.date);
+//		return this;
 	}
 	
 	
-	public NiceDate preciseAtMin(){
-		precise(DateType.min);
-		return this;
+	public PreciseNiceDate preciseAtMin(){
+		return precise(DateType.min);
+//		return this;
 	}
 	
-	public NiceDate preciseAtSec(){
-		precise(DateType.sec);
-		return this;
+	public PreciseNiceDate preciseAtSec(){
+		return precise(DateType.sec);
+//		return this;
 	}
 	
 	/***
@@ -225,16 +296,6 @@ public class NiceDate {
 		return this;
 	} */
 	
-
-	public NiceDate atTheBeginning(){
-		DateUtils.accurateToBeginningAt(calendar, dateType);
-		return this;
-	}
-	
-	public NiceDate atTheEnd(){
-		DateUtils.accurateToEndAt(calendar, dateType);
-		return this;
-	}
 	
 	public NiceDate clearMillis(){
 		this.calendar.clear(Calendar.MILLISECOND);
@@ -356,9 +417,12 @@ public class NiceDate {
 		return duration;
 	}
 	
+	public Calendar getCalendar() {
+		return calendar;
+	}
+
 	public NiceDate clone(){
 		NiceDate date = new NiceDate(this.calendar.getTime());
-		date.dateType = this.dateType;
 		return date;
 	}
 	
@@ -367,4 +431,62 @@ public class NiceDate {
 		System.out.println(date.getDatePhase());
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((calendar == null) ? 0 : calendar.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NiceDate other = (NiceDate) obj;
+		if (calendar == null) {
+			if (other.calendar != null)
+				return false;
+		} else if (!calendar.equals(other.calendar))
+			return false;
+		return true;
+	}
+
+
+	/***
+	 * 设置日期对象精确到某年或某月或某天，获取某年或某月或某天的开始和结束时间
+	 * @author way
+	 *
+	 */
+	final static public class PreciseNiceDate extends NiceDate {
+		private DateType dateType = DateType.date;
+
+		public PreciseNiceDate(NiceDate niceDate, DateType dateType) {
+			super(niceDate.getTime());
+			this.dateType = dateType;
+			DateUtils.accurateToBeginningAt(getCalendar(), dateType);
+		}
+
+		final public NiceDate atTheBeginning(){
+			NiceDate d = super.clone();
+			DateUtils.accurateToBeginningAt(d.getCalendar(), dateType);
+			return d;
+		}
+		
+		final public NiceDate atTheEnd(){
+			NiceDate d = super.clone();
+			DateUtils.accurateToEndAt(d.getCalendar(), dateType);
+			return d;
+		}
+
+		final public PreciseNiceDate clone(){
+			PreciseNiceDate date = new PreciseNiceDate(this, dateType);
+			return date;
+		}
+	}
 }

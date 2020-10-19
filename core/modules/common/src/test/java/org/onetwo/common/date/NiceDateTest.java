@@ -11,10 +11,42 @@ import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.date.NiceDateRange.QuarterDateRange;
 
 
 
 public class NiceDateTest {
+	
+
+	@Test
+	public void testQuarter() throws ParseException{
+		NiceDate now = NiceDate.Now();
+		String dateTime = now.getQuarter(0).getStart().format("MM-dd HH:mm:ss");
+		System.out.println("dateTime: " + dateTime);
+		assertThat(dateTime).isEqualTo("01-01 00:00:00");
+
+		// 第三季度的下一季度，即第四季度
+		QuarterDateRange q = now.getQuarter(2).nextQuarter(1);
+		dateTime = q.getStart().format("MM-dd HH:mm:ss");
+		assertThat(dateTime).isEqualTo("10-01 00:00:00");
+		assertThat(q.getValue()).isEqualTo(3);
+		
+		q = now.getQuarter(3).nextQuarter(1);
+		dateTime = q.getStart().format("MM-dd HH:mm:ss");
+		assertThat(dateTime).isEqualTo("01-01 00:00:00");
+		assertThat(q.getValue()).isEqualTo(0);
+		
+		q = now.getQuarter(3).nextQuarter(-3);
+		dateTime = q.getStart().format("MM-dd HH:mm:ss");
+		assertThat(dateTime).isEqualTo("01-01 00:00:00");
+		assertThat(q.getValue()).isEqualTo(0);
+		
+		q = now.getQuarter(3).nextQuarter(-7);
+		dateTime = q.getStart().format("MM-dd HH:mm:ss");
+		assertThat(dateTime).isEqualTo("01-01 00:00:00");
+		assertThat(q.getValue()).isEqualTo(0);
+	}
+		
 
 	@Test
 	public void test() throws ParseException{
@@ -33,7 +65,7 @@ public class NiceDateTest {
 		Date d = sdf.parse(str);
 		System.out.println("parse:"+d.toLocaleString());
 		
-		str = NiceDate.Now().nextDay(1).atTheBeginning().formatAsDateTime();
+		str = NiceDate.Now().nextDay(1).preciseAtDate().atTheBeginning().formatAsDateTime();
 		System.out.println("next date: " + str);
 		
 	}
