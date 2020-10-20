@@ -25,18 +25,7 @@ import com.ql.util.express.instruction.op.OperatorBase;
 
 import lombok.Data;
 
-public class QLExpressTest {
-	
-	@Test
-	public void testJoinOperator() throws Exception {
-		ExpressRunner runner = new ExpressRunner(true, true);
-		DefaultContext<String, Object> context = new DefaultContext<String, Object>();
-		runner.addFunction("join",new JoinOperator());
-		Object r = runner.execute("join(1,2,3)", context, null, false, true);
-		System.out.println(r);
-//		r = runner.execute("[1,2].join(3)", context, null, false, true);
-//		System.out.println(r);
-	}
+public class ExpressExecutorTest {
 
 	@Test
 	public void testForbiddenInvokeSecurityRiskMethods() throws Exception {
@@ -115,6 +104,19 @@ public class QLExpressTest {
         System.out.println(result);
         System.out.println(context);
     }
+	
+	@Test
+	public void testJoinOperator() throws Exception {
+		ExpressRunner runner = new ExpressRunner(true, true);
+		DefaultContext<String, Object> context = new DefaultContext<String, Object>();
+		runner.addFunction("join",new JoinOperator());
+		Object r = runner.execute("join(1,2,3)", context, null, false, true);
+		System.out.println("testJoinOperator1: " + r);
+		
+		runner.addOperator("join2", new JoinOperator());
+		r = runner.execute("1 join2 2", context, null, false, true);
+		System.out.println("testJoinOperator2: " + r);
+	}
 	
 	class OperatorContextPut extends OperatorBase {
         
