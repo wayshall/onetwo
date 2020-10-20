@@ -60,10 +60,23 @@ public class DefaultRowProcessor implements RowProcessor {
 	public void setCellListener(CellListener cellListener) {
 		this.cellListener = cellListener;
 	}
+	
+	protected boolean conditionCanCreateRow(String condition, RowContextData rowContext) {
+		Boolean createRow = (Boolean)rowContext.parseValue(condition);
+		return createRow!=null && createRow;
+	}
 
 	public void processRow(RowContextData rowContext) {
 //		Sheet sheet = rowContext.getSheet();
 		RowModel rowModel = rowContext.getRowModel();
+
+		boolean hasRowCondition = StringUtils.isNotBlank(rowModel.getCondition());
+		if(hasRowCondition){
+			if (!conditionCanCreateRow(rowModel.getCondition(), rowContext)) {
+				return;
+			}
+		}
+		
 		Row row = createRow(rowContext);
 		if(rowModel.getFields()==null)
 			return ;

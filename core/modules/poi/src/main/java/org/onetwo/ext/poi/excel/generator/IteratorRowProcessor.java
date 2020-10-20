@@ -45,6 +45,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		String indexName = StringUtils.isBlank(iterator.getIndex())?"rowIndex":iterator.getIndex();
 
 //		FieldProcessor fieldProcessor = getFieldProcessor(iterator, context);
+		boolean hasRowCondition = StringUtils.isNotBlank(iterator.getCondition());
 		for (Object ele = null; it.hasNext(); index++) {
 //			UtilTimerStack.push(iterator.getName());
 			if(index%1000==0)
@@ -55,13 +56,21 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 //			UtilTimerStack.push(pname);
 			ele = it.next();
 			rowContext.setCurrentRowObject(ele);
-			Row row = createRow(rowContext);
-			rowContext.setCurrentRow(row);
 			
+
 			if(context!=null){
 				context.put(iterator.getName(), ele);
 				context.put(indexName, index);
 			}
+			if(hasRowCondition){
+				if(!conditionCanCreateRow(iterator.getCondition(), rowContext)){
+					continue;
+				}
+			}
+			
+			Row row = createRow(rowContext);
+			rowContext.setCurrentRow(row);
+			
 //			UtilTimerStack.pop(pname);
 
 			FieldModel field = null;

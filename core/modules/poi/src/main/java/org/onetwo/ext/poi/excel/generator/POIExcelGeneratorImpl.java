@@ -291,12 +291,12 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 					UtilTimerStack.push(rowname);
 				}*/
 //				Object dataSourceValue = getExcelValueParser().parseValue(row.getDatasource(), null, null);A
-				if(StringUtils.isNotBlank(row.getCondition())){
-					Boolean createRow = (Boolean)sheetData.parseValue(row.getCondition());
-					if(createRow==null || !createRow){
-						continue;
-					}
-				}
+//				if(StringUtils.isNotBlank(row.getCondition())){
+//					Boolean createRow = (Boolean)sheetData.parseValue(row.getCondition());
+//					if(createRow==null || !createRow){
+//						continue;
+//					}
+//				}
 				RowContextData datacontext = createRowDataContext(sheetData, row);
 				this.rowProcessors.get(row.getType()).processRow(datacontext);
 				/*if(printTime){
