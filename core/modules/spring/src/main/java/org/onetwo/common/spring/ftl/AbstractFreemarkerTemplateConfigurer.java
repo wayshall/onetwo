@@ -81,6 +81,8 @@ abstract public class AbstractFreemarkerTemplateConfigurer {
 				this.configuration.setTemplateLoader(loader);
 			}*/
 			this.configuration.setTemplateLoader(loader);
+			// 关闭本地化查找，即不根据local查找模板
+			this.configuration.setLocalizedLookup(false);
 			
 			this.buildConfigration(this.configuration);
 			
