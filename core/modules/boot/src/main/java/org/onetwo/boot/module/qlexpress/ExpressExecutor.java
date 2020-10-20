@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 
 import com.ql.util.express.DefaultContext;
 import com.ql.util.express.ExpressRunner;
+import com.ql.util.express.Operator;
 
 /**
  * @author weishao zeng
@@ -28,6 +29,45 @@ public class ExpressExecutor {
 		this.properties = properties;
 	}
 	
+	public ExpressExecutor addOperator(String name, Operator op) {
+		return addOperator(name, "*", op);
+	}
+	
+	/****
+	 * 添加操作符
+	 * @author weishao zeng
+	 * @param name
+	 * @param aRefOpername
+	 * @param op
+	 * @return
+	 */
+	public ExpressExecutor addOperator(String name,String aRefOpername,Operator op) {
+		try {
+			this.expressRunner.addOperator(name, aRefOpername, op);
+		} catch (Exception e) {
+			throw new ServiceException("添加自定义操作符错误：" + name);
+		}
+		return this;
+	}
+	
+	public ExpressExecutor addFunction(String name, Operator op) {
+		try {
+			this.expressRunner.addFunction(name, op);
+		} catch (Exception e) {
+			throw new ServiceException("添加自定义操作符错误：" + name);
+		}
+		return this;
+	}
+	
+
+	public ExpressExecutor addOperatorWithAlias(String keyWordName, String realKeyWordName) {
+		try {
+			this.expressRunner.addOperatorWithAlias(keyWordName, realKeyWordName, null);
+		} catch (Exception e) {
+			throw new ServiceException("添加操作符别名错误, keyWordName: " + keyWordName + ", realKeyWordName: " + realKeyWordName);
+		}
+		return this;
+	}
 
 	public Object execute(String expressString, Map<String,Object> context) {
 		DefaultContext<String, Object> calcContext = new DefaultContext<String, Object>();
@@ -74,4 +114,9 @@ public class ExpressExecutor {
 			throw new BaseException("ql syntax error: " + expressString);
 		}
 	}
+
+	public ExpressRunner getExpressRunner() {
+		return expressRunner;
+	}
+	
 }
