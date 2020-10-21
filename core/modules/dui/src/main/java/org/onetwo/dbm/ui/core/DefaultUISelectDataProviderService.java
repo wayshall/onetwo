@@ -75,7 +75,13 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 				.orElse("");
 	}
 	
-	protected Object getCompareValue(DUISelectMeta uiselect, Object value) {
+	/***
+	 * 枚举类型时，根据配置获取对象实际需要比较的值
+	 * @param uiselect
+	 * @param value
+	 * @return
+	 */
+	public Object getCompareValue(DUISelectMeta uiselect, Object value) {
 		Object compareValue = value;
 		if (uiselect.useEnumData()) {
 			DbmMappedField dbmField = uiselect.getField().getDbmField();

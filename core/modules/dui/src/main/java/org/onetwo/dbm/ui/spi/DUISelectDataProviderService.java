@@ -28,4 +28,6 @@ public interface DUISelectDataProviderService {
 	 */
 	Object getListValue(DUISelectMeta uiselect, Object value);
 	
+	Object getCompareValue(DUISelectMeta uiselect, Object value);
+	
 }
