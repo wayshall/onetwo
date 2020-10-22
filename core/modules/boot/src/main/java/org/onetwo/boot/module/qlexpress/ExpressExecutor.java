@@ -88,7 +88,7 @@ public class ExpressExecutor {
 		try {
 			result = this.expressRunner.execute(expressString, calcContext, null, properties.isCache(), properties.isTrace());
 		} catch (Exception e) {
-			throw new BaseException("execute ql error, expression: " + expressString + ", message: " + e.getMessage(), e);
+			throw new ServiceException("execute ql error, expression: " + expressString + ", message: " + e.getMessage(), e);
 		}
 		return result;
 	}
