@@ -98,7 +98,7 @@ public class ExpressExecutor {
 		try {
 			varNames = expressRunner.getOutVarNames(expressString);
 		} catch (Exception e) {
-			throw new ServiceException("getOutVarNames error for expression: " + expressString);
+			throw new ServiceException("表达式[" + expressString + "]语法可能有错: " + e.getMessage(), e);
 		}
 		for (String varName : varNames) {
 			if (!calcContext.containsKey(varName)) {
