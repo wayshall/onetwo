@@ -7,6 +7,7 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -19,6 +20,15 @@ import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
+	
+
+	@Test
+	public void testJoinMap() {
+		Map<String, String> map = CUtils.asLinkedMap("test1", "1", "test2", 2);
+		String res = StringUtils.join(map, ":", "-");
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("test1:1-test2:2");
+	}
 
 	@Test
 	public void testEllipsis() {

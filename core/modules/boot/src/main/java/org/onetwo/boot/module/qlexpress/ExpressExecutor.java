@@ -102,7 +102,7 @@ public class ExpressExecutor {
 		}
 		for (String varName : varNames) {
 			if (!calcContext.containsKey(varName)) {
-				throw new ServiceException("变量未定义：" + varName);
+				throw new ServiceException("表达式[" + expressString + "]有错，变量未定义：" + varName);
 			}
 		}
 	}
