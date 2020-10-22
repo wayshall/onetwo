@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.dbm.mapping.DbmEnumIntMapping;
 import org.onetwo.dbm.ui.meta.DUIEntityMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta;
 import org.onetwo.dbm.ui.meta.DUIFieldMeta.DUISelectMeta;
@@ -24,6 +25,53 @@ public class DUISelectFieldJsonSerializer extends JsonSerializer<Object> {
 			return ;
 		}
     	
+    	boolean writeValue = writeValue(value, jgen);
+//    	if (!writeValue) {
+//    		jgen.writeString(value.toString());
+//		}
+//		else {
+//    		jgen.writeString(value.toString());
+//    	}
+		
+		Object object = jgen.getOutputContext().getCurrentValue();
+		String fieldName = jgen.getOutputContext().getCurrentName();
+		if (object==null || fieldName==null) {
+			if (!writeValue) {
+				jgen.writeString(value.toString());
+			}
+			return ;
+		}
+		
+		Optional<DUIEntityMeta> meta = getDUIMetaManager().find(object.getClass());
+		if (!meta.isPresent()) {
+			if (!writeValue) {
+				jgen.writeString(value.toString());
+			}
+			return ;
+		} 
+		
+		DUIFieldMeta field = meta.get().getField(fieldName);
+		if (StringUtils.isNotBlank(field.getListField()) && field.getSelect()!=null) {
+			DUISelectMeta uiselect = field.getSelect();
+			
+			if (!writeValue) {
+				Object selectedValue = getUISelectDataProviderService(uiselect).getCompareValue(uiselect, value);
+				if (!writeValue(selectedValue, jgen)) {
+					jgen.writeString(selectedValue.toString());
+				}
+			}
+			
+			Object label = getUISelectDataProviderService(uiselect).getListValue(uiselect, value);
+			jgen.writeStringField(field.getListField(), label==null?"":label.toString());
+		} else {
+			if (!writeValue) {
+				jgen.writeString(value.toString());
+			}
+		}
+    }
+    
+    protected boolean writeValue(Object value, JsonGenerator jgen) throws IOException {
+    	boolean hasWrite = true;
     	if (value instanceof Boolean) {
     		jgen.writeBoolean((Boolean)value);
     	} else if (value instanceof Double) {
@@ -32,33 +80,14 @@ public class DUISelectFieldJsonSerializer extends JsonSerializer<Object> {
     		jgen.writeNumber((Integer)value);
     	} else if (value instanceof Float) {
     		jgen.writeNumber((Float)value);
-		} /*
-			 * else if (value instanceof Long) { jgen.writeNumber((Long)value); } else if
-			 * (value instanceof BigDecimal) { jgen.writeNumber((BigDecimal)value); }
-			 */ 
-    	else {
-    		// long 等类型的精度在前端js会丢失，统一序列化为string
-    		jgen.writeString(value.toString());
-    	}
-		
-		Object object = jgen.getOutputContext().getCurrentValue();
-		String fieldName = jgen.getOutputContext().getCurrentName();
-		if (object==null || fieldName==null) {
-			return ;
+		} else if (value instanceof DbmEnumIntMapping) {
+    		jgen.writeNumber(((DbmEnumIntMapping)value).getMappingValue());
+		} else {
+			hasWrite = false;
 		}
-		
-		Optional<DUIEntityMeta> meta = getDUIMetaManager().find(object.getClass());
-		if (!meta.isPresent()) {
-			return ;
-		} 
-		
-		DUIFieldMeta field = meta.get().getField(fieldName);
-		if (StringUtils.isNotBlank(field.getListField()) && field.getSelect()!=null) {
-			DUISelectMeta uiselect = field.getSelect();
-			Object label = getUISelectDataProviderService(uiselect).getListValue(uiselect, value);
-			jgen.writeStringField(field.getListField(), label==null?"":label.toString());
-		}
+    	return hasWrite;
     }
+    
 
 	protected DUIMetaManager getDUIMetaManager() {
 		return Springs.getInstance().getBean(DUIMetaManager.class);
