@@ -16,6 +16,7 @@ import org.onetwo.boot.core.web.async.MvcAsyncProperties;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
+import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
@@ -26,6 +27,7 @@ import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.mvc.args.WebAttributeArgumentResolver;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.spring.mvc.DbmIntStringValueToEnumConverterFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -188,7 +190,11 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
 		registry.removeConvertible(String.class, Enum.class);
-		registry.addConverterFactory(new IntStringValueToEnumConverterFactory());
+		if (BootUtils.isEnableDbmPresent()) {
+			registry.addConverterFactory(new DbmIntStringValueToEnumConverterFactory());
+		} else {
+			registry.addConverterFactory(new IntStringValueToEnumConverterFactory());
+		}
 		registry.addConverterFactory(new IntegerToEnumConverterFactory());
 		
 		registry.addConverterFactory(new StringToMapConverterFactory());

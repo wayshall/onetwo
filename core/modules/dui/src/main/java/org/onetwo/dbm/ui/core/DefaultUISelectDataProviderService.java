@@ -47,7 +47,7 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		if (uiselect==null) {
 			throw new DbmUIException("ui select not found, entity name: " + request.getEntity() + ", field: " + request.getField());
 		}
-		return getDatas(uiselect, request);
+		return getDatas(uifield, request);
 	}
 	
 	/***
@@ -58,7 +58,8 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Object getListValue(DUISelectMeta uiselect, Object value) {
+	public Object getListValue(DUIFieldMeta field, Object value) {
+		DUISelectMeta uiselect = field.getSelect();
 		if (uiselect.isTreeSelect()) {
 			return "";
 		}
@@ -66,8 +67,8 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		UISelectDataRequest request = new UISelectDataRequest();
 //		request.setQuery(value==null?null:value.toString());
 		request.setSelectedValue(value==null?null:value.toString());
-		List<EnumDataVO> list = (List<EnumDataVO>)getDatas(uiselect, request);
-		Object compareValue = getCompareValue(uiselect, value);		
+		List<EnumDataVO> list = (List<EnumDataVO>)getDatas(field, request);
+		Object compareValue = getCompareValue(field, value);		
 		return list.stream()
 				.filter(d -> d.getValue().equals(compareValue))
 				.findAny()
@@ -81,7 +82,8 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 	 * @param value
 	 * @return
 	 */
-	public Object getCompareValue(DUISelectMeta uiselect, Object value) {
+	public Object getCompareValue(DUIFieldMeta field, Object value) {
+		DUISelectMeta uiselect = field.getSelect();
 		Object compareValue = value;
 		if (uiselect.useEnumData()) {
 			DbmMappedField dbmField = uiselect.getField().getDbmField();
@@ -99,14 +101,15 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 	}
 	
 //	public List<?> getDatas(DUISelectMeta uiselect, Object query, boolean loadById) {
-	public List<?> getDatas(DUISelectMeta uiselect, UISelectDataRequest request) {
+	public List<?> getDatas(DUIFieldMeta field, UISelectDataRequest request) {
+		DUISelectMeta uiselect = field.getSelect();
 		if (uiselect.useEnumData()) {
 			Enum<?>[] values = (Enum<?>[]) uiselect.getDataEnumClass().getEnumConstants();
 //			DataBase[] vals = DataBase.class.getEnumConstants();
 			List<EnumDataVO> list = Stream.of(values).filter(ev -> {
 				return !ArrayUtils.contains(uiselect.getExcludeEnumNames(), ev.name());
 			}).map(ev -> {
-				EnumDataVO data = toEnumDataVO(uiselect, ev);
+				EnumDataVO data = toEnumDataVO(field, ev);
 				return data;
 			}).collect(Collectors.toList());
 			return list;
@@ -125,7 +128,7 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 				return dataProvider.findDatas(queryRequest);
 			} else {
 				return dataProvider.findDatas(queryRequest)
-								.stream().map(d -> toEnumDataVO(uiselect, d))
+								.stream().map(d -> toEnumDataVO(field, d))
 								.collect(Collectors.toList());
 			}
 			
@@ -133,9 +136,9 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 			boolean loadById = (StringUtils.isBlank(request.getQuery()) || request.isInitQuery()) && 
 								StringUtils.isNotBlank(request.getSelectedValue());
 			if (loadById) {
-				return _this.findByValueField(uiselect, request.getSelectedValue());
+				return _this.findByValueField(field, request.getSelectedValue());
 			} else {
-				return _this.queryFromCascade(uiselect, request.isInitQuery()?null:request.getQuery());
+				return _this.queryFromCascade(field, request.isInitQuery()?null:request.getQuery());
 			}
 		}else {
 			throw new DbmUIException("Neither enum nor dataProvider, field: " + uiselect.getField().getName());
@@ -143,7 +146,8 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 	}
 	
 	@Transactional
-	public List<EnumDataVO> findByValueField(DUISelectMeta uiselect, Object value) {
+	public List<EnumDataVO> findByValueField(DUIFieldMeta field, Object value) {
+		DUISelectMeta uiselect = field.getSelect();
 		List<EnumDataVO> dataList = baseEntityManager.from(uiselect.getCascadeEntity())
 				.where()
 					.field(uiselect.getValueField())
@@ -153,13 +157,14 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 				.limit(0, 10)
 				.toQuery().list()
 				.stream().map(e -> {
-					return toEnumDataVO(uiselect, e);
+					return toEnumDataVO(field, e);
 				}).collect(Collectors.toList());
 		return dataList;
 	}
 	
 	@Transactional
-	public List<EnumDataVO> queryFromCascade(DUISelectMeta uiselect, String query) {
+	public List<EnumDataVO> queryFromCascade(DUIFieldMeta field, String query) {
+		DUISelectMeta uiselect = field.getSelect();
 		List<EnumDataVO> dataList = baseEntityManager.from(uiselect.getCascadeEntity())
 				.where()
 					.field(uiselect.getCascadeQueryFields())
@@ -169,20 +174,26 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 				.limit(0, 10)
 				.toQuery().list()
 				.stream().map(e -> {
-					return toEnumDataVO(uiselect, e);
+					return toEnumDataVO(field, e);
 				}).collect(Collectors.toList());
 		return dataList;
 	}
 
-	private EnumDataVO toEnumDataVO(DUISelectMeta uiselect, Object beanData) {
+	private EnumDataVO toEnumDataVO(DUIFieldMeta field, Object beanData) {
+		DUISelectMeta uiselect = field.getSelect();
 		EnumDataVO enumData = new EnumDataVO();
 		BeanWrapper bw = SpringUtils.newBeanWrapper(beanData);
 		String label = (String)bw.getPropertyValue(uiselect.getLabelField());
 		
-		if (beanData instanceof DbmEnumValueMapping) {
-			Object value = ((DbmEnumValueMapping<?>)beanData).getEnumMappingValue();
+		if (field.getDbmField()!=null && field.getDbmField().isEnumerated()) {
+			Object value = field.getDbmField().getActualStoreValue(beanData);
 			enumData.setValue(value);
-		} else if (bw.isReadableProperty(uiselect.getValueField())) {
+		} 
+//		else if (beanData instanceof DbmEnumValueMapping) {
+//			Object value = ((DbmEnumValueMapping<?>)beanData).getEnumMappingValue();
+//			enumData.setValue(value);
+//		} 
+		else if (bw.isReadableProperty(uiselect.getValueField())) {
 			Object value = bw.getPropertyValue(uiselect.getValueField());
 			enumData.setValue(value);
 		} else if (beanData instanceof Enum<?>){

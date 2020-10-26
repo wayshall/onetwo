@@ -29,6 +29,9 @@ public class IntStringValueToEnumConverterFactory implements ConverterFactory<St
 		}
 
 		public T convert(String source) {
+			if (source.length() == 0) {
+				return null;
+			}
 			if(ValueEnum.class.isAssignableFrom(enumType)){
 				Class<T> genericClass = (Class<T>)TypeResolver.resolveRawArgument(ValueEnum.class, enumType);
 				T value = Types.convertValue(source, genericClass);
@@ -42,18 +45,17 @@ public class IntStringValueToEnumConverterFactory implements ConverterFactory<St
 				} 
 				return (T) val;*/
 			}else{
-				if (source.length() == 0) {
-					return null;
-				}
-				try {
-					return (T) Enum.valueOf(this.enumType, source.trim());
-				} catch (IllegalArgumentException e) {
-					try {
-						return (T) Enum.valueOf(this.enumType, source.trim().toUpperCase());
-					} catch (IllegalArgumentException e2) {
-						throw e;
-					}
-				}
+				T enumValue = Types.convertValue(source, enumType);
+				return enumValue;
+//				try {
+//					return (T) Enum.valueOf(this.enumType, source.trim());
+//				} catch (IllegalArgumentException e) {
+//					try {
+//						return (T) Enum.valueOf(this.enumType, source.trim().toUpperCase());
+//					} catch (IllegalArgumentException e2) {
+//						throw e;
+//					}
+//				}
 			}
 		}
 	}

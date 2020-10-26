@@ -22,6 +22,7 @@ final public class BootUtils {
 	private static final Logger logger = JFishLoggerFactory.getLogger(BootUtils.class);
 	
 
+	private final static boolean isEnableDbmPresent = ClassUtils.isPresent("org.onetwo.dbm.spring.EnableDbm", ClassUtils.getDefaultClassLoader());
 	private static final boolean isHystrixErrorPresent = ClassUtils.isPresent("com.netflix.hystrix.exception.HystrixRuntimeException", null);
 	
 	public static final int WEBAPP_INITIALIZER_ORDER = -1000;
@@ -32,6 +33,10 @@ final public class BootUtils {
 		
 
 	private BootUtils(){
+	}
+
+	public static boolean isEnableDbmPresent() {
+		return isEnableDbmPresent;
 	}
 
 	public static void asyncInit(Runnable task){

@@ -1,6 +1,6 @@
 package org.onetwo.dbm.ui.spi;
 
-import org.onetwo.dbm.ui.meta.DUIFieldMeta.DUISelectMeta;
+import org.onetwo.dbm.ui.meta.DUIFieldMeta;
 import org.onetwo.dbm.ui.vo.UISelectDataRequest;
 
 /**
@@ -26,8 +26,8 @@ public interface DUISelectDataProviderService {
 	 * @param value
 	 * @return
 	 */
-	Object getListValue(DUISelectMeta uiselect, Object value);
+	Object getListValue(DUIFieldMeta field, Object value);
 	
-	Object getCompareValue(DUISelectMeta uiselect, Object value);
+	Object getCompareValue(DUIFieldMeta field, Object value);
 	
 }

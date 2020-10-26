@@ -55,13 +55,13 @@ public class DUISelectFieldJsonSerializer extends JsonSerializer<Object> {
 			DUISelectMeta uiselect = field.getSelect();
 			
 			if (!writeValue) {
-				Object selectedValue = getUISelectDataProviderService(uiselect).getCompareValue(uiselect, value);
+				Object selectedValue = getUISelectDataProviderService(uiselect).getCompareValue(field, value);
 				if (!writeValue(selectedValue, jgen)) {
 					jgen.writeString(selectedValue.toString());
 				}
 			}
 			
-			Object label = getUISelectDataProviderService(uiselect).getListValue(uiselect, value);
+			Object label = getUISelectDataProviderService(uiselect).getListValue(field, value);
 			jgen.writeStringField(field.getListField(), label==null?"":label.toString());
 		} else {
 			if (!writeValue) {
