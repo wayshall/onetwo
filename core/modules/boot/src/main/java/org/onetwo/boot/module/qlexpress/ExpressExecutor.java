@@ -88,7 +88,7 @@ public class ExpressExecutor {
 		try {
 			result = this.expressRunner.execute(expressString, calcContext, null, properties.isCache(), properties.isTrace());
 		} catch (Exception e) {
-			throw new BaseException("execute ql error, expression: " + expressString + ", message: " + e.getMessage(), e);
+			throw new ServiceException("execute ql error, expression: " + expressString + ", message: " + e.getMessage(), e);
 		}
 		return result;
 	}
@@ -98,11 +98,11 @@ public class ExpressExecutor {
 		try {
 			varNames = expressRunner.getOutVarNames(expressString);
 		} catch (Exception e) {
-			throw new ServiceException("getOutVarNames error for expression: " + expressString);
+			throw new ServiceException("表达式[" + expressString + "]语法可能有错: " + e.getMessage(), e);
 		}
 		for (String varName : varNames) {
 			if (!calcContext.containsKey(varName)) {
-				throw new ServiceException("变量未定义：" + varName);
+				throw new ServiceException("表达式[" + expressString + "]有错，变量未定义：" + varName);
 			}
 		}
 	}

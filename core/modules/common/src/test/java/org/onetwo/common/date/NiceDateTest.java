@@ -65,9 +65,21 @@ public class NiceDateTest {
 		Date d = sdf.parse(str);
 		System.out.println("parse:"+d.toLocaleString());
 		
-		str = NiceDate.Now().nextDay(1).preciseAtDate().atTheBeginning().formatAsDateTime();
-		System.out.println("next date: " + str);
+		str = NiceDate.New(date).preciseAtMonth().atTheEnd().formatAsDateTime();
+		System.out.println("preciseAtMonth: " + str);
+		Assert.assertEquals("2015-11-30 23:59:59", str);
 		
+		str = NiceDate.New(date).preciseAtHour().atTheEnd().formatAsDateTime();
+		System.out.println("preciseAtHour: " + str);
+		Assert.assertEquals("2015-11-11 11:59:59", str);
+		
+		str = NiceDate.New(date).preciseAtDate().atTheBeginning().formatAsDateTime();
+		System.out.println("preciseAtDate: " + str);
+		Assert.assertEquals("2015-11-11 00:00:00", str);
+
+		str = NiceDate.New(date).preciseAtHour().atTheBeginning().formatAsDateTime();
+		System.out.println("preciseAtHour: " + str);
+		Assert.assertEquals("2015-11-11 11:00:00", str);
 	}
 
 	@Test

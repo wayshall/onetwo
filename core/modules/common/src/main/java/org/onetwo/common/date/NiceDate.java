@@ -1,6 +1,7 @@
 package org.onetwo.common.date;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,11 @@ public class NiceDate {
 
 	public static NiceDate Now(){
 		return new NiceDate(DateUtils.now());
+	}
+
+	public static NiceDate New(LocalDateTime localDateTime){
+		Assert.notNull(localDateTime);
+		return new NiceDate(Dates.toDate(localDateTime));
 	}
 
 	public static NiceDate New(Date date){
@@ -472,12 +478,30 @@ public class NiceDate {
 			DateUtils.accurateToBeginningAt(getCalendar(), dateType);
 		}
 
+		/***
+		 * 根据被精确到的DateType类型，设置对应的开始时间
+		 * 如
+		 * DateType为DateType.date，则开始时间类似：2020-10-26 00:00:00
+		 * DateType为DateType.hour，则开始时间类似：2020-10-26 11:00:00
+		 * DateType为DateType.min，则开始时间类似：2020-10-26 11:11:00
+		 * @author weishao zeng
+		 * @return
+		 */
 		final public NiceDate atTheBeginning(){
 			NiceDate d = super.clone();
 			DateUtils.accurateToBeginningAt(d.getCalendar(), dateType);
 			return d;
 		}
 		
+		/****
+		 * 根据被精确到的DateType类型，设置对应的开始时间
+		 * 如
+		 * DateType为DateType.month，则开始时间类似：2020-10-31 23:59:59
+		 * DateType为DateType.date，则开始时间类似：2020-10-26 23:59:59
+		 * DateType为DateType.hour，则开始时间类似：2020-10-26 11:59:59
+		 * @author weishao zeng
+		 * @return
+		 */
 		final public NiceDate atTheEnd(){
 			NiceDate d = super.clone();
 			DateUtils.accurateToEndAt(d.getCalendar(), dateType);
