@@ -11,7 +11,7 @@ public class Slf4jTimeLogger implements TimeLogger {
 
 	public Slf4jTimeLogger() {
 //		this.logger = null;
-		logger = JFishLoggerFactory.getLogger(Slf4jTimeLogger.class);
+		logger = JFishLoggerFactory.getLogger(TimeLogger.class);
 	}
 	
 	public Slf4jTimeLogger(Logger logger) {
@@ -25,7 +25,7 @@ public class Slf4jTimeLogger implements TimeLogger {
 		if(logger==null || NOPLogger.class.isInstance(logger)){
 			logger = JFishLoggerFactory.getLogger(logSource);
 		}
-		logger.info("\n"+msg, args);
+		logger.info(msg, args);
 	}
 
 	public Logger getLogger() {
