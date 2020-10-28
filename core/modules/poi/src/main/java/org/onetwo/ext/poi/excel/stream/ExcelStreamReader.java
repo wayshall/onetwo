@@ -14,8 +14,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.poi.utils.ExcelUtils;
+import org.slf4j.Logger;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -114,6 +118,25 @@ public class ExcelStreamReader {
 				throw new BaseException("import data file error: " + e.getMessage(), e);
 			}
 		}
+		
+		public void from(MultipartFile dataFile, boolean transtoFile) {
+			if (!transtoFile) {
+				from(dataFile);
+			}
+			String tempPath = FileUtils.getJavaIoTmpdir(true) + LangUtils.randomUUID() + "." + FileUtils.getExtendName(dataFile.getOriginalFilename());
+			Logger logger = JFishLoggerFactory.getCommonLogger();
+			if (logger.isInfoEnabled()) {
+				logger.info("MultipartFile transfer to dest file: {}", tempPath);
+			}
+			File dest = new File(tempPath);
+			try {
+				dataFile.transferTo(dest);
+				build().from(dest, null);
+			} catch (IOException e) {
+				throw new BaseException("import data file error: " + e.getMessage(), e);
+			}
+		}
+		
 		public ExcelStreamReader build() {
 			ExcelStreamReader reader = new ExcelStreamReader(sheetReaders);
 			return reader;
