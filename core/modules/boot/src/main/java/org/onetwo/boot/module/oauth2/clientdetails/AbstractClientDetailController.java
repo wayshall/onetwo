@@ -20,11 +20,11 @@ public class AbstractClientDetailController extends AbstractBaseController {
 		return opt.orElseThrow(()->new ServiceException(OAuth2Errors.CLIENT_ACCESS_TOKEN_NOT_FOUND));
 	}
 	
-	protected <T extends ClientDetails> Optional<T> getCurrentClientDetail(Class<T> clazz){
+	protected <T extends OAuth2ClientDetail> Optional<T> getCurrentClientDetail(Class<T> clazz){
 		return getOauth2ClientDetailManager().getCurrentClientDetail();
 	}
 	
-	protected <T extends ClientDetails> T requiredCurrentClientDetail(Class<T> clazz){
+	protected <T extends OAuth2ClientDetail> T requiredCurrentClientDetail(Class<T> clazz){
 		Optional<T> opt = getOauth2ClientDetailManager().getCurrentClientDetail();
 		return opt.map(d -> clazz.cast(d)).orElseThrow(()->new ServiceException(OAuth2Errors.CLIENT_ACCESS_TOKEN_NOT_FOUND));
 	}
