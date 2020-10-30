@@ -81,7 +81,7 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     @DUIInput(type=DUIInput.InputTypes.TEXTAREA)
         </#if>
     </#if>
-    @DUIField(label = "${(column.comments[0])!''}", order = ${column?counter})
+    @DUIField(label = "${(column.comments[0])!''}", order = ${column?counter}0)
     ${column.mappingJavaClassLabel} ${column.propertyName};
     
 </#if>
