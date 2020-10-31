@@ -2,8 +2,10 @@ package org.onetwo.common.date;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.onetwo.common.date.DateUtils.DateType;
@@ -368,8 +370,16 @@ public class NiceDate {
 	}
 
 	public String format(String format){
-		return DateUtils.format(format, calendar.getTime());
+//		return DateUtils.format(format, calendar.getTime());
+		return format(format, null);
 	}
+
+	public String format(String format, Locale locale){
+		DateTimeFormatter formatter = locale==null?DateTimeFormatter.ofPattern(format):DateTimeFormatter.ofPattern(format, locale);
+		LocalDateTime ldt = Dates.toLocalDateTime(calendar.getTime());
+		return ldt.format(formatter);
+	}
+	
 	public String formatAsDate(){
 		return DateUtils.formatDate(calendar.getTime());
 	}

@@ -31,6 +31,7 @@ import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
 import org.onetwo.boot.module.session.BootSpringSessionConfiguration;
 import org.onetwo.boot.module.sftp.SftpConfiguration;
 import org.onetwo.boot.module.swagger.SwaggerConfiguration;
+import org.onetwo.boot.module.timer.TimerConfiguration;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.context.AbstractImportSelector;
@@ -120,6 +121,8 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		
 		//ali qlexpress
 		classNames.add(QLExpressConfigtion.class.getName());
+		
+		classNames.add(TimerConfiguration.class.getName());
 		
 		
 		return classNames;
