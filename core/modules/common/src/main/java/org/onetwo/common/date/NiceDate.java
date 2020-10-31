@@ -229,6 +229,14 @@ public class NiceDate {
 //		return this;
 	}
 	
+	public NiceDate nextWeek(int amount){
+		NiceDate d = clone();
+		d.calendar.add(Calendar.WEEK_OF_MONTH, amount);
+		return d;
+//		calendar.add(Calendar.MINUTE, amount);
+//		return this;
+	}
+	
 	public NiceDate nextSecond(int amount){
 		NiceDate d = clone();
 		d.calendar.add(Calendar.SECOND, amount);
