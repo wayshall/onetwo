@@ -28,8 +28,10 @@ public class PasswordEncoderTest {
 
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		result = encoder.encode(pwd);
-		System.out.println("BCryptPasswordEncoder result: " + result);
+		System.out.println("BCryptPasswordEncoder result1: " + result);
 		assertThat(saltEncoder.matches(pwd, result));
+		result = encoder.encode(pwd);
+		System.out.println("BCryptPasswordEncoder result2: " + result);
 
 		result = saltEncoder.encode(pwd);
 		System.out.println("result: " + result);
