@@ -20,15 +20,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import ognl.Ognl;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.ooxml.POIXMLDocument;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -56,6 +55,8 @@ import org.springframework.core.io.Resource;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+
+import ognl.Ognl;
 
 abstract public class ExcelUtils {
 	private final static Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
@@ -200,23 +201,24 @@ abstract public class ExcelUtils {
 		}*/
 		
 		if(value==null){
-			cell.setCellType(Cell.CELL_TYPE_BLANK);
+//			cell.setCellType(Cell.CELL_TYPE_BLANK);
+			cell.setBlank();
 			return ;
 		}
 		if(Number.class.isInstance(value)){
-			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+//			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			cell.setCellValue(((Number)value).doubleValue());
 		}else if(String.class.isInstance(value)){
-			cell.setCellType(Cell.CELL_TYPE_STRING);
+//			cell.setCellType(Cell.CELL_TYPE_STRING);
 			cell.setCellValue(value.toString());
 		}else if(Boolean.class.isInstance(value)){
-			cell.setCellType(Cell.CELL_TYPE_BOOLEAN);
+//			cell.setCellType(Cell.CELL_TYPE_BOOLEAN);
 			cell.setCellValue((Boolean)value);
 		}else if(Date.class.isInstance(value)){
-			cell.setCellType(Cell.CELL_TYPE_FORMULA);
+//			cell.setCellType(Cell.CELL_TYPE_FORMULA);
 			cell.setCellValue((Date)value);
 		}else if(Calendar.class.isInstance(value)){
-			cell.setCellType(Cell.CELL_TYPE_FORMULA);
+//			cell.setCellType(Cell.CELL_TYPE_FORMULA);
 			cell.setCellValue((Calendar)value);
 		}else{
 			HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
@@ -232,7 +234,7 @@ abstract public class ExcelUtils {
 		}
 		if(cell==null)
 			return null;
-		cell.setCellType(Cell.CELL_TYPE_STRING);
+		cell.setCellType(CellType.STRING);
 		String value = StringUtils.trimToEmpty(cell.getStringCellValue());
 		return value;
 	}
@@ -240,18 +242,18 @@ abstract public class ExcelUtils {
 	public static Object getCellValue(Cell cell){
 		if(cell==null)
 			return null;
-		int type = cell.getCellType();
+		CellType type = cell.getCellType();
 		Object value = null;
-		if(Cell.CELL_TYPE_STRING==type){
+		if(CellType.STRING==type){
 //			value = StringUtils.cleanInvisibleUnicode(cell.getStringCellValue().trim());
 			value = cell.getStringCellValue().trim();
-		}else if(Cell.CELL_TYPE_NUMERIC==type){
+		}else if(CellType.NUMERIC==type){
 			value = cell.getNumericCellValue();
-		}else if(Cell.CELL_TYPE_FORMULA==type){
+		}else if(CellType.FORMULA==type){
 			value = cell.getCellFormula();
-		}else if(Cell.CELL_TYPE_BOOLEAN==type){
+		}else if(CellType.BOOLEAN==type){
 			value = cell.getBooleanCellValue();
-		}else if(Cell.CELL_TYPE_BLANK==type){
+		}else if(CellType.BLANK==type){
 			value = "";
 		}
 		return value;
@@ -393,7 +395,7 @@ abstract public class ExcelUtils {
 		if(row==null)
 			return ;
 		for(Cell cell : row){
-			cell.setCellType(Cell.CELL_TYPE_STRING);
+			cell.setCellType(CellType.STRING);
 			cell.setCellValue("");
 		}
 	}
@@ -463,22 +465,22 @@ abstract public class ExcelUtils {
             newCell.setCellType(oldCell.getCellType());
 
             switch (oldCell.getCellType()) {
-                case Cell.CELL_TYPE_BLANK:
+                case BLANK:
                     newCell.setCellValue(oldCell.getStringCellValue());
                     break;
-                case Cell.CELL_TYPE_BOOLEAN:
+                case BOOLEAN:
                     newCell.setCellValue(oldCell.getBooleanCellValue());
                     break;
-                case Cell.CELL_TYPE_ERROR:
+                case ERROR:
                     newCell.setCellErrorValue(oldCell.getErrorCellValue());
                     break;
-                case Cell.CELL_TYPE_FORMULA:
+                case FORMULA:
                     newCell.setCellFormula(oldCell.getCellFormula());
                     break;
-                case Cell.CELL_TYPE_NUMERIC:
+                case NUMERIC:
                     newCell.setCellValue(oldCell.getNumericCellValue());
                     break;
-                case Cell.CELL_TYPE_STRING:
+                case STRING:
                     newCell.setCellValue(oldCell.getRichStringCellValue());
                     break;
             }
@@ -778,5 +780,12 @@ abstract public class ExcelUtils {
 			newStr.append(c);
 		}
 		return newStr.toString();
+	}
+	
+	public static boolean isCellTypeString(CellType type) {
+		return type==CellType.STRING;
+	}
+	public static void setCellTypeAsString(Cell cell) {
+		cell.setCellType(CellType.STRING);
 	}
 }

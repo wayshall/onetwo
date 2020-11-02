@@ -14,7 +14,7 @@ public class ListRowMapper extends AbstractRowMapper<List<Object>> {
 
 		@Override
 		protected Object getCellValue(Cell cell){
-			cell.setCellType(Cell.CELL_TYPE_STRING);
+			ExcelUtils.setCellTypeAsString(cell);
 			return cell.getStringCellValue();
 		}
 	}
