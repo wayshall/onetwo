@@ -817,6 +817,13 @@ public abstract class StringUtils {
         return RandomStringUtils.random(count, 33, 127, false, false);
     }
     
+
+    public static boolean isStringStartWithAnyOne(final String str, Collection<String> prefixList) {
+    	if (LangUtils.isEmpty(prefixList)) {
+    		return false;
+    	}
+        return prefixList.stream().anyMatch(prefix -> str.startsWith(prefix));
+    }
     
 	public static void main(String[] args) {
 

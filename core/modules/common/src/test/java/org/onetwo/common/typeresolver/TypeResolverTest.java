@@ -1,5 +1,8 @@
 package org.onetwo.common.typeresolver;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +36,20 @@ public class TypeResolverTest {
 		Class<?> listItemType = ReflectUtils.getListGenricType(propertyType);
 		System.out.println("listItemType: " + listItemType);
 		
+		Type gtype = TypeResolver.resolveGenericType(EnumValueMapping.class, UserGenders.MALE.getClass());
+		System.out.println("gtype:"+gtype);
+		type = TypeResolver.resolveRawClass(gtype, UserGenders.MALE.getClass());
+		System.out.println("type:"+type);
+		
+		type = ReflectUtils.getGenricType(gtype, 0);
+		System.out.println("type:"+type);
+		assertThat(type).isEqualTo(Double.class);
+		
+
+		type = ReflectUtils.resolveClassOfGenericType(EnumValueMapping.class, UserGenders.MALE.getClass());
+		System.out.println("type:"+type);
+		assertThat(type).isEqualTo(Double.class);
+		
 	}
 
 	public List<Integer> getIntList() {
@@ -43,6 +60,30 @@ public class TypeResolverTest {
 		this.intList = intList;
 	}
 	
+	public static enum UserGenders implements EnumValueMapping<Double> {
+		FEMALE("女性", 10),
+		MALE("男性", 11);
+		
+		final private String label;
+		final private double value;
+		private UserGenders(String label, double value) {
+			this.label = label;
+			this.value = value;
+		}
+		public String getLabel() {
+			return label;
+		}
+		@Override
+		public Double getEnumMappingValue() {
+			return value;
+		}
+		
+	}
 	
+	public interface EnumValueMapping<T> {
+		
+		T getEnumMappingValue();
+
+	}
 
 }
