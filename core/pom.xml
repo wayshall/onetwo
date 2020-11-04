@@ -41,7 +41,7 @@
 			<modules>
                 <module>modules/common</module>
                 <module>../../dbm</module>
-                <module>modules/boot</module>
+                <module>../../onetwo-wechat</module>
 			</modules>
            <build>
               <plugins>
