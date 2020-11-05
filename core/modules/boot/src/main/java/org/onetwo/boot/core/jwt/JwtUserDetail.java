@@ -2,6 +2,7 @@ package org.onetwo.boot.core.jwt;
 
 import java.util.Map;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.web.userdetails.UserDetail;
 
 import com.google.common.collect.Maps;
@@ -43,7 +44,10 @@ public class JwtUserDetail implements UserDetail {
 	}
 
 	public boolean isAnonymousLogin() {
-		Boolean anonymousLogin = (Boolean)properties.get(ANONYMOUS_LOGIN_KEY);
+		if (!properties.containsKey(ANONYMOUS_LOGIN_KEY)) {
+			return false;
+		}
+		Boolean anonymousLogin = Types.convertValue(properties.get(ANONYMOUS_LOGIN_KEY), Boolean.class);
 		if (anonymousLogin==null) {
 			return false;
 		}

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.Dates;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
@@ -136,7 +137,11 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 												.filter(entry->isPropertyKey(entry.getKey()))
 												.collect(Collectors.toMap(entry->getProperty(entry.getKey()), entry->entry.getValue()));
 		Long userId = Long.parseLong(claims.get(JwtSecurityUtils.CLAIM_USER_ID).toString());
-		Boolean anonymousLogin = (Boolean)properties.get(JwtUserDetail.ANONYMOUS_LOGIN_KEY);
+		Boolean anonymousLogin = false;
+		if (properties.containsKey(JwtUserDetail.ANONYMOUS_LOGIN_KEY)) {
+			String anonymousLoginStr = properties.get(JwtUserDetail.ANONYMOUS_LOGIN_KEY).toString();
+			anonymousLogin = Types.convertValue(anonymousLoginStr, Boolean.class);
+		}
 		JwtUserDetail userDetail = buildJwtUserDetail(anonymousLogin, userId, claims.getSubject(), properties);
 		userDetail.setClaims(claims);
 
