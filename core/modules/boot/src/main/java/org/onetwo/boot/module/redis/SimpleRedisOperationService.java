@@ -187,7 +187,11 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	 * @param cacheData
 	 */
 	private void configCacheData(BoundValueOperations<Object, Object> ops, String cacheKey, CacheData<?> cacheData) {
-		if (cacheData.getExpireAt()!=null) {
+		// 配置优先
+		if (this.expires.containsKey(cacheKey)) {
+			Long expireInSeconds = this.expires.get(cacheKey);
+			ops.set(cacheData.getValue(), expireInSeconds, TimeUnit.SECONDS);
+		} else if (cacheData.getExpireAt()!=null) {
 			TimeUnit unit = TimeUnit.SECONDS;
 			Duration d = Dates.between(new Date(), cacheData.getExpireAt());
 			Long timeout = d.getSeconds();
@@ -195,11 +199,6 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		} else if (cacheData.getExpire()!=null && cacheData.getExpire()>0) {
 //			ops.expire(cacheData.getExpire(), cacheData.getTimeUnit());
 			ops.set(cacheData.getValue(), cacheData.getExpire(), cacheData.getTimeUnit());
-		}
-		
-		if (this.expires.containsKey(cacheKey)) {
-			Long expireInSeconds = this.expires.get(cacheKey);
-			ops.set(cacheData.getValue(), expireInSeconds, TimeUnit.SECONDS);
 		} else {
 			ops.set(cacheData.getValue());
 		}

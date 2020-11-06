@@ -59,7 +59,7 @@ public class NiceDateTest {
 		weekformat = NiceDate.New("2020-10-31").format("yyyy-w'(week)' HH:mm", Locale.ENGLISH);
 		System.out.println("weekformat: " + weekformat);
 		assertThat(weekformat).isEqualTo("2020-44(week) 00:00");
-		weekformat = NiceDate.New("2020-11-04 00:00:33").format("E HH:mm", Locale.ENGLISH);
+		weekformat = NiceDate.New("2020-11-06 00:00:33").format("E HH:mm", Locale.ENGLISH);
 		System.out.println("weekformat2: " + weekformat);
 		
 		NiceDate start = NiceDate.Now().nextMinute(-4);
