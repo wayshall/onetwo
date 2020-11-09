@@ -70,6 +70,7 @@ public class JFishOauth2Properties {
 	@Data
 	public static class AuthorizationServerProps {
 		public static final String ENABLED_KEY = CONFIG_PREFIX + ".authorizationServer.enabled";
+		public static final String USE_PASSOWRD_ENCODER_KEY = CONFIG_PREFIX + ".authorizationServer.usePassowrdEncoder";
 		
 		boolean allowFormAuthenticationForClients;
 		boolean customFormAuthenticationForClients;
@@ -87,6 +88,13 @@ public class JFishOauth2Properties {
 		String anyRequest;
 		
 		Map<String, String> pathMappings = Maps.newHashMap();
+		
+		/***
+		 * 是否配置使用spring上下文配置的PasswordEncoder验证密码，比如bcrypt
+		 * 之前的策略是，如果查找到有PasswordEncoder实例，就自动使用，但这会产生bug：原来不使用PasswordEncoder，但因为业务上下文配置了一个PasswordEncoder，就变成了使用PasswordEncoder了
+		 * 所以，增加一个配置，显式控制是否使用PasswordEncoder验证密码
+		 */
+		boolean usePassowrdEncoder = false;
 		
 	}
 	
