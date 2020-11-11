@@ -15,6 +15,7 @@ import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet;
 import org.onetwo.common.db.generator.dialet.DelegateDatabaseMetaDialet;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.SpringAnnotationUtils;
@@ -40,6 +41,7 @@ import org.onetwo.dbm.ui.meta.DUIFieldMeta.DUISelectMeta;
 import org.onetwo.dbm.ui.meta.DUITreeGridMeta;
 import org.onetwo.dbm.ui.spi.DUILabelEnum;
 import org.onetwo.dbm.ui.spi.DUIMetaManager;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -54,6 +56,8 @@ import com.google.common.collect.Maps;
  */
 
 public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
+	
+	final private Logger logger = JFishLoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private DbmSessionFactory dbmSessionFactory;
@@ -88,7 +92,11 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 				if (duiEntityClassMap.containsKey(name)) {
 					throw new DbmUIException("duplicate ui name: " + name);
 				}
-				duiEntityClassMap.put(name, metadataReader.getClassMetadata().getClassName());
+				String className = metadataReader.getClassMetadata().getClassName();
+				duiEntityClassMap.put(name, className);
+				if (logger.isInfoEnabled()) {
+					logger.info("scaned dui entity : {}", className);
+				}
 				
 
 				Map<String, Object> tableAttrs = metadataReader.getAnnotationMetadata().getAnnotationAttributes(Table.class.getName());

@@ -6,7 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -65,9 +68,20 @@ public class WebHolder {
 		return getRequest().map(req->(HttpServletResponse)req.getAttribute(RESPONSE_TAG));
 	}
 	
+	public static Optional<ServletRequestAttributes> getServletRequestAttributes(){
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs==null || !isRequestAttributesActive(attrs)) {
+			return Optional.empty();
+		}
+		return Optional.of(attrs);
+	}
+	
 	public static Optional<HttpServletRequest> getSpringContextHolderRequest(){
 		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-		return attrs==null?Optional.empty():Optional.of(attrs.getRequest());
+		if (attrs==null || !isRequestAttributesActive(attrs)) {
+			return Optional.empty();
+		}
+		return Optional.of(attrs.getRequest());
 	}
 	
 	public static HttpSession getSession(){
@@ -85,5 +99,17 @@ public class WebHolder {
 		val = StringUtils.isObjectBlank(val)?request.getSession().getAttribute(name):val;
 		val = StringUtils.isObjectBlank(val)?request.getSession().getServletContext().getAttribute(name):val;
 		return StringUtils.emptyIfNull(val);
+	}
+	
+	public static boolean isRequestAttributesActive(RequestAttributes req) {
+		if (req==null) {
+			return false;
+		}
+		try {
+			return (boolean) SpringUtils.newPropertyAccessor(req, true).getPropertyValue("requestActive");
+		} catch (Exception e) {
+			JFishLoggerFactory.getCommonLogger().error("isRequestAttributesActive error: " + e.getMessage());
+			return true;
+		}
 	}
 }

@@ -12,6 +12,7 @@ import org.onetwo.boot.core.jwt.JwtConfig;
 import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.cloud.canary.CanaryUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.beans.factory.InitializingBean;
@@ -76,7 +77,7 @@ final public class AuthEnvs implements InitializingBean {
 		RequestAttributes req = RequestContextHolder.getRequestAttributes();
 		AuthEnv env = null;
 		if (req!=null) {
-			env = (AuthEnv) req.getAttribute(AUTH_ENV_KEY, RequestAttributes.SCOPE_REQUEST);
+			env = getAuthEnvFromRequestAttributes(req);
 		} else {
 			env = CURRENT_ENVS.get();
 		}
@@ -86,8 +87,18 @@ final public class AuthEnvs implements InitializingBean {
 		return env;
 	}
 	
+	public static AuthEnv getAuthEnvFromRequestAttributes(RequestAttributes req) {
+		try {
+			return (AuthEnv) req.getAttribute(AUTH_ENV_KEY, RequestAttributes.SCOPE_REQUEST);
+		} catch (Exception e) {
+			// IllegalStateException: Cannot ask for request attribute - request is not active anymore!
+			JFishLoggerFactory.getCommonLogger().error("getAuthEnvFromRequestAttributes error: " + e.getMessage(), e);
+			return null;
+		}
+	}
+	
 	public static void removeCurrent() {
-		RequestAttributes req = RequestContextHolder.getRequestAttributes();
+		RequestAttributes req = WebHolder.getServletRequestAttributes().orElse(null);
 		if (req!=null) {
 			req.removeAttribute(AUTH_ENV_KEY, RequestAttributes.SCOPE_REQUEST);
 		} else {
