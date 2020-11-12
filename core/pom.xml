@@ -39,11 +39,7 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/common</module>
-                <module>modules/web</module>
-                <module>modules/dui</module>
-                <module>../../onetwo-wechat</module>
-                <module>modules/cloud</module>
+                <module>modules/security</module>
 			</modules>
            <build>
               <plugins>

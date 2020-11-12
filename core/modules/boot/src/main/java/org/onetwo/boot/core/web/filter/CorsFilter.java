@@ -39,7 +39,7 @@ public class CorsFilter implements Filter {
 			//2. 跨越cookies，client side: RestangularProvider.setDefaultHttpFields({withCredentials: true});
 			/*httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:8100");
 			httpResponse.setHeader("Access-Control-Allow-Credentials", "true");*/
-			httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+			httpResponse.setHeader("Access-Control-Allow-Credentials", "false");
 		}else{
 			headers.entrySet().forEach(e->{
 				httpResponse.setHeader(e.getKey(), e.getValue());

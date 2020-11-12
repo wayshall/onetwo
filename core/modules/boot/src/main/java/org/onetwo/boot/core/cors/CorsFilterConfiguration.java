@@ -15,8 +15,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 /**
  * @author weishao zeng
+ * @see BootMvcConfigurerAdapter#addCorsMappings
  * <br/>
  */
+@Deprecated
 @Configuration
 @ConditionalOnProperty(name=BootJFishConfig.ENABLE_MVC_CORSFILTER)
 public class CorsFilterConfiguration {
