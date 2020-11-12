@@ -71,7 +71,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		}
 		
 		classNames.add(ExcelViewConfiguration.class.getName());
-//		classNames.add(CorsFilterConfiguration.class.getName());
+		classNames.add(CorsFilterConfiguration.class.getName());
 		
 		classNames.add(BootDbmConfiguration.class.getName());
 		classNames.add(ErrorHandleConfiguration.class.getName());

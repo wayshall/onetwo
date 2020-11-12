@@ -304,6 +304,10 @@ public class ExcelStreamReader {
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				for(RowStreamReader<T> reader : rowReaders) {
 					Row row = sheet.getRow(rowIndex);
+					if (row==null) {
+						// 忽略空行
+						continue;
+					}
 					if (reader.match(rowIndex)) {
 						reader.onRead(dataModelInst, sheet, sheetIndex, row, rowIndex);
 					}

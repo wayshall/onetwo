@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.web.cors.CorsUtils;
 
 public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigurer {
 
@@ -55,6 +56,9 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 		for(InterceptersConfig interConfig : this.securityConfig.getIntercepters()){
 			http.authorizeRequests().antMatchers(interConfig.getPathPatterns()).access(interConfig.getAccess());
 		}*/
+		if (securityConfig.getCors().isPermitAllPreFlightRequest()) {
+			http.authorizeRequests().requestMatchers(req -> CorsUtils.isPreFlightRequest(req)).permitAll();
+		}
 		// permitAll
 		if (this.securityConfig.isCheckAnyUrlpermitAll()) {
 			for(Entry<String[], String> entry : securityConfig.getIntercepterUrls().entrySet()) {
