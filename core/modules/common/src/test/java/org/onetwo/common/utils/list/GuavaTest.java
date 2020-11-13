@@ -27,9 +27,11 @@ import com.google.common.base.Splitter;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
@@ -110,6 +112,15 @@ public class GuavaTest {
 		Assert.assertTrue(ArrayUtils.contains(interSet.toArray(), 2));
 	}
 	
+	@Test
+	public void testMultimap() {
+		Multimap<String, String> map = ArrayListMultimap.create();
+		map.put("test", "test1");
+		map.put("test", "test2");
+		Collection<String> values = map.get("test");
+		assertThat(values).size().isEqualTo(2);
+		assertThat(values).contains("test2");
+	}
 	@Test
 	public void testGroupBy(){
 		List<UserEntity> all = LangUtils.newArrayList();
