@@ -84,6 +84,19 @@ public class NiceDate {
 		this.calendar = calendar;
 	}
 	
+	public boolean isSaturday() {
+		return getDayOfWeek() == Calendar.SATURDAY;
+	}
+	
+	public boolean isSunday() {
+		return getDayOfWeek() == Calendar.SUNDAY;
+	}
+	
+	public int getDayOfWeek() {
+		int day = this.calendar.get(Calendar.DAY_OF_WEEK);
+		return day;
+	}
+	
 	/***
 	 * 当前季度，第一季度为0
 	 * @author weishao zeng
