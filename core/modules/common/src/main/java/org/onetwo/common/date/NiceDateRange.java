@@ -43,6 +43,14 @@ public class NiceDateRange {
 			return NiceDate.New().getQuarter(nextQuarter);
 		}
 		
+		public String toString() {
+			return toString("", "Q");
+		}
+		
+		public String toString(String joiner, String quarterTag) {
+			return this.getStart().format("yyyy") + joiner + quarterTag + (this.quarterValue + 1);
+		}
+		
 	}
 
 	public NiceDate getStart() {

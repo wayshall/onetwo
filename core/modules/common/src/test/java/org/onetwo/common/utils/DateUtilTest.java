@@ -133,7 +133,7 @@ public class DateUtilTest {
 	public void testDate(){
 		Date date = DateUtils.parseDate("2013-09-09");
 		System.out.println("date: " + date.toLocaleString());
-		Date date1 = NiceDate.New("2013-9-9").atTheBeginning().getTime();
+		Date date1 = NiceDate.New("2013-9-9").preciseAtDate().atTheBeginning().getTime();
 		System.out.println("date1: " + date1.toLocaleString());
 		
 		try {

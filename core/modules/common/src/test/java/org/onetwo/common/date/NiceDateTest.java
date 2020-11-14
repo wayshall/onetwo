@@ -21,6 +21,9 @@ public class NiceDateTest {
 	@Test
 	public void testQuarter() throws ParseException{
 		NiceDate now = NiceDate.Now();
+		
+		assertThat(NiceDate.New("2020-11-14").getQuarter(0).toString()).isEqualTo("2020-Q1");
+		
 		String dateTime = now.getQuarter(0).getStart().format("MM-dd HH:mm:ss");
 		System.out.println("dateTime: " + dateTime);
 		assertThat(dateTime).isEqualTo("01-01 00:00:00");

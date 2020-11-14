@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.onetwo.common.date.DateUtils.DateType;
 import org.onetwo.common.date.NiceDateRange.QuarterDateRange;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 
 public class NiceDate {
@@ -89,6 +90,17 @@ public class NiceDate {
 	 * @return
 	 */
 	public QuarterDateRange getCurrentQuarter() {
+		int quarter = getCurrentQuarterIndex();
+		QuarterDateRange currentQuarter = getQuarter(quarter);
+		return currentQuarter;
+	}
+	
+	/***
+	 * 获取当前所属季度
+	 * @author weishao zeng
+	 * @return
+	 */
+	public int getCurrentQuarterIndex() {
 		int currentMonth = getMonth() + 1;
 
 		int quarter = 0;
@@ -100,9 +112,14 @@ public class NiceDate {
 			quarter = 2;
 		} else if (currentMonth >= 10 && currentMonth <= 12) {
 			quarter = 3;
+		} else {
+			throw new BaseException("error month index: " + currentMonth);
 		}
-		QuarterDateRange currentQuarter = getQuarter(quarter);
-		return currentQuarter;
+		return quarter;
+	}
+
+	public int getCurrentSeason() {
+		return getCurrentQuarterIndex();
 	}
 	
 	/***
