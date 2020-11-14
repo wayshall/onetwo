@@ -110,6 +110,9 @@ public class NiceDate {
 	
 	/***
 	 * 获取当前所属季度
+	 * 0表示第一季
+	 * 1表示第二季
+	 * 如此类推
 	 * @author weishao zeng
 	 * @return
 	 */
@@ -130,9 +133,16 @@ public class NiceDate {
 		}
 		return quarter;
 	}
-
+	/***
+	 * 获取当前所属季度
+	 * 1表示第一季
+	 * 2表示第二季
+	 * 如此类推
+	 * @author weishao zeng
+	 * @return
+	 */
 	public int getCurrentSeason() {
-		return getCurrentQuarterIndex();
+		return getCurrentQuarterIndex() + 1;
 	}
 	
 	/***
