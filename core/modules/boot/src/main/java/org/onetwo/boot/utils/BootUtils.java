@@ -40,6 +40,10 @@ final public class BootUtils {
 	}
 
 	public static void asyncInit(Runnable task){
+		if (asyncInitor==null) {
+			task.run();
+			return ;
+		}
 		Thread main = Thread.currentThread();
 		asyncInitor.submit(() -> {
 			try {
