@@ -386,13 +386,24 @@ public class ExcelStreamReader {
 			Date date = DateUtils.parseByPatterns(value, pattern);
 			return date;
 		}
+		
 		public <T extends Enum<?>> T getEnum(int cellnum, Class<T> enumClass) {
+			return getEnum(cellnum, enumClass, null);
+		}
+		
+		public <T extends Enum<?>> T getEnum(int cellnum, Class<T> enumClass, T def) {
 			String value = getString(cellnum);
-			T enumValue = Types.convertValue(value, enumClass);
+			if (value==null) {
+				return def;
+			}
+			T enumValue = Types.convertValue(value, enumClass, def);
 			return enumValue;
 		}
 		public <T> T getCellValue(int cellnum, Class<T> clazz, T def) {
 			Object value = getCellValue(cellnum);
+			if (value==null) {
+				return def;
+			}
 			return Types.asValue(value, clazz, def);
 		}
 		public Row getRow() {

@@ -42,6 +42,28 @@ public class NiceDate {
 		Date date = DateUtils.parseByPatterns(dateStr, format);
 		return New(date);
 	}
+
+	public static NiceDate New(Calendar calendar){
+		NiceDate niceDate = new NiceDate(calendar);
+		return niceDate;
+	}
+
+	public static NiceDate currentYearWithDate(int year, String dateStr, String dateFormat){
+		Calendar now = Calendar.getInstance();
+		Date date = DateUtils.parseByPatterns(dateStr, dateFormat);
+		now.setTime(date);
+		now.set(Calendar.YEAR, year);
+		return  New(now);
+	}
+
+	public static NiceDate currentYearWithDate(String dateStr, String dateFormat){
+		Calendar now = Calendar.getInstance();
+		int year = now.get(Calendar.YEAR);
+		Date date = DateUtils.parseByPatterns(dateStr, dateFormat);
+		now.setTime(date);
+		now.set(Calendar.YEAR, year);
+		return  New(now);
+	}
 	
 	public static enum DatePhase {
 		morning(6, 12),
