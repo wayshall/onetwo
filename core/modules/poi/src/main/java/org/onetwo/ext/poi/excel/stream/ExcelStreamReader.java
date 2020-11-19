@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -18,6 +20,7 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.ext.poi.excel.reader.image.DelegateSheetImageReader;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.slf4j.Logger;
 import org.springframework.util.Assert;
@@ -28,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
  * <br/>
  */
 public class ExcelStreamReader {
+	private static final DelegateSheetImageReader imageDelegateReader = new DelegateSheetImageReader();
 	private List<SheetStreamReader<?>> sheetReaders;
 	
 	private ExcelStreamReader(List<SheetStreamReader<?>> sheetReaders) {
@@ -52,6 +56,7 @@ public class ExcelStreamReader {
 		try {
 			int sheetCount = workbook.getNumberOfSheets();
 			Sheet sheet = null;
+			List<? extends PictureData> picDatas = workbook.getAllPictures();
 			for(int sheetIndex=0; sheetIndex<sheetCount; sheetIndex++){
 				sheet = workbook.getSheetAt(sheetIndex);
 				if(sheet.getPhysicalNumberOfRows()<1)
@@ -299,6 +304,7 @@ public class ExcelStreamReader {
 			return dataModelInst;
 		}
 		public T onRead(Sheet sheet, int sheetIndex) {
+			SheetData sheetData = new SheetData(sheet, sheetIndex);
 			T dataModelInst = createDataModel();
 			int rowCount = sheet.getPhysicalNumberOfRows();
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
@@ -309,11 +315,49 @@ public class ExcelStreamReader {
 						continue;
 					}
 					if (reader.match(rowIndex)) {
-						reader.onRead(dataModelInst, sheet, sheetIndex, row, rowIndex);
+						reader.onRead(dataModelInst, sheetData, row, rowIndex);
 					}
 				}
 			}
 			return dataModelInst;
+		}
+		
+		/***
+		 * 此方法有问题，尚未能读取图片位置
+		 * @author weishao zeng
+		 * @param sheetData
+		 */
+		protected void initPictureDatas(SheetData sheetData) {
+			Map<Integer, Map<Integer, PictureData>> pictureDatas = imageDelegateReader.readPictureDatas(sheetData.getSheet());
+			sheetData.setPictureDatas(pictureDatas);
+		}
+		
+	}
+	
+	public static class SheetData {
+		final private Sheet sheet;
+		final private int sheetIndex;
+		private Map<Integer, Map<Integer, PictureData>> pictureDatas;
+		public SheetData(Sheet sheet, int sheetIndex) {
+			super();
+			this.sheet = sheet;
+			this.sheetIndex = sheetIndex;
+		}
+		public Sheet getSheet() {
+			return sheet;
+		}
+		public int getSheetIndex() {
+			return sheetIndex;
+		}
+		public PictureData getPictureDatas(int rowIndex, int colIndex) {
+			Map<Integer, PictureData> row = pictureDatas.get(rowIndex);
+			if (row==null) {
+				return null;
+			}
+			return row.get(colIndex);
+		}
+		void setPictureDatas(Map<Integer, Map<Integer, PictureData>> pictureDatas) {
+			this.pictureDatas = pictureDatas;
 		}
 	}
 	
@@ -330,20 +374,24 @@ public class ExcelStreamReader {
 		public boolean match(int rowIndex) {
 			return fromIndex <= rowIndex && rowIndex <= toIndex;
 		}
-		public void onRead(T dataModel, Sheet sheet, int sheetIndex, Row row, int rowIndex) {
-			RowData rowData = new RowData(row, sheetIndex);
+		public void onRead(T dataModel, SheetData sheet, Row row, int rowIndex) {
+			RowData rowData = new RowData(sheet, sheet.getSheetIndex(), row, rowIndex);
 			rowConsumer.onRow(dataModel, rowData, rowIndex);
 		}
 	}
 	
 	public static class RowData {
+		final private SheetData sheet;
 		final private Row row;
 		final private int sheetIndex;
+		final private int rowIndex;
 
-		public RowData(Row row, int sheetIndex) {
+		public RowData(SheetData sheet, int sheetIndex, Row row, int rowIndex) {
 			super();
+			this.sheet = sheet;
 			this.row = row;
 			this.sheetIndex = sheetIndex;
+			this.rowIndex = rowIndex;
 		}
 		/***
 		 * from 0
@@ -354,6 +402,9 @@ public class ExcelStreamReader {
 		 */
 		public Cell getCell(int cellnum) {
 			return row.getCell(cellnum);
+		}
+		public PictureData getPicture(int cellnum) {
+			return this.sheet.getPictureDatas(rowIndex, cellnum);
 		}
 		public Object getCellValue(int cellnum) {
 			Cell cell = getCell(cellnum);

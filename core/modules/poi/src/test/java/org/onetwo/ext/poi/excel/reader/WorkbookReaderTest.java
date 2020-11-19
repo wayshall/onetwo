@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.PictureData;
 import org.junit.Test;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.poi.excel.CardEntity;
@@ -29,6 +30,8 @@ public class WorkbookReaderTest {
 											if (row.getSheetIndex()==0) {
 												assertThat(row.getCellValue(0)).isEqualTo(String.valueOf(index));
 											}
+											PictureData picData = row.getPicture(3);
+											assertThat(picData).isNotNull();
 										})
 									.endSheet()
 								.readSheet(1).to(1)
