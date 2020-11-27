@@ -45,7 +45,7 @@ public class WorkbookReaderTest {
 		
 
 		path = ExcelUtils.class.getClassLoader().getResource("").getPath()+"/org/onetwo/common/excel/test.xlsx";
-		WorkbookReaderFactory.monitorStreamReader().readSheet(0).to(1)
+		WorkbookReaderFactory.streamReader(100).readSheet(0).to(1)
 										.row(0).onData((dataModel, row, index) -> {
 											System.out.println("rwo: " + row.getCell(0));
 											assertThat(row.getCellValue(0)).isEqualTo("主键");

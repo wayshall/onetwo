@@ -239,10 +239,14 @@ public abstract class WorkbookReaderFactory {
 		return new ExcelStreamReaderBuilder();
 	}
 	
-	public static ExcelStreamReaderBuilder monitorStreamReader() {
+	public static ExcelStreamReaderBuilder streamReader(int bufferSize) {
+		return streamReader(bufferSize, bufferSize/10);
+	}
+	
+	public static ExcelStreamReaderBuilder streamReader(int bufferSize, int rowCacheSize) {
 		return new ExcelStreamReaderBuilder() {
 			protected ExcelStreamReader build(List<SheetStreamReader<?>> sheetReaders) {
-				ExcelStreamReader reader = new MonitorExcelStreamReader(sheetReaders);
+				ExcelStreamReader reader = new MonitorExcelStreamReader(sheetReaders, bufferSize, rowCacheSize);
 				return reader;
 			}
 		};

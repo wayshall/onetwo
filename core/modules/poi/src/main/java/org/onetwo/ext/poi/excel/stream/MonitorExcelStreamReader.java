@@ -22,9 +22,22 @@ import com.monitorjbl.xlsx.StreamingReader;
  */
 
 public class MonitorExcelStreamReader extends BaseExcelStreamReader {
+	/***
+	 * number of rows to keep in memory (defaults to 500)
+	 */
+	private int rowCacheSize = 500;
+	/***
+	 * buffer size to use when reading InputStream to file (defaults to 5000)
+	 */
+	private int bufferSize = 5000;
 
 	public MonitorExcelStreamReader(List<SheetStreamReader<?>> sheetReaders) {
 		super(sheetReaders);
+	}
+	public MonitorExcelStreamReader(List<SheetStreamReader<?>> sheetReaders, int bufferSize, int rowCacheSize) {
+		super(sheetReaders);
+		this.bufferSize = bufferSize;
+		this.rowCacheSize = rowCacheSize;
 	}
 	
 	@Override
@@ -50,8 +63,8 @@ public class MonitorExcelStreamReader extends BaseExcelStreamReader {
 	@Override
 	public void from(InputStream inputStream, SheeDataModelConsumer consumer) {
 		Workbook workbook = StreamingReader.builder()
-		        .rowCacheSize(100)    // number of rows to keep in memory (defaults to 10)
-		        .bufferSize(4096)     // buffer size to use when reading InputStream to file (defaults to 1024)
+		        .rowCacheSize(this.rowCacheSize)    // number of rows to keep in memory (defaults to 10)
+		        .bufferSize(this.bufferSize)     // buffer size to use when reading InputStream to file (defaults to 1024)
 		        .open(inputStream); 
 		read(workbook, consumer);
 	}
