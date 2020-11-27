@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.PictureData;
 import org.junit.Test;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.poi.excel.CardEntity;
@@ -30,8 +29,37 @@ public class WorkbookReaderTest {
 											if (row.getSheetIndex()==0) {
 												assertThat(row.getCellValue(0)).isEqualTo(String.valueOf(index));
 											}
-											PictureData picData = row.getPicture(3);
-											assertThat(picData).isNotNull();
+//											PictureData picData = row.getPicture(3);
+//											assertThat(picData).isNotNull();
+										})
+									.endSheet()
+								.readSheet(1).to(1)
+										.row(0).to(0).onData((dataModel, row, index) -> {
+											System.out.println("row2: " + row.getCell(0));
+										})
+										.row(1).toEnd().onData((dataModel, row, index) -> {
+											System.out.println("row2: " + row.getCell(0));
+										})
+									.endSheet()
+								.from(path, null);
+		
+
+		path = ExcelUtils.class.getClassLoader().getResource("").getPath()+"/org/onetwo/common/excel/test.xlsx";
+		WorkbookReaderFactory.monitorStreamReader().readSheet(0).to(1)
+										.row(0).onData((dataModel, row, index) -> {
+											System.out.println("rwo: " + row.getCell(0));
+											assertThat(row.getCellValue(0)).isEqualTo("主键");
+										})
+										.row(1).toEnd().onData((dataModel, row, index) -> {
+											System.out.println("rwo["+index+"]: " + row.getCell(0));
+											if (row.getDouble(0)==null) {
+												return ;
+											}
+											if (row.getSheetIndex()==0) {
+												assertThat(row.getCellValue(0)).isEqualTo(String.valueOf(index));
+											}
+//											PictureData picData = row.getPicture(3);
+//											assertThat(picData).isNotNull();
 										})
 									.endSheet()
 								.readSheet(1).to(1)

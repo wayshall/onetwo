@@ -201,6 +201,16 @@ abstract public class DateUtils {
 	public static Date parse(SimpleDateFormat format, String dateStr) {
 		return parse(format, dateStr, true);
 	}
+	
+	/****
+	 * 注意SimpleDateFormat有坑
+	 * 比如用pattern[yyyyMMdd]去解释2020-11-28这种格式，并不会出错，但是会丢失年份
+	 * @author weishao zeng
+	 * @param format
+	 * @param dateStr
+	 * @param throwIfError
+	 * @return
+	 */
 	public static Date parse(SimpleDateFormat format, String dateStr, boolean throwIfError) {
 		Date date = null;
 		try {
@@ -230,6 +240,14 @@ abstract public class DateUtils {
 		throw new BaseException("parse date string [" + dateStr + "] error with format: " + LangUtils.toString(dateFormats));
 	}
 
+	/***
+	 * 注意SimpleDateFormat有坑
+	 * 比如用pattern[yyyyMMdd]去解释2020-11-28这种格式，并不会出错，但是会丢失年份
+	 * @author weishao zeng
+	 * @param dateStr
+	 * @param patterns
+	 * @return
+	 */
 	public static Date parseByPatterns(String dateStr, String... patterns) {
 		if(StringUtils.isBlank(dateStr))
 			return null;
@@ -670,7 +688,7 @@ abstract public class DateUtils {
 		
 //		return dt.ordinal()>0?(isSameAt(c1, c2, dt.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false):c1.get(dt.getField())==c2.get(dt.getField());
 		if(dt.ordinal()>0){
-			return isSameAt(c1, c2, dt.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false;
+			return isSameAt(c1, c2, DateType.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false;
 		}else{
 			return c1.get(dt.getField())==c2.get(dt.getField());
 		}

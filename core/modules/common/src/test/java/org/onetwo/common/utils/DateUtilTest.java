@@ -2,6 +2,7 @@ package org.onetwo.common.utils;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -160,12 +161,6 @@ public class DateUtilTest {
 		/*Date now = DateUtil.date(":now");
 		System.out.println("now: " + now.getTime())*/;
 		
-		Date today = DateUtils.date(":today");
-		System.out.println("today: " + today);
-		
-		Date yesterday = DateUtils.date(":yesterday");
-		System.out.println("yesterday: " + yesterday);
-		
 		Date tomorrow = DateUtils.date(":tomorrow");
 		System.out.println("tomorrow: " + tomorrow);
 		
@@ -177,9 +172,13 @@ public class DateUtilTest {
 		Date parseDate = DateUtils.parseByPatterns("20121029102501", "yyyyMMddHHmmss");
 		System.out.println("parseDate:" + parseDate.toLocaleString());
 		
+		parseDate = DateUtils.parseByPatterns("2020-11-27", "yyyyMMdd");
+		System.out.println("parseDate2:" + parseDate.toLocaleString());
+		
+		LocalDate localDate = Dates.parseLocalDate("2020-11-27", "yyyyMMdd");
+		parseDate = Dates.toDate(localDate);
+		System.out.println("parseDate3:" + parseDate.toLocaleString());
 
-		Calendar cal = Calendar.getInstance();
-		System.out.println("day: " + cal.get(Calendar.DAY_OF_WEEK));
 	}
 	
 	@Test
