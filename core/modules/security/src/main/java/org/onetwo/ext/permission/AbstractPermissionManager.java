@@ -17,6 +17,7 @@ import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -40,6 +41,8 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	private ApplicationContext applicationContext;
 	
 	private Multimap<Method, IPermission> methodPermissionMapping;
+	@Autowired
+	private SecurityConfig securityConfig;
 	
 	@PostConstruct
 	public void initParsers(){
@@ -58,7 +61,9 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	}
 	
 	private void checkParsers(){
-		Assert.notEmpty(parsers, "parsers can not be empty");
+		if (securityConfig.getPermission().isSync2db()) {
+			Assert.notEmpty(parsers, "parsers can not be empty");
+		}
 	}
 
 

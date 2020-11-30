@@ -1,5 +1,7 @@
 package org.onetwo.boot.core.web.service;
 
+import java.util.List;
+
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
@@ -51,11 +53,13 @@ public class BootCommonServiceConfig {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(BootCommonService.class)
-	@ConditionalOnBean(FileStorer.class)
+//	@ConditionalOnBean(FileStorer.class)
 	@ConditionalOnProperty(BootSiteConfig.ENABLE_STORETYPE_PROPERTY)
-	public BootCommonService bootCommonService(){
+	@Autowired
+	public BootCommonService bootCommonService(List<FileStorer> fileStorers){
 		SimpleBootCommonService service = new SimpleBootCommonService();
 		service.setCompressConfig(bootSiteConfig.getUpload().getCompressImage());
+		service.setFileStorers(fileStorers);
 //		service.setFileStoreBaseDir(bootSiteConfig.getUpload().getFileStorePath());
 		return service;
 	}

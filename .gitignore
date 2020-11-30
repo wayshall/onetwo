@@ -13,6 +13,7 @@ pom.properties
 *.war
 *.ear
 *.log
+~$*
 
 tomcat.8080
 build

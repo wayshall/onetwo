@@ -43,6 +43,25 @@ final public class Dates {
 		return LocalDateTime.parse(dateTimeStr, DATE_TIME);
 	}
 	
+	public static LocalDate parseDate(String dateTimeStr){
+		return LocalDate.parse(dateTimeStr, DATE_ONLY);
+	}
+	
+	public static LocalDateTime parseLocalDateTime(String value, String pattern){
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		return LocalDateTime.parse(value, formatter);
+	}
+	
+	public static LocalDate parseLocalDate(String value, String pattern){
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		return LocalDate.parse(value, formatter);
+	}
+	
+	public static LocalTime parseLocaTime(String value, String pattern){
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		return LocalTime.parse(value, formatter);
+	}
+	
 	public static Date toDate(LocalDate localDate, LocalTime localTime){
 		LocalDateTime newDate = localTime.atDate(localDate);
 		return Date.from(newDate.atZone(ZoneId.systemDefault()).toInstant());

@@ -2,6 +2,7 @@ package org.onetwo.ext.poi.excel.reader;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,7 +11,10 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.onetwo.ext.poi.excel.generator.CellValueConvertor;
 import org.onetwo.ext.poi.excel.reader.ListRowMapper.StringListRowMapper;
-import org.onetwo.ext.poi.excel.stream.ExcelStreamReader.ExcelStreamReaderBuilder;
+import org.onetwo.ext.poi.excel.stream.ExcelStreamReader;
+import org.onetwo.ext.poi.excel.stream.ExcelStreamReaderBuilder;
+import org.onetwo.ext.poi.excel.stream.MonitorExcelStreamReader;
+import org.onetwo.ext.poi.excel.stream.SheetStreamReaderBuilder.SheetStreamReader;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.TheFunction;
 import org.slf4j.Logger;
@@ -233,6 +237,19 @@ public abstract class WorkbookReaderFactory {
 	
 	public static ExcelStreamReaderBuilder streamReader() {
 		return new ExcelStreamReaderBuilder();
+	}
+	
+	public static ExcelStreamReaderBuilder streamReader(int bufferSize) {
+		return streamReader(bufferSize, bufferSize/10);
+	}
+	
+	public static ExcelStreamReaderBuilder streamReader(int bufferSize, int rowCacheSize) {
+		return new ExcelStreamReaderBuilder() {
+			protected ExcelStreamReader build(List<SheetStreamReader<?>> sheetReaders) {
+				ExcelStreamReader reader = new MonitorExcelStreamReader(sheetReaders, bufferSize, rowCacheSize);
+				return reader;
+			}
+		};
 	}
 
 	public static WorkbookReader getWorkbookReader(){

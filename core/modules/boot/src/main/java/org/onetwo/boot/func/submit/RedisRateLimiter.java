@@ -34,11 +34,15 @@ public interface RedisRateLimiter {
 	}
 
 	default public void checkAction(String actionKey, int time, TimeUnit timeUnit) {
+		checkAction(actionKey, time, timeUnit, "请勿频繁提交！");
+	}
+	
+	default public void checkAction(String actionKey, int time, TimeUnit timeUnit, String errMsg) {
 		ActionContext actionContext = new ActionContext();
 		actionContext.setActionKey(actionKey);
 		actionContext.setTimesInPeriod(1);
 		actionContext.setPeriod(time);
-		actionContext.setErrorMessage("请勿频繁提交！");
+		actionContext.setErrorMessage(errMsg);
 		actionContext.setPeriodUnit(timeUnit);
 		consumeAction(actionContext);
 	}

@@ -92,6 +92,9 @@ public class SecurityConfig {
 	
 	private boolean debug;
 	
+	private CorsConfig cors = new CorsConfig();
+	
+	
 	public boolean isDebug(){
 		return debug;
 	}
@@ -319,5 +322,12 @@ public class SecurityConfig {
 		String[] pathPatterns;
 		String access;
 	}
-	
+
+	@Data
+	public static class CorsConfig {
+		/***
+		 * 允许所有预检请求
+		 */
+		boolean permitAllPreFlightRequest;
+	}
 }

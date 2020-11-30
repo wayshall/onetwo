@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.onetwo.common.date.DateUtils.DateType;
 import org.onetwo.common.date.NiceDateRange.QuarterDateRange;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 
 public class NiceDate {
@@ -40,6 +41,28 @@ public class NiceDate {
 	public static NiceDate New(String dateStr, String format){
 		Date date = DateUtils.parseByPatterns(dateStr, format);
 		return New(date);
+	}
+
+	public static NiceDate New(Calendar calendar){
+		NiceDate niceDate = new NiceDate(calendar);
+		return niceDate;
+	}
+
+	public static NiceDate currentYearWithDate(int year, String dateStr, String dateFormat){
+		Calendar now = Calendar.getInstance();
+		Date date = DateUtils.parseByPatterns(dateStr, dateFormat);
+		now.setTime(date);
+		now.set(Calendar.YEAR, year);
+		return  New(now);
+	}
+
+	public static NiceDate currentYearWithDate(String dateStr, String dateFormat){
+		Calendar now = Calendar.getInstance();
+		int year = now.get(Calendar.YEAR);
+		Date date = DateUtils.parseByPatterns(dateStr, dateFormat);
+		now.setTime(date);
+		now.set(Calendar.YEAR, year);
+		return  New(now);
 	}
 	
 	public static enum DatePhase {
@@ -83,12 +106,39 @@ public class NiceDate {
 		this.calendar = calendar;
 	}
 	
+	public boolean isSaturday() {
+		return getDayOfWeek() == Calendar.SATURDAY;
+	}
+	
+	public boolean isSunday() {
+		return getDayOfWeek() == Calendar.SUNDAY;
+	}
+	
+	public int getDayOfWeek() {
+		int day = this.calendar.get(Calendar.DAY_OF_WEEK);
+		return day;
+	}
+	
 	/***
 	 * 当前季度，第一季度为0
 	 * @author weishao zeng
 	 * @return
 	 */
 	public QuarterDateRange getCurrentQuarter() {
+		int quarter = getCurrentQuarterIndex();
+		QuarterDateRange currentQuarter = getQuarter(quarter);
+		return currentQuarter;
+	}
+	
+	/***
+	 * 获取当前所属季度
+	 * 0表示第一季
+	 * 1表示第二季
+	 * 如此类推
+	 * @author weishao zeng
+	 * @return
+	 */
+	public int getCurrentQuarterIndex() {
 		int currentMonth = getMonth() + 1;
 
 		int quarter = 0;
@@ -100,9 +150,21 @@ public class NiceDate {
 			quarter = 2;
 		} else if (currentMonth >= 10 && currentMonth <= 12) {
 			quarter = 3;
+		} else {
+			throw new BaseException("error month index: " + currentMonth);
 		}
-		QuarterDateRange currentQuarter = getQuarter(quarter);
-		return currentQuarter;
+		return quarter;
+	}
+	/***
+	 * 获取当前所属季度
+	 * 1表示第一季
+	 * 2表示第二季
+	 * 如此类推
+	 * @author weishao zeng
+	 * @return
+	 */
+	public int getCurrentSeason() {
+		return getCurrentQuarterIndex() + 1;
 	}
 	
 	/***

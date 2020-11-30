@@ -10,7 +10,7 @@ public class MediaUrlJsonSerializer extends ImageUrlJsonSerializer {
 
 	public MediaUrlJsonSerializer() {
 		super();
-		this.fileTypes = Arrays.asList("mp3", "mp4", "avi");
+		this.fileTypes = Arrays.asList("mp3", "mp4", "avi", "mov");
 	}
 
 }

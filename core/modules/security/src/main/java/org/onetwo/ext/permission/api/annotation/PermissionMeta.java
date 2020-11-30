@@ -12,6 +12,7 @@ import org.onetwo.ext.permission.api.PermissionType;
 public @interface PermissionMeta {
 	/***
 	 * 排序
+	 * 数字越小，排序越靠前
 	 * @author weishao zeng
 	 * @return
 	 */

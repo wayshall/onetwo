@@ -24,11 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.Setter;
+
 @Transactional
 public class SimpleBootCommonService implements BootCommonService {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	@Autowired
+//	@Autowired
+	@Setter
 	private List<FileStorer> fileStorers;
 	
 	@Autowired(required=false)

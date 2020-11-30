@@ -183,6 +183,10 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 		String[] allowedMethods = new String[] {"*"};//{"POST", "PUT", "GET", "OPTIONS", "DELETE", "HEAD"}; // spring mvc 支持*
 		String[] allowedHeaders = new String[] {"*"}; //{"Content-Type", "Accept", "x-requested-with"}; // // spring mvc 支持*
 		String[] exposedHeaders = new String[] {}; // 不支持 *
+		/***
+		 * true为设置Access-Control-Allow-Credentials: true，允许跨域cookies
+		 * 同时需要客户端设置 xhr.withCredentials = true
+		 */
 		boolean allowCredentials = false;
 		String maxAge;
 		

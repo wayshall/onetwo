@@ -21,6 +21,9 @@ public class NiceDateTest {
 	@Test
 	public void testQuarter() throws ParseException{
 		NiceDate now = NiceDate.Now();
+		
+		assertThat(NiceDate.New("2020-11-14").getQuarter(0).toString()).isEqualTo("2020-Q1");
+		
 		String dateTime = now.getQuarter(0).getStart().format("MM-dd HH:mm:ss");
 		System.out.println("dateTime: " + dateTime);
 		assertThat(dateTime).isEqualTo("01-01 00:00:00");
@@ -92,6 +95,12 @@ public class NiceDateTest {
 		str = NiceDate.New(date).preciseAtHour().atTheBeginning().formatAsDateTime();
 		System.out.println("preciseAtHour: " + str);
 		Assert.assertEquals("2015-11-11 11:00:00", str);
+		
+		NiceDate monthDate = NiceDate.New("11月19日", "MM月dd日");
+		assertThat(monthDate.formatAsDateTime()).isEqualTo("1970-11-19 00:00:00");
+		monthDate = NiceDate.currentYearWithDate(2020, "11月19日", "MM月dd日");
+		System.out.println("monthDate: " + monthDate.formatAsDateTime());
+		assertThat(monthDate.formatAsDateTime()).isEqualTo("2020-11-19 00:00:00");
 	}
 
 	@Test
