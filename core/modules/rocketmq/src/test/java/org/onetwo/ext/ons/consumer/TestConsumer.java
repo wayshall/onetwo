@@ -1,6 +1,7 @@
 package org.onetwo.ext.ons.consumer;
 
 import java.util.Date;
+import java.util.List;
 
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.ext.alimq.ConsumContext;
@@ -26,8 +27,13 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.Consum
 			idempotent=IdempotentType.DATABASE)
 public class TestConsumer implements CustomONSConsumer /*MessageListener*/ {
 	int count = 0;
+	
 
-//	@Override
+	@Override
+	public void doConsumeBatch(List<ConsumContext> batchContexts) {
+	}
+
+	//	@Override
 	public void doConsume(ConsumContext consumContext) {
 		/*if(count<1){
 			count++;
