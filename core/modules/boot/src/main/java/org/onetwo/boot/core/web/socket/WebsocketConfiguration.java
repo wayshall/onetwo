@@ -24,4 +24,9 @@ public class WebsocketConfiguration {
 	public PrincipalHandshakeHandler principalHandshakeHandler() {
 		return new PrincipalHandshakeHandler();
 	}
+	
+	@Bean
+	public StompMessageSender stompMessageSender() {
+		return new StompMessageSender();
+	}
 }

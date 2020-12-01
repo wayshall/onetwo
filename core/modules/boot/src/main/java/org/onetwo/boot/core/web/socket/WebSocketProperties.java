@@ -15,13 +15,14 @@ import lombok.Data;
         // 进行页面设置
         setConnected(true);
         // 订阅服务端发送回来的消息: /topic/greetings
-        stompClient.subscribe(WebSocketProperties.simpleBroker+'/greetings', function (greeting) {
+        stompClient.subscribe(BrokerProps.simplePrefixes+'/receive', function (greeting) {
             // 将服务端发送回来的消息展示出来
             showGreeting(JSON.parse(greeting.body));
         });
     });
             
-	stompClient.send(WebSocketProperties.destinationPrefixes + "/hello") //  =/ws/hello
+    // send(/app/sendAll)，controller收到后通过messageSendingOperations.convertAndSend(BrokerProps.simplePrefixes+"/receive");
+	stompClient.send(BrokerProps.appPrefixes + "/sendAll")
  * @author way
  *
  */

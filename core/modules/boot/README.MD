@@ -315,6 +315,20 @@ jfish:
 		  allowedHeaders: Content-Type
 ```
 
+### websocket和stomp配置
+```yaml
+jfish:
+	websocket: 
+		enabled: true
+	    stomp:
+			endpoints: /stomp
+			allowedOrigins: '*'
+	    broker:
+			simplePrefixes: /broadcast
+			appPrefixes: /app
+			userPrefix: /user
+```
+
 ### 其它一些简化使用的扩展
 
 - @BootMvcArgumentResolver 注解   

@@ -307,4 +307,13 @@ public abstract class WorkbookReaderFactory {
 	public static Map<String, CellValueConvertor> getConvertors() {
 		return convertors;
 	}
+	
+	public static <T> T convertCellValue(Cell cell, Class<T> type, T def) {
+		CellValueConvertor convertor = convertors.get(type.getSimpleName().toLowerCase());
+		if (convertor==null) {
+			return def;
+		}
+		T val = (T)convertor.convert(cell);
+		return val;
+	}
 }
