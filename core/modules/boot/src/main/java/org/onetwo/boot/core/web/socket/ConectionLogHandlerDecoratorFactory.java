@@ -35,7 +35,7 @@ public class ConectionLogHandlerDecoratorFactory implements WebSocketHandlerDeco
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 			if (logger.isInfoEnabled()) {
-				logger.info("websocket连接已监听, 用户：{}, sid: {}", session.getPrincipal()==null?"null":session.getPrincipal().getName(), session.getId());
+				logger.info("websocket 连接已监听, 用户：{}, sid: {}", session.getPrincipal()==null?"null":session.getPrincipal().getName(), session.getId());
 			}
 			applicationContext.publishEvent(new WebsocketConnectedEvent(this, session));
 			super.afterConnectionEstablished(session);
@@ -44,7 +44,7 @@ public class ConectionLogHandlerDecoratorFactory implements WebSocketHandlerDeco
 		@Override
 		public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
 			if (logger.isInfoEnabled()) {
-				logger.info("websocket连接已监听, 用户：{}, sid: {}", session.getPrincipal()==null?"null":session.getPrincipal().getName(), session.getId());
+				logger.info("websocket 连接已监听, 用户：{}, sid: {}", session.getPrincipal()==null?"null":session.getPrincipal().getName(), session.getId());
 			}
 			applicationContext.publishEvent(new WebsocketClosedEvent(this, session, closeStatus));
 			super.afterConnectionClosed(session, closeStatus);
