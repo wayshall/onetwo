@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.poi.hpsf.Array;
 import org.onetwo.boot.core.web.socket.WebSocketProperties.BrokerProps;
 import org.onetwo.boot.core.web.socket.WebSocketProperties.StompProps;
 import org.onetwo.common.utils.LangUtils;
@@ -14,6 +13,8 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.StompWebSocketEndpointRegistration;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
+import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 
 public class CustomWebSocketMessageBrokerConfigurer extends AbstractWebSocketMessageBrokerConfigurer {
 	
@@ -21,6 +22,8 @@ public class CustomWebSocketMessageBrokerConfigurer extends AbstractWebSocketMes
 	WebSocketProperties properties;
 	@Autowired(required = false)
 	PrincipalHandshakeHandler principalHandshakeHandler;
+	@Autowired
+	List<WebSocketHandlerDecoratorFactory> factories;
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -59,6 +62,13 @@ public class CustomWebSocketMessageBrokerConfigurer extends AbstractWebSocketMes
 			}
 			reg.withSockJS();
 			
+		}
+	}
+
+	@Override
+	public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+		if (factories!=null) {
+			registration.setDecoratorFactories(factories.toArray(new WebSocketHandlerDecoratorFactory[0]));
 		}
 	}
 

@@ -29,4 +29,9 @@ public class WebsocketConfiguration {
 	public StompMessageSender stompMessageSender() {
 		return new StompMessageSender();
 	}
+	
+	@Bean
+	public ConectionLogHandlerDecoratorFactory conectionLogHandlerDecoratorFactory() {
+		return new ConectionLogHandlerDecoratorFactory();
+	}
 }
