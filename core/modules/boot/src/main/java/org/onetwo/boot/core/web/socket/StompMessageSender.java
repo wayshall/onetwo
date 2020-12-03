@@ -1,6 +1,7 @@
 package org.onetwo.boot.core.web.socket;
 
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
@@ -19,6 +20,18 @@ public class StompMessageSender {
 	 */
 	public void sendToBroadcast(Object payload) {
 		String destination = LangUtils.getFirst(properties.getBroker().getSimplePrefixes());
+		sendTo(destination, payload);
+	}
+	
+	/***
+	 * 发送到 /broadcast/{subpath}
+	 * 默认把第一个前缀作为广播地址
+	 * @param subpath
+	 * @param payload
+	 */
+	public void sendToBroadcast(String subpath, Object payload) {
+		String destination = LangUtils.getFirst(properties.getBroker().getSimplePrefixes());
+		destination = destination + StringUtils.appendStartWithSlash(subpath);
 		sendTo(destination, payload);
 	}
 	
