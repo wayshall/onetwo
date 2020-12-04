@@ -51,6 +51,11 @@ public class ExtZuulContextConfig {
     	return filter;
     }
     
+//    @Bean
+//    public WebsocketZuulFilter websocketZuulFilter() {
+//    	return new WebsocketZuulFilter();
+//    }
+    
     @Bean
     @ConditionalOnMissingBean(SpringMultipartFilterProxy.class)
     public SpringMultipartFilterProxy springMultipartFilterProxy(){
