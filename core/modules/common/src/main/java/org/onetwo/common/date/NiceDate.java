@@ -197,6 +197,23 @@ public class NiceDate {
 		d.calendar.set(Calendar.MONTH, month);
 		return d;
 	}
+	
+	public NiceDate atWeek(int week) {
+		NiceDate d = clone();
+		d.calendar.set(Calendar.WEEK_OF_MONTH, week);
+		return d;
+	}
+	
+	public NiceDate atDayOfMonth(int date) {
+		NiceDate d = clone();
+		d.calendar.set(Calendar.DAY_OF_MONTH, date);
+		return d;
+	}
+	public NiceDate atDayOfWeek(int date) {
+		NiceDate d = clone();
+		d.calendar.set(Calendar.DAY_OF_WEEK, date);
+		return d;
+	}
 
 	protected PreciseNiceDate precise(DateType dateType) {
 		return new PreciseNiceDate(this, dateType);
