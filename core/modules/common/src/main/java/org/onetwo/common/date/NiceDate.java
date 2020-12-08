@@ -198,6 +198,12 @@ public class NiceDate {
 		return d;
 	}
 	
+	public NiceDate atYear(int year) {
+		NiceDate d = clone();
+		d.calendar.set(Calendar.YEAR, year);
+		return d;
+	}
+	
 	public NiceDate atWeek(int week) {
 		NiceDate d = clone();
 		d.calendar.set(Calendar.WEEK_OF_MONTH, week);
