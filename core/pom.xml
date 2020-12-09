@@ -40,7 +40,6 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/common</module>
-                <module>../../dbm</module>
 			</modules>
            <build>
               <plugins>

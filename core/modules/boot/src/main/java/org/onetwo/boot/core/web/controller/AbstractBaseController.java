@@ -53,7 +53,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 abstract public class AbstractBaseController {
 //	public static final String SINGLE_MODEL_FLAG_KEY = "__SINGLE_MODEL_FLAG_KEY__";
 
-	public static final String DEFAULT_CONTENT_TYPE = "application/download; charset=GBK";
+//	public static final String DEFAULT_CONTENT_TYPE = "application/download; charset=GBK";
 
 	public static final String REDIRECT = "redirect:";
 	public static final String MESSAGE = ModelAttr.MESSAGE;
@@ -233,18 +233,12 @@ abstract public class AbstractBaseController {
 
 	protected void download(HttpServletResponse response, InputStream input, String filename) {
 		try {
-			response.setContentLength(input.available());
-			response.setContentType(DEFAULT_CONTENT_TYPE);
-			String name = new String(filename.getBytes("GBK"), "ISO8859-1");
-			response.setHeader("Content-Disposition", "attachment;filename=" + name);
-			IOUtils.copy(input, response.getOutputStream());
-		} catch (Exception e) {
-			String msg = "下载文件出错：";
-			logger.error(msg + e.getMessage(), e);
+			ResponseUtils.download(response, input, filename);
 		} finally {
 			IOUtils.closeQuietly(input);
 		}
 	}
+	
 
 	protected void write(HttpServletResponse response, byte[] data) {
 		write(response, MediaType.APPLICATION_OCTET_STREAM_VALUE, data);
@@ -288,9 +282,10 @@ abstract public class AbstractBaseController {
 		PrintWriter out = null;
 		try {
 			out = response.getWriter();
-			response.setContentType(DEFAULT_CONTENT_TYPE);
-			String name = new String(filename.getBytes("GBK"), "ISO8859-1");
-			response.setHeader("Content-Disposition", "attachment;filename=" + name);
+//			response.setContentType(DEFAULT_CONTENT_TYPE);
+//			String name = new String(filename.getBytes("GBK"), "ISO8859-1");
+//			response.setHeader("Content-Disposition", "attachment;filename=" + name);
+			ResponseUtils.configDownloadHeaders(response, filename);
 			for (Object data : datas) {
 				out.println(block.execute(data));
 			}
