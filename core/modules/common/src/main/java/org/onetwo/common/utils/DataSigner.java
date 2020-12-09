@@ -24,21 +24,35 @@ import com.google.common.collect.Lists;
  */
 public interface DataSigner {
 	
-	default String sign(String signKey, long timestamp, Object request, String... excludeProperties) {
+	default String sign(String secretkey, long timestamp, Object request, String... excludeProperties) {
 		SigningData data = new SigningData();
-		data.setSigningKey(signKey);
+		data.setSecretkey(secretkey);
 		data.setTimestamp(timestamp);
 		data.setParams(request);
 		return sign(data, excludeProperties);
 	}
 	String sign(SigningData data, String... excludeProperties);
-	void checkSign(SigningConfig config, SignableRequest signRequest, Object actualRequest, String... excludeProperties);
+	
+	void checkSign(SigningCheckableData checkableData, String... excludeProperties);
+	
+	@Deprecated
+	default void checkSign(SigningConfig config, SignableRequest signRequest, Object actualRequest, String... excludeProperties) {
+		SigningCheckableData sdata = new SigningCheckableData();
+		sdata.setDebug(false);
+		sdata.setSigningConfig(config);
+		sdata.setSignRequest(signRequest);
+		checkSign(sdata, excludeProperties);
+	}
 
 	public interface SignableRequest {
 		public static final String FIELD_SIGNKEY = "signkey";
 		public static final String FIELD_TIMESTAMP = "timestamp";
 		
-		
+		/***
+		 * 参数和秘钥签名后的字符串
+		 * @author weishao zeng
+		 * @return
+		 */
 		public String getSignkey();
 		public Long getTimestamp();
 	}
@@ -68,7 +82,7 @@ public interface DataSigner {
 
 	
 	public class SigningData {
-		private String signingKey;
+		private String secretkey;
 		private long timestamp;
 		/***
 		 * 请求参数
@@ -79,19 +93,21 @@ public interface DataSigner {
 		public SigningData() {
 		}
 
-		public SigningData(String signingKey, long timestamp, Object params) {
+		public SigningData(String secretkey, long timestamp, Object params) {
 			super();
-			this.signingKey = signingKey;
+			this.secretkey = secretkey;
 			this.timestamp = timestamp;
 			this.params = params;
 		}
-		
-		public String getSigningKey() {
-			return signingKey;
+
+		public String getSecretkey() {
+			return secretkey;
 		}
-		public void setSigningKey(String signingKey) {
-			this.signingKey = signingKey;
+
+		public void setSecretkey(String secretkey) {
+			this.secretkey = secretkey;
 		}
+
 		public long getTimestamp() {
 			return timestamp;
 		}
@@ -116,11 +132,10 @@ public interface DataSigner {
 	
 	public class SigningConfig {
 		private int maxDelayTimeInSeconds = 60*3;
-		private String signingKey;
 		/***
-		 * 是否打印源字符串和签名字符串，用于调试
+		 * 签名秘钥
 		 */
-		private boolean debug;
+		private String secretkey;
 		/***
 		 * 若小于0，则不判断重放攻击
 		 * @author weishao zeng
@@ -133,21 +148,58 @@ public interface DataSigner {
 			this.maxDelayTimeInSeconds = maxDelayTimeInSeconds;
 		}
 		public String getSigningKey() {
-			return signingKey;
+			return secretkey;
 		}
 		public void setSigningKey(String signingKey) {
-			this.signingKey = signingKey;
+			this.secretkey = signingKey;
 		}
 
+		public String getSecretkey() {
+			return secretkey;
+		}
+		public void setSecretkey(String secretkey) {
+			this.secretkey = secretkey;
+		}
+	}
+	
+	public class SigningCheckableData {
+		private SigningConfig signingConfig;
+		private SignableRequest signRequest;
+
+		/***
+		 * 是否打印源字符串和签名字符串，用于调试
+		 */
+		private boolean debug;
+
+		public SigningCheckableData() {
+		}
+		
+		public SigningCheckableData(SigningConfig signingConfig, SignableRequest signRequest) {
+			super();
+			this.signingConfig = signingConfig;
+			this.signRequest = signRequest;
+		}
+		
 		public void setDebug(boolean debug) {
 			this.debug = debug;
 		}
 		public boolean isDebug() {
 			return debug;
 		}
-
+		public SigningConfig getSigningConfig() {
+			return signingConfig;
+		}
+		public void setSigningConfig(SigningConfig signingConfig) {
+			this.signingConfig = signingConfig;
+		}
+		public SignableRequest getSignRequest() {
+			return signRequest;
+		}
+		public void setSignRequest(SignableRequest signRequest) {
+			this.signRequest = signRequest;
+		}
 	}
-
+	
 	
 	public class DefaultDataSigner implements DataSigner {
 		final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -167,10 +219,10 @@ public interface DataSigner {
 		}
 		
 		protected String convertToSourceString(SigningData data, String... excludeProperties){
-			Assert.hasText(data.getSigningKey(), "signKey can not blank");
+			Assert.hasText(data.getSecretkey(), "secretkey can not blank");
 			Map<String, Object> requestMap = getBeanToMapConvertor(excludeProperties).toFlatMap(data.getParams());
 			final String paramString = ParamUtils.comparableKeyMapToParamString(requestMap);
-			String sourceString = data.getSigningKey() + paramString + data.getTimestamp();
+			String sourceString = data.getSecretkey() + paramString + data.getTimestamp();
 			if(data.isDebug()){
 				logger.info("param string: {}", paramString);
 				logger.info("source string: {}", sourceString);
@@ -193,7 +245,10 @@ public interface DataSigner {
 			return timestampInSeconds * 1000;
 		}
 		
-		public void checkSign(SigningConfig config, SignableRequest signRequest, Object actualRequest, String... excludeProperties){
+		public void checkSign(SigningCheckableData checkableData, String... excludeProperties){
+			SigningConfig config = checkableData.getSigningConfig();
+			SignableRequest signRequest = checkableData.getSignRequest();
+			
 			if(signRequest.getTimestamp()==null){
 				throw new ServiceException(SignErrors.TIMESTAMP_ERR);
 			}
@@ -208,14 +263,14 @@ public interface DataSigner {
 			//如果请求时间+延迟时间后少于当前时间，则可能是攻击
 			this.checkMaxDelayTimeError(requestTime, config);
 			
-			Object request = actualRequest==null?signRequest:actualRequest;
-			SigningData signingData = new SigningData(config.getSigningKey(), signRequest.getTimestamp(), request);
-			signingData.setDebug(config.isDebug());
+//			Object request = actualRequest==null?signRequest:actualRequest;
+			SigningData signingData = new SigningData(config.getSigningKey(), signRequest.getTimestamp(), signRequest);
+			signingData.setDebug(checkableData.isDebug());
 //			String sourceString = convertToSourceString(config.getSigningKey(), signRequest.getTimestamp(), request, excludeProperties);
 			String sourceString = convertToSourceString(signingData, excludeProperties);
 			MessageDigestHasher hasher = Hashs.sha1(false, CodeType.HEX);
 			String hashString = hasher.hash(sourceString);
-			if(config.isDebug()){
+			if(checkableData.isDebug()){
 				logger.info("checkSign hash string: {}", hashString);
 			}
 			
