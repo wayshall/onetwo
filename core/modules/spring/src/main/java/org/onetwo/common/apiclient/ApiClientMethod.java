@@ -82,7 +82,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	final static private BeanToMapConvertor beanToMapConvertor = EnhanceBeanToMapBuilder.enhanceBuilder()
 																	.enableFieldNameAnnotation()
 																	.enableJsonPropertyAnnotation()
-																	.valueConvertor(new ValueConvertor())
+																	.valueConvertor(new RestApiValueConvertor())
 																	.flatableObject(obj->{
 																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
 																		return  flatable &&

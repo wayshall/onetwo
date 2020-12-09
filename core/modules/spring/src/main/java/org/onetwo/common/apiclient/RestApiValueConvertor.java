@@ -10,6 +10,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.PropertyContext;
+import org.onetwo.common.reflect.ValueConvertor;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.converter.ValueEnum;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -23,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author wayshall
  * <br/>
  */
-public class ValueConvertor implements org.onetwo.common.reflect.ValueConvertor {
+public class RestApiValueConvertor implements ValueConvertor {
 	
 	@Override
 	public Object apply(PropertyContext prop, Object v) {
