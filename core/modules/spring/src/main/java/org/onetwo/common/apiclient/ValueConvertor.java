@@ -1,27 +1,32 @@
 package org.onetwo.common.apiclient;
 
-import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Date;
-import java.util.function.BiFunction;
 
 import org.onetwo.common.apiclient.resouce.FileNameByteArrayResource;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.reflect.Intro;
+import org.onetwo.common.reflect.PropertyContext;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.converter.ValueEnum;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author wayshall
  * <br/>
  */
-public class ValueConvertor implements BiFunction<PropertyDescriptor, Object, Object> {
+public class ValueConvertor implements org.onetwo.common.reflect.ValueConvertor {
+	
 	@Override
-	public Object apply(PropertyDescriptor prop, Object v) {
+	public Object apply(PropertyContext prop, Object v) {
 		if(v instanceof Enum){
 			Enum<?> e = (Enum<?>)v;
 			if(e instanceof ValueEnum){
@@ -54,7 +59,16 @@ public class ValueConvertor implements BiFunction<PropertyDescriptor, Object, Ob
 			v = ((ApiArgumentTransformer)v).asApiValue();
 		}else if(v instanceof Date){
 			Date d = (Date) v;
-			v = DateUtils.formatDateTimeMillis2(d);
+			DateTimeFormat df = null;
+			if (prop.getSource()!=null) {
+				Field field = Intro.wrap(prop.getSource().getClass()).getField(prop.getName());
+				df = AnnotationUtils.findAnnotation(field, DateTimeFormat.class);
+			}
+			if (df!=null) {
+				v = SpringUtils.formatDate(d, df);
+			} else {
+				v = DateUtils.formatDateTimeMillis2(d);
+			}
 		}else{
 			v = v==null?v:v.toString();
 		}

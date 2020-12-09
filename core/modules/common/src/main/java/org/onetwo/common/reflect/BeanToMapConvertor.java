@@ -166,7 +166,7 @@ public class BeanToMapConvertor implements Cloneable {
 	private String prefix = "";
 	private PropertyAcceptor propertyAcceptor;
 	private PropertyNameConvertor propertyNameConvertor;
-	private BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
+	private ValueConvertor valueConvertor;
 	
 	private Function<Object, Boolean> flatableObject = DEFAULT_FLATABLE;
 //	private Set<Class<?>> valueTypes = new HashSet<Class<?>>(LangUtils.getSimpleClass());
@@ -220,7 +220,7 @@ public class BeanToMapConvertor implements Cloneable {
 //		this.checkFreezed();
 		this.propertyAcceptor = propertyAcceptor;
 	}
-	public void setValueConvertor(BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+	public void setValueConvertor(ValueConvertor valueConvertor) {
 //		this.checkFreezed();
 		this.valueConvertor = valueConvertor;
 	}
@@ -273,7 +273,7 @@ public class BeanToMapConvertor implements Cloneable {
 					Object newVal = valueConvertor.apply(prop, val);
 					val = (newVal!=null?newVal:val);
 				}*/
-				val = convertValue(prop, val);
+				val = convertValue(propContext, val);
 //				PropertyContext propContext = createPropertyContext(obj, prop);
 				rsMap.put(toPropertyName(propContext.getConvertedName()), val);
 			}
@@ -353,7 +353,7 @@ public class BeanToMapConvertor implements Cloneable {
 	private <T> void flatObject(final String prefixName, final Object obj, ValuePutter valuePutter, PropertyContext keyContext){
 		Objects.requireNonNull(prefixName);
 		if(isMappableValue(obj)){
-			Object convertedValue = convertValue(null, obj);
+			Object convertedValue = convertValue(keyContext, obj);
 			valuePutter.put(prefixName, convertedValue, keyContext);
 		}else if(isMapObject(obj)){
 			String mapPrefixName = prefixName;
@@ -429,7 +429,7 @@ public class BeanToMapConvertor implements Cloneable {
 		});
 	}
 	
-	private Object convertValue(PropertyDescriptor prop, Object val){
+	private Object convertValue(PropertyContext prop, Object val){
 		if(valueConvertor!=null){
 			Object newVal = valueConvertor.apply(prop, val);
 			val = (newVal!=null?newVal:val);
@@ -563,7 +563,7 @@ public class BeanToMapConvertor implements Cloneable {
 	protected static class BaseBeanToMapBuilder<T extends BaseBeanToMapBuilder<T>> {
 //		private BeanToMapConvertor beanToFlatMap = new BeanToMapConvertor();
 		protected PropertyAcceptor propertyAcceptor;
-		protected BiFunction<PropertyDescriptor, Object, Object> valueConvertor;
+		protected ValueConvertor valueConvertor;
 		protected Function<Object, Boolean> flatableObject;
 		protected boolean enableFieldNameAnnotation = false;
 		protected boolean enableUnderLineStyle = false;
@@ -610,7 +610,7 @@ public class BeanToMapConvertor implements Cloneable {
 			return self();
 		}
 
-		public T valueConvertor(BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+		public T valueConvertor(ValueConvertor valueConvertor) {
 			this.valueConvertor = valueConvertor;
 			return self();
 		}

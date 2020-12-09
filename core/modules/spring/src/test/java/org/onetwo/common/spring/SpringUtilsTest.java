@@ -2,14 +2,18 @@ package org.onetwo.common.spring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
 import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.reflect.Intro;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -50,6 +54,19 @@ public class SpringUtilsTest {
 		assertThat(map.size()).isEqualTo(5);
 		assertThat(map.get("birthday")).isEqualTo("2017-01-05");
 		assertThat(map.get("realName")).isEqualTo("testRealName");
+	}
+	
+	@Test
+	public void test() throws ParseException {
+		DateFormatTest t = new DateFormatTest();
+		Field field = Intro.wrap(DateFormatTest.class).getField("date");
+		Date date = SpringUtils.parseDate("2020-12-09", field);
+		assertThat(date).isEqualTo(DateUtils.parse("2020-12-09"));
+	}
+
+	static public class DateFormatTest {
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
+		Date date;
 	}
 	
 	public static class TestBean {

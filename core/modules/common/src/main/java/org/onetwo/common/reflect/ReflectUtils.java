@@ -950,7 +950,7 @@ public class ReflectUtils {
 //		return toMap(ignoreNull, obj, null);
 		return ignoreNull?BEAN_TO_MAP_IGNORE_NULL_CONVERTOR.toMap(obj):BEAN_TO_MAP_CONVERTOR.toMap(obj);
 	}
-	public static Map<String, Object> toMap(boolean ignoreNull, Object obj, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+	public static Map<String, Object> toMap(boolean ignoreNull, Object obj, ValueConvertor valueConvertor) {
 		return toMap(obj, (p, v)->{
 			if(v!=null)
 				return true;
@@ -965,7 +965,7 @@ public class ReflectUtils {
 	}
 	
 	// public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
-	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor) {
 		return BeanToMapBuilder.newBuilder()
 						.propertyAcceptor(acceptor)
 						.valueConvertor(valueConvertor)
