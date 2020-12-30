@@ -2,7 +2,7 @@ package org.onetwo.common.utils;
 
 import java.text.DecimalFormat;
 
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 
 /**
  * 非原创，来自网络
@@ -28,7 +28,7 @@ public abstract class DistanceUtils {
     public static double calcDistance(Double lng1, Double lat1, Double lng2, Double lat2) {
     	if(lng1==null || lat1==null || lng2==null || lat2==null){
 //    		return Double.NaN;
-    		throw new BaseException("参数错误，坐标不能为空！")
+    		throw new ServiceException("参数错误，坐标不能为空！")
     							.put("lng1", lng1)
     							.put("lat1", lat1)
     							.put("lng2", lng2)
