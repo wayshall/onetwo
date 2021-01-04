@@ -65,8 +65,8 @@ public class DefaultMenuItemRepository implements MenuItemRepository<Permisstion
 			permissions = permissionManager.findAppMenus(null);
 		}else{
 			// 这个是查询菜单的接口，所以只查菜单数据，若需要包含非菜单的权限数据，应该另外调用permissionManager.findUserAppPerms查询，避免混乱
-			permissions = permissionManager.findUserAppMenus(null, loginUser);
-//			permissions = permissionManager.findUserAppPerms(null, loginUser);
+//			permissions = permissionManager.findUserAppMenus(null, loginUser);
+			permissions = permissionManager.findUserAppPerms(null, loginUser);
 		}
 	    return builder.build(permissions, getAllPermissions());
 	}

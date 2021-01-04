@@ -10,13 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.onetwo.common.convert.Types;
-import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 
 @SuppressWarnings("unchecked")
 public class TreeBuilder<TM extends TreeModel<TM>> {
@@ -189,10 +185,12 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			/*if (node.getId().toString().contains("Politicals_DuesMgr")) {
 				System.out.println("test");
 			}*/
+			// 通过回调函数判断是否跟节点
 			if (this.rootNodeFunc!=null && this.rootNodeFunc.isRootNode(node, nodeMap)) {
 				addRoot(node);
 				continue;
 			}else if(node.getParentId() == null){
+				// 如果parentId为null，则被当做是根节点
 				addRoot(node);
 				continue;
 			}
@@ -201,6 +199,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 				addRoot(node);
 				continue;
 			}*/
+			// 如果该节点是已存在的跟节点，则忽略
 			if (isExistsRootNode(node))
 				continue;
 //			TM p = nodeMap.get(node.getParentId());
@@ -215,14 +214,17 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 //				node.setParent(p);
 			}*/
 			if (p==null) {
+				// 当父节点为null时，调用ParentNodeNotFoundAction回调函数查找父节点
 				p = notFoundAction.onParentNodeNotFound(node);
 				if(p==null){
-					// do nothing
+					// 如果返回null，则忽略处理
 //					addRoot(node);
 				} else if (p.equals(node)) {
 					// 返回自身，则添加到根节点
 					addRoot(node);
 				} else {
+					// 通过ParentNodeNotFoundAction回调查找到父节点时，把父节点也放到缓存nodeMap里
+					// 同时通过addChild方法把当前节点放到父节点的children列表里
 					nodeMap.put(p.getId(), p);
 					treeModels.add(p);
 					// 当父节点是延迟加载的时候会出现修改list的情况
