@@ -61,6 +61,7 @@ import org.onetwo.common.utils.map.CaseInsensitiveMap;
 abstract public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
+	public final static long START_STMP = 1610374613027L; //2021-1-11 22:17的时间戳，用于某些基于时间戳算法的id减去基值
 
 	public static final String UTF8 = "utf-8";
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
