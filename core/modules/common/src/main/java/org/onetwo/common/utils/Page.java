@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.onetwo.common.exception.ServiceException;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -64,6 +66,11 @@ public class Page<T> implements Serializable {
 	public static void setDefaultPageSize(int defaultPageSize) {
 		Page.DefaultPageSize = defaultPageSize;
 	}
+	
+	
+	public static void defaultMaxPageSize(int defaultMaxPageSize) {
+		Page.DefaultMaxPageSize = defaultMaxPageSize;
+	}
 
 	public static int getDefaultPageSize() {
 		return DefaultPageSize;
@@ -74,6 +81,10 @@ public class Page<T> implements Serializable {
 	public static final String DESC = ":desc";
 	
 	private static int DefaultPageSize = 20;
+	/***
+	 * 防止前端传入过大的分页数
+	 */
+	private static int DefaultMaxPageSize = 10000;
 
 	/***
 	 * 分页显示时，显示相距当前页的数量，默认为当前页前后5页
@@ -134,15 +145,27 @@ public class Page<T> implements Serializable {
 	public int getPageSize() {
 		return pageSize;
 	}
+	
+	/***
+	 * 另外提供不做检查强制修改分页数量的方法
+	 * @author weishao zeng
+	 * @param pageSize
+	 */
+	public void forceChangePageSize(final Integer pageSize) {
+		this.pageSize = pageSize;
+	}
 
 	public void setPageSize(final Integer pageSize) {
 		if(pageSize==null){
 			return ;
 		}
-		if(pageSize<=0)
+		if(pageSize<=0) {
 			this.pageSize = DefaultPageSize;
-		else
+		} else if (pageSize > DefaultMaxPageSize) {
+			throw new ServiceException("错误的分页数：" + pageSize);
+		} else {
 			this.pageSize = pageSize;
+		}
 	}
 	
 	public int getSize(){
