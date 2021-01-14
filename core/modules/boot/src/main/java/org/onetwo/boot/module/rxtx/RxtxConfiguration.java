@@ -17,16 +17,17 @@ public class RxtxConfiguration {
 	
 	@Bean
 	@ConditionalOnMissingBean(SerialPortManager.class)
-	public SerialPortManager serialPortManager(SerialPortEventPublisher serialPortEventPublisher) {
-		SerialPortManager mgr = new SerialPortManager(serialPortEventPublisher);
+//	public SerialPortManager serialPortManager(SerialPortEventPublisher serialPortEventPublisher) {
+	public SerialPortManager serialPortManager() {
+		SerialPortManager mgr = new SerialPortManager();
 		return mgr;
 	}
 	
-	@Bean
-	@ConditionalOnMissingBean(SerialPortEventPublisher.class)
-	public SerialPortEventPublisher serialPortEventPublisher() {
-		SerialPortEventPublisher publisher = new SpringSerialPortEventPublisher();
-		return publisher;
-	}
+//	@Bean
+//	@ConditionalOnMissingBean(SerialPortEventPublisher.class)
+//	public SerialPortEventPublisher serialPortEventPublisher() {
+//		SerialPortEventPublisher publisher = new SpringSerialPortEventPublisher();
+//		return publisher;
+//	}
 
 }

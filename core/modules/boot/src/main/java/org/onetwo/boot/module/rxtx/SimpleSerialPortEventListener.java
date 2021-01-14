@@ -14,10 +14,27 @@ import gnu.io.SerialPortEvent;
  * <br/>
  */
 
-public class SimpleSerialPortEventListener {
+public class SimpleSerialPortEventListener /* implements SerialPortEventListener */{
 	
 	protected final Logger logger = JFishLoggerFactory.getLogger(getClass());
 
+//	private JSerialPort serialPort;
+//	
+//	public SimpleSerialPortEventListener(JSerialPort port) {
+//		super();
+//		this.serialPort = port;
+//	}
+//
+//	public void setSerialPort(JSerialPort serialPort) {
+//		this.serialPort = serialPort;
+//	}
+//
+//	@Override
+//	public void serialEvent(SerialPortEvent event) {
+//		JSerialEvent serialEvent = new JSerialEvent(serialPort, event);
+//		onSerialEvent(serialEvent);
+//	}
+	
 //	@EventListener
 	public void onSerialEvent(JSerialEvent serialEvent) {
 		int eventType = serialEvent.getEvent().getEventType();

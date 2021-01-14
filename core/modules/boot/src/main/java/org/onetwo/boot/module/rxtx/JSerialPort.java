@@ -18,24 +18,33 @@ import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
 /**
+ * 串口设备
+ * 包含基本的连接（打开端口）、关闭和事件监听
+ * 
  * @author weishao zeng <br/>
  */
-
-public class JSerialPort implements SerialPortEventListener {
+public class JSerialPort {
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(getClass());
 
 	private CommPortIdentifier portIdentifier;
 	private SerialPort serialPort;
 	private volatile boolean connected;
-	private SerialPortEventPublisher publisher;
+//	private SerialPortEventPublisher publisher;
 
-	public JSerialPort(CommPortIdentifier portIdentifier, SerialPortEventPublisher publisher) {
+//	public JSerialPort(CommPortIdentifier portIdentifier, SerialPortEventPublisher publisher) {
+	public JSerialPort(CommPortIdentifier portIdentifier) {
 		super();
 		this.portIdentifier = portIdentifier;
-		this.publisher = publisher;
+//		this.publisher = publisher;
 	}
 
+	/***
+	 * 打开串口
+	 * @param name
+	 * @param timeoutInMillis
+	 * @param baudrate
+	 */
 	public void open(String name, int timeoutInMillis, int baudrate) {
 		CommPort commPort;
 		try {
@@ -58,11 +67,15 @@ public class JSerialPort implements SerialPortEventListener {
 	protected void configPort(SerialPort serialPort, int baudrate) {
 		configBaudrate(this.serialPort, baudrate);
 		
-		if (publisher!=null) {
-			addListener(this);
-		}
+//		if (publisher!=null) {
+//			addListener(this);
+//		}
 	}
 	
+	/***
+	 * 向串口写入数据
+	 * @param data
+	 */
 	public void write(byte[] data) {
 		OutputStream output = null;
 		try {
@@ -75,6 +88,10 @@ public class JSerialPort implements SerialPortEventListener {
 		}
 	}
 	
+	/***
+	 * 移除事件监听器
+	 * 关闭串口连接
+	 */
 	public void close() {
 		this.connected = false;
 		removeEventListener();
@@ -86,10 +103,13 @@ public class JSerialPort implements SerialPortEventListener {
 		return connected;
 	}
 
-	@Override
-	public void serialEvent(SerialPortEvent event) {
+	/****
+	 * 监听接收串口事件，重新包装和发布
+	 */
+//	@Override
+	private void serialEvent(SerialPortEvent event) {
 		JSerialEvent serialEvent = new JSerialEvent(this, event);
-		publisher.publish(serialEvent);
+//		publisher.publish(serialEvent);
 		
 //		int eventType = event.getEventType();
 //		switch (eventType) {
@@ -131,6 +151,10 @@ public class JSerialPort implements SerialPortEventListener {
 //		}
 	}
 
+	/****
+	 * 添加原生的监听器
+	 * @param lisenner
+	 */
 	public void addListener(SerialPortEventListener lisenner) {
 		try {
 			this.serialPort.addEventListener(lisenner);
