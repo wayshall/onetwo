@@ -1,8 +1,9 @@
-package org.onetwo.boot.module.rxtx;
+package org.onetwo.boot.module.rxtx.weigh;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
+import org.onetwo.boot.module.rxtx.BaseSeriaCommand;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.BinaryUtils;
 import org.onetwo.common.utils.LangUtils;

@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.rxtx;
+package org.onetwo.boot.module.rxtx.weigh;
 
 import java.math.BigDecimal;
 

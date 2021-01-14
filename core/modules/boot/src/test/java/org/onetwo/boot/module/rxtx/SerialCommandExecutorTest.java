@@ -7,12 +7,14 @@ package org.onetwo.boot.module.rxtx;
 import java.util.Map;
 
 import org.junit.Test;
+import org.onetwo.boot.module.rxtx.weigh.GetAllWeighCommand;
+import org.onetwo.boot.module.rxtx.weigh.ModuleWeighInfo;
 
-public class WeighReaderTest {
+public class SerialCommandExecutorTest {
 	SerialPortManager serialPortManager = new SerialPortManager();
 
 	@Test
-	public void test() {
+	public void testGetAllWeighCommand() {
 		serialPortManager.init();
 		
 		SerialCommandExecutor reader = new SerialCommandExecutor(serialPortManager);
