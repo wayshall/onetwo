@@ -11,11 +11,13 @@ import org.onetwo.common.utils.LangUtils;
 import com.google.common.collect.Maps;
 
 /**
+ * 获取称重设备所有模块的称重数据
+ * 
  * @author weishao zeng
  * <br/>
  */
 
-public class GetAllWeighCommand extends BaseSeriaCommand<Map<String, ModuleWeighInfo>> {
+public class GetAllWeighTestCommand extends BaseSeriaCommand<Map<String, ModuleWeighInfo>> {
 	private static final String GET_WEIGH_VALUE = "00 05 02 05 0C";
 
 	/***

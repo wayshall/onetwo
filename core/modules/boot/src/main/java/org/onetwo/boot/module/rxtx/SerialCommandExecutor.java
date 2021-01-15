@@ -2,6 +2,7 @@ package org.onetwo.boot.module.rxtx;
 
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.util.Assert;
 
 import gnu.io.SerialPortEventListener;
@@ -37,9 +38,16 @@ public class SerialCommandExecutor {
 	}
 	
 	public void open() {
+		open(null);
+	}
+	
+	public void open(String portLabel) {
 		int timeout = getTimeout(getSerialConfig().getTimeout());
 		Assert.notNull(getSerialConfig().getBaudrate(), "波特率参数不能为空！");
-		port.open("weigh-"+getSerialConfig().getPort(), timeout, getSerialConfig().getBaudrate());
+		if (StringUtils.isBlank(portLabel)) {
+			portLabel = getSerialConfig().getPortLabel();
+		}
+		port.open(portLabel, timeout, getSerialConfig().getBaudrate());
 //		port.addListener(this);
 	}
 	

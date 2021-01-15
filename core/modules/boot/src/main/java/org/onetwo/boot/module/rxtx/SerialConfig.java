@@ -12,7 +12,13 @@ import lombok.Data;
 @Data
 public class SerialConfig {
 //	String readerName = "COM3:115200";
-	
+	/***
+	 * 端口名称
+	 */
+	String portLabel;
+	/***
+	 * 端口
+	 */
 	String port;
 	/***
 	 * 默认波特率 115200
@@ -31,5 +37,12 @@ public class SerialConfig {
 		if (baudrate==null) {
 			throw new BaseException("没有配置串口波特率：" + baudrate);
 		}
+	}
+	
+	public String getPortLabel() {
+		if (StringUtils.isBlank(portLabel)) {
+			return getPort();
+		}
+		return portLabel;
 	}
 }
