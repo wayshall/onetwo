@@ -39,8 +39,26 @@ public class NiceDateRange {
 		}
 		
 		public QuarterDateRange nextQuarter(int diff) {
-			int nextQuarter = Math.abs(this.quarterValue + diff)%4;
-			return NiceDate.New().getQuarter(nextQuarter);
+//			int nextQuarter = Math.abs(this.quarterValue + diff)%4;
+//			return NiceDate.New().getQuarter(nextQuarter);
+			if (diff==0) {
+				return this;
+			} else if (diff>0) {
+				int seasonIndex = this.quarterValue + diff;
+				int addYear = seasonIndex / 4;
+				int realSeasonIndex = seasonIndex % 4;
+				QuarterDateRange q = getStart().nextYear(addYear).getQuarter(realSeasonIndex);
+				return q;
+			} else {
+				int seasonIndex = this.quarterValue + diff;
+				int addYear = seasonIndex/4;
+				if (seasonIndex<0) {
+					addYear = -1;
+				}
+				int realSeasonIndex = (seasonIndex+4) % 4;
+				QuarterDateRange q = getStart().nextYear(addYear).getQuarter(realSeasonIndex);
+				return q;
+			}
 		}
 		
 		public String toString() {
