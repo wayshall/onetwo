@@ -205,7 +205,7 @@ public class Page<T> implements Serializable {
 		setOrderBy(theOrderBy);
 		return this;
 	}
-
+	
 	public String getOrder() {
 		return order;
 	}

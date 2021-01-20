@@ -137,6 +137,20 @@
 	    <version>1.46</version>
 	    <optional>true</optional>
 	</dependency>
+	
+	
+    <!-- swagger -->
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <optional>true</optional>
+      <exclusions>
+        <exclusion>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     
     <dependency>
         <groupId>junit</groupId>
