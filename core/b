@@ -1,12 +1,19 @@
 #!/bin/bash
 
 currentCmd="$*"
+isDebug="1"
+function debug(){
+    if [ $isDebug = '1' ] ; then
+        local ts=$(date "+%Y-%m-%d %H:%M:%S")
+        echo "[debug]$ts $1"
+    fi
+}
 
 function runArgsCmdInCurrentDir(){
     # 获取当前目录的路径
     currentPath=$(cd `dirname $0`; pwd)
-    echo "curent dir: $currentPath"
-    echo "run cmd: $currentCmd"
+    debug "curent dir: $currentPath"
+    debug "run cmd: $currentCmd"
     eval $currentCmd
 }
 
