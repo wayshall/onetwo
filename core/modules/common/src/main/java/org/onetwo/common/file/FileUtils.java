@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -21,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -352,7 +355,7 @@ public class FileUtils {
 		return br;
 	}
 	
-
+	
 	public static List<String> readAsList(InputStream in){
 		return readAsList(in, DEFAULT_CHARSET);
 	}
@@ -373,6 +376,30 @@ public class FileUtils {
 		return datas;
 	}
 	
+
+	public static void readFile(File file, FileLineCallback flcb){
+		readFile(file, DEFAULT_CHARSET, flcb);
+	}
+	
+	/***
+	 * 通过回调读取文件
+	 * @author weishao zeng
+	 * @param file
+	 * @param charset
+	 * @param flcb
+	 */
+	public static void readFile(File file, String charset, FileLineCallback flcb){
+		FileInputStream in;
+		try {
+			in = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new BaseException("找不到文件：" + file.getPath(), e);
+		}
+		readInputStream(in, charset, flcb);
+	}
+	public static void readInputStream(InputStream in, String charset, FileLineCallback flcb){
+		reader(asBufferedReader(in, charset), flcb);
+	}
 	
 	public static void reader(BufferedReader br, FileLineCallback flcb){
 //		List<String> datas = new ArrayList<String>();
@@ -954,20 +981,28 @@ public class FileUtils {
 	}
 	
 	public static List<File> list(File dirFile, Predicate<File> fileMatcher, boolean includeDir) {
-		File[] files = dirFile.listFiles();
+		return matchFiles(dirFile, (dir, file) -> fileMatcher.test(file), includeDir);
+	}
+	
+	public static List<File> matchFiles(File baseDirFile, FileMatcher fileMatcher, boolean includeDir) {
+		return matchFiles(baseDirFile, baseDirFile, fileMatcher, includeDir);
+	}
+	
+	public static List<File> matchFiles(File baseDirFile, File toListDir, FileMatcher fileMatcher, boolean includeDir) {
+		File[] files = toListDir.listFiles();
 		if (files == null)
 			return Collections.EMPTY_LIST;
 
 		List<File> fileList = new ArrayList<File>();
 		for (File f : files) {
 			if (f.isFile()) {
-				if(fileMatcher==null || fileMatcher.test(f))
+				if(fileMatcher==null || fileMatcher.match(baseDirFile, f))
 					fileList.add(f);
 			} else {
-				if(includeDir && (fileMatcher==null || fileMatcher.test(f))){
+				if(includeDir && (fileMatcher==null || fileMatcher.match(baseDirFile, f))){
 					fileList.add(f);
 				}
-				List<File> l = list(f, fileMatcher, includeDir);
+				List<File> l = matchFiles(baseDirFile, f, fileMatcher, includeDir);
 				if(l==null || l.isEmpty())
 					continue;
 				fileList.addAll(l);
@@ -976,7 +1011,7 @@ public class FileUtils {
 
 		return fileList;
 	}
-	
+
 	public static String getPackageName(File file){
 		String packageName = "";
 		BufferedReader br = null;
@@ -1423,6 +1458,10 @@ public class FileUtils {
 	}
 	
 	public static File zipfiles(String targetZipFilePath, File...files){
+		return zipfiles(targetZipFilePath, Arrays.asList(files));
+	}
+	
+	public static File zipfiles(String targetZipFilePath, List<File> files){
 		Assert.notEmpty(files);
 		File zipfile = new File(targetZipFilePath);
 		makeDirs(zipfile, true);
@@ -1524,6 +1563,74 @@ public class FileUtils {
 		}
 		ByteArrayInputStream bin = new ByteArrayInputStream(output.toByteArray());
 		return bin;
+	}
+    
+    /***
+     * 根据文件路径创建BufferedWriter，文件不存在，则创建一个
+     * @author weishao zeng
+     * @param filePath
+     * @return
+     */
+    public static BufferedWriterWrapper createOrGetBufferedWriter(String filePath) {
+    	File file = new File(filePath);
+    	return createOrGetBufferedWriter(file);
+    }
+    public static BufferedWriterWrapper createOrGetBufferedWriter(File file) {
+    	if (!file.exists()) {
+    		boolean created;
+			try {
+				created = file.createNewFile();
+			} catch (IOException e) {
+				throw new BaseException("create new file error: " + file.getPath(), e);
+			}
+    		if (!created) {
+    			logger.info("create error：" + file.getPath());
+    		}
+    	}
+    	return fileToBufferedWriter(file);
+    }
+    
+    public static BufferedWriterWrapper fileToBufferedWriter(File file) {
+    	FileOutputStream fout;
+		try {
+			fout = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new BaseException("找不到文件：" + file.getPath(), e);
+		}
+		OutputStreamWriter osw = new OutputStreamWriter(fout);
+		BufferedWriter bw = new BufferedWriter(osw);
+		return new BufferedWriterWrapper(bw);
+    }
+    
+    /***
+     * 获取文件所在目录，基于baseDir的子目录的名称
+     * @author weishao zeng
+     * @param file
+     * @param baseDir
+     * @return
+     */
+    public static String getSubdirOf(File file, File baseDir) {
+    	String path = replaceBackSlashToSlash(file.getPath());
+    	String baseDirPath = replaceBackSlashToSlash(baseDir.getPath());
+    	String relativePath = StringUtils.substringAfter(path, baseDirPath);
+    	relativePath = StringUtils.trimStartWith(relativePath, SLASH);
+    	String name = StringUtils.substringBefore(relativePath, SLASH);
+    	return name;
+    }
+    
+    public static String getRelativeDirPath(File file, File baseDir) {
+    	String path = replaceBackSlashToSlash(file.getPath());
+    	String baseDirPath = replaceBackSlashToSlash(baseDir.getPath());
+    	String relativePath = StringUtils.substringAfter(path, baseDirPath);
+//    	relativePath = StringUtils.trimStartWith(relativePath, SLASH);
+    	return relativePath;
+    }
+
+	static public boolean relativeDirPathContains(File file, File baseDir, String...dirs){
+		String relativePath = FileUtils.getRelativeDirPath(file, baseDir);
+		return Stream.of(dirs).anyMatch(dir->{
+			return relativePath.contains(dir);
+		});
 	}
 	
 	public static void main(String[] args) {
