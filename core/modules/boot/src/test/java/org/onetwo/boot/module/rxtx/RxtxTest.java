@@ -10,7 +10,7 @@ import org.onetwo.common.utils.LangUtils;
 public class RxtxTest {
 
 	public static void main(String[] args) {
-		SerialPortManager mgr = new SerialPortManager(new SimpleSerialPortEventPublisher());
+		SerialPortManager mgr = new SerialPortManager();
 		mgr.init();
 		JSerialPort serialPort = mgr.getSerialPort("COM2");
 		serialPort.open("test", 2000, 115200);

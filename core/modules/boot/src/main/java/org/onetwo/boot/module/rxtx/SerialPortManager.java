@@ -20,15 +20,15 @@ public class SerialPortManager implements InitializingBean {
 
 	private Map<String, CommPortIdentifier> portMap;
 	
-	private SerialPortEventPublisher serialPortEventPublisher;
+//	private SerialPortEventPublisher serialPortEventPublisher;
 	
 	public SerialPortManager() {
-		this(null);
+//		this(null);
 	}
-	public SerialPortManager(SerialPortEventPublisher serialPortEventPublisher) {
-		super();
-		this.serialPortEventPublisher = serialPortEventPublisher;
-	}
+//	public SerialPortManager(SerialPortEventPublisher serialPortEventPublisher) {
+//		super();
+//		this.serialPortEventPublisher = serialPortEventPublisher;
+//	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -50,7 +50,8 @@ public class SerialPortManager implements InitializingBean {
 	}
 	
 	protected JSerialPort createJSerialPort(CommPortIdentifier portIdentifier) {
-		return new JSerialPort(portIdentifier, serialPortEventPublisher);
+//		return new JSerialPort(portIdentifier, serialPortEventPublisher);
+		return new JSerialPort(portIdentifier);
 	}
 	
 	public CommPortIdentifier getCommPortIdentifier(String portName) {
@@ -73,8 +74,8 @@ public class SerialPortManager implements InitializingBean {
         return portMap;
     }
 
-	public SerialPortEventPublisher getSerialPortEventPublisher() {
-		return serialPortEventPublisher;
-	}
+//	public SerialPortEventPublisher getSerialPortEventPublisher() {
+//		return serialPortEventPublisher;
+//	}
     
 }

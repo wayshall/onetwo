@@ -20,9 +20,9 @@ public class NiceDateTest {
 
 	@Test
 	public void testQuarter() throws ParseException{
-		NiceDate now = NiceDate.Now();
+		NiceDate now = NiceDate.New("2020-11-14");
 		
-		assertThat(NiceDate.New("2020-11-14").getQuarter(0).toString()).isEqualTo("2020-Q1");
+		assertThat(NiceDate.New("2020-11-14").getQuarter(0).toString()).isEqualTo("2020Q1");
 		
 		String dateTime = now.getQuarter(0).getStart().format("MM-dd HH:mm:ss");
 		System.out.println("dateTime: " + dateTime);
@@ -39,15 +39,33 @@ public class NiceDateTest {
 		assertThat(dateTime).isEqualTo("01-01 00:00:00");
 		assertThat(q.getValue()).isEqualTo(0);
 		
+		// 第四季的前三季度，即第一季
 		q = now.getQuarter(3).nextQuarter(-3);
 		dateTime = q.getStart().format("MM-dd HH:mm:ss");
 		assertThat(dateTime).isEqualTo("01-01 00:00:00");
 		assertThat(q.getValue()).isEqualTo(0);
-		
+		assertThat(q.getStart().formatAsDate()).isEqualTo("2020-01-01");
+		assertThat(q.getEnd().formatAsDate()).isEqualTo("2020-03-31");
+
+		// 2020第四季的前7季度，即上一年2019第四季的前三季度，即上一年2019的第一季
 		q = now.getQuarter(3).nextQuarter(-7);
 		dateTime = q.getStart().format("MM-dd HH:mm:ss");
 		assertThat(dateTime).isEqualTo("01-01 00:00:00");
 		assertThat(q.getValue()).isEqualTo(0);
+		assertThat(q.getStart().formatAsDate()).isEqualTo("2019-01-01");
+		assertThat(q.getEnd().formatAsDate()).isEqualTo("2019-03-31");
+
+		now = NiceDate.New("2021-01-19");
+		// 2021-01的当前季度的上一季，即2020第四季
+		q = now.getCurrentQuarter().nextQuarter(-1);
+		assertThat(q.getStart().formatAsDate()).isEqualTo("2020-10-01");
+		assertThat(q.getEnd().formatAsDate()).isEqualTo("2020-12-31");
+		
+
+		q = now.getCurrentQuarter();
+		System.out.println("start: " + q.getStart().formatAsDate());
+		System.out.println("end: " + q.getEnd().formatAsDate());
+		
 	}
 		
 

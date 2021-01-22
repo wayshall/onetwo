@@ -72,7 +72,26 @@ public class ZipUtils {
 	}
 	
 	public static File zipfiles(String targetZipFilePath, String encoding, File...files){
-		return zipfileList(targetZipFilePath, encoding, Arrays.asList(files), null);
+		return zipfileList(targetZipFilePath, encoding, Arrays.asList(files), (ZipEntryName)null);
+	}
+	
+	/***
+	 * 
+	 * @author weishao zeng
+	 * @param targetZipFilePath
+	 * @param encoding
+	 * @param files
+	 * @param baseDirPath 压缩的基准目录，为空，则不创建目录，所有文件压缩在同一个目录下
+	 * @return
+	 */
+	public static File zipfileList(String targetZipFilePath, List<File> files, String baseDirPath){
+		return zipfileList(targetZipFilePath, FileUtils.UTF8, files, f -> {
+			if (StringUtils.isBlank(baseDirPath)) {
+				return f.getName();
+			}
+			String subFileName = StringUtils.substringAfter(f.getPath(), baseDirPath);
+			return subFileName;
+		});
 	}
 	
 	public static File zipfileList(String targetZipFilePath, String encoding, List<File> files, ZipEntryName zipEntryName){

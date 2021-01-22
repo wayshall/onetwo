@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Stream;
 
+import org.onetwo.common.file.FileMatcher;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
@@ -34,14 +34,28 @@ public class ProjectRefactor {
 		return this;
 	}
 	
+	public <T extends BaseFileProcessor<T>> T newFileProcessor(T fileProcessor){
+		fileRefactors.add(fileProcessor);
+		return fileProcessor;
+	}
+	
+	public ZipFileProcessor newZipFile(String targetZipFilePath){
+		return newFileProcessor(new ZipFileProcessor(this, baseDir, targetZipFilePath));
+	}
+	
+	public ExecutorFileProcessor newExecutor(FileProccessExecutor callback){
+		return newFileProcessor(new ExecutorFileProcessor(this, baseDir, callback));
+	}
+	
 	public FileReplacementsRefactor newFileReplacement(){
-		FileReplacementsRefactor r = new FileReplacementsRefactor(baseDir);
+		FileReplacementsRefactor r = new FileReplacementsRefactor(this, baseDir);
 		r.charset(charset);
 		fileRefactors.add(r);
 		return r;
 	}
+	
 	public FileDeleteRefactor newFileDelete(){
-		FileDeleteRefactor r = new FileDeleteRefactor(baseDir);
+		FileDeleteRefactor r = new FileDeleteRefactor(this, baseDir);
 		fileRefactors.add(r);
 		return r;
 	}
@@ -52,14 +66,13 @@ public class ProjectRefactor {
 		});
 	}
 	
-	
 	public class FileReplacementsRefactor extends BaseFileProcessor<FileReplacementsRefactor> {
 
 		private Map<String, String> textReplacements = Maps.newLinkedHashMap();
 		private String charset = FileUtils.DEFAULT_CHARSET;
 		
-		public FileReplacementsRefactor(String baseDir) {
-			super(baseDir);
+		public FileReplacementsRefactor(ProjectRefactor project, String baseDir) {
+			super(project, baseDir);
 		}
 		public FileReplacementsRefactor charset(String charset) {
 			this.charset = charset;
@@ -93,34 +106,8 @@ public class ProjectRefactor {
 
 	public class FileDeleteRefactor extends BaseFileProcessor<FileDeleteRefactor> {
 		
-		public FileDeleteRefactor(String baseDir) {
-			super(baseDir);
-		}
-		
-		public FileDeleteRefactor fileNameEndWith(String...postfix){
-			return orFileMatcher(file->{
-				return Stream.of(postfix).anyMatch(suffix->{
-					return file.getName().endsWith(suffix);
-				});
-			});
-		}
-		
-		public FileDeleteRefactor dirNameEqual(String...dirNames){
-			return orFileMatcher(file->{
-				return Stream.of(dirNames).anyMatch(dirName->{
-					boolean res = file.isDirectory() && file.getName().equals(dirName);
-//					logger.info("file[{}] match dir res: {}", file.getPath(), res);
-					return res;
-				});
-			});
-		}
-		
-		public FileDeleteRefactor fileNameEqual(String...fileNames){
-			return orFileMatcher(file->{
-				return Stream.of(fileNames).anyMatch(fileName->{
-					return file.isFile() && file.getName().equals(fileName);
-				});
-			});
+		public FileDeleteRefactor(ProjectRefactor project, String baseDir) {
+			super(project, baseDir);
 		}
 
 		@Override
@@ -132,8 +119,17 @@ public class ProjectRefactor {
 			}
 		}
 		
-		public ProjectRefactor end(){
-			return ProjectRefactor.this;
+
+		public FileDeleteRefactor orFileNameEndWith(String...postfix){
+			return orFileMatcher(FileMatcher.fileNameEndWith(postfix));
+		}
+		
+		public FileDeleteRefactor orDirNameIs(String...dirNames){
+			return orFileMatcher(FileMatcher.dirNameIs(dirNames));
+		}
+		
+		public FileDeleteRefactor orFileNameIs(String...fileNames){
+			return orFileMatcher(FileMatcher.fileNameIs(fileNames));
 		}
 		
 	}

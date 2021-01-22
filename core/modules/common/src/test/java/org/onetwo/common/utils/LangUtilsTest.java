@@ -28,6 +28,7 @@ public class LangUtilsTest {
 		String res = StringUtils.join(map, ":", "-");
 		System.out.println("res: " + res);
 		assertThat(res).isEqualTo("test1:1-test2:2");
+		System.out.println("res: " + System.currentTimeMillis());
 	}
 
 	@Test
