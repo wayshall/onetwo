@@ -172,7 +172,16 @@ final public class SpringUtils {
 	/*public static Map<String, Object> toFlatMap(Object obj) {
 		return toFlatMap(obj, o->!LangUtils.isSimpleTypeObject(o));
 	}*/
+
+	public static Map<String, Object> toMap(Object obj) {
+		Map<String, Object> map = BEAN_TO_MAP_CONVERTOR.toMap(obj);
+		return map;
+	}
 	
+	public static BeanToMapConvertor getBeanToMapConvertor() {
+		return BEAN_TO_MAP_CONVERTOR;
+	}
+
 	public static Map<String, Object> toFlatMap(Object obj) {
 		Map<String, Object> map = Maps.newHashMap();
 		
