@@ -27,8 +27,8 @@ public class ProjectRefactorTest {
 					.textReplace("[jdbcPassword]", "dbPassword")
 				.end()
 				.newFileDelete()
-					.dirNameEqual(".settings", "target")
-					.fileNameEqual(".classpath", ".project")
+					.orDirNameIs(".settings", "target")
+					.orFileNameIs(".classpath", ".project")
 				.end()
 				.execute();
 	}
