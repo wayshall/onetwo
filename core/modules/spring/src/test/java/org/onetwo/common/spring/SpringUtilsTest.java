@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
@@ -55,6 +54,17 @@ public class SpringUtilsTest {
 		assertThat(map.get("birthday")).isEqualTo("2017-01-05");
 		assertThat(map.get("realName")).isEqualTo("testRealName");
 	}
+	@Test
+	public void testEnumToString(){
+		TestBean test = new TestBean();
+		test.setUserName("testUserName");
+		test.setBirthday(DateUtils.parse("2017-01-05 11:11:11"));
+		test.setStatus(TestUserStatus.NORMAL);
+		
+		String status = SpringUtils.getFormattingConversionService().convert(TestUserStatus.NORMAL, String.class);
+		System.out.println("status: " + status);
+		assertThat(status).isEqualTo(TestUserStatus.NORMAL.name());
+	}
 	
 	@Test
 	public void test() throws ParseException {
@@ -68,6 +78,7 @@ public class SpringUtilsTest {
 		@DateTimeFormat(pattern = "yyyy-MM-dd")
 		Date date;
 	}
+
 	
 	public static class TestBean {
 		private String userName;
@@ -77,6 +88,8 @@ public class SpringUtilsTest {
 	    
 	    @FieldName("realName")
 	    private String name;
+	    
+	    private TestUserStatus status;
 
 		public TestBean() {
 			super();
@@ -113,7 +126,18 @@ public class SpringUtilsTest {
 		public void setName(String name) {
 			this.name = name;
 		}
-		
+
+		public TestUserStatus getStatus() {
+			return status;
+		}
+
+		public void setStatus(TestUserStatus status) {
+			this.status = status;
+		}
 	}
 	
+	public static enum TestUserStatus {
+		NORMAL,
+		DISABLED;
+	}
 }

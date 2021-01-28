@@ -120,8 +120,11 @@ final public class SpringUtils {
 	private SpringUtils(){
 	}
 	
+	public static Date parseDate(String text, Field field) {
+		DateTimeFormat df = AnnotationUtils.findAnnotation(field, DateTimeFormat.class);
+		return parseDate(text, df);
+	}
 	public static Date parseDate(String text, DateTimeFormat df) {
-//		DateTimeFormat df = AnnotationUtils.findAnnotation(annotatedElement, DateTimeFormat.class);
 		DateFormatter formatter = (DateFormatter)DATE_TIME_FORMAT.getParser(df, Date.class);
 		try {
 			return formatter.parse(text, Locale.getDefault());
