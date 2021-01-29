@@ -16,6 +16,9 @@ public interface PluginMeta {
 	static PluginMeta by(Class<? extends WebPlugin> webPluginClass){
 		return by(webPluginClass, "1.0.0");
 	}
+	static PluginMeta byName(String pluginName, Class<? extends WebPlugin> webPluginClass){
+		return by(pluginName, webPluginClass, "1.0.0", PLUGIN_POSTFIX);
+	}
 	
 	/***
 	 * 使用短横杠命名方法

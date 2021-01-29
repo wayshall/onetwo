@@ -267,6 +267,17 @@
           <optional>true</optional>
         </dependency>
         
+	  	<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>core</artifactId>
+          	<optional>true</optional>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>javase</artifactId>
+          	<optional>true</optional>
+		</dependency>
+        
         <!-- websocket -->
         <dependency>
 		  <groupId>org.springframework.boot</groupId>

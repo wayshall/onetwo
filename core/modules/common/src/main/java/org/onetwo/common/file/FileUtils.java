@@ -1250,6 +1250,12 @@ public class FileUtils {
 			throw new BaseException("write image to file error.", e);
 		}
 	}
+	
+	public static byte[] toByteArray(BufferedImage bufImg, String format) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+		FileUtils.writeToStream(bufImg, format, bos);
+		return bos.toByteArray();
+	}
 
 	public static BufferedImage readAsBufferedImage(File imgFile) {
 		try {
