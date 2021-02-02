@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ErrorMessage;
 import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
+import org.onetwo.boot.core.web.mvc.log.OperationLogs;
 import org.onetwo.boot.core.web.mvc.log.OperatorLogEvent;
 import org.onetwo.boot.core.web.mvc.log.OperatorLogInfo;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -18,10 +19,8 @@ import org.onetwo.common.ds.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishMathcer;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.filter.RequestInfo;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +76,8 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 //		request.setAttribute(START_TIME_KEY, System.currentTimeMillis());;
-		WebContextUtils.initRequestInfo(request);
+//		WebContextUtils.initRequestInfo(request);
+		OperationLogs.initLogInfo(request);
 		return true;
 	}
 	
@@ -100,15 +100,17 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		if(handler==null || !HandlerMethod.class.isInstance(handler))
 			return ;
 
-		RequestInfo reqInfo = WebContextUtils.requestInfo(request);
+//		RequestInfo reqInfo = WebContextUtils.requestInfo(request);
+		OperatorLogInfo reqInfo = OperationLogs.getLogInfo(request);
 		if(reqInfo==null)
 			return ;
 
-		String url = request.getMethod() + "|" + request.getRequestURL();
-		long start = reqInfo.getStartTime();
-		OperatorLogInfo info = new OperatorLogInfo(start, System.currentTimeMillis());
+//		String url = request.getMethod() + "|" + request.getRequestURL();
+//		long start = reqInfo.getStartTime();
+//		OperatorLogInfo info = new OperatorLogInfo(start, System.currentTimeMillis());
+//		info.setUrl(url);
+		OperatorLogInfo info = reqInfo;
 		
-		info.setUrl(url);
 		info.setRemoteAddr(RequestUtils.getRemoteAddr(request));
 		info.setUserAgent(RequestUtils.getUserAgent(request));
 //		info.setParameters(request.getParameterMap());

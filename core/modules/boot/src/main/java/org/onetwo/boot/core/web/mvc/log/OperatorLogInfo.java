@@ -26,7 +26,7 @@ public class OperatorLogInfo implements Serializable {
 	private String message = "";
 	private Map<String, String[]> parameters;
 	final private long startTime;
-	final private long endTime;
+	private long endTime;
 	private String webHandler;
 	private String userAgent;
 	
@@ -39,10 +39,11 @@ public class OperatorLogInfo implements Serializable {
 	@JsonIgnore
 	HandlerMethod handlerMethod;
 	
-	public OperatorLogInfo(long startTime, long endTime) {
+	public OperatorLogInfo(String url, long startTime) {
 		super();
 		this.startTime = startTime;
-		this.endTime = endTime;
+//		this.endTime = endTime;
+		this.url = url;
 	}
 	private DataChangedContext datas;
 	
@@ -125,5 +126,8 @@ public class OperatorLogInfo implements Serializable {
 	}
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
 	}
 }
