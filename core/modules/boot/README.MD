@@ -329,6 +329,78 @@ jfish:
 			userPrefix: /user
 ```
 
+### activemq之mqtt支持
+增加下面配置即可启用mqtt支持
+- 1、在pom文件加入activemq的相关依赖
+- 2、在application.yaml里增加下面的配置：
+```yaml
+jfish:
+    activemq: 
+        mqtt: 
+            server-urls: tcp://activemqhost:1883
+            username: user
+            password: password
+            cleanSession: false
+```
+
+#### 配置消息outbound
+相当于消息发布者
+在application.yaml里增加下面的配置：
+```yaml
+jfish:
+    activemq: 
+        mqtt: 
+            outbound: 
+                clientId: producerId
+                defaultQos: 1
+                converter: json
+```
+
+#### 配置消息inbound
+有两种方式
+- 直接在application.yaml里增加下面的配置：
+```yaml
+jfish:
+    activemq: 
+        mqtt: 
+            inbounds: 
+                - clientId: consumerId
+                  topics: SewageStation.device.test.post
+                  channelName: SewageStationDeviceInBoundChannel
+                  converter: json
+```
+
+- 通过注解方式
+有时候你可能需要根据类型注入 MqttPahoMessageDrivenChannel，
+这时候可以通过实现MqttPahoMessageDrivenChannel的子类，并通过注解标注
+
+```Java
+@MqttInboundHandler(
+		clientId="clientId", 
+		channelName="channelName",
+		converter=MessageConverters.JSON,
+		topics="test"
+)
+public class TestInBoundChannelAdapter extends MqttPahoMessageDrivenChannel {
+	public TestInBoundChannelAdapter(InBoundClientProps clientConfig, MqttPahoClientFactory clientFactory) {
+		super(clientConfig, clientFactory);
+	}
+}
+```
+这样你就可以在任务地方通过服务注入的方式得到 TestInBoundChannelAdapter 了。
+
+使用此功能需要在配置类增加 @EnableMqttInbound 注解
+```Java
+@SpringBootApplication
+@EnableMqttInbound
+public class TestServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TestServiceApplication.class, args);
+    }
+}
+```
+
 ### 其它一些简化使用的扩展
 
 - @BootMvcArgumentResolver 注解   

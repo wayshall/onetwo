@@ -2,9 +2,12 @@ package org.onetwo.common.spring.context;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -21,7 +24,6 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import net.jodah.typetools.TypeResolver;
@@ -112,12 +114,16 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 						.forEach(bd->{
 							AnnotatedBeanDefinition beanDefinition = (AnnotatedBeanDefinition) bd;
 							AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
-							Assert.isTrue(annotationMetadata.isInterface(),
-									"@"+componentAnnoClass.getSimpleName()+" can only be specified on an interface");
+							checkComponent(componentAnnoClass, annotationMetadata);
 
 							AnnotationAttributes tagAttributes = SpringUtils.getAnnotationAttributes(annotationMetadata, componentAnnoClass);
 							registerComponent(registry, annotationMetadata, tagAttributes);
 						});
+	}
+	
+	protected void checkComponent(Class<? extends Annotation> componentAnnoClass, AnnotationMetadata annotationMetadata) {
+//		Assert.isTrue(annotationMetadata.isInterface(),
+//				"@"+componentAnnoClass.getSimpleName()+" can only be specified on an interface");
 	}
 	
 
@@ -154,6 +160,9 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 	
 
 	final protected String resolveName(AnnotationAttributes attributes, String defName) {
+		if (!attributes.containsKey(ATTRS_NAME)) {
+			return defName;
+		}
 		String name = attributes.getString(ATTRS_NAME);
 		if (!StringUtils.hasText(name)) {
 			name = defName;
@@ -165,6 +174,22 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 
 	final protected String resolve(String value) {
 		return SpringUtils.resolvePlaceholders(resourceLoader, value);
+	}
+
+	final protected String resolveAttributeAsString(AnnotationAttributes attributes, String attrName) {
+		String value = attributes.getString(attrName);
+		if (!StringUtils.hasText(value)) {
+			return value;
+		}
+		return resolve(value);
+	}
+
+	final protected String[] resolveAttributeAsStringArray(AnnotationAttributes attributes, String attrName) {
+		String[] values = attributes.getStringArray(attrName);
+		if (LangUtils.isEmpty(values)) {
+			return LangUtils.EMPTY_STRING_ARRAY;
+		}
+		return Stream.of(values).map(v -> resolve(v)).collect(Collectors.toList()).toArray(new String[0]);
 	}
 
 	@Override

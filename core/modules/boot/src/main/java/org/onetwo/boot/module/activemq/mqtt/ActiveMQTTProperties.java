@@ -139,7 +139,7 @@ public class ActiveMQTTProperties {
 			最少一次（1）
 			只一次（2）
 		 */
-		int[] qos = new int[] {1};
+		int[] qos = new int[] { 2 };
 		
 		/***
 		 * 默认30秒
@@ -152,7 +152,8 @@ public class ActiveMQTTProperties {
 	}
 	
 	public static enum MessageConverters {
-		JSON
+		JSON,
+		DEFAULT,
 	}
 	
 }

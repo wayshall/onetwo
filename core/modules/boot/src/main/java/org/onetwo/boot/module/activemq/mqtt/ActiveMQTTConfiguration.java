@@ -81,6 +81,11 @@ public class ActiveMQTTConfiguration {
 //		@Value("${spring.application.name:''}")
 //		private String defaultClientId;
 		
+		/***
+		 * 将消息发送给为一个订阅者，然后阻碍发送直到消息被接收
+		 * @author weishao zeng
+		 * @return
+		 */
 		@Bean(name = Mqtts.OUTBOUND_CHANNEL)
 		@ConditionalOnMissingBean(name = Mqtts.OUTBOUND_CHANNEL)
 		public MessageChannel mqttOutboundChannel() {
@@ -153,8 +158,12 @@ public class ActiveMQTTConfiguration {
 //				} else {
 //					channel = SpringUtils.getBean(context, channelName);
 //				}
+				//在构造函数和onInit函数设置了
 //				drivenChannel.setOutputChannel(channel);
-				drivenChannel.setOutputChannelName(channelName);
+//				drivenChannel.setOutputChannelName(channelName);
+//				drivenChannel.setQos(props.getQos());
+//				drivenChannel.setCompletionTimeout(props.getCompletionTimeout());
+				
 				String beanName = channelName + "Adapter";
 				SpringUtils.registerSingleton(context, beanName, drivenChannel);
 				SpringUtils.initializeBean(context, drivenChannel);

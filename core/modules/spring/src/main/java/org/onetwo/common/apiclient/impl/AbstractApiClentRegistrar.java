@@ -1,5 +1,6 @@
 package org.onetwo.common.apiclient.impl;
 
+import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -38,6 +40,12 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 //		this.regiseterRestExecutor(getAnnotationMetadataHelper(importingClassMetadata), registry);
 		super.registerBeanDefinitions(importingClassMetadata, registry);
+	}
+	
+	@Override
+	protected void checkComponent(Class<? extends Annotation> componentAnnoClass, AnnotationMetadata annotationMetadata) {
+		Assert.isTrue(annotationMetadata.isInterface(),
+				"@"+componentAnnoClass.getSimpleName()+" can only be specified on an interface");
 	}
 	
 	/***
