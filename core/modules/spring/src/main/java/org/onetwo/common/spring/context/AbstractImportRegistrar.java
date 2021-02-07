@@ -175,6 +175,22 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 	final protected String resolve(String value) {
 		return SpringUtils.resolvePlaceholders(resourceLoader, value);
 	}
+	
+	/****
+	 * 如果是属性，则从配置中获取；
+	 * 如果是表达式，则直接作为值解释；
+	 * 其它原样返回
+	 * @author weishao zeng
+	 * @param propertyOrPlaceholderValue
+	 * @return
+	 */
+	final protected String getPropertyOrResolveValue(String propertyOrPlaceholderValue) {
+		return SpringUtils.getPropertyOrResolveValue(resourceLoader, propertyOrPlaceholderValue);
+	}
+	
+	final protected String getRequiredPropertyOrResolveValue(String propertyOrPlaceholderValue) {
+		return SpringUtils.getRequiredPropertyOrResolveValue(resourceLoader, propertyOrPlaceholderValue);
+	}
 
 	final protected String resolveAttributeAsString(AnnotationAttributes attributes, String attrName) {
 		String value = attributes.getString(attrName);

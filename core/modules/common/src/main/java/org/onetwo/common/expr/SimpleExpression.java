@@ -86,8 +86,22 @@ public class SimpleExpression implements Expression {
 		this.throwIfVarNotfound = throwIfVarNotfound;
 	}*/
 
+	/****
+	 * 是否是表达式：由属性和非属性字符串组成
+	 * 如：aaaa{property}
+	 */
 	public boolean isExpresstion(String text) {
 		return StringUtils.isNotBlank(text) && text.indexOf(start) != -1 && text.indexOf(end) != -1;
+	}
+
+	/****
+	 * 是否是属性：即整个字符串刚好由start字符和end字符包住，如：{property}
+	 * @author weishao zeng
+	 * @param text
+	 * @return
+	 */
+	public boolean isProperty(String text) {
+		return StringUtils.isNotBlank(text) && text.startsWith(start) && text.endsWith(end);
 	}
 
 	/*public boolean isExpresstion() {

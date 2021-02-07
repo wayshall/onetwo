@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.activemq.mqtt.inbound;
 
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTConfiguration;
+import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.InBoundClientProps;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverters;
 import org.onetwo.boot.module.activemq.mqtt.MqttPahoMessageDrivenChannel;
@@ -8,7 +9,6 @@ import org.onetwo.boot.module.activemq.mqtt.annotation.EnableMqttInbound;
 import org.onetwo.boot.module.activemq.mqtt.annotation.MqttInboundHandler;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.context.AbstractImportRegistrar;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -18,7 +18,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * <br/>
  */
 public class MqttInboundImportRegistrar extends AbstractImportRegistrar<EnableMqttInbound, MqttInboundHandler> {
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {
@@ -28,11 +28,16 @@ public class MqttInboundImportRegistrar extends AbstractImportRegistrar<EnableMq
 		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(drivenChannelClass);
 
 		InBoundClientProps clientConfig = new InBoundClientProps();
-		clientConfig.setClientId(resolveAttributeAsString(attributes, "clientId"));
+		String clientId = attributes.getString("clientId");
+		clientId = getRequiredPropertyOrResolveValue(clientId);
+		clientConfig.setClientId(clientId);
+		
 		String channelName = resolveAttributeAsString(attributes, "channelName");
 		clientConfig.setChannelName(channelName);
 		clientConfig.setConverter((MessageConverters)attributes.get("converter"));
-		clientConfig.setCompletionTimeout((int)attributes.get("completionTimeout"));
+		
+		int completionTimeout = (int)attributes.get("completionTimeout");
+		clientConfig.setCompletionTimeout(completionTimeout);
 		clientConfig.setQos((int[])attributes.get("qos"));
 		
 		String[] topics = resolveAttributeAsStringArray(attributes, "topics");

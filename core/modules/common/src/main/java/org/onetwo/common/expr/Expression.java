@@ -10,7 +10,19 @@ public interface Expression {
 	public static final Expression WELL = ExpressionFacotry.WELL;
 	public static final Expression BRACE = ExpressionFacotry.BRACE;*/
 	
-	public boolean isExpresstion(String text);
+	/****
+	 * 是否是表达式：由属性和非属性字符串组成
+	 * 如：aaaa{property}
+	 */
+	boolean isExpresstion(String text);
+	
+	/****
+	 * 是否是属性：即整个字符串刚好由start字符和end字符包住，如：{property}
+	 * @author weishao zeng
+	 * @param text
+	 * @return
+	 */
+	boolean isProperty(String text);
 
 //	public boolean isExpresstion();
 

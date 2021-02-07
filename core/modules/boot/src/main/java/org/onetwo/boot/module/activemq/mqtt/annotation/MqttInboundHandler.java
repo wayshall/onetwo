@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverters;
 
 /**
@@ -28,7 +29,7 @@ public @interface MqttInboundHandler {
 	 */
 	int[] qos() default { 2 };
 	
-	int completionTimeout() default 30000;
+	int completionTimeout() default ActiveMQTTProperties.COMPLETION_TIMEOUT_USING_CONFIG_VALUE;
 	
 	MessageConverters converter() default MessageConverters.DEFAULT;
 	

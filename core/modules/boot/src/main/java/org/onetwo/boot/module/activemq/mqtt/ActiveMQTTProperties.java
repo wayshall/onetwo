@@ -19,6 +19,8 @@ import lombok.Data;
 @Data
 @ConfigurationProperties(value=ActiveMQTTProperties.PREFIX_KEY)
 public class ActiveMQTTProperties {
+	public static final int COMPLETION_TIMEOUT_USING_CONFIG_VALUE = Integer.MIN_VALUE;
+	
 	public static final String PREFIX_KEY = ActivemqProperties.PREFIX_KEY + ".mqtt";
 	public static final String MESSAGE_CONVERTER_KEY = PREFIX_KEY + ".messageConverter";
 	
@@ -34,6 +36,13 @@ public class ActiveMQTTProperties {
 	 */
 	String username;
 	String password;
+	
+	/***
+	 * MqttToken.waitForCompletion
+	 * -1为一直等待
+	 * 默认为30秒
+	 */
+	int inboundChannelCompletionTimeout = 30000;
 	
 	/***
 	 * 设置客户端的默认停止行为：ConsumerStopAction.UNSUBSCRIBE_CLEAN

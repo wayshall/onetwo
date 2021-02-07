@@ -7,6 +7,7 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 
@@ -19,6 +20,8 @@ public class MqttPahoMessageDrivenChannel extends MqttPahoMessageDrivenChannelAd
 	
 	private InBoundClientProps clientConfig;
 	private ConfigurablePropertyAccessor wrapper;
+	@Autowired
+	private ActiveMQTTProperties properties;
 	
 	public MqttPahoMessageDrivenChannel(InBoundClientProps clientConfig, MqttPahoClientFactory clientFactory) {
 		super(clientConfig.getClientId(), clientFactory, clientConfig.getTopics());
@@ -35,7 +38,12 @@ public class MqttPahoMessageDrivenChannel extends MqttPahoMessageDrivenChannelAd
 	@Override
 	public void onInit() {
 		setQos(clientConfig.getQos());
-		setCompletionTimeout(clientConfig.getCompletionTimeout());
+
+		int completionTimeout = clientConfig.getCompletionTimeout();
+		if (completionTimeout==ActiveMQTTProperties.COMPLETION_TIMEOUT_USING_CONFIG_VALUE) {
+			completionTimeout = properties.getInboundChannelCompletionTimeout();
+		}
+		setCompletionTimeout(completionTimeout);
 		
 		super.onInit();
 	}

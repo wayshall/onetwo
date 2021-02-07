@@ -754,21 +754,70 @@ final public class SpringUtils {
 		return resolvedValue;
 	}
 	
+
+	public static String getRequiredPropertyOrResolveValue(Object applicationContext, String propertyOrPlaceholderValue){
+		if (StringUtils.isBlank(propertyOrPlaceholderValue)) {
+			throw new BaseException("property can not be blank!");
+		}
+		return getPropertyOrResolveValue(applicationContext, propertyOrPlaceholderValue);
+	}
+	/***
+	 * 如果是属性，则从配置中获取；
+	 * 如果是表达式，则直接作为值解释；
+	 * 其它原样返回
+	 * @author weishao zeng
+	 * @param applicationContext
+	 * @param propertyOrPlaceholderValue 属性：{property}，表达式：aaa${property}，其它原样返回
+	 * @return
+	 */
+	public static String getPropertyOrResolveValue(Object applicationContext, String propertyOrPlaceholderValue){
+		if (StringUtils.isBlank(propertyOrPlaceholderValue)) {
+			return LangUtils.EMPTY_STRING;
+		}
+		PropertyResolver env = getPropertyResolver(applicationContext);
+		String newValue = null;
+		if (ExpressionFacotry.BRACE.isProperty(propertyOrPlaceholderValue)) {
+			// 作为属性
+			newValue = ExpressionFacotry.BRACE.parse(propertyOrPlaceholderValue, var -> {
+				return env.getProperty(var);
+			});
+		} else if (StringUtils.hasText(propertyOrPlaceholderValue) && DOLOR.isExpresstion(propertyOrPlaceholderValue)) {
+			newValue = env.resolvePlaceholders(propertyOrPlaceholderValue);
+		} else {
+			newValue = propertyOrPlaceholderValue;
+		}
+		return newValue;
+	}
+	
 	public static String resolvePlaceholders(Object applicationContext, String value, boolean throwIfNotResolved){
 		String newValue = value;
 		if (StringUtils.hasText(value) && DOLOR.isExpresstion(value)){
-			if (applicationContext instanceof ConfigurableApplicationContext){
-				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
-				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
-			} else if (applicationContext instanceof PropertyResolver){
-				PropertyResolver env = (PropertyResolver)applicationContext;
-				newValue = env.resolvePlaceholders(value);
-			}
+//			if (applicationContext instanceof ConfigurableApplicationContext){
+//				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
+//				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
+//			} else if (applicationContext instanceof PropertyResolver){
+//				PropertyResolver env = (PropertyResolver)applicationContext;
+//				newValue = env.resolvePlaceholders(value);
+//			}
+			newValue = getPropertyResolver(applicationContext).resolvePlaceholders(value);
 			if (DOLOR.isExpresstion(newValue) && throwIfNotResolved){
 				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + newValue);
 			}
 		}
 		return newValue;
+	}
+	
+	public static PropertyResolver getPropertyResolver(Object applicationContext){
+		PropertyResolver env = null;
+		if (applicationContext instanceof ConfigurableApplicationContext){
+			ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
+			env = appcontext.getEnvironment();
+		} else if (applicationContext instanceof PropertyResolver){
+			env = (PropertyResolver)applicationContext;
+		} else {
+			throw new BaseException("error applicationContext, it's not a PropertyResolver.");
+		}
+		return env;
 	}
 	
 	public static <T> T toBean(Map<String, ?> propValues, Class<T> beanClass){
