@@ -91,6 +91,10 @@ public abstract class BaseFileProcessor<R extends BaseFileProcessor<R>> {
 	public R andPostfixIsAnyOf(String...postfix){
 		return andFileMatcher(FileMatcher.fileNameEndWith(postfix));
 	}
+	
+	public R andFilePathContains(String...paths){
+		return andFileMatcher(FileMatcher.filePathContains(paths));
+	}
 
 	
 	public R andIgnoreDirContains(String...ignoreDirs){
