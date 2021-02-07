@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.activemq.mqtt;
 
+import org.onetwo.boot.module.activemq.mqtt.data.ConvertedMessage;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.springframework.integration.mqtt.support.MqttHeaders;
@@ -64,6 +65,14 @@ final public class Mqtts {
 			JFishLoggerFactory.getCommonLogger().error("convert payload error!",e);
 		}
 		return null;
+	}
+	
+
+	public static <T> ConvertedMessage<T> convertedMessage(Message<?> message, Class<T> bodyClass) {
+		String topic = Mqtts.getTopic(message);
+		T body = Mqtts.convertPayloadWithJson(message, bodyClass);
+		ConvertedMessage<T> msg = new ConvertedMessage<>(topic, body);
+		return msg;
 	}
 	
 	static JsonMapper getJsonMapper() {

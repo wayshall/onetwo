@@ -21,6 +21,11 @@ public @interface MqttInboundHandler {
 	
 	String[] topics() default {};
 	
+	/***
+	 * 最多一次（0）
+		最少一次（1）
+		只一次（2）
+	 */
 	int[] qos() default { 2 };
 	
 	int completionTimeout() default 30000;

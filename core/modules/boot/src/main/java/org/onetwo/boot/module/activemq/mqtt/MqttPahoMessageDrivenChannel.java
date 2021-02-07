@@ -28,6 +28,8 @@ public class MqttPahoMessageDrivenChannel extends MqttPahoMessageDrivenChannelAd
 			throw new BaseException("inbound output channel name can not blank!");
 		}
 		this.setOutputChannelName(clientConfig.getChannelName());
+		setQos(clientConfig.getQos());
+		setCompletionTimeout(clientConfig.getCompletionTimeout());
 	}
 
 	@Override
