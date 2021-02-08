@@ -51,6 +51,15 @@ public interface FileMatcher {
 			});
 		};
 	}
+	
+	static public FileMatcher filePathContains(String...paths){
+		return (baseDir, file)->{
+			return Stream.of(paths).anyMatch(path->{
+//				System.out.println("path: " + file.getPath().toLowerCase());;
+				return file.getPath().toLowerCase().contains(path.toLowerCase());
+			});
+		};
+	}
 
 	static public FileMatcher subDirIs(String...dirs){
 		Set<String> dirSet = Sets.newHashSet(dirs);
