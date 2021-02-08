@@ -501,6 +501,18 @@ public class NiceDate {
 	public int getHourOfDay(){
 		return calendar.get(Calendar.HOUR_OF_DAY);
 	}
+	
+	public int getMinute(){
+		return calendar.get(Calendar.MINUTE);
+	}
+	
+	public int getSecond(){
+		return calendar.get(Calendar.SECOND);
+	}
+	
+	public int getWeekOfMonth(){
+		return calendar.get(Calendar.WEEK_OF_MONTH);
+	}
 
 	public boolean isBeforeOrEquals(NiceDate date){
 		return isBefore(date) || isEquals(date);

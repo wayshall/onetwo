@@ -21,6 +21,7 @@ public class NiceDateTest {
 	@Test
 	public void testQuarter() throws ParseException{
 		NiceDate now = NiceDate.New("2020-11-14");
+		System.out.println("year: " + now.getYear());
 		
 		assertThat(NiceDate.New("2020-11-14").getQuarter(0).toString()).isEqualTo("2020Q1");
 		
