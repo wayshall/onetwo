@@ -2,6 +2,8 @@ package org.onetwo.boot.module.activemq.mqtt.data;
 
 import java.io.Serializable;
 
+import org.onetwo.common.jackson.JsonMapper;
+
 import lombok.Data;
 
 /**
@@ -17,5 +19,12 @@ public class ConvertedMessage<T> implements Serializable {
 		super();
 		this.topic = topic;
 		this.body = body;
+	}
+	
+	public String bodyAsJson() {
+		if (body==null) {
+			return "";
+		}
+		return JsonMapper.toJsonString(body);
 	}
 }
