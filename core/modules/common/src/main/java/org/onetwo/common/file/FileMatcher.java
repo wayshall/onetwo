@@ -61,6 +61,14 @@ public interface FileMatcher {
 		};
 	}
 
+	static public FileMatcher relativePathIs(String...relativePaths){
+		Set<String> relativePathSet = Sets.newHashSet(relativePaths);
+		return (baseDir, file) -> {
+			String relativePath = FileUtils.getRelativeDirPath(file, baseDir);
+			return relativePathSet.contains(relativePath);
+		};
+	}
+
 	static public FileMatcher subDirIs(String...dirs){
 		Set<String> dirSet = Sets.newHashSet(dirs);
 		return (baseDir, file) -> {
@@ -69,6 +77,12 @@ public interface FileMatcher {
 				return false;
 			}
 			return dirSet.contains(subdir);
+		};
+	}
+
+	static public FileMatcher subDirIsNot(String...dirs){
+		return (baseDir, file) -> {
+			return !subDirIs(dirs).match(baseDir, file);
 		};
 	}
 

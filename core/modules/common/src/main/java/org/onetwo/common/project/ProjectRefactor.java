@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
  * <br/>
  */
 public class ProjectRefactor {
-	final private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	final private String baseDir;
 	private String charset = FileUtils.DEFAULT_CHARSET;
@@ -41,6 +41,14 @@ public class ProjectRefactor {
 	
 	public ZipFileProcessor newZipFile(String targetZipFilePath){
 		return newFileProcessor(new ZipFileProcessor(this, baseDir, targetZipFilePath));
+	}
+	
+	public DirCopyProcessor newDirCopy(String sourceSubDir, String targetSubDir){
+		return newFileProcessor(new DirCopyProcessor(this, baseDir, sourceSubDir, targetSubDir));
+	}
+	
+	public ProjectCopyProcessor newProjectCopy(String templateModuleName, String newModuleName, String modulePostfix){
+		return newFileProcessor(new ProjectCopyProcessor(this, baseDir, templateModuleName, newModuleName, modulePostfix));
 	}
 	
 	public ExecutorFileProcessor newExecutor(FileProccessExecutor callback){

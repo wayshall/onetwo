@@ -109,6 +109,21 @@ public class FileUtils {
 		return file.delete();
 	}
 
+	public static void deleteDirectory(String path){
+		File dirFile = new File(path);
+		if (!dirFile.exists()) {
+			return ;
+		}
+		for (File file : dirFile.listFiles()) {
+			if (file.isDirectory()) {
+				deleteDirectory(file.getPath());
+			} else {
+				file.delete();
+			}
+		}
+		dirFile.delete();
+	}
+
 	public static File newFile(String path){
 		return newFile(path, false);
 	}
