@@ -16,7 +16,7 @@ public class JFishRefactorTest {
 		String newVersion = "4.7.2-SNAPSHOT";
 		ProjectRefactor refactor = new ProjectRefactor(dir);
 		refactor.newFileReplacement()
-					.fileMatcher(f->FileUtils.getFileName(f.getName()).equals("pom.xml") || FileUtils.getFileName(f.getName()).equalsIgnoreCase("readme.md"))
+					.file(f->FileUtils.getFileName(f.getName()).equals("pom.xml") || FileUtils.getFileName(f.getName()).equalsIgnoreCase("readme.md"))
 					.textReplace("<version>"+oldVersion+"</version>", "<version>"+newVersion+"</version>")
 					.textReplace("<onetwo.version>"+oldVersion+"</onetwo.version>", "<onetwo.version>"+newVersion+"</onetwo.version>")
 				.end()
@@ -25,7 +25,7 @@ public class JFishRefactorTest {
 		String dbmPath = "D:/mydev/java/workspace/bitbucket/dbm/";
 		ProjectRefactor dbm = new ProjectRefactor(dbmPath);
 		dbm.newFileReplacement()
-					.fileMatcher(f->FileUtils.getFileName(f.getName()).equals("pom.xml") || FileUtils.getFileName(f.getName()).equalsIgnoreCase("readme.md"))
+					.file(f->FileUtils.getFileName(f.getName()).equals("pom.xml") || FileUtils.getFileName(f.getName()).equalsIgnoreCase("readme.md"))
 					.textReplace("<version>"+oldVersion+"</version>", "<version>"+newVersion+"</version>")
 					.textReplace("<onetwo.version>"+oldVersion+"</onetwo.version>", "<onetwo.version>"+newVersion+"</onetwo.version>")
 				.end()

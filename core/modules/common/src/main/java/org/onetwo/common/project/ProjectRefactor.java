@@ -129,15 +129,15 @@ public class ProjectRefactor {
 		
 
 		public FileDeleteRefactor orFileNameEndWith(String...postfix){
-			return orFileMatcher(FileMatcher.fileNameEndWith(postfix));
+			return orFile(FileMatcher.fileNameEndWith(postfix));
 		}
 		
 		public FileDeleteRefactor orDirNameIs(String...dirNames){
-			return orFileMatcher(FileMatcher.dirNameIs(dirNames));
+			return orFile(FileMatcher.dirNameIs(dirNames));
 		}
 		
 		public FileDeleteRefactor orFileNameIs(String...fileNames){
-			return orFileMatcher(FileMatcher.fileNameIs(fileNames));
+			return orFile(FileMatcher.fileNameIs(fileNames));
 		}
 		
 	}

@@ -16,11 +16,11 @@ public class ProjectRefactorTest {
 		
 		ProjectRefactor refactor = new ProjectRefactor(dir);
 		refactor.newFileReplacement()
-					.fileMatcher(f->FileUtils.getFileName(f.getName()).equals("pom.xml"))
+					.file(f->FileUtils.getFileName(f.getName()).equals("pom.xml"))
 					.textReplace("project-template-springboot", projectName)
 				.end()
 				.newFileReplacement()
-					.fileMatcher(f->FileUtils.getFileName(f.getName()).endsWith(".yaml"))
+					.file(f->FileUtils.getFileName(f.getName()).endsWith(".yaml"))
 					.textReplace("[project-template-springboot]", projectName)
 					.textReplace("[jdbcUrl]", "host:port/dbName")
 					.textReplace("[jdbcUser]", "dbUser")

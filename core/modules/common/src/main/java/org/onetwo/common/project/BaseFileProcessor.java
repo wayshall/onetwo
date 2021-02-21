@@ -32,32 +32,32 @@ public abstract class BaseFileProcessor<R extends BaseFileProcessor<R>> {
 //		this.baseDirFile = new File(baseDir);
 	}
 
-	public R fileMatcher(Predicate<File> fileMatcher){
+	public R file(Predicate<File> fileMatcher){
 		PredicateFileAdapter adpt = new PredicateFileAdapter(fileMatcher);
-		return fileMatcher(adpt);
+		return file(adpt);
 	}
 
 	@SuppressWarnings("unchecked")
-	public R fileMatcher(FileMatcher fileMatcher){
+	public R file(FileMatcher fileMatcher){
 		this.fileMatcher = fileMatcher;
 		return (R)this;
 	}
 	
-	public R orFileMatcher(Predicate<File> matcher){
+	public R orFile(Predicate<File> matcher){
 		PredicateFileAdapter adpt = new PredicateFileAdapter(matcher);
-		return orFileMatcher(adpt);
+		return orFile(adpt);
 	}
 	
-	public R orFileMatcher(FileMatcher matcher){
-		return fileMatcher(this.fileMatcher==null?matcher:this.fileMatcher.or(matcher));
+	public R orFile(FileMatcher matcher){
+		return file(this.fileMatcher==null?matcher:this.fileMatcher.or(matcher));
 	}
 	
-	public R andFileMatcher(Predicate<File> matcher){
+	public R andFile(Predicate<File> matcher){
 		PredicateFileAdapter adpt = new PredicateFileAdapter(matcher);
-		return andFileMatcher(adpt);
+		return andFile(adpt);
 	}
-	public R andFileMatcher(FileMatcher matcher){
-		return fileMatcher(this.fileMatcher==null?matcher:this.fileMatcher.and(matcher));
+	public R andFile(FileMatcher matcher){
+		return file(this.fileMatcher==null?matcher:this.fileMatcher.and(matcher));
 	}
 
 	protected List<File> matchAllFiles(){
@@ -79,33 +79,33 @@ public abstract class BaseFileProcessor<R extends BaseFileProcessor<R>> {
 	 * @return
 	 */
 	public R andSubDirIs(String...dirs){
-		return andFileMatcher(FileMatcher.subDirIs(dirs));
+		return andFile(FileMatcher.subDirIs(dirs));
 	}
 	public R andSubDirIsNot(String...dirs){
-		return andFileMatcher(FileMatcher.subDirIsNot(dirs));
+		return andFile(FileMatcher.subDirIsNot(dirs));
 	}
 	public R andSubDirIs(String dir, String dirSeperator){
 		String[] dirs = StringUtils.split(dir, dirSeperator);
-		return andFileMatcher(FileMatcher.subDirIs(dirs));
+		return andFile(FileMatcher.subDirIs(dirs));
 	}
 	
 	public R andPostfixIsAnyOf(String...postfix){
-		return andFileMatcher(FileMatcher.fileNameEndWith(postfix));
+		return andFile(FileMatcher.fileNameEndWith(postfix));
 	}
 	
 	public R andFilePathContains(String...paths){
-		return andFileMatcher(FileMatcher.filePathContains(paths));
+		return andFile(FileMatcher.filePathContains(paths));
 	}
 	
 	public R andFilePathNotContains(String path){
-		return andFileMatcher((baseDir, file)->{
+		return andFile((baseDir, file)->{
 			return !FileMatcher.filePathContains(path).match(baseDir, file);
 		});
 	}
 
 	
 	public R andIgnoreDirContains(String...ignoreDirs){
-		return andFileMatcher((baseDir, file)-> {
+		return andFile((baseDir, file)-> {
 			return !FileUtils.relativeDirPathContains(file, baseDir, ignoreDirs);
 		});
 	}

@@ -20,7 +20,7 @@ public class ZipFileProcessor extends BaseFileProcessor<ZipFileProcessor> {
 	}
 	
 	public ZipFileProcessor fileNameEndWith(String...postfix){
-		return orFileMatcher(file->{
+		return orFile(file->{
 			return Stream.of(postfix).anyMatch(suffix->{
 				return file.getName().endsWith(suffix);
 			});
