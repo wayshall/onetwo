@@ -28,7 +28,7 @@ public class ProjectCopyProcessor extends BaseFileProcessor<ProjectCopyProcessor
 	}
 
 	protected void beforeProcess(String baseDir) throws Exception {
-		FileUtils.deleteDirectory(targetBaseDir);
+//		FileUtils.deleteDirectory(targetBaseDir);
 	}
 	
 	@Override
@@ -45,9 +45,14 @@ public class ProjectCopyProcessor extends BaseFileProcessor<ProjectCopyProcessor
 		logger.info("copy to target: {}", targetPath);
 		if (isJavaFile(file) || isSpringFactoriesFile(file)) {
 			String content = FileUtils.readAsString(file);
-			content = content.replace("." + templateModuleName + ".", "." + newModuleName + ".");
+			content = content.replace("odysseus." + templateModuleName + ".", "odysseus." + newModuleName + ".");
 			content = content.replace(StringUtils.capitalize(templateModuleName), StringUtils.capitalize(newModuleName));
 			content = content.replace("\"" + templateModuleName + "\"", "\"" + newModuleName + "\"");
+			
+//			StringBuilder content = new StringBuilder();
+//			FileUtils.readFile(file, (line, index) -> {
+//				return true;
+//			});
 			FileUtils.writeStringToFile(targetFile, charset, content);
 		} else if (isPomFile(file) || isLogFile(file)) {
 			String content = FileUtils.readAsString(file);

@@ -15,7 +15,7 @@ public class StompMessageSender {
 	private String defaultUserDestination  = "/inbox";
 
 	/***
-	 * 默认把第一个前缀作为广播地址
+	 * 默认把第一个前缀(/broadcast)作为广播地址
 	 * @param payload
 	 */
 	public void sendToBroadcast(Object payload) {

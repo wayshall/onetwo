@@ -1,6 +1,9 @@
 package org.onetwo.boot.module.activemq.mqtt;
 
+import java.util.LinkedHashMap;
+
 import org.onetwo.boot.module.activemq.mqtt.data.ConvertedMessage;
+import org.onetwo.boot.module.activemq.mqtt.data.LinkedMapMessage;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.springframework.integration.mqtt.support.MqttHeaders;
@@ -72,6 +75,15 @@ final public class Mqtts {
 		String topic = Mqtts.getTopic(message);
 		T body = Mqtts.convertPayloadWithJson(message, bodyClass);
 		ConvertedMessage<T> msg = new ConvertedMessage<>(topic, body);
+		return msg;
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	public static LinkedMapMessage linkedMapMessage(Message<?> message) {
+		String topic = Mqtts.getTopic(message);
+		LinkedHashMap<String, Object> body = (LinkedHashMap<String, Object>)Mqtts.convertPayloadWithJson(message, LinkedHashMap.class);
+		LinkedMapMessage msg = new LinkedMapMessage(topic, body);
 		return msg;
 	}
 	
