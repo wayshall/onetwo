@@ -114,7 +114,7 @@ public class ActiveMQTTProperties {
 			最少一次（1）
 			只一次（2）
 		 */
-		int defaultQos = 1;
+		int defaultQos = 2;
 		
 		/***
 		 * Retained 消息是指在 PUBLISH 数据包中 Retain 标识设为 1 的消息，Broker 收到这样的 PUBLISH 包以后，将保存这个消息，当有一个新的订阅者订阅相应主题的时候，Broker 会马上将这个消息发送给订阅者
