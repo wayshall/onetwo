@@ -150,6 +150,9 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 		}
 		
 		BeanDefinitionBuilder definition = createComponentFactoryBeanBuilder(annotationMetadata, tagAttributes);
+		if (definition==null) {
+			return ;
+		}
 		
 		String alias = beanName + "-" + getComponentAnnotationClass().getSimpleName();
 		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();

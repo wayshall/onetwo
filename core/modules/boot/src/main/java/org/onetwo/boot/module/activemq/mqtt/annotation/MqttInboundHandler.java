@@ -15,7 +15,13 @@ import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverte
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface MqttInboundHandler {
-	
+	/***
+	 * 客户单id，若没有配置，则不启用
+	 * 整个作为配置属性名，使用大括号{propertyName}
+	 * 作为表达式，则使用美元符号：partValue${configName1}，
+	 * @author weishao zeng
+	 * @return
+	 */
 	String clientId();
 	
 	String channelName() default "";

@@ -50,7 +50,7 @@ public class SimpleExpression implements Expression {
 		}
 	}
 
-	private final static String NULL_VALUE = "NULL";
+	private final static String NULL_VALUE = null;
 	
 	private final String start;
 	private final String end;

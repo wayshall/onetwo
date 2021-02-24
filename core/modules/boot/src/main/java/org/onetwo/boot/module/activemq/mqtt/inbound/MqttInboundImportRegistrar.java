@@ -7,8 +7,10 @@ import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverte
 import org.onetwo.boot.module.activemq.mqtt.MqttPahoMessageDrivenChannel;
 import org.onetwo.boot.module.activemq.mqtt.annotation.EnableMqttInbound;
 import org.onetwo.boot.module.activemq.mqtt.annotation.MqttInboundHandler;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.context.AbstractImportRegistrar;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -29,7 +31,12 @@ public class MqttInboundImportRegistrar extends AbstractImportRegistrar<EnableMq
 
 		InBoundClientProps clientConfig = new InBoundClientProps();
 		String clientId = attributes.getString("clientId");
-		clientId = getRequiredPropertyOrResolveValue(clientId);
+		clientId = getPropertyOrResolveValue(clientId);
+//		clientId = getRequiredPropertyOrResolveValue(clientId);
+		if (StringUtils.isBlank(clientId)) {
+			logger.info("the clientId is blank, ignore registar MqttInboundHandler: {}", drivenChannelClass);
+			return null;
+		}
 		clientConfig.setClientId(clientId);
 		
 		String channelName = resolveAttributeAsString(attributes, "channelName");
