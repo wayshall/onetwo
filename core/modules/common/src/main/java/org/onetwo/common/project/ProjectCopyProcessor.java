@@ -33,7 +33,8 @@ public class ProjectCopyProcessor extends BaseFileProcessor<ProjectCopyProcessor
 	
 	@Override
 	protected void fileProcess(File file) {
-		String relaPath = StringUtils.substringAfter(file.getPath(), sourceBaseDir);
+		String filePath = FileUtils.replaceBackSlashToSlash(file.getPath());
+		String relaPath = StringUtils.substringAfter(filePath, sourceBaseDir);
 		relaPath = relaPath.replace("/" + templateModuleName + "/", "/" + newModuleName + "/");
 		relaPath = relaPath.replace(StringUtils.capitalize(templateModuleName), StringUtils.capitalize(newModuleName));
 		String targetPath = targetBaseDir + relaPath;
@@ -43,6 +44,7 @@ public class ProjectCopyProcessor extends BaseFileProcessor<ProjectCopyProcessor
 		}
 		
 		logger.info("copy to target: {}", targetPath);
+		
 		if (isJavaFile(file) || isSpringFactoriesFile(file)) {
 			String content = FileUtils.readAsString(file);
 			content = content.replace("odysseus." + templateModuleName + ".", "odysseus." + newModuleName + ".");
@@ -64,6 +66,8 @@ public class ProjectCopyProcessor extends BaseFileProcessor<ProjectCopyProcessor
 			FileUtils.writeStringToFile(targetFile, charset, content);
 		} else if (file.isFile()) {
 			FileUtils.copyFile(file, targetFile);
+		} else if (file.isDirectory() && !file.exists()) {
+			file.mkdirs();
 		}
 	}
 

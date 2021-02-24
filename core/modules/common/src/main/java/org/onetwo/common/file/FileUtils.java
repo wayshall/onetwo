@@ -1004,6 +1004,9 @@ public class FileUtils {
 	}
 	
 	public static List<File> matchFiles(File baseDirFile, File toListDir, FileMatcher fileMatcher, boolean includeDir) {
+		if (!toListDir.exists()) {
+			throw new BaseException("can not list dir file, dir not found: " + toListDir.getPath());
+		}
 		File[] files = toListDir.listFiles();
 		if (files == null)
 			return Collections.EMPTY_LIST;
