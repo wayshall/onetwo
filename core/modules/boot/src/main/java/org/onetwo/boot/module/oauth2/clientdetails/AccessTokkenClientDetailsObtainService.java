@@ -25,7 +25,7 @@ public class AccessTokkenClientDetailsObtainService implements ClientDetailsObta
 	private TokenStore tokenStore;
 //	private TokenExtractor tokenExtractor = new BearerTokenExtractor();
 	@Autowired(required=false)
-	private TokenExtractor tokenExtractor;;
+	private TokenExtractor tokenExtractor;
 	private ClientDetailConverter<? extends ClientDetails> clientDetailConverter;
 
 	
