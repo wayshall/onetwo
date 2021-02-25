@@ -66,4 +66,20 @@ public @interface PermissionMeta {
 	/*String cssClass() default "";
 	
 	String showProps() default "";*/
+	
+	/**
+	 * 此属性为vue特有属性，去掉
+	 * 
+	 * routerView为true时，componentViewPath=routerView
+	 * 
+	 * 创建多级菜单时，为了避免重复嵌套侧栏和顶栏，父菜单的路由component属性（componentViewPath）不能使用Layout，需要重写一个模板页：
+	 * <template>
+  		<router-view/>
+	   </template>
+	   此页模板在根目录 /routerView.vue
+	 * 
+	 * @author weishao zeng
+	 * @return
+	 
+	boolean routerView() default false;*/
 }
