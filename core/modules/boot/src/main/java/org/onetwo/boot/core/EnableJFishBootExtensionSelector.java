@@ -19,6 +19,7 @@ import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
 import org.onetwo.boot.core.web.socket.WebsocketConfiguration;
 import org.onetwo.boot.module.activemq.ActivemqConfiguration;
+import org.onetwo.boot.module.activemq.jmx.ActiveMQJmxConfiguration;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTConfiguration;
 import org.onetwo.boot.module.alioss.OssConfiguration;
 import org.onetwo.boot.module.cache.SpringCacheConfiguration;
@@ -115,12 +116,14 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 			classNames.add(extClassName);
 		}
 		
-		//activemq
+		// activemq
 		classNames.add(ActivemqConfiguration.class.getName());
-		//activemq mqtt
+		// activemq jmx
+		classNames.add(ActiveMQJmxConfiguration.class.getName());
+		// activemq mqtt
 		classNames.add(ActiveMQTTConfiguration.class.getName());
 		
-		//ali qlexpress
+		// ali qlexpress
 		classNames.add(QLExpressConfigtion.class.getName());
 		
 		classNames.add(TimerConfiguration.class.getName());

@@ -1,9 +1,9 @@
 package org.onetwo.boot.module.activemq;
 
-import lombok.Data;
-
 import org.apache.activemq.RedeliveryPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 /**
  * @author wayshall
