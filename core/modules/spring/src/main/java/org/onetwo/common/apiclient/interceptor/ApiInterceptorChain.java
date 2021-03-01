@@ -22,7 +22,7 @@ public class ApiInterceptorChain {
 	private Collection<ApiInterceptor> interceptors;
 	private Iterator<ApiInterceptor> iterator;
 	private Object result;
-	private Throwable throwable;
+//	private Throwable throwable;
 	
 
 	public ApiInterceptorChain(Collection<ApiInterceptor> interceptors, Object context, ActionInvoker actualInvoker) {
@@ -37,6 +37,13 @@ public class ApiInterceptorChain {
 		this.requestContext = context;
 	}
 
+	/****
+	 * 依次调用拦截器，最后调用实际请求actualInvoker.invoke()；
+	 * 返回结果后，再逆序进入拦截器
+	 * @author weishao zeng
+	 * @return
+	 * @throws Throwable
+	 */
 	public Object invoke() throws Throwable {
 		if(iterator==null){
 			this.iterator = this.interceptors.iterator();
@@ -51,13 +58,21 @@ public class ApiInterceptorChain {
 		return result;
 	}
 	
+	/***
+	 * 重置拦截器调用栈状态，重置后，当调用 {@link ApiInterceptorChain#invoke()} 的时候会重新调用一遍拦截器
+	 * @author weishao zeng
+	 */
+	void restInvokeState() {
+		this.iterator = null;
+	}
+	
 	Object getResult() {
 		return result;
 	}
 	
-	Throwable getThrowable() {
-		return throwable;
-	}
+//	Throwable getThrowable() {
+//		return throwable;
+//	}
 
 	public Object getRequestContext() {
 		return requestContext;

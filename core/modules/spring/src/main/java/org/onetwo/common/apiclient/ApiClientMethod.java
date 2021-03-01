@@ -26,7 +26,6 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.reflect.BeanToMapConvertor;
-import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.rest.RestUtils;
@@ -303,11 +302,25 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return values;
 	}
 	
+	/***
+	 * 在http规范任何方法都能发送请求实体。他们报文时没有任何区别的，但是在浏览器中，因为XMLHttpRequest规范的限制，浏览器中ajax发送的http请求，get，delete请求不能携带实体。
+	 * 这里在判断是否queryString参数时，遵循浏览器规则:
+	 * 1. get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
+	 * 2. get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
+	 * @author weishao zeng
+	 * @param p
+	 * @return
+	 */
 	protected boolean isQueryStringParameters(ApiClientMethodParameter p){
-		if(requestMethod==RequestMethod.POST || requestMethod==RequestMethod.PATCH){
-			//post方法，使用了RequestParam才转化为queryString
+//		if(requestMethod==RequestMethod.POST || requestMethod==RequestMethod.PATCH){
+//			//post方法，使用了RequestParam才转化为queryString
+//			return p.hasParameterAnnotation(RequestParam.class);
+//		}
+		if(requestMethod!=RequestMethod.GET && requestMethod!=RequestMethod.DELETE) {
+			// 非get，delete请求时，只有指定了@RequestParam的参数，才是queryString参数
 			return p.hasParameterAnnotation(RequestParam.class);
 		}
+		// get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
 		return !isUriVariables(p) && !isSpecalPemerater(p);
 	}
 	
