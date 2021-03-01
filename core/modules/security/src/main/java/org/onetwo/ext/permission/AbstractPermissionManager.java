@@ -154,7 +154,10 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 											.filter(p -> p.getRootMenu().isPresent())
 											.map(p -> p.getRootMenuCode())
 											.collect(Collectors.toSet());
-		Set<String> deleteRootCodes = Sets.difference(getDatabaseRootCodes(), memoryRootCodes);
+		Set<String> databaseRootCodes = getDatabaseRootCodes();
+		Set<String> deleteRootCodes = Sets.difference(databaseRootCodes, memoryRootCodes);
+		
+		logger.info("deleteRootCodes: {}, memoryRootCodes: {}, databaseRootCodes: {}", deleteRootCodes, memoryRootCodes, databaseRootCodes);
 		deleteRootCodes.stream().forEach(rootCode -> {
 			if (isReversePermissions(rootCode)) {
 				return;
