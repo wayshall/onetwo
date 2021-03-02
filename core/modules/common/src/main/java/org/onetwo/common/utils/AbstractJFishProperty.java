@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
+import java.util.Set;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.reflect.Intro;
@@ -84,7 +85,7 @@ abstract public class AbstractJFishProperty implements JFishProperty {
 		return getAnnotationInfo().getAnnotation(annoClass);
 	}
 
-	/*public <T extends Annotation> Set<T> getAnnotations(Class<T> annoClass) {
-		return annotationInfo.getAnnotations(annoClass);
-	}*/
+	public <T extends Annotation> Set<T> getMergedRepeatableAnnotations(Class<T> annoClass) {
+		return getAnnotationInfo().getMergedRepeatableAnnotations(annoClass);
+	}
 }

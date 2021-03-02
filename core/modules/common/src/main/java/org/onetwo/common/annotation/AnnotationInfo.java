@@ -3,8 +3,10 @@ package org.onetwo.common.annotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
+import java.util.Set;
 
 import org.onetwo.common.utils.Assert;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -92,6 +94,10 @@ public class AnnotationInfo {
 //		return annotatedElement.getAnnotation(annoClass);
 		return annotationFinder.getAnnotation(annotatedElement, annoClass);
 //		return annoClass.cast(LangUtils.getFirst(getAnnotations(annoClass)));
+	}
+
+	public <T extends Annotation> Set<T> getMergedRepeatableAnnotations(Class<T> annoClass) {
+		return AnnotatedElementUtils.getMergedRepeatableAnnotations(annotatedElement, annoClass);
 	}
 	
 	public AnnotatedElement getAnnotatedElement() {
