@@ -13,6 +13,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 public class PasswordEncoderTest {
+	@Test
+	public void testBcryptEncodePassword(){
+		String pwd = "test";
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		String result = encoder.encode(pwd);
+		System.out.println("result: " + result);
+		assertThat(encoder.matches(pwd, result));
+	}
 	
 	@Test
 	public void testBcrypt(){
