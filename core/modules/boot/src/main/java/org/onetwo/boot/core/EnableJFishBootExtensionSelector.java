@@ -25,11 +25,12 @@ import org.onetwo.boot.module.alioss.OssConfiguration;
 import org.onetwo.boot.module.cache.SpringCacheConfiguration;
 import org.onetwo.boot.module.cos.CosConfiguration;
 import org.onetwo.boot.module.dbm.BootDbmConfiguration;
+import org.onetwo.boot.module.oauth2.ssoclient.tokeninfo.SsoClientCustomTokenInfoUriConfiguration;
+import org.onetwo.boot.module.oauth2.ssoclient.userinfo.SsoClientCustomUserInfoUriConfiguration;
 import org.onetwo.boot.module.poi.ExcelViewConfiguration;
 import org.onetwo.boot.module.qlexpress.QLExpressConfigtion;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
-import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
 import org.onetwo.boot.module.session.BootSpringSessionConfiguration;
 import org.onetwo.boot.module.sftp.SftpConfiguration;
 import org.onetwo.boot.module.swagger.SwaggerConfiguration;
@@ -81,7 +82,8 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 
 		classNames.add(JwtContextConfig.class.getName());
 		
-		classNames.add(OAuth2SsoClientAutoContextConfig.class.getName());
+		classNames.add(SsoClientCustomUserInfoUriConfiguration.class.getName());
+		classNames.add(SsoClientCustomTokenInfoUriConfiguration.class.getName());
 		classNames.add(RedisConfiguration.class.getName());
 		classNames.add(AsyncMvcConfiguration.class.getName());
 		classNames.add(AsyncTaskConfiguration.class.getName());

@@ -8,21 +8,19 @@ import org.onetwo.boot.module.oauth2.result.OAuth2ExceptionDataResultJsonSeriali
 import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
-import org.springframework.security.oauth2.provider.token.TokenStore;
 
 /**
  * 配置定制的OAuth2ExceptionRenderer，返回框架约定的的格式
  * @author wayshall
  * <br/>
  */
-@ConditionalOnBean(TokenStore.class)
+//@ConditionalOnBean(TokenStore.class)
 @Configuration
 public class OAuth2CustomResultConfiguration implements InitializingBean{
 

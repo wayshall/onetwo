@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.security.oauth2;
+package org.onetwo.boot.module.oauth2.ssoclient;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
-public class NotEnableOauth2SsoCondition extends SpringBootCondition {
+public class DisabledOauth2SsoCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -18,9 +18,9 @@ public class NotEnableOauth2SsoCondition extends SpringBootCondition {
 		}
 		String[] beanNames = context.getBeanFactory().getBeanNamesForAnnotation(EnableOAuth2Sso.class);
 		if(beanNames==null || beanNames.length==0){
-			return ConditionOutcome.match("not @EnableOAuth2Sso bean found!");
+			return ConditionOutcome.match("@EnableOAuth2Sso bean not found!");
 		}
-		return ConditionOutcome.noMatch("@EnableOAuth2Sso sso client!");
+		return ConditionOutcome.noMatch("@EnableOAuth2Sso found!");
 	}
 	
 }

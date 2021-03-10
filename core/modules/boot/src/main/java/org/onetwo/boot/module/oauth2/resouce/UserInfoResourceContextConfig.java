@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.security.oauth2;
+package org.onetwo.boot.module.oauth2.resouce;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.onetwo.boot.module.oauth2.ssoclient.DisabledOauth2SsoCondition;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
-import org.onetwo.boot.module.security.oauth2.NotEnableOauth2SsoCondition;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
@@ -39,7 +39,7 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 	@Bean
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 //	@ConditionalOnMissingBean(DefaultUrlSecurityConfigurer.class)
-	@Conditional(NotEnableOauth2SsoCondition.class)
+	@Conditional(DisabledOauth2SsoCondition.class)
 	@Autowired
 	public DefaultUrlSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
 		return super.defaultSecurityConfigurer(accessDecisionManager);
