@@ -84,7 +84,8 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	@Bean
 	@OnMissingBean(AjaxAuthenticationHandler.class)
 	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
-		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().getLoginUrl(), 
+		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().isFailureUrlWithMessage(), 
+																			getSecurityConfig().getFailureUrl(), 
 																			getSecurityConfig().getAfterLoginUrl(),
 																			getSecurityConfig().isAlwaysUseDefaultTargetUrl());
 		if(securityConfig.getJwt().isEnabled()){

@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.security;
+package org.onetwo.boot.module.security.oauth2.ssoclient;
 
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
 import org.onetwo.common.apiclient.impl.RestExecutorConfig;

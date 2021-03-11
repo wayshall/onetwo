@@ -44,6 +44,10 @@ public class SecurityConfig {
 	String defaultLoginPage;
 	private String logoutUrl = LOGOUT_PATH;
 	private String loginUrl = LOGIN_PATH;
+	/***
+	 * 当认证失败（抛出AuthenticationException异常）时，在转发到 failureUrl 时，是否把异常信息附加到message参数
+	 */
+	private boolean failureUrlWithMessage = true;
 	private String failureUrl;
 	/***
 	 * LogoutConfigurer#logoutSuccessUrl default value
@@ -135,6 +139,11 @@ public class SecurityConfig {
 		return resolveUrl(loginUrl);
 	}
 	
+	/****
+	 * 没有配置，则默认为loginUrl
+	 * @author weishao zeng
+	 * @return
+	 */
 	public String getFailureUrl(){
 		String failureUrl = this.failureUrl;
 		if(StringUtils.isBlank(failureUrl)){

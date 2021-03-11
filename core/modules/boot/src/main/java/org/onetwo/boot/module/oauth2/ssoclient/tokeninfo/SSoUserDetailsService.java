@@ -1,5 +1,7 @@
 package org.onetwo.boot.module.oauth2.ssoclient.tokeninfo;
 
+import java.util.Map;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -8,6 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public interface SSoUserDetailsService {
 	
-	UserDetails loadUserByUsername(String username);
+	UserDetails loadUserByOAuth2User(Map<String, ?> map);
 
 }
