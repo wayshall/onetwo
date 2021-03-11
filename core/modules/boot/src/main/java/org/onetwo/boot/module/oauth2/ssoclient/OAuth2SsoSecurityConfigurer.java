@@ -1,5 +1,7 @@
-package org.onetwo.boot.module.security.oauth2.ssoclient;
+package org.onetwo.boot.module.oauth2.ssoclient;
 
+import org.onetwo.boot.module.oauth2.ssoclient.filter.OAuth2ClientFilterSecurityConfigurer;
+import org.onetwo.boot.module.oauth2.ssoclient.rest.SsoClientUserInfoRestTemplateCustomizer;
 import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public class OAuth2SsoSecurityConfigurer extends DefaultUrlSecurityConfigurer {
 	@Autowired
 	private ApplicationContext applicationContext;
 	@Autowired
-	OAuth2SsoClientProperties properties;
+	private OAuth2SsoClientProperties properties;
 	@Autowired(required=false)
 	private AjaxAuthenticationHandler authenticationHandler;
 	

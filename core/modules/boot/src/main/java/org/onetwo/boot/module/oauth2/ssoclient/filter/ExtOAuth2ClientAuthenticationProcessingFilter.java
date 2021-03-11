@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.security.oauth2.ssoclient;
+package org.onetwo.boot.module.oauth2.ssoclient.filter;
 
 import java.io.IOException;
 

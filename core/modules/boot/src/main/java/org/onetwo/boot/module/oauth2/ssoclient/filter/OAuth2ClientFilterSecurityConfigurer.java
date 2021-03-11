@@ -1,5 +1,6 @@
-package org.onetwo.boot.module.security.oauth2.ssoclient;
+package org.onetwo.boot.module.oauth2.ssoclient.filter;
 
+import org.onetwo.boot.module.oauth2.ssoclient.OAuth2SsoClientProperties;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateFactory;
 import org.springframework.context.ApplicationContext;

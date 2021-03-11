@@ -1,7 +1,7 @@
 package org.onetwo.boot.module.oauth2.ssoclient.tokeninfo;
 
 import org.onetwo.boot.module.oauth2.ssoclient.EnableOauth2SsoCondition;
-import org.onetwo.boot.module.security.oauth2.ssoclient.OAuth2SsoClientProperties;
+import org.onetwo.boot.module.oauth2.ssoclient.OAuth2SsoClientProperties;
 import org.onetwo.common.apiclient.impl.RestExecutorConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

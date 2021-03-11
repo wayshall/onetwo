@@ -1,7 +1,8 @@
-package org.onetwo.boot.module.security.oauth2.ssoclient;
+package org.onetwo.boot.module.oauth2.ssoclient.rest;
 
 import java.util.Arrays;
 
+import org.onetwo.boot.module.oauth2.ssoclient.OAuth2SsoClientProperties;
 import org.onetwo.common.apiclient.impl.DefaultRestExecutorFactory;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateCustomizer;
 import org.springframework.http.HttpHeaders;
