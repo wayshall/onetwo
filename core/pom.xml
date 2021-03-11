@@ -42,6 +42,7 @@
                 <module>modules/spring</module>
                 <module>modules/security</module>
                 <module>modules/boot</module>
+                <module>../../zifish-plugins/web-admin</module>
 			</modules>
            <build>
               <plugins>
