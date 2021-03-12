@@ -19,6 +19,10 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 	private Integer statusCode;
 	private ErrorType errorType;
 
+	public ApiClientException(String message) {
+		super(message);
+	}
+	
 	public ApiClientException(ErrorType exceptionType) {
 		this(exceptionType, (Throwable)null);
 	}

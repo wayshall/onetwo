@@ -17,9 +17,18 @@ import org.springframework.web.client.RestClientException;
  * <br/>
  */
 public class SimpleApiClientResponseHandler<M extends ApiClientMethod> extends DefaultApiClientResponseHandler<M> {
-	private String resultCodeField;
-	private String resultMessageField;
+	private String resultCodeField = "";
+	private String resultMessageField = "";
 	
+	public SimpleApiClientResponseHandler() {
+	}
+	
+	public SimpleApiClientResponseHandler(String resultCodeField, String resultMessageField) {
+		super();
+		this.resultCodeField = resultCodeField;
+		this.resultMessageField = resultMessageField;
+	}
+
 	@Override
 	public Class<?> getActualResponseType(M invokeMethod){
 		Class<?> responseType = invokeMethod.getMethodReturnType();
@@ -64,7 +73,7 @@ public class SimpleApiClientResponseHandler<M extends ApiClientMethod> extends D
 				}
 			} else {
 				if(logger.isDebugEnabled()){
-					logger.debug("Non-WechatResponse type: {}", response.getClass());
+					logger.debug("Non-ApiResponse type: {}", response.getClass());
 				}
 			}
 			

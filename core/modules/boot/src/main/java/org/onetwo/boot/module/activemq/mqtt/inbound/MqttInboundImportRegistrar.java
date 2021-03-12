@@ -23,7 +23,7 @@ public class MqttInboundImportRegistrar extends AbstractImportRegistrar<EnableMq
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {
+	protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(AnnotationMetadata importingClassMetadata, AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {
 		String className = annotationMetadata.getClassName();
 		Class<? extends MqttPahoMessageDrivenChannel> drivenChannelClass = (Class<? extends MqttPahoMessageDrivenChannel>)ReflectUtils.loadClass(className);
 		

@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author wayshall
  * <br/>
  */
-abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends AbstractImportRegistrar<IMPORT, COMPONENT> implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
+abstract public class AbstractApiClentRegistrar extends AbstractImportRegistrar implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
 
 	public static final String ATTRS_URL = "url";
 	public static final String ATTRS_BASE_URL = "baseUrl";
@@ -34,7 +34,14 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 	public static final String ATTRS_REST_EXECUTOR_FACTORY = "restExecutorFactory";
 	
 //	private RestExecutor restExecutor;
+
+	protected AbstractApiClentRegistrar() {
+	}
 	
+	protected AbstractApiClentRegistrar(Class<? extends Annotation> importingAnnotationClass,
+			Class<? extends Annotation> componentAnnotationClass) {
+		super(importingAnnotationClass, componentAnnotationClass);
+	}
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -71,18 +78,32 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 	}
 
 	/***
-	 * 
+	 * annotationMetadataHelper可拿到importingClassMetadata相关信息
 	 * @author wayshall
 	 * @return
 	 */
 	abstract protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes);
+	
+	/****
+	 * 增加 importingClassMetadata 参数的子类方法，适配新的需求
+	 * 有了此方法，另一个方法空实现即可
+	 * @author weishao zeng
+	 * @param importingClassMetadata
+	 * @param annotationMetadata
+	 * @param attributes
+	 * @return
+	 */
+	protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata importingClassMetadata, AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {
+		return createApiClientFactoryBeanBuilder(annotationMetadata, attributes);
+	}
 
 
 	@Override
 	protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(
+			AnnotationMetadata importingClassMetadata,
 			AnnotationMetadata annotationMetadata,
 			AnnotationAttributes attributes) {
-		return createApiClientFactoryBeanBuilder(annotationMetadata, attributes);
+		return createApiClientFactoryBeanBuilder(importingClassMetadata, annotationMetadata, attributes);
 	}
 
 

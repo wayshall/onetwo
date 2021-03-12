@@ -2,8 +2,8 @@ package org.onetwo.common.apiclient.api.simple2;
 
 import org.onetwo.common.apiclient.RestExecutorFactory;
 import org.onetwo.common.apiclient.annotation.RestApiClient;
-import org.onetwo.common.apiclient.impl.AbstractApiClentRegistrar;
 import org.onetwo.common.apiclient.impl.DefaultApiClientFactoryBean;
+import org.onetwo.common.apiclient.simple.GenericApiClentRegistrar;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -13,7 +13,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author weishao zeng
  * <br/>
  */
-public class Simple2RestApiClentRegistrar extends AbstractApiClentRegistrar<EnableSimpleApiClient, RestApiClient> {
+public class Simple2RestApiClentRegistrar extends GenericApiClentRegistrar<EnableSimpleApiClient, RestApiClient> {
 
 	@Override
 	protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {

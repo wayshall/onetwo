@@ -26,13 +26,11 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.StringUtils;
 
-import net.jodah.typetools.TypeResolver;
-
 /**
  * @author wayshall
  * <br/>
  */
-abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware, EnvironmentAware {
+abstract public class AbstractImportRegistrar implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware, EnvironmentAware {
 
 	public static final String ATTRS_NAME = "name";
 	
@@ -47,13 +45,34 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 	private Class<? extends Annotation> componentAnnotationClass;
 	
 	
-	@SuppressWarnings("unchecked")
-	public AbstractImportRegistrar() {
-		super();
-		Class<? extends Annotation>[] paramClasses = (Class<?  extends Annotation>[])TypeResolver.resolveRawArguments(AbstractImportRegistrar.class, getClass());
-		this.importingAnnotationClass = paramClasses[0];
-		this.componentAnnotationClass = paramClasses[1];
+//	@SuppressWarnings("unchecked")
+//	protected AbstractImportRegistrar() {
+//		super();
+//		Class<? extends Annotation>[] paramClasses = (Class<?  extends Annotation>[])TypeResolver.resolveRawArguments(AbstractImportRegistrar.class, getClass());
+//		this.importingAnnotationClass = paramClasses[0];
+//		this.componentAnnotationClass = paramClasses[1];
+//	}
+
+	protected AbstractImportRegistrar() {
 	}
+	
+	protected AbstractImportRegistrar(Class<? extends Annotation> importingAnnotationClass,
+			Class<? extends Annotation> componentAnnotationClass) {
+		super();
+		this.importingAnnotationClass = importingAnnotationClass;
+		this.componentAnnotationClass = componentAnnotationClass;
+	}
+
+
+	final protected void setImportingAnnotationClass(Class<? extends Annotation> importingAnnotationClass) {
+		this.importingAnnotationClass = importingAnnotationClass;
+	}
+
+
+	final protected void setComponentAnnotationClass(Class<? extends Annotation> componentAnnotationClass) {
+		this.componentAnnotationClass = componentAnnotationClass;
+	}
+
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
@@ -105,9 +124,19 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 	protected List<BeanDefinition> scanBeanDefinitions(AnnotationMetadata importingClassMetadata){
 		return getAnnotationMetadataHelper(importingClassMetadata).scanBeanDefinitions(getComponentAnnotationClass());
 	}
+	
+	/***
+	 * 在注册bean之前初始化
+	 * @author weishao zeng
+	 * @param importingClassMetadata
+	 * @param registry
+	 */
+	protected void initBeforeRegisterBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+	}
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+		initBeforeRegisterBeanDefinitions(importingClassMetadata, registry);
 		Class<? extends Annotation> componentAnnoClass = getComponentAnnotationClass();
 		List<BeanDefinition> beandefList = scanBeanDefinitions(importingClassMetadata);
 		beandefList.stream().filter(AnnotatedBeanDefinition.class::isInstance)
@@ -117,7 +146,7 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 							checkComponent(componentAnnoClass, annotationMetadata);
 
 							AnnotationAttributes tagAttributes = SpringUtils.getAnnotationAttributes(annotationMetadata, componentAnnoClass);
-							registerComponent(registry, annotationMetadata, tagAttributes);
+							registerComponent(registry, importingClassMetadata, annotationMetadata, tagAttributes);
 						});
 	}
 	
@@ -132,10 +161,12 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 	 * @author wayshall
 	 * @return
 	 */
-	abstract protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes);
+	abstract protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(AnnotationMetadata importingClassMetadata, 
+			AnnotationMetadata componentAnnotationMetadata, 
+			AnnotationAttributes attributes);
 
-	protected void registerComponent(BeanDefinitionRegistry registry, AnnotationMetadata annotationMetadata, AnnotationAttributes tagAttributes) {
-		String className = annotationMetadata.getClassName();
+	protected void registerComponent(BeanDefinitionRegistry registry, AnnotationMetadata importingClassMetadata, AnnotationMetadata componentAnnotationMetadata, AnnotationAttributes tagAttributes) {
+		String className = componentAnnotationMetadata.getClassName();
 		String beanName = resolveName(tagAttributes, className);
 		
 		if (registry.containsBeanDefinition(beanName)) {
@@ -149,7 +180,7 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 			}
 		}
 		
-		BeanDefinitionBuilder definition = createComponentFactoryBeanBuilder(annotationMetadata, tagAttributes);
+		BeanDefinitionBuilder definition = createComponentFactoryBeanBuilder(importingClassMetadata, componentAnnotationMetadata, tagAttributes);
 		if (definition==null) {
 			return ;
 		}
@@ -176,7 +207,8 @@ abstract public class AbstractImportRegistrar<IMPORT, COMPONENT> implements Impo
 	
 
 	final protected String resolve(String value) {
-		return SpringUtils.resolvePlaceholders(resourceLoader, value);
+//		return SpringUtils.resolvePlaceholders(resourceLoader, value);
+		return SpringUtils.getPropertyOrResolveValue(resourceLoader, value);
 	}
 	
 	/****
