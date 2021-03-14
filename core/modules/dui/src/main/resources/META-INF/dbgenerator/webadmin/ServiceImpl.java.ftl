@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-<#if DUIEntityMeta.isTree()==true>
+<#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
 import java.util.List;
 import java.util.stream.Collectors;
 import org.onetwo.common.tree.DefaultTreeModel;
@@ -39,7 +39,7 @@ import ${entityPackage}.${entityClassName};
 @Service
 @Transactional
 public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassName}, ${idType}> {
-<#if DUIEntityMeta.isTree()==true>
+<#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
     private static TreeModelCreator<DefaultTreeModel, ${entityClassName}> TREE_MODEL_CREATER = data -> {
         DefaultTreeModel tm = new DefaultTreeModel(data.get${idName?cap_first}(), data.getName(), data.getParent${idName?cap_first}());
         return tm;
@@ -51,7 +51,7 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
         super(baseEntityManager);
     }
     
-<#if DUIEntityMeta.isTree()==true>
+<#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
     public List<DefaultTreeModel> loadAsTree() {
         List<${entityClassName}> treeList = this.baseEntityManager.findAll(${entityClassName}.class);
         TreeBuilder<DefaultTreeModel> treeBuilder = TreeUtils.newBuilder(treeList, TREE_MODEL_CREATER);
@@ -85,11 +85,13 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
     }
     
     public ${entityClassName} save(${entityClassName} entity) {
+    <#if DUIEntityMeta??>
       <#list DUIEntityMeta.hasDefaultFields as field>
         if (entity.get${field.column.capitalizePropertyName}()==null) {
             entity.set${field.column.capitalizePropertyName}(Types.asValue("${field.defaultValue}", ${field.column.mappingJavaClassLabel}.class));
         }
       </#list>
+    </#if>
         baseEntityManager.persist(entity);
         return entity;
     }

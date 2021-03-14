@@ -1,13 +1,11 @@
 package org.onetwo.boot.module.activemq.mqtt.inbound;
 
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTConfiguration;
-import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.InBoundClientProps;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverters;
 import org.onetwo.boot.module.activemq.mqtt.MqttPahoMessageDrivenChannel;
 import org.onetwo.boot.module.activemq.mqtt.annotation.EnableMqttInbound;
 import org.onetwo.boot.module.activemq.mqtt.annotation.MqttInboundHandler;
-import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.context.AbstractImportRegistrar;
 import org.onetwo.common.utils.StringUtils;
@@ -19,7 +17,11 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author weishao zeng
  * <br/>
  */
-public class MqttInboundImportRegistrar extends AbstractImportRegistrar<EnableMqttInbound, MqttInboundHandler> {
+public class MqttInboundImportRegistrar extends AbstractImportRegistrar {
+
+	public MqttInboundImportRegistrar() {
+		super(EnableMqttInbound.class,  MqttInboundHandler.class);
+	}
 	
 	@SuppressWarnings("unchecked")
 	@Override

@@ -59,7 +59,7 @@ public class BaseRedisLockTask implements InitializingBean {
 			logger.info("\n---------------[{}]结束执行任务……\n", name);
 			return null;
 		}, () -> {
-			logger.info("[{}]有正在执行的任务，忽略本次任务调度……");
+			logger.info("[{}]有正在执行的任务，忽略本次任务调度……", name);
 			return null;
 		});
 	}
