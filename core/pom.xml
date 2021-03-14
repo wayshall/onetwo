@@ -39,9 +39,13 @@
        <profile>
            <id>microcloud</id>
 			<modules>
+                <module>modules/common</module>
                 <module>modules/spring</module>
                 <module>modules/security</module>
+                <module>modules/dbm</module>
                 <module>modules/boot</module>
+                <module>modules/dui</module>
+                <module>../../onetwo-wechat</module>
                 <module>../../zifish-plugins/web-admin</module>
 			</modules>
            <build>
