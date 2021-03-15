@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import lombok.Data;
 
 /**
+ * @see OAuth2ClientProperties security.oauth2.client.clientId
  * @author weishao zeng
  * <br/>
  */

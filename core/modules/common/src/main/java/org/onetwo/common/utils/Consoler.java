@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Map;
 
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.slf4j.Logger;
+
 import com.google.common.collect.Maps;
 
 public class Consoler {
@@ -45,6 +48,7 @@ public class Consoler {
 	}
 	
 	public Consoler awaitInput(){
+		Logger logger = JFishLoggerFactory.getCommonLogger();
 		try {
 			String input = null;
 			while((input = consoleReader.readLine())!=null){
@@ -53,7 +57,11 @@ public class Consoler {
 				if(action!=null){
 					System.out.println("execute command: " + cmds[0]);
 					String value = cmds.length==1?cmds[0]:cmds[1];
-					action.execute(value);
+					try {
+						action.execute(value);
+					} catch (Exception e) {
+						logger.error("execute command error, cmd: " + value, e);
+					}
 				}else{
 					System.out.println("no match command: " + input);
 				}
