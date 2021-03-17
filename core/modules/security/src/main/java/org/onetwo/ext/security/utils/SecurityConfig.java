@@ -224,6 +224,10 @@ public class SecurityConfig {
 		 */
 		private boolean sync2db;
 		private ControllerPermissionNotFoundActions permissionNotFound = ControllerPermissionNotFoundActions.THROWS;
+		
+		public void setSync2db(boolean sync2db) {
+			this.sync2db = sync2db;
+		}
 	}
 	public static enum ControllerPermissionNotFoundActions {
 		/***
