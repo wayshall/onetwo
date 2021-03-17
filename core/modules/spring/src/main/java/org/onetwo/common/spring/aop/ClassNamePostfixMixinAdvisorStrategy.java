@@ -45,7 +45,14 @@ public class ClassNamePostfixMixinAdvisorStrategy implements MixinAdvisorStrateg
 		return createMixinAdvisor(mixinInterface, attrs);
 	}
 	
-
+	/***
+	 * 根据规则（接口名称+Impl）查找mixin接口（mixinInterface）的实现类
+	 * 并创建Advisor
+	 * @author weishao zeng
+	 * @param mixinInterface
+	 * @param mixin
+	 * @return
+	 */
 	protected Advisor createMixinAdvisor(Class<?> mixinInterface, MixinAttrs mixin){
 		if(!mixinInterface.isInterface()){
 			throw new IllegalArgumentException("mixinInterface must be a interface");
