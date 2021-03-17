@@ -293,6 +293,12 @@ public class SheetStreamReaderBuilder<T> {
 			Cell cell = getCell(cellnum);
 			return ExcelUtils.getCellValue(cell);
 		}
+		
+		/***
+		 * @author weishao zeng
+		 * @param cellnum base 0
+		 * @return
+		 */
 		public String getString(int cellnum) {
 			Cell cell = getCell(cellnum);
 			return (String)ExcelUtils.getCellValue(cell, sheet.isCanConverToStringValue());
