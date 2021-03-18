@@ -1,5 +1,5 @@
 # spring 
-交流群：  604158262    
+联系邮箱：  wayshall@qq.com    
 依赖到spring相关的封装
 
 ## 目录
