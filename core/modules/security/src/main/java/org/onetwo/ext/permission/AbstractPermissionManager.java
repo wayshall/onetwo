@@ -155,6 +155,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 											.map(p -> p.getRootMenuCode())
 											.collect(Collectors.toSet());
 		Set<String> databaseRootCodes = getDatabaseRootCodes();
+		// databaseRootCodes存在，memoryRootCodes不存在的，则删除
 		Set<String> deleteRootCodes = Sets.difference(databaseRootCodes, memoryRootCodes);
 		
 		logger.info("deleteRootCodes: {}, memoryRootCodes: {}, databaseRootCodes: {}", deleteRootCodes, memoryRootCodes, databaseRootCodes);
@@ -205,8 +206,11 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		Set<P> memoryPermissions = new HashSet<>(menuNodeMap.values());
 
 		Set<P> dbPermissions = new HashSet<P>(dbPermissionMap.values());
+		// memoryPermissions存在，dbPermissions不存在的，则为新增
 		Set<P> adds = Sets.difference(memoryPermissions, dbPermissions);
+		 // dbPermissions存在，memoryPermissions不存在的，则为删除
 		Set<P> deletes = Sets.difference(dbPermissions, memoryPermissions);
+		// memoryPermissions和dbPermissions都存在的，则更新……
 		Set<P> intersections = Sets.intersection(memoryPermissions, dbPermissions);
 		
 //		filterReversePermissions(deletes);
