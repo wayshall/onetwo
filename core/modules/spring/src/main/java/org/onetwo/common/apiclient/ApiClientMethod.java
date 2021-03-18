@@ -1,6 +1,5 @@
 package org.onetwo.common.apiclient;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -27,13 +26,11 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.proxy.AbstractMethodResolver;
 import org.onetwo.common.proxy.BaseMethodParameter;
 import org.onetwo.common.reflect.BeanToMapConvertor;
-import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.rest.RestUtils;
+import org.onetwo.common.spring.utils.EnhanceBeanToMapConvertor.EnhanceBeanToMapBuilder;
 import org.onetwo.common.utils.LangUtils;
-import org.slf4j.Logger;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.Resource;
@@ -81,9 +78,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return beanToMapConvertor;
 	}
 
-	final static private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
+	final static private BeanToMapConvertor beanToMapConvertor = EnhanceBeanToMapBuilder.enhanceBuilder()
 																	.enableFieldNameAnnotation()
-																	.valueConvertor(new ValueConvertor())
+																	.enableJsonPropertyAnnotation()
+																	.valueConvertor(new RestApiValueConvertor())
 																	.flatableObject(obj->{
 																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
 																		return  flatable &&
@@ -92,6 +90,17 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 																				!MultipartFile.class.isInstance(obj);
 																	})
 																	.build();
+//	final static private BeanToMapConvertor beanToMapConvertor = BeanToMapBuilder.newBuilder()
+//			.enableFieldNameAnnotation()
+//			.valueConvertor(new ValueConvertor())
+//			.flatableObject(obj->{
+//				boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
+//				return  flatable &&
+//						!Resource.class.isInstance(obj) &&
+//						!byte[].class.isInstance(obj) &&
+//						!MultipartFile.class.isInstance(obj);
+//			})
+//			.build();
 	
 //	final private AnnotationAttributes requestMappingAttributes;
 	private RequestMethod requestMethod;
@@ -188,14 +197,14 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	 * @author weishao zeng
 	 * @param annoClass
 	 * @return
-	 */
+	
 	public <T extends Annotation> T findAnnotation(Class<T> annoClass) {
 		T annoInst = AnnotatedElementUtils.getMergedAnnotation(getMethod(), annoClass);
 		if (annoInst==null) {
 			annoInst = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), annoClass);
 		}
 		return annoInst;
-	}
+	} */
 	
 	private void initHandlers() {
 		// 需要加@Inherited才能继承
@@ -223,24 +232,6 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	protected ApiErrorHandler obtainDefaultApiErrorHandler() {
 		return null;
-	}
-	
-	private <T> T createAndInitComponent(Class<T> clazz) {
-		T component = null;
-		if (Springs.getInstance().isInitialized()){
-			component = Springs.getInstance().getBean(clazz);
-			if (component==null) {
-				component = ReflectUtils.newInstance(clazz);
-				SpringUtils.injectAndInitialize(Springs.getInstance().getAppContext(), component);
-			}
-		} else {
-			Logger logger = ApiClientUtils.getApiclientlogger();
-			if (logger.isWarnEnabled()) {
-				logger.warn("spring application not initialized, use reflection to create component: {}", clazz);
-			}
-			component = ReflectUtils.newInstance(clazz);
-		}
-		return component;
 	}
 	
 	public CustomResponseHandler<?> getCustomResponseHandler() {
@@ -311,11 +302,25 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return values;
 	}
 	
+	/***
+	 * 在http规范任何方法都能发送请求实体。他们报文时没有任何区别的，但是在浏览器中，因为XMLHttpRequest规范的限制，浏览器中ajax发送的http请求，get，delete请求不能携带实体。
+	 * 这里在判断是否queryString参数时，遵循浏览器规则:
+	 * 1. get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
+	 * 2. get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
+	 * @author weishao zeng
+	 * @param p
+	 * @return
+	 */
 	protected boolean isQueryStringParameters(ApiClientMethodParameter p){
-		if(requestMethod==RequestMethod.POST || requestMethod==RequestMethod.PATCH){
-			//post方法，使用了RequestParam才转化为queryString
+//		if(requestMethod==RequestMethod.POST || requestMethod==RequestMethod.PATCH){
+//			//post方法，使用了RequestParam才转化为queryString
+//			return p.hasParameterAnnotation(RequestParam.class);
+//		}
+		if(requestMethod!=RequestMethod.GET && requestMethod!=RequestMethod.DELETE) {
+			// 非get，delete请求时，只有指定了@RequestParam的参数，才是queryString参数
 			return p.hasParameterAnnotation(RequestParam.class);
 		}
+		// get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
 		return !isUriVariables(p) && !isSpecalPemerater(p);
 	}
 	

@@ -14,6 +14,8 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
@@ -55,6 +57,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	
 //	private String authenticationFailureUrl;
 	private AuthenticationFailureHandler failureHandler;
+	private boolean failureUrlWithMessage;
     private AuthenticationSuccessHandler successHandler;
 	private JsonMapper mapper = JsonMapper.IGNORE_NULL;
 	
@@ -73,14 +76,22 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
 	}
+	
 	public AjaxAuthenticationHandler(String authenticationFailureUrl){
 		this(authenticationFailureUrl, null, false);
 	}
+	
 	public AjaxAuthenticationHandler(String authenticationFailureUrl, String defaultSuccessUrl){
 		this(authenticationFailureUrl, defaultSuccessUrl, false);
 	}
+	
 	public AjaxAuthenticationHandler(String authenticationFailureUrl, String defaultSuccessUrl, boolean alwaysUse) {
+		this(false, authenticationFailureUrl, defaultSuccessUrl, alwaysUse);
+	}
+	
+	public AjaxAuthenticationHandler(boolean failureUrlWithMessage, String authenticationFailureUrl, String defaultSuccessUrl, boolean alwaysUse) {
 	    super();
+	    this.failureUrlWithMessage = failureUrlWithMessage;
 	    this.authenticationFailureUrl = authenticationFailureUrl;
 	    if(StringUtils.isNotBlank(defaultSuccessUrl)){
 	    	this.setDefaultTargetUrl(defaultSuccessUrl);
@@ -172,7 +183,16 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 											.data(data)
 											.build();
 			String text = mapper.toJson(rs);
-			ResponseUtils.renderJsonByAgent(request, response, text);
+			
+//			ResponseUtils.renderJsonByAgent(request, response, text);
+			
+			BrowserMeta meta = RequestUtils.getBrowerMetaByAgent(request);
+			//如果是ie某些低版本，必须设置为html，否则会导致json下载
+			if(meta.isFuckingBrowser()){
+				ResponseUtils.render(response, text, ResponseUtils.HTML_TYPE, true);
+			} else {
+				ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
+			}
 		}else{
 			this.successHandler.onAuthenticationSuccess(request, response, authentication);
 		}
@@ -201,7 +221,14 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else{
-			this.failureHandler.onAuthenticationFailure(request, response, exception);
+			if (failureUrlWithMessage) {
+				String message = LangUtils.encodeUrl(exception.getMessage());
+				String failUrl = RequestUtils.appendParam(authenticationFailureUrl, "message", message);
+				AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler(failUrl);
+				failureHandler.onAuthenticationFailure(request, response, exception);
+			} else {
+				this.failureHandler.onAuthenticationFailure(request, response, exception);
+			}
 		}
     }
 	

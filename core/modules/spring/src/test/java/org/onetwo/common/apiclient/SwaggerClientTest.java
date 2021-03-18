@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author wayshall
  * <br/>
  */
-public class SwaggerClientTest extends ApicientBaseTests {
+public class SwaggerClientTest extends ApiClientBaseTests {
 	
 	@Autowired
 	SwaggerClient swaggerClient;

@@ -1,5 +1,7 @@
 package org.onetwo.boot.module.alioss;
 
+import java.io.File;
+
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +54,20 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 		this.wraper = new OssClientWrapper(ossProperties);
 		wraper.afterPropertiesSet();
 //		this.wraper.createBucketIfNotExists(bucketName);
+	}
+	
+	@Test 
+	public void testUploadVideo() {
+		String path = "/Users/way/Movies/test/test.mp4";
+		
+		SnapshotProperties conifg = new SnapshotProperties();
+		conifg.setEnabled(true);
+		conifg.setTime(4000);
+		String storeKey = "test.mp4";
+		String editKey = "test-edit.jpg";
+		this.wraper.objectOperation(bucketName, storeKey)
+//					.store(new File(path))
+					.videoSnapshot(editKey, conifg, null);
 	}
 	
 	@Test

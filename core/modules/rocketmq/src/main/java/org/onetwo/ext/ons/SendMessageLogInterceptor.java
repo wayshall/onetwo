@@ -7,14 +7,13 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import com.aliyun.openservices.ons.api.Message;
-import com.aliyun.openservices.ons.api.SendResult;
 
 /**
- * 应该放在最后一个拦截
+ * 日志拦截
  * @author wayshall
  * <br/>
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class SendMessageLogInterceptor implements SendMessageInterceptor {
 	private final Logger logger = ONSUtils.getONSLogger();
 
@@ -23,13 +22,13 @@ public class SendMessageLogInterceptor implements SendMessageInterceptor {
 	}
 
 	@Override
-	public SendResult intercept(org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain chain) {
+	public Object intercept(org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain chain) {
 		ONSSendMessageContext ctx = (ONSSendMessageContext)chain.getSendMessageContext();
 		Message message = ctx.getMessage();
 		if(logger.isInfoEnabled()){
 			logger.info("send message topic: {}, tags: {}, key: {}", message.getTopic(), message.getTag(), message.getKey());
 		}
-		SendResult result = (SendResult)chain.invoke();
+		Object result = chain.invoke();
 		if(logger.isInfoEnabled()){
 			logger.info("send message success. topic: {}, tags: {}, sendResult: {}", message.getTopic(), message.getTag(), result);
 		}

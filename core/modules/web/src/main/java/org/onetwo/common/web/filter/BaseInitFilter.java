@@ -40,12 +40,12 @@ public class BaseInitFilter extends IgnoreFiler {
 
 	public static final String LOCALE_SESSION_ATTRIBUTE = WebLocaleUtils.ATTRIBUTE_KEY;//I18nInterceptor.DEFAULT_SESSION_ATTRIBUTE;
 
-	public static final String RELOAD = "reload";
+//	public static final String RELOAD = "reload";
 //	public static final String JNA_LIBRARY_PATH = "jna.library.path";
 	
 //	public static final String REQUEST_ERROR_COUNT = "REQUEST_ERROR_COUNT";
 	public static final String REQUEST_URI = RequestUtils.REQUEST_URI;
-	private boolean timeProfiler = false;//BaseSiteConfig.getInstance().isTimeProfiler();
+//	private boolean timeProfiler = false;//BaseSiteConfig.getInstance().isTimeProfiler();
 	
 	private boolean preventXssRequest = false;
 	private SiteConfig siteConfig;

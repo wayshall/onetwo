@@ -3,7 +3,9 @@ package org.onetwo.common.utils;
 import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.Closure;
@@ -237,9 +240,22 @@ final public class LangOps {
 	public static long timeToMinutes(String time, long def) {
 		return parseTime(time, def, (duration, timeUnit)->timeUnit.toMinutes(duration));
 	}
+	
+	/***
+	 * 
+	 * @author weishao zeng
+	 * @param time
+	 * @param def 当time为空时，会返回默认值def，def少于0时，则表示没有提供默认值，直接抛错
+	 * @param convert
+	 * @return
+	 */
 	public static long parseTime(String time, long def, BiFunction<Integer, TimeUnit, Long> convert) {
 		if(StringUtils.isBlank(time)){
-			return def;
+			if (def>=0) {
+				return def;
+			} else {
+				throw new BaseException("time is blank and default value has not be provided.");
+			}
 		}
 		Pair<Integer, TimeUnit> tu = parseTimeUnit(time);
 		return convert.apply(tu.getKey(), tu.getValue());
@@ -318,6 +334,11 @@ final public class LangOps {
 			return Collections.emptyList();
 		}
 		return Arrays.asList(values);
+	}
+    
+	public static <T extends Comparable<? super T>> T max(Collection<T> datas, T def) {
+		T max = datas.stream().max(Comparator.naturalOrder()).orElse(def);
+		return max;
 	}
 	
 	private LangOps(){}

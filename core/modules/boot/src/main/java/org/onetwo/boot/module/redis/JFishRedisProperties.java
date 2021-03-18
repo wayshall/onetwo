@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.redis;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -17,7 +18,7 @@ public class JFishRedisProperties {
 
 	public static final String ENABLED_KEY = "jfish.redis.enabled";
 	public static final String SERIALIZER_KEY = "jfish.redis.serializer";
-	public static final String ENABLED_LOCK_REGISTRY = "jfish.redis.lockRegistry.key";
+//	public static final String ENABLED_LOCK_REGISTRY = "jfish.redis.lockRegistry.key";
 	private static final String LOCK_PREFX_KEY = "Zifish:RedisLock:";
 
 	/*String hostName = "localhost";
@@ -40,10 +41,13 @@ public class JFishRedisProperties {
 	
 	@Data
 	public static class LockRegistryProperties {
-		String key;
-		long expireAfter = 60000;
+		public static final String DEFAULT_LOCK_KEY = "${"+BootJFishConfig.PREFIX+".redis.lockRegistry.key:${spring.application.name}}";
+		/***
+		 * default is 2 min
+		 */
+		long expireAfter = 120000;
 		
-		public String getKey(){
+		public String getLockKey(String key){
 			return LOCK_PREFX_KEY + key;
 		}
 	}

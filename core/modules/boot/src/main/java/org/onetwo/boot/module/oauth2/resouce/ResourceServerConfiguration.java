@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -38,6 +39,9 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 	@Autowired(required=false)
 	private OAuth2AccessDeniedHandler oauth2AccessDeniedHandler;
 
+	@Autowired(required=false)
+	private TokenExtractor tokenExtractor;
+	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		ResourceServerProps resourceServerProps = oauth2Properties.getResourceServer();
@@ -60,18 +64,21 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-		if(tokenStore!=null){
+		if (tokenStore!=null) {
 			resources.tokenStore(tokenStore);
 		}
 		String resourceId = oauth2Properties.getResourceServer().getResourceId();
-		if(resourceId!=null){
+		if (resourceId!=null) {
 			resources.resourceId(resourceId);//see OAuth2AuthenticationProcessingFilter#doFilter -> OAuth2AuthenticationManager#authenticate
 		}
-		if(oauth2AuthenticationEntryPoint!=null){
+		if (oauth2AuthenticationEntryPoint!=null) {
 			resources.authenticationEntryPoint(oauth2AuthenticationEntryPoint);
 		}
-		if(oauth2AccessDeniedHandler!=null){
+		if (oauth2AccessDeniedHandler!=null) {
 			resources.accessDeniedHandler(oauth2AccessDeniedHandler);
+		}
+		if (tokenExtractor!=null) {
+			resources.tokenExtractor(tokenExtractor);
 		}
 	}
 	

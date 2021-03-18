@@ -19,7 +19,8 @@
         <appender-ref ref="onsAppender"/>
     </appender>
 
-    <logger name="org.onetwo.ext.ons.ONSMessageLog" level="INFO">
+    <property name="ONS_LOGGER_LEVEL" value="${ONS_LOGGER_LEVEL:INFO}"/>
+    <logger name="org.onetwo.ext.ons.ONSMessageLog" level="${ONS_LOGGER_LEVEL}">
         <appender-ref ref="asyncOnsFile"/>
     </logger>
     

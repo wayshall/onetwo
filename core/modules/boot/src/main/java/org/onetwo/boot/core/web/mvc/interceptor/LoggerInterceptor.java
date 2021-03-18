@@ -2,11 +2,16 @@ package org.onetwo.boot.core.web.mvc.interceptor;
 
 import java.util.Date;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ErrorMessage;
+import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
+import org.onetwo.boot.core.web.mvc.log.OperationLogs;
 import org.onetwo.boot.core.web.mvc.log.OperatorLogEvent;
 import org.onetwo.boot.core.web.mvc.log.OperatorLogInfo;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
@@ -14,10 +19,8 @@ import org.onetwo.common.ds.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishMathcer;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.filter.RequestInfo;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
-import org.onetwo.common.web.utils.WebContextUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +41,18 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	private ContextHolder contextHolder;
 //	private AccessLogger accessLogger;
 	private final boolean logOperation = true;
-	private JFishMathcer matcher ;
+	/***
+	 * 用于记录日志时，避免记录一些敏感参数
+	 */
+	private JFishMathcer parameterMatcher ;
 	private String[] excludes;
 	private UserDetailRetriever userDetailRetriever;
 //	@Autowired
 //	private BootSiteConfig bootSiteConfig;
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private AccessLogProperties accessLogProperties;
 	
 	public LoggerInterceptor(){
 	}
@@ -53,7 +61,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		if(LangUtils.isEmpty(excludes)){
 			this.excludes = new String[]{"*password*"};
 		}
-		this.matcher = JFishMathcer.excludes(false, excludes);
+		this.parameterMatcher = JFishMathcer.excludes(false, excludes);
 		/*if(isLogOperation() && accessLogger==null){
 			DefaultAccessLogger defaultLogger = new DefaultAccessLogger();
 //			if(bootSiteConfig!=null)
@@ -68,7 +76,8 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 //		request.setAttribute(START_TIME_KEY, System.currentTimeMillis());;
-		WebContextUtils.initRequestInfo(request);
+//		WebContextUtils.initRequestInfo(request);
+		OperationLogs.initLogInfo(request);
 		return true;
 	}
 	
@@ -91,15 +100,17 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		if(handler==null || !HandlerMethod.class.isInstance(handler))
 			return ;
 
-		RequestInfo reqInfo = WebContextUtils.requestInfo(request);
+//		RequestInfo reqInfo = WebContextUtils.requestInfo(request);
+		OperatorLogInfo reqInfo = OperationLogs.getLogInfo(request);
 		if(reqInfo==null)
 			return ;
 
-		String url = request.getMethod() + "|" + request.getRequestURL();
-		long start = reqInfo.getStartTime();
-		OperatorLogInfo info = new OperatorLogInfo(start, System.currentTimeMillis());
+//		String url = request.getMethod() + "|" + request.getRequestURL();
+//		long start = reqInfo.getStartTime();
+//		OperatorLogInfo info = new OperatorLogInfo(start, System.currentTimeMillis());
+//		info.setUrl(url);
+		OperatorLogInfo info = reqInfo;
 		
-		info.setUrl(url);
 		info.setRemoteAddr(RequestUtils.getRemoteAddr(request));
 		info.setUserAgent(RequestUtils.getUserAgent(request));
 //		info.setParameters(request.getParameterMap());
@@ -111,8 +122,11 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 			} catch (Exception e) {
 				e.printStackTrace();
 			}*/
-			if(matcher.match(entry.getKey())){
-				info.addParameter(entry.getKey(), entry.getValue());
+			if(parameterMatcher.match(entry.getKey())){
+				String[] values = Stream.of(entry.getValue()).map(val -> {
+					return StringUtils.substring(val, 0, this.accessLogProperties.getLogParameterValueMaxLength());
+				}).collect(Collectors.toList()).toArray(new String[0]);
+				info.addParameter(entry.getKey(), values);
 			}else{
 				info.addParameter(entry.getKey(), "******");
 			}
@@ -138,7 +152,10 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		if(contextHolder!=null){
 			info.setDatas(contextHolder.getDataChangedContext());
 		}
+		info.setRequestMethod(request.getMethod());
+		
 		HandlerMethod webHandler = (HandlerMethod)handler;
+		info.setHandlerMethod(webHandler);
 		info.setWebHandler(webHandler.getBeanType().getCanonicalName()+"."+webHandler.getMethod().getName());
 		
 //		accessLogger.logOperation(info);

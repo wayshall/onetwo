@@ -2,7 +2,6 @@ package org.onetwo.boot.mq.task;
 
 import java.time.LocalDateTime;
 
-import org.onetwo.boot.module.redis.JFishRedisProperties;
 import org.onetwo.boot.module.redis.RedisLockRunner;
 import org.onetwo.boot.mq.MQProperties;
 import org.onetwo.boot.mq.entity.SendMessageEntity;
@@ -25,7 +24,7 @@ import org.springframework.util.Assert;
  */
 @Transactional
 public class DeleteSentMessageTask implements InitializingBean {
-	public static final String LOCK_KEY = "locker:ons:delete_send_message_task";
+	public static final String LOCK_KEY = "ons:delete_send_message_task";
 //	public static final long DEFAULT_RUN_FIXEDRATE = 1000*60*60*1;//每小时运行一次
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
@@ -45,8 +44,7 @@ public class DeleteSentMessageTask implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(useReidsLock){
-			Assert.notNull(redisLockRegistry, "redisLockRegistry not found! "
-					+ "you should config the key[" + JFishRedisProperties.ENABLED_LOCK_REGISTRY + "] to enabled redisLockRegistry!");
+			Assert.notNull(redisLockRegistry, "redisLockRegistry not found! ");
 		}
 	}
 
@@ -93,7 +91,7 @@ public class DeleteSentMessageTask implements InitializingBean {
 	}
 	
 	private RedisLockRunner getRedisLockRunner(){
-		RedisLockRunner redisLockRunner = RedisLockRunner.createLoker(redisLockRegistry, LOCK_KEY, redisLockTimeout);
+		RedisLockRunner redisLockRunner = RedisLockRunner.createLocker(redisLockRegistry, LOCK_KEY, redisLockTimeout);
 		return redisLockRunner;
 	}
 

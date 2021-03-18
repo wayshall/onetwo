@@ -257,6 +257,62 @@ http://localhost:8081/api/article?access_token=xxxxxxxxxxxxx
 #### 增加jwt-redis tokenStore
 这种存储方式结合redis和jwt的形式，认证服务器把jwt的token和uuid对应保存到redis，客户端使用uuid作为access_token，网关统一验证access_token并转为jwt的token，网关后面的服务使用jwt的token来调用，从而实现无状态调用，又避免了jwt的token无法手动失效的缺点。
 
+### OAuth2 sso客户端单点登录
+
+#### 1、在项目下，新建一个配置类
+```Java
+@Configuration
+@EnableOAuth2Sso
+// 定制oauth错误异常
+@Import(OAuth2CustomResultConfiguration.class)
+public class OAuth2ClientSecurityConfigurer extends OAuth2SsoSecurityConfigurer {
+    
+    public OAuth2ClientSecurityConfigurer(AccessDecisionManager accessDecisionManager) {
+        super(accessDecisionManager);
+    }
+    
+}
+```
+#### 2、对应配置文件
+```yaml
+jfish:
+    security: 
+        failureUrl: http://localhost:9527/oauth2Login?error=true
+    oauth2: 
+        ssoclient: 
+            stateMandatory: false
+            tokenInfo.enabled: true #此属性会激活 SsoClientCustomTokenInfoUriConfiguration 配置类
+security: 
+    oauth2: 
+        resource: 
+            tokenInfoUri: http://ssoserver:port/oauth/check_token #token的rest api地址
+            preferTokenInfo: true
+            #userInfoUri: http://ssoserver:port/oauth/userInfo #若使用 userInfo 接口，则除了配置 userInfoUri 属性，还需要配置 preferTokenInfo=false 
+        client: 
+            clientId: <clientId>
+            clientSecret: <clientSecret>
+            preEstablishedRedirectUri: http://localhost:9527/oauth2Login #前端oauth2Login登录页面，需要同时配置 useCurrentUri=false 
+            useCurrentUri: false
+            accessTokenUri: http://ssoserver:port/oauth/token #获取用户accessToken的rest api 地址
+            tokenName: token
+            userAuthorizationUri: http://ssoserver:port/oauth/authorize #用户授权地址
+```
+### 3、扩展单点登录用户信息加载接口
+```Java
+@Service
+public class SsoUserDetailService implements SSoUserDetailsService {
+    @Override
+    public UserDetails loadUserByOAuth2User(Map<String, ?> map) {
+        Map<String, ?> userInfo = (Map<String, ?>)map.get("user_info");
+        String userId = (String)userInfo.get("user_id");
+        UserDetails userDetail = loadUserDetails(userId);
+        return userDetail;
+    }
+}
+```
+
+
+
 ### 优雅退出支持
 ```yaml
 jfish: 
@@ -313,6 +369,92 @@ jfish:
           allowedOrigins: *
 		  allowedMethods: GET, OPTION
 		  allowedHeaders: Content-Type
+```
+
+### websocket和stomp配置
+```yaml
+jfish:
+	websocket: 
+		enabled: true
+	    stomp:
+			endpoints: /stomp
+			allowedOrigins: '*'
+	    broker:
+			simplePrefixes: /broadcast
+			appPrefixes: /app
+			userPrefix: /user
+```
+
+### activemq之mqtt支持
+增加下面配置即可启用mqtt支持
+- 1、在pom文件加入activemq的相关依赖
+- 2、在application.yaml里增加下面的配置：
+```yaml
+jfish:
+    activemq: 
+        mqtt: 
+            server-urls: tcp://activemqhost:1883
+            username: user
+            password: password
+            cleanSession: false
+```
+
+#### 配置消息outbound
+相当于消息发布者
+在application.yaml里增加下面的配置：
+```yaml
+jfish:
+    activemq: 
+        mqtt: 
+            outbound: 
+                clientId: producerId
+                defaultQos: 1
+                converter: json
+```
+
+#### 配置消息inbound
+有两种方式
+- 直接在application.yaml里增加下面的配置：
+```yaml
+jfish:
+    activemq: 
+        mqtt: 
+            inbounds: 
+                - clientId: consumerId
+                  topics: SewageStation.device.test.post
+                  channelName: SewageStationDeviceInBoundChannel
+                  converter: json
+```
+
+- 通过注解方式
+有时候你可能需要根据类型注入 MqttPahoMessageDrivenChannel，
+这时候可以通过实现MqttPahoMessageDrivenChannel的子类，并通过注解标注
+
+```Java
+@MqttInboundHandler(
+		clientId="clientId", 
+		channelName="channelName",
+		converter=MessageConverters.JSON,
+		topics="test"
+)
+public class TestInBoundChannelAdapter extends MqttPahoMessageDrivenChannel {
+	public TestInBoundChannelAdapter(InBoundClientProps clientConfig, MqttPahoClientFactory clientFactory) {
+		super(clientConfig, clientFactory);
+	}
+}
+```
+这样你就可以在任务地方通过服务注入的方式得到 TestInBoundChannelAdapter 了。
+
+使用此功能需要在配置类增加 @EnableMqttInbound 注解
+```Java
+@SpringBootApplication
+@EnableMqttInbound
+public class TestServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TestServiceApplication.class, args);
+    }
+}
 ```
 
 ### 其它一些简化使用的扩展

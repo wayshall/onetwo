@@ -81,6 +81,10 @@ public final class RestUtils {
 		return ClassUtils.isPresent(CLASS_OK_HTTP_CLIENT, null);
 	}
 	
+	public static boolean isHttpComponentPresent(){
+		return ClassUtils.isPresent("org.apache.http.impl.client.AbstractHttpClient", null);
+	}
+	
 
 //	@SuppressWarnings("unchecked")
 	public static HttpEntity<?> createFormEntity(final Object obj){

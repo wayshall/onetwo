@@ -28,6 +28,9 @@ import redis.clients.jedis.JedisPoolConfig;
 @Data
 @ToString
 public class SecurityConfig {
+	/***
+	 * 不做任何配置
+	 */
 	public static final String ANY_REQUEST_NONE = "none";
 	
 	public static final String LOGIN_PATH = "/login";
@@ -41,6 +44,10 @@ public class SecurityConfig {
 	String defaultLoginPage;
 	private String logoutUrl = LOGOUT_PATH;
 	private String loginUrl = LOGIN_PATH;
+	/***
+	 * 当认证失败（抛出AuthenticationException异常）时，在转发到 failureUrl 时，是否把异常信息附加到message参数
+	 */
+	private boolean failureUrlWithMessage = true;
 	private String failureUrl;
 	/***
 	 * LogoutConfigurer#logoutSuccessUrl default value
@@ -76,14 +83,21 @@ public class SecurityConfig {
 	
 	private Map<String[], String> intercepterUrls = Maps.newHashMap();
 	private List<InterceptersConfig> intercepters = Lists.newArrayList();
+	/***
+	 * 是否检查：/** -> permitAll
+	 */
+	private boolean checkAnyUrlpermitAll = true;
 	
-	private String anyRequest;
+	private String anyRequest = SecurityConfig.ANY_REQUEST_NONE;
 	private boolean ignoringDefautStaticPaths = true;
 	private String[] ignoringUrls;
 	
 	private Map<String, MemoryUser> memoryUsers = Maps.newHashMap();
 	
 	private boolean debug;
+	
+	private CorsConfig cors = new CorsConfig();
+	
 	
 	public boolean isDebug(){
 		return debug;
@@ -125,6 +139,11 @@ public class SecurityConfig {
 		return resolveUrl(loginUrl);
 	}
 	
+	/****
+	 * 没有配置，则默认为loginUrl
+	 * @author weishao zeng
+	 * @return
+	 */
 	public String getFailureUrl(){
 		String failureUrl = this.failureUrl;
 		if(StringUtils.isBlank(failureUrl)){
@@ -205,6 +224,10 @@ public class SecurityConfig {
 		 */
 		private boolean sync2db;
 		private ControllerPermissionNotFoundActions permissionNotFound = ControllerPermissionNotFoundActions.THROWS;
+		
+		public void setSync2db(boolean sync2db) {
+			this.sync2db = sync2db;
+		}
 	}
 	public static enum ControllerPermissionNotFoundActions {
 		/***
@@ -312,5 +335,12 @@ public class SecurityConfig {
 		String[] pathPatterns;
 		String access;
 	}
-	
+
+	@Data
+	public static class CorsConfig {
+		/***
+		 * 允许所有预检请求
+		 */
+		boolean permitAllPreFlightRequest;
+	}
 }

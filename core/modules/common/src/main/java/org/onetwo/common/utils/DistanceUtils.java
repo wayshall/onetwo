@@ -2,6 +2,8 @@ package org.onetwo.common.utils;
 
 import java.text.DecimalFormat;
 
+import org.onetwo.common.exception.ServiceException;
+
 /**
  * 非原创，来自网络
  */
@@ -14,9 +16,23 @@ public abstract class DistanceUtils {
         return d * Math.PI / 180.0;  
     }
     
+    /***
+     * 计算两个坐标之间的距离，单位：米
+     * @author weishao zeng
+     * @param lng1
+     * @param lat1
+     * @param lng2
+     * @param lat2
+     * @return
+     */
     public static double calcDistance(Double lng1, Double lat1, Double lng2, Double lat2) {
     	if(lng1==null || lat1==null || lng2==null || lat2==null){
-    		return Double.NaN;
+//    		return Double.NaN;
+    		throw new ServiceException("参数错误，坐标不能为空！")
+    							.put("lng1", lng1)
+    							.put("lat1", lat1)
+    							.put("lng2", lng2)
+    							.put("lat2", lat2);
     	}
         double lat1Angle = toAngle(lat1);  
         double lat2Angle = toAngle(lat2);  

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.onetwo4j</groupId>
+        <artifactId>onetwo-parent</artifactId>
+		<version>4.8.0-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+
+	<artifactId>onetwo-dui</artifactId>
+	<packaging>jar</packaging>
+
+	<name>onetwo-dui</name>
+	<description>onetwo-dui</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+        <dependency>
+          <groupId>org.onetwo4j</groupId>
+          <artifactId>onetwo-boot</artifactId>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.onetwo4j</groupId>
+          <artifactId>onetwo-dbm</artifactId>
+        </dependency>
+        
+	    <dependency>
+	        <groupId>org.projectlombok</groupId>
+	        <artifactId>lombok</artifactId>
+          	<optional>true</optional>
+	    </dependency>
+	
+        <!-- <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
+        </dependency> -->
+    
+	    <dependency>
+	        <groupId>org.springframework</groupId>
+	        <artifactId>spring-test</artifactId>
+	        <scope>test</scope>
+	    </dependency>
+	    
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <optional>true</optional>
+        </dependency>
+	    
+        <dependency>
+          <groupId>com.jayway.restassured</groupId>
+          <artifactId>rest-assured</artifactId>
+          <scope>test</scope>
+        </dependency>
+	    <dependency>
+	      <groupId>org.springframework.boot</groupId>
+	      <artifactId>spring-boot-starter-test</artifactId>
+	      <scope>test</scope>
+	    </dependency>
+	</dependencies>
+	
+	<repositories>
+        <repository>
+            <id>Central</id>
+            <name>Central Repository</name>
+            <url>http://central.maven.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+	
+	
+  <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+        </plugin>
+        
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+                <compilerVersion>${java.version}</compilerVersion>
+                <showWarnings>true</showWarnings>
+                <encoding>utf-8</encoding>
+                <compilerArgs>
+                    <arg>-parameters</arg>
+                </compilerArgs>
+            </configuration>
+        </plugin>
+        
+        
+    </plugins>
+  </build>
+	
+</project>

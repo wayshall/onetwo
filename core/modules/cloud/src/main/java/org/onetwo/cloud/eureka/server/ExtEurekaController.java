@@ -1,6 +1,5 @@
 package org.onetwo.cloud.eureka.server;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
-import com.netflix.discovery.shared.Application;
-import com.netflix.eureka.EurekaServerContext;
-import com.netflix.eureka.EurekaServerContextHolder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +43,7 @@ public class ExtEurekaController extends EurekaController {
 	private String dashboardPath = "";*/
 	@Value("${eureka.dashboard.baseurl:/gateway/eureka}")
 	private String baseurl = "";
-	@Value("${eureka.dashboard.authHeaderName:auth}")
+	@Value("${eureka.dashboard.authHeaderName:sid}")
 	private String authHeaderName = "";
 	
 	private ExtRestTemplate restTemplate = new ExtRestTemplate();
@@ -64,7 +60,7 @@ public class ExtEurekaController extends EurekaController {
 
 	@RequestMapping(path="instance", method = RequestMethod.POST)
 	public String instance(@RequestParam String instId, InstanceStatus status, Map<String, Object> model) {
-		Optional<InstanceInfo> inst = findInstanceInfoById(instId);
+		Optional<InstanceInfo> inst = InstanceInfoMeta.findInstanceInfoById(instId);
 		
 		if (!inst.isPresent()) {
 			model.put("message", "找不到实例：" + instId);
@@ -88,7 +84,7 @@ public class ExtEurekaController extends EurekaController {
 
 	@RequestMapping(path="refreshConfig", method = RequestMethod.POST)
 	public String refreshConfig(@RequestParam String instId, Map<String, Object> model) {
-		Optional<InstanceInfo> inst = findInstanceInfoById(instId);
+		Optional<InstanceInfo> inst = InstanceInfoMeta.findInstanceInfoById(instId);
 		
 		if (!inst.isPresent()) {
 			model.put("message", "找不到实例：" + instId);
@@ -100,20 +96,15 @@ public class ExtEurekaController extends EurekaController {
 	}
 
 	protected String refreshInstanceConfig(InstanceInfo inst) {
-		String url = inst.getMetadata().get("refresh-config-url");
-		if (StringUtils.isBlank(url)) {
-			url = inst.getMetadata().get("management.context-path");
-			if (url==null) {
-//				throw new ServiceException("the config [metadata-map.management.context-path] of client is missing!");
-				url = "";
-			}
-			url = inst.getHomePageUrl() + url + "/refresh";
-		}
+		InstanceInfoMeta meta = InstanceInfoMeta.newInstance(inst);
+		String url = meta.getRefreshConfigUrl();
+
+		String authHeaderName = meta.getAuthHeaderName(this.authHeaderName);
 		
 		String auth = RequestUtils.getCookieValue(request, authHeaderName);
 		HttpHeaders headers = RestUtils.createHeader(MediaType.APPLICATION_JSON_UTF8);
 		if (StringUtils.isNotBlank(auth)) {
-//			headers.set("auth", auth);
+//			headers.set("auth", auth); // for manager
 			headers.set("Cookie", authHeaderName+"="+auth);
 		}
 
@@ -137,22 +128,12 @@ public class ExtEurekaController extends EurekaController {
 		return null;
 	}
 	
-	private Optional<InstanceInfo> findInstanceInfoById(String instId) {
-		List<Application> sortedApplications = getEurekaServerContext().getRegistry().getSortedApplications();
-		Optional<InstanceInfo> inst = sortedApplications.stream().filter(app -> {
-			return app.getByInstanceId(instId)!=null;
-		})
-		.findFirst()
-		.map(app -> app.getByInstanceId(instId));
-		return inst;
-	}
-	
-	private EurekaServerContext getEurekaServerContext() {
-		return EurekaServerContextHolder.getInstance().getServerContext();
-	}
 	
 	@ModelAttribute("dashboardBaseUrl")
 	public String getDashboardBaseurl(){
+		if (baseurl.equals("/")) {
+			return "";
+		}
 		return baseurl;
 	}
 }

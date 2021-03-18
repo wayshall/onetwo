@@ -18,6 +18,7 @@ public class SnapshotAction extends ObjectProcess<SnapshotProperties> {
 	
 	/***
 	 * 截图时间
+	 * 单位ms，[0,视频时长]
 	 * @author weishao zeng
 	 * @param time
 	 */

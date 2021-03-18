@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.log.MyLoggerFactory;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
 public class FileScanner {
-	protected final Logger logger = MyLoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
 //	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 //	private MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory();

@@ -1,7 +1,6 @@
 package org.onetwo.ext.ons;
 
 import org.onetwo.boot.mq.MQProperties;
-import org.onetwo.boot.mq.MQProperties.SendMode;
 import org.onetwo.boot.mq.MQTransactionalConfiguration;
 import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.repository.SendMessageRepository;
@@ -10,6 +9,7 @@ import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.ons.consumer.DbmReceiveMessageRepository;
 import org.onetwo.ext.ons.consumer.DelegateMessageService;
 import org.onetwo.ext.ons.consumer.ONSPushConsumerStarter;
+import org.onetwo.ext.ons.consumer.ONSSubscribeProcessor;
 import org.onetwo.ext.ons.consumer.ReceiveMessageRepository;
 import org.onetwo.ext.ons.consumer.StoreConsumerListener;
 import org.onetwo.ext.ons.producer.OnsDatabaseTransactionMessageInterceptor;
@@ -34,6 +34,11 @@ public class ONSConfiguration {
 	private ONSProperties onsProperties;
 	@Autowired
 	private MQProperties mqProperties;
+	
+	@Bean
+	public ONSSubscribeProcessor onsSubscribeProcessor() {
+		return new ONSSubscribeProcessor();
+	}
 	
 	@Bean
 	public ONSPushConsumerStarter onsPushConsumerStarter(DelegateMessageService delegateMessageService){
@@ -88,18 +93,28 @@ public class ONSConfiguration {
 	
 
 	@Bean
-	@ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
+	@ConditionalOnProperty(value=MQProperties.TRANSACTIONAL_ENABLED_KEY, matchIfMissing=true)
 	public DatabaseTransactionMessageInterceptor databaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
 		OnsDatabaseTransactionMessageInterceptor interceptor = new OnsDatabaseTransactionMessageInterceptor();
-		SendMode sendMode = mqProperties.getTransactional().getSendMode();
+		/*SendMode sendMode = mqProperties.getTransactional().getSendMode();
 		if(sendMode==SendMode.ASYNC){
 			interceptor.setUseAsync(true);
 		}else{
 			interceptor.setUseAsync(false);
-		}
+		}*/
+		interceptor.setTransactionalProps(mqProperties.getTransactional());
 		interceptor.setSendMessageRepository(sendMessageRepository);
 		return interceptor;
 	}
+	
+	/*@Bean
+	@ConditionalOnProperty(MQProperties.TRANSACTIONAL_ENABLED_KEY)
+	public OnsBatchDatabaseTransactionMessageInterceptor batchDatabaseTransactionMessageInterceptor(SendMessageRepository sendMessageRepository){
+		OnsBatchDatabaseTransactionMessageInterceptor interceptor = new OnsBatchDatabaseTransactionMessageInterceptor();
+		interceptor.setTransactionalProps(mqProperties.getTransactional());
+		interceptor.setSendMessageRepository(sendMessageRepository);
+		return interceptor;
+	}*/
 	
 	/*@Configuration
 	@ConditionalOnProperty(ONSProperties.TRANSACTIONAL_ENABLED_KEY)

@@ -35,6 +35,9 @@ public class SendMessageContext<M extends Serializable> {
 		this.debug = debug;
 	}
 	
+	public boolean isDebug() {
+		return debug;
+	}
 	
 	public M getMessage(){
 		return message;
@@ -43,5 +46,8 @@ public class SendMessageContext<M extends Serializable> {
 	public boolean isTransactional(){
 		return false;
 	}
-
+	
+	public boolean isDelayMessage() {
+		return false;
+	}
 }

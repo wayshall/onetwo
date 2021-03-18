@@ -60,7 +60,7 @@ public class SimpleCaptchaGenerator {
 		drawBorder(g2d, settings);
 		drawPuzzleLines(g2d, settings);
 
-		String codes = RandomStringUtils.randomAlphanumeric(settings.getCodeLength()).toLowerCase();
+		String codes = RandomStringUtils.randomAlphanumeric(settings.getCodeLength()).toUpperCase();
 		drawCodes(g2d, settings, codes);
 		CaptchaResult result = new CaptchaResult(codes);
 		
@@ -125,9 +125,10 @@ public class SimpleCaptchaGenerator {
 //			g2d.setColor(Color.RED);
 			//xy为字母最后的点，即最右和最底部的点
 			int y = height-randomMargin*5;
-			int middle = height-surplusHeight/2; //居中
-			// 如果计算出的y点少于高度的70%，则居中
-			y = y<height*0.7?middle:y;
+			int middle = height-Math.round(surplusHeight/2); //居中
+			// 如果计算出的y点少于高度的60%，则居中
+			y = y<height*0.6?middle:y;
+//			y = height;
 //			System.out.println("y: " + y + ", middle: " + middle);
 			g2d.drawString(String.valueOf(code), leftMargin+codeIndex*codeWidth+randomMargin, y);
 			codeIndex++;
@@ -156,7 +157,7 @@ public class SimpleCaptchaGenerator {
 		String imageFormatName = "png";
 		//验证码颜色,默认随机
 		String codeColor;
-		double fontHeight = 0.9;
+		double fontHeight = 0.8;
 		
 		public Font getFont(){
 			if(font==null){

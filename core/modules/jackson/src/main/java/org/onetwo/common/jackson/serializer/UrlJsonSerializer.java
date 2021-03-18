@@ -6,6 +6,7 @@ import java.util.zip.CRC32;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -42,10 +43,26 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 	 */
 	@Override
 	public void serializeWithType(Object value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-		typeSer.writeTypePrefixForScalar(value, gen);
-		serialize(value, gen, serializers);
-//		typeSer.writeTypePrefixForScalar(value, gen);
-		typeSer.writeTypeSuffixForScalar(value, gen);
+		if(value==null)
+			return ;
+		if(value.getClass().isArray()){
+			typeSer.writeTypePrefix(gen, typeSer.typeId(value, value.getClass(), JsonToken.START_ARRAY));
+//			typeSer.writeTypePrefixForArray(value, gen, value.getClass());
+			serialize(value, gen, serializers);
+//			typeSer.writeTypeSuffixForArray(value, gen);
+			typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.START_ARRAY));
+		}else if(value instanceof Collection){
+			typeSer.writeTypePrefix(gen, typeSer.typeId(value, value.getClass(), JsonToken.START_ARRAY));
+			serialize(value, gen, serializers);
+			typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.START_ARRAY));
+		}else{
+			typeSer.writeTypePrefix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
+			serialize(value, gen, serializers);
+			typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
+		}
+//		typeSer.writeTypePrefix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
+//		serialize(value, gen, serializers);
+//		typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
 	}
 
 

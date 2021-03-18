@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.web.cors.CorsUtils;
 
 public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigurer {
 
@@ -53,6 +56,19 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 		for(InterceptersConfig interConfig : this.securityConfig.getIntercepters()){
 			http.authorizeRequests().antMatchers(interConfig.getPathPatterns()).access(interConfig.getAccess());
 		}*/
+		if (securityConfig.getCors().isPermitAllPreFlightRequest()) {
+			http.authorizeRequests().requestMatchers(req -> CorsUtils.isPreFlightRequest(req)).permitAll();
+		}
+		// permitAll
+		if (this.securityConfig.isCheckAnyUrlpermitAll()) {
+			for(Entry<String[], String> entry : securityConfig.getIntercepterUrls().entrySet()) {
+				if (ArrayUtils.contains(entry.getKey(), "/**") && 
+						("permitAll".equals(entry.getValue()) || "authenticated".equals(entry.getValue()))
+					) {
+					throw new BaseException("do not config /** -> permitAll or authenticated, it's very danger!");
+				}
+			}
+		}
 		configIntercepterUrls(http, securityConfig.getIntercepterUrls(), securityConfig.getIntercepters());
 
 //		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);

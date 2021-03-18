@@ -40,11 +40,15 @@ public class SpringMixinableInterfaceCreator implements MixinableInterfaceCreato
 		analyseProxyInterfaces();
 	}
 	
+	/****
+	 * 创建代理对象，如果要代理的接口有mixin接口，则使用mixinFactory把mixin接口混入到对象。
+	 */
 	@Override
 	public Object createMixinObject(MethodInterceptor interceptor){
 		Object mixinObject = null;
 		mixinObject = Proxys.interceptInterfaces(proxyInterfaces, interceptor);
 		
+		// 如果有mixin接口，则使用mixinFactory创建对象
 		if(!mixinInterfaces.isEmpty()){
 			mixinObject = mixinFactory.of(mixinObject, mixinInterfaces.toArray(new Class<?>[0]));
 		}
@@ -57,6 +61,12 @@ public class SpringMixinableInterfaceCreator implements MixinableInterfaceCreato
 			analyseInterface(inter);
 		}
 	}
+	
+	/***
+	 * 分析要代理的接口是否是mixin接口
+	 * @author weishao zeng
+	 * @param interfaceClass
+	 */
 	private void analyseInterface(Class<?> interfaceClass){
 		Class<?>[] interfaces = interfaceClass.getInterfaces();
 		for(Class<?> inter : interfaces){

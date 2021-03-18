@@ -55,14 +55,20 @@ salt为8个随机字节。
 		MessageDigestHasher md5 = Hashs.MD5;
 		
 		String encrypt = md5.hashWithRandomSalt(source, -1);
-		LangUtils.println("testMDWithoutLabel after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		LangUtils.println("testCsrf after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
 		boolean rs = md5.checkHash(source, encrypt);
 		Assert.assertEquals(true, rs);
 		
-		
-		encrypt = "36D69B4433C402F087A666A004B6A8ECD9BCD663C68F3700";
-		LangUtils.println("testMDWithoutLabel after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
-		rs = md5.checkHash(source, encrypt);
+
+		LangUtils.println("testCsrf hash: ${0}", md5.hash(source));
+		String encryptWithoutSalt = "60b013423f47bc25a5e3aaacd9f00e84";
+		rs = md5.checkHash(source, encryptWithoutSalt);
+		Assert.assertEquals(true, rs);
+
+		LangUtils.println("testCsrf hashWithSalt: ${0}", md5.hashWithSalt(source, "fix_salt"));
+		String encryptWithSalt = "69B52F298A6605E1FBFD341FCA7E06066669785F73616C74";
+		LangUtils.println("testCsrf after encrypt : ${0}, ${1}", encryptWithSalt.length(), encryptWithSalt);
+		rs = md5.checkHash(source, encryptWithSalt);
 		Assert.assertEquals(true, rs);
 	}
 	@Test

@@ -1,11 +1,15 @@
 package org.onetwo.common.apiclient.impl;
 
+import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import org.onetwo.common.apiclient.RestExecutorFactory;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.context.AbstractImportRegistrar;
 import org.onetwo.common.spring.context.AnnotationMetadataHelper;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -14,13 +18,14 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.StringUtils;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author wayshall
  * <br/>
  */
-abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends AbstractImportRegistrar<IMPORT, COMPONENT> implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
+abstract public class AbstractApiClentRegistrar extends AbstractImportRegistrar implements ImportBeanDefinitionRegistrar, BeanClassLoaderAware, ResourceLoaderAware {
 
 	public static final String ATTRS_URL = "url";
 	public static final String ATTRS_BASE_URL = "baseUrl";
@@ -29,12 +34,25 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 	public static final String ATTRS_REST_EXECUTOR_FACTORY = "restExecutorFactory";
 	
 //	private RestExecutor restExecutor;
+
+	protected AbstractApiClentRegistrar() {
+	}
 	
+	protected AbstractApiClentRegistrar(Class<? extends Annotation> importingAnnotationClass,
+			Class<? extends Annotation> componentAnnotationClass) {
+		super(importingAnnotationClass, componentAnnotationClass);
+	}
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 //		this.regiseterRestExecutor(getAnnotationMetadataHelper(importingClassMetadata), registry);
 		super.registerBeanDefinitions(importingClassMetadata, registry);
+	}
+	
+	@Override
+	protected void checkComponent(Class<? extends Annotation> componentAnnoClass, AnnotationMetadata annotationMetadata) {
+		Assert.isTrue(annotationMetadata.isInterface(),
+				"@"+componentAnnoClass.getSimpleName()+" can only be specified on an interface");
 	}
 	
 	/***
@@ -60,25 +78,53 @@ abstract public class AbstractApiClentRegistrar<IMPORT, COMPONENT> extends Abstr
 	}
 
 	/***
-	 * 
+	 * annotationMetadataHelper可拿到importingClassMetadata相关信息
 	 * @author wayshall
 	 * @return
 	 */
 	abstract protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes);
-
-
-	@Override
-	protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(
-			AnnotationMetadata annotationMetadata,
-			AnnotationAttributes attributes) {
+	
+	/****
+	 * 增加 importingClassMetadata 参数的子类方法，适配新的需求
+	 * 有了此方法，另一个方法空实现即可
+	 * @author weishao zeng
+	 * @param importingClassMetadata
+	 * @param annotationMetadata
+	 * @param attributes
+	 * @return
+	 */
+	protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata importingClassMetadata, AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {
 		return createApiClientFactoryBeanBuilder(annotationMetadata, attributes);
 	}
 
 
+	@Override
+	protected BeanDefinitionBuilder createComponentFactoryBeanBuilder(
+			AnnotationMetadata importingClassMetadata,
+			AnnotationMetadata annotationMetadata,
+			AnnotationAttributes attributes) {
+		return createApiClientFactoryBeanBuilder(importingClassMetadata, annotationMetadata, attributes);
+	}
+
+
 	final protected String resolveUrl(AnnotationAttributes tagAttributes) {
+		return resolveUrl(tagAttributes, null);
+	}
+	
+	final protected String resolveUrl(AnnotationAttributes tagAttributes, AnnotationMetadata annotationMetadata) {
 		String url = resolve(tagAttributes.getString(ATTRS_URL));
-		if(!StringUtils.hasText(url) && annotationMetadataHelper!=null){
+		if (!StringUtils.hasText(url) && annotationMetadataHelper!=null){
 			url = resolve(annotationMetadataHelper.getAttributes().getString(ATTRS_BASE_URL));
+		}
+		// 解释类上的RequestMapping作为base
+		if (annotationMetadata!=null) {
+			Map<String, Object> requestMapping = annotationMetadata.getAnnotationAttributes(RequestMapping.class.getName());
+			if (requestMapping!=null) {
+				String[] values = (String[])requestMapping.get("value");
+				if (values!=null && values.length>0) {
+					url = StringUtils.trimEndWith(url, FileUtils.SLASH) + StringUtils.appendStartWithSlash(resolve(values[0]));
+				}
+			}
 		}
 		if (StringUtils.hasText(url)) {
 			if (!url.contains("://")) {

@@ -32,6 +32,11 @@ public class TomcatProperties {
 	int connectionUploadTimeout = -1;
 	String connectionUploadTimeoutTime;
 	
+	/***
+	 * 是否使用apr协议
+	 */
+	boolean aprProtocol;
+	
 	public int getConnectionUploadTimeout(){
 		if(StringUtils.isBlank(connectionUploadTimeoutTime)){
 			return connectionUploadTimeout;

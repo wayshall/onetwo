@@ -1,10 +1,13 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -17,6 +20,55 @@ import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
+	
+
+	@Test
+	public void testJoinMap() {
+		Map<String, String> map = CUtils.asLinkedMap("test1", "1", "test2", 2);
+		String res = StringUtils.join(map, ":", "-");
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("test1:1-test2:2");
+		System.out.println("res: " + System.currentTimeMillis());
+	}
+
+	@Test
+	public void testEllipsis() {
+		String str = "test";
+		String res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo(str);
+		
+		str = null;
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo(str);
+		
+		str = "12345676910";
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo("1234567...");
+		
+		str = "一二三四五六七八九十十一";
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo("一二三四五六七...");
+	}
+	
+	@Test
+	public void testReplace() {
+		int val = 127;
+		int val2 = 0xFF;
+		System.out.println("val:" +val+", " + Integer.toHexString(val)+", " + Integer.toBinaryString(val));
+		System.out.println("val2:" +val2);
+		String str = "waypc.mshome.net|8888";
+		String[] strs = str.split("\\|");
+		System.out.println("str: " + LangUtils.toString(strs));
+		str = "127.0.0.1|8888";
+		strs = str.split("|");
+		System.out.println("str: " + LangUtils.toString(strs));
+		
+		String url = "aaa\\bb?cc*dd|ee\"ff";
+		System.out.println("source: " + url);
+		url = url.replaceAll("\\\\|:|\\*|\\?|\"|<|>|\\|", "");
+		System.out.println("url: " + url);
+		assertThat(url).isEqualTo("aaabbccddeeff");
+	}
 	
 	@Test
 	public void testFormatValue(){
@@ -367,6 +419,29 @@ public class LangUtilsTest {
 	 System.out.println(padRight("Howto", 20) + "*");
 	 System.out.println(padLeft("Howto", 20) + "*");
 	}
+
+
+	@Test
+	public void testSensitive() {
+	 String name = "李建国";
+	 
+	 String unsensitive = LangUtils.sensitive(name, 1);
+	 assertThat(unsensitive).isEqualTo("李**");
+	 unsensitive = LangUtils.sensitive(name, 4);
+	 assertThat(unsensitive).isEqualTo("李建国");
+	 
+	 unsensitive = LangUtils.sensitive(name, -1);
+	 assertThat(unsensitive).isEqualTo("**国");
+	 unsensitive = LangUtils.sensitive(name, 4);
+	 assertThat(unsensitive).isEqualTo("李建国");
+	 
+	 name = "13666676666";
+	 unsensitive = LangUtils.sensitive(name, 7);
+	 assertThat(unsensitive).isEqualTo("1366667****");
+	 
+	 unsensitive = LangUtils.sensitive(name, -4);
+	 assertThat(unsensitive).isEqualTo("*******6666");
+	}
 	
 	@Test
 	public void testRandomString(){
@@ -374,6 +449,16 @@ public class LangUtilsTest {
 		System.out.println("key:" + key);
 		key = "sport-"+RandomStringUtils.randomAlphanumeric(128);
 		System.out.println("key:" + key);
+		key = RandomStringUtils.randomAlphanumeric(32);
+		System.out.println("key:" + key);
+	}
+	
+	@Test
+	public void testGetCRC32() {
+		String data = "测试一下阿斯顿发了水电费开始的";
+		long value = LangUtils.getCrc32(data);
+		System.out.println(Long.toString(value, 36));
+		assertThat(value).isEqualTo(4286944383L);
 	}
 	
 }

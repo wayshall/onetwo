@@ -24,13 +24,26 @@ final public class CanaryUtils {
 	public static final String ATTR_CANARYCONTEXT = "__JFISH_CANARYCONTEXT__";
 	
 	public static HttpServletRequest getHttpServletRequest(){
-		ServletRequestAttributes attrs = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+		return getHttpServletRequestOptional().orElseThrow(() -> {
+			return new BaseException("ServletRequestAttributes not found, you may missing config [jfish.cloud.hystrix.shareRequestContext=true], "
+					+ "or invoked in not web environment");
+		});
+		/*ServletRequestAttributes attrs = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
 		if(attrs==null){
 			throw new BaseException("ServletRequestAttributes not found, you may missing config [jfish.cloud.hystrix.shareRequestContext=true]");
 		}
         final HttpServletRequest request = attrs.getRequest();
-        return request;
+        return request;*/
 //		request.setAttribute(CanaryUtils.ATTR_CANARYCONTEXT, ctx);
+	}
+	
+	public static Optional<HttpServletRequest> getHttpServletRequestOptional(){
+		ServletRequestAttributes attrs = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+		if(attrs==null){
+			return  Optional.empty();
+		}
+        final HttpServletRequest request = attrs.getRequest();
+        return Optional.ofNullable(request);
 	}
 	
 	public static void storeCanaryContext(CanaryContext ctx){
@@ -46,11 +59,17 @@ final public class CanaryUtils {
 	public static enum CanaryMode {
 		//不启用，走默认侧策略
 		DISABLED,
-		//当没有x-canary头的时候，查找没有配置canary.filter的服务
+		/***
+		 * 当没有x-canary头的时候，查找没有配置canary.filter的服务
+		 */
 		CANARY_NONE,
-		//启用，当没有匹配的时候，使用默认查找策略
+		/***
+		 * 启用，当没有匹配的时候，使用默认查找策略
+		 */
 		SMOOTHNESS,
-		//启用，强制匹配，没有匹配的时候，抛错
+		/***
+		 * 启用，强制匹配，没有匹配的时候，抛错
+		 */
 		FORCE;
 		
 

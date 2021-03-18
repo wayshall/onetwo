@@ -9,10 +9,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.onetwo.dbm.jpa.BaseEntity;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import org.onetwo.dbm.jpa.BaseEntity;
 
 /**
  * @author wayshall
@@ -22,7 +22,7 @@ import org.onetwo.dbm.jpa.BaseEntity;
 @Entity
 @Table(name="data_mq_send")
 @Data
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper=false)
 public class SendMessageEntity extends BaseEntity {
 	
 	@Id
@@ -33,6 +33,8 @@ public class SendMessageEntity extends BaseEntity {
 	private SendStates state;
 	private String locker;
 	private Date deliverAt;
+	@Column(name="is_delay")
+	private Boolean delay;
 	
 	public static enum SendStates {
 		UNSEND,

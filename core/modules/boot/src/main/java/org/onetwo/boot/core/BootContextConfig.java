@@ -6,17 +6,13 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.common.spring.validator.EmptyTraversableResolver;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ClassUtils;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /****
@@ -40,11 +36,16 @@ public class BootContextConfig {
 
 		@Bean
 		@Autowired
-		public ValidatorWrapper validatorWrapper(@Qualifier(ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE) MessageSource messageSource){
-			return ValidatorWrapper.wrap(validator(messageSource));
+		public ValidatorWrapper validatorWrapper(Validator validator, @Qualifier(ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE) MessageSource messageSource){
+			if (validator instanceof LocalValidatorFactoryBean) {
+				LocalValidatorFactoryBean vfb = (LocalValidatorFactoryBean) validator;
+				vfb.setValidationMessageSource(messageSource);
+				vfb.setTraversableResolver(new EmptyTraversableResolver());
+			}
+			return ValidatorWrapper.wrap(validator);
 		}
 		
-		@Bean
+		/*@Bean
 		@ConditionalOnMissingBean(Validator.class)
 		public Validator validator(@Qualifier(ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE) MessageSource messageSource) {
 			Validator validator = null;
@@ -63,7 +64,7 @@ public class BootContextConfig {
 			vfb.setValidationMessageSource(messageSource);
 			vfb.setTraversableResolver(new EmptyTraversableResolver());
 			return validator;
-		}
+		}*/
 	}
 
 	

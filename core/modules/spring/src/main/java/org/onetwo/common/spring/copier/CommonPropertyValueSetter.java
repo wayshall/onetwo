@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.util.Assert;
@@ -20,9 +21,9 @@ public class CommonPropertyValueSetter implements PropertyValueCopier {
 	
 	@SuppressWarnings("unchecked")
 	public void copyPropertyValue(SimpleBeanCopier beanCopier, BeanWrapper targetBeanWrapper, PropertyDescriptor toProperty, Object srcValue){
-		String propertyName = toProperty.getName();
+//		String propertyName = toProperty.getName();
 		if(srcValue==null){
-			setPropertyValue0(targetBeanWrapper, propertyName, null);
+			setPropertyValue0(targetBeanWrapper, toProperty, null);
 			return ;
 		}
 
@@ -31,7 +32,7 @@ public class CommonPropertyValueSetter implements PropertyValueCopier {
 		Class<?> propertyType = (Class<?>) type;
 		Cloneable cloneable = getCloneableAnnotation(targetBeanWrapper.getWrappedInstance(), toProperty);
 		if(isCopyValueOrRef(toProperty, cloneable)){
-			setPropertyValue0(targetBeanWrapper, propertyName, srcValue);
+			setPropertyValue0(targetBeanWrapper, toProperty, srcValue);
 			
 		}else if(propertyType.isArray()){
 			copyArray(beanCopier, targetBeanWrapper, propertyType, cloneable, toProperty, srcValue);
@@ -46,12 +47,16 @@ public class CommonPropertyValueSetter implements PropertyValueCopier {
 //			Object targetValue = newBeanCopier(toProperty.getPropertyType()).fromObject(srcValue);
 			Object targetValue = beanCopier.fromObject(srcValue, toProperty.getPropertyType());
 //			targetBeanWrapper.setPropertyValue(propertyName, targetValue);
-			setPropertyValue0(targetBeanWrapper, propertyName, targetValue);
+			setPropertyValue0(targetBeanWrapper, toProperty, targetValue);
 		}
 	}
 
-	protected void setPropertyValue0(BeanWrapper targetBeanWrapper, String propertyName, Object value) {
-		targetBeanWrapper.setPropertyValue(propertyName, value);
+	protected void setPropertyValue0(BeanWrapper targetBeanWrapper, PropertyDescriptor property, Object value) {
+		Object convertedValue = value;
+		if (value!=null && !value.getClass().equals(property.getPropertyType())) {
+			convertedValue = SpringUtils.getFormattingConversionService().convert(value, property.getPropertyType());
+		}
+		targetBeanWrapper.setPropertyValue(property.getName(), convertedValue);
 	}
 	
 	/****
@@ -118,7 +123,7 @@ public class CommonPropertyValueSetter implements PropertyValueCopier {
 			}
 		}
 //		targetBeanWrapper.setPropertyValue(toProperty.getName(), array);
-		setPropertyValue0(targetBeanWrapper, toProperty.getName(), array);
+		setPropertyValue0(targetBeanWrapper, toProperty, array);
 	}
 	
 
@@ -147,7 +152,7 @@ public class CommonPropertyValueSetter implements PropertyValueCopier {
 		}
 //		ReflectionUtils.invokeMethod(toProperty.getWriteMethod(), target, cols);
 //		targetBeanWrapper.setPropertyValue(toProperty.getName(), cols);
-		setPropertyValue0(targetBeanWrapper, toProperty.getName(), cols);
+		setPropertyValue0(targetBeanWrapper, toProperty, cols);
 	}
 	
 	protected void copyMap(SimpleBeanCopier beanCopier, BeanWrapper targetBeanWrapper, Class<? extends Map<Object, Object>> propertyType, Cloneable cloneable, PropertyDescriptor toProperty, Map<?, ?> srcValue){
@@ -191,7 +196,7 @@ public class CommonPropertyValueSetter implements PropertyValueCopier {
 		
 //		ReflectionUtils.invokeMethod(toProperty.getWriteMethod(), target, map);
 //		targetBeanWrapper.setPropertyValue(toProperty.getName(), map);
-		setPropertyValue0(targetBeanWrapper, toProperty.getName(), map);
+		setPropertyValue0(targetBeanWrapper, toProperty, map);
 	}
 	
 	protected Map<Object, Object> copyMapWithSource(SimpleBeanCopier beanCopier, Class<? extends Map<Object, Object>> propertyType, Cloneable cloneable, Map<?, ?> srcValue){

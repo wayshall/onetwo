@@ -15,6 +15,11 @@ public class TimeCounter {
 		t.logger(timeLogger);
 		return t;
 	}
+
+	public static TimeCounter create(Object target, Logger logger){
+		TimeCounter t = new TimeCounter(target, logger);
+		return t;
+	}
 	public static TimeCounter start(Object target){
 		TimeCounter t = new TimeCounter(target);
 		t.start();

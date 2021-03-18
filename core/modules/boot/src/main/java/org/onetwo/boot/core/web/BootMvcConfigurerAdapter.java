@@ -16,14 +16,18 @@ import org.onetwo.boot.core.web.async.MvcAsyncProperties;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
+import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
+import org.onetwo.common.spring.converter.StringToJackson2ObjectNodeConverterFactory;
+import org.onetwo.common.spring.converter.StringToMapConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
 import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
 import org.onetwo.common.spring.mvc.args.WebAttributeArgumentResolver;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.dbm.spring.mvc.DbmIntStringValueToEnumConverterFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,6 +38,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -44,6 +49,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentResolverAdapter;
 
 /****
  * 有关web mvc的一些扩展配置
@@ -62,6 +68,12 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Autowired
 	private List<HandlerMethodArgumentResolver> argumentResolverList;
+	/***
+	 * WebArgumentResolver实际上会通过ServletWebArgumentResolverAdapter适配为HandlerMethodArgumentResolver
+	 * 而这个适配实际上调用了两次WebArgumentResolver#resolveArgument，完全没必要，建议不要使用WebArgumentResolver接口
+	 */
+	@Autowired(required=false)
+	private List<WebArgumentResolver> webArgumentResolverList;
 	
 	@Autowired(required=false)
 	private ExtJackson2HttpMessageConverter jackson2HttpMessageConverter;
@@ -74,6 +86,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Autowired
 	private List<HandlerInterceptor> interceptorList;
+//	@Autowired
+//	private ApplicationContext applicationContext;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
@@ -142,6 +156,13 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 				}
 			});
 		}
+		if(this.webArgumentResolverList!=null){
+			webArgumentResolverList.forEach(arg->{
+				if(arg.getClass().getAnnotation(BootMvcArgumentResolver.class)!=null){
+					argumentResolvers.add(new ServletWebArgumentResolverAdapter(arg));
+				}
+			});
+		}
 	}
 
 	@Override
@@ -168,11 +189,16 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
-		
 		registry.removeConvertible(String.class, Enum.class);
-		registry.addConverterFactory(new IntStringValueToEnumConverterFactory());
-		
+		if (BootUtils.isEnableDbmPresent()) {
+			registry.addConverterFactory(new DbmIntStringValueToEnumConverterFactory());
+		} else {
+			registry.addConverterFactory(new IntStringValueToEnumConverterFactory());
+		}
 		registry.addConverterFactory(new IntegerToEnumConverterFactory());
+		
+		registry.addConverterFactory(new StringToMapConverterFactory());
+		registry.addConverterFactory(new StringToJackson2ObjectNodeConverterFactory());
 	}
 
 	/***

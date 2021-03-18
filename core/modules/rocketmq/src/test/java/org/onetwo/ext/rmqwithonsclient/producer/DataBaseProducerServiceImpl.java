@@ -3,6 +3,7 @@ package org.onetwo.ext.rmqwithonsclient.producer;
 import java.util.Date;
 
 import org.onetwo.boot.mq.SendMessageFlags;
+import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.dbm.id.SnowflakeIdGenerator;
 import org.onetwo.ext.alimq.SimpleMessage;
@@ -25,18 +26,21 @@ public class DataBaseProducerServiceImpl {
 	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
 	
 
-	public void sendDelayMessage(String deliverTime){
+	public OrderTestMessage sendDelayMessage(Date deliverTime){
+		Long id = idGenerator.nextId();
+		OrderTestMessage msg = OrderTestMessage.builder()
+			.orderId(id)
+			.title("取消-"+DateUtils.formatDateTime(deliverTime))
+			.build();
 		SendResult res = onsProducerService.sendMessage(SimpleMessage.builder()
 				  .topic(RmqONSProducerTest.TOPIC)
 				  .tags(RmqONSProducerTest.ORDER_CANCEL)
-				  .key("test_"+idGenerator.nextId())
-				  .deliverAtString(deliverTime)
-				  .body(OrderTestMessage.builder()
-			  				.orderId(2L)
-			  				.title("取消")
-			  				.build())
+				  .key("test_"+id)
+				  .deliverAt(deliverTime)
+				  .body(msg)
 				  .build(), SendMessageFlags.EnableDatabaseTransactional);
 		System.out.println("res: " + res);
+		return msg;
 	}
 
 	public void sendMessage(){

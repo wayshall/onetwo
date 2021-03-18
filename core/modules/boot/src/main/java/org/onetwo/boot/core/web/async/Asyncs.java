@@ -1,5 +1,6 @@
 package org.onetwo.boot.core.web.async;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -12,7 +13,23 @@ import org.onetwo.common.spring.Springs;
  */
 public class Asyncs {
 
-	volatile private static AsyncTaskDelegateService delegateService;
+	private static AsyncTaskDelegateService delegateService;
+	private static boolean hasInited = false;
+	private static Object lockObj = new Object();
+	
+	/***
+	 * 若能找到异步服务，则尝试异步执行
+	 * @author weishao zeng
+	 * @param runnable
+	 */
+	public static void tryAsyncRun(Runnable runnable){
+		Optional<AsyncTaskDelegateService> delegateOpt = delegateOpt();
+		if (delegateOpt.isPresent()) {
+			delegateOpt.get().run(runnable);
+		} else {
+			runnable.run();
+		}
+	}
 	
 	public static void run(Runnable runnable){
 		delegate().run(runnable);
@@ -23,15 +40,23 @@ public class Asyncs {
 	}
 	
 	public static AsyncTaskDelegateService delegate(){
+		return delegateOpt().orElseThrow(() -> new BaseException("AsyncTaskDelegateService not found!"));
+	}
+	
+	public static Optional<AsyncTaskDelegateService> delegateOpt(){
 		AsyncTaskDelegateService ds = delegateService;
 		if(ds==null){
-			ds = Springs.getInstance().getBean(AsyncTaskDelegateService.class);
-			if(ds==null){
-				throw new BaseException("no AsyncTaskDelegateService found! Maybe ["+AsyncTaskProperties.ENABLE_KEY+"] not enabled!");
+			synchronized (lockObj) {
+				if (!hasInited) {
+					ds = Springs.getInstance().getBean(AsyncTaskDelegateService.class);
+					delegateService = ds;
+					hasInited = true;
+				} else {
+					ds = delegateService;
+				}
 			}
-			delegateService = ds;
 		}
-		return ds;
+		return Optional.ofNullable(ds);
 	}
 	
 	private Asyncs(){

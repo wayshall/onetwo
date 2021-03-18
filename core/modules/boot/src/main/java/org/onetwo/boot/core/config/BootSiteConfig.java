@@ -2,11 +2,13 @@ package org.onetwo.boot.core.config;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.filter.DefaultSiteConfig;
 import org.onetwo.common.web.filter.SiteConfigProvider;
@@ -15,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import com.google.common.collect.Maps;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,9 +38,11 @@ import lombok.NoArgsConstructor;
  *
  */
 //@ConfigurationProperties(prefix="jfish.siteConfig")
-@ConfigurationProperties(prefix="site")
+@ConfigurationProperties(prefix=BootSiteConfig.PREFIX)
 //@Data
 public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvider<BootSiteConfig> {
+	public static final String PREFIX = "site";
+	
 	/*public static final String BASEURL = "baseURL";
 	public static final String APP_NAME = "name";
 	public static final String APP_CODE = "code";*/
@@ -219,6 +225,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		boolean useLoadBalance;
 		int serverCount = 2;
 		
+		Map<String, String> pathTags = Maps.newHashMap();
+		
+		WaterMaskConfig watermask = new WaterMaskConfig();
+		
 		public String getBasePath(){
 			if(StringUtils.isNotBlank(basePath)){
 				return basePath;
@@ -240,6 +250,16 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 			return basePath + subPath;
 		}
 	}
+	
+	@Data
+	public static class WaterMaskConfig {
+		boolean enabled;
+		/***
+		 * 用urlTemplate重新解释url
+		 */
+		String urlTemplate;
+		List<String> applyPostfixList = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
+	}
 
 	//move to jfishConfig?
 	@Data
@@ -248,7 +268,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		 * 如果设置了值，则会把上传目录映射到对应的访问路径，如：/upload/**
 		 */
 		String accessPathPatterns;
-//		StoreType storeType = StoreType.LOCAL;
+		StoreType storeType = StoreType.LOCAL;
 		/***
 		 * 如果是local存储，可以写绝对路径，如：/data/upload/cms；
 		 * 如果是云存储，可以看做是系统模块名称，如：cms
@@ -270,6 +290,23 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 //		String ftpBaseDir;
 		
 		CompressConfig compressImage = new CompressConfig();
+		
+		/****
+		 * 单个文件最大上传
+		 */
+		String maxFileUploadSize;
+		
+		/***
+		 * -1为没有配置
+		 * @author weishao zeng
+		 * @return
+		 */
+		public int getMaxFileUploadSizeInBytes() {
+			if (StringUtils.isBlank(maxFileUploadSize)) {
+				return -1;
+			}
+			return FileUtils.parseSize(maxFileUploadSize);
+		}
 
 		public Integer getResourceCacheInDays() {
 			return resourceCacheInDays;
@@ -323,7 +360,9 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static enum StoreType {
 		LOCAL,
 		FTP,
-		ALI_OSS;
+		SFTP,
+		ALIOSS,
+		COS;
 		
 		public static StoreType of(String str){
 			if(StringUtils.isBlank(str)){

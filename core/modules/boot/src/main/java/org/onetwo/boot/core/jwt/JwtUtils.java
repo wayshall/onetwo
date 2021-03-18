@@ -26,7 +26,11 @@ public abstract class JwtUtils {
 	
 	
 
+	@SuppressWarnings("unchecked")
 	public static <T extends UserDetail> T createUserDetail(JwtUserDetail jwtUserDetail, Class<T> parameterType) {
+		if (parameterType==JwtUserDetail.class) {
+			return (T)jwtUserDetail;
+		}
 		Map<String, Object> userMap = Maps.newHashMap(jwtUserDetail.getProperties());
 		userMap.put(JwtUtils.CLAIM_USER_ID, jwtUserDetail.getUserId());
 		userMap.put(JwtUtils.CLAIM_USER_NAME, jwtUserDetail.getUserName());

@@ -3,8 +3,10 @@ package org.onetwo.common.annotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
+import java.util.Set;
 
 import org.onetwo.common.utils.Assert;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -12,7 +14,16 @@ import com.google.common.collect.ImmutableList;
 public class AnnotationInfo {
 	
 	public static interface AnnotationFinder {
-		public Annotation getAnnotation(AnnotatedElement annotatedElement, Class<? extends Annotation> annoClass);
+		AnnotationFinder DEFAULT = new AnnotationFinder() {
+			@Override
+			public <A extends Annotation> A getAnnotation(AnnotatedElement annotatedElement, Class<A> annoClass) {
+//				return Sets.newHashSet(annotatedElement.getDeclaredAnnotationsByType(annoClass));
+				A anno = annotatedElement.getAnnotation(annoClass);
+				return anno;
+			}
+		};
+//		public Annotation getAnnotation(AnnotatedElement annotatedElement, Class<? extends Annotation> annoClass);
+		public <A extends Annotation> A getAnnotation(AnnotatedElement annotatedElement, Class<A> annoClass);
 	}
 
 	private final Class<?> sourceClass;
@@ -37,9 +48,7 @@ public class AnnotationInfo {
 		if(annotationFinder!=null){
 			this.annotationFinder = annotationFinder;
 		}else{
-			this.annotationFinder = (annoElement, annoClass)->{
-				return annoElement.getAnnotation(annoClass);
-			};
+			this.annotationFinder = AnnotationFinder.DEFAULT;
 		}
 	}
 	//使用spring相关类实现
@@ -70,7 +79,7 @@ public class AnnotationInfo {
 		return ImmutableList.copyOf(this.annotatedElement.getAnnotations());
 	}
 	
-	public boolean hasAnnotation(Class<? extends Annotation> annoClass){
+	public boolean hasAnnotation(Class<? extends Annotation> annoClass) {
 		return getAnnotation(annoClass)!=null;
 	}
 	
@@ -83,9 +92,17 @@ public class AnnotationInfo {
 		return null;*/
 //		return (T)this.annotationMap.get(annoClass);
 //		return annotatedElement.getAnnotation(annoClass);
-		return annoClass.cast(annotationFinder.getAnnotation(this.annotatedElement, annoClass));
+		return annotationFinder.getAnnotation(annotatedElement, annoClass);
+//		return annoClass.cast(LangUtils.getFirst(getAnnotations(annoClass)));
 	}
 
+	public <T extends Annotation> Set<T> getMergedRepeatableAnnotations(Class<T> annoClass) {
+		return AnnotatedElementUtils.getMergedRepeatableAnnotations(annotatedElement, annoClass);
+	}
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return annotatedElement;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;

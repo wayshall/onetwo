@@ -25,6 +25,7 @@ public class SimpleDataSigner extends DefaultDataSigner {
 		excludes.addAll(Arrays.asList(excludeProperties));
 		BeanToMapConvertor convertor = EnhanceBeanToMapBuilder.enhanceBuilder()
 															.enableJsonPropertyAnnotation()
+															.ignoreNull()
 															.excludeProperties(excludes.toArray(new String[0]))
 															.enableFieldNameAnnotation()
 //															.propertyAcceptor((p, v)->v!=null)

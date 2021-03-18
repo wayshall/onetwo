@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -57,9 +58,10 @@ import org.onetwo.common.utils.func.ArgsReturnableClosure;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class LangUtils {
+abstract public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
+	public final static long START_STMP = 1610374613027L; //2021-1-11 22:17的时间戳，用于某些基于时间戳算法的id减去基值
 
 	public static final String UTF8 = "utf-8";
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
@@ -801,10 +803,17 @@ public class LangUtils {
 		return buf.toString();
 	}
 	
+	public static String toHex(byte b){
+		StringBuilder buf = new StringBuilder();
+		buf.append(HEX_CHAR.charAt((b >>> 4 & 0xf)));//high. symbol >>> is unsigned right shift 
+		buf.append(HEX_CHAR.charAt((b & 0xf)));//low
+		return buf.toString();
+	}
+	
 
 	public static byte[] hex2Bytes(String str){
 		byte[] bytes = null;
-		char[] chars = str.toCharArray();
+		char[] chars = str.toUpperCase().toCharArray();
 
 		int numb1;
 		int numb2;
@@ -818,7 +827,7 @@ public class LangUtils {
 	}
 	
 	public static boolean isHexString(String str){
-		char[] chars = str.toCharArray();
+		char[] chars = str.toUpperCase().toCharArray();
 		int index = -1;
 		for(char ch : chars){
 			index = HEX_CHAR.indexOf(ch);
@@ -1569,6 +1578,11 @@ public class LangUtils {
 		}
 		return actualValue;
 	}
+	
+	public static BigDecimal roundHalfUp(BigDecimal number) {
+		number.setScale(2, BigDecimal.ROUND_HALF_UP); // 四色五入，保持两个小数点
+		return number;
+	}
 
 	public static String format(Number num, String pattern) {
 		NumberFormat format = new DecimalFormat(pattern);
@@ -1577,6 +1591,24 @@ public class LangUtils {
 	
 	public static String format(Number num) {
 		return new DecimalFormat("0.00").format(num);
+	}
+	
+	/***
+	 * 如果字符串超过指定长度，则填充省略号
+	 * @author weishao zeng
+	 * @param str
+	 * @param length
+	 * @return
+	 */
+	public static String ellipsis(String str, int length) {
+		if (StringUtils.isBlank(str)) {
+			return str;
+		}
+		if (str.length() <= length) {
+			return str;
+		}
+		String newStr = str.substring(0, length-3) + "...";
+		return newStr;
 	}
 
 	/*****
@@ -1688,6 +1720,46 @@ public class LangUtils {
 		}
 	}
 	
+
+	public static String safeUrlEncode(String base64) {
+		return safeUrlEncode(base64, false);
+	}
+	
+	/***
+	 * URL安全的Base64编码适用于以URL方式传递Base64编码结果的场景。该编码方式的基本过程是先将内容以Base64格式编码为字符串，然后检查该结果字符串，将字符串中的加号+换成中划线-，并且将斜杠/换成下划线_。 
+详细编码规范请参考RFC4648标准中的相关描述。 
+补充：对于末尾的“=”占位符，Bouncy Castle将之用.代替，而Commons Codes杜绝任何的补位符。
+	 * @author weishao zeng
+	 * @param base64
+	 * @return
+	 */
+	public static String safeUrlEncode(String base64, boolean bouncyCastle) {
+		String val = base64;
+		val = val.replace('+', '-');
+		val = val.replace('/', '_');
+		if (bouncyCastle) {
+			val = val.replace('=', '.');
+		} else {
+			val = val.replace("=", "");
+		}
+		return val;
+	}
+	
+	public static String safeUrldecode(String base64, boolean bouncyCastle) {
+		String val = base64;
+		val = val.replace('-', '+');
+		val = val.replace('_', '/');
+		if (bouncyCastle) {
+			val = val.replace('.', '=');
+		} else {
+			int mod4 = base64.length()%4;
+			if(mod4 > 0){
+				val = val + "====".substring(mod4);
+			}
+		}
+		return val;
+	}
+	
 	public static boolean isDigitString(String str){
 		return DIGIT.matcher(str).matches();
 	}
@@ -1715,13 +1787,23 @@ public class LangUtils {
 			lock.unlock();
 		}
 	}
-	
+
+	/***
+	 * 是否正整数
+	 * @author weishao zeng
+	 * @param str
+	 * @return
+	 */
+	public static boolean isNumeric(String str){
+		return org.apache.commons.lang3.StringUtils.isNumeric(str);
+	}
 
 	public static boolean isNumberObject(Object val){
 		if(val==null)
 			return false;
 		return isNumberType(val.getClass());
 	}
+	
 	public static boolean isNumberType(Class<?> clazz){
 		if(clazz==null)
 			return false;
@@ -1754,6 +1836,10 @@ public class LangUtils {
 		return System.getProperties().getProperty("os.name", "");
 	}
 	
+	public static boolean isWindowsOS() {
+		return getOsName().toLowerCase().startsWith("win");
+	}
+	
 	public static String converTo36Radix(String str){
 		Long value = getCrc32(str.getBytes());
 		return Long.toString(value, 36);
@@ -1772,4 +1858,61 @@ public class LangUtils {
 	public static String randomUUID() {
 		return UUID.randomUUID().toString().replace("-", "");
 	}
+
+
+	public static String sensitive(String sensitive, int sensitiveIndex) {
+		return sensitive(sensitive, sensitiveIndex, "*");
+	}
+	/****
+	 * 
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keepPlainTextSize 少于0时表示从右边开始计算脱敏索引
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitive(String sensitive, int keepPlainTextSize, String replaceStr) {
+		String unsensitive = sensitive;
+		if (keepPlainTextSize>=0) {
+			unsensitive = LangUtils.sensitiveFromLeft(sensitive, keepPlainTextSize, replaceStr);
+		} else {
+			unsensitive = LangUtils.sensitiveFromRight(sensitive, -keepPlainTextSize, replaceStr);
+		}
+		return unsensitive;
+	}
+	
+	/****
+	 * 从右边指定的索引开始脱敏
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keepPlainTextSize
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitiveFromRight(String sensitive, int keepPlainTextSize, String replaceStr) {
+		if (keepPlainTextSize<0) {
+			throw new IllegalArgumentException("error keepPlainTextSize, it must greater than 0, but acutal " + keepPlainTextSize);
+		}
+		String unsensitive = org.apache.commons.lang3.StringUtils.right(sensitive, keepPlainTextSize);
+		unsensitive = org.apache.commons.lang3.StringUtils.leftPad(unsensitive, sensitive.length(), replaceStr);
+		return unsensitive;
+	}
+
+	/***
+	 * 从左边指定的索引开始脱敏
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param keepPlainTextSize
+	 * @param replaceStr
+	 * @return
+	 */
+	public static String sensitiveFromLeft(String sensitive, int keepPlainTextSize, String replaceStr) {
+		if (keepPlainTextSize<0) {
+			throw new IllegalArgumentException("error keepPlainTextSize, it must greater than 0, but acutal " + keepPlainTextSize);
+		}
+		String unsensitive = org.apache.commons.lang3.StringUtils.left(sensitive, keepPlainTextSize);
+		unsensitive = org.apache.commons.lang3.StringUtils.rightPad(unsensitive, sensitive.length(), replaceStr);
+		return unsensitive;
+	}
+	
 }

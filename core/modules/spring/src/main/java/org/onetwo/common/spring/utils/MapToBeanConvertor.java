@@ -56,6 +56,7 @@ public class MapToBeanConvertor {
 		return injectBeanProperties(propValues, bean);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T injectBeanProperties(Map<String, ?> propValues, T bean){
 		Class<?> beanClass = bean.getClass();
 		BeanWrapper bw = SpringUtils.newBeanWrapper(bean);
@@ -66,7 +67,11 @@ public class MapToBeanConvertor {
 			if(value==null){
 				continue;
 			}
-			value = SpringUtils.getFormattingConversionService().convert(value, pd.getPropertyType());
+			if (value instanceof Map) {
+				value = toBean((Map<String, ?>)value, pd.getPropertyType());
+			} else {
+				value = SpringUtils.getFormattingConversionService().convert(value, pd.getPropertyType());
+			}
 			bw.setPropertyValue(pd.getName(), value);
 		}
 		return bean;

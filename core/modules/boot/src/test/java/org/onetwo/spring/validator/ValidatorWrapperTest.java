@@ -11,6 +11,7 @@ import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.spring.validator.annotation.AnyOneNotBlank;
 import org.onetwo.common.spring.validator.annotation.AnyOneNotBlanks;
 import org.onetwo.common.spring.validator.annotation.ContentCheck;
+import org.onetwo.common.spring.validator.annotation.Mobile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -49,6 +50,14 @@ public class ValidatorWrapperTest extends AbstractJUnit4SpringContextTests {
 		Assert.assertFalse(msg.contains("手机和用户id不能都为空！"));
 //		Assert.assertTrue(msg.contains("备注发现敏感词：敏感词1, 敏感词2"));
 		Assert.assertTrue(msg.contains("备注发现敏感词"));
+		
+
+		param.setUserName("testUse");
+		param.setMobile("1133333333");
+		br = validatorWrapper.validate(param);
+		msg = br.getErrorMessagesAsString();
+		System.out.println("br:"+msg);
+		Assert.assertTrue(msg.contains("无效的手机:1133333333"));
 	}
 	
 	@AnyOneNotBlanks({
@@ -58,6 +67,7 @@ public class ValidatorWrapperTest extends AbstractJUnit4SpringContextTests {
 	static class ParamForValidatorTest {
 		
 		@NotNull
+		@Mobile(message="无效的手机:{mobile}")
 		private String mobile;
 		private Long userId;
 

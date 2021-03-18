@@ -4,25 +4,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.jwt.JwtConfig;
 import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.cloud.canary.CanaryUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,29 +35,75 @@ import lombok.extern.slf4j.Slf4j;
  * <br/>
  */
 @Slf4j
-final public class AuthEnvs {
+final public class AuthEnvs implements InitializingBean {
 
 	final public static Set<String> DEFAULT_HEADER_NAMES = Sets.newHashSet(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, "auth", CanaryUtils.HEADER_CLIENT_TAG);//
 	private static final NamedThreadLocal<AuthEnv> CURRENT_ENVS = new NamedThreadLocal<>("auth env");
-	
+	private static final String AUTH_ENV_KEY = "__AUTH_WEB_ENV__";
 
-	public static AuthEnv getCurrent() {
-		return CURRENT_ENVS.get();
+	private static AuthEnvs instance;
+
+	
+	public static <T> T runInCurrent(AuthEnv authEnv, Supplier<T> supplier) {
+		if (authEnv==null) {
+			throw new IllegalArgumentException("authEnv can not be null");
+		}
+		AuthEnv existEnv = getCurrent();
+		setCurrent(authEnv);
+		try {
+			return supplier.get();
+		} finally {
+			removeCurrent();
+			if (existEnv!=null) {
+				setCurrent(existEnv);
+			}
+		}
 	}
-	public static Optional<AuthEnv> getCurrentOptional() {
-		return Optional.ofNullable(getCurrent());
+
+	public static void setCurrent(AuthEnv env) {
+		if (env==null) {
+			removeCurrent();
+			return ;
+		}
+		RequestAttributes req = RequestContextHolder.getRequestAttributes();
+		if (req!=null) {
+			req.setAttribute(AUTH_ENV_KEY, env, RequestAttributes.SCOPE_REQUEST);
+		} else {
+			CURRENT_ENVS.set(env);
+		}
 	}
 	
-	public static void setCurrent(AuthEnv authEnv) {
-		if (authEnv==null) {
-			removeCurrent();
+	public static AuthEnv getCurrent() {
+		RequestAttributes req = RequestContextHolder.getRequestAttributes();
+		AuthEnv env = null;
+		if (req!=null) {
+			env = getAuthEnvFromRequestAttributes(req);
 		} else {
-			CURRENT_ENVS.set(authEnv);
+			env = CURRENT_ENVS.get();
+		}
+		if (env==null && instance!=null) {
+			env = instance.createWebAuthEnv(false);
+		}
+		return env;
+	}
+	
+	public static AuthEnv getAuthEnvFromRequestAttributes(RequestAttributes req) {
+		try {
+			return (AuthEnv) req.getAttribute(AUTH_ENV_KEY, RequestAttributes.SCOPE_REQUEST);
+		} catch (Exception e) {
+			// IllegalStateException: Cannot ask for request attribute - request is not active anymore!
+			JFishLoggerFactory.getCommonLogger().error("getAuthEnvFromRequestAttributes error: " + e.getMessage(), e);
+			return null;
 		}
 	}
 	
 	public static void removeCurrent() {
-		CURRENT_ENVS.remove();
+		RequestAttributes req = WebHolder.getServletRequestAttributes().orElse(null);
+		if (req!=null) {
+			req.removeAttribute(AUTH_ENV_KEY, RequestAttributes.SCOPE_REQUEST);
+		} else {
+			CURRENT_ENVS.remove();
+		}
 	}
 	
 	private Set<String> keepHeaders = DEFAULT_HEADER_NAMES;
@@ -71,9 +122,9 @@ final public class AuthEnvs {
 	 * @param func
 	 * @return
 	 */
-	public <T> T runInCurrentWebEnvs(Function<AuthEnv, T> func) {
+	/*public <T> T runInCurrentWebEnvs(Function<AuthEnv, T> func) {
 		return runInCurrentWebEnvs(func, true);
-	}
+	}*/
 	
 	/***
 	 * 从给定的context上下文中获取所需要的header（keepHeaders配置）
@@ -82,13 +133,18 @@ final public class AuthEnvs {
 	 * @param action
 	 * @return
 	 */
-	public <T> T runInContextEnvs(Map<String, String> context, Function<AuthEnv, T> action) {
+	/*public <T> T runInContextEnvs(Map<String, String> context, Function<AuthEnv, T> action) {
 		AuthEnv authEnv = createAuthEnv(header -> {
 			return context.get(header);
 		});
 		return runInCurrentEnvs(authEnv, ()->action.apply(authEnv));
-	}
+	}*/
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		instance = this;
+	}
+
 	/****
 	 * 
 	 * @author weishao zeng
@@ -96,7 +152,7 @@ final public class AuthEnvs {
 	 * @param action 业务逻辑回调
 	 * @return
 	 */
-	public <T> T runInContextEnvs(Function<String, String> contextExtractor, Function<AuthEnv, T> action) {
+	/*public <T> T runInContextEnvs(Function<String, String> contextExtractor, Function<AuthEnv, T> action) {
 		AuthEnv authEnv = createAuthEnv(contextExtractor);
 		return runInCurrentEnvs(authEnv, ()->action.apply(authEnv));
 	}
@@ -104,26 +160,70 @@ final public class AuthEnvs {
 	private <T> T runInCurrentWebEnvs(Function<AuthEnv, T> func, boolean throwIfWebEnvNotFound) {
 		AuthEnv authEnv = createWebAuthEnv(throwIfWebEnvNotFound);
 		return runInCurrentEnvs(authEnv, ()->func.apply(authEnv));
-	}
+	}*/
 	
-	public <T> T runInCurrentEnvs(AuthEnv authEnv, Supplier<T> supplier) {
-		if (authEnv==null) {
-			throw new IllegalArgumentException("authEnv can not be null");
+	public <T> Consumer<T> decorate(Consumer<T> action) {
+		if (!WebHolder.getRequest().isPresent()) {
+			throw new BaseException("web environment not found!");
 		}
-		setCurrent(authEnv);
-		try {
-			Optional<AuthEnvHeader> oauth2 = authEnv.findAuthorization();
-			if (oauth2.isPresent()) {
-				return OAuth2Utils.runInToken(oauth2.get().getValue(), supplier);
-			} else {
-				return supplier.get();
+		AuthEnv webAuthEnv = createWebAuthEnv(true);
+		return data -> {
+			RequestContextHolder.setRequestAttributes(webAuthEnv.getRequestAttributes());
+			try {
+				action.accept(data);
+			} finally {
+				RequestContextHolder.resetRequestAttributes();
 			}
-		} finally {
-			removeCurrent();
+		};
+	}
+	public Runnable decorate(Runnable runnable) {
+		if (!WebHolder.getRequest().isPresent()) {
+			throw new BaseException("web environment not found!");
 		}
+		AuthEnv webAuthEnv = createWebAuthEnv(true);
+		return () -> {
+			RequestContextHolder.setRequestAttributes(webAuthEnv.getRequestAttributes());
+			try {
+				runnable.run();
+			} finally {
+				RequestContextHolder.resetRequestAttributes();
+			}
+		};
 	}
 	
-	private AuthEnv createAuthEnv(Function<String, String> contextExtractor) {
+	public <T> Supplier<T> decorate(Supplier<T> supplier) {
+		if (!WebHolder.getRequest().isPresent()) {
+			throw new BaseException("web environment not found!");
+		}
+		AuthEnv webAuthEnv = createWebAuthEnv(true);
+		return () -> {
+			RequestContextHolder.setRequestAttributes(webAuthEnv.getRequestAttributes());
+			try {
+				return supplier.get();
+			} finally {
+				RequestContextHolder.resetRequestAttributes();
+			}
+		};
+	}
+	
+	public void runInCurrent(Map<String, String> map, Runnable runnable) {
+		AuthEnv authEnv = create(map);
+		runInCurrent(authEnv, () -> {
+			runnable.run();
+			return null;
+		});
+	}
+	
+	/****
+	 * 从map中创建env
+	 * @author weishao zeng
+	 * @param map
+	 * @return
+	 */
+	private AuthEnv create(Map<String, String> map) {
+		return create(name -> map.get(name));
+	}
+	public AuthEnv create(Function<String, String> contextExtractor) {
 		AuthEnv authEnv = createAuthEnv();
 		keepHeaders.forEach(header -> {
 			if(log.isDebugEnabled()){
@@ -139,9 +239,10 @@ final public class AuthEnvs {
 	}
 	
 	public AuthEnv createWebAuthEnv(boolean throwIfWebEnvNotFound) {
-		Optional<HttpServletRequest> requestOpt = WebHolder.getRequest();
+//		Optional<HttpServletRequest> requestOpt = WebHolder.getRequest();
 //			return new BaseException("web environment not found");
-		if (!requestOpt.isPresent()) {
+		RequestAttributes req = RequestContextHolder.getRequestAttributes();
+		if (req==null) {
 			if (throwIfWebEnvNotFound) {
 				throw new BaseException("web environment not found");
 			} else {
@@ -149,22 +250,28 @@ final public class AuthEnvs {
 			}
 		}
 		
+		ServletRequestAttributes sattr = (ServletRequestAttributes)req;
 		AuthEnv authEnv = createAuthEnv();
 		keepHeaders.forEach(header -> {
 			if(log.isDebugEnabled()){
 				log.debug("set current request header[{}] to feign request...", header);
 			}
-			String value = requestOpt.get().getHeader(header);
+			String value = sattr.getRequest().getHeader(header);
 			if(StringUtils.isNotBlank(value)){
+				if (OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER.equals(header)) {
+					value = StringUtils.appendStartWith(value, OAuth2Utils.BEARER_TYPE + " ");
+				}
 				authEnv.getHeaders().add(new AuthEnvHeader(header, value));
 			}
 		});
+		
+//		setCurrent(authEnv);
 		
 		return authEnv;
 	}
 	
 	private AuthEnv createAuthEnv() {
-		AuthEnv authEnv = new AuthEnv();
+		AuthEnv authEnv = new AuthEnv(RequestContextHolder.getRequestAttributes());
 		return authEnv;
 	}
 	
@@ -177,11 +284,21 @@ final public class AuthEnvs {
 		this.keepHeaders = keepHeaders;
 	}
 
-
+	@ToString
 	public static class AuthEnv {
 		final private List<AuthEnvHeader> headers = Lists.newArrayList();
-		public AuthEnv() {
+		final private RequestAttributes requestAttributes;
+		
+		public AuthEnv(RequestAttributes requestAttributes) {
+			this.requestAttributes = requestAttributes;
 		}
+		
+		/*public void setToCurrentContext() {
+			if (requestAttributes!=null) {
+				RequestContextHolder.setRequestAttributes(requestAttributes);
+			}
+		}*/
+		
 		public void addAuthEnvHeader(AuthEnvHeader header) {
 			this.headers.add(header);
 		}
@@ -195,6 +312,9 @@ final public class AuthEnvs {
 		}
 		public Optional<AuthEnvHeader> findAuthorization() {
 			return findAuthEnvHeader(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER);
+		}
+		public RequestAttributes getRequestAttributes() {
+			return requestAttributes;
 		}
 		
 	}

@@ -1,5 +1,6 @@
 package org.onetwo.common.date;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,6 +43,30 @@ final public class Dates {
 		return LocalDateTime.parse(dateTimeStr, DATE_TIME);
 	}
 	
+	public static LocalDate parseDate(String dateTimeStr){
+		return LocalDate.parse(dateTimeStr, DATE_ONLY);
+	}
+	
+	public static LocalDateTime parseLocalDateTime(String value, String pattern){
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		return LocalDateTime.parse(value, formatter);
+	}
+	
+	public static LocalDate parseLocalDate(String value, String pattern){
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		return LocalDate.parse(value, formatter);
+	}
+	
+	public static LocalTime parseLocaTime(String value, String pattern){
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		return LocalTime.parse(value, formatter);
+	}
+	
+	public static Date toDate(LocalDate localDate, LocalTime localTime){
+		LocalDateTime newDate = localTime.atDate(localDate);
+		return Date.from(newDate.atZone(ZoneId.systemDefault()).toInstant());
+	}
+	
 	public static Date toDate(LocalDate localDate){
 		return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
@@ -53,13 +78,25 @@ final public class Dates {
 	public static LocalDate toLocalDate(Date date) {
 	    return toZonedDateTime(date).toLocalDate();
 	}
+	
+	public static LocalDate toLocalDate(Long millis) {
+	    return toZonedDateTime(millis).toLocalDate();
+	}
 
 	public static LocalDateTime toLocalDateTime(Date date) {
 		return toZonedDateTime(date).toLocalDateTime();
 	}
 
+	public static LocalDateTime toLocalDateTime(Long millis) {
+		return toZonedDateTime(millis).toLocalDateTime();
+	}
+
 	public static LocalTime toLocalTime(Date date) {
 		return toZonedDateTime(date).toLocalTime();
+	}
+
+	public static LocalTime toLocalTime(Long millis) {
+		return toZonedDateTime(millis).toLocalTime();
 	}
 
 	public static ZonedDateTime toZonedDateTime(Date date) {
@@ -68,6 +105,20 @@ final public class Dates {
 
 	public static ZonedDateTime toZonedDateTime(Long millis) {
 		return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault());
+	}
+	
+	/***
+	 * 返回两个日期之间的时间段
+	 * @author weishao zeng
+	 * @param startInclusive
+	 * @param endExclusive
+	 * @return
+	 */
+	public static Duration between(Date startInclusive, Date endExclusive) {
+		LocalDateTime start = toLocalDateTime(startInclusive);
+		LocalDateTime end = toLocalDateTime(endExclusive);
+		Duration d = Duration.between(start, end);
+		return d;
 	}
   
 //	public static long sum(Iterable<T>)

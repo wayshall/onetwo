@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.input.ReaderInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
 import org.onetwo.boot.module.alioss.image.ResizeAction;
 import org.onetwo.boot.module.alioss.image.WatermarkAction;
@@ -146,6 +147,20 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		return ossClient.putObject(request);
 	}
 	
+	public boolean doesObjectExist(String objectKey){
+		if (StringUtils.isBlank(objectKey)) {
+			throw new IllegalArgumentException("illegal objectKey : " + objectKey);
+		}
+		return ossClient.doesObjectExist(ossProperties.getBucketName(), objectKey);
+	}
+	
+	public boolean doesObjectExist(String bucketName, String objectKey){
+		if (StringUtils.isBlank(objectKey)) {
+			throw new IllegalArgumentException("illegal objectKey : " + objectKey);
+		}
+		return ossClient.doesObjectExist(bucketName, objectKey);
+	}
+	
 	public OSSClient getOssClient() {
 		return ossClient;
 	}
@@ -199,8 +214,10 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			if (onCompleted!=null) {
 				onCompleted.accept(result);
 			} else {
-				if (!result.getResponse().isSuccessful()) {
+				if (result.getResponse()!=null && !result.getResponse().isSuccessful()) {
 					throw new BaseException("uplaod to oss error: " + result.getResponse().getErrorResponseAsString());
+				} else {
+					logger.info("store result: {}",  result);
 				}
 			}
 			return this;
@@ -288,7 +305,11 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			obj.setSourceKey(key);
 			obj.setTargetKey(targetKey);
 			obj.configBy(config);
-//			System.out.println("style: " + obj.toStyleWithName());
+			
+			if (logger.isInfoEnabled()) {
+				logger.info("watermask style: {}", obj.toStyleWithName());
+			}
+			
 			GenericResult result = this.ossClient.processObject(obj.buildRequest());
 			if (onCompleted!=null) {
 				onCompleted.accept(result);
@@ -306,7 +327,7 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			String keyWithoutPostfix = FileUtils.getFileNameWithoutExt(key);
 			String cutImageKey = dirPath + "/" + keyWithoutPostfix + "-cover." + config.getFormat().name().toLowerCase();
 			videoSnapshot(cutImageKey, config, result -> {
-				if (!result.getResponse().isSuccessful()) {
+				if (result.getResponse()!=null && !result.getResponse().isSuccessful()) {
 					throw new BaseException("video snapshot error: " + result.getResponse().getErrorResponseAsString());
 				}else if (onSuccess!=null) {
 					onSuccess.accept(cutImageKey);
@@ -315,15 +336,15 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			return this;
 		}
 		
-		public ObjectOperation videoSnapshot(String targetKey, SnapshotProperties config, Consumer<GenericResult> onCompleted) {
+		public Optional<String> videoSnapshot(String targetKey, SnapshotProperties config, Consumer<GenericResult> onCompleted) {
 			if (!config.isEnabled()) {
 				logger.warn("video snapshot config is disabled.");
-				return this;
+				return Optional.empty();
 			}
 			String fileExt = FileUtils.getExtendName(key);
 			if (!config.isSupportFileType(fileExt)) {
 				logger.warn("video snapshot unsupport the file ext: {}, video snapshot file types: {}", fileExt, config.getSupportFileTypes());
-				return this;
+				return Optional.empty();
 			}
 			SnapshotAction obj = new SnapshotAction();
 			obj.setBucketName(bucketName);
@@ -335,11 +356,14 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 			if (onCompleted!=null) {
 				onCompleted.accept(result);
 			} else {
-				if (!result.getResponse().isSuccessful()) {
+				if (result.getResponse()!=null && !result.getResponse().isSuccessful()) {
 					throw new BaseException("video snapshot error: " + result.getResponse().getErrorResponseAsString());
+				} else {
+					logger.info("videoSnapshot result: {}", result);
+					return Optional.of(targetKey);
 				}
 			}
-			return this;
+			return Optional.empty();
 		}
 		
 		public ObjectOperation store(InputStream in){

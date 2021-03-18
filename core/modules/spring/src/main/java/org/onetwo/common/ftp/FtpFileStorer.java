@@ -21,6 +21,10 @@ public class FtpFileStorer extends SimpleFileStorer  {
 		this.ftpConfig = ftpConfig;
 //		this.ftpClientManager = new FtpClientManager(ftpConfig);
 	}
+
+	public String getStoreType() {
+		return "ftp";
+	}
 	
 	@Override
 	protected void doStoring(SimpleFileStoredMeta meta, StoringFileContext context){

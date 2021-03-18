@@ -18,7 +18,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * <br/>
  */
 @Configuration
-@ConditionalOnProperty(AsyncTaskProperties.ENABLE_KEY)
+@ConditionalOnProperty(value = AsyncTaskProperties.ENABLE_KEY, matchIfMissing = true)
 @EnableConfigurationProperties(AsyncTaskProperties.class)
 @ConditionalOnClass(EnableAsync.class)
 @EnableAsync
@@ -29,26 +29,27 @@ public class AsyncTaskConfiguration {
 	private AsyncTaskProperties asyncTaskProperties;
 	
 	@Bean(ASYNC_TASK_BEAN_NAME)
-	@ConditionalOnMissingBean(name=AsyncTaskConfiguration.ASYNC_TASK_BEAN_NAME)
-    public AsyncTaskExecutor mvcAsyncTaskExecutor(SimpleTaskDecorator simpleTaskDecorator) {
+//	@ConditionalOnMissingBean(AsyncTaskExecutor.class)
+    public AsyncTaskExecutor asyncTaskExecutor(DelegateTaskDecorator delegateTaskDecorator) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(asyncTaskProperties.getCorePoolSize());
         executor.setMaxPoolSize(asyncTaskProperties.getMaxPoolSize());
         executor.setQueueCapacity(asyncTaskProperties.getQueueCapacity());
-        executor.setTaskDecorator(simpleTaskDecorator);
+        executor.setTaskDecorator(delegateTaskDecorator);
         return executor;
     }
 	
 	@Bean
-	public SimpleTaskDecorator simpleTaskDecorator() {
-		return new SimpleTaskDecorator();
+	public DelegateTaskDecorator delegateTaskDecorator() {
+		return new DelegateTaskDecorator();
 	}
 	
 	@Bean
 	@ConditionalOnMissingBean(AsyncTaskConfigurer.class)
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	public AsyncTaskConfigurer asyncTaskConfigurer(){
-		return new AsyncTaskConfigurer();
+	public AsyncTaskConfigurer asyncTaskConfigurer(DelegateTaskDecorator delegateTaskDecorator){
+		AsyncTaskConfigurer configurer = new AsyncTaskConfigurer(asyncTaskExecutor(delegateTaskDecorator));
+		return configurer;
 	}
 	
 	@Bean

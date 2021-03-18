@@ -58,7 +58,7 @@ public class UrlBasedSecurityConfig {
 	}
 	
 	@Bean
-//	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+//	@Order(SecurityProperties.ACCESS_OV`ERRIDE_ORDER)
 //	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 	@Autowired
 	public DefaultUrlSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){

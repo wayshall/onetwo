@@ -34,6 +34,10 @@ public class JwtConfig {
 	String audience = "webclient";
 	String refreshTokenIfRemainingTime = "30s";
 	
+
+	boolean canBeNotLogin = false;
+	boolean canBeAnonymous = true;
+	
 	public String getSigningKey(){
 		String key = this.signingKey;
 		if(StringUtils.isBlank(key)){

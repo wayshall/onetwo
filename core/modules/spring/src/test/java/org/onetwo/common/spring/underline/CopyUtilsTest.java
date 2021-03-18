@@ -15,6 +15,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtilsTest.TestUserStatus;
 import org.onetwo.common.spring.copier.Cloneable;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.spring.copier.CopyUtils.BeanCopierBuilder;
@@ -135,6 +136,7 @@ public class CopyUtilsTest {
 		srcBean.setUserName(userName);
 		srcBean.setBirthday(now);
 		srcBean.setCreateTime(createTime);
+		srcBean.setStatus(TestUserStatus.NORMAL);
 		
 		UnderlineBean target = CopyUtils.copy(UnderlineBean.class, srcBean);
 		
@@ -148,6 +150,7 @@ public class CopyUtilsTest {
 		Assert.assertEquals(srcBean.getUserName(), target.getUser_name());
 		Assert.assertEquals(srcBean.getBirthday(), target.getBirthday());
 		Assert.assertEquals(srcBean.getCreateTime(), target.getCreate_time());
+		assertThat(target.getStatus()).isEqualTo(srcBean.getStatus().name());
 		
 		target = new UnderlineBean();
 		BeanCopierBuilder.fromObject(srcBean)
@@ -480,8 +483,7 @@ public class CopyUtilsTest {
 		assertThat(bean1.getCreate_time()).isEqualTo(bean2.getBirthday());
 		assertThat(bean1.getId()).isEqualTo(bean2.getId());
 	}
-
-
+	
 
 	public static class TestMapBean implements Serializable, java.lang.Cloneable {
 		@Cloneable
@@ -510,6 +512,8 @@ public class CopyUtilsTest {
 		private Map<String, Object> map;
 
 		private Map<String, CapitalBean2> map2;
+		
+	    private TestUserStatus status;
 		
 		@Override
 		public CapitalBean clone()  {
@@ -573,6 +577,12 @@ public class CopyUtilsTest {
 		public void setMap2(Map<String, CapitalBean2> map2) {
 			this.map2 = map2;
 		}
+		public TestUserStatus getStatus() {
+			return status;
+		}
+		public void setStatus(TestUserStatus status) {
+			this.status = status;
+		}
 		
 	}
 	
@@ -581,6 +591,7 @@ public class CopyUtilsTest {
 		private long id;
 		private String subName;
 		private Date createTime;
+//		String status;
 		
 		public long getId() {
 			return id;
@@ -607,6 +618,8 @@ public class CopyUtilsTest {
 		private String user_name;
 		private Date birthday;
 		private Date create_time;
+		
+		private String status;
 		
 		@Cloneable
 		private List<UnderlineBean2> datas;
@@ -640,6 +653,12 @@ public class CopyUtilsTest {
 		}
 		public void setDatas(List<UnderlineBean2> datas) {
 			this.datas = datas;
+		}
+		public String getStatus() {
+			return status;
+		}
+		public void setStatus(String status) {
+			this.status = status;
 		}
 		
 	}

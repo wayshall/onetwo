@@ -75,7 +75,7 @@ public class AESCaptchaChecker implements CaptchaChecker {
 	}
 	
 	private String contentAsString(String code, long validTime) {
-		String content = StringUtils.join(Arrays.asList(code, validTime), ":");
+		String content = StringUtils.join(Arrays.asList(code.toUpperCase(), validTime), ":");
 		return content;
 	}
 	

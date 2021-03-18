@@ -15,7 +15,6 @@ import org.onetwo.boot.core.web.view.ViewResolverConfiguration;
 import org.onetwo.boot.plugin.PluginContextConfig;
 import org.onetwo.boot.plugin.ftl.WebFtlsContextConfig;
 import org.onetwo.common.web.init.CommonWebFilterInitializer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,8 +46,8 @@ import org.springframework.core.Ordered;
 public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	@Autowired
-	private HttpEncodingProperties httpEncodingProperties;
+//	@Autowired
+//	private HttpEncodingProperties httpEncodingProperties;
 	
 	public BootWebUIContextAutoConfig(){
 	}
@@ -56,10 +55,10 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	public BootSiteConfig bootSiteConfig(){
 		return bootSiteConfig;
 	}*/
-	
 
 	/***
 	 * 异常解释
+	 * BootWebExceptionHandler 无法拦截在spring拦截器里抛出的异常，所以这里配置自定义的HandlerExceptionResolver进行拦截
 	 * @return
 	 */
 	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)
@@ -69,9 +68,11 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	public BootWebExceptionResolver bootWebExceptionResolver(){
 		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
 //		resolver.setExceptionMessage(exceptionMessage);
+		resolver.setJfishConfig(bootJfishConfig);
+		resolver.setErrorView(jsonView);
 		return resolver;
 	}
-	
+
 	/****
 	 * CorsFilter 须在所有filter之前，包括security的filter
 	 * 否则会抛 No 'Access-Control-Allow-Origin' header is present on the requested resource

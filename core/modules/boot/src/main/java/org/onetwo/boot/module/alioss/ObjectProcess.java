@@ -85,6 +85,10 @@ public class ObjectProcess<T> {
 		return toStyle("x-oss-process");
 	}
 	/***
+	 * 多个处理器（style）时，貌似是用斜杠拼起来？
+	 * 如：
+	 * example.jpg?x-oss-process=image/resize,w_400/watermark,image_cGFuZGEucG5nP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLFBfMzA,t_90,g_se,x_10,y_10
+	 * 
 	 * "%s|sys/saveas,o_%s,b_%s"
 	 * @author weishao zeng
 	 * @return
@@ -129,22 +133,23 @@ public class ObjectProcess<T> {
 	public static class AttrValue {
 		final private Object value;
 		final private boolean encodeBase64;
-		final private boolean encodeUrl;
+		final private boolean safeUrl;
 		public AttrValue(Object value, boolean encodeBase64) {
 			this(value, encodeBase64, false);
 		}
 		
 		@Builder
-		public AttrValue(Object value, boolean encodeBase64, boolean encodeUrl) {
+		public AttrValue(Object value, boolean encodeBase64, boolean safeUrl) {
 			super();
 			this.value = value;
 			this.encodeBase64 = encodeBase64;
-			this.encodeUrl = encodeUrl;
+			this.safeUrl = safeUrl;
 		}
 		
 		public Object getValue() {
-			Object val = encodeBase64?encode(value.toString()):value;
-			val = encodeUrl?LangUtils.encodeUrl(val.toString()):val;
+			String val = value.toString();
+			val = encodeBase64?encode(val):val;
+			val = safeUrl?LangUtils.safeUrlEncode(val):val;
 			return val;
 		}
 		

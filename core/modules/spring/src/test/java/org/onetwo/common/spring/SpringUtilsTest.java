@@ -2,6 +2,8 @@ package org.onetwo.common.spring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.reflect.Intro;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -51,6 +54,31 @@ public class SpringUtilsTest {
 		assertThat(map.get("birthday")).isEqualTo("2017-01-05");
 		assertThat(map.get("realName")).isEqualTo("testRealName");
 	}
+	@Test
+	public void testEnumToString(){
+		TestBean test = new TestBean();
+		test.setUserName("testUserName");
+		test.setBirthday(DateUtils.parse("2017-01-05 11:11:11"));
+		test.setStatus(TestUserStatus.NORMAL);
+		
+		String status = SpringUtils.getFormattingConversionService().convert(TestUserStatus.NORMAL, String.class);
+		System.out.println("status: " + status);
+		assertThat(status).isEqualTo(TestUserStatus.NORMAL.name());
+	}
+	
+	@Test
+	public void test() throws ParseException {
+		DateFormatTest t = new DateFormatTest();
+		Field field = Intro.wrap(DateFormatTest.class).getField("date");
+		Date date = SpringUtils.parseDate("2020-12-09", field);
+		assertThat(date).isEqualTo(DateUtils.parse("2020-12-09"));
+	}
+
+	static public class DateFormatTest {
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
+		Date date;
+	}
+
 	
 	public static class TestBean {
 		private String userName;
@@ -60,6 +88,8 @@ public class SpringUtilsTest {
 	    
 	    @FieldName("realName")
 	    private String name;
+	    
+	    private TestUserStatus status;
 
 		public TestBean() {
 			super();
@@ -96,7 +126,18 @@ public class SpringUtilsTest {
 		public void setName(String name) {
 			this.name = name;
 		}
-		
+
+		public TestUserStatus getStatus() {
+			return status;
+		}
+
+		public void setStatus(TestUserStatus status) {
+			this.status = status;
+		}
 	}
 	
+	public static enum TestUserStatus {
+		NORMAL,
+		DISABLED;
+	}
 }

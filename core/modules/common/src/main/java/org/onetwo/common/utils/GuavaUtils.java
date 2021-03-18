@@ -41,6 +41,10 @@ public final class GuavaUtils {
 		return StreamSupport.stream(it.spliterator(), false);
 	}
 	
+	public static String join(String[] strs, String joiner) {
+		return Joiner.on(joiner).skipNulls().join(strs);
+	}
+	
 	public static String join(Iterable<?> strs, String joiner) {
 		return Joiner.on(joiner).skipNulls().join(strs);
 	}

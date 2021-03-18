@@ -1,6 +1,6 @@
 package org.onetwo.common.exception;
 /**
- * 用于一些直接抛出信息提示作为异常，但又无需回滚事务但场景
+ * 用于一些直接抛出信息提示作为异常，但可能无需回滚事务但场景
  * 
  * @author weishao zeng
  * <br/>

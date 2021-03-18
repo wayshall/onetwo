@@ -3,8 +3,11 @@ package org.onetwo.boot.core.web.service.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
+import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.web.service.BootCommonService;
 import org.onetwo.boot.core.web.service.FileStorerListener;
 import org.onetwo.boot.core.web.utils.UploadOptions;
@@ -21,12 +24,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.Setter;
+
 @Transactional
 public class SimpleBootCommonService implements BootCommonService {
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-	@Autowired
-	private FileStorer fileStorer;
+//	@Autowired
+	@Setter
+	private List<FileStorer> fileStorers;
 	
 	@Autowired(required=false)
 	private FileStorerListener fileStorerListener;
@@ -40,18 +46,34 @@ public class SimpleBootCommonService implements BootCommonService {
 	//少于等于0则一律不压缩
 //	private int compressThresholdSize = -1;
 	private CompressConfig compressConfig;
+	@Autowired
+	private BootSiteConfig siteConfig;
 	
 	/***
 	 * 上传的根目录
 	 */
-	private String fileStoreBaseDir = "";
+//	private String fileStoreBaseDir = "";
 	
-	public void setFileStoreBaseDir(String fileStoreBaseDir) {
-		this.fileStoreBaseDir = fileStoreBaseDir;
-	}
+//	public void setFileStoreBaseDir(String fileStoreBaseDir) {
+//		this.fileStoreBaseDir = fileStoreBaseDir;
+//	}
 
-	public void setFileStorer(FileStorer fileStorer) {
-		this.fileStorer = fileStorer;
+//	public void setFileStorer(FileStorer fileStorer) {
+//		this.fileStorer = fileStorer;
+//	}
+
+	
+	protected FileStorer getFileStorer() {
+		StoreType type = siteConfig.getUpload().getStoreType();
+		return this.getFileStorer(type);
+	}
+	
+	protected FileStorer getFileStorer(StoreType storeType) {
+		return this.fileStorers.stream().filter(st -> {
+			return st.getStoreType().equalsIgnoreCase(storeType.name());
+		}).findAny().orElseThrow(()-> {
+			return new BaseException("file store not found: " + storeType.name());
+		});
 	}
 
 
@@ -127,9 +149,21 @@ public class SimpleBootCommonService implements BootCommonService {
 																in, 
 																options.getMultipartFile().getOriginalFilename());
 		context.setResizeConfig(options.getResizeConfig());
-		context.setFileStoreBaseDir(fileStoreBaseDir);
+		if (options.getFileStoreBaseDir()==null) {
+			context.setFileStoreBaseDir(siteConfig.getUpload().getFileStorePath());
+		} else {
+			context.setFileStoreBaseDir(options.getFileStoreBaseDir());
+		}
 //		context.setStoreFilePathStrategy(storeFilePathStrategy);
 		context.setKey(options.getKey());
+		context.setWaterMaskConfig(options.getWaterMaskConfig());
+		
+		StoreType type = options.getStoreType();
+		if (type==null) {
+			type = siteConfig.getUpload().getStoreType();
+		}
+		
+		FileStorer fileStorer = getFileStorer(type);
 		FileStoredMeta meta = fileStorer.write(context);
 		if(fileStorerListener!=null){
 			fileStorerListener.afterFileStored(meta);
@@ -138,16 +172,29 @@ public class SimpleBootCommonService implements BootCommonService {
 	}
 	
 	
+	@Override
+	public boolean isObjectExist(StoreType type, String objectPath) {
+		if (type==null) {
+			type = siteConfig.getUpload().getStoreType();
+		}
+		FileStorer fileStorer = getFileStorer(type);
+		return fileStorer.isObjectExist(objectPath);
+	}
+
 	public void readFileTo(String accessablePath, OutputStream output){
-		this.fileStorer.readFileTo(accessablePath, output);
+		this.getFileStorer().readFileTo(accessablePath, output);
 	}
 	
 	public void delete(String key) {
-		this.fileStorer.delete(key);
+		this.getFileStorer().delete(key);
 	}
 
 	public void setCompressConfig(CompressConfig compressConfig) {
 		this.compressConfig = compressConfig;
+	}
+
+	public void setFileStorers(List<FileStorer> fileStorers) {
+		this.fileStorers = fileStorers;
 	}
 	
 }

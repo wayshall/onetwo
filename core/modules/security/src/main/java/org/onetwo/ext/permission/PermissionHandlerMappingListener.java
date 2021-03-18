@@ -1,5 +1,6 @@
 package org.onetwo.ext.permission;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,6 +30,10 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+
 public class PermissionHandlerMappingListener implements InitializingBean {
 	
 	private UrlResourceInfoParser urlResourceInfoParser = new UrlResourceInfoParser();
@@ -41,6 +46,7 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	private RequestMappingHandlerMapping requestMappingHandlerMapping;
 //	private boolean syncPermissionData;
 	private PermConfig permConfig;
+	private Multimap<Method, IPermission> methodPermissionMapping = null;
 	
 	/*public void setSyncPermissionData(boolean syncMenuDataEnable) {
 		this.syncPermissionData = syncMenuDataEnable;
@@ -53,10 +59,15 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		if(!permConfig.isSync2db()){
 			return ;
 		}
+		
 		Map<RequestMappingInfo, HandlerMethod> handlerMethods = this.requestMappingHandlerMapping.getHandlerMethods();
+		
+		this.methodPermissionMapping = ArrayListMultimap.create(handlerMethods.size(), 3); 
+				
 		this.onHandlerMethodsInitialized(handlerMethods);
-
 		this.permissionManager.syncMenuToDatabase();
+		
+		this.permissionManager.setMethodPermissionMapping(methodPermissionMapping);
 	}
 
 	public void setPermConfig(PermConfig permConfig) {
@@ -182,6 +193,9 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 			this.setMenuUrlByRequestMappingInfo(codeClass, perm, entry);
 		}
 		this.setResourcePatternByRequestMappingInfo(codeClass, perm, entry);
+		
+//		String key = entry.getValue().getMethod().toString();
+		this.methodPermissionMapping.put(entry.getValue().getMethod(), perm);
 	}
 	
 }

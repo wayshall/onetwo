@@ -18,6 +18,7 @@ public class SnapshotProperties {
 	boolean enabled;
 	/***
 	 * 单位ms，[0,视频时长]
+	 * 超过视频最长时间，则截取最后一祯（试验所得)
 	 */
 	int time;
 	int width;

@@ -23,13 +23,16 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.Assert;
 
-/**
- * @author wayshall
- * <br/>
+/****
+ * 
+ * @author way
+ * @deprecated  be insteaded
+ * @see DelayableSendMessageTask
  */
 //@Transactional
-public class CompensationSendMessageTask implements InitializingBean {
-	public static final String LOCK_KEY = "locker:ons:send_message_task";
+@Deprecated
+public class CompensationSendMessageTask implements InitializingBean, SendMessageTask {
+	public static final String LOCK_KEY = "mq:CompensationSendMessageTask";
 	
 	protected Logger log = JFishLoggerFactory.getLogger(getClass());
 	
@@ -61,11 +64,10 @@ public class CompensationSendMessageTask implements InitializingBean {
 	}
 
 	/***
-	 * 定时器运行时间，默认30秒一次
+	 * 定时器运行时间
 	 * @author wayshall
 	 */
-//	@Scheduled(cron="${"+ONSProperties.TRANSACTIONAL_TASK_CRON_KEY+":0 0/1 * * * *}")
-	@Scheduled(fixedRateString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_FIXED_RATE_STRING_KEY+":30000}", initialDelay=30000)
+	@Scheduled(fixedDelayString="${"+MQProperties.TRANSACTIONAL_SEND_TASK_CONFIG_KEY+"}", initialDelay=5000)
 	public void scheduleCheckSendMessage(){
 		SendTaskProps taskProps = this.mqProperties.getTransactional().getSendTask();
 		int ignoreCreateAtRecently = (int)LangOps.timeToSeconds(taskProps.getIgnoreCreateAtRecently(), 30);
@@ -77,15 +79,15 @@ public class CompensationSendMessageTask implements InitializingBean {
 	 * 可扩展为其它类型锁
 	 * @author wayshall
 	 */
-	protected void doCheckSendMessage(int deleteCountPerTask, int ignoreCreateAtRecently){
+	protected void doCheckSendMessage(int sendCountPerTask, int ignoreCreateAtRecently){
 		log.info("start to check unsend message...");
 		if(useReidsLock){
 			getRedisLockRunner().tryLock(()->{
-				findAndProcessUnsendMessage(deleteCountPerTask, ignoreCreateAtRecently);
+				findAndProcessUnsendMessage(sendCountPerTask, ignoreCreateAtRecently);
 				return null;
 			});
 		}else{
-			this.findAndProcessUnsendMessage(deleteCountPerTask, ignoreCreateAtRecently);
+			this.findAndProcessUnsendMessage(sendCountPerTask, ignoreCreateAtRecently);
 		}
 		log.info("finish check unsend message...");
 	}
@@ -128,7 +130,7 @@ public class CompensationSendMessageTask implements InitializingBean {
 	
 
 	private RedisLockRunner getRedisLockRunner(){
-		RedisLockRunner redisLockRunner = RedisLockRunner.createLoker(redisLockRegistry, LOCK_KEY, redisLockTimeout);
+		RedisLockRunner redisLockRunner = RedisLockRunner.createLocker(redisLockRegistry, LOCK_KEY, redisLockTimeout);
 		return redisLockRunner;
 	}
 

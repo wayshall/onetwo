@@ -4,9 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
+import org.onetwo.common.file.FileMatcher;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
@@ -19,11 +18,11 @@ import com.google.common.collect.Maps;
  * <br/>
  */
 public class ProjectRefactor {
-	final private Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	final protected Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	final private String baseDir;
 	private String charset = FileUtils.DEFAULT_CHARSET;
-	private List<BaseFileRefactor<?>> fileRefactors = Lists.newArrayList();
+	private List<BaseFileProcessor<?>> fileRefactors = Lists.newArrayList();
 
 	public ProjectRefactor(String baseDir) {
 		super();
@@ -35,14 +34,36 @@ public class ProjectRefactor {
 		return this;
 	}
 	
+	public <T extends BaseFileProcessor<T>> T newFileProcessor(T fileProcessor){
+		fileRefactors.add(fileProcessor);
+		return fileProcessor;
+	}
+	
+	public ZipFileProcessor newZipFile(String targetZipFilePath){
+		return newFileProcessor(new ZipFileProcessor(this, baseDir, targetZipFilePath));
+	}
+	
+	public DirCopyProcessor newDirCopy(String sourceSubDir, String targetSubDir){
+		return newFileProcessor(new DirCopyProcessor(this, baseDir, sourceSubDir, targetSubDir));
+	}
+	
+	public ProjectCopyProcessor newProjectCopy(String templateModuleName, String newModuleName, String modulePostfix){
+		return newFileProcessor(new ProjectCopyProcessor(this, baseDir, templateModuleName, newModuleName, modulePostfix));
+	}
+	
+	public ExecutorFileProcessor newExecutor(FileProccessExecutor callback){
+		return newFileProcessor(new ExecutorFileProcessor(this, baseDir, callback));
+	}
+	
 	public FileReplacementsRefactor newFileReplacement(){
-		FileReplacementsRefactor r = new FileReplacementsRefactor(baseDir);
+		FileReplacementsRefactor r = new FileReplacementsRefactor(this, baseDir);
 		r.charset(charset);
 		fileRefactors.add(r);
 		return r;
 	}
+	
 	public FileDeleteRefactor newFileDelete(){
-		FileDeleteRefactor r = new FileDeleteRefactor(baseDir);
+		FileDeleteRefactor r = new FileDeleteRefactor(this, baseDir);
 		fileRefactors.add(r);
 		return r;
 	}
@@ -53,51 +74,13 @@ public class ProjectRefactor {
 		});
 	}
 	
-	abstract class BaseFileRefactor<R extends BaseFileRefactor<R>> {
-		final protected String baseDir;
-		protected Predicate<File> fileMatcher;
-		
-		public BaseFileRefactor(String baseDir) {
-			super();
-			this.baseDir = baseDir;
-		}
-
-		@SuppressWarnings("unchecked")
-		public R fileMatcher(Predicate<File> fileMatcher){
-			this.fileMatcher = fileMatcher;
-			return (R)this;
-		}
-		
-		public R orFileMatcher(Predicate<File> matcher){
-			return fileMatcher(this.fileMatcher==null?matcher:this.fileMatcher.or(matcher));
-		}
-		
-		public R andFileMatcher(Predicate<File> matcher){
-			return fileMatcher(this.fileMatcher==null?matcher:this.fileMatcher.and(matcher));
-		}
-
-		public void process(){
-			File dirFile = new File(baseDir);
-			FileUtils.list(dirFile, fileMatcher, true)
-					 .forEach(file->{
-						 doRefactor(file);
-					 });
-		}
-		
-		abstract protected void doRefactor(File file);
-		
-		public ProjectRefactor end(){
-			return ProjectRefactor.this;
-		}
-	}
-	
-	public class FileReplacementsRefactor extends BaseFileRefactor<FileReplacementsRefactor> {
+	public class FileReplacementsRefactor extends BaseFileProcessor<FileReplacementsRefactor> {
 
 		private Map<String, String> textReplacements = Maps.newLinkedHashMap();
 		private String charset = FileUtils.DEFAULT_CHARSET;
 		
-		public FileReplacementsRefactor(String baseDir) {
-			super(baseDir);
+		public FileReplacementsRefactor(ProjectRefactor project, String baseDir) {
+			super(project, baseDir);
 		}
 		public FileReplacementsRefactor charset(String charset) {
 			this.charset = charset;
@@ -110,7 +93,7 @@ public class ProjectRefactor {
 		}
 
 		@Override
-		protected void doRefactor(File file) {
+		protected void fileProcess(File file) {
 			if(file.isDirectory()){
 				return ;
 			}
@@ -122,48 +105,39 @@ public class ProjectRefactor {
 			FileUtils.writeStringToFile(file, charset, text);
 		}
 		
+		public ProjectRefactor end(){
+			return ProjectRefactor.this;
+		}
+		
 	}
 	
 
-	public class FileDeleteRefactor extends BaseFileRefactor<FileDeleteRefactor> {
+	public class FileDeleteRefactor extends BaseFileProcessor<FileDeleteRefactor> {
 		
-		public FileDeleteRefactor(String baseDir) {
-			super(baseDir);
-		}
-		
-		public FileDeleteRefactor fileNameEndWith(String...postfix){
-			return orFileMatcher(file->{
-				return Stream.of(postfix).anyMatch(suffix->{
-					return file.getName().endsWith(suffix);
-				});
-			});
-		}
-		
-		public FileDeleteRefactor dirNameEqual(String...dirNames){
-			return orFileMatcher(file->{
-				return Stream.of(dirNames).anyMatch(dirName->{
-					boolean res = file.isDirectory() && file.getName().equals(dirName);
-//					logger.info("file[{}] match dir res: {}", file.getPath(), res);
-					return res;
-				});
-			});
-		}
-		
-		public FileDeleteRefactor fileNameEqual(String...fileNames){
-			return orFileMatcher(file->{
-				return Stream.of(fileNames).anyMatch(fileName->{
-					return file.isFile() && file.getName().equals(fileName);
-				});
-			});
+		public FileDeleteRefactor(ProjectRefactor project, String baseDir) {
+			super(project, baseDir);
 		}
 
 		@Override
-		protected void doRefactor(File file) {
+		protected void fileProcess(File file) {
 			if(FileUtils.delete(file, true)){
 				logger.info("delete succeed: {}", file.getPath());
 			}else{
 				logger.info("delete failed : {}", file.getPath());
 			}
+		}
+		
+
+		public FileDeleteRefactor orFileNameEndWith(String...postfix){
+			return orFile(FileMatcher.fileNameEndWith(postfix));
+		}
+		
+		public FileDeleteRefactor orDirNameIs(String...dirNames){
+			return orFile(FileMatcher.dirNameIs(dirNames));
+		}
+		
+		public FileDeleteRefactor orFileNameIs(String...fileNames){
+			return orFile(FileMatcher.fileNameIs(fileNames));
 		}
 		
 	}

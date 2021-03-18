@@ -28,6 +28,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,8 +60,10 @@ public class RmqONSProducerTest {
 	@Test
 	public void test1SendMessage(){
 		baseEntityManager.removeAll(SendMessageEntity.class);
-		dataBaseProducerService.sendMessage();
 		int messageCount = baseEntityManager.countRecord(SendMessageEntity.class).intValue();
+		assertThat(messageCount).isEqualTo(0);
+		dataBaseProducerService.sendMessage();
+		messageCount = baseEntityManager.countRecord(SendMessageEntity.class).intValue();
 		assertThat(messageCount).isEqualTo(1);
 //		LangUtils.CONSOLE.exitIf("test");
 	}
@@ -94,7 +98,7 @@ public class RmqONSProducerTest {
 		assertThat(messageCount).isEqualTo(1);
 //		LangUtils.CONSOLE.exitIf("test");
 	}
-	
+
 	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
 	@Configuration
 	@PropertySource("classpath:rmqwithonsclient-test.properties")
@@ -134,9 +138,10 @@ public class RmqONSProducerTest {
 	public static class TestDatabaseTransactionMessageInterceptor extends OnsDatabaseTransactionMessageInterceptor {
 		private volatile boolean throwWhenExecuteSendMessage;
 		@Override
+		@TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT)
 		public void afterCommit(SendMessageEvent event){
 			if(throwWhenExecuteSendMessage){
-				throw new ServiceException("send error");
+				throw new ServiceException("send error afterCommit");
 			}
 			super.afterCommit(event);
 		}
@@ -152,7 +157,29 @@ public class RmqONSProducerTest {
 	public static class OrderTestMessage {
 		Long orderId;
 		String title;
-		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			OrderTestMessage other = (OrderTestMessage) obj;
+			if (orderId == null) {
+				if (other.orderId != null)
+					return false;
+			} else if (!orderId.equals(other.orderId))
+				return false;
+			return true;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((orderId == null) ? 0 : orderId.hashCode());
+			return result;
+		}
 		
 	}
 }

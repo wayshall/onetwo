@@ -20,22 +20,63 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartb
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ONSSubscribe {
-
-	String consumerId();
+	
+	/****
+	 * 若不指定，则默认使用消费者类的simpleName+"_"+方法名称 作为消费者id
+	 * 
+	 * @author weishao zeng
+	 * @return
+	 */
+	String consumerId() default "";
 	String topic();
 	String subExpression() default "";
 	String[] tags() default {};
 	MessageModel messageModel() default MessageModel.CLUSTERING;
 	ConsumeFromWhere consumeFromWhere() default ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET ;
+
+	// DefaultMQPushConsumer#consumeTimestamp
+	/***
+	 * 格式：yyyyMMddhhmmss 
+	 */
+	String consumeTimestamp() default "";
+	
+	/****
+	 * PropertyKeyConst.ConsumeTimeout
+	 * 
+	 * 少于0表示使用rocketmq默认时间，rmq默认为15分钟
+	 * 可通过下面配置覆盖：
+	 * jfish.ons.consumers.consumerId.consumeTimeout: 15
+	 * 
+	 * @author weishao zeng
+	 * @return
+	 */
+	int consumeTimeoutInMinutes() default -1;
+	
+	/***
+	 * 是否自动加上配置文件里的消费组前缀
+	 * @author weishao zeng
+	 * @return
+	 */
+	boolean appendConsumerPrefix() default true;
+	
 	long ignoreOffSetThreshold() default -1;
 	int maxReconsumeTimes() default -1;
 	boolean autoDeserialize() default true;
 	IdempotentType idempotent() default IdempotentType.NONE;
 	
+	/***
+	 * 批量消费的最大消息条数，默认为1
+	 * @author weishao zeng
+	 * @return
+	 */
+	int consumeMessageBatchMaxSize() default 1;
+	
 	//consumeTimeoutInMinutes
 	//properties: field=vlaue
 	
 	ConsumerProperty[] properties() default {};
+	
+	boolean useBatchMode() default false;
 	
 	public enum IdempotentType {
 		NONE,

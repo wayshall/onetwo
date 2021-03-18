@@ -46,6 +46,11 @@ public class Mixins {
 	}
 	
 	/***
+	 * 根据指定策略（MixinAdvisorStrategy）查找mixin接口（mixinInterfaces）的实现，并创建Advisor，
+	 * 为target对象创建一个代理工厂（ProxyFactory），并把mixin接口的Advisor，添加到ProxyFactory，即把mixin接口混入到target对象。
+	 * 
+	 * target和mixinInterfaces实际上没有关系，但mixin后，target可强转为mixinInterfaces，
+	 * 
 	 *  mixin mixinInterfaces to target object
 	 * 混入接口的实现类寻找策略可由MixinAdvisorStrategy指定
 	 * target和mixinInterfaces实际上没有关系，但mixin后，target可强转为mixinInterfaces，
@@ -54,18 +59,18 @@ public class Mixins {
 	 * obj = Mixins.of(obj, Human.class);
 		String talkWord = ((Human)obj).talk();//invoke HumanImpl.talk
 	 * @author wayshall
-	 * @param obj
+	 * @param target
 	 * @param factory
 	 * @param mixinInterfaces
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T of(Object obj, MixinAdvisorStrategy factory, Class<?>... mixinInterfaces){
+	public static <T> T of(Object target, MixinAdvisorStrategy factory, Class<?>... mixinInterfaces){
 		List<Advisor> advisors = Stream.of(mixinInterfaces)
 										.filter(factory::isMixinInterface)
 										.map(factory::createAdvisor)
 										.collect(Collectors.toList());
-		ProxyFactory proxy = new ProxyFactory(obj);
+		ProxyFactory proxy = new ProxyFactory(target);
 		proxy.addAdvisors(advisors);
 		proxy.setOptimize(true);
 		T proxyObject = (T)proxy.getProxy();

@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.boot.plugin.core.WebPlugin;
+import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
@@ -37,6 +38,12 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		BootUtils.asyncInit(() -> {
+			initWebPlugins();
+		});
+	}
+	
+	private void initWebPlugins() {
 		int registedCount = this.registerDockets();
 		int index = registedCount;
 		for(WebPlugin plugin : pluginManager.getPlugins()){

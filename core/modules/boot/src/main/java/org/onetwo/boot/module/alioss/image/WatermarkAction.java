@@ -174,7 +174,7 @@ public class WatermarkAction extends ObjectProcess<WaterMaskProperties> {
 	public void setImage(String image) {
 		put("image", AttrValue.builder()
 									.encodeBase64(true)
-									.encodeUrl(true)
+									.safeUrl(true)
 									.value(image).build()
 			);
 	}

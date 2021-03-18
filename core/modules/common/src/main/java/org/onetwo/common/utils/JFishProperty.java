@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Optional;
+import java.util.Set;
 
 import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.reflect.Intro;
@@ -39,6 +40,7 @@ public interface JFishProperty {
 	boolean hasAnnotation(Class<? extends Annotation> annoClass);
 	
 	<T extends Annotation> T getAnnotation(Class<T> annoClass);
+	<T extends Annotation> Set<T> getMergedRepeatableAnnotations(Class<T> annoClass);
 	
 	AnnotationInfo getAnnotationInfo();
 

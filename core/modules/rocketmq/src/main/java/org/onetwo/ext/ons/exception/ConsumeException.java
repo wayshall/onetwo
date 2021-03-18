@@ -5,7 +5,7 @@ import org.onetwo.common.exception.ErrorType;
 
 @SuppressWarnings("serial")
 public class ConsumeException extends BaseException{
-
+	
 	public ConsumeException() {
 		super("consume message error");
 	}

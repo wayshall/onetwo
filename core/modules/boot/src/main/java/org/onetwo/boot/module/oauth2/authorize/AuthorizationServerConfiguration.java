@@ -117,7 +117,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		if(oauth2AccessDeniedHandler!=null){
 			security.accessDeniedHandler(oauth2AccessDeniedHandler);
 		}
-		if(passwordEncoder!=null){
+		if(passwordEncoder!=null && this.oauth2Properties.getAuthorizationServer().isUsePassowrdEncoder()){
 			security.passwordEncoder(passwordEncoder);
 		}
 	}

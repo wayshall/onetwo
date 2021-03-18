@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.ext.ons.ONSUtils;
+import org.slf4j.Logger;
 
 /**
  * @author wayshall
@@ -28,6 +30,7 @@ public class JsonMessageSerializer implements MessageSerializer {
 	public static final String PROP_BODY_TYPE = "PROP_BODY_TYPE";
 	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
 	private boolean checkMessageBodyInstantiate;
+	private Logger logger = ONSUtils.getONSLogger();
 	
 	public JsonMessageSerializer(){
 		//不使用enableDefaultTyping模式，携带了太多类型信息，对反序列化不友好
@@ -53,6 +56,12 @@ public class JsonMessageSerializer implements MessageSerializer {
 		}
 		if (messageDelegate!=null && StringUtils.isBlank(messageDelegate.getUserProperties(PROP_BODY_TYPE))) {
 			messageDelegate.putUserProperties(PROP_BODY_TYPE, body.getClass().getName());
+		}
+		if (messageDelegate.isDebug()) {
+			if (logger.isInfoEnabled()) {
+				String jsonstr = jsonMapper.toJson(body);
+				logger.info("ons message body json: {}", jsonstr);
+			}
 		}
 		return jsonMapper.toJsonBytes(body);
 	}

@@ -7,6 +7,7 @@ import org.onetwo.common.utils.func.Closure1;
 import org.onetwo.ext.permission.utils.PermissionUtils;
 
 public interface IPermission {
+//	String COMPONENT_VIEW_PATH = "componentViewPath";
 
 	String getCode();
 
@@ -68,6 +69,20 @@ public interface IPermission {
 	
 	Map<String, Object> getMeta();
 	void setMeta(Map<String, Object> meta);
+	
+/*	public default String getComponentViewPath() {
+		if (getMeta()==null) {
+			return null;
+		}
+		return (String)getMeta().get(COMPONENT_VIEW_PATH);
+	}
+	
+	default void setComponentViewPath(String componentViewPath) {
+		if (getMeta()==null) {
+			setMeta(new HashMap<String, Object>());
+		}
+		getMeta().put(COMPONENT_VIEW_PATH, componentViewPath);
+	}*/
 
 	default public String toTreeString(String spliter){
 		final StringBuilder str = new StringBuilder();

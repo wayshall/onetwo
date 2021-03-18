@@ -9,10 +9,15 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.onetwo.common.apiclient.utils.ApiClientUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.validation.annotation.Validated;
 
@@ -104,6 +109,39 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 	
 	public T getParameter(String name) {
 		return parameters.stream().filter( m->( m.getParameterName().equals(name))).findFirst().get();
+	}
+
+	/****
+	 * 先从方法上查找注解，没有则从类上查找
+	 * @author weishao zeng
+	 * @param annoClass
+	 * @return
+	 */
+	public <A extends Annotation> A findAnnotation(Class<A> annoClass) {
+		A annoInst = AnnotatedElementUtils.getMergedAnnotation(getMethod(), annoClass);
+		if (annoInst==null) {
+			annoInst = AnnotatedElementUtils.getMergedAnnotation(getDeclaringClass(), annoClass);
+		}
+		return annoInst;
+	}
+
+	
+	final protected <A> A createAndInitComponent(Class<A> clazz) {
+		A component = null;
+		if (Springs.getInstance().isInitialized()){
+			component = Springs.getInstance().getBean(clazz);
+			if (component==null) {
+				component = ReflectUtils.newInstance(clazz);
+				SpringUtils.injectAndInitialize(Springs.getInstance().getAppContext(), component);
+			}
+		} else {
+			Logger logger = ApiClientUtils.getApiclientlogger();
+			if (logger.isWarnEnabled()) {
+				logger.warn("spring application not initialized, use reflection to create component: {}", clazz);
+			}
+			component = ReflectUtils.newInstance(clazz);
+		}
+		return component;
 	}
 
 	abstract protected T createMethodParameter(Method method, int parameterIndex, Parameter parameter);

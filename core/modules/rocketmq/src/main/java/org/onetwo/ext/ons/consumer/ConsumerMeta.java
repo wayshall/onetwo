@@ -23,27 +23,69 @@ import lombok.Data;
 @Data
 @Builder
 public class ConsumerMeta {
-	final private String consumerId;
-	final private String topic;
-	final private String subExpression;
-	final private MessageModel messageModel;
-	final private ConsumeFromWhere consumeFromWhere;
-	final private long ignoreOffSetThreshold;
-	final private ListenerType listenerType;
-	final private Object consumerAction;
-	final private String consumerBeanName;
+	public static final String CONSUME_TIMESTAMP_KEY = "consumeTimestamp";
+	
+	private String consumerId;
+	private String topic;
+	private String subExpression;
+
+	private ListenerType listenerType;
+	private Object consumerAction;
+	private String consumerBeanName;
+	
+	@Builder.Default
+	private MessageModel messageModel = MessageModel.CLUSTERING;
+	@Builder.Default
+	private ConsumeFromWhere consumeFromWhere = ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET;
+	
+	// DefaultMQPushConsumer#consumeTimestamp
+	/***
+	 * 格式：yyyyMMddhhmmss 
+	 */
+	private String consumeTimestamp;
+	
+	/***
+	 * 
+	 * PropertyKeyConst.ConsumeTimeout
+	 * 
+	 * 少于等于0表示使用rocketmq默认时间，rmq默认为15分钟
+	 */
+	@Builder.Default
+	private int consumeTimeoutInMinutes = -1;
+	
+	@Builder.Default
+	private long ignoreOffSetThreshold = -1;
 	/***
 	 * 
 	 */
-	final private int maxReconsumeTimes;
+	@Builder.Default
+	private int maxReconsumeTimes = -1;
 	private Properties comsumerProperties;
 	
-	private boolean autoDeserialize;
+	/***
+	 * 配置说明：批量消费的最大消息条数.默认值：1
+	 */
+	@Builder.Default
+	private int consumeMessageBatchMaxSize = 1;
+
+	@Builder.Default
+	private boolean autoDeserialize = true;
+
+	@Builder.Default
+	private IdempotentType idempotentType = IdempotentType.NONE;
 	
-	private IdempotentType idempotentType;
+	private boolean appendConsumerPrefix;
+	/***
+	 * 是否使用批量消费模式
+	 */
+	private boolean useBatchMode;
 	
 	public boolean shouldWithTransational() {
 		return getIdempotentType()==IdempotentType.DATABASE;
+	}
+	
+	public Object getConsumerAction() {
+		return consumerAction;
 	}
 
 }

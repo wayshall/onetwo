@@ -1,5 +1,6 @@
 package org.onetwo.cloud.zuul;
 
+import org.onetwo.boot.bugfix.AllEncompassingFormHttpMessageConverter;
 import org.onetwo.boot.core.embedded.BootServletContainerCustomizer;
 import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.web.filter.SpringMultipartFilterProxy;
@@ -19,6 +20,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
+import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 
@@ -49,6 +51,11 @@ public class ExtZuulContextConfig {
     	return filter;
     }
     
+//    @Bean
+//    public WebsocketZuulFilter websocketZuulFilter() {
+//    	return new WebsocketZuulFilter();
+//    }
+    
     @Bean
     @ConditionalOnMissingBean(SpringMultipartFilterProxy.class)
     public SpringMultipartFilterProxy springMultipartFilterProxy(){
@@ -66,6 +73,19 @@ public class ExtZuulContextConfig {
 	@Bean
 	public static FixFormBodyWrapperFilterPostProcessor formBodyWrapperFilterPostProcessor(){
 		return new FixFormBodyWrapperFilterPostProcessor();
+	}
+	
+	/****
+	 * 修复put方法的参数值里有%号的时，抛异常 Incomplete trailing escape (%) pattern的问题
+	 * 
+	 * @author weishao zeng
+	 * @return
+	 */
+	@Bean
+	public HttpPutFormContentFilter httpPutFormContentFilter() {
+		HttpPutFormContentFilter filter = new HttpPutFormContentFilter();
+		filter.setFormConverter(new AllEncompassingFormHttpMessageConverter());
+		return new HttpPutFormContentFilter();
 	}
 	
 	/*@Bean

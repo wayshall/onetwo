@@ -1,9 +1,10 @@
 package org.onetwo.common.spring.mvc.utils;
 
 import org.onetwo.common.data.AbstractDataResult;
-import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.ErrorType;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 @SuppressWarnings("unchecked")
@@ -14,6 +15,7 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	private boolean extractableData = false;
 	protected T data;
 	private String view;
+	private Boolean showMessage;
 //	final protected Class<?> builderClass;
 //	private T data;
 	
@@ -51,7 +53,7 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	 */
 	public B code(String code, String message){
 		this.code = code;
-		this.message = message;
+		message(message);
 //		return builderClass.cast(this);
 		return (B) this;
 	}
@@ -74,25 +76,34 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	}
 	public B code(Enum<?> code){
 		this.code = code.name();
-		if(message==null)
-			this.message = code.toString();
+		if(message==null) {
+			message(code.toString());
+		}
 		return (B) this;
 	}
 
 	public B message(String message){
 		this.message = message;
+		if (StringUtils.isNotBlank(message)) {
+			this.showMessage = true;
+		}
 //		return builderClass.cast(this);
 		return (B) this;
 	}
 	
 	public B error(ErrorType errorType){
 		this.code = errorType.getErrorCode();
-		this.message = errorType.getErrorMessage();
+		this.message(errorType.getErrorMessage());
 		return (B) this;
 	}
 
 	public B data(T data){
 		this.data = data;
+		return (B) this;
+	}
+	
+	public B showMessage(boolean showMessage) {
+		this.showMessage = showMessage;
 		return (B) this;
 	}
 
@@ -103,6 +114,9 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 
 	public SimpleDataResult<T> build(){
 		SimpleDataResult<T> rs = creeateResult();
+		if (this.showMessage!=null) {
+			rs.setShowMessage(showMessage);
+		}
 		rs.setExtractableData(extractableData);
 		return rs;
 	}

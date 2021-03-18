@@ -35,6 +35,7 @@ abstract public class XmlUtils {
 			xstream.useAttributeFor(boolean.class);
 		}
 		xstream.ignoreUnknownElements();
+		xstream.autodetectAnnotations(true);
 		
 		return xstream;
 	}

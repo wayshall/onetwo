@@ -2,8 +2,9 @@ package org.onetwo.boot.mq;
 
 import org.onetwo.boot.mq.MQProperties.DeleteTaskProps;
 import org.onetwo.boot.mq.MQProperties.TaskLocks;
-import org.onetwo.boot.mq.task.CompensationSendMessageTask;
+import org.onetwo.boot.mq.task.DelayableSendMessageTask;
 import org.onetwo.boot.mq.task.DeleteSentMessageTask;
+import org.onetwo.boot.mq.task.SendMessageTask;
 
 /**
  * @author wayshall
@@ -18,8 +19,8 @@ public class MQTaskConfiguration {
 		this.mqProperties = mqProperties;
 	}
 
-	public CompensationSendMessageTask createCompensationSendMessageTask(){
-		CompensationSendMessageTask task = new CompensationSendMessageTask();
+	public SendMessageTask createSendMessageTask(){
+		DelayableSendMessageTask task = new DelayableSendMessageTask();
 		TaskLocks taskLock = mqProperties.getTransactional().getSendTask().getLock();
 		if(taskLock==TaskLocks.REDIS){
 			task.setUseReidsLock(true);
@@ -33,6 +34,8 @@ public class MQTaskConfiguration {
 		DeleteTaskProps deleteProps = mqProperties.getTransactional().getDeleteTask();
 		if(deleteProps.getLock()==TaskLocks.REDIS){
 			task.setUseReidsLock(true);
+		} else if (deleteProps.getLock()==TaskLocks.DB) {
+			task.setUseReidsLock(false);
 		}
 		task.setDeleteBeforeAt(deleteProps.getDeleteBeforeAt());
 		task.setRedisLockTimeout(deleteProps.getRedisLockTimeout());

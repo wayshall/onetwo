@@ -1,7 +1,5 @@
 package org.onetwo.boot.bugfix;
 
-import io.reactivex.annotations.Nullable;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -37,6 +35,8 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
+
+import io.reactivex.annotations.Nullable;
 
 /**
  * @author wayshall
@@ -208,12 +208,27 @@ public class FormHttpMessageConverter extends org.springframework.http.converter
 				result.add(URLDecoder.decode(pair, charset.name()), null);
 			}
 			else {
-				String name = URLDecoder.decode(pair.substring(0, idx), charset.name());
-				String value = URLDecoder.decode(pair.substring(idx + 1), charset.name());
+				// 修复put方法的参数值里有%号的时，抛异常 Incomplete trailing escape (%) pattern的问题
+				String name = urlDecode(pair.substring(0, idx), charset.name());
+				String value = urlDecode(pair.substring(idx + 1), charset.name());
 				result.add(name, value);
 			}
 		}
 		return result;
+	}
+	
+	/***
+	 * 修复put方法的参数值里有%号的时，抛异常 Incomplete trailing escape (%) pattern的问题
+	 * @author weishao zeng
+	 * @param value
+	 * @param charset
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	private String urlDecode(String value, String charset) throws UnsupportedEncodingException {
+		value = value.replaceAll("%", "%25");
+		String decodedValue = URLDecoder.decode(value, charset);
+		return decodedValue;
 	}
 
 	@Override

@@ -2,14 +2,19 @@ package org.onetwo.ext.poi.excel.reader;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.onetwo.ext.poi.excel.generator.CellValueConvertor;
 import org.onetwo.ext.poi.excel.reader.ListRowMapper.StringListRowMapper;
-import org.onetwo.ext.poi.excel.stream.ExcelStreamReader.ExcelStreamReaderBuilder;
+import org.onetwo.ext.poi.excel.stream.ExcelStreamReader;
+import org.onetwo.ext.poi.excel.stream.ExcelStreamReaderBuilder;
+import org.onetwo.ext.poi.excel.stream.MonitorExcelStreamReader;
+import org.onetwo.ext.poi.excel.stream.SheetStreamReaderBuilder.SheetStreamReader;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.TheFunction;
 import org.slf4j.Logger;
@@ -44,7 +49,7 @@ public abstract class WorkbookReaderFactory {
 		}
 		
 		protected String getAsString(Cell cell){
-			cell.setCellType(Cell.CELL_TYPE_STRING);
+			ExcelUtils.setCellTypeAsString(cell);
 			return StringUtils.trimToEmpty(cell.getStringCellValue());
 		}
 		
@@ -64,17 +69,17 @@ public abstract class WorkbookReaderFactory {
 
 		@Override
 		public Integer doConvert(Cell cell) {
-			int type = cell.getCellType();
+			CellType type = cell.getCellType();
 			Integer value = null;
-			if(Cell.CELL_TYPE_STRING==type){
+			if(CellType.STRING==type){
 				String strValue = getStringValue(cell);
 				if(StringUtils.isBlank(strValue))
 					return defaultValue;
 				value = Integer.parseInt(strValue);
-			}else if(Cell.CELL_TYPE_NUMERIC==type){
+			}else if(CellType.NUMERIC==type){
 				Double dvalue = cell.getNumericCellValue();
 				value = dvalue.intValue();
-			}else if(Cell.CELL_TYPE_FORMULA==type){
+			}else if(CellType.FORMULA==type){
 				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
 				value = cv==null?defaultValue:(int)cv.getNumberValue();
 			}else{
@@ -96,14 +101,14 @@ public abstract class WorkbookReaderFactory {
 
 		@Override
 		public Long doConvert(Cell cell) {
-			int type = cell.getCellType();
+			CellType type = cell.getCellType();
 			Long value = null;
-			if(Cell.CELL_TYPE_STRING==type){
+			if(CellType.STRING==type){
 				value = ((Number)Double.parseDouble(getStringValue(cell))).longValue();
-			}else if(Cell.CELL_TYPE_NUMERIC==type){
+			}else if(CellType.NUMERIC==type){
 				Double dvalue = cell.getNumericCellValue();
 				value = dvalue.longValue();
-			}else if(Cell.CELL_TYPE_FORMULA==type){
+			}else if(CellType.FORMULA==type){
 				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
 				value = cv==null?defaultValue:(long)cv.getNumberValue();
 			}else{
@@ -125,13 +130,13 @@ public abstract class WorkbookReaderFactory {
 
 		@Override
 		public Double doConvert(Cell cell) {
-			int type = cell.getCellType();
+			CellType type = cell.getCellType();
 			Double value = null;
-			if(Cell.CELL_TYPE_STRING==type){
+			if(CellType.STRING==type){
 				value = Double.parseDouble(getStringValue(cell));
-			}else if(Cell.CELL_TYPE_NUMERIC==type){
+			}else if(CellType.NUMERIC==type){
 				value = cell.getNumericCellValue();
-			}else if(Cell.CELL_TYPE_FORMULA==type){
+			}else if(CellType.FORMULA==type){
 				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
 				value = cv==null?defaultValue:cv.getNumberValue();
 			}else{
@@ -153,22 +158,22 @@ public abstract class WorkbookReaderFactory {
 
 		@Override
 		public String doConvert(Cell cell) {
-			int type = cell.getCellType();
+			CellType type = cell.getCellType();
 			String value = null;
-			if(Cell.CELL_TYPE_STRING==type){
+			if(CellType.STRING==type){
 				value = getStringValue(cell);
-			}else if(Cell.CELL_TYPE_NUMERIC==type){
+			}else if(CellType.NUMERIC==type){
 				Double dvalue = cell.getNumericCellValue();
 				if(dvalue!=null){
 					value = String.valueOf(dvalue.longValue());
 				}
-			}else if(Cell.CELL_TYPE_FORMULA==type){
+			}else if(CellType.FORMULA==type){
 				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
 				value = cv==null?defaultValue:cv.getStringValue();
-			}else if(Cell.CELL_TYPE_BOOLEAN==type){
+			}else if(CellType.BOOLEAN==type){
 				boolean bvalue = cell.getBooleanCellValue();
 				value = String.valueOf(bvalue);
-			}else if(Cell.CELL_TYPE_BLANK==type){
+			}else if(CellType.BLANK==type){
 				value = "";
 			}
 			return value;
@@ -183,13 +188,13 @@ public abstract class WorkbookReaderFactory {
 
 		@Override
 		public Date doConvert(Cell cell) {
-			int type = cell.getCellType();
+			CellType type = cell.getCellType();
 			Date value = null;
-			if(Cell.CELL_TYPE_STRING==type){
+			if(CellType.STRING==type){
 				value = TheFunction.getInstance().parseDateTime(getStringValue(cell));
-			}else if(Cell.CELL_TYPE_NUMERIC==type){
+			}else if(CellType.NUMERIC==type){
 				value = cell.getDateCellValue();
-			}else if(Cell.CELL_TYPE_FORMULA==type){
+			}else if(CellType.FORMULA==type){
 				CellValue cv = ExcelUtils.getFormulaCellValue(cell);
 				value = cv==null?defaultValue:TheFunction.getInstance().parseDateTime(cv.getStringValue());//Types.convertValue(cv.getStringValue(), Date.class);
 			}else {
@@ -233,6 +238,19 @@ public abstract class WorkbookReaderFactory {
 	public static ExcelStreamReaderBuilder streamReader() {
 		return new ExcelStreamReaderBuilder();
 	}
+	
+	public static ExcelStreamReaderBuilder streamReader(int bufferSize) {
+		return streamReader(bufferSize, bufferSize/10);
+	}
+	
+	public static ExcelStreamReaderBuilder streamReader(int bufferSize, int rowCacheSize) {
+		return new ExcelStreamReaderBuilder() {
+			protected ExcelStreamReader build(List<SheetStreamReader<?>> sheetReaders) {
+				ExcelStreamReader reader = new MonitorExcelStreamReader(sheetReaders, bufferSize, rowCacheSize);
+				return reader;
+			}
+		};
+	}
 
 	public static WorkbookReader getWorkbookReader(){
 		return getWorkbookReader(HashMap.class);
@@ -249,6 +267,14 @@ public abstract class WorkbookReaderFactory {
 		return WORKBOOK_CACHES.get(key);
 	}*/
 	
+	/****
+	 * 创建excel读取器
+	 * @author weishao zeng
+	 * @param clazz 每一行excel数据映射的对象
+	 * @param dataRowStartIndex 数据行的索引，若第一行为标题行，第二行开始为数据行，则此参数为1
+	 * @param propertyMapper
+	 * @return
+	 */
 	@SuppressWarnings("rawtypes")
 	public static WorkbookReader createWorkbookReader(Class clazz, int dataRowStartIndex, Object...propertyMapper){
 		WorkbookReader wb = new DefaultRowMapperWorkbookReader(new BeanRowMapper(dataRowStartIndex, clazz, ExcelUtils.asMap(propertyMapper), convertors));
@@ -280,5 +306,14 @@ public abstract class WorkbookReaderFactory {
 
 	public static Map<String, CellValueConvertor> getConvertors() {
 		return convertors;
+	}
+	
+	public static <T> T convertCellValue(Cell cell, Class<T> type, T def) {
+		CellValueConvertor convertor = convertors.get(type.getSimpleName().toLowerCase());
+		if (convertor==null) {
+			return def;
+		}
+		T val = (T)convertor.convert(cell);
+		return val;
 	}
 }

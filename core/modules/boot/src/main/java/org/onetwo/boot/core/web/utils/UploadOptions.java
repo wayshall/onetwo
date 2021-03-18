@@ -1,6 +1,7 @@
 package org.onetwo.boot.core.web.utils;
 
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,9 +19,10 @@ import lombok.Setter;
  */
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class UploadOptions {
-	final private String module;
-	final private MultipartFile multipartFile;
+	private String module;
+	private MultipartFile multipartFile;
 	/***
 	 * 上传的时候是否压缩图片本身，统一实现
 	 */
@@ -38,11 +40,23 @@ public class UploadOptions {
 	@Setter
 	@Getter
 	private SnapshotConfig snapshotConfig;
+
+	@Setter
+	@Getter
+	private WaterMaskConfig waterMaskConfig;
 	
 	/**
 	 * 如果指定了key，会覆盖
 	 */
-	final private String key;
+	private String key;
+
+	@Setter
+	@Getter
+	StoreType storeType;
+
+	@Setter
+	@Getter
+	String fileStoreBaseDir;
 	
 	public UploadOptions(String module, MultipartFile multipartFile) {
 		this(null, module, multipartFile);
@@ -110,6 +124,25 @@ public class UploadOptions {
 		String text;
 		Integer size;
 		String type;
+		String image;
+		
+		/***
+		 * 样式名称
+		 * 如果腾讯云cos，可以在控制台配置好样式，在程序里配置样式名称即可
+		 */
+//		String style;
+
+		@Builder
+		public WaterMaskConfig(String text, Integer size, String type, String image/* , String style */) {
+			super();
+			this.text = text;
+			this.size = size;
+			this.type = type;
+			this.image = image;
+//			this.style = style;
+		}
+		
+		
 	}
 	
 	/***
@@ -137,4 +170,5 @@ public class UploadOptions {
 			this.height = height;
 		}
 	}
+	
 }

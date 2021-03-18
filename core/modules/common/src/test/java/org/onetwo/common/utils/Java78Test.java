@@ -162,7 +162,7 @@ public class Java78Test {
 															return str.append(user.getUserName());
 														}, 
 														(str1, str2)->{
-															throw new RuntimeException("never invoke this method");
+															throw new RuntimeException("第三个参数只有并行流中才会执行");
 														});
 		
 		//change to parallelStream, the combiner will be invoked

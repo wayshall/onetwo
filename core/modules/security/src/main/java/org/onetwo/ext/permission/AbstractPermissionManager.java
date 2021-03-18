@@ -1,5 +1,6 @@
 package org.onetwo.ext.permission;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -13,8 +14,10 @@ import javax.annotation.PostConstruct;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.permission.api.IPermission;
+import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +25,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 abstract public class AbstractPermissionManager<P extends IPermission> implements PermissionManager<P> {
@@ -35,6 +39,10 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	private Multimap<Method, IPermission> methodPermissionMapping;
+	@Autowired
+	private SecurityConfig securityConfig;
 	
 	@PostConstruct
 	public void initParsers(){
@@ -53,7 +61,9 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	}
 	
 	private void checkParsers(){
-		Assert.notEmpty(parsers, "parsers can not be empty");
+		if (securityConfig.getPermission().isSync2db()) {
+			Assert.notEmpty(parsers, "parsers can not be empty");
+		}
 	}
 
 
@@ -144,8 +154,15 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 											.filter(p -> p.getRootMenu().isPresent())
 											.map(p -> p.getRootMenuCode())
 											.collect(Collectors.toSet());
-		Set<String> deleteRootCodes = Sets.difference(getDatabaseRootCodes(), memoryRootCodes);
+		Set<String> databaseRootCodes = getDatabaseRootCodes();
+		// databaseRootCodes存在，memoryRootCodes不存在的，则删除
+		Set<String> deleteRootCodes = Sets.difference(databaseRootCodes, memoryRootCodes);
+		
+		logger.info("deleteRootCodes: {}, memoryRootCodes: {}, databaseRootCodes: {}", deleteRootCodes, memoryRootCodes, databaseRootCodes);
 		deleteRootCodes.stream().forEach(rootCode -> {
+			if (isReversePermissions(rootCode)) {
+				return;
+			}
 			this.removeUnusedRootMenu(rootCode);
 		});
 		
@@ -153,7 +170,10 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 			securityMetadataSourceBuilder.buildSecurityMetadataSource();
 		}
 	}
-
+	
+	protected boolean isReversePermissions(String code) {
+		return code.equalsIgnoreCase(FullyAuthenticated.AUTH_CODE);
+	}
 	
 	protected void removeUnusedRootMenu(String rootCode) {
 		this.removePermission(rootCode, true);
@@ -170,6 +190,9 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	public void syncMenuToDatabase(MenuInfoParser<P> menuInfoParser){
 //		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
+		if (logger.isInfoEnabled()) {
+			logger.info("synchronizing menu class: {} ...", menuInfoParser.getRootMenuCode());
+		}
 		Optional<P> rootPermissionOpt = menuInfoParser.getRootMenu();
 		if(!rootPermissionOpt.isPresent()){
 			this.removeRootMenu(menuInfoParser);
@@ -183,9 +206,14 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		Set<P> memoryPermissions = new HashSet<>(menuNodeMap.values());
 
 		Set<P> dbPermissions = new HashSet<P>(dbPermissionMap.values());
+		// memoryPermissions存在，dbPermissions不存在的，则为新增
 		Set<P> adds = Sets.difference(memoryPermissions, dbPermissions);
+		 // dbPermissions存在，memoryPermissions不存在的，则为删除
 		Set<P> deletes = Sets.difference(dbPermissions, memoryPermissions);
+		// memoryPermissions和dbPermissions都存在的，则更新……
 		Set<P> intersections = Sets.intersection(memoryPermissions, dbPermissions);
+		
+//		filterReversePermissions(deletes);
 		
 		this.updatePermissions(rootPermission, dbPermissionMap, adds, deletes, intersections);
 
@@ -204,8 +232,17 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		this.securityMetadataSourceBuilder = securityMetadataSourceBuilder;
 	}
 
+	public Multimap<Method, IPermission> getMethodPermissionMapping() {
+		return methodPermissionMapping;
+	}
+
+	public void setMethodPermissionMapping(Multimap<Method, IPermission> methodPermissionMapping) {
+		this.methodPermissionMapping = methodPermissionMapping;
+	}
+
 	/*@Override
 	public String parseCode(Class<?> permClass) {
 		return menuInfoParser.getCode(permClass);
 	}*/
+	
 }

@@ -2,6 +2,12 @@ package org.onetwo.common.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Map;
+
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.slf4j.Logger;
+
+import com.google.common.collect.Maps;
 
 public class Consoler {
 	
@@ -22,25 +28,40 @@ public class Consoler {
 	}
 
 	private BufferedReader consoleReader;
+	private Map<String, ConsoleAction> cmdMap = Maps.newHashMap();
+	private String cmdSplitor = ":";
 
 	public Consoler(BufferedReader consoleReader) {
 		super();
 		this.consoleReader = consoleReader;
 	}
 	
-	public Consoler waitIf(String in, ConsoleAction action){
-		return waitIf(in, ":", action);
+	public Consoler executeIf(String in, ConsoleAction action){
+		this.cmdMap.put(in, action);
+		return this;
 	}
 	
-	public Consoler waitIf(String in, String cmdSplitor, ConsoleAction action){
+	public Consoler waitIf(String in, ConsoleAction action){
+		this.executeIf(in, action);
+		return awaitInput();
+//		return waitIf(in, ":", action);
+	}
+	
+	public Consoler awaitInput(){
+		Logger logger = JFishLoggerFactory.getCommonLogger();
 		try {
 			String input = null;
 			while((input = consoleReader.readLine())!=null){
 				String[] cmds = GuavaUtils.split(input, cmdSplitor);
-				if(cmds[0].equals(in)){
+				ConsoleAction action = cmdMap.get(cmds[0]);
+				if(action!=null){
 					System.out.println("execute command: " + cmds[0]);
 					String value = cmds.length==1?cmds[0]:cmds[1];
-					action.execute(value);
+					try {
+						action.execute(value);
+					} catch (Exception e) {
+						logger.error("execute command error, cmd: " + value, e);
+					}
 				}else{
 					System.out.println("no match command: " + input);
 				}

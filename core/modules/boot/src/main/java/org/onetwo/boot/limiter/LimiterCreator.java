@@ -3,17 +3,17 @@ package org.onetwo.boot.limiter;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.boot.limiter.LimiterCreator.LimiterConfig;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.MapRegisterManager;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 
@@ -25,10 +25,11 @@ import org.onetwo.common.utils.MapRegisterManager;
 public class LimiterCreator extends MapRegisterManager<String, Function<LimiterConfig, InvokeLimiter>> {
 	public static final LimiterCreator INSTANCE = new LimiterCreator();
 	
-	private MatcherRegister matcherRegister = MatcherRegister.INSTANCE;
+	private MatcherRegister matcherRegister;
 	
 	public LimiterCreator() {
 		super();
+		matcherRegister = new MatcherRegister();
 		register(LocalRateLimiter.class.getSimpleName(), (config)->{
 			Matcher<InvokeContext> matcher = matcherRegister.createMatcher(config.getMatcher(), config.getPatterns());
 			LocalRateLimiter limiter = new LocalRateLimiter(config.getKey(), matcher);

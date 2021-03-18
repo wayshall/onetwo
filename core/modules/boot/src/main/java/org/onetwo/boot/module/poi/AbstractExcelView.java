@@ -45,20 +45,18 @@ abstract public class AbstractExcelView extends AbstractUrlBasedView {
 		String downloadFileName = request.getParameter(fileNameField);
 		if(StringUtils.isBlank(downloadFileName)){
 			//在model里的，由用户自己转码
-			downloadFileName = (model!=null && model.containsKey(fileNameField))?model.get(fileNameField).toString():defaultFileName;
+			if (model!=null && model.containsKey(fileNameField)) {
+				downloadFileName = (String)model.get(fileNameField);
+			} else if (model!=null && model.containsKey("title")) {
+				downloadFileName = (String)model.get("title");
+			} else {
+				downloadFileName = defaultFileName;
+			}
 		}else{
-			/*if(encode){
-//				downloadFileName = LangUtils.changeCharset(downloadFileName, "GBK", "ISO8859-1");
-				downloadFileName = LangUtils.changeCharset(downloadFileName, charset, "ISO8859-1");
-			}*/
-			/*try {
-				downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");
-			} catch (Exception e) {
-				throw new BaseException("get down file name error: " +e.getMessage());
-			}*/
 		}
 		if(encode){
 //			downloadFileName = LangUtils.changeCharset(downloadFileName, charset, "ISO8859-1");
+			downloadFileName = downloadFileName.replace(" ", "");
 			downloadFileName = LangUtils.encodeUrl(downloadFileName);
 		}
 //		downloadFileName = new String(downloadFileName.getBytes("GBK"), "ISO8859-1");

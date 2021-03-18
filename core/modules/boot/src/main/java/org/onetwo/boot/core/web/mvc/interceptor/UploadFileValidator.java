@@ -19,11 +19,23 @@ public @interface UploadFileValidator {
 	/****
 	 * 每个文件上传大小限制，注意这个值不能超过容器的最大值
 	 * 
+	 * 这里的判断是通过拦截器判断，在这个之前还有配置限制，见：
+	 * spring.http.multipart.maxFileSize
 	 * spring.http.multipart.maxRequestSize
+	 * 
+	 * -1为不检查
 	 * 
 	 * @author wayshall
 	 * @return
 	 */
 	int maxUploadSize() default 1024*1024*10;//byte
+	/***
+	 * 通过配置文件来配置大小，如：module.upload.maxUploadSize: 50k
+	 * 优先级比maxUploadSize高
+	 * @author weishao zeng
+	 * @return
+	 */
+	String maxUploadSizeConfigKey() default "";//byte
 //	String maxUploadSizeErrorMessage() default "error max upload file size!";
+	
 }

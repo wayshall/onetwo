@@ -7,9 +7,9 @@ package org.onetwo.boot.func.signature;
 import org.junit.Test;
 import org.onetwo.common.annotation.IgnoreField;
 import org.onetwo.common.utils.DataSigner.SignableRequest;
+import org.onetwo.common.utils.DataSigner.SigningCheckableData;
 import org.onetwo.common.utils.DataSigner.SigningConfig;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.onetwo.common.utils.DataSigner.SigningData;
 
 import lombok.Data;
 
@@ -21,38 +21,41 @@ public class SimpleDataSignerTest {
 		
 		SigningConfig config = new SigningConfig();
 		config.setMaxDelayTimeInSeconds(10);
-		config.setSigningKey("SigningKey");
+		config.setSigningKey("lcgNTCJl8Q652N2as7iTlangchaovJ7dx5zH7Ls1XHJlrMwFgtP9FRzwYa0JgTabM9NtYOiRrC9VUWJdcGQSsPybEuVot8langchaoIHXgOsBrZLVvItruoX1IepbHpZORs59M4nL8BJkbyOlangchao");
 		
 		TestSignableRequest signRequest = new TestSignableRequest();
-		signRequest.setUserName("testUsername");
-		signRequest.setPassword("testpassword");
+		signRequest.setBeginDate("20201201");
+		signRequest.setEndDate("20201202");
 		
 		long timestamp = System.currentTimeMillis()/1000;
-		String signkey = singer.sign(config.getSigningKey(), timestamp, signRequest);
+		SigningData data = new SigningData();
+		data.setSecretkey(config.getSigningKey());
+		data.setTimestamp(timestamp);
+		data.setParams(signRequest);
+		data.setDebug(true);
+		String signkey = singer.sign(data);
 		
 		signRequest.setSignkey(signkey);
 		signRequest.setTimestamp(timestamp);
 		
-		singer.checkSign(config, signRequest, null);
+		SigningCheckableData sdata = new SigningCheckableData();
+		sdata.setDebug(true);
+		sdata.setSigningConfig(config);
+		sdata.setSignRequest(signRequest);
+		singer.checkSign(sdata);
 	}
 
 	@Data
 	public static class TestSignableRequest implements SignableRequest {
 		@IgnoreField
-		@JsonProperty("Signkey")
+//		@JsonProperty("Signkey")
 		private String signkey;
 
-		@JsonProperty("Timestamp")
+//		@JsonProperty("Timestamp")
 		@IgnoreField
 		private Long timestamp;
 
-		@JsonProperty("Id")
-		private Long id;
-
-		@JsonProperty("UserName")
-		private String userName;
-
-		@JsonProperty("Password")
-		private String password;
+		private String beginDate;
+		private String endDate;
 	}
 }

@@ -10,7 +10,9 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
+import org.onetwo.cloud.hystrix.exception.HystrixBadRequestCodeException;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
+import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -26,7 +28,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 
-import com.netflix.hystrix.exception.HystrixBadRequestException;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
 
@@ -51,14 +52,14 @@ public class ExtResponseEntityDecoder implements Decoder {
 	@SuppressWarnings({ "rawtypes" })
 	protected Object decode(FeignResponseAdapter response, Type type) throws IOException, FeignException {
 		Object res = null;
-		List<String> headerValues = response.getHeaders().get(BootWebExceptionHandler.ERROR_RESPONSE_HEADER);
+		List<String> errorHeaders = response.getHeaders().get(BootWebExceptionHandler.ERROR_RESPONSE_HEADER);
 		try {
-			if(LangUtils.isEmpty(headerValues)){
+			if(LangUtils.isEmpty(errorHeaders)){
 				//没有错误
 				res = decodeByType(response, type);
 			}else{
 				SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
-				if(isCutoutError(response, dr)){
+				/*if(isCutoutError(response, dr)){
 					ServiceException cause = new ServiceException(dr.getMessage(), dr.getCode());
 					String message = "cutoutError, remote service error:"+dr.getMessage();
 					JFishLoggerFactory.findMailLogger().error(message);
@@ -67,8 +68,10 @@ public class ExtResponseEntityDecoder implements Decoder {
 				}else if(dr.isError()){
 					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 				}
-				res = dr.getData();
+				res = dr.getData();*/
+				res = dr;
 			}
+			res = handleDataResult(response, res);
 		} catch (HttpMessageNotReadableException e) {
 			if(log.isErrorEnabled()){
 				String msg = String.format("decode error, try to use[%s] to decode again, error message: %s", SimpleDataResult.class.getSimpleName(), e.getMessage());
@@ -80,9 +83,11 @@ public class ExtResponseEntityDecoder implements Decoder {
 			SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 			if(dr.isError()){
 				if(StringUtils.isNotBlank(dr.getCode())){
-					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+					throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 				}else{
-					throw new HystrixBadRequestException(e.getMessage(), new ServiceException("decode error", e));
+//					throw new HystrixBadRequestException(e.getMessage(), new ServiceException("decode error", e));
+					throw new HystrixBadRequestCodeException(e.getMessage(), new ServiceException("decode error", e));
 				}
 			}
 			res = dr.getData();
@@ -90,7 +95,27 @@ public class ExtResponseEntityDecoder implements Decoder {
 		return res;
 	}
 	
-	protected boolean isCutoutError(FeignResponseAdapter response, SimpleDataResult<?> dr){
+	protected Object handleDataResult(FeignResponseAdapter response, Object res) {
+		Object result = res;
+		if (result instanceof DataResult) {
+			DataResult<?> dr = (DataResult<?>) result;
+			if(isCutoutError(response, dr)){
+				ServiceException cause = new ServiceException(dr.getMessage(), dr.getCode());
+				String message = "cutoutError, remote service error:"+dr.getMessage();
+				JFishLoggerFactory.findMailLogger().error(message);
+				
+				throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
+			}else if(!dr.isSuccess()){
+//				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+				throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//				throw new ServiceException(dr.getMessage(), dr.getCode());
+			}
+			res = dr.getData();
+		}
+		return result;
+	}
+	
+	protected boolean isCutoutError(FeignResponseAdapter response, DataResult<?> dr){
 		//TODO dr.getCode().startWith("SHORTCIRCUIT_")，暂时不需要
 		return false;
 	}
@@ -107,7 +132,8 @@ public class ExtResponseEntityDecoder implements Decoder {
 			SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 			if(dr.isError()){
 //				throw new ServiceException(dr.getMessage(), dr.getCode());
-				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+				throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 			}
 			res = dr.getData();
 		}

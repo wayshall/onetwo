@@ -1,6 +1,6 @@
 package org.onetwo.cloud.env;
 
-import org.onetwo.boot.core.web.async.SimpleTaskDecorator.AsyncTaskDecorator;
+import org.onetwo.boot.core.web.async.DelegateTaskDecorator.AsyncTaskDecorator;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableSet;
  */
 @Configuration
 @EnableConfigurationProperties(EnvProperties.class)
+//@Import(RmqAuthEnvsConfiguration.class)
 public class AuthEnvsConfiguration {
 	@Autowired
 	private EnvProperties envProperties;
@@ -31,4 +32,5 @@ public class AuthEnvsConfiguration {
 		}
 		return authEnvs;
 	}
+	
 }

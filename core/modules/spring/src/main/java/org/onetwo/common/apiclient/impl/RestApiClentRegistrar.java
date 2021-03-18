@@ -12,7 +12,11 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author wayshall
  * <br/>
  */
-public class RestApiClentRegistrar extends AbstractApiClentRegistrar<EnableRestApiClient, RestApiClient> {
+public class RestApiClentRegistrar extends AbstractApiClentRegistrar {
+
+	protected RestApiClentRegistrar() {
+		super(EnableRestApiClient.class, RestApiClient.class);
+	}
 
 	@Override
 	protected BeanDefinitionBuilder createApiClientFactoryBeanBuilder(AnnotationMetadata annotationMetadata, AnnotationAttributes attributes) {

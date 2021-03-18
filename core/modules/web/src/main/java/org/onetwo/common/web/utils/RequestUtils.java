@@ -45,12 +45,14 @@ public final class RequestUtils {
 			put("android 2.3", "Android 2.3");
 			put("android 4", "Android 4");
 			put("windows nt 6.0", "Womdows Vista");
+			put("windows nt 10.0", "Windows 10");
 			put("windows nt 6.1", "Womdows 7");
 			put("windows nt 5.2", "Womdows 2003");
 			put("windows nt 5.1", "Windows xp");
 			put("windows nt 5.0", "Windows 2000");
 			put("windows nt 4.0", "Windows nt");
 			put("windows 98", "Windows 98");
+			put("windows", "Windows");
 			put("sunos", "SunOS");
 			put("android", "Android");
 			put("linux", "Linux");
@@ -125,21 +127,17 @@ public final class RequestUtils {
 	public static String getRemoteAddr(HttpServletRequest request) {
 
 		String ip = request.getHeader("X-Real-IP");
-		
+
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("X-Forwarded-For");
-		}
-		
-		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
-			ip = request.getHeader("X-Forwarded-Host");//
 		}
 
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
-
+		
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
-			ip = request.getHeader("WL-Proxy-Client-IP");
+			ip = request.getHeader("X-Forwarded-Host");//
 		}
 
 		if (StringUtils.isBlank(ip)|| UNKNOWN.equalsIgnoreCase(ip)) {

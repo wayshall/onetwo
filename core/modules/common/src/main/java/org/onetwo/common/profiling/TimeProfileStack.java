@@ -28,14 +28,15 @@ public class TimeProfileStack
     /**
      * Initialized in a static block, it can be changed at runtime by calling setActive(...)
      */
-    private static boolean active;
+//    private static boolean active;
+    protected static ThreadLocal<Boolean> actives = new ThreadLocal<Boolean>();
     private static boolean nanoTime;
     
     private static TimeLogger timeLogger;
 
     static {
     	final Logger logger = JFishLoggerFactory.getLogger(PROFILE_LOGGER);
-        active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY, "true"));
+//        active = "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY, "true"));
 		timeLogger = new Slf4jTimeLogger(logger);
     }
 
@@ -157,7 +158,13 @@ public class TimeProfileStack
      */
     public static boolean isActive()
     {
-        return active;
+//        return active;
+    	Boolean active = actives.get();
+    	if (active==null) {
+    		return "true".equalsIgnoreCase(System.getProperty(ACTIVATE_PROPERTY, "true"));
+    	} else {
+    		return active;
+    	}
     }
 
     /****
@@ -173,14 +180,20 @@ public class TimeProfileStack
      * @param active
      */
     public static void active(boolean active) {
-        if (active)
+        if (active) {
             System.setProperty(ACTIVATE_PROPERTY, "true");
-        else
+        } else {
         	System.clearProperty(ACTIVATE_PROPERTY);
-
-        TimeProfileStack.active = active; 
+        }
     }
-
+    
+    public static void setCurrentActive(Boolean active) {
+        if (active==null) {
+        	actives.remove();
+        } else {
+        	actives.set(active);
+        }
+    }
 
     /**
      * A convenience method that allows <code>block</code> of code subjected to profiling to be executed 

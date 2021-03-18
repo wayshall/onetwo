@@ -26,7 +26,7 @@ public class BaseMethodParameter extends MethodParameter {
 	}
 	
 	public AnnotationAttributes getAnnotationAttributes(Class<? extends Annotation> annotationClass){
-		Assert.notNull(annotationClass);
+		Assert.notNull(annotationClass, "annotationClass can not be null");
 		Annotation anno = getParameterAnnotation(annotationClass);
 		return AnnotationUtils.getAnnotationAttributes(null, anno);
 	}

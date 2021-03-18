@@ -7,6 +7,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.onetwo.common.log.DataChangedContext;
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.web.method.HandlerMethod;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @SuppressWarnings("serial")
 public class OperatorLogInfo implements Serializable {
@@ -20,14 +26,24 @@ public class OperatorLogInfo implements Serializable {
 	private String message = "";
 	private Map<String, String[]> parameters;
 	final private long startTime;
-	final private long endTime;
+	private long endTime;
 	private String webHandler;
 	private String userAgent;
 	
-	public OperatorLogInfo(long startTime, long endTime) {
+	@Getter
+	@Setter
+	private String requestMethod;
+	
+	@Getter
+	@Setter
+	@JsonIgnore
+	HandlerMethod handlerMethod;
+	
+	public OperatorLogInfo(String url, long startTime) {
 		super();
 		this.startTime = startTime;
-		this.endTime = endTime;
+//		this.endTime = endTime;
+		this.url = url;
 	}
 	private DataChangedContext datas;
 	
@@ -110,5 +126,8 @@ public class OperatorLogInfo implements Serializable {
 	}
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
 	}
 }

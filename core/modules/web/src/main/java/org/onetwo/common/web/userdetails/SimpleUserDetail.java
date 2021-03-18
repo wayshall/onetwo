@@ -2,32 +2,24 @@ package org.onetwo.common.web.userdetails;
 
 import java.io.Serializable;
 
-
 @SuppressWarnings("serial")
-public class SimpleUserDetail implements SsoTokenable, UserDetail, UserRoot, Serializable {
+public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 	
 	private long userId;
 	private String userName;
-	private String token;
+	private String nickName;
+//  @ApiModelProperty("头像")
+	private String avatar;
+//	private String token;
 
 	public SimpleUserDetail(){ 
 	}
 	
-	public SimpleUserDetail(long userId, String userName, String token) {
+	public SimpleUserDetail(long userId, String userName) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
-		this.token = token;
-	}
-
-
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
+		this.nickName = userName;
 	}
 
 	public long getUserId() {
@@ -45,18 +37,25 @@ public class SimpleUserDetail implements SsoTokenable, UserDetail, UserRoot, Ser
 		this.userName = userName;
 	}
 
-	public String toString(){
-		StringBuilder sb = new StringBuilder("{");
-		sb.append("userName:").append(userName)
-		.append(",token:").append(token)
-		.append("}");
-		return sb.toString();
-	}
-
 	@Override
 	public boolean isSystemRootUser() {
-		return false;
+		return UserRoot.ROOT_USER_ID==getUserId();
 	}
-	
-	
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
 }

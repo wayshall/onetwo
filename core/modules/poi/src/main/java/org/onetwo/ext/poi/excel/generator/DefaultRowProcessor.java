@@ -60,10 +60,23 @@ public class DefaultRowProcessor implements RowProcessor {
 	public void setCellListener(CellListener cellListener) {
 		this.cellListener = cellListener;
 	}
+	
+	protected boolean conditionCanCreateRow(String condition, RowContextData rowContext) {
+		Boolean createRow = (Boolean)rowContext.parseValue(condition);
+		return createRow!=null && createRow;
+	}
 
 	public void processRow(RowContextData rowContext) {
 //		Sheet sheet = rowContext.getSheet();
 		RowModel rowModel = rowContext.getRowModel();
+
+		boolean hasRowCondition = StringUtils.isNotBlank(rowModel.getCondition());
+		if(hasRowCondition){
+			if (!conditionCanCreateRow(rowModel.getCondition(), rowContext)) {
+				return;
+			}
+		}
+		
 		Row row = createRow(rowContext);
 		if(rowModel.getFields()==null)
 			return ;
@@ -211,19 +224,6 @@ public class DefaultRowProcessor implements RowProcessor {
 		return cell;
 	}
 	
-	private int getCellType(String dateType) {
-		int type = Cell.CELL_TYPE_STRING;
-		if (StringUtils.isNotBlank(dateType)) {
-			String actualFieldName = "CELL_TYPE_" + dateType.toUpperCase();
-			try {
-				type = (int)ReflectUtils.getStaticFieldValue(Cell.class, actualFieldName);
-			} catch (Exception e) {
-				logger.error("get cell type value error for dataType: " + dateType + ". cause: " + e.getMessage());
-			}
-		}
-		return type;
-	}
-	
 	private Cell createCell(Row row, int cellIndex){
 		Cell cell = row.createCell(cellIndex);
 		this.generator.getWorkbookData().getWorkbookListener().afterCreateCell(cell, cellIndex);
@@ -362,7 +362,8 @@ public class DefaultRowProcessor implements RowProcessor {
 
 	protected void processCellTypeByValue(FieldModel field, Cell cell, Object value){
 		if(value==null){
-			cell.setCellType(Cell.CELL_TYPE_BLANK);
+//			cell.setCellType(Cell.CELL_TYPE_BLANK);
+			cell.setBlank();
 			return ;
 		}
 		
