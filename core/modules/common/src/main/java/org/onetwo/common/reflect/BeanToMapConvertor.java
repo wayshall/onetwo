@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -592,6 +591,9 @@ public class BeanToMapConvertor implements Cloneable {
 		}
 		public T excludeProperties(String... properties) {
 //			this.checkPropertyAcceptor();
+			if (LangUtils.isEmpty(properties)) {
+				return self();
+			}
 			this.propertyAcceptor = new ExcludePropertyAcceptor(this.propertyAcceptor, Arrays.asList(properties));
 			return self();
 		}

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -58,13 +59,21 @@ public class SpringAnnotationUtils {
 			if(attrs==null){
 				return ;
 			}
-//			String[] modelPacks = enableDbm.packagesToScan();
+//			String[] modelPacks = enableDbm.packagesToScan();basePackageClasses
 			String[] modelPacks = attrs.getStringArray("packagesToScan");
 			if(ArrayUtils.isNotEmpty(modelPacks)){
 				for(String pack : modelPacks){
 					packageNames.add(pack);
 				}
-			}else{
+			}
+			if (attrs.containsKey("basePackageClasses")) {
+				for(Class<?> p : attrs.getClassArray("basePackageClasses")){
+					packageNames.add(p.getPackage().getName());
+				}
+			}
+			
+			// 若为空，则以注解所在类为基础包扫描
+			if (LangUtils.isEmpty(packageNames)){
 				String packageName = beanClass.getPackage().getName();
 				if(!packageName.startsWith("org.onetwo.")){
 					packageNames.add(packageName);

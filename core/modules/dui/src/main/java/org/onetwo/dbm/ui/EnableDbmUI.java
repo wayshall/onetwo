@@ -19,5 +19,7 @@ public @interface EnableDbmUI {
 	 * @return
 	 */
 	String[] packagesToScan() default {};
+
+	Class<?>[] basePackageClasses() default {};
 	
 }

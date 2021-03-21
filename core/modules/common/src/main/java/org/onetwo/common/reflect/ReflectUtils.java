@@ -958,17 +958,19 @@ public class ReflectUtils {
 		}, valueConvertor);
 	}
 	
-	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor) {
+	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, String... excludeProperties) {
 		return toMap(obj, (prop, val) -> {
 			return acceptor.apply(prop, val);
-		}, null);
+		}, (ValueConvertor)null, excludeProperties);
 	}
 	
 	// public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
-	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor) {
+//	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor) {
+	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor, String... excludeProperties) {
 		return BeanToMapBuilder.newBuilder()
 						.propertyAcceptor(acceptor)
 						.valueConvertor(valueConvertor)
+						.excludeProperties(excludeProperties)
 						.build()
 						.toMap(obj);
 	}
