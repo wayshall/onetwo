@@ -20,6 +20,9 @@ public class OAuth2SsoClientProperties {
 	 */
 	public static final String CONFIG_PREFIX = JFishOauth2Properties.CONFIG_PREFIX + ".ssoclient";
 	
+	/***
+	 * jfish.oauth2.ssoclient.tokenInfo.enabled
+	 */
 	public static final String ENABLED_TOKEN_INFO_CUSTOM = CONFIG_PREFIX + ".tokenInfo.enabled";
 	
 	RestExecutorConfig resttemplate = new RestExecutorConfig(60_000, 60_000, 60_000);
