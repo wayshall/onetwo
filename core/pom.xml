@@ -40,9 +40,8 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/common</module>
-                <module>modules/spring</module>
+                <module>modules/jackson</module>
                 <module>../../dbm</module>
-                <module>modules/dui</module>
 			</modules>
            <build>
               <plugins>
