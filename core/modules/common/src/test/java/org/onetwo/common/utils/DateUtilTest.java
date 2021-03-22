@@ -175,7 +175,7 @@ public class DateUtilTest {
 		parseDate = DateUtils.parseByPatterns("2020-11-27", "yyyyMMdd");
 		System.out.println("parseDate2:" + parseDate.toLocaleString());
 		
-		LocalDate localDate = Dates.parseLocalDate("2020-11-27", "yyyyMMdd");
+		LocalDate localDate = Dates.parseLocalDate("2020-11-27", "yyyy-MM-dd");
 		parseDate = Dates.toDate(localDate);
 		System.out.println("parseDate3:" + parseDate.toLocaleString());
 

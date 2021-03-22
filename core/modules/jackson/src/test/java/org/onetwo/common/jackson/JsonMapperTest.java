@@ -511,9 +511,13 @@ public class JsonMapperTest {
 		data.setSlidePictureUrls(new String[] {"test"});
 		data.setErrorWithList(Lists.newArrayList("test list"));
 		JsonMapper json = JsonMapper.ignoreNull();
-		json.getObjectMapper().enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
 		String str = json.toJson(data);
 		System.out.println("str: " + str);
+		
+		json = JsonMapper.ignoreNull();
+		json.getObjectMapper().enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+		str = json.toJson(data);
+		System.out.println("enableDefaultTyping str: " + str);
 	}
 	
 
