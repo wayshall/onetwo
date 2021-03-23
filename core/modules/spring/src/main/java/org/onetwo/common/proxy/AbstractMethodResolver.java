@@ -67,6 +67,12 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 					.findFirst();
 	}
 	
+	final public Optional<T> findParameterByAnnotation(Class<? extends Annotation> annotationType){
+		return parameters.stream()
+					.filter(p->p.hasParameterAnnotation(annotationType))
+					.findFirst();
+	}
+	
 	@SuppressWarnings("unchecked")
 	final protected <E> Optional<E> findParameterValueByType(Object[] args, Class<E> targetParamType){
 		return (Optional<E>)findParameterByType(targetParamType).map(p->{
