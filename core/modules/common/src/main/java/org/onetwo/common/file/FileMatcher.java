@@ -101,10 +101,24 @@ public interface FileMatcher {
 		};
 	}
 	
+	/***
+	 * 文件名（包括路径）
+	 * @author weishao zeng
+	 * @param fileNames
+	 * @return
+	 */
 	static public FileMatcher fileNameIs(String...fileNames){
 		return (baseDir, file)->{
 			return Stream.of(fileNames).anyMatch(fileName->{
 				return file.isFile() && file.getName().equals(fileName);
+			});
+		};
+	}
+	
+	static public FileMatcher fileShortNameIs(String...shortNames){
+		return (baseDir, file)->{
+			return Stream.of(shortNames).anyMatch(fileName->{
+				return file.isFile() && FileUtils.getFileName(file.getName()).equals(fileName);
 			});
 		};
 	}
