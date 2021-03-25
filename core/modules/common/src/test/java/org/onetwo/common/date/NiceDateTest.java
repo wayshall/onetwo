@@ -17,6 +17,15 @@ import org.onetwo.common.date.NiceDateRange.QuarterDateRange;
 
 public class NiceDateTest {
 	
+	@Test
+	public void testNextMonths() {
+		NiceDate now = NiceDate.New("2020-03-31");
+		String dt = now.formatAsDateTime();
+		System.out.println("datetime: " + dt);
+		now = now.nextMonth(-1);
+		dt = now.formatAsDateTime();
+		assertThat(dt).isEqualTo("2020-02-29 00:00:00");
+	}
 
 	@Test
 	public void testQuarter() throws ParseException{
