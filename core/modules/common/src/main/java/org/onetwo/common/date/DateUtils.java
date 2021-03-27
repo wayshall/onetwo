@@ -43,7 +43,11 @@ abstract public class DateUtils {
 
 	}
 	
-
+	/***
+	 * yyyy-MM-dd HH:mm:ss
+	 * yyyy/MM/dd HH:mm:ss
+	 * yyyy.MM.dd HH:mm:ss
+	 */
     public static final Pattern PATTERN_YYYY_MM_DD_HH_MM_SS = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
     public static final Pattern PATTERN_YYYY_MM_DD_HH_MM = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
     public static final Pattern PATTERN_YYYY_MM_DD_HH = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9]$");
@@ -52,6 +56,11 @@ abstract public class DateUtils {
     public static final Pattern PATTERN_YYYY = Pattern.compile("^\\d{4}$");
     public static final Pattern PATTERN_HH_MM = Pattern.compile("^[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
     public static final Pattern PATTERN_HH_MM_SS = Pattern.compile("^[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
+    
+    /***
+     * yyyyMMdd
+     */
+    public static final Pattern PATTERN_YYYYMMDD = Pattern.compile("^\\d{4}[01][0-9][0-3][0-9]$");
 
     public static final int MILLIS_PER_SECOND = 1000;
 	public static final int SECONDS_PER_MINUTE = 60;
@@ -88,6 +97,7 @@ abstract public class DateUtils {
 		df.setTimeZone(TimeZone.getDefault());
 		return df;
 	}
+	
 	/**
 	 * 获取本月的第一天
 	 * 

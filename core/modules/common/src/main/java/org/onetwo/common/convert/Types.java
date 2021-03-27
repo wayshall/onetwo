@@ -15,6 +15,14 @@ final public class Types {
 		return convertor().convert(source, clazz);
 	}
 
+	/****
+	 * 解释source为clazz类型的值，若对应的解释器错误，则返回默认值defValue
+	 * @author weishao zeng
+	 * @param source
+	 * @param clazz
+	 * @param defValue
+	 * @return
+	 */
 	public static <T> T convertValue(Object source, Class<T> clazz, T defValue) {
 		try {
 			if(source==null)
@@ -37,6 +45,12 @@ final public class Types {
 		return convertor().convert(source, Long.class);
 	}
 
+	/****
+	 * 解释source为integer类型的值，若source无法解释，则抛错
+	 * @author weishao zeng
+	 * @param source
+	 * @return
+	 */
 	public static Integer asInteger(Object source) {
 		return convertor().convert(source, Integer.class);
 	}
@@ -50,6 +64,14 @@ final public class Types {
 		return convertor().convert(source, clazz);
 	}
 
+	/***
+	 * 解释source为clazz类型的值，若对应的解释器错误，则返回默认值defValue
+	 * @author weishao zeng
+	 * @param source
+	 * @param clazz
+	 * @param defValue
+	 * @return
+	 */
 	public static <T> T asValue(Object source, Class<T> clazz, T defValue) {
 		return convertValue(source, clazz, defValue);
 	}

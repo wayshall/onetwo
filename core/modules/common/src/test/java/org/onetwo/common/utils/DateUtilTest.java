@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -23,6 +25,20 @@ import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.log.JFishLoggerFactory;
 
 public class DateUtilTest {
+	
+	@Test
+	public void testPatterns() {
+		boolean match = DateUtils.PATTERN_YYYYMMDD.matcher("20210305").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210315").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210325").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("2021305").matches();
+		assertThat(match).isFalse();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210343").matches();
+		assertThat(match).isFalse();
+	}
 	
 	@Test
 	public void testSqlTime(){
