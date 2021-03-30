@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -364,9 +365,24 @@ public class SheetStreamReaderBuilder<T> {
 		public <T> T getCellValue(int cellnum, Class<T> clazz) {
 			return getCellValue(cellnum, clazz, null);
 		}
+		
+		/****
+		 * 
+		 * @author weishao zeng
+		 * @param cellnum
+		 * @param pattern 当cell为日期格式时，此参数无效
+		 * @return
+		 */
 		public Date getDate(int cellnum, String pattern) {
-			String value = getString(cellnum);
-			Date date = DateUtils.parseByPatterns(value, pattern);
+			Cell cell = getCell(cellnum);
+            boolean isDateCell = DateUtil.isCellDateFormatted(cell);
+            Date date;
+            if (isDateCell) {
+            	date = cell.getDateCellValue();
+            } else {
+				String value = getString(cellnum);
+				date = DateUtils.parseByPatterns(value, pattern);
+            }
 			return date;
 		}
 		
