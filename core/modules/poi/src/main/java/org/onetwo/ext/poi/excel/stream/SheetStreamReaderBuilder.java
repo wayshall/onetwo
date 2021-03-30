@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Row;
@@ -325,7 +326,7 @@ public class SheetStreamReaderBuilder<T> {
 		 */
 		public int getInt(int cellnum, int def) {
 			Object value = getCellValue(cellnum);
-			if (value==null) {
+			if (value==null || StringUtils.isBlank(value.toString())) {
 				return def;
 			}
 			Integer intValue = Types.asInteger(value);
@@ -341,7 +342,7 @@ public class SheetStreamReaderBuilder<T> {
 
 		public long getLong(int cellnum, long def) {
 			Object value = getCellValue(cellnum);
-			if (value==null) {
+			if (value==null || StringUtils.isBlank(value.toString())) {
 				return def;
 			}
 			Long longValue = Types.asLong(value);
