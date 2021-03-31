@@ -293,6 +293,11 @@ public interface ExceptionMessageFinder {
 //		detail = product?detail:true;
 		error.setMesage(errorMsg);
 		
+		if (ex instanceof SystemErrorCode) {
+			Object errorData = ((SystemErrorCode)ex).getErrorContext();
+			error.setErrorData(errorData);
+		}
+		
 	}
 	
 	default public void processExceptionMappingStatus(ErrorMessage error, Exception ex) {
@@ -406,6 +411,10 @@ public interface ExceptionMessageFinder {
 		private String viewName;
 		
 		final private Exception exception;
+		
+		@Setter
+		@Getter
+		private Object errorData;
 		
 		@Setter
 		@Getter
