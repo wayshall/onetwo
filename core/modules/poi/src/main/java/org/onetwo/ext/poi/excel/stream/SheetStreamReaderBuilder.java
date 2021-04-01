@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,6 +17,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.date.Dates;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.springframework.util.Assert;
@@ -375,11 +377,15 @@ public class SheetStreamReaderBuilder<T> {
 		 */
 		public Date getDate(int cellnum, String pattern) {
 			Cell cell = getCell(cellnum);
-            boolean isDateCell = DateUtil.isCellDateFormatted(cell);
-            Date date;
-            if (isDateCell) {
+			Date date;
+			CellType cellType = cell.getCellType();
+			if (cellType==CellType.NUMERIC) {
+	            boolean isDateCell = DateUtil.isCellDateFormatted(cell);
+	            if (!isDateCell) {
+	            	throw new ServiceException("the cell type is not a numberic(date) type: " + cellnum);
+	            }
             	date = cell.getDateCellValue();
-            } else {
+			} else {
 				String value = getString(cellnum);
 				date = DateUtils.parseByPatterns(value, pattern);
             }
