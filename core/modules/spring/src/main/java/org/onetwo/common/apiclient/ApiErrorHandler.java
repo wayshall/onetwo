@@ -8,6 +8,7 @@ import org.onetwo.common.apiclient.utils.ApiClientConstants.ApiClientErrors;
 import org.onetwo.common.exception.ApiClientException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 import lombok.Data;
 
@@ -34,6 +35,10 @@ public interface ApiErrorHandler {
 	default Object handleError(ApiClientMethod invokeMethod, Throwable e) {
 		if (e instanceof ApiClientException) {
 			throw (ApiClientException) e;
+		} else if (e instanceof HttpClientErrorException) {
+			HttpClientErrorException hce = (HttpClientErrorException) e;
+			ApiClientException ace = new ApiClientException(ApiClientErrors.HTTP_CLIENT_ERROR, hce.getStatusCode().value(), e);
+			throw ace;
 		} else {
 			throw new ApiClientException(ApiClientErrors.EXECUTE_REST_ERROR, invokeMethod.getMethod(), e);
 		}
