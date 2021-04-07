@@ -62,13 +62,15 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException,
 			ServletException {
+		String url = request.getMethod() + "|" + request.getRequestURI();
+		String errorMsg = getErrorMessage(accessDeniedException);
+		logger.info("[{}] AccessDenied: {}. Enable [jfish.security.]logSecurityError to see more error detail.", url, errorMsg);
+		
 		if (securityConfig.isLogSecurityError()) {
 			logger.error("security access denied. ", accessDeniedException);
 		}
-		String url = request.getMethod() + "|" + request.getRequestURI();
-		String errorMsg = getErrorMessage(accessDeniedException);
 		
-		if(RequestUtils.isAjaxRequest(request)){
+		if (RequestUtils.isAjaxRequest(request)){
 			SimpleResultBuilder<?> builder = DataResults.error(errorMsg+
 																	", at "+request.getRequestURI())
 															.code(SecurityErrors.ACCESS_DENIED)
@@ -76,9 +78,12 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			
 			DataResult<?> rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).build();
 			String text = mapper.toJson(rs);
-			logger.info("[{}] AccessDenied, render json: {}", url, text);
+			
+			if (securityConfig.isLogSecurityError()) {
+				logger.info("[{}] AccessDenied, render json: {}", url, text);
+			}
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
-		}else if(!response.isCommitted() && StringUtils.isNotBlank(redirectErrorUrl)) {
+		} else if (!response.isCommitted() && StringUtils.isNotBlank(redirectErrorUrl)) {
 			String rurl = redirectErrorUrl;
 			if(rurl.contains("?")){
 				rurl += "&";
@@ -88,9 +93,11 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			rurl += "accessDenied=true&status="+HttpServletResponse.SC_FORBIDDEN+"&message=";
 			rurl += URLEncoder.encode(errorMsg, Charsets.UTF_8.name());//encode value, otherwise will redirect failed
 
-			logger.info("{} AccessDenied, redirect to {}", url, rurl);
+			if (securityConfig.isLogSecurityError()) {
+				logger.info("{} AccessDenied, redirect to {}", url, rurl);
+			}
 			response.sendRedirect(rurl);
-		}else{
+		} else {
 			defaultHandle(request, response, accessDeniedException);
 		}
 	}

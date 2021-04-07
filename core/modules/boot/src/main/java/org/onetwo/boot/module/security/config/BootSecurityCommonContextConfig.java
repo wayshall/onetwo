@@ -14,7 +14,7 @@ import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.BootSecurityExceptionMessager;
 import org.onetwo.boot.module.security.handler.BootSecurityAccessDeniedHandler;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
-import org.onetwo.common.web.userdetails.SimpleUserDetail;
+import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.SecurityExceptionMessager;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
@@ -28,8 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.context.SecurityContextRepository;
 
 /****
@@ -53,6 +51,8 @@ public class BootSecurityCommonContextConfig{
 	protected BootJFishConfig jfishConfig;
 	@Autowired(required=false)
 	private BootJsonView jsonView;
+	@Autowired
+	private SessionUserManager<UserDetail> sessionUserManager;
 
 	/*@Autowired
 	private BootSecurityConfig bootSecurityConfig;
@@ -82,18 +82,19 @@ public class BootSecurityCommonContextConfig{
 	public LoggerInterceptor loggerInterceptor(){
 		LoggerInterceptor log = new LoggerInterceptor();
 		log.setUserDetailRetriever(()->{
-			if(SecurityContextHolder.getContext().getAuthentication()==null)
-				return null;
-			Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if(UserDetail.class.isInstance(user)){
-				return (UserDetail)user;
-			}else if(User.class.isInstance(user)){
-				User suser = (User)user;
-				SimpleUserDetail ud = new SimpleUserDetail();
-				ud.setUserName(suser.getUsername());
-				return ud;
-			}
-			return null;
+//			if(SecurityContextHolder.getContext().getAuthentication()==null)
+//				return null;
+//			Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			if(UserDetail.class.isInstance(user)){
+//				return (UserDetail)user;
+//			}else if(User.class.isInstance(user)){
+//				User suser = (User)user;
+//				SimpleUserDetail ud = new SimpleUserDetail();
+//				ud.setUserName(suser.getUsername());
+//				return ud;
+//			}
+//			return null;
+			return sessionUserManager.getCurrentUser();
 		});
 		log.setPathPatterns(accessLogProperties.getPathPatterns());
 		return log;
