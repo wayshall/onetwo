@@ -98,9 +98,15 @@ public class SecurityConfig {
 	
 	private CorsConfig cors = new CorsConfig();
 	
+	private boolean logSecurityError;
+	
 	
 	public boolean isDebug(){
 		return debug;
+	}
+	
+	public boolean isLogSecurityError() {
+		return logSecurityError;
 	}
 	
 	public void setSyncPermissionData(boolean syncPermissionData) {

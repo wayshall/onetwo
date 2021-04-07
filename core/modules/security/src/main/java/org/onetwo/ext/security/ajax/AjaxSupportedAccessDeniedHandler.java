@@ -16,6 +16,7 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
 import org.onetwo.ext.security.SecurityExceptionMessager;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,8 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 	protected String errorPage;
 	@Autowired(required=false)
 	private SecurityExceptionMessager securityExceptionMessager;
+	@Autowired
+	private SecurityConfig securityConfig;
 	
 	public AjaxSupportedAccessDeniedHandler(){
 		delegateAccessDeniedHandler = new AccessDeniedHandlerImpl();
@@ -59,6 +62,9 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException,
 			ServletException {
+		if (securityConfig.isLogSecurityError()) {
+			logger.error("security access denied. ", accessDeniedException);
+		}
 		String url = request.getMethod() + "|" + request.getRequestURI();
 		String errorMsg = getErrorMessage(accessDeniedException);
 		
