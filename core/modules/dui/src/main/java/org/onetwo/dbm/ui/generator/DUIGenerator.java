@@ -350,7 +350,8 @@ public class DUIGenerator {
 			return this;
 		}
 		
-		public WebadminGenerator generateVueController(){
+		public WebadminGenerator generateVueController(Class<?> pluginBaseController){
+			context.put("pluginBaseController", pluginBaseController.getName());
 			tableGenerator.javaClassTemplate("controller", templateName+"/MgrController.java.ftl");
 			return this;
 		}
