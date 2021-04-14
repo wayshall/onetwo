@@ -52,9 +52,10 @@ public class SpringAnnotationUtils {
 	 * @return
 	 */
 	public static Set<String> scanAnnotationPackages(ListableBeanFactory beanFactory, Class<? extends Annotation> annotationCLass){
-		Set<String> packageNames = new HashSet<>();
+		Set<String> allPackageNames = new HashSet<>();
 		SpringUtils.scanAnnotation(beanFactory, annotationCLass, (beanDef, beanClass)->{
 //			Annotation enableDbm = beanClass.getAnnotation(annotationCLass);
+			Set<String> innerPackageNames = new HashSet<>();
 			AnnotationAttributes attrs = AnnotatedElementUtils.getMergedAnnotationAttributes(beanClass, annotationCLass);
 			if(attrs==null){
 				return ;
@@ -63,24 +64,28 @@ public class SpringAnnotationUtils {
 			String[] modelPacks = attrs.getStringArray("packagesToScan");
 			if(ArrayUtils.isNotEmpty(modelPacks)){
 				for(String pack : modelPacks){
-					packageNames.add(pack);
+					innerPackageNames.add(pack);
 				}
 			}
 			if (attrs.containsKey("basePackageClasses")) {
 				for(Class<?> p : attrs.getClassArray("basePackageClasses")){
-					packageNames.add(p.getPackage().getName());
+					innerPackageNames.add(p.getPackage().getName());
 				}
 			}
 			
 			// 若为空，则以注解所在类为基础包扫描
-			if (LangUtils.isEmpty(packageNames)){
+			if (LangUtils.isEmpty(innerPackageNames)){
 				String packageName = beanClass.getPackage().getName();
 				if(!packageName.startsWith("org.onetwo.")){
-					packageNames.add(packageName);
+					innerPackageNames.add(packageName);
 				}
 			}
+			
+			if (!innerPackageNames.isEmpty()) {
+				allPackageNames.addAll(innerPackageNames);
+			}
 		});
-		return packageNames;
+		return allPackageNames;
 	}
 	
 }
