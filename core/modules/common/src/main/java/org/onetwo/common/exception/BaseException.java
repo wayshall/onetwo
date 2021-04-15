@@ -81,6 +81,9 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	
 	@SuppressWarnings("unchecked")
 	final public <T extends BaseException> T putAsMap(Object context){
+		if (context==null) {
+			return (T) this;
+		}
 		try {
 			Map<String, Object> map = ReflectUtils.toMap(context);
 			this.errorContext().putAll(map);

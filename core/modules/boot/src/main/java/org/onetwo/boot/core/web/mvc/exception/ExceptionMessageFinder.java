@@ -295,7 +295,16 @@ public interface ExceptionMessageFinder {
 		
 		if (ex instanceof SystemErrorCode) {
 			Object errorData = ((SystemErrorCode)ex).getErrorContext();
-			error.setErrorData(errorData);
+			if (errorData!=null) {
+				if (errorData instanceof Map) {
+					Map<?, ?> map = (Map<?, ?>) errorData;
+					if (!map.isEmpty()) {
+						error.setErrorData(errorData);
+					}
+				} else {
+					error.setErrorData(errorData);
+				}
+			}
 		}
 		
 	}
