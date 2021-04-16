@@ -9,6 +9,7 @@ import java.util.function.Function;
 
 import javax.sql.DataSource;
 
+import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.common.db.generator.DbGenerator;
 import org.onetwo.common.db.generator.DbGenerator.DbTableGenerator;
 import org.onetwo.common.db.generator.DbGenerator.DbTableGenerator.TableGeneratedConfig;
@@ -216,6 +217,10 @@ public class DUIGenerator {
 	}
 
 	public VuePageGenerator vueGenerator(Class<?> pageClass, String vueModuleName){
+		return vueGenerator(pageClass, vueModuleName, AbstractBaseController.class);
+	}
+	
+	public VuePageGenerator vueGenerator(Class<?> pageClass, String vueModuleName, Class<?> baseControllerClass){
 		DUIEntityMeta duiEntityMeta = getDUIEntityMeta(pageClass);
 		duiEntityMeta.setStripPrefix(this.stripTablePrefix);
 //		duiEntityMeta.setModuleName(vueModuleName);
@@ -227,6 +232,7 @@ public class DUIGenerator {
 		vueGenerator.tableGenerator = tableGenerator;
 		vueGenerator.vueModuleName = vueModuleName;
 		vueGenerator.duiEntityMeta = duiEntityMeta;
+		vueGenerator.baseControllerClass = baseControllerClass;
 		vueGenerator.initGenerator();
 //		vueGenerator.vueBaseDir = vueBaseDir;
 //		if (LangUtils.isNotEmpty(duiEntityMeta.getEditableEntities())) {
@@ -356,6 +362,10 @@ public class DUIGenerator {
 			return this;
 		}
 		
+		public WebadminGenerator generateVueController(){
+			return generateVueController(AbstractBaseController.class);
+		}
+		
 		public WebadminGenerator generateEntity(){
 			tableGenerator.entityTemplate(templateName+"/Entity.java.ftl");
 			return this;
@@ -398,6 +408,7 @@ public class DUIGenerator {
 		String apiDir = "/src/api";
 		String vueModuleName;
 		DUIEntityMeta duiEntityMeta;
+		Class<?> baseControllerClass;
 		
 //		VuePageGenerator cascadeEntityGenerator;
 		
@@ -408,7 +419,7 @@ public class DUIGenerator {
 			if (LangUtils.isNotEmpty(duiEntityMeta.getEditableEntities())) {
 				duiEntityMeta.getEditableEntities().forEach(editable -> {
 					DUIGenerator.this.webadminGenerator(editable.getTable().getName())
-										.generateVueController()
+										.generateVueController(baseControllerClass)
 										.generateServiceImpl();
 					VuePageGenerator vg = DUIGenerator.this.vueGenerator(editable.getEntityClass(), vueModuleName);
 					vg.generateVueMgrForm();
@@ -419,7 +430,7 @@ public class DUIGenerator {
 			if (LangUtils.isNotEmpty(duiEntityMeta.getChildrenEntities())) {
 				duiEntityMeta.getChildrenEntities().forEach(child -> {
 					DUIGenerator.this.webadminGenerator(child.getTable().getName())
-										.generateVueController()
+										.generateVueController(baseControllerClass)
 										.generateServiceImpl();
 					VuePageGenerator vg = DUIGenerator.this.vueGenerator(child.getEntityClass(), vueModuleName);
 					vg.generateVueCrud();
