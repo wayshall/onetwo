@@ -53,7 +53,7 @@
 	
 	<!-- poi 3.14-->
     <ognl.version>3.0</ognl.version>
-    <commons-io.version>2.4</commons-io.version>
+    <commons-io.version>2.7</commons-io.version>
     <poi.version>4.1.2</poi.version>
     <ooxml-schamas.version>4.1.2</ooxml-schamas.version>
     <druid.version>1.0.26</druid.version>
