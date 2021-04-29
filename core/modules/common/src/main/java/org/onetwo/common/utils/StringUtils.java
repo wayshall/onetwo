@@ -261,6 +261,12 @@ public abstract class StringUtils {
 		return convertWithSeperator(name, "_");
 	}
 
+	/***
+	 * 大小写转换成分隔符op分隔
+	 * @param name
+	 * @param op
+	 * @return
+	 */
 	public static String convertWithSeperator(String name, String op) {
 		if(name==null)
 			return "";

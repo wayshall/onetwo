@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,7 @@ public class SimpleMultipartFile implements MultipartFile {
 	final private byte[] content;
 	
 	public SimpleMultipartFile(String originalFilename, File file) {
-		this(originalFilename, FileUtils.readFileToByteArray(file));
+		this(StringUtils.isBlank(originalFilename)?file.getName():originalFilename, FileUtils.readFileToByteArray(file));
 	}
 	
 	public SimpleMultipartFile(String originalFilename, Resource resource) {

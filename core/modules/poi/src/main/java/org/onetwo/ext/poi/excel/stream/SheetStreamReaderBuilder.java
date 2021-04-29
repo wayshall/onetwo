@@ -44,12 +44,21 @@ public class SheetStreamReaderBuilder<T> {
 		return this;
 	}
 	
+	/***
+	 * 
+	 * @param startIndex 包含
+	 * @return
+	 */
 	public SheetStreamReaderBuilder<T> from(int startIndex) {
 		this.fromIndex = startIndex;
 		return this;
 	}
 
-
+	/***
+	 * 
+	 * @param toIndex 包含
+	 * @return
+	 */
 	public SheetStreamReaderBuilder<T> to(int toIndex) {
 		this.toIndex = toIndex;
 		return this;

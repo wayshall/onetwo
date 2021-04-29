@@ -32,6 +32,7 @@ import org.onetwo.dbm.ui.annotation.DUIField;
 import org.onetwo.dbm.ui.annotation.DUIInput;
 import org.onetwo.dbm.ui.annotation.DUIInput.InputTypes;
 import org.onetwo.dbm.ui.annotation.DUISelect;
+import org.onetwo.dbm.ui.annotation.DUISelect.NoEnums;
 import org.onetwo.dbm.ui.annotation.DUITreeGrid;
 import org.onetwo.dbm.ui.exception.DbmUIException;
 import org.onetwo.dbm.ui.meta.DUIEntityMeta;
@@ -334,11 +335,16 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 		return Optional.of(uifieldMeta);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private DUISelectMeta buildSelectMeta(DUIFieldMeta uifieldMeta, DUISelect uiselect, Class<? extends Enum<?>> enumClass) {
 		DUISelectMeta uiselectMeta = uifieldMeta.new DUISelectMeta();
 		uiselectMeta.setDataEnumClass(enumClass);
 		if (uiselect!=null) {
-			uiselectMeta.setDataEnumClass(uiselect.dataEnumClass());
+			if (uiselect.dataEnumClass()!=NoEnums.class) {
+				uiselectMeta.setDataEnumClass(uiselect.dataEnumClass());
+			} else if (uifieldMeta.getDbmField().isEnumerated()){
+				uiselectMeta.setDataEnumClass((Class<? extends Enum<?>>)uifieldMeta.getDbmField().getPropertyInfo().getType());
+			}
 			uiselectMeta.setDataProvider(uiselect.dataProvider());
 			uiselectMeta.setLabelField(uiselect.labelField());
 			uiselectMeta.setValueField(uiselect.valueField());

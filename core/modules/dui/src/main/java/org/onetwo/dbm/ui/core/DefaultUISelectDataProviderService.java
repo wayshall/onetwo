@@ -103,18 +103,7 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 //	public List<?> getDatas(DUISelectMeta uiselect, Object query, boolean loadById) {
 	public List<?> getDatas(DUIFieldMeta field, UISelectDataRequest request) {
 		DUISelectMeta uiselect = field.getSelect();
-		if (uiselect.useEnumData()) {
-			Enum<?>[] values = (Enum<?>[]) uiselect.getDataEnumClass().getEnumConstants();
-//			DataBase[] vals = DataBase.class.getEnumConstants();
-			List<EnumDataVO> list = Stream.of(values).filter(ev -> {
-				return !ArrayUtils.contains(uiselect.getExcludeEnumNames(), ev.name());
-			}).map(ev -> {
-				EnumDataVO data = toEnumDataVO(field, ev);
-				return data;
-			}).collect(Collectors.toList());
-			return list;
-			
-		} else if (uiselect.useDataProvider()) {
+		if (uiselect.useDataProvider()) {
 			Class<? extends UISelectDataProvider> dataProviderClass = uiselect.getDataProvider();
 			UISelectDataProvider dataProvider = (UISelectDataProvider)SpringUtils.getBean(applicationContext, dataProviderClass);
 			if (dataProvider==null) {
@@ -140,7 +129,18 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 			} else {
 				return _this.queryFromCascade(field, request.isInitQuery()?null:request.getQuery());
 			}
-		}else {
+		} else if (uiselect.useEnumData()) {
+			Enum<?>[] values = (Enum<?>[]) uiselect.getDataEnumClass().getEnumConstants();
+//			DataBase[] vals = DataBase.class.getEnumConstants();
+			List<EnumDataVO> list = Stream.of(values).filter(ev -> {
+				return !ArrayUtils.contains(uiselect.getExcludeEnumNames(), ev.name());
+			}).map(ev -> {
+				EnumDataVO data = toEnumDataVO(field, ev);
+				return data;
+			}).collect(Collectors.toList());
+			return list;
+			
+		} else {
 			throw new DbmUIException("Neither enum nor dataProvider, field: " + uiselect.getField().getName());
 		}
 	}
