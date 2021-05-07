@@ -53,6 +53,7 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	private RedisLockRegistry redisLockRegistry;
 	private String cacheKeyPrefix = DEFAUTL_CACHE_PREFIX;
 	private String lockerKey = LOCK_KEY;
+	private String nextIdKeyPrefix = "nextId:";
 	@Setter
     private long waitLockInSeconds = 60;
 	@Setter
@@ -108,6 +109,28 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	
 	protected BoundValueOperations<Object, Object> boundValueOperations(String key) {
 		return this.redisTemplate.boundValueOps(key);
+	}
+	
+	public Long nextId() {
+		return nextId("defaultNextId", 1);
+	}
+	
+	/***
+	 * 获取递增id
+	 * @param key
+	 * @param delta
+	 * @return
+	 */
+	public Long nextId(String key, long delta) {
+		BoundValueOperations<Object, Object> ops = nextIdOps(key);
+		Long id = ops.increment(delta);
+		return id;
+	}
+
+	private BoundValueOperations<Object, Object> nextIdOps(String key) {
+		String cacheKey = getCacheKey(key) + nextIdKeyPrefix + key;
+		BoundValueOperations<Object, Object> ops = boundValueOperations(cacheKey);
+		return ops;
 	}
 	
 
