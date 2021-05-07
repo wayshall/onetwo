@@ -103,6 +103,9 @@ public class ZipUtils {
 			zipout = new ZipOutputStream(new FileOutputStream(zipfile));
 			zipout.setEncoding(encoding);
 			for(File f : files){
+				if (f.isDirectory()) {
+					continue;
+				}
 				String entryName = f.getName();
 				if (zipEntryName!=null) {
 					entryName = zipEntryName.entryName(f);

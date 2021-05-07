@@ -105,8 +105,18 @@ public abstract class BaseFileProcessor<R extends BaseFileProcessor<R>> {
 
 	
 	public R andIgnoreDirContains(String...ignoreDirs){
+		return andRelativePathIgnore(ignoreDirs);
+	}
+
+	public R andRelativePathIgnore(String...relativeDirs){
 		return andFile((baseDir, file)-> {
-			return !FileUtils.relativeDirPathContains(file, baseDir, ignoreDirs);
+			return !FileUtils.relativeDirPathContains(file, baseDir, relativeDirs);
+		});
+	}
+	
+	public R andRelativePathContains(String...relativeDirs){
+		return andFile((baseDir, file)-> {
+			return FileUtils.relativeDirPathContains(file, baseDir, relativeDirs);
 		});
 	}
 
