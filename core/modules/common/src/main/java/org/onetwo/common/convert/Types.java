@@ -10,6 +10,14 @@ final public class Types {
 	private static final Convertor instance = new DefaultTypeConvertors();
 	private static final Logger logger = JFishLoggerFactory.getLogger(Types.class);
 
+	/****
+	 * 当目标类型为基本类型时，如果source为null，则返回配置的基本类型的默认值
+	 * 否则，返回null
+	 * @param <T>
+	 * @param source
+	 * @param clazz
+	 * @return
+	 */
 	public static <T> T convertValue(Object source, Class<T> clazz) {
 //		return convertValue(source, clazz, null);
 		return convertor().convert(source, clazz);
