@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.aop.Proxys;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
@@ -62,6 +63,8 @@ public class LocalFeignDelegateBean<T> implements MethodInterceptor {
 	private Object invokeTarget(Object target, MethodInvocation invocation) {
 		try {
 			return AopUtils.invokeJoinpointUsingReflection(target, invocation.getMethod(), invocation.getArguments());
+		} catch (ServiceException e) {
+			throw e;
 		} catch (Throwable e) {
 			throw new BaseException("invoke local feign client error: " + e.getMessage(), e);
 		}
