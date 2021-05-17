@@ -1,6 +1,10 @@
 package org.onetwo.boot.core.web.mvc.log;
 
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import com.google.common.collect.Lists;
 
 import lombok.Data;
 
@@ -32,4 +36,9 @@ public class AccessLogProperties {
 	 * 参数值记录的最大长度，超过的截断
 	 */
 	int logParameterValueMaxLength = 500;
+	
+	/***
+	 * 记录日志时，要忽略的敏感参数
+	 */
+	List<String> ignoreParameters = Lists.newArrayList("*password*");
 }
