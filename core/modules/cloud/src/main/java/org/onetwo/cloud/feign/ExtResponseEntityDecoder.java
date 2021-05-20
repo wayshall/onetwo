@@ -27,6 +27,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
@@ -165,6 +166,12 @@ public class ExtResponseEntityDecoder implements Decoder {
 			Type actualType = ReflectUtils.getGenricType(type, 0);
 			Object result = decode(responseAdapter, actualType);
 			return Optional.ofNullable(result);
+		} else if (isSpringDeferredResult(type)) {
+			Type actualType = ReflectUtils.getGenricType(type, 0);
+			Object result = decode(responseAdapter, actualType);
+			DeferredResult<Object> deferredResult = new DeferredResult<>();
+			deferredResult.setResult(result);
+			return deferredResult;
 		}
 		else {
 			return decode(responseAdapter, type);
@@ -175,6 +182,15 @@ public class ExtResponseEntityDecoder implements Decoder {
 	private boolean isParameterizeHttpEntity(Type type) {
 		if (type instanceof ParameterizedType) {
 			return isHttpEntity(((ParameterizedType) type).getRawType());
+		}
+		return false;
+	}
+
+	private boolean isSpringDeferredResult(Type type) {
+		if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			Type rawType = parameterizedType.getRawType();
+			return DeferredResult.class.equals(rawType);
 		}
 		return false;
 	}
