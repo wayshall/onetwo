@@ -43,6 +43,7 @@ public class Application{
 - 重新定义了feign client的errorCoder，远程调用返回错误时，直接抛异常
 - 支持feign client远程调用转本地调用
 - feign接口支持直接在参数里定义MultipartFile对象
+- 返回值支持Optional和DeferredResult类型
 
 
 ## 配置
