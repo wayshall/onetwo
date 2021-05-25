@@ -837,6 +837,21 @@ abstract public class LangUtils {
 		return true;
 	}
 	
+	/***
+	 * 取16位无符号整数高8位
+	 * @param int16
+	 * @return
+	 */
+	public static byte high8(short int16) {
+		byte h8 = (byte)((int16 & 0xFF00) >> 8);
+		return h8;
+	}
+	
+	public static byte low8(short int16) {
+		byte l8 = (byte)(int16 & 0x00FF);
+		return l8;
+	}
+	
 
 	public static String append(Object... strings) {
 		return appendWith(false, strings);

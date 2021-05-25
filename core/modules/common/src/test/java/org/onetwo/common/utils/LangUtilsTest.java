@@ -305,6 +305,20 @@ public class LangUtilsTest {
 	}
 	
 	@Test
+	public void test10to2(){
+		short numb = 2605;
+		System.out.println("numb: " + Integer.toBinaryString(numb));
+//		byte h8 = (byte)((numb & 0xFF00) >> 8);
+		byte h8 = LangUtils.high8(numb);
+		System.out.println("numb1: " + Integer.toBinaryString(numb & 0xFF00));
+		System.out.println("numb2: " + Integer.toBinaryString((numb & 0xFF00) >> 8));
+//		byte l8 = (byte)(numb & 0x00FF);
+		byte l8 = LangUtils.low8(numb);
+		System.out.println("h8: " + h8);
+		System.out.println("l8: " + l8);
+	}
+	
+	@Test
 	public void test10to16(){
 		String cardNo10 = "6124895493223875970";
 		System.out.println("cardno: " + cardNo10.length());
