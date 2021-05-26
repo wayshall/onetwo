@@ -138,6 +138,11 @@ public class LangUtilsTest {
 	public void testTimeUnit(){
 		long i = TimeUnit.MINUTES.toHours(59);
 		System.out.println("unit: " + i);
+		assertThat(i).isEqualTo(0L);
+		
+		i = TimeUnit.MINUTES.toHours(119);
+		System.out.println("unit: " + i);
+		assertThat(i).isEqualTo(1L);
 		
 		List<String> list = LangUtils.newArrayList("aa", "bb", "cc");
 		List<String> sublist = list.subList(0, 2);
