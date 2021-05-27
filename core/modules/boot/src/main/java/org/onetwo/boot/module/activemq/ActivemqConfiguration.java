@@ -15,11 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.module.activemq.ActivemqProperties.JdbcStoreProps;
 import org.onetwo.boot.module.activemq.ActivemqProperties.KahaDBStoreProps;
 import org.onetwo.boot.module.jms.JmsDestinationConverter;
-import org.onetwo.boot.module.jms.JmsMessageCreator;
 import org.onetwo.boot.module.jms.JmsProducerService;
 import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
 import org.onetwo.boot.mq.MQTransactionalConfiguration;
-import org.onetwo.boot.mq.ProducerService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -34,6 +32,7 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 
 /**
+ * JmsAutoConfiguration
  * @author wayshall
  * <br/>
  */
@@ -92,7 +91,7 @@ public class ActivemqConfiguration implements InitializingBean {
 	}
 
 	@Bean
-	public ProducerService<JmsMessageCreator, Object> jmdProducerService(){
+	public JmsProducerService jmdProducerService(){
 		JmsProducerService producer = new JmsProducerService();
 		return producer;
 	}
