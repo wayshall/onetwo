@@ -39,8 +39,8 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/rocketmq</module>
-                <module>modules/cloud</module>
+                <module>../../dbm</module>
+                <module>modules/dui</module>
 			</modules>
            <build>
               <plugins>

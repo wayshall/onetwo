@@ -18,9 +18,9 @@
      <#else>
         ${spaces}<dui-select
           ${spaces}v-model="${modelPrefix}.${field.name}"
-    <#if isEditFormField>
+    <#-- if isEditFormField>
           :data="${field.name}Datas"
-    </#if>
+    </#if -->
           ${spaces}entity="${DUIEntityMeta.name}"
         <#if isEditFormField>
           ${spaces}:disabled="${field.formDisabledValue}"
