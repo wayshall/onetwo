@@ -74,6 +74,7 @@ public class DeleteReceiveMessageTask implements InitializingBean {
 					.field("state").equalTo(ConsumeStates.CONSUMED.ordinal())
 					.field("createAt").lessThan(createAt)
 				.end()
+				.toExecute()
 				.delete();
 		return deleteCount;
 	}
