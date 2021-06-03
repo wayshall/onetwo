@@ -31,7 +31,6 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class PermissionHandlerMappingListener implements InitializingBean {
@@ -165,6 +164,9 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 				continue ;
 			}
 			for(Class<?> codeClass : permClassInst.value()){
+//				if (codeClass.getName().contains("DeviceMgr")) {
+//					System.out.println("test");
+//				}
 				this.autoConifgPermission(codeClass, entry, permClassInst);
 			}
 		}

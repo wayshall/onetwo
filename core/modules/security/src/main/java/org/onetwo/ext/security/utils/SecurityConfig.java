@@ -98,6 +98,12 @@ public class SecurityConfig {
 	
 	private CorsConfig cors = new CorsConfig();
 	
+	/***
+	 * 是否拒绝公共调用
+	 * 当访问的方法或请求没有配置权限(即公共请求)时，是否拒绝访问
+	 */
+	private boolean rejectPublicInvocations = true;
+	
 	private boolean logSecurityError;
 	
 	
