@@ -41,11 +41,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.CollectionUtils;
-<<<<<<< HEAD
 import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
-=======
 import org.springframework.web.bind.support.WebArgumentResolver;
->>>>>>> dev
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -55,12 +52,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-<<<<<<< HEAD
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-=======
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentResolverAdapter;
->>>>>>> dev
 
 /****
  * 有关web mvc的一些扩展配置

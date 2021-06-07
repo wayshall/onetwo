@@ -1,20 +1,13 @@
 package org.onetwo.boot.module.session;
 
-import javax.servlet.Filter;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.http.HttpSessionIdResolver;
-import org.springframework.session.web.http.HttpSessionStrategy;
-import org.springframework.session.web.http.SessionRepositoryFilter;
-import org.springframework.web.filter.RequestContextFilter;
 
 /**
  * @author weishao zeng
@@ -23,6 +16,7 @@ import org.springframework.web.filter.RequestContextFilter;
 @Configuration
 @EnableConfigurationProperties(SessionProperties.class)
 @ConditionalOnClass(HttpSessionIdResolver.class)
+@EnableRedisHttpSession
 public class BootSpringSessionConfiguration {
 	
 	@Autowired
@@ -37,21 +31,22 @@ public class BootSpringSessionConfiguration {
 		return strategy;
 	}
 	
-	@Configuration
-	public class RequestContextFilterConfiguration {
-
-	    @Bean
-	    @ConditionalOnMissingBean(RequestContextFilter.class)
-	    public RequestContextFilter requestContextFilter() {
-	        return new RequestContextFilter();
-	    }
-
-	    @Bean
-	    public FilterRegistrationBean requestContextFilterChainRegistration(@Qualifier("requestContextFilter") Filter requestContextFilter) {
-	        FilterRegistrationBean registration = new FilterRegistrationBean(requestContextFilter);
-	        registration.setOrder(SessionRepositoryFilter.DEFAULT_ORDER + 1);
-	        registration.setName("requestContextFilter");
-	        return registration;
-	    }
-	}
+	// 修复spring bean的session作用域
+//	@Configuration
+//	public class RequestContextFilterConfiguration {
+//
+//	    @Bean
+//	    @ConditionalOnMissingBean(RequestContextFilter.class)
+//	    public RequestContextFilter requestContextFilter() {
+//	        return new RequestContextFilter();
+//	    }
+//
+//	    @Bean
+//	    public FilterRegistrationBean requestContextFilterChainRegistration(@Qualifier("requestContextFilter") Filter requestContextFilter) {
+//	        FilterRegistrationBean registration = new FilterRegistrationBean(requestContextFilter);
+//	        registration.setOrder(SessionRepositoryFilter.DEFAULT_ORDER + 1);
+//	        registration.setName("requestContextFilter");
+//	        return registration;
+//	    }
+//	}
 }

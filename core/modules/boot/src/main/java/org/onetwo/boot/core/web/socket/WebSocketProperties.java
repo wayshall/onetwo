@@ -29,7 +29,7 @@ import lombok.Data;
 @Data
 @ConfigurationProperties(WebSocketProperties.PREFIX)
 public class WebSocketProperties {
-	public static final String PREFIX = BootJFishConfig.PREFIX + ".websocket";
+	public static final String PREFIX = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".websocket";
 	/**
 	 * jfish.websocket.enabled: true
 	 */

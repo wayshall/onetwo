@@ -4,9 +4,6 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import org.onetwo.common.utils.LangOps;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -45,7 +42,7 @@ public class JFishRedisProperties {
 	
 	@Data
 	public static class LockRegistryProperties {
-		public static final String DEFAULT_LOCK_KEY = "${"+BootJFishConfig.PREFIX+".redis.lockRegistry.key:${spring.application.name}}";
+		public static final String DEFAULT_LOCK_KEY = "${"+BootJFishConfig.ZIFISH_CONFIG_PREFIX+".redis.lockRegistry.key:${spring.application.name}}";
 		/***
 		 * default is 2 min
 		 */

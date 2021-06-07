@@ -1,6 +1,6 @@
-package org.springframework.cloud.netflix.feign;
+package org.springframework.cloud.openfeign;
 
-import org.springframework.cloud.netflix.feign.ExtTargeter.FeignTargetContext;
+import org.springframework.cloud.openfeign.ExtTargeter.FeignTargetContext;
 
 /**
  * @author weishao zeng

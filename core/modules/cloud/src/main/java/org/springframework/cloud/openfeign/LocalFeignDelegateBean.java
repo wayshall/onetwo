@@ -1,4 +1,4 @@
-package org.springframework.cloud.netflix.feign;
+package org.springframework.cloud.openfeign;
 
 import java.util.Arrays;
 

@@ -18,11 +18,10 @@ import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.AnnotatedParameterProcessor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.support.SpringMvcContract;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.convert.ConversionService;
@@ -60,7 +59,7 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 	private static final String FEIGN_CONTEXT_PATH_KEY2 = "feignClient.basePaths.contextPath";
 
 	private ApplicationContext applicationContext;
-	private RelaxedPropertyResolver relaxedPropertyResolver;
+//	private RelaxedPropertyResolver relaxedPropertyResolver;
 	@Autowired
 	private FeignProperties feignProperties;
 	
@@ -181,7 +180,7 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 			}
 			if(StringUtils.isBlank(pathValue)){
 				// jfish.cloud.feign.base.contextPath
-				pathValue = this.relaxedPropertyResolver.getProperty(FeignProperties.FEIGN_CONTEXT_PATH_KEY);
+				pathValue = this.resolveRelatedProperty(FeignProperties.FEIGN_CONTEXT_PATH_KEY);
 				//兼容旧配置
 				if(StringUtils.isBlank(pathValue)){
 //					pathValue = this.relaxedPropertyResolver.getProperty(FEIGN_CONTEXT_PATH_KEY2);
