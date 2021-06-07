@@ -1,7 +1,7 @@
 #tomcat#
 ------
 简单的内嵌tomcat   
-交流群：  604158262
+联系邮箱：  wayshall@qq.com
 
 ##环境要求
 JDK8+

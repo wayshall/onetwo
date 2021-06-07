@@ -24,7 +24,9 @@ abstract public class AbstractTypeConvert<T> implements TypeConvert<T>{
 		}
 	}
 	
-
+	/****
+	 * 如果source为null，则返回配置的默认值
+	 */
 	public T convertNotNull(Object source, Class<?> componentType){
 		if(source==null){
 			if(!supportedNotNull)
@@ -33,7 +35,11 @@ abstract public class AbstractTypeConvert<T> implements TypeConvert<T>{
 		}
 		return doConvert(source, componentType);
 	}
-
+	
+	/***
+	 * 当目标类型为基本类型时，如果source为null，则返回配置的基本类型的默认值
+	 * 否则，返回null
+	 */
 	public T convert(Object source, Class<?> componentType){
 		if(source==null){
 			if(componentType.isPrimitive())

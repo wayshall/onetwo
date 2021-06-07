@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.onetwo.cloud.feign.FeignProperties.ServiceProps;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.openfeign.AnnotatedParameterProcessor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.support.SpringMvcContract;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.convert.ConversionService;
@@ -50,14 +53,16 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class EnhanceSpringMvcContract extends SpringMvcContract implements ApplicationContextAware, InitializingBean {
-	private static final String FEIGN_BASE_PATH_TAG = ":";
-	private static final String FEIGN_BASE_PATH_KEY = FeignProperties.PROPERTIES_PREFIX+".basePath.";
-	private static final String FEIGN_CONTEXT_PATH_KEY = FeignProperties.PROPERTIES_PREFIX+".basePath.contextPath";
+//	private static final String FEIGN_BASE_PATH_TAG = ":";
+//	private static final String FEIGN_BASE_PATH_KEY = FeignProperties.FEIGN_BASE_PATH_KEY;
+//	private static final String FEIGN_CONTEXT_PATH_KEY = FeignProperties.FEIGN_CONTEXT_PATH_KEY;
 	@Deprecated
 	private static final String FEIGN_CONTEXT_PATH_KEY2 = "feignClient.basePaths.contextPath";
 
 	private ApplicationContext applicationContext;
-//	private RelaxedPropertyResolver relaxedPropertyResolver;
+	private RelaxedPropertyResolver relaxedPropertyResolver;
+	@Autowired
+	private FeignProperties feignProperties;
 	
 	public EnhanceSpringMvcContract(List<AnnotatedParameterProcessor> annotatedParameterProcessors) {
 		super(annotatedParameterProcessors);
@@ -168,24 +173,26 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 			String serviceName = StringUtils.isNotBlank(feignClient.name())?feignClient.name():feignClient.serviceId();
 			serviceName = SpringUtils.resolvePlaceholders(applicationContext, serviceName);
 			//不填，默认查找对应的配置 -> jfish.cloud.feign.basePath.serviceName
-			pathValue = FEIGN_BASE_PATH_KEY + serviceName;
-//			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
-			pathValue = resolveRelatedProperty(pathValue);
+			/*pathValue = FEIGN_BASE_PATH_KEY + serviceName;
+			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);*/
+			ServiceProps serviceProps = this.feignProperties.getServices().get(serviceName);
+			if (serviceProps!=null) {
+				pathValue = serviceProps.getBasePath();
+			}
 			if(StringUtils.isBlank(pathValue)){
-//				pathValue = this.relaxedPropertyResolver.getProperty(FEIGN_CONTEXT_PATH_KEY);
-				pathValue = resolveRelatedProperty(FEIGN_CONTEXT_PATH_KEY);
+				// jfish.cloud.feign.base.contextPath
+				pathValue = this.relaxedPropertyResolver.getProperty(FeignProperties.FEIGN_CONTEXT_PATH_KEY);
 				//兼容旧配置
 				if(StringUtils.isBlank(pathValue)){
 //					pathValue = this.relaxedPropertyResolver.getProperty(FEIGN_CONTEXT_PATH_KEY2);
 					pathValue = resolveRelatedProperty(FEIGN_CONTEXT_PATH_KEY2);
 				}
 			}
-		}else if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
+		}/*else if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
 			//:serviceName -> jfish.cloud.feign.basePath.serviceName
 			pathValue = FEIGN_BASE_PATH_KEY + pathValue.substring(1);
-//			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
-			pathValue = resolveRelatedProperty(pathValue);
-		}else if(ExpressionFacotry.DOLOR.isExpresstion(pathValue)){
+			pathValue = this.relaxedPropertyResolver.getProperty(pathValue);
+		}*/else if(ExpressionFacotry.DOLOR.isExpresstion(pathValue)){
 			//${basePath}
 			pathValue = SpringUtils.resolvePlaceholders(applicationContext, pathValue);
 		}

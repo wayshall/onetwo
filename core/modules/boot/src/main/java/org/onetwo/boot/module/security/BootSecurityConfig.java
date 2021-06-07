@@ -2,10 +2,12 @@ package org.onetwo.boot.module.security;
 
 import javax.servlet.ServletContext;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.filter.WebContextConfigProvider;
+import org.onetwo.ext.security.utils.ExceptionUserCheckerConfig;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,6 +33,8 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	
 	@Autowired(required=false)
 	private BootSiteConfig bootSiteConfig;
+	@Autowired(required=false)
+	private BootJFishConfig bootJFishConfig;
 	private String baseURL;
 	
 	ExceptionUserCheckerConfig exceptionUserChecker = new ExceptionUserCheckerConfig();
@@ -41,6 +45,16 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 		}
 		return this.syncPermissionData;
 	}*/
+	
+	/***
+	 * 是否记录相关的security日志
+	 */
+	public boolean isLogSecurityError() {
+		if (bootJFishConfig!=null && bootJFishConfig.isAlwaysLogErrorDetail()) {
+			return true;
+		}
+		return super.isLogSecurityError();
+	}
 	
 	@Override
 	public String getUserLogoutUrl(){
@@ -86,12 +100,6 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	@Override
 	public Object getWebConfig(ServletContext servletContext) {
 		return this;
-	}
-
-	@Data
-	public static class ExceptionUserCheckerConfig {
-		private String duration = "1m";
-		private int maxLoginTimes = 5;
 	}
 
 }

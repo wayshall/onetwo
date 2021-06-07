@@ -1,15 +1,13 @@
 package org.onetwo.ext.ons.producer;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.onetwo.boot.mq.entity.SendMessageEntity;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 
 import com.aliyun.openservices.ons.api.Message;
-import com.aliyun.openservices.ons.api.bean.ProducerBean;
-import com.aliyun.openservices.ons.api.bean.TransactionProducerBean;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author wayshall
@@ -47,6 +45,10 @@ public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext
 
 	public boolean isTransactional(){
 		return source.isTransactional();
+	}
+	
+	public boolean isDelayMessage() {
+		return getMessage().getStartDeliverTime() > 0;
 	}
 	
 

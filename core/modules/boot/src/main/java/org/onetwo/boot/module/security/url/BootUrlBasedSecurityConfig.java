@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.onetwo.boot.module.oauth2.ssoclient.DisabledOauth2SsoCondition;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
 import org.onetwo.boot.module.security.method.BootMethodBasedSecurityConfig;
@@ -17,6 +18,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
@@ -38,9 +40,12 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 //	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	@Order(BootMethodBasedSecurityConfig.ACCESS_OVERRIDE_ORDER)
 	@ConditionalOnMissingBean(DefaultUrlSecurityConfigurer.class)
+//	@ConditionalOnMissingBean(DefaultUrlSecurityConfigurer.class)
+	@Conditional(DisabledOauth2SsoCondition.class)
 	@Autowired
 	public DefaultUrlSecurityConfigurer defaultSecurityConfigurer(AccessDecisionManager accessDecisionManager){
 		return super.defaultSecurityConfigurer(accessDecisionManager);
+//		return new OAuth2ClientSecurityConfigurer(accessDecisionManager);
 	}
 
 	@ConditionalOnClass(name="org.springframework.jdbc.core.support.JdbcDaoSupport")//这里要字符串的形式，否则会抛错。且如果不抽取JdbcSecurityMetadataSourceBuilder接口隔离DatabaseSecurityMetadataSource, @ConditionalOnClass not work
@@ -55,8 +60,8 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 	@ConditionalOnProperty(name=BootSecurityConfig.EXCEPTION_USER_CHECKER_ENABLE_KEY, matchIfMissing=true)
 	public ExceptionUserChecker exceptionUserChecker(){
 		ExceptionUserChecker checker = new ExceptionUserChecker();
-		checker.setDuration(securityConfig.getExceptionUserChecker().getDuration());
-		checker.setMaxLoginTimes(securityConfig.getExceptionUserChecker().getMaxLoginTimes());
+		checker.setExceptionUserCheckerConfig(securityConfig.getExceptionUserChecker());
+//		checker.setMaxLoginTimes(securityConfig.getExceptionUserChecker().getMaxLoginTimes());
 		return checker;
 	}
 	

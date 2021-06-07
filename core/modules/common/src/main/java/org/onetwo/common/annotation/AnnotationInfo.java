@@ -3,8 +3,10 @@ package org.onetwo.common.annotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
+import java.util.Set;
 
 import org.onetwo.common.utils.Assert;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -93,11 +95,14 @@ public class AnnotationInfo {
 		return annotationFinder.getAnnotation(annotatedElement, annoClass);
 //		return annoClass.cast(LangUtils.getFirst(getAnnotations(annoClass)));
 	}
-	/*public <T extends Annotation> Set<T> getAnnotations(Class<T> annoClass) {
-		Assert.notNull(annoClass, "annotation class can not be null");
-		return annotationFinder.getAnnotations(annotatedElement, annoClass);
-	}*/
 
+	public <T extends Annotation> Set<T> getMergedRepeatableAnnotations(Class<T> annoClass) {
+		return AnnotatedElementUtils.getMergedRepeatableAnnotations(annotatedElement, annoClass);
+	}
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return annotatedElement;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;

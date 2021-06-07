@@ -179,7 +179,7 @@ public class FtpClientManager {
 		private boolean pasv = true;
 	}
 	
-	@Data(staticConstructor="of")
+	@Data
 	public static class LoginParam {
 		private String user;
 		private String password;

@@ -214,7 +214,7 @@ public abstract class StringUtils {
 	 * @author weishao zeng
 	 * @param str
 	 * @param op
-	 * @param isFirstUpper
+	 * @param isFirstUpper 是否把第一个字符转为大写
 	 * @return
 	 */
 	public static String toCamelWithoutConvert2LowerCase(String str, char op, boolean isFirstUpper) {
@@ -261,6 +261,12 @@ public abstract class StringUtils {
 		return convertWithSeperator(name, "_");
 	}
 
+	/***
+	 * 大小写转换成分隔符op分隔
+	 * @param name
+	 * @param op
+	 * @return
+	 */
 	public static String convertWithSeperator(String name, String op) {
 		if(name==null)
 			return "";
@@ -527,6 +533,16 @@ public abstract class StringUtils {
 		return join(collection.iterator(), separator);
 	}
 
+	public static <K, V> String join(Map<K, V> map, String separator) {
+		return join(map, ":", separator);
+	}
+	
+	public static <K, V> String join(Map<K, V> map, String entrySeparator, String separator) {
+		return join(map.entrySet(), separator, entry -> {
+			return entry.getKey().toString() + entrySeparator + entry.getValue().toString();
+		});
+	}
+	
 	public static <T> String join(Collection<T> collection, String separator, ReturnableClosure<T, String> it) {
 		if (collection == null) {
 			return EMPTY;
@@ -573,7 +589,7 @@ public abstract class StringUtils {
 		return buf.toString();
 	}
 
-	public static String UnicodeToString(String str) {
+	public static String unicodeToString(String str) {
 		Pattern pattern = Pattern.compile("(\\\\u(\\p{XDigit}{4}))");
 		Matcher matcher = pattern.matcher(str);
 		char ch;
@@ -584,7 +600,7 @@ public abstract class StringUtils {
 		return str;
 	}
 
-	public static String StringToUnicode(String str) {
+	public static String stringToUnicode(String str) {
 		String result = "";
 		for (int i = 0; i < str.length(); i++) {
 			result += "\\u" + Integer.toHexString(str.charAt(i));
@@ -807,6 +823,13 @@ public abstract class StringUtils {
         return RandomStringUtils.random(count, 33, 127, false, false);
     }
     
+
+    public static boolean isStringStartWithAnyOne(final String str, Collection<String> prefixList) {
+    	if (LangUtils.isEmpty(prefixList)) {
+    		return false;
+    	}
+        return prefixList.stream().anyMatch(prefix -> str.startsWith(prefix));
+    }
     
 	public static void main(String[] args) {
 

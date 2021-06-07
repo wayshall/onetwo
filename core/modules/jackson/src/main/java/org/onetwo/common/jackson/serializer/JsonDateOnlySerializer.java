@@ -23,7 +23,9 @@ public class JsonDateOnlySerializer extends JsonSerializer<Date>{
 	@Override
 	public void serializeWithType(Date value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
 		typeSer.writeTypePrefixForScalar(value, gen);
+//		typeSer.writeTypePrefix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
 		serialize(value, gen, serializers);
+//		typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
 		typeSer.writeTypeSuffixForScalar(value, gen);
 	}
 }

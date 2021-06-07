@@ -3,6 +3,7 @@ package org.onetwo.ext.ons;
 import java.util.Collections;
 import java.util.List;
 
+import org.onetwo.ext.alimq.BatchConsumContext;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.ConsumerListener;
 import org.onetwo.ext.ons.consumer.ConsumerMeta;
@@ -47,6 +48,13 @@ public class ONSConsumerListenerComposite implements InitializingBean, ConsumerL
 	public void onConsumeMessageError(ConsumContext context, Throwable e) {
 		for(ConsumerListener listener : listeners){
 			listener.onConsumeMessageError(context, e);
+		}
+	}
+	
+	@Override
+	public void onBatchConsumeMessageError(BatchConsumContext batchContext, Throwable e) {
+		for(ConsumerListener listener : listeners){
+			listener.onBatchConsumeMessageError(batchContext, e);
 		}
 	}
 

@@ -53,6 +53,8 @@ import org.slf4j.Logger;
 
 import com.google.common.collect.Maps;
 
+import net.jodah.typetools.TypeResolver;
+
 
 
 @SuppressWarnings( { "rawtypes", "unchecked" })
@@ -391,6 +393,24 @@ public class ReflectUtils {
 		return (Class<?>) params[index];
 	}
 
+	public static Class<?> resolveClassOfGenericType(Class<?> parentGenericType, Type subType) {
+		return resolveClassOfGenericType(parentGenericType, subType, 0);
+	}
+	
+	/***
+	 * parentGenericType为泛型类，subType为实现或继承了泛型类（parentGenericType）的子类
+	 * 此方法解释subType实现泛型类时定义的实际类型
+	 * @author weishao zeng
+	 * @param parentType
+	 * @param subType
+	 * @param index
+	 * @return
+	 */
+	public static Class<?> resolveClassOfGenericType(Class<?> parentGenericType, Type subType, final int subTypeGenericIndex) {
+		Type subTypeGenericType = TypeResolver.resolveGenericType(parentGenericType, subType);
+		Class<?> type = ReflectUtils.getGenricType(subTypeGenericType, subTypeGenericIndex);
+		return type;
+	}
 
 	public static Class<?> getGenricType(final Object obj, final int index) {
 		return getGenricType(obj, index, Object.class);
@@ -930,7 +950,7 @@ public class ReflectUtils {
 //		return toMap(ignoreNull, obj, null);
 		return ignoreNull?BEAN_TO_MAP_IGNORE_NULL_CONVERTOR.toMap(obj):BEAN_TO_MAP_CONVERTOR.toMap(obj);
 	}
-	public static Map<String, Object> toMap(boolean ignoreNull, Object obj, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+	public static Map<String, Object> toMap(boolean ignoreNull, Object obj, ValueConvertor valueConvertor) {
 		return toMap(obj, (p, v)->{
 			if(v!=null)
 				return true;
@@ -938,17 +958,19 @@ public class ReflectUtils {
 		}, valueConvertor);
 	}
 	
-	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor) {
+	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, String... excludeProperties) {
 		return toMap(obj, (prop, val) -> {
 			return acceptor.apply(prop, val);
-		}, null);
+		}, (ValueConvertor)null, excludeProperties);
 	}
 	
 	// public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
-	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
+//	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor) {
+	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor, String... excludeProperties) {
 		return BeanToMapBuilder.newBuilder()
 						.propertyAcceptor(acceptor)
 						.valueConvertor(valueConvertor)
+						.excludeProperties(excludeProperties)
 						.build()
 						.toMap(obj);
 	}
@@ -1927,6 +1949,9 @@ public class ReflectUtils {
 	
 	public static FieldName getFieldNameAnnotation(Class<?> clazz, String name){
 		PropertyDescriptor property = getPropertyDescriptor(clazz, name);
+		if (property==null || property.getReadMethod()==null) {
+			return null;
+		}
 		FieldName fn = property.getReadMethod().getAnnotation(FieldName.class);
 		if(fn!=null){
 			return fn;

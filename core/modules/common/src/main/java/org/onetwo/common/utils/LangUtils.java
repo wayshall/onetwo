@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -57,9 +58,10 @@ import org.onetwo.common.utils.func.ArgsReturnableClosure;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class LangUtils {
+abstract public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
+	public final static long START_STMP = 1610374613027L; //2021-1-11 22:17的时间戳，用于某些基于时间戳算法的id减去基值
 
 	public static final String UTF8 = "utf-8";
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
@@ -801,10 +803,17 @@ public class LangUtils {
 		return buf.toString();
 	}
 	
+	public static String toHex(byte b){
+		StringBuilder buf = new StringBuilder();
+		buf.append(HEX_CHAR.charAt((b >>> 4 & 0xf)));//high. symbol >>> is unsigned right shift 
+		buf.append(HEX_CHAR.charAt((b & 0xf)));//low
+		return buf.toString();
+	}
+	
 
 	public static byte[] hex2Bytes(String str){
 		byte[] bytes = null;
-		char[] chars = str.toCharArray();
+		char[] chars = str.toUpperCase().toCharArray();
 
 		int numb1;
 		int numb2;
@@ -818,7 +827,7 @@ public class LangUtils {
 	}
 	
 	public static boolean isHexString(String str){
-		char[] chars = str.toCharArray();
+		char[] chars = str.toUpperCase().toCharArray();
 		int index = -1;
 		for(char ch : chars){
 			index = HEX_CHAR.indexOf(ch);
@@ -826,6 +835,21 @@ public class LangUtils {
 				return false;
 		}
 		return true;
+	}
+	
+	/***
+	 * 取16位无符号整数高8位
+	 * @param int16
+	 * @return
+	 */
+	public static byte high8(short int16) {
+		byte h8 = (byte)((int16 & 0xFF00) >> 8);
+		return h8;
+	}
+	
+	public static byte low8(short int16) {
+		byte l8 = (byte)(int16 & 0x00FF);
+		return l8;
 	}
 	
 
@@ -1569,6 +1593,11 @@ public class LangUtils {
 		}
 		return actualValue;
 	}
+	
+	public static BigDecimal roundHalfUp(BigDecimal number) {
+		number.setScale(2, BigDecimal.ROUND_HALF_UP); // 四色五入，保持两个小数点
+		return number;
+	}
 
 	public static String format(Number num, String pattern) {
 		NumberFormat format = new DecimalFormat(pattern);
@@ -1577,6 +1606,24 @@ public class LangUtils {
 	
 	public static String format(Number num) {
 		return new DecimalFormat("0.00").format(num);
+	}
+	
+	/***
+	 * 如果字符串超过指定长度，则填充省略号
+	 * @author weishao zeng
+	 * @param str
+	 * @param length
+	 * @return
+	 */
+	public static String ellipsis(String str, int length) {
+		if (StringUtils.isBlank(str)) {
+			return str;
+		}
+		if (str.length() <= length) {
+			return str;
+		}
+		String newStr = str.substring(0, length-3) + "...";
+		return newStr;
 	}
 
 	/*****
@@ -1755,13 +1802,23 @@ public class LangUtils {
 			lock.unlock();
 		}
 	}
-	
+
+	/***
+	 * 是否正整数
+	 * @author weishao zeng
+	 * @param str
+	 * @return
+	 */
+	public static boolean isNumeric(String str){
+		return org.apache.commons.lang3.StringUtils.isNumeric(str);
+	}
 
 	public static boolean isNumberObject(Object val){
 		if(val==null)
 			return false;
 		return isNumberType(val.getClass());
 	}
+	
 	public static boolean isNumberType(Class<?> clazz){
 		if(clazz==null)
 			return false;
@@ -1872,4 +1929,5 @@ public class LangUtils {
 		unsensitive = org.apache.commons.lang3.StringUtils.rightPad(unsensitive, sensitive.length(), replaceStr);
 		return unsensitive;
 	}
+	
 }

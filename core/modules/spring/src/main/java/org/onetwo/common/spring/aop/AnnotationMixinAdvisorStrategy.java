@@ -14,7 +14,10 @@ public class AnnotationMixinAdvisorStrategy extends ClassNamePostfixMixinAdvisor
 		return interfaceClass.isInterface() && AnnotationUtils.findAnnotation(interfaceClass, Mixin.class)!=null;
 	}
 
-
+	/****
+	 * 根据规则（@Mixin）查找mixin接口（mixinInterface）的实现类
+	 * 并创建Advisor
+	 */
 	@Override
 	public Advisor createAdvisor(Class<?> mixinInterface) {
 		Mixin mixin = AnnotationUtils.findAnnotation(mixinInterface, Mixin.class);

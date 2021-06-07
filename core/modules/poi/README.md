@@ -7,7 +7,7 @@
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-poi</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.8.0-SNAPSHOT</version>
 </dependency>   
 
 ```
@@ -120,29 +120,43 @@ excel模板如下：
 
 ```Java
 String path = "excel_template_path.xls";
-List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(CardEntity.class, 1, 
-											"主键", "id", 
+List<CardEntity> cardList = WorkbookReaderFactory.createWorkbookReader(
+                                            CardEntity.class, //每一行excel数据映射的对象
+                                            1, //数据行的索引，若第一行为标题行，第二行开始为数据行，则此参数为1 
+											"主键", //excel标题列名
+											"id", //对应的JavaBean(此处为CardEntity)的属性名,下面的参数如此类推
 											"卡号", "cardNo", 
 											"密码", "cardPwd")
-											.readFirstSheet(path);
+											.readFirstSheet(path); // 读取第一个excel表格
 		
 ```
 
 ### 流式读取api
-上面那些看上去整得太复杂？   
 
-4.7.3 后增加一个简单的流式api读取excel
+
+4.7.3 后增加了流式api读取excel
 
 ```Java
+@Data
+public class ImportBatchVO {
+    String title;
+    List<DetailImportData> dataList;
+}
+
+
 ImportBatchVO batch = new ImportBatchVO();
 WorkbookReaderFactory.streamReader()
-		.readSheet(0).readSheet(0) //读取第一个表格
+		.readSheet(0) //读取第一个表格
 			//读取第1行作为标题
 			.row(0).onData((row, index) -> {
 				batch.setTitle(row.getString(1));
 			})
 			////读取第2行到结束
 			.row(1).toEnd().onData((row, index) -> {
+                 if (StringUtils.isBlank(row.getString(0))) {
+                     // 如果该行的第一列为空，则视为空行，忽略处理
+                     return ;
+                 }
 				DetailImportData detail = new DetailImportData();
 				detail.setRealName(row.getString(0));
 				detail.setUserName(row.getString(1));

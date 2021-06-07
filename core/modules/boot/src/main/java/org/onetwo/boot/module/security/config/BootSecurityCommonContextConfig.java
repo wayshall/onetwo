@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.security.config;
 
 import org.onetwo.boot.core.BootWebCommonAutoConfig;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.mvc.DefaultExceptionMessageFinder;
@@ -8,11 +9,12 @@ import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.LoggerInterceptor;
 import org.onetwo.boot.core.web.mvc.log.AccessLogProperties;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
+import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.BootSecurityExceptionMessager;
 import org.onetwo.boot.module.security.handler.BootSecurityAccessDeniedHandler;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
-import org.onetwo.common.web.userdetails.SimpleUserDetail;
+import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.SecurityExceptionMessager;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
@@ -26,8 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.context.SecurityContextRepository;
 
 /****
@@ -46,6 +46,13 @@ public class BootSecurityCommonContextConfig{
 	private ExceptionMessageAccessor exceptionMessageAccessor;
 	@Autowired
 	private SecurityConfig securityConfig;
+
+	@Autowired
+	protected BootJFishConfig jfishConfig;
+	@Autowired(required=false)
+	private BootJsonView jsonView;
+	@Autowired
+	private SessionUserManager<UserDetail> sessionUserManager;
 
 	/*@Autowired
 	private BootSecurityConfig bootSecurityConfig;
@@ -75,18 +82,19 @@ public class BootSecurityCommonContextConfig{
 	public LoggerInterceptor loggerInterceptor(){
 		LoggerInterceptor log = new LoggerInterceptor();
 		log.setUserDetailRetriever(()->{
-			if(SecurityContextHolder.getContext().getAuthentication()==null)
-				return null;
-			Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if(UserDetail.class.isInstance(user)){
-				return (UserDetail)user;
-			}else if(User.class.isInstance(user)){
-				User suser = (User)user;
-				SimpleUserDetail ud = new SimpleUserDetail();
-				ud.setUserName(suser.getUsername());
-				return ud;
-			}
-			return null;
+//			if(SecurityContextHolder.getContext().getAuthentication()==null)
+//				return null;
+//			Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			if(UserDetail.class.isInstance(user)){
+//				return (UserDetail)user;
+//			}else if(User.class.isInstance(user)){
+//				User suser = (User)user;
+//				SimpleUserDetail ud = new SimpleUserDetail();
+//				ud.setUserName(suser.getUsername());
+//				return ud;
+//			}
+//			return null;
+			return sessionUserManager.getCurrentUser();
 		});
 		log.setPathPatterns(accessLogProperties.getPathPatterns());
 		return log;
@@ -101,7 +109,10 @@ public class BootSecurityCommonContextConfig{
 //	@ConditionalOnMissingBean(name=BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER, value={BootWebExceptionResolver.class, ResponseEntityExceptionHandler.class})
 	@ConditionalOnMissingBean(name=BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER, value={BootWebExceptionResolver.class})
 	public SecurityWebExceptionResolver bootWebExceptionResolver(){
-		return new SecurityWebExceptionResolver();
+		SecurityWebExceptionResolver r = new SecurityWebExceptionResolver();
+		r.setJfishConfig(jfishConfig);
+		r.setErrorView(jsonView);
+		return r;
 	}
 
 	@ConditionalOnProperty(name="hostName", prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".security.redis")

@@ -17,16 +17,24 @@ import org.onetwo.boot.core.web.mvc.EnhanceRequestMappingConfiguration;
 import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
+import org.onetwo.boot.core.web.socket.WebsocketConfiguration;
+import org.onetwo.boot.module.activemq.ActivemqConfiguration;
+import org.onetwo.boot.module.activemq.jmx.ActiveMQJmxConfiguration;
+import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTConfiguration;
 import org.onetwo.boot.module.alioss.OssConfiguration;
 import org.onetwo.boot.module.cache.SpringCacheConfiguration;
 import org.onetwo.boot.module.cos.CosConfiguration;
 import org.onetwo.boot.module.dbm.BootDbmConfiguration;
+import org.onetwo.boot.module.oauth2.ssoclient.tokeninfo.SsoClientCustomTokenInfoUriConfiguration;
+import org.onetwo.boot.module.oauth2.ssoclient.userinfo.SsoClientCustomUserInfoUriConfiguration;
 import org.onetwo.boot.module.poi.ExcelViewConfiguration;
+import org.onetwo.boot.module.qlexpress.QLExpressConfigtion;
 import org.onetwo.boot.module.redis.RedisConfiguration;
 import org.onetwo.boot.module.redission.RedissonConfiguration;
-import org.onetwo.boot.module.security.oauth2.OAuth2SsoClientAutoContextConfig;
 import org.onetwo.boot.module.session.BootSpringSessionConfiguration;
+import org.onetwo.boot.module.sftp.SftpConfiguration;
 import org.onetwo.boot.module.swagger.SwaggerConfiguration;
+import org.onetwo.boot.module.timer.TimerConfiguration;
 import org.onetwo.boot.plugin.core.JFishWebPlugin;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.context.AbstractImportSelector;
@@ -51,6 +59,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		//store 在BootCommonServiceConfig之前初始化，因为BootCommonService依赖filestore来加载
 		classNames.add(OssConfiguration.class.getName());
 		classNames.add(CosConfiguration.class.getName());
+		classNames.add(SftpConfiguration.class.getName());
 		
 		if(attributes.getBoolean("enableCommonService")){
 			classNames.add(BootCommonServiceConfig.class.getName());
@@ -73,7 +82,8 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 
 		classNames.add(JwtContextConfig.class.getName());
 		
-		classNames.add(OAuth2SsoClientAutoContextConfig.class.getName());
+		classNames.add(SsoClientCustomUserInfoUriConfiguration.class.getName());
+		classNames.add(SsoClientCustomTokenInfoUriConfiguration.class.getName());
 		classNames.add(RedisConfiguration.class.getName());
 		classNames.add(AsyncMvcConfiguration.class.getName());
 		classNames.add(AsyncTaskConfiguration.class.getName());
@@ -107,6 +117,20 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 			}
 			classNames.add(extClassName);
 		}
+		
+		// activemq
+		classNames.add(ActivemqConfiguration.class.getName());
+		// activemq jmx
+		classNames.add(ActiveMQJmxConfiguration.class.getName());
+		// activemq mqtt
+		classNames.add(ActiveMQTTConfiguration.class.getName());
+		
+		// ali qlexpress
+		classNames.add(QLExpressConfigtion.class.getName());
+		
+		classNames.add(TimerConfiguration.class.getName());
+		
+		classNames.add(WebsocketConfiguration.class.getName());
 		
 		
 		return classNames;

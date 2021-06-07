@@ -34,7 +34,7 @@ public class SimpleLoggerManager {
 	}
 	
 	public void changeLevels(String level, String... loggerNames){
-		Stream.of(loggerNames).forEach(loggerName->changeLevel(level, loggerName));
+		Stream.of(loggerNames).parallel().forEach(loggerName->changeLevel(level, loggerName));
 	}
 	
 	public void changeLevel(Level level, Class<?> clazz){

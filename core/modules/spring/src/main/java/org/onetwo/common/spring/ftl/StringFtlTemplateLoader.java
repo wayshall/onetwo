@@ -47,7 +47,7 @@ public class StringFtlTemplateLoader implements TemplateLoader {
         return new StringReader(((StringTemplateSource)templateSource).source);
     }
 	
-	 private static class StringTemplateSource {
+	 static class StringTemplateSource {
 	        private final String name;
 	        private final String source;
 	        private final long lastModified;
@@ -67,7 +67,22 @@ public class StringFtlTemplateLoader implements TemplateLoader {
 	            this.lastModified = lastModified;
 	        }
 	        
-	        public boolean equals(Object obj) {
+	        
+	        public String getName() {
+				return name;
+			}
+
+			public String getSource() {
+				return source;
+			}
+
+			public long getLastModified() {
+				return lastModified;
+			}
+
+
+
+			public boolean equals(Object obj) {
 	            if(obj instanceof StringTemplateSource) {
 	                return name.equals(((StringTemplateSource)obj).name);
 	            }

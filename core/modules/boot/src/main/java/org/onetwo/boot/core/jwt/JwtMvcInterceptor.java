@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorAdapter;
 import org.onetwo.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,17 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 	private String authHeaderName = JwtUtils.DEFAULT_HEADER_KEY;
 	@Autowired
 	private JwtTokenService jwtTokenService;
-	private boolean canBeAnonymous;
+	@Autowired
+	private BootJFishConfig jfishConfig;
+//	private boolean canBeNotLogin;
+	private Boolean canBeAnonymous;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
 		String token = request.getHeader(authHeaderName);
-		if(StringUtils.isBlank(token) && canBeAnonymous){
+		// 如果token为空，并且有允许不登录，直接返回true
+		boolean canBeNotLogin = jfishConfig.getJwt().isCanBeNotLogin();
+		if(StringUtils.isBlank(token) && canBeNotLogin){
 			return true;
 		}
 		Optional<JwtUserDetail> userOpt = Optional.empty();
@@ -39,20 +45,39 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 			if(e instanceof ServiceException){
 				throw (ServiceException)e;
 			}
-			throw new ServiceException(JwtErrors.CM_LOGIN_UNKNOW_ERR, e);
+			throw new ServiceException(JwtErrors.CM_NOT_LOGIN_UNKNOW, e);
 		}
 		
 		if(!userOpt.isPresent()){
 			throw new ServiceException(JwtErrors.CM_NOT_LOGIN);
 		}
+		
+		JwtUserDetail userDetail = userOpt.get();
+		boolean canBeAnonymous = canBeAnonymous();
+		if (userDetail.isAnonymousLogin() && !canBeAnonymous) {
+			throw new ServiceException(JwtErrors.CM_NOT_LOGIN_ANONYMOUS);
+		}
 		return true;
+	}
+	
+	/****
+	 * 是否可以匿名登录
+	 * @author weishao zeng
+	 * @return
+	 */
+	public boolean canBeAnonymous() {
+		if (canBeAnonymous!=null) {
+			return canBeAnonymous;
+		}
+		return jfishConfig.getJwt().isCanBeAnonymous();
 	}
 
 	public void setAuthHeaderName(String authHeaderName) {
 		this.authHeaderName = authHeaderName;
 	}
 
-	public void setCanBeAnonymous(boolean canBeAnonymous) {
+
+	public void setCanBeAnonymous(Boolean canBeAnonymous) {
 		this.canBeAnonymous = canBeAnonymous;
 	}
 
@@ -63,8 +88,7 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 
 	@Override
 	public String toString() {
-		return "JwtMvcInterceptor [authHeaderName=" + authHeaderName
-				+ ", canBeAnonymous=" + canBeAnonymous + "]";
+		return "JwtMvcInterceptor [authHeaderName=" + authHeaderName + "]";
 	}
 
 }

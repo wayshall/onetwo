@@ -55,6 +55,7 @@ public class ExtSpringEncoder extends SpringEncoder {
 				map.add(k, v);
 			});*/
 			getParamsConvertor.flatObject("", requestBody, new ConsumableValuePutter((k, v) -> {
+				// urlencode?
 				map.add(k, v);
 			}));
 			map.forEach((name, value)->{

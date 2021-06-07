@@ -15,7 +15,7 @@ public class JsonDateOnlyDerializer extends JsonDeserializer<Date>{
 	@Override
 	public Date deserialize(JsonParser p, DeserializationContext ctxt)throws IOException, JsonProcessingException {
 		String val = p.getText();
-		return NiceDate.New(val).thisDate().getTime();
+		return NiceDate.New(val).preciseAtDate().getTime();
 	}
 
 }

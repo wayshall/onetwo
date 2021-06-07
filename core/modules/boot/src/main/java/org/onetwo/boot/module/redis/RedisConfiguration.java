@@ -2,10 +2,12 @@ package org.onetwo.boot.module.redis;
 
 import org.onetwo.boot.module.redis.JFishRedisProperties.LockRegistryProperties;
 import org.onetwo.boot.module.redis.JFishRedisProperties.OnceTokenProperties;
+import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -18,7 +20,7 @@ import org.springframework.integration.redis.util.RedisLockRegistry;
  * <br/>
  */
 @EnableConfigurationProperties({JFishRedisProperties.class})
-@ConditionalOnClass({JedisConnectionFactory.class, RedisTemplate.class})
+@ConditionalOnClass({RedisConnectionFactory.class, RedisTemplate.class})
 @ConditionalOnProperty(name=JFishRedisProperties.ENABLED_KEY, havingValue="true", matchIfMissing=true)
 //@ConditionalOnBean(JedisConnectionFactory.class)
 //@AutoConfigureBefore(RedisAutoConfiguration.class)
@@ -26,10 +28,14 @@ public class RedisConfiguration {
 	
 //	private static final String BEAN_REDISCONNECTIONFACTORY = "redisConnectionFactory";
 
-//    @Autowired
-//    private ApplicationContext applicationContext;
+    @Autowired
+    private ApplicationContext applicationContext;
     @Autowired
     private JFishRedisProperties redisProperties;
+    
+    /*@Value(LockRegistryProperties.DEFAULT_LOCK_KEY)
+    private String lockKey;*/
+	
     
 	/*@Bean
     @ConditionalOnMissingBean(name=BEAN_REDISCONNECTIONFACTORY)
@@ -77,12 +83,14 @@ public class RedisConfiguration {
 	}*/
 	
 	@Bean
-	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
+//	@ConditionalOnProperty(name=JFishRedisProperties.ENABLED_LOCK_REGISTRY)
 	@ConditionalOnClass({RedisLockRegistry.class})
 	public RedisLockRegistry redisLockRegistry(@Autowired RedisConnectionFactory redisConnectionFactory){
 		LockRegistryProperties lockRegistryProperties = redisProperties.getLockRegistry();
-		RedisLockRegistry lockRegistry = new RedisLockRegistry(redisConnectionFactory, 
-																lockRegistryProperties.getKey(), 
+		String lockKey = SpringUtils.resolvePlaceholders(applicationContext, LockRegistryProperties.DEFAULT_LOCK_KEY);
+		String realLockKey = lockRegistryProperties.getLockKey(lockKey);
+		RedisLockRegistry lockRegistry = new RedisLockRegistry(redisConnectionFactory,
+																realLockKey, 
 																lockRegistryProperties.getExpireAfter());
 		return lockRegistry;
 	}
@@ -102,6 +110,13 @@ public class RedisConfiguration {
 		token.setExpiredInSeconds(config.getExpiredInSeconds());
 		token.setRedisOperationService(redisOperationService);
 		return token;
+	}
+	
+	@Bean
+	@Autowired
+	@ConditionalOnClass({RedisLockRegistry.class})
+	public RedisLockService redisLockService(@Autowired JedisConnectionFactory jedisConnectionFactory) {
+		return new RedisLockService(redisLockRegistry(jedisConnectionFactory));
 	}
     
 }

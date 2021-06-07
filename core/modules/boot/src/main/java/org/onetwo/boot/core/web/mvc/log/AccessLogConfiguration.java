@@ -37,7 +37,7 @@ public class AccessLogConfiguration {
 	}
 	
 	@Bean(name="accessLogger")
-//	@ConditionalOnMissingBean(DefaultAccessLogger.class)
+	@ConditionalOnProperty(value=AccessLogProperties.FILE_LOGGER_ENABLED_KEY, matchIfMissing=true)
 	public FileAccessLogger accessLogger(){
 		FileAccessLogger accessLogger = new FileAccessLogger();
 		accessLogger.setLoggerName(accessLogProperties.getLoggerName());

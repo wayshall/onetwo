@@ -57,7 +57,7 @@ public class SimpleBeanCopier {
 	}
 	
 	/****
-	 * 
+	 * 遍历目标对象的属性，根据目标属性在源对象里寻找对应属性的值，并复制该值
 	 * @param src src object can be a map or java bean
 	 * @param target
 	 * @return

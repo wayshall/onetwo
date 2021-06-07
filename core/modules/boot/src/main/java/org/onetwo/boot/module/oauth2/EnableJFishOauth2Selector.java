@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.onetwo.boot.module.oauth2.EnableJFishOauth2.OAuth2Role;
 import org.onetwo.boot.module.oauth2.authorize.AuthorizationServerConfiguration;
+import org.onetwo.boot.module.oauth2.bearer.OAuth2BearerTokenConfiguration;
 import org.onetwo.boot.module.oauth2.clientdetails.ClientDetailsResolverConfiguration;
 import org.onetwo.boot.module.oauth2.resouce.ResourceServerConfiguration;
 import org.onetwo.boot.module.oauth2.result.OAuth2CustomResultConfiguration;
@@ -28,6 +29,8 @@ public class EnableJFishOauth2Selector extends AbstractImportSelector<EnableJFis
 		List<OAuth2Role> roles = Arrays.asList((OAuth2Role[])attributes.get("value"));
 		
 		classNames.add(PasswordEncoderConfiguration.class.getName());
+		
+		classNames.add(OAuth2BearerTokenConfiguration.class.getName());
 		
 		if(roles.contains(OAuth2Role.AUTHORIZATION_SERVER)){
 			classNames.add(AuthorizationServerConfiguration.class.getName());

@@ -1,5 +1,7 @@
 package org.onetwo.boot.core.web.service;
 
+import java.util.List;
+
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSiteConfig.CompressConfig;
@@ -7,6 +9,7 @@ import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.service.impl.DbmFileStorerListener;
 import org.onetwo.boot.core.web.service.impl.SimpleBootCommonService;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
+import org.onetwo.boot.core.web.utils.PathTagResolver;
 import org.onetwo.boot.utils.ImageCompressor;
 import org.onetwo.boot.utils.ImageCompressor.ImageCompressorConfig;
 import org.onetwo.common.db.spi.BaseEntityManager;
@@ -50,12 +53,14 @@ public class BootCommonServiceConfig {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(BootCommonService.class)
-	@ConditionalOnBean(FileStorer.class)
+//	@ConditionalOnBean(FileStorer.class)
 	@ConditionalOnProperty(BootSiteConfig.ENABLE_STORETYPE_PROPERTY)
-	public BootCommonService bootCommonService(){
+	@Autowired
+	public BootCommonService bootCommonService(List<FileStorer> fileStorers){
 		SimpleBootCommonService service = new SimpleBootCommonService();
 		service.setCompressConfig(bootSiteConfig.getUpload().getCompressImage());
-		service.setFileStoreBaseDir(bootSiteConfig.getUpload().getFileStorePath());
+		service.setFileStorers(fileStorers);
+//		service.setFileStoreBaseDir(bootSiteConfig.getUpload().getFileStorePath());
 		return service;
 	}
 	
@@ -85,6 +90,11 @@ public class BootCommonServiceConfig {
 	public SimpleLoggerManager simpleLoggerManager(){
 		return SimpleLoggerManager.getInstance();
 	}
-
+	
+	@Bean
+	public PathTagResolver pathTagResolver() {
+		PathTagResolver resolver = new PathTagResolver();
+		return resolver;
+	}
 
 }

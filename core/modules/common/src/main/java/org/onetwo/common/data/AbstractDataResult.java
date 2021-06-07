@@ -36,6 +36,7 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 
 	private String code = null;//SUCCESS;//0,1;
 	private String message;//
+	private Boolean showMessage;
 	/***
 	 * 
 	面向某些领域时，指示客户端是否只提取result里的data作为返回结果
@@ -118,10 +119,22 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	 * 客户端用拦截的方式统一处理时需要用到，客户端拦截器可以根据这个提示只弹出提示信息，无需继续传递结果给下层的ui
 	 * @return
 	 */
+	@Deprecated
 	public Boolean isMessageOnly() {
+//		return StringUtils.isNotBlank(message) && getData()==null;
+		return isShowMessage();
+	}
+	
+	public Boolean isShowMessage() {
+		if (this.showMessage!=null) {
+			return this.showMessage;
+		}
 		return StringUtils.isNotBlank(message) && getData()==null;
 	}
 
+	public void setShowMessage(Boolean showMessage) {
+		this.showMessage = showMessage;
+	}
 
 	@Override
 	public String toString() {

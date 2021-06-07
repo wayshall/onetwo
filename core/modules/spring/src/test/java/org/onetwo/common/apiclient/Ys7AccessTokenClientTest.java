@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @author wayshall
  * <br/>
  */
-public class Ys7AccessTokenClientTest extends ApicientBaseTests {
+public class Ys7AccessTokenClientTest extends ApiClientBaseTests {
 	
 	@Autowired
 	Ys7AccessTokenClient ys7AccessTokenClient;

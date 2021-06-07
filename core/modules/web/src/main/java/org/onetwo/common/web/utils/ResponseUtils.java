@@ -1,5 +1,6 @@
 package org.onetwo.common.web.utils;
 
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,11 +14,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
 abstract public class ResponseUtils {
@@ -267,16 +271,30 @@ abstract public class ResponseUtils {
 //		response.addHeader("P3P", "CP=\"CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR\"");
 //		response.addHeader("P3P", "CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\"");
 	}
+	
+	/***
+	 * 设置下载的header
+	 * @author weishao zeng
+	 * @param response
+	 * @param filename
+	 */
+	public static void configDownloadHeaders(HttpServletResponse response, String filename) {
+		response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+		String name = LangUtils.encodeUrl(filename);
+		response.setHeader("Content-Disposition", "attachment;filename*=utf-8''" + name);
+	}
 
-	/*public static void main(String[] args) {
-		Date now = new Date();
-		String str = COOKIE_DATA_FORMAT.format(now);
-		System.out.println("str: " + now.toLocaleString());
-		System.out.println("str: " + str);
-
-		now = new Date();
-		now = DateUtil.addHours(now, 8);
-		System.out.println("str3: " + now.toLocaleString());
-		System.out.println("str3: " + COOKIE_DATA_FORMAT.format(now));
-	}*/
+	public static void download(HttpServletResponse response, InputStream input, String filename) {
+		try {
+			response.setContentLength(input.available());
+//			response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+//			String name = new String(filename.getBytes("GBK"), "ISO8859-1");
+//			response.setHeader("Content-Disposition", "attachment;filename=" + name);
+			ResponseUtils.configDownloadHeaders(response, filename);
+			IOUtils.copy(input, response.getOutputStream());
+		} catch (Exception e) {
+			String msg = "download file error：";
+			logger.error(msg + e.getMessage(), e);
+		}
+	}
 }

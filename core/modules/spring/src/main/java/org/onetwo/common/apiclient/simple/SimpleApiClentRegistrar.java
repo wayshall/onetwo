@@ -15,11 +15,12 @@ import com.google.common.collect.Sets;
  * @author weishao zeng
  * <br/>
  */
-public class SimpleApiClentRegistrar extends GeneircApiClentRegistrar<EnableRestApiClient, RestApiClient> {
+public class SimpleApiClentRegistrar extends GenericApiClentRegistrar<EnableRestApiClient, RestApiClient> {
 
 	private Class<?> componentBaseClass;
 	
 	public SimpleApiClentRegistrar(Class<?> componentBaseClass) {
+		super(EnableRestApiClient.class, RestApiClient.class);
 		this.componentBaseClass = componentBaseClass;
 		SimpleApiClientResponseHandler<ApiClientMethod> handler = new SimpleApiClientResponseHandler<>();
 		setResponseHandler(handler);

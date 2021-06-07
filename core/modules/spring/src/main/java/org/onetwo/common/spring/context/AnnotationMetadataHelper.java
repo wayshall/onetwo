@@ -128,4 +128,8 @@ public class AnnotationMetadataHelper {
 		return attributes;
 	}
 
+	public AnnotationMetadata getImportingClassMetadata() {
+		return importingClassMetadata;
+	}
+
 }

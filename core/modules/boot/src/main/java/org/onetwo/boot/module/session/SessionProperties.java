@@ -32,5 +32,9 @@ public class SessionProperties {
 										.orElse(COOKIE);
 		}
 	}
+	
+	public String getTokenHeaderName() {
+		return tokenHeaderName;
+	}
 
 }

@@ -9,7 +9,7 @@ import java.util.Map;
  * <br/>
  */
 @SuppressWarnings("serial")
-public class ClientDetails implements Serializable {
+public class ClientDetails implements OAuth2ClientDetail, Serializable {
 	private String clientId;
 	
 	private Map<String, Object> properties;

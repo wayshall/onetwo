@@ -29,8 +29,8 @@ import com.google.common.collect.Lists;
 @ConditionalOnProperty(name=ZuulLimiterProperties.ENABLED_KEY)
 public class LimiterConfiguration {
 
-	@Autowired
-	private ZuulLimiterProperties limiterProperties;
+//	@Autowired
+//	private ZuulLimiterProperties limiterProperties;
 	
 	@Bean
 	public PreLimiterZuulFilter preLimiterZuulFilter(LimiterManager limiterManager){
@@ -53,7 +53,8 @@ public class LimiterConfiguration {
 	}
 	
 	@Bean
-	public LimiterManager LimiterManager(){
+	@Autowired
+	public LimiterManager LimiterManager(ZuulLimiterProperties limiterProperties){
 		LimiterManager lm = new LimiterManager();
 		lm.setLimiterConfigs(new ArrayList<>(limiterProperties.getPolicies().values()));
 		lm.buildLimiter();

@@ -1,10 +1,14 @@
 package org.onetwo.common.utils.convertor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.onetwo.common.convert.EnumerableTextLabel;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -156,5 +160,51 @@ public enum JNamedQueryKey {
 		
 		cdate = Types.convertValue(cdate.getTime(), Date.class);
 		Assert.assertEquals(datestr, DateUtils.formatTime(cdate));
+	}
+	
+	@Test
+	public void testEnumerableTextLabel(){
+		String enumStr = "正常";
+		EnumerableTextLabelValues enumValue = Types.convertValue("正常", EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.NORMAL);
+		
+		enumValue = Types.convertValue("NORMAL", EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.NORMAL);
+		
+		enumValue = Types.convertValue("0", EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.NORMAL);
+		
+		enumValue = Types.convertValue(0, EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.NORMAL);
+		
+		enumStr = "已删除";
+		enumValue = Types.convertValue(enumStr, EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.DELETE);
+		
+		enumStr = "DISABLED";
+		enumValue = Types.convertValue(enumStr, EnumerableTextLabelValues.class);
+		assertThat(enumValue).isEqualTo(EnumerableTextLabelValues.DISABLED);
+		
+		assertThatThrownBy(() -> {
+			Types.convertValue("error", EnumerableTextLabelValues.class);
+		}).isInstanceOf(IllegalArgumentException.class);
+	}
+	
+
+	public static enum EnumerableTextLabelValues implements EnumerableTextLabel {
+		NORMAL("正常"),
+		DISABLED("禁用"),
+		DELETE("已删除");
+		
+		final private String label;
+
+		private EnumerableTextLabelValues(String label) {
+			this.label = label;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+		
 	}
 }

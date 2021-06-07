@@ -4,12 +4,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangOps;
+import org.onetwo.ext.security.utils.ExceptionUserCheckerConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -23,6 +21,8 @@ import org.springframework.util.Assert;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**异常用户检测，如果用户在某一个时段内连续登录失败超过maxLoginTimes次，则拒绝再尝试。
  * @author wayshall
  * <br/>
@@ -34,16 +34,16 @@ public class ExceptionUserChecker implements InitializingBean, AuthenticationPro
 	/***
 	 * 默认一天
 	 */
-	@Setter
-	private String duration;
+	private ExceptionUserCheckerConfig exceptionUserCheckerConfig;
 	/***
 	 * 默认最大5次
 	 */
-	@Setter
-	private int maxLoginTimes = 5;
+//	@Setter
+//	private int maxLoginTimes = 5;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		String duration = exceptionUserCheckerConfig.getDuration();
 		Assert.hasText(duration, "duration must have length; it must not be null or empty");
 		Pair<Integer, TimeUnit> durationPair = LangOps.parseTimeUnit(duration);
 		exceptionUsers = CacheBuilder.newBuilder()
@@ -62,6 +62,7 @@ public class ExceptionUserChecker implements InitializingBean, AuthenticationPro
 	
 	
 	public void checkUser(String userName){
+		int maxLoginTimes = exceptionUserCheckerConfig.getMaxLoginTimes();
 		AtomicInteger errorTimes = getExceptionTimesByUser(userName);
 		int times = errorTimes.get();
 		if(times>=maxLoginTimes){
@@ -91,6 +92,10 @@ public class ExceptionUserChecker implements InitializingBean, AuthenticationPro
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+	}
+
+	public void setExceptionUserCheckerConfig(ExceptionUserCheckerConfig exceptionUserCheckerConfig) {
+		this.exceptionUserCheckerConfig = exceptionUserCheckerConfig;
 	}
 
 }

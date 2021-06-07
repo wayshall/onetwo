@@ -11,9 +11,9 @@ import org.onetwo.ext.security.mvc.args.SecurityArgumentResolver;
 import org.onetwo.ext.security.utils.CookieStorer;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecuritySessionUserManager;
+import org.onetwo.ext.security.utils.UserPasswordEncoder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,8 +31,6 @@ public class SecurityCommonContextConfig implements InitializingBean{
 //	abstract public SecurityConfig getSecurityConfig();
 	@Autowired
 	private SecurityConfig securityConfig;
-	@Autowired
-	private ApplicationContext applicationContext;
 	
 	
 	@Override
@@ -58,15 +56,21 @@ public class SecurityCommonContextConfig implements InitializingBean{
 		return new SecuritySessionUserManager();
 	}
 	
+//	@Bean
+//	public BCryptPasswordEncoder bcryptEncoder(){
+//		BCryptPasswordEncoder coder = new BCryptPasswordEncoder();
+//		return coder;
+//	}
+	
 	@Bean
-	public BCryptPasswordEncoder bcryptEncoder(){
-		BCryptPasswordEncoder coder = new BCryptPasswordEncoder();
-		return coder;
+	public UserPasswordEncoder userPasswordEncoder() {
+		return new UserPasswordEncoder();
 	}
 	
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder(){
-		return bcryptEncoder();
+		BCryptPasswordEncoder coder = new BCryptPasswordEncoder();
+		return coder;
 	}
 	
 	@Bean
@@ -80,7 +84,8 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	@Bean
 	@OnMissingBean(AjaxAuthenticationHandler.class)
 	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
-		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().getLoginUrl(), 
+		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().isFailureUrlWithMessage(), 
+																			getSecurityConfig().getFailureUrl(), 
 																			getSecurityConfig().getAfterLoginUrl(),
 																			getSecurityConfig().isAlwaysUseDefaultTargetUrl());
 		if(securityConfig.getJwt().isEnabled()){

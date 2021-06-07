@@ -3,6 +3,7 @@ package org.onetwo.ext.security.url;
 import java.util.Collection;
 
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.userdetails.UserRoot;
 import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource.CodeSecurityConfig;
 import org.slf4j.Logger;
@@ -39,28 +40,39 @@ public class MultiWebExpressionVoter implements AccessDecisionVoter<FilterInvoca
 				return ACCESS_GRANTED;
 			}
 		}
-		CodeSecurityConfig codeConfig = findConfigAttribute(attributes);
+//		CodeSecurityConfig codeConfig = findConfigAttribute(attributes);
 
-		if (codeConfig == null) {
+		if (LangUtils.isEmpty(attributes)) {
 			return ACCESS_ABSTAIN;
 		}
 
 		EvaluationContext ctx = expressionHandler.createEvaluationContext(authentication,
 				fi);
 
-		return ExpressionUtils.evaluateAsBoolean(codeConfig.getAuthorizeExpression(), ctx) ? ACCESS_GRANTED
-				: ACCESS_DENIED;
-	}
-
-	private CodeSecurityConfig findConfigAttribute(
-			Collection<ConfigAttribute> attributes) {
+//		return ExpressionUtils.evaluateAsBoolean(codeConfig.getAuthorizeExpression(), ctx) ? ACCESS_GRANTED
+//				: ACCESS_DENIED;
+		int result = ACCESS_ABSTAIN;
 		for (ConfigAttribute attribute : attributes) {
 			if (attribute instanceof CodeSecurityConfig) {
-				return (CodeSecurityConfig) attribute;
+				CodeSecurityConfig codeConfig = (CodeSecurityConfig) attribute;
+				result = ExpressionUtils.evaluateAsBoolean(codeConfig.getAuthorizeExpression(), ctx) ? ACCESS_GRANTED : ACCESS_DENIED;
+				if (result==ACCESS_GRANTED) {
+					return result;
+				}
 			}
 		}
-		return null;
+		return result;
 	}
+
+//	private CodeSecurityConfig findConfigAttribute(
+//			Collection<ConfigAttribute> attributes) {
+//		for (ConfigAttribute attribute : attributes) {
+//			if (attribute instanceof CodeSecurityConfig) {
+//				return (CodeSecurityConfig) attribute;
+//			}
+//		}
+//		return null;
+//	}
 
 	public boolean supports(ConfigAttribute attribute) {
 		return attribute instanceof CodeSecurityConfig;

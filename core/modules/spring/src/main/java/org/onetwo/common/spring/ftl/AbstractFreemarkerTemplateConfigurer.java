@@ -16,7 +16,7 @@ import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 
-abstract public class AbstractFreemarkerTemplateConfigurer{
+abstract public class AbstractFreemarkerTemplateConfigurer {
 	public static final BeansWrapper INSTANCE = FtlUtils.BEAN_WRAPPER;
 
 	static {
@@ -81,6 +81,8 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 				this.configuration.setTemplateLoader(loader);
 			}*/
 			this.configuration.setTemplateLoader(loader);
+			// 关闭本地化查找，即不根据local查找模板
+			this.configuration.setLocalizedLookup(false);
 			
 			this.buildConfigration(this.configuration);
 			
@@ -99,7 +101,7 @@ abstract public class AbstractFreemarkerTemplateConfigurer{
 		try {
 			template = getConfiguration().getTemplate(name);
 		}catch (ParseException e) {
-			throw new BaseException("sql tempalte["+name+"] syntax error : " + e.getMessage());
+			throw new BaseException("freemark tempalte["+name+"] syntax error : " + e.getMessage());
 		} catch (Exception e) {
 			throw new BaseException("get tempalte["+name+"] error : " + e.getMessage(), e);
 		}

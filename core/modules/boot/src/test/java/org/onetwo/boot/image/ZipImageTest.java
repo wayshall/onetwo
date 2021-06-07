@@ -15,7 +15,7 @@ public class ZipImageTest {
 	
 	@Test
 	public void testZip() throws Exception{
-		String path = "F:/资料/云微科技/中大最美校园/pic/南校园素材1.rar";
+		String path = "F:/test.rar";
 		Thumbnails.fromFilenames(Arrays.asList(path))
 					.scale(1)
 					.outputQuality(0.01)

@@ -5,16 +5,17 @@ import java.lang.reflect.Method;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
-import com.google.common.cache.LoadingCache;
+import com.google.common.cache.Cache;
 
 /**
  * @author wayshall
  * <br/>
  */
 public abstract class AbstractMethodInterceptor<M extends AbstractMethodResolver<?>> implements MethodInterceptor {
-	final protected LoadingCache<Method, M> methodCache;
+	final protected Cache<Method, M> methodCache;
 
-	public AbstractMethodInterceptor(LoadingCache<Method, M> methodCache) {
+
+	public AbstractMethodInterceptor(Cache<Method, M> methodCache) {
 		this.methodCache = methodCache;
 	}
 
@@ -37,10 +38,17 @@ public abstract class AbstractMethodInterceptor<M extends AbstractMethodResolver
 			}
 		}
 		
-		M invokeMethod = methodCache.get(method);
+//		M invokeMethod = methodCache.get(method);
+		M invokeMethod = methodCache.get(method, () -> {
+			return createMethod(method);
+		});
 		return doInvoke(invocation, invokeMethod);
 	}
 	
-	abstract protected Object doInvoke(MethodInvocation invocation, M invokeMethod);
+	protected M createMethod(Method method) {
+		throw new UnsupportedOperationException();
+	}
+	
+	abstract protected Object doInvoke(MethodInvocation invocation, M invokeMethod) throws Throwable ;
 	
 }

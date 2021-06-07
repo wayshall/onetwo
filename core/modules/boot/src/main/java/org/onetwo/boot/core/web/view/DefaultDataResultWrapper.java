@@ -38,7 +38,8 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 			MapResultBuilder dataResult = createMapResultBuilder((Map<String, Object>) result);
 			return dataResult.build();
 		}else{
-			SimpleDataResult<Object> dataResult = SimpleDataResult.success("success", result);
+//			SimpleDataResult<Object> dataResult = SimpleDataResult.success("success", result);
+			SimpleDataResult<Object> dataResult = DataResults.data(result).build();
 			return dataResult;
 		}
 	}
@@ -52,13 +53,13 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 					dataResult.error();
 				}
 				
-			}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
+			}else if(entry.getKey() instanceof String && ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
 				dataResult.success(entry.getValue().toString());
 				//只返回message，清空data
 				dataResult.data(null);
 				return dataResult;
 				
-			}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
+			}else if(entry.getKey() instanceof String && ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
 				dataResult.error(entry.getValue().toString());
 				//只返回message，清空data
 				dataResult.data(null);

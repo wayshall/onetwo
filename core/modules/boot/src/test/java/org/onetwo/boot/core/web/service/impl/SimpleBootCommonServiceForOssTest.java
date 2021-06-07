@@ -1,5 +1,7 @@
 package org.onetwo.boot.core.web.service.impl;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.onetwo.boot.core.web.utils.SimpleMultipartFile;
@@ -69,8 +71,8 @@ private OssProperties ossProperties;
 		Resource resource = SpringUtils.classpath("data/test.jpg");
 		
 		SimpleBootCommonService common = new SimpleBootCommonService();
-		common.setFileStoreBaseDir("/test");
-		common.setFileStorer(storer);
+//		common.setFileStoreBaseDir("/test");
+		common.setFileStorers(Arrays.asList(storer));
 		
 		SimpleMultipartFile upfile = new SimpleMultipartFile("test.jpg", resource.getFile());
 		UploadOptions opts = UploadOptions.builder()		
@@ -97,8 +99,8 @@ private OssProperties ossProperties;
 		ossProperties.setWatermask(watermask);
 		storer = new OssFileStore(wraper, ossProperties);
 		SimpleBootCommonService common = new SimpleBootCommonService();
-		common.setFileStoreBaseDir("/test");
-		common.setFileStorer(storer);
+//		common.setFileStoreBaseDir("/test");
+		common.setFileStorers(Arrays.asList(storer));
 		
 		SimpleMultipartFile upfile = new SimpleMultipartFile("test.jpg", resource.getFile());
 		UploadOptions opts = UploadOptions.builder()		

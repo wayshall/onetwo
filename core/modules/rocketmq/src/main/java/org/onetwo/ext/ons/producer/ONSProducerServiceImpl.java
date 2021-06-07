@@ -9,6 +9,8 @@ import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
@@ -17,6 +19,8 @@ import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
+import org.onetwo.ext.ons.ONSUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +39,7 @@ import com.aliyun.openservices.ons.api.exception.ONSClientException;
  */
 public class ONSProducerServiceImpl extends ProducerBean implements InitializingBean, DisposableBean, DefaultProducerService, ProducerService {
 
-//	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
+	private final Logger logger = ONSUtils.getONSLogger();
 	
 	private MessageSerializer messageSerializer;
 
@@ -135,19 +139,28 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		Message message = onsMessage.toMessage();
 		
 		String topic = resolvePlaceholders(message.getTopic());
+		checkTopicOrTag(topic);
 		message.setTopic(topic);
+		
 		String tag = resolvePlaceholders(message.getTag());
 		message.setTag(tag);
+		checkTopicOrTag(tag);
 		
 		MessageSerializer messageSerializer = getMessageSerializer(onsMessage);
+		configMessage(message, onsMessage);
 		if(needSerialize(body)){
 			message.setBody(messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
 		}else{
 			message.setBody((byte[])body);
 		}
-		configMessage(message, onsMessage);
 		
 		return sendRawMessage(message, interceptorPredicate);
+	}
+	
+	private void checkTopicOrTag(String name) {
+		if (StringUtils.isBlank(name) || name.contains(" ") || name.contains(FileUtils.UNICODE_ZERO_WIDTH_SPACE)) {
+			throw new BaseException("invalid topic or tag: [" + name + "]");
+		}
 	}
 
 	private MessageSerializer getMessageSerializer(OnsMessage onsMessage) {
@@ -237,6 +250,9 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 
 	public SendResult doSendRawMessage(Message message){
 		try {
+			if (logger.isInfoEnabled()) {
+				logger.info("do send raw message: {}", message.getKey());
+			}
 			return send(message);
 		} catch (ONSClientException e) {
 			handleException(e, message);

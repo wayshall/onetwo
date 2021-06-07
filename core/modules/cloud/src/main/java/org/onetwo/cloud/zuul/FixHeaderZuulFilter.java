@@ -6,18 +6,20 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.lang3.StringUtils;
+import org.onetwo.boot.module.oauth2.bearer.BearerTokenProperties;
+import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
+import org.onetwo.boot.utils.PathMatcher;
 import org.onetwo.cloud.core.BootJfishCloudConfig;
 import org.onetwo.cloud.core.BootJfishCloudConfig.FixHeadersConfig;
-import org.onetwo.cloud.core.BootJfishCloudConfig.PathMatcher;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ import org.springframework.util.AntPathMatcher;
 import com.google.common.collect.Sets;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -41,6 +45,8 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 
 	@Autowired
     private BootJfishCloudConfig cloudConfig;
+	@Autowired(required=false)
+	private BearerTokenProperties bearerTokenProperties;
 	
 //	private List<FixHeadersConfig> fixHeaders;
 	private AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -71,8 +77,31 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 
 	@Override
 	public Object run() {
-		List<FixHeadersConfig> fixHeaders = this.cloudConfig.getZuul().getFixHeaders();
-		if(fixHeaders==null){
+		boolean debug = this.cloudConfig.getZuul().isDebug();
+		
+		List<FixHeadersConfig> fixHeaders = new ArrayList<>();
+		fixHeaders.addAll(this.cloudConfig.getZuul().getFixHeaders());
+		
+		if (bearerTokenProperties!=null && !bearerTokenProperties.getHeaders().isEmpty()) {
+			bearerTokenProperties.getHeaders().values().forEach(conf -> {
+				FixHeadersConfig fc = new FixHeadersConfig();
+				fc.setHeader(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER);
+				fc.setMatcher(conf.getMatcher());
+				fc.setPathPatterns(conf.getPathPatterns());
+				fc.setValue(StringUtils.appendStartWith(conf.getValue(), OAuth2Utils.BEARER_TYPE + " "));
+				fc.setOverride(conf.isOverride());
+				fixHeaders.add(fc);
+				if (debug) {
+					log.info("fixHeaders add bearer header: {}", fc.getHeader());
+				}
+			});
+		}
+		
+		if (debug) {
+			log.info("fixHeaders: {}", fixHeaders.stream().map(h -> h.getHeader()).collect(Collectors.toList()));
+		}
+		
+		if(LangUtils.isEmpty(fixHeaders)){
 			return null;
 		}
 		
@@ -94,10 +123,22 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 			return pathMatcher.match(pattern, path);
 		});
 		if(match){
-			if(log.isDebugEnabled()){
-				log.debug("add header[{}] for path {}", fix.getHeader(), path);
+			HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
+			String headerValue = request.getHeader(fix.getHeader());
+			if(cloudConfig.getZuul().isDebug()){
+				log.info("header[{}] in current request is: {}", fix.getHeader(), headerValue);
 			}
+			if (StringUtils.isNotBlank(headerValue) && !fix.isOverride()) {
+				if(cloudConfig.getZuul().isDebug()){
+					log.info("header[{}] has exist, ignore override for ant path: {}", fix.getHeader(), path);
+				}
+				return ;
+			}
+			
 			RequestContext.getCurrentContext().addZuulRequestHeader(fix.getHeader(), fix.getValue());
+			if(cloudConfig.getZuul().isDebug()){
+				log.info("add header[{}] for ant path {}", fix.getHeader(), path);
+			}
 		}
 	}
 	
@@ -106,6 +147,18 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 			Matcher matcher = entry.getValue().matcher(path);
 			boolean isMatch = matcher.matches();
 			if(isMatch){
+				HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
+				String headerValue = request.getHeader(fix.getHeader());
+				if(cloudConfig.getZuul().isDebug()){
+					log.info("header[{}] in current request is: {}", fix.getHeader(), headerValue);
+				}
+				if (StringUtils.isNotBlank(headerValue) && !fix.isOverride()) {
+					if(cloudConfig.getZuul().isDebug()){
+						log.info("header[{}] has exist, ignore override for path: {}", fix.getHeader(), path);
+					}
+					return ;
+				}
+				
 				int count = matcher.groupCount();
 				List<String> groups = new ArrayList<>(count);
 				for (int i = 0; i <= count; i++) {
@@ -113,8 +166,8 @@ public class FixHeaderZuulFilter extends ZuulFilter implements InitializingBean 
 					groups.add(val);
 				}
 				String value = expression.parse(fix.getValue(), groups);
-				if(log.isDebugEnabled()){
-					log.debug("add header[{}] for path {}", fix.getHeader(), path);
+				if(cloudConfig.getZuul().isDebug()){
+					log.info("add header[{}] for path {}", fix.getHeader(), path);
 				}
 				RequestContext.getCurrentContext().addZuulRequestHeader(fix.getHeader(), value);
 			}

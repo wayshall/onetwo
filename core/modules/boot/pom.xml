@@ -120,6 +120,13 @@
             <artifactId>mail</artifactId>
         </dependency>
         
+        <!-- ssh -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
         <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
@@ -282,6 +289,24 @@
           <artifactId>joda-time</artifactId>
           <optional>true</optional>
         </dependency>
+        
+	  	<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>core</artifactId>
+          	<optional>true</optional>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>javase</artifactId>
+          	<optional>true</optional>
+		</dependency>
+        
+        <!-- websocket -->
+        <dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-starter-websocket</artifactId>
+		  <optional>true</optional>
+		</dependency>
 	    
 	    <!-- mybatis -->
 	    <dependency>
@@ -370,6 +395,12 @@
             </exclusion>
           </exclusions>
 	    </dependency>
+        
+        <dependency>
+            <groupId>com.tencent.cloud</groupId>
+            <artifactId>cos-sts-java</artifactId>
+            <optional>true</optional>
+        </dependency>
 	    
 	    <!-- activemq -->
         <!--
@@ -405,13 +436,61 @@
             <artifactId>activemq-web</artifactId>
             <optional>true</optional>
         </dependency>
-	    
+        
+        <!-- ali qlexpress -->
+	    <dependency>
+	      <groupId>com.alibaba</groupId>
+	      <artifactId>QLExpress</artifactId>
+	      <optional>true</optional>
+	    </dependency>
+        
+        <!-- activemq mqtt -->
+        <dependency>
+		    <groupId>org.springframework.integration</groupId>
+		    <artifactId>spring-integration-mqtt</artifactId>
+            <optional>true</optional>
+		</dependency>
+        
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>opencv</artifactId>
             <version>3.4.3-1.4.3</version>
             <optional>true</optional>
         </dependency>
+        
+        <!-- rxtx -->
+        
+    <!-- https://mvnrepository.com/artifact/org.rxtx/rxtx -->
+	    <dependency>
+	        <groupId>org.rxtx</groupId>
+	        <artifactId>rxtx</artifactId>
+	        <version>2.2pre2</version>
+            <optional>true</optional>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.rxtx</groupId>
+	        <artifactId>rxtx</artifactId>
+	        <version>2.2pre2</version>
+	        <classifier>win64</classifier>
+	        <type>dll</type>
+            <optional>true</optional>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.rxtx</groupId>
+	        <artifactId>rxtx</artifactId>
+	        <version>2.2pre2</version>
+	        <classifier>linux64</classifier>
+	        <type>so</type>
+            <optional>true</optional>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.rxtx</groupId>
+	        <artifactId>rxtx</artifactId>
+	        <version>2.2pre2</version>
+	        <classifier>mac</classifier>
+	        <type>jnilib</type>
+            <optional>true</optional>
+	    </dependency>
         
         <!-- <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>

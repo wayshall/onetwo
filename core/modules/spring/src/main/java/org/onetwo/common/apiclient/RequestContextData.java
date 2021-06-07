@@ -22,6 +22,11 @@ public class RequestContextData {
 	private Class<?> responseType;
 //	private Object requestBody;
 	final private Map<String, ?> uriVariables;
+	/***
+	 * 这里在判断是否queryString参数时，遵循浏览器规则:
+	 * 1. get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
+	 * 2. get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
+	 */
 	@Getter
 	final private Map<String, ?> queryParameters;
 	private Consumer<HttpHeaders> headerCallback;

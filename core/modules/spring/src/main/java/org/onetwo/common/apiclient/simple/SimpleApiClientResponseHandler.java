@@ -17,9 +17,18 @@ import org.springframework.web.client.RestClientException;
  * <br/>
  */
 public class SimpleApiClientResponseHandler<M extends ApiClientMethod> extends DefaultApiClientResponseHandler<M> {
-	private String resultCodeField;
-	private String resultMessageField;
+	private String resultCodeField = "";
+	private String resultMessageField = "";
 	
+	public SimpleApiClientResponseHandler() {
+	}
+	
+	public SimpleApiClientResponseHandler(String resultCodeField, String resultMessageField) {
+		super();
+		this.resultCodeField = resultCodeField;
+		this.resultMessageField = resultMessageField;
+	}
+
 	@Override
 	public Class<?> getActualResponseType(M invokeMethod){
 		Class<?> responseType = invokeMethod.getMethodReturnType();
@@ -38,8 +47,8 @@ public class SimpleApiClientResponseHandler<M extends ApiClientMethod> extends D
 	@Override
 	public Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Class<?> actualResponseType){
 		Object response = responseEntity.getBody();
+		ApiResponsable<?> baseResponse = null;
 		if(responseEntity.getStatusCode().is2xxSuccessful()){
-			ApiResponsable<?> baseResponse = null;
 			if(ApiResponsable.class.isInstance(response)){
 				baseResponse = (ApiResponsable<?>) response;
 			} else if (Result.class.isAssignableFrom(actualResponseType)) {
@@ -64,18 +73,12 @@ public class SimpleApiClientResponseHandler<M extends ApiClientMethod> extends D
 				}
 			} else {
 				if(logger.isDebugEnabled()){
-					logger.debug("Non-WechatResponse type: {}", response.getClass());
+					logger.debug("Non-ApiResponse type: {}", response.getClass());
 				}
 			}
 			
 			if(baseResponse!=null && !baseResponse.isSuccess() && invokeMethod.isAutoThrowIfErrorCode()){
 				logger.error("api[{}] error response: {}", invokeMethod.getMethod().getName(), baseResponse);
-				/*throw WechatErrors.byErrcode(baseResponse.getErrcode())
-				 			 .map(err->new ApiClientException(err, invokeMethod.getMethod(), null))
-				 			 .orElse(new ApiClientException(ErrorTypes.of(baseResponse.getErrcode().toString(), 
-				 					 										baseResponse.getErrmsg(), 
-				 					 										responseEntity.getStatusCodeValue())
-				 					 									));*/
 				throw translateToApiClientException(invokeMethod, baseResponse, responseEntity);
 //				throw new ApiClientException(ErrorTypes.of(baseResponse.getErrcode().toString(), baseResponse.getErrmsg(), responseEntity.getStatusCodeValue()));
 			}
@@ -86,8 +89,15 @@ public class SimpleApiClientResponseHandler<M extends ApiClientMethod> extends D
 			}
 			
 			return response;
+		} else {
+			// 其它非200的http代码，视为失败s
+			if (response instanceof ApiResponsable) {
+				baseResponse = (ApiResponsable<?>) response;
+				throw new ApiClientException("api[" + invokeMethod.getMethod().getName() + "] error response, code: " + baseResponse.resultCode() + ", message: " + baseResponse.resultMessage());
+			} else {
+				throw new RestClientException("api[" + invokeMethod.getMethod().getName() + "] error response: " + responseEntity.getStatusCodeValue());
+			}
 		}
-		throw new RestClientException("error response: " + responseEntity.getStatusCodeValue());
 	}
 	
 	public Object handleResponseMap(Map<String, ?> map, Class<?> responseType) {

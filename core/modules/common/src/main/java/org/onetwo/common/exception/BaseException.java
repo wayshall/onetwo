@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import org.onetwo.common.reflect.ReflectUtils;
 
@@ -80,6 +81,9 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	
 	@SuppressWarnings("unchecked")
 	final public <T extends BaseException> T putAsMap(Object context){
+		if (context==null) {
+			return (T) this;
+		}
 		try {
 			Map<String, Object> map = ReflectUtils.toMap(context);
 			this.errorContext().putAll(map);
@@ -108,6 +112,11 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
 	
 
     public void printStackTrace(PrintStream s) {
+    	errorContextToString().ifPresent(msg -> s.println(msg));
+    	super.printStackTrace(s);
+    }
+    
+    public Optional<String> errorContextToString() {
     	if(this.errorContext!=null){
     		StringBuilder contextMsg = new StringBuilder(300);
     		contextMsg.append(SEP_LIE).append("\n");
@@ -115,9 +124,9 @@ public class BaseException extends RuntimeException implements SystemErrorCode, 
     			contextMsg.append(key).append("\t:\t").append(value);
     		});
     		contextMsg.append("\n").append(SEP_LIE);
-    		s.println(contextMsg);
+    		return Optional.of(contextMsg.toString());
     	}
-    	super.printStackTrace(s);
+    	return Optional.empty();
     }
     
 	public Map<String, Object> getErrorContext() {

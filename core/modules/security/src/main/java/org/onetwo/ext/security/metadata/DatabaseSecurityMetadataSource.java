@@ -41,7 +41,6 @@ import com.google.common.collect.Maps;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 
@@ -122,10 +121,16 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		List<AuthorityResource> authorities = fetchAuthorityResources();
 		final Map<SortableAntPathRequestMatcher, Collection<ConfigAttribute>> resouceMap = new HashMap<>(authorities.size());
 		authorities.forEach(auth->{
+//			if (auth.getAuthority().equals("test")) {
+//				System.out.println("test");
+//			}
 			auth.getUrlResourceInfo().forEach(r->{
 				//根据httpmethod和url映射权限标识，url拦截时也是根据这个matcher找到对应的权限SecurityConfig
 //				AntPathRequestMatcher matcher = new AntPathRequestMatcher(r.getUrl(), r.getMethod());
 				SortableAntPathRequestMatcher matcher = new SortableAntPathRequestMatcher(new AntPathRequestMatcher(r.getUrl(), r.getMethod()), auth.getSort());
+//				if (r.getUrl().contains("/mallCanteenMgr/productCategory/treeList*")) {
+//					System.out.println("test");
+//				}
 				if(resouceMap.containsKey(matcher)){
 //					resouceMap.get(matcher).add(new SecurityConfig(auth.getAuthority()));
 					Collection<ConfigAttribute> attrs = resouceMap.get(matcher);
@@ -190,7 +195,8 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		if(originRequestMap!=null && !originRequestMap.isEmpty()){
 			this.requestMap.putAll(originRequestMap);
 		}
-		DefaultFilterInvocationSecurityMetadataSource fism = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
+//		DefaultFilterInvocationSecurityMetadataSource fism = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
+		MatchAllFilterInvocationSecurityMetadataSource fism = new MatchAllFilterInvocationSecurityMetadataSource(requestMap);
 		this.filterSecurityInterceptor.setSecurityMetadataSource(fism);
 	}
 	
@@ -263,15 +269,46 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		private List<UrlResourceInfo> urlResourceInfo;
 		private Integer sort;
 		private String authorityName;
+		
+		public List<UrlResourceInfo> getUrlResourceInfo() {
+			return this.urlResourceInfo;
+		}
 	}
 
 	@Data
-	@EqualsAndHashCode
 	@AllArgsConstructor
-	@ToString
 	static class SortableAntPathRequestMatcher {
 		private AntPathRequestMatcher pathMatcher;
 		private Integer sort;
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SortableAntPathRequestMatcher other = (SortableAntPathRequestMatcher) obj;
+			if (pathMatcher == null) {
+				if (other.pathMatcher != null)
+					return false;
+			} else if (!pathMatcher.equals(other.pathMatcher))
+				return false;
+			return true;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((pathMatcher == null) ? 0 : pathMatcher.hashCode());
+			return result;
+		}
+		@Override
+		public String toString() {
+			return pathMatcher.toString();
+		}
+		
 	}
 
 	@SuppressWarnings("serial")

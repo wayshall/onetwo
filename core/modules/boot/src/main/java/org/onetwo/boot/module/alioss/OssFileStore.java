@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
 import org.onetwo.boot.core.web.service.impl.BootStoringFileContext;
 import org.onetwo.boot.module.alioss.OssClientWrapper.ObjectOperation;
 import org.onetwo.boot.module.alioss.OssProperties.WaterMaskProperties;
@@ -17,9 +18,12 @@ import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
+ * Content-Type: application/octet-stream
+ * Content-Disposition: filename
  * @author wayshall
  * <br/>
  */
@@ -35,6 +39,11 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		this.ossProperties = ossProperties;
 //		this.bucketName = ossProperties.getBucketName();
 	}
+	
+
+	public String getStoreType() {
+		return StoreType.ALIOSS.name().toLowerCase();
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -45,6 +54,23 @@ public class OssFileStore implements FileStorer, InitializingBean {
 		key = StringUtils.trimStartWith(key, FileUtils.SLASH);
 		ObjectOperation operation = wrapper.objectOperation(ossProperties.getBucketName(), key);
 		operation.delete();
+	}
+	
+	public boolean isObjectExist(String objectPath) {
+		String key = objectPath;
+		if (!RequestUtils.isHttpPath(ossProperties.getDownloadEndPoint())) {
+			if (objectPath.startsWith(RequestUtils.HTTP_KEY)) {
+				key = StringUtils.substringAfter(key, RequestUtils.HTTP_KEY);
+			} else if (objectPath.startsWith(RequestUtils.HTTPS_KEY)) {
+				key = StringUtils.substringAfter(key, RequestUtils.HTTPS_KEY);
+			}
+		}
+		if (key.startsWith(ossProperties.getDownloadEndPoint())) {
+			key = StringUtils.substringAfter(key, ossProperties.getDownloadEndPoint());
+		}
+		key = StringUtils.trimStartWith(key, "/");
+		boolean exist = wrapper.getOssClient().doesObjectExist(ossProperties.getBucketName(), key);
+		return exist;
 	}
 
 	@Override

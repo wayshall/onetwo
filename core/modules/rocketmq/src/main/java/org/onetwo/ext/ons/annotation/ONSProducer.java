@@ -16,4 +16,5 @@ import java.lang.annotation.Target;
 public @interface ONSProducer {
 	String producerId();
 	boolean transactional() default false;
+	boolean primary() default true;
 }

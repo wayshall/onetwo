@@ -98,7 +98,8 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 
 	protected void doLog(HttpServletRequest request, ErrorMessage errorMessage){
-		errorMessage.setNotifyThrowables(bootJFishConfig.getNotifyThrowables());
+//		errorMessage.setNotifyThrowables(bootJFishConfig.getNotifyThrowables());
+		errorMessage.setNotify(bootJFishConfig.isNotifyThrowable(errorMessage.getException()));
 		logError(request, errorMessage);
 	}
 

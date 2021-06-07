@@ -3,21 +3,33 @@ package org.onetwo.boot.module.cos;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.boot.core.config.BootSiteConfig.StoreType;
+import org.onetwo.boot.module.cos.CosProperties.VideoConfig;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.file.FileStoredMeta;
 import org.onetwo.common.file.FileStorer;
+import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.file.SimpleFileStoredMeta;
 import org.onetwo.common.file.StoringFileContext;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author wayshall
  * <br/>
  */
 public class CosFileStore implements FileStorer, InitializingBean {
+	private Logger logger = JFishLoggerFactory.getLogger(getClass());
 	
 	private CosClientWrapper wrapper;
 	private CosProperties cosProperties;
@@ -30,6 +42,11 @@ public class CosFileStore implements FileStorer, InitializingBean {
 		this.bucketName = ossProperties.getAppBucketName();
 	}
 
+
+	public String getStoreType() {
+		return StoreType.COS.name().toLowerCase();
+	}
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.wrapper.createBucketIfNotExists(cosProperties.getAppBucketName());
@@ -54,14 +71,92 @@ public class CosFileStore implements FileStorer, InitializingBean {
 		meta.setSotredFileName(key);
 		meta.setAccessablePath(accessablePath);
 		meta.setFullAccessablePath(cosProperties.getDownloadUrl(accessablePath));
-		if(cosProperties.isAlwaysStoreFullPath()){
-			meta.setAccessablePath(meta.getFullAccessablePath());
-		}
 		meta.setStoredServerLocalPath(key);
 		meta.setBizModule(context.getModule());
 		meta.setSotredFileName(key);
 		
+		processVideo(meta);
+		
+		if(cosProperties.isAlwaysStoreFullPath()){
+			meta.setAccessablePath(meta.getFullAccessablePath());
+		}
+		
 		return meta;
+	}
+	
+	/***
+	 * 处理视频，如水印、截图
+	 * @author weishao zeng
+	 * @param meta
+	 */
+	private void processVideo(SimpleFileStoredMeta meta) {
+		String accessablePath = meta.getAccessablePath();
+//		int lastDot = accessablePath.lastIndexOf(FileUtils.DOT_CHAR);
+//		String filename = accessablePath.substring(0, lastDot);
+//		String format = accessablePath.substring(lastDot+1).toLowerCase();
+		String filename = FileUtils.getFileNameWithoutExt(accessablePath);
+		String format = FileUtils.getExtendName(accessablePath).toLowerCase();
+		VideoConfig videoConfig = cosProperties.getVideo();
+		if (videoConfig.isEnabled() 
+				&& accessablePath.startsWith(videoConfig.getTriggerDir())
+				&& videoConfig.getPostfix().contains(format)) {
+			Map<String, String> parseCtx = ImmutableMap.of("filename", filename, "format", format);
+			
+			String snapshotFileName = ExpressionFacotry.BRACE.parseByProvider(videoConfig.getSnapshotFileName(), parseCtx);
+			snapshotFileName = videoConfig.getOutputDir() + snapshotFileName;
+			SimpleFileStoredMeta cutMeta = new SimpleFileStoredMeta(meta.getOriginalFilename(), snapshotFileName);
+			cutMeta.setSotredFileName(snapshotFileName);
+			cutMeta.setAccessablePath(snapshotFileName);
+			cutMeta.setFullAccessablePath(cosProperties.getDownloadUrl(snapshotFileName));
+			if(cosProperties.isAlwaysStoreFullPath()){
+				cutMeta.setAccessablePath(cutMeta.getFullAccessablePath());
+			}
+			meta.setSnapshotStoredMeta(cutMeta);
+			
+			// 覆盖非水印视频
+			String waterMaskFileName = ExpressionFacotry.BRACE.parseByProvider(videoConfig.getWaterMaskFileName(), parseCtx);
+			waterMaskFileName = videoConfig.getOutputDir() + waterMaskFileName;
+			meta.setSotredFileName(waterMaskFileName);
+			meta.setAccessablePath(waterMaskFileName);
+			meta.setFullAccessablePath(cosProperties.getDownloadUrl(waterMaskFileName));
+			
+			// 是否轮询异步结果，默认为不轮训……
+			int checkInMillis = videoConfig.getCheckTaskInMillis();
+			int totalInMillis = 0;
+			if (checkInMillis > 0) {
+				while(!wrapper.getCosClient().doesObjectExist(bucketName, waterMaskFileName)) {
+					logger.info("正在检查转码后的视频是否存在, waterMaskFileName: {} ……", waterMaskFileName);
+					LangUtils.awaitInMillis(checkInMillis);
+					totalInMillis += checkInMillis;
+					if (totalInMillis>=videoConfig.getTotalTaskInMillis()) {
+						logger.info("获取转码后的视频达到最大时间, waterMaskFileName: {} ", waterMaskFileName);
+						break;
+					}
+				}
+				logger.info("获取转码后的视频成功, waterMaskFileName: {} ", waterMaskFileName);
+			} else {
+				logger.info("上传视频成功, 不轮训异步转码结果.  视频: {}, 水印: {} ", waterMaskFileName, snapshotFileName);
+			}
+		} else {
+			logger.info("忽略处理视频：enabled: {}, accessablePath: {}, format: {}", videoConfig.isEnabled(), accessablePath, format);
+		}
+	}
+	
+	public boolean isObjectExist(String objectPath) {
+		String key = objectPath;
+		if (!RequestUtils.isHttpPath(cosProperties.getDownloadEndPoint())) {
+			if (objectPath.startsWith(RequestUtils.HTTP_KEY)) {
+				key = StringUtils.substringAfter(key, RequestUtils.HTTP_KEY);
+			} else if (objectPath.startsWith(RequestUtils.HTTPS_KEY)) {
+				key = StringUtils.substringAfter(key, RequestUtils.HTTPS_KEY);
+			}
+		}
+		if (key.startsWith(cosProperties.getDownloadEndPoint())) {
+			key = StringUtils.substringAfter(key, cosProperties.getDownloadEndPoint());
+		}
+		key = StringUtils.trimStartWith(key, "/");
+		boolean exist = wrapper.getCosClient().doesObjectExist(bucketName, key);
+		return exist;
 	}
 	
 	@Override

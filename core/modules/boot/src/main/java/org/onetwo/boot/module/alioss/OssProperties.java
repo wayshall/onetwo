@@ -3,9 +3,11 @@ package org.onetwo.boot.module.alioss;
 import java.util.Arrays;
 import java.util.List;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.module.alioss.image.WatermarkAction.WatermarkFonts;
 import org.onetwo.boot.module.alioss.video.SnapshotProperties;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.aliyun.oss.ClientConfiguration;
@@ -16,9 +18,12 @@ import lombok.Data;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".alioss")
+@ConfigurationProperties(OssProperties.PREFIX)
 @Data
 public class OssProperties {
+	public static final String PREFIX = BootJFishConfig.PREFIX + ".alioss";
+	public static final String ENABLED_KEY = PREFIX + ".bucketName";
+	
 	String downloadEndPoint;
 	String endpoint;
     String accessKeyId;
@@ -43,18 +48,43 @@ public class OssProperties {
 		}
 		return endpoint;
 	}
+	
+	/***
+	 * 兼容
+	 * @author weishao zeng
+	 * @param endPoint
+	 */
+	public void setEndPoint(String endPoint) {
+		this.endpoint = endPoint;
+	}
+	
+	public String getEndPoint() {
+		return this.endpoint;
+	}
+	
+	public String getEndpoint() {
+		return endpoint;
+	}
+
+	public void setEndpoint(String endpoint) {
+		this.endpoint = endpoint;
+	}
 
 	public static String buildUrl(boolean https, String endpoint, String bucketName, String key){
-		StringBuilder url = new StringBuilder(https?"https":"http");
-		url.append("://")
-			.append(bucketName)
-			.append(".")
-			.append(endpoint)
-			.append("/")
+		StringBuilder url = new StringBuilder(200);
+		if (!RequestUtils.isHttpPath(endpoint)) {
+			url.append(https?"https":"http");
+			url.append("://");
+			if (!endpoint.startsWith(bucketName)) {
+				url.append(bucketName)
+					.append(".");
+			}
+		}
+		url.append(endpoint)
 			.append(key);
 		return url.toString();
 	}
-	
+
 	@lombok.Data
 	public static class WaterMaskProperties {
 		boolean enabled;

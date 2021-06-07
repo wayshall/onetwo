@@ -12,8 +12,6 @@ public class DefaultTemplateParser implements TemplateParser {
 	
 	final private AbstractFreemarkerTemplateConfigurer freemarkerTemplateConfigurer;
 	
-	
-
 	public DefaultTemplateParser(
 			AbstractFreemarkerTemplateConfigurer freemarkerTemplateConfigurer) {
 		super();

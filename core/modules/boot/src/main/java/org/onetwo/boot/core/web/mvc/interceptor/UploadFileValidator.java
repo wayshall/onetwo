@@ -23,9 +23,19 @@ public @interface UploadFileValidator {
 	 * spring.http.multipart.maxFileSize
 	 * spring.http.multipart.maxRequestSize
 	 * 
+	 * -1为不检查
+	 * 
 	 * @author wayshall
 	 * @return
 	 */
 	int maxUploadSize() default 1024*1024*10;//byte
+	/***
+	 * 通过配置文件来配置大小，如：module.upload.maxUploadSize: 50k
+	 * 优先级比maxUploadSize高
+	 * @author weishao zeng
+	 * @return
+	 */
+	String maxUploadSizeConfigKey() default "";//byte
 //	String maxUploadSizeErrorMessage() default "error max upload file size!";
+	
 }

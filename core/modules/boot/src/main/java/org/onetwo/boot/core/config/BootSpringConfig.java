@@ -1,14 +1,16 @@
 package org.onetwo.boot.core.config;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.Data;
-
 import org.onetwo.common.propconf.Env;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+
+import lombok.Data;
 
 /***
  * 需要使用到的spring的配置
@@ -23,12 +25,16 @@ public class BootSpringConfig {
 	 * -Dapp.env=product
 	 */
 	public static final String SYSTEM_APP_ENV_KEY = "app.env";
-	private ProfilesConfig profiles = new ProfilesConfig();
+//	private ProfilesConfig profiles = new ProfilesConfig();
 	private ApplicationProperties application = new ApplicationProperties();
+	
+	@Autowired
+	private ApplicationContext applicationContext;
 	
     public boolean isEnv(Env env){
     	String envString = env.name().toLowerCase();
-		boolean res = Optional.ofNullable(profiles.getActive())
+    	List<String> activeProfiles = getActiveProfiles();
+		boolean res = Optional.ofNullable(activeProfiles)
 						.orElse(Collections.EMPTY_LIST)
 						.contains(envString);
 		return res?true:System.getProperty(SYSTEM_APP_ENV_KEY, "").contains(envString);
@@ -46,11 +52,15 @@ public class BootSpringConfig {
 		return isEnv(Env.TEST);
 	}
 	
-	@Data
+	public List<String> getActiveProfiles() {
+		return Arrays.asList(applicationContext.getEnvironment().getActiveProfiles());
+	}
+	
+	/*@Data
 	public class ProfilesConfig {
 		private List<String> active = new ArrayList<String>();
 	}
-	
+	*/
 	@Data
 	public class ApplicationProperties {
 		String name;

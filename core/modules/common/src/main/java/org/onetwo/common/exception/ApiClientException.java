@@ -19,6 +19,10 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 	private Integer statusCode;
 	private ErrorType errorType;
 
+	public ApiClientException(String message) {
+		super(message);
+	}
+	
 	public ApiClientException(ErrorType exceptionType) {
 		this(exceptionType, (Throwable)null);
 	}
@@ -29,6 +33,18 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 		this.statusCode = exceptionType.getStatusCode();
 		this.errorType = exceptionType;
 		put("api method", method);
+	}
+
+	public ApiClientException(String code, String msg, Method method) {
+		super(msg);
+		initErrorCode(code);
+		put("api method", method);
+	}
+
+	public ApiClientException(ErrorType exceptionType, Integer statusCode, Throwable cause) {
+		super(String.format(exceptionType.getErrorMessage(), cause.getMessage()), cause);
+		this.errorType = exceptionType;
+		this.statusCode = statusCode;
 	}
 
 	public ApiClientException(ErrorType exceptionType, Class<?> interfaceClass, Throwable cause) {

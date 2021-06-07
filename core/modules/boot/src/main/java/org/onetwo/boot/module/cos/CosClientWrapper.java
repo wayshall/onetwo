@@ -59,7 +59,9 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 		Assert.hasText("accessKey", cosProperties.getAccessKey());
 		Assert.hasText("secretKey", cosProperties.getSecretKey());
 		Assert.hasText("regionName", cosProperties.getRegionName());
-		COSCredentials credentials = new BasicCOSCredentials(cosProperties.getAccessKey(), cosProperties.getSecretKey());
+		// 下面这个没有传appid构造方法会在判断bucket是否存在（doesBucketExist）抛错
+//		COSCredentials credentials = new BasicCOSCredentials(cosProperties.getAccessKey(), cosProperties.getSecretKey());
+		COSCredentials credentials = new BasicCOSCredentials(cosProperties.getAppid(), cosProperties.getAccessKey(), cosProperties.getSecretKey());
 		if(clientConfig==null){
 			clientConfig = cosProperties.getClient();
 		}
@@ -77,6 +79,9 @@ public class CosClientWrapper implements InitializingBean, DisposableBean {
 		return getBucket(bucketName, true).get();
 	}
 
+	public CosProperties getCosProperties() {
+		return cosProperties;
+	}
 
 	public Optional<Bucket> getBucket(String bucketName, boolean createIfNotExist) {
 		Bucket bucket = null;

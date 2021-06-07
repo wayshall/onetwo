@@ -43,7 +43,11 @@ abstract public class DateUtils {
 
 	}
 	
-
+	/***
+	 * yyyy-MM-dd HH:mm:ss
+	 * yyyy/MM/dd HH:mm:ss
+	 * yyyy.MM.dd HH:mm:ss
+	 */
     public static final Pattern PATTERN_YYYY_MM_DD_HH_MM_SS = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
     public static final Pattern PATTERN_YYYY_MM_DD_HH_MM = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
     public static final Pattern PATTERN_YYYY_MM_DD_HH = Pattern.compile("^\\d{4}[\\-|\\/|\\.][01]{0,1}[0-9](\\-|\\/|\\.)[0-3]{0,1}[0-9]\\s+[0-2]{0,1}[0-9]$");
@@ -52,6 +56,11 @@ abstract public class DateUtils {
     public static final Pattern PATTERN_YYYY = Pattern.compile("^\\d{4}$");
     public static final Pattern PATTERN_HH_MM = Pattern.compile("^[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
     public static final Pattern PATTERN_HH_MM_SS = Pattern.compile("^[0-2]{0,1}[0-9][:][0-5]{0,1}[0-9][:][0-5]{0,1}[0-9]$");
+    
+    /***
+     * yyyyMMdd
+     */
+    public static final Pattern PATTERN_YYYYMMDD = Pattern.compile("^\\d{4}[01][0-9][0-3][0-9]$");
 
     public static final int MILLIS_PER_SECOND = 1000;
 	public static final int SECONDS_PER_MINUTE = 60;
@@ -88,6 +97,7 @@ abstract public class DateUtils {
 		df.setTimeZone(TimeZone.getDefault());
 		return df;
 	}
+	
 	/**
 	 * 获取本月的第一天
 	 * 
@@ -201,6 +211,16 @@ abstract public class DateUtils {
 	public static Date parse(SimpleDateFormat format, String dateStr) {
 		return parse(format, dateStr, true);
 	}
+	
+	/****
+	 * 注意SimpleDateFormat有坑
+	 * 比如用pattern[yyyyMMdd]去解释2020-11-28这种格式，并不会出错，但是会丢失年份
+	 * @author weishao zeng
+	 * @param format
+	 * @param dateStr
+	 * @param throwIfError
+	 * @return
+	 */
 	public static Date parse(SimpleDateFormat format, String dateStr, boolean throwIfError) {
 		Date date = null;
 		try {
@@ -230,6 +250,14 @@ abstract public class DateUtils {
 		throw new BaseException("parse date string [" + dateStr + "] error with format: " + LangUtils.toString(dateFormats));
 	}
 
+	/***
+	 * 注意SimpleDateFormat有坑
+	 * 比如用pattern[yyyyMMdd]去解释2020-11-28这种格式，并不会出错，但是会丢失年份
+	 * @author weishao zeng
+	 * @param dateStr
+	 * @param patterns
+	 * @return
+	 */
 	public static Date parseByPatterns(String dateStr, String... patterns) {
 		if(StringUtils.isBlank(dateStr))
 			return null;
@@ -412,8 +440,9 @@ abstract public class DateUtils {
 			return ;
 
 		for (DateType d : DateType.values()) {
-			if (d.getField() <= dt.getField())
+			if (d.getField() <= dt.getField()) {
 				continue;
+			}
 			calendar.set(d.getField(), calendar.getActualMinimum(d.getField()));
 		}
 //		return calendar.getTime();
@@ -669,7 +698,7 @@ abstract public class DateUtils {
 		
 //		return dt.ordinal()>0?(isSameAt(c1, c2, dt.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false):c1.get(dt.getField())==c2.get(dt.getField());
 		if(dt.ordinal()>0){
-			return isSameAt(c1, c2, dt.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false;
+			return isSameAt(c1, c2, DateType.values()[dt.ordinal()-1])?c1.get(dt.getField())==c2.get(dt.getField()):false;
 		}else{
 			return c1.get(dt.getField())==c2.get(dt.getField());
 		}
@@ -739,23 +768,23 @@ abstract public class DateUtils {
 	 * @return
 	 */
 	public static String matchPattern(String dateStr){
-		if(isYyyy(dateStr)){
-			return YEAR_ONLY;
-		}else if(isYyyy_MM(dateStr)){
-			return YEAR_MONTH;
-		}else if(isYyyy_MM_dd(dateStr)){
-			return DATE_ONLY;
-		}else if(isYyyy_MM_dd_HH(dateStr)){
-			return "yyyy-MM-dd HH";
-		}else if(isYyyy_MM_dd_HH_mm(dateStr)){
-			return "yyyy-MM-dd HH:mm";
-		}else if(isYyyy_MM_dd_HH_mm_ss(dateStr)){
+		if(isYyyy_MM_dd_HH_mm_ss(dateStr)){
 			return DATE_TIME;
-		}else if(isHH_mm(dateStr)){
+		} else if (isYyyy_MM_dd_HH_mm(dateStr)){
+			return DATE_SHORT_TIME;
+		} else if (isYyyy_MM_dd(dateStr)){
+			return DATE_ONLY;
+		} else if (isYyyy(dateStr)){
+			return YEAR_ONLY;
+		} else if (isYyyy_MM(dateStr)){
+			return YEAR_MONTH;
+		} else if (isYyyy_MM_dd_HH(dateStr)){
+			return "yyyy-MM-dd HH";
+		}else if (isHH_mm(dateStr)){
 			return "HH:mm";
-		}else if(isHH_mm_ss(dateStr)){
+		} else if (isHH_mm_ss(dateStr)){
 			return "HH:mm:ss";
-		}else{
+		} else {
 			return DATE_TIME_MILLS;
 		}
 	}

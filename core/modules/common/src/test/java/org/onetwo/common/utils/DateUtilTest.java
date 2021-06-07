@@ -1,7 +1,10 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,6 +27,20 @@ import org.onetwo.common.log.JFishLoggerFactory;
 public class DateUtilTest {
 	
 	@Test
+	public void testPatterns() {
+		boolean match = DateUtils.PATTERN_YYYYMMDD.matcher("20210305").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210315").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210325").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("2021305").matches();
+		assertThat(match).isFalse();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210343").matches();
+		assertThat(match).isFalse();
+	}
+	
+	@Test
 	public void testSqlTime(){
 		Date now = new Date();
 		Time time = new Time(now.getTime());
@@ -31,7 +48,7 @@ public class DateUtilTest {
 		String str = DateUtils.formatDateTime(time);
 		System.out.println("time:"+DateUtils.format("h:mm a", new Date()));
 		System.out.println("time:"+str);
-		System.out.println("time:"+now.getTime());
+		System.out.println("now.getTime():"+now.getTime());
 		System.out.println("time:"+time.getTime());
 		System.out.println("nowTime:"+nowTime.getTime());
 		
@@ -133,7 +150,7 @@ public class DateUtilTest {
 	public void testDate(){
 		Date date = DateUtils.parseDate("2013-09-09");
 		System.out.println("date: " + date.toLocaleString());
-		Date date1 = NiceDate.New("2013-9-9").atTheBeginning().getTime();
+		Date date1 = NiceDate.New("2013-9-9").preciseAtDate().atTheBeginning().getTime();
 		System.out.println("date1: " + date1.toLocaleString());
 		
 		try {
@@ -160,12 +177,6 @@ public class DateUtilTest {
 		/*Date now = DateUtil.date(":now");
 		System.out.println("now: " + now.getTime())*/;
 		
-		Date today = DateUtils.date(":today");
-		System.out.println("today: " + today);
-		
-		Date yesterday = DateUtils.date(":yesterday");
-		System.out.println("yesterday: " + yesterday);
-		
 		Date tomorrow = DateUtils.date(":tomorrow");
 		System.out.println("tomorrow: " + tomorrow);
 		
@@ -177,9 +188,13 @@ public class DateUtilTest {
 		Date parseDate = DateUtils.parseByPatterns("20121029102501", "yyyyMMddHHmmss");
 		System.out.println("parseDate:" + parseDate.toLocaleString());
 		
+		parseDate = DateUtils.parseByPatterns("2020-11-27", "yyyyMMdd");
+		System.out.println("parseDate2:" + parseDate.toLocaleString());
+		
+		LocalDate localDate = Dates.parseLocalDate("2020-11-27", "yyyy-MM-dd");
+		parseDate = Dates.toDate(localDate);
+		System.out.println("parseDate3:" + parseDate.toLocaleString());
 
-		Calendar cal = Calendar.getInstance();
-		System.out.println("day: " + cal.get(Calendar.DAY_OF_WEEK));
 	}
 	
 	@Test

@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.convert.Types;
@@ -162,6 +163,12 @@ public class Intro<T> {
 		
 //		return JFishList.wrap(_allFieldMap.values());
 		return ImmutableList.copyOf(_allFieldMap.values());
+	}
+	
+	public List<Field> selectFields(FieldSelector selector) {
+		return getAllFields().stream().filter(field -> {
+			return selector.accept(field);
+		}).collect(Collectors.toList());
 	}
 	
 	public List<String> getAllPropertyNames() {
@@ -633,6 +640,10 @@ public class Intro<T> {
 	
 	public String toString(){
 		return "class wraper["+clazz+"]";
+	}
+	
+	public static interface FieldSelector {
+		boolean accept(Field field);
 	}
 	
 	@Override

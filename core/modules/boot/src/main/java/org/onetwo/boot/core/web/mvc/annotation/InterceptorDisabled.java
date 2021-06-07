@@ -10,6 +10,7 @@ import org.onetwo.boot.core.web.mvc.annotation.InterceptorDisabled.DisableMvcInt
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorAdapter;
 
 /**
+ * @see MvcInterceptorManager#findInterceptorAnnotationAttrsList
  * @author wayshall
  * <br/>
  */

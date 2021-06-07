@@ -7,15 +7,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -52,6 +56,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
@@ -61,6 +66,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.MethodIntrospector;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -75,9 +81,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
+import org.springframework.format.datetime.DateFormatter;
+import org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils.MethodFilter;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -104,7 +114,43 @@ final public class SpringUtils {
 																			.build();
 	public static final Expression DOLOR = ExpressionFacotry.newExpression("${", "}");
 	
+
+	private static final DateTimeFormatAnnotationFormatterFactory DATE_TIME_FORMAT = new DateTimeFormatAnnotationFormatterFactory();
+	
 	private SpringUtils(){
+	}
+	
+	public static Date parseDate(String text, Field field) {
+		DateTimeFormat df = AnnotationUtils.findAnnotation(field, DateTimeFormat.class);
+		return parseDate(text, df);
+	}
+	public static Date parseDate(String text, DateTimeFormat df) {
+		DateFormatter formatter = (DateFormatter)DATE_TIME_FORMAT.getParser(df, Date.class);
+		try {
+			return formatter.parse(text, Locale.getDefault());
+		} catch (ParseException e) {
+			throw new IllegalArgumentException("error date value: " + text + " with pattern: " + df.pattern());
+		}
+	}
+	
+	public static String formatDate(Date date, DateTimeFormat df) {
+//		DateTimeFormat df = AnnotationUtils.findAnnotation(annotatedElement, DateTimeFormat.class);
+		DateFormatter formatter = (DateFormatter)DATE_TIME_FORMAT.getParser(df, Date.class);
+		return formatter.print(date, Locale.getDefault());
+	}
+
+	public static int higherThan(int order) {
+		return higherThan(order, 10);
+	}
+	public static int higherThan(int order, int step) {
+		return order - step;
+	}
+
+	public static int lowerThan(int order) {
+		return lowerThan(order, 10);
+	}
+	public static int lowerThan(int order, int step) {
+		return order + step;
 	}
 
 	public static FormattingConversionService getFormattingConversionService(){
@@ -126,7 +172,16 @@ final public class SpringUtils {
 	/*public static Map<String, Object> toFlatMap(Object obj) {
 		return toFlatMap(obj, o->!LangUtils.isSimpleTypeObject(o));
 	}*/
+
+	public static Map<String, Object> toMap(Object obj) {
+		Map<String, Object> map = BEAN_TO_MAP_CONVERTOR.toMap(obj);
+		return map;
+	}
 	
+	public static BeanToMapConvertor getBeanToMapConvertor() {
+		return BEAN_TO_MAP_CONVERTOR;
+	}
+
 	public static Map<String, Object> toFlatMap(Object obj) {
 		Map<String, Object> map = Maps.newHashMap();
 		
@@ -164,7 +219,7 @@ final public class SpringUtils {
 		public void put(String k, Object v, PropertyContext ctx) {
 			Object value = v;
 			TypeDescriptor sourceType = null;
-			if(v.getClass()!=String.class){
+			if(v!=null && v.getClass()!=String.class){
             	Field field = ctx.getField();
             	if(field!=null && (field.getAnnotation(DateTimeFormat.class)!=null || field.getAnnotation(NumberFormat.class)!=null) ){
     	            sourceType = new TypeDescriptor(field);
@@ -242,11 +297,18 @@ final public class SpringUtils {
 		})
 		.collect(Collectors.toList());
 	}
+	
+	public static <T> T getBeanWithAnnotation(ApplicationContext applicationContext, Class<? extends Annotation> annotationType) {
+		List<T> beans = (List<T>)getBeansWithAnnotation(applicationContext, annotationType).stream().map(d -> {
+			return d.getBean();
+		}).collect(Collectors.toList());
+		return LangUtils.isEmpty(beans)?null:beans.get(0);
+	}
 
 	public static <T> List<T> getBeans(ListableBeanFactory appContext, Class<T> clazz) {
 		Map<String, T> beanMaps = BeanFactoryUtils.beansOfTypeIncludingAncestors(appContext, clazz);
 		if(beanMaps==null || beanMaps.isEmpty())
-			return Collections.emptyList();
+			return new ArrayList<>();
 		List<T> list = new ArrayList<T>(beanMaps.values());
 		AnnotationAwareOrderComparator.sort(list);
 		return list;
@@ -420,7 +482,7 @@ final public class SpringUtils {
 	}
 	
 
-	public static <T> T registerBean(BeanFactory context, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, Class<T> beanClass, Object...params){
 		return registerBean(context, StringUtils.uncapitalize(beanClass.getSimpleName()), beanClass, params);
 	}
 	
@@ -433,7 +495,7 @@ final public class SpringUtils {
 	 * @param params
 	 * @return
 	 */
-	public static <T> T registerBean(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
+	public static <T> T registerBean(BeanFactory context, String beanName, Class<T> beanClass, Object...params){
 		registerBeanDefinition(context, beanName, beanClass, params);
 		T bean = (T) context.getBean(beanName);
 		if(bean==null)
@@ -441,33 +503,22 @@ final public class SpringUtils {
 		return bean;
 	}
 	
-
-	/*public static BeanDefinition registerBeanDefinition(ApplicationContext context, String beanName, Class<?> beanClass, Object...params){
-		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
-		return registerBeanDefinition(bdr, beanName, beanClass, params);
-	}
-	public static BeanDefinition registerBeanDefinition(BeanFactory context, String beanName, Class<?> beanClass, Object...params){
-		BeanDefinitionRegistry bdr = getBeanDefinitionRegistry(context, true);
-		return registerBeanDefinition(bdr, beanName, beanClass, params);
-	}*/
-	
-
-	/*public static BeanDefinitionRegistry getBeanDefinitionRegistry(Object context, boolean throwIfNull){
-		BeanDefinitionRegistry bdr = null;
-		if(ApplicationContext.class.isInstance(context)){
-			BeanFactory bf = ((ApplicationContext)context).getAutowireCapableBeanFactory();
-			if(BeanDefinitionRegistry.class.isInstance(bf))
-				bdr = (BeanDefinitionRegistry) bf;
-		}else if(BeanDefinitionRegistry.class.isInstance(context)){
-			bdr = (BeanDefinitionRegistry) context;
-		}else{
-			//
+	/****
+	 * 注册可解释的依赖
+	 * @author weishao zeng
+	 * @param applicationContext
+	 * @param dependencyType
+	 * @param autowiredValue 一般是ObjectFactory对象
+	 */
+	public static void registerResolvableDependency(ApplicationContext applicationContext, Class<?> dependencyType, Object autowiredValue) {
+		ConfigurableListableBeanFactory clbf = null;
+		if (applicationContext instanceof ConfigurableListableBeanFactory) {
+			clbf = (ConfigurableListableBeanFactory) applicationContext;
+		} else if (applicationContext instanceof AbstractApplicationContext) {
+			clbf = ((AbstractApplicationContext)applicationContext).getBeanFactory();
 		}
-
-		if(bdr==null && throwIfNull)
-			throw new BaseException("this context can not rigister spring bean : " + context);
-		return bdr;
-	}*/
+		clbf.registerResolvableDependency(dependencyType, autowiredValue);
+	}
 	
 	/****
 	 * 注册bean定义
@@ -703,21 +754,70 @@ final public class SpringUtils {
 		return resolvedValue;
 	}
 	
+
+	public static String getRequiredPropertyOrResolveValue(Object applicationContext, String propertyOrPlaceholderValue){
+		if (StringUtils.isBlank(propertyOrPlaceholderValue)) {
+			throw new BaseException("property can not be blank!");
+		}
+		return getPropertyOrResolveValue(applicationContext, propertyOrPlaceholderValue);
+	}
+	/***
+	 * 如果是属性，则从配置中获取；
+	 * 如果是表达式，则直接作为值解释；
+	 * 其它原样返回
+	 * @author weishao zeng
+	 * @param applicationContext
+	 * @param propertyOrPlaceholderValue 属性：{property}，表达式：aaa${property}，其它原样返回
+	 * @return
+	 */
+	public static String getPropertyOrResolveValue(Object applicationContext, String propertyOrPlaceholderValue){
+		if (StringUtils.isBlank(propertyOrPlaceholderValue)) {
+			return LangUtils.EMPTY_STRING;
+		}
+		PropertyResolver env = getPropertyResolver(applicationContext);
+		String newValue = null;
+		if (ExpressionFacotry.BRACE.isProperty(propertyOrPlaceholderValue)) {
+			// 作为属性
+			newValue = ExpressionFacotry.BRACE.parse(propertyOrPlaceholderValue, var -> {
+				return env.getProperty(var);
+			});
+		} else if (StringUtils.hasText(propertyOrPlaceholderValue) && DOLOR.isExpresstion(propertyOrPlaceholderValue)) {
+			newValue = env.resolvePlaceholders(propertyOrPlaceholderValue);
+		} else {
+			newValue = propertyOrPlaceholderValue;
+		}
+		return newValue;
+	}
+	
 	public static String resolvePlaceholders(Object applicationContext, String value, boolean throwIfNotResolved){
 		String newValue = value;
 		if (StringUtils.hasText(value) && DOLOR.isExpresstion(value)){
-			if (applicationContext instanceof ConfigurableApplicationContext){
-				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
-				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
-			} else if (applicationContext instanceof PropertyResolver){
-				PropertyResolver env = (PropertyResolver)applicationContext;
-				newValue = env.resolvePlaceholders(value);
-			}
+//			if (applicationContext instanceof ConfigurableApplicationContext){
+//				ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
+//				newValue = appcontext.getEnvironment().resolvePlaceholders(value);
+//			} else if (applicationContext instanceof PropertyResolver){
+//				PropertyResolver env = (PropertyResolver)applicationContext;
+//				newValue = env.resolvePlaceholders(value);
+//			}
+			newValue = getPropertyResolver(applicationContext).resolvePlaceholders(value);
 			if (DOLOR.isExpresstion(newValue) && throwIfNotResolved){
 				throw new BaseException("can not resolve placeholders value: " + value + ", resovled value: " + newValue);
 			}
 		}
 		return newValue;
+	}
+	
+	public static PropertyResolver getPropertyResolver(Object applicationContext){
+		PropertyResolver env = null;
+		if (applicationContext instanceof ConfigurableApplicationContext){
+			ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
+			env = appcontext.getEnvironment();
+		} else if (applicationContext instanceof PropertyResolver){
+			env = (PropertyResolver)applicationContext;
+		} else {
+			throw new BaseException("error applicationContext, it's not a PropertyResolver.");
+		}
+		return env;
 	}
 	
 	public static <T> T toBean(Map<String, ?> propValues, Class<T> beanClass){
@@ -771,6 +871,39 @@ final public class SpringUtils {
 														.enableFieldNameAnnotation()
 														.build();
 		return convertor;
+	}
+	
+
+	public static Set<Method> selectMethodsByParameterTypes(Class<?> targetClass, String targetMethod, Method sourceMethod) {
+		Set<Method> methods = MethodIntrospector.selectMethods(targetClass, (MethodFilter)method -> {
+			return method.getName().equals(targetMethod) && 
+					method.getParameterCount()==sourceMethod.getParameterCount() &&
+					Objects.deepEquals(method.getParameterTypes(), sourceMethod.getParameterTypes());
+		});
+		return methods;
+	}
+	
+	public static String readAsBase64(MultipartFile resource) {
+		return Base64Utils.encodeToString(readAsBytes(resource));
+	}
+	
+	public static byte[] readAsBytes(MultipartFile resource) {
+		try {
+			return IOUtils.toByteArray(resource.getInputStream());
+		} catch (IOException e) {
+			throw new BaseException("read resource error: " + e.getMessage());
+		}
+	}
+	public static String readAsBase64(Resource resource) {
+		return Base64Utils.encodeToString(readAsBytes(resource));
+	}
+	
+	public static byte[] readAsBytes(Resource resource) {
+		try {
+			return IOUtils.toByteArray(resource.getInputStream());
+		} catch (IOException e) {
+			throw new BaseException("read resource error: " + e.getMessage());
+		}
 	}
 	
 }

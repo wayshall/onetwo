@@ -29,9 +29,17 @@ public class MixinFactory {
 							.filter(i->!isMixinInterface(i))
 							.collect(Collectors.toList());
 	}
-
-	public <T> T of(Object obj, Class<?>... mixinInterfaces){
-		return Mixins.of(obj, advisorStrategy, mixinInterfaces);
+	
+	/***
+	 * 根据指定的策略（MixinAdvisorStrategy），把mixin接口(mixinInterfaces)混入到target对象
+	 * @author weishao zeng
+	 * @param <T>
+	 * @param target
+	 * @param mixinInterfaces
+	 * @return
+	 */
+	public <T> T of(Object target, Class<?>... mixinInterfaces){
+		return Mixins.of(target, advisorStrategy, mixinInterfaces);
 	}
 
 	public void setAdvisorStrategy(MixinAdvisorStrategy advisorFactory) {

@@ -24,5 +24,8 @@ public enum WebErrors implements ErrorType {
 		return message;
 	}
 
+	public Integer getStatusCode(){
+		return 200;
+	};
 }
 

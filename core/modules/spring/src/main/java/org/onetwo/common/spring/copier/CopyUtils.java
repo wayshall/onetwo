@@ -198,6 +198,14 @@ public class CopyUtils {
     	return IGNORE_NULL_BLANK_COPIER.fromObject(src, newInstance(targetClass));
     }
     
+    /****
+     * 遍历目标对象的属性，根据目标属性在源对象里寻找对应属性的值，并复制该值
+     * @param <T>
+     * @param target
+     * @param src
+     * @param propertyNames
+     * @return
+     */
     public static <T> T copyIgnoreNullAndBlank(T target, Object src, String... propertyNames){
     	if (LangUtils.isEmpty(propertyNames)) {
         	IGNORE_NULL_BLANK_COPIER.fromObject(src, target);

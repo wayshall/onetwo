@@ -5,7 +5,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.onetwo.boot.module.oauth2.clientdetails.OAuth2ClientDetails.TokenNotFoundActions;
+import org.onetwo.boot.module.oauth2.annotation.OAuth2ClientDetails;
+import org.onetwo.boot.module.oauth2.annotation.OAuth2ClientDetails.TokenNotFoundActions;
 import org.onetwo.boot.module.oauth2.util.OAuth2Errors;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.Dates;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
@@ -16,6 +17,7 @@ import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -58,7 +60,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		Map<String, Object> props = beanToMap.toFlatMap(userDetail);
 		Long userId = (Long)props.remove(JwtUtils.CLAIM_USER_ID);
 		String userName = (String)props.remove(JwtUtils.CLAIM_USER_NAME);
-		JwtUserDetail jwtDetail = new JwtUserDetail(userId, userName);
+		JwtUserDetail jwtDetail = new JwtUserDetail(userId, userName, null);
 		jwtDetail.setProperties(props);
 		return generateToken(jwtDetail);
 	}
@@ -124,7 +126,10 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		Claims claims = createClaimsFromToken(token);
 		LocalDateTime expireation = Dates.toLocalDateTime(claims.getExpiration());
 		if(expireation.isBefore(LocalDateTime.now())){
-			throw new ServiceException(JwtErrors.CM_SESSION_EXPIREATION);
+			if (log.isErrorEnabled()) {
+				log.error("登录的token已过时，需要重新登录: {}", token);
+			}
+			throw new ServiceException(JwtErrors.CM_ERROR_TOKEN);
 		}
 		
 		Map<String, Object> properties = claims.entrySet()
@@ -132,7 +137,12 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 												.filter(entry->isPropertyKey(entry.getKey()))
 												.collect(Collectors.toMap(entry->getProperty(entry.getKey()), entry->entry.getValue()));
 		Long userId = Long.parseLong(claims.get(JwtSecurityUtils.CLAIM_USER_ID).toString());
-		JwtUserDetail userDetail = buildJwtUserDetail(userId, claims.getSubject(), properties);
+		Boolean anonymousLogin = false;
+		if (properties.containsKey(JwtUserDetail.ANONYMOUS_LOGIN_KEY)) {
+			String anonymousLoginStr = properties.get(JwtUserDetail.ANONYMOUS_LOGIN_KEY).toString();
+			anonymousLogin = Types.convertValue(anonymousLoginStr, Boolean.class);
+		}
+		JwtUserDetail userDetail = buildJwtUserDetail(anonymousLogin, userId, claims.getSubject(), properties);
 		userDetail.setClaims(claims);
 
 		long remainingSeconds = (claims.getExpiration().getTime() - System.currentTimeMillis())/1000;
@@ -147,8 +157,8 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		return userDetail;
 	}
 
-	protected JwtUserDetail buildJwtUserDetail(Long userId, String userName, Map<String, Object> properties){
-		JwtUserDetail userDetail = new JwtUserDetail(userId, userName);
+	protected JwtUserDetail buildJwtUserDetail(Boolean anonymousLogin, Long userId, String userName, Map<String, Object> properties){
+		JwtUserDetail userDetail = new JwtUserDetail(userId, userName, anonymousLogin);
 		userDetail.setProperties(properties);
 		return userDetail;
 	}
@@ -160,6 +170,8 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 										.parse(token)
 										.getBody();
 			return claims;
+		} catch (ExpiredJwtException e) {
+			throw new ServiceException(JwtErrors.CM_NOT_LOGIN, e).put("token", token);
 		} catch (Exception e) {
 			throw new ServiceException(JwtErrors.CM_ERROR_TOKEN, e).put("token", token);
 		}

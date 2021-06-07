@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.redis;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Data;
@@ -18,6 +19,7 @@ public class CacheData<T> {
 		private D data;
 		private Long expire;
 		private TimeUnit timeUnit = TimeUnit.SECONDS;
+		private Date expireAt;
 		public CacheDataBuilder<D> value(D data) {
 			this.data = data;
 			return this;
@@ -32,19 +34,25 @@ public class CacheData<T> {
 		}
 		
 		public CacheData<D> build() {
-			return new CacheData<D>(data, expire, timeUnit);
+			return new CacheData<D>(data, expire, timeUnit, expireAt);
+		}
+		public CacheDataBuilder<D> expireAt(Date expireAt) {
+			this.expireAt = expireAt;
+			return this;
 		}
 	}
 	
 	private T value;
 	private Long expire;
 	private TimeUnit timeUnit = TimeUnit.SECONDS;
+	private Date expireAt;
 	
-	public CacheData(T value, Long expire, TimeUnit timeUnit) {
+	public CacheData(T value, Long expire, TimeUnit timeUnit, Date expireAt) {
 		super();
 		this.value = value;
 		this.expire = expire;
 		this.timeUnit = timeUnit;
+		this.expireAt = expireAt;
 	}
 	
 }

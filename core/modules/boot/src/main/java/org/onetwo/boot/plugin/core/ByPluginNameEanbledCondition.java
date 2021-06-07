@@ -26,6 +26,7 @@ public class ByPluginNameEanbledCondition extends EnabledKeyCondition {
 	protected String getEnabledKey(Environment environment, AnnotationAttributes attrubutes) {
 		PluginMeta meta = parsePlugin(attrubutes).getPluginMeta();
 		String property = attrubutes.getString("property");
+		// prefix+jfish.swagger.pluginName.enabled
 		String key = prefix+property+"."+meta.getName()+".enabled";
 		return key;
 	}

@@ -1,9 +1,10 @@
 package org.onetwo.boot.module.activemq;
 
-import lombok.Data;
-
+import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -24,6 +25,15 @@ public class ActivemqProperties {
 	JdbcStoreProps jdbcStore = new JdbcStoreProps();
 	RedeliveryProps redelivery = new RedeliveryProps();
 	String messageConverter = "simple";
+	
+	/***
+	 * 消息预取策略
+	 * jfish.activemq:
+	 * 		prefetchPolicy:
+	 * 			queuePrefetch: 1
+	 * 			topicPrefetch: 1
+	 */
+	ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
 	
 	@Data
 	static public class KahaDBStoreProps {

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -65,6 +67,13 @@ public class JsonMapper {
 	 */
 	public static final JsonMapper IGNORE_EMPTY = ignoreEmpty();
 	
+	public static String toJsonString(Object object) {
+		return IGNORE_NULL.toJson(object);
+	}
+	
+	public static <T> T fromJsonString(String json, Class<T> targetType) {
+		return IGNORE_NULL.fromJson(json, targetType);
+	}
 
 	public static SimpleFilterProvider exceptFilter(String id, String...properties){
 		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
@@ -102,12 +111,19 @@ public class JsonMapper {
 	public JsonMapper(Include include){
 		this(new ObjectMapper(), include);
 	}
+	
 	public JsonMapper(ObjectMapper objectMapper, Include include){
 		this(objectMapper, include, false);
 	}
 	
+	public JsonMapper(ObjectMapper objectMapper){
+		this(objectMapper, null, false);
+	}
+	
 	public JsonMapper(ObjectMapper objectMapper, Include include, boolean fieldVisibility){
-		objectMapper.setSerializationInclusion(include);
+		if (include!=null) {
+			objectMapper.setSerializationInclusion(include);
+		}
 //		objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 //		setDateFormat(DateUtils.DATE_TIME);
 		objectMapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
@@ -164,11 +180,19 @@ public class JsonMapper {
 		return this;
 	}
 	
-	/*public JsonMapper addMixInAnnotations(Class<?> target, Class<?> mixinSource){
-		this.objectMapper.getSerializationConfig().addMixInAnnotations(target, mixinSource);
-		this.objectMapper.getDeserializationConfig().addMixInAnnotations(target, mixinSource);
+	/****
+	 * 为指定target的类，使用mixinSource的规则
+	 * @author weishao zeng
+	 * @param target
+	 * @param mixinSource
+	 * @return
+	 */
+	public JsonMapper addMixIns(Class<?> mixinSource, Class<?>... targets){
+		for(Class<?> target : targets) {
+			this.objectMapper.addMixIn(target, mixinSource);
+		}
 		return this;
-	}*/
+	}
 	
 	public JsonMapper defaultFiler(PropertyFilter bpf){
 //		this.filterProvider.setDefaultFilter(bpf);
@@ -302,12 +326,17 @@ public class JsonMapper {
 		return fromJson(json, objType, false);
 	}
 	
+	public ObjectNode fromJson(final Object json) {
+		return fromJson(json, ObjectNode.class);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T> T fromJson(final Object json, Type objType, boolean parseAsStringIfError){
 		if(json==null)
 			return null;
 		Assert.notNull(objType);
 		Object obj = null;
+		String jsonstr = "";
 		try {
 			if(json instanceof InputStream){
 				obj = this.objectMapper.readValue((InputStream)json, (Class<?>)objType);
@@ -316,7 +345,7 @@ public class JsonMapper {
 			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
 				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else{
-				String jsonstr = json.toString();
+				jsonstr = json.toString();
 				if(StringUtils.isBlank(jsonstr)){
 					return null;
 				}
@@ -324,7 +353,9 @@ public class JsonMapper {
 			}
 		} catch (Exception e) {
 			if (parseAsStringIfError) {
-				String jsonstr = fromJson(json, String.class, false);
+				if (json instanceof byte[]) {
+					jsonstr = LangUtils.newString((byte[])obj);
+				}
 				throw new JsonException("parse json to ["+objType+"] error, json: " + jsonstr, e);
 			} else {
 				throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
@@ -361,6 +392,7 @@ public class JsonMapper {
 		return obj;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public JavaType constructJavaType(Type objType){
 		JavaType javaType = null;
 		if(objType instanceof ParameterizedType){
@@ -434,6 +466,18 @@ public class JsonMapper {
 		if(StringUtils.isBlank(json))
 			return Collections.EMPTY_LIST;
 		return fromJson(json, new TypeReference<List<T>>(){});
+	}
+    @SuppressWarnings("rawtypes")
+	public <T> Collection<T> fromJsonAsCollection(String json, Class<Collection> ctype, Class<T> itemType){
+		if(StringUtils.isBlank(json))
+			return Collections.emptyList();
+		Collection<T> datas;
+		try {
+			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ctype, itemType));
+		} catch (Exception e) {
+			throw new JsonException("parse json to collection error : " + ctype + " => " + json, e);
+		}
+		return datas;
 	}
 	
 	public <T> T update(String jsonString, T object) {

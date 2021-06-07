@@ -36,7 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.google.common.cache.LoadingCache;
+import com.google.common.cache.Cache;
 
 /**
  * @author wayshall
@@ -184,11 +184,11 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	
 	public class DefaultApiMethodInterceptor extends AbstractMethodInterceptor<M> {
 
-		public DefaultApiMethodInterceptor(LoadingCache<Method, M> methodCache) {
+		public DefaultApiMethodInterceptor(Cache<Method, M> methodCache) {
 			super(methodCache);
 		}
 		
-		protected Object doInvoke(MethodInvocation invocation, M invokeMethod) {
+		protected Object doInvoke(MethodInvocation invocation, M invokeMethod) throws Throwable {
 			Object[] args = processArgumentsBeforeRequest(invocation, invokeMethod);
 			invokeMethod.validateArgements(validatorWrapper, args);
 
@@ -231,11 +231,11 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			catch (Throwable e) {
 				// /ocketException, UnknownHostException等网络异常
 				ApiErrorHandler handler = invokeMethod.getApiErrorHandler().orElse(apiErrorHandler);
-				ErrorInvokeContext ctx = new ErrorInvokeContext(context, e);
-				ctx.setRetryInvoker(ioe -> {
-					logger.warn("{} times invoke throws io error: {}, retry after {} ms ...", context.getInvokeCount(), ioe.getMessage(), retryWaitInMillis);
-					if (retryWaitInMillis>0) {
-						LangUtils.awaitInMillis(retryWaitInMillis); //休眠500毫秒
+				ErrorInvokeContext ctx = new ErrorInvokeContext(context, e, retryWaitInMillis);
+				ctx.setRetryInvoker(() -> {
+					logger.warn("{} times invoke throws error: {}, retry after {} ms ...", context.getInvokeCount(), e.getMessage(), retryWaitInMillis);
+					if (ctx.getRetryWaitInMillis() > 0) {
+						LangUtils.awaitInMillis(ctx.getRetryWaitInMillis()); //休眠指定的时间（毫秒）
 					}
 					Object res = actualInvoke0(invokeMethod, context);
 					return res;

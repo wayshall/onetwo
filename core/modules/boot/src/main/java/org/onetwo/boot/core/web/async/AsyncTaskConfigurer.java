@@ -5,7 +5,6 @@ import java.util.concurrent.Executor;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 
 /**
@@ -18,9 +17,14 @@ public class AsyncTaskConfigurer implements AsyncConfigurer {
 	
 	@Autowired(required=false)
 	private AsyncUncaughtExceptionHandler asyncUncaughtExceptionHandler;
-	@Autowired(required=false)
-	@Qualifier(AsyncTaskConfiguration.ASYNC_TASK_BEAN_NAME)
+//	@Autowired(required=false)
+//	@Qualifier(AsyncTaskConfiguration.ASYNC_TASK_BEAN_NAME)
 	private Executor executor;
+
+	public AsyncTaskConfigurer(Executor executor) {
+		super();
+		this.executor = executor;
+	}
 
 	@Override
 	public Executor getAsyncExecutor() {

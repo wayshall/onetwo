@@ -9,6 +9,6 @@ import java.util.Optional;
  */
 public interface Oauth2ClientDetailManager {
 
-	<T extends ClientDetails> Optional<T> getCurrentClientDetail();
+	<T extends OAuth2ClientDetail> Optional<T> getCurrentClientDetail();
 	
 }

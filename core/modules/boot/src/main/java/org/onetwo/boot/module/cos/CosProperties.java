@@ -1,21 +1,29 @@
 package org.onetwo.boot.module.cos;
 
-import lombok.Data;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.boot.core.config.BootJFishConfig;
+import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.region.Region;
 
+import lombok.Data;
+
 /**
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cos")
+@ConfigurationProperties(CosProperties.PREFIX)
 @Data
 public class CosProperties {
+	public static final String PREFIX = BootJFishConfig.PREFIX + ".cos";
+	public static final String ENABLED_KEY = PREFIX + ".bucketName";
+	
 	String downloadEndPoint;
 	String uploadEndPoint;
 	String endPoint;
@@ -36,6 +44,17 @@ public class CosProperties {
     boolean enabledAsyncUpload = false;
 
 	ClientConfig client = new ClientConfig(null);
+	
+	/***
+	 * 此功能需要配置腾讯云mps工作流，设置触发目录和任务
+	 * 文档见：https://cloud.tencent.com/document/product/862/36400
+	 */
+	VideoConfig video = new VideoConfig();
+	
+	/***
+	 * 临时秘钥
+	 */
+	StsConfig sts = new StsConfig();
 	
 	public String getDownloadEndPoint() {
 		if(StringUtils.isBlank(downloadEndPoint)){
@@ -58,7 +77,7 @@ public class CosProperties {
 		return client;
 	}
 
-	private String getBucketName(){
+	public String getBucketName(){
 		return bucketName;
 	}
 	
@@ -81,12 +100,92 @@ public class CosProperties {
 	
 
 	public static String buildUrl(boolean https, String endpoint, String bucketName, String key){
-		StringBuilder url = new StringBuilder(https?"https":"http");
-		url.append("://")
-			.append(bucketName)
-			.append(".")
-			.append(endpoint)
+		StringBuilder url = new StringBuilder(200);
+		if (!RequestUtils.isHttpPath(endpoint)) {
+			url.append(https?"https":"http");
+			url.append("://");
+			if (!endpoint.startsWith(bucketName)) {
+				url.append(bucketName)
+					.append(".");
+			}
+		}
+		url.append(endpoint)
 			.append(key);
 		return url.toString();
+	}
+
+	public void setEndPoint(String endPoint) {
+		this.endPoint = endPoint;
+	}
+	
+	public String getEndPoint() {
+		return this.endPoint;
+	}
+	
+	public String getEndpoint() {
+		return endPoint;
+	}
+
+	public void setEndpoint(String endpoint) {
+		this.endPoint = endpoint;
+	}
+	
+	@Data
+	public static class VideoConfig {
+		boolean enabled = false;
+		/***
+		 * 腾讯云可以截取多张图片，_0表示的是第一张截图
+		 * 对应配置：
+		 * {inputName}-cover.{format}
+		 */
+		String snapshotFileName = "{filename}-cover.jpg";
+		/***
+		 * 对应配置：
+		 * {inputName}wm
+		 */
+		String waterMaskFileName = "{filename}wm.{format}";
+		/***
+		 * 上传以下后缀的文件时，触发处理
+		 */
+		List<String> postfix = Arrays.asList("mp4", "flv");
+		
+		/***
+		 * 触发目录
+		 * 对应腾讯云mps工作流配置的触发目录
+		 */
+		String triggerDir = "/video/";
+		
+		/***
+		 * 输出目录
+		 * 对应腾讯云mps工作流配置的输出目录
+		 */
+		String outputDir = "/video/";
+		/***
+		 * 每隔多少毫秒检查是否转换成功
+		 * 因为腾讯云的加水印功能是异步的
+		 * 少于0表示不轮询检查异步转换结果
+		 */
+		int checkTaskInMillis = -1;
+		/***
+		 * 最大等待时间，默认30秒
+		 */
+		int totalTaskInMillis = 30000;
+	}
+	
+	@Data
+	public static class StsConfig {
+		int durationInSeconds = 1800;
+		/***
+		 * 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的具体路径，例子：a.jpg 或者 a/* 或者 * 。
+           	如果填写了“*”，将允许用户访问所有资源；除非业务需要，否则请按照最小权限原则授予用户相应的访问权限范围。
+		 */
+		String[] allowPrefixs = new String[] {"*"};
+		String[] allowActions = new String[] {
+				// 简单上传
+				"name/cos:PutObject", "name/cos:PostObject",
+				// 分片上传
+				"name/cos:InitiateMultipartUpload", "name/cos:ListMultipartUploads", "name/cos:ListParts",
+				"name/cos:UploadPart", "name/cos:CompleteMultipartUpload" 
+		};
 	}
 }

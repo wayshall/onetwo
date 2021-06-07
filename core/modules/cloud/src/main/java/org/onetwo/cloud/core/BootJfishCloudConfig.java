@@ -1,14 +1,16 @@
 package org.onetwo.cloud.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import lombok.Data;
-
+import org.onetwo.boot.utils.PathMatcher;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 /**
  * @author wayshall
@@ -23,11 +25,14 @@ public class BootJfishCloudConfig {
 	
 	public static final String EUREKA_EMBEDDED_KEY = "jfish.cloud.eureka.embedded";
 	
+	public static final String HYSTRIX_SHARE_REQUEST_CONTEXT = "jfish.cloud.hystrix.shareRequestContext";
+	
 	ZuulConfig zuul = new ZuulConfig();
 	
 	@Data
 	public class ZuulConfig {
 		List<FixHeadersConfig> fixHeaders = new ArrayList<>();
+		boolean debug;
 	}
 
 	@Data
@@ -37,8 +42,16 @@ public class BootJfishCloudConfig {
 		String value;
 		PathMatcher matcher = PathMatcher.ANT;
 		Map<String, Pattern> patterns = null;
+		/***
+		 * 如果当前请求已有对应的header，是否强制覆盖
+		 * 默认为true
+		 */
+		boolean override = true;
 		
 		public Map<String, Pattern> getPatterns(){
+			if (matcher!=PathMatcher.REGEX) {
+				return Collections.emptyMap();
+			}
 			Map<String, Pattern> patterns = this.patterns;
 			if(patterns==null || patterns.isEmpty()){
 				patterns = pathPatterns.stream().collect(Collectors.toMap(path->path, path->Pattern.compile(path)));
@@ -47,8 +60,8 @@ public class BootJfishCloudConfig {
 		}
 	}
 	
-	public static enum PathMatcher {
+	/*public static enum PathMatcher {
 		ANT,
 		REGEX
-	}
+	}*/
 }

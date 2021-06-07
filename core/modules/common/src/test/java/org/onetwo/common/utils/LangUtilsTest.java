@@ -7,6 +7,7 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -19,6 +20,55 @@ import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
+	
+
+	@Test
+	public void testJoinMap() {
+		Map<String, String> map = CUtils.asLinkedMap("test1", "1", "test2", 2);
+		String res = StringUtils.join(map, ":", "-");
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("test1:1-test2:2");
+		System.out.println("res: " + System.currentTimeMillis());
+	}
+
+	@Test
+	public void testEllipsis() {
+		String str = "test";
+		String res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo(str);
+		
+		str = null;
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo(str);
+		
+		str = "12345676910";
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo("1234567...");
+		
+		str = "一二三四五六七八九十十一";
+		res = LangUtils.ellipsis(str, 10);
+		assertThat(res).isEqualTo("一二三四五六七...");
+	}
+	
+	@Test
+	public void testReplace() {
+		int val = 127;
+		int val2 = 0xFF;
+		System.out.println("val:" +val+", " + Integer.toHexString(val)+", " + Integer.toBinaryString(val));
+		System.out.println("val2:" +val2);
+		String str = "waypc.mshome.net|8888";
+		String[] strs = str.split("\\|");
+		System.out.println("str: " + LangUtils.toString(strs));
+		str = "127.0.0.1|8888";
+		strs = str.split("|");
+		System.out.println("str: " + LangUtils.toString(strs));
+		
+		String url = "aaa\\bb?cc*dd|ee\"ff";
+		System.out.println("source: " + url);
+		url = url.replaceAll("\\\\|:|\\*|\\?|\"|<|>|\\|", "");
+		System.out.println("url: " + url);
+		assertThat(url).isEqualTo("aaabbccddeeff");
+	}
 	
 	@Test
 	public void testFormatValue(){
@@ -88,6 +138,11 @@ public class LangUtilsTest {
 	public void testTimeUnit(){
 		long i = TimeUnit.MINUTES.toHours(59);
 		System.out.println("unit: " + i);
+		assertThat(i).isEqualTo(0L);
+		
+		i = TimeUnit.MINUTES.toHours(119);
+		System.out.println("unit: " + i);
+		assertThat(i).isEqualTo(1L);
 		
 		List<String> list = LangUtils.newArrayList("aa", "bb", "cc");
 		List<String> sublist = list.subList(0, 2);
@@ -255,6 +310,20 @@ public class LangUtilsTest {
 	}
 	
 	@Test
+	public void test10to2(){
+		short numb = 2605;
+		System.out.println("numb: " + Integer.toBinaryString(numb));
+//		byte h8 = (byte)((numb & 0xFF00) >> 8);
+		byte h8 = LangUtils.high8(numb);
+		System.out.println("numb1: " + Integer.toBinaryString(numb & 0xFF00));
+		System.out.println("numb2: " + Integer.toBinaryString((numb & 0xFF00) >> 8));
+//		byte l8 = (byte)(numb & 0x00FF);
+		byte l8 = LangUtils.low8(numb);
+		System.out.println("h8: " + h8);
+		System.out.println("l8: " + l8);
+	}
+	
+	@Test
 	public void test10to16(){
 		String cardNo10 = "6124895493223875970";
 		System.out.println("cardno: " + cardNo10.length());
@@ -399,6 +468,16 @@ public class LangUtilsTest {
 		System.out.println("key:" + key);
 		key = "sport-"+RandomStringUtils.randomAlphanumeric(128);
 		System.out.println("key:" + key);
+		key = RandomStringUtils.randomAlphanumeric(32);
+		System.out.println("key:" + key);
+	}
+	
+	@Test
+	public void testGetCRC32() {
+		String data = "测试一下阿斯顿发了水电费开始的";
+		long value = LangUtils.getCrc32(data);
+		System.out.println(Long.toString(value, 36));
+		assertThat(value).isEqualTo(4286944383L);
 	}
 	
 }

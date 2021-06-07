@@ -12,15 +12,7 @@ public class IntegerToEnumConverterFactory implements ConverterFactory<Integer, 
 
 	@Override
 	public <R extends Enum> Converter<Integer, R> getConverter(Class<R> targetType) {
-		Class<?> enumType = targetType;
-		while (enumType != null && !enumType.isEnum()) {
-			enumType = enumType.getSuperclass();
-		}
-		if (enumType == null) {
-			throw new IllegalArgumentException(
-					"The target type " + targetType.getName() + " does not refer to an enum");
-		}
-		return new IntegerToEnum(enumType);
+		return new IntegerToEnum(targetType);
 	}
 
 	private class IntegerToEnum<T extends Enum> implements Converter<Integer, T> {
@@ -38,7 +30,6 @@ public class IntegerToEnumConverterFactory implements ConverterFactory<Integer, 
 			int ordinal = source;
 			return ordinal>values.length?null:values[ordinal];
 		}
-		
 		
 		
 	}

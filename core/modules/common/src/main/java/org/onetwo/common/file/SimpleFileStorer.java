@@ -23,6 +23,10 @@ public class SimpleFileStorer implements FileStorer {
 	private String storeBaseDir;
 	private String appContextDir;
 	
+	public String getStoreType() {
+		return "local";
+	}
+	
 	@Override
 	public SimpleFileStoredMeta write(StoringFileContext context) {
 		SimpleFileStoredMeta meta = getStoreDir(context);
@@ -106,7 +110,7 @@ public class SimpleFileStorer implements FileStorer {
 	}
 
 
-	private static class SimpleStoreFilePathStrategy /*implements StoreFilePathStrategy*/ {
+	public static class SimpleStoreFilePathStrategy /*implements StoreFilePathStrategy*/ {
 		static public String getAppModulePath(String appContextDir, StoringFileContext ctx){
 			String baseDir = FileUtils.convertDir(appContextDir);
 			baseDir = StringUtils.appendStartWith(baseDir, FileUtils.SLASH);
@@ -130,6 +134,7 @@ public class SimpleFileStorer implements FileStorer {
 
 			
 			//sotreDir/appContextDir/moduleDir/yyyy-MM-dd//orginFileName-HHmmssSSS-randomString.ext
+			// fileStoreBaseDir 配置在 bootCommonService，可为空
 			String storedServerLocalPath = ctx.getFileStoreBaseDir() + accessablePath;
 			
 			SimpleFileStoredMeta meta = new SimpleFileStoredMeta(ctx.getFileName(), storedServerLocalPath);
