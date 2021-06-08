@@ -66,7 +66,7 @@ public class ExtZuulContextConfig {
 	@ConditionalOnMissingBean(name={MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME})
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
-		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
+		resolver.setMaxUploadSize(multipartProperties.getMaxRequestSize().toBytes());
 		return resolver;
 	}
 	

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.json.ObjectMapperProvider;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.beans.factory.InitializingBean;
@@ -23,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonValue;
 
 /**
  * @author wayshall
@@ -79,15 +79,16 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 	protected Object filterAndWrapModel(Object value, HttpOutputMessage outputMessage, HttpServletRequest request) {
 		String jsonpParameterValue = getJsonpParameterValue(request);
 		if (jsonpParameterValue != null) {
-			if (value instanceof MappingJacksonValue) {
-				((MappingJacksonValue) value).setJsonpFunction(jsonpParameterValue);
-			}
-			else {
-				MappingJacksonValue container = new MappingJacksonValue(value);
-				container.setJsonpFunction(jsonpParameterValue);
-				value = container;
-			}
-			outputMessage.getHeaders().setContentType(MediaType.parseMediaType("application/javascript"));
+//			if (value instanceof MappingJacksonValue) {
+//				((MappingJacksonValue) value).setJsonpFunction(jsonpParameterValue);
+//			}
+//			else {
+//				MappingJacksonValue container = new MappingJacksonValue(value);
+//				container.setJsonpFunction(jsonpParameterValue);
+//				value = container;
+//			}
+//			outputMessage.getHeaders().setContentType(MediaType.parseMediaType("application/javascript"));
+			throw new ServiceException("unsupported jsonp function!");
 		}
 		if (value instanceof Optional) {
 			Optional<?> opt = (Optional<?>) value;

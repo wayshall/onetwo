@@ -65,6 +65,12 @@
           <artifactId>onetwo-poi</artifactId>
           <optional>true</optional>
         </dependency>
+	        
+        <dependency>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
+          <optional>true</optional>
+        </dependency>
         
         <dependency>
           <groupId>io.jsonwebtoken</groupId>
@@ -314,11 +320,6 @@
 	      <artifactId>mybatis</artifactId>
           <optional>true</optional>
 	    </dependency>
-	    <dependency>
-		  <groupId>org.mybatis</groupId>
-		  <artifactId>mybatis</artifactId>
-          <optional>true</optional>
-		</dependency>
 			    
 	    <dependency>
 	        <groupId>com.github.pagehelper</groupId>

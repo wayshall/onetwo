@@ -80,9 +80,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 
 
 	@Override
-    public List<MethodMetadata> parseAndValidatateMetadata(Class<?> targetType) {
+    public List<MethodMetadata> parseAndValidateMetadata(Class<?> targetType) {
 		try {
-	    	return super.parseAndValidatateMetadata(targetType);
+	    	return super.parseAndValidateMetadata(targetType);
 		} catch (IllegalStateException e) {
 			
 			if(e.getMessage().startsWith("Only single-level inheritance supported")){

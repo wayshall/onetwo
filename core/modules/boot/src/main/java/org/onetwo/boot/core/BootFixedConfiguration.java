@@ -5,7 +5,6 @@ import java.lang.management.ManagementFactory;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -50,7 +49,7 @@ public class BootFixedConfiguration {
 	@Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
-		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
+		resolver.setMaxUploadSize(multipartProperties.getMaxRequestSize().toBytes());
 		return resolver;
 	}
 	

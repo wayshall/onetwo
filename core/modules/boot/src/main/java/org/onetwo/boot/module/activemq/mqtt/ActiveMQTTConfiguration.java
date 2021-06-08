@@ -2,6 +2,7 @@ package org.onetwo.boot.module.activemq.mqtt;
 
 import java.util.List;
 
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.InBoundClientProps;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverters;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.OutBoundClientProps;
@@ -42,14 +43,26 @@ public class ActiveMQTTConfiguration {
 	@Bean(name = BEAN_MQTT_PAHO_CLIENT_FACTORY)
 	public MqttPahoClientFactory mqttPahoClientFactory() {
 		DefaultMqttPahoClientFactory clientFactory = new DefaultMqttPahoClientFactory();
-		clientFactory.setServerURIs(activeMQTTProperties.getServerUrls());
-		clientFactory.setUserName(activeMQTTProperties.getUsername());
-		clientFactory.setPassword(activeMQTTProperties.getPassword());
-		clientFactory.setCleanSession(activeMQTTProperties.isCleanSession());
-		clientFactory.setConnectionTimeout(activeMQTTProperties.getConnectionTimeout());
-		clientFactory.setKeepAliveInterval(activeMQTTProperties.getKeepAliveInterval());
-		clientFactory.setSslProperties(activeMQTTProperties.getSsl());
+		
+//		clientFactory.setServerURIs(activeMQTTProperties.getServerUrls());
+//		clientFactory.setUserName(activeMQTTProperties.getUsername());
+//		clientFactory.setPassword(activeMQTTProperties.getPassword());
+//		clientFactory.setCleanSession(activeMQTTProperties.isCleanSession());
+//		clientFactory.setConnectionTimeout(activeMQTTProperties.getConnectionTimeout());
+//		clientFactory.setKeepAliveInterval(activeMQTTProperties.getKeepAliveInterval());
+//		clientFactory.setSslProperties(activeMQTTProperties.getSsl());
+//		clientFactory.setConsumerStopAction(activeMQTTProperties.getConsumerStopAction());
+		
+		MqttConnectOptions options = new MqttConnectOptions();
+		options.setServerURIs(activeMQTTProperties.getServerUrls());
+		options.setUserName(activeMQTTProperties.getUsername());
+		options.setPassword(activeMQTTProperties.getPassword().toCharArray());
+		options.setCleanSession(activeMQTTProperties.isCleanSession());
+		options.setConnectionTimeout(activeMQTTProperties.getConnectionTimeout());
+		options.setKeepAliveInterval(activeMQTTProperties.getKeepAliveInterval());
+		options.setSSLProperties(activeMQTTProperties.getSsl());
 		clientFactory.setConsumerStopAction(activeMQTTProperties.getConsumerStopAction());
+		
 		return clientFactory;
 	}
 

@@ -8,9 +8,9 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.module.redis.RedisBaseTest.RedisTtestContextConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,7 +47,7 @@ public class RedisBaseTest {
 
 	@Configuration
 	@SpringBootApplication(exclude={DataSourceAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class, 
-			ElasticsearchAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class, SessionAutoConfiguration.class})
+			ElasticsearchRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class, SessionAutoConfiguration.class})
 	@Import(RedisConfiguration.class)
 	public static class RedisTtestContextConfig {
 		

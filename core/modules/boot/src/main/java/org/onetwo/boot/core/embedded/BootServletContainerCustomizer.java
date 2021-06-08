@@ -3,9 +3,6 @@ package org.onetwo.boot.core.embedded;
 import java.util.Arrays;
 
 import org.apache.coyote.http11.Http11NioProtocol;
-import org.apache.catalina.core.AprLifecycleListener;
-import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.onetwo.common.file.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
@@ -50,8 +47,8 @@ public class BootServletContainerCustomizer implements WebServerFactoryCustomize
 
 	protected TomcatConnectorCustomizer tomcatConnectorCustomizer() {
 		return (connector) -> {
-        	//connector 本身默认是 2 mb
-        	connector.setMaxPostSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
+        	//connector 本身默认是 2 mb, multipartProperties默认10mb
+        	connector.setMaxPostSize((int)multipartProperties.getMaxRequestSize().toBytes());
         	Http11NioProtocol handler = (Http11NioProtocol)connector.getProtocolHandler();
         	if(tomcatProperties.getBacklog()!=-1){
         		//socket 连接队列大小
