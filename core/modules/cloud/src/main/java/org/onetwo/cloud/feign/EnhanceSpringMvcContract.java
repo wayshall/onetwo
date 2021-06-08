@@ -145,7 +145,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 					if (!pathValue.startsWith("/")) {
 						pathValue = "/" + pathValue;
 					}
-					data.template().insert(0, pathValue);
+					// insert is deprecated
+//					data.template().insert(0, pathValue);
+					data.template().uri(pathValue);
 				}
 			}
 		}
@@ -153,7 +155,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 			EnhanceFeignClient classAnnotation = findMergedAnnotation(clz, EnhanceFeignClient.class);
 			Optional<String> basePathOpt = getFeignBasePath(clz, classAnnotation);
 			if(basePathOpt.isPresent()){
-				data.template().insert(0, basePathOpt.get());
+				// insert is deprecated
+//				data.template().insert(0, basePathOpt.get());
+				data.template().uri(basePathOpt.get());
 			}
 		}
 	}

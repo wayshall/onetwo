@@ -7,7 +7,6 @@ import org.onetwo.boot.core.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.cloud.bugfix.FixFormBodyWrapperFilterPostProcessor;
 import org.onetwo.cloud.core.BootJfishCloudConfig;
-import org.onetwo.common.file.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,6 +36,7 @@ public class ExtZuulContextConfig {
 
 	@Bean
 	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
+	@ConditionalOnMissingBean(BootServletContainerCustomizer.class)
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
 	}

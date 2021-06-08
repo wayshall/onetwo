@@ -1,5 +1,6 @@
 package org.onetwo.cloud.core;
 
+import org.onetwo.cloud.util.BootCloudUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class BootCloudConfigration {
 
 	@Bean
-	@ConditionalOnClass(name={"org.springframework.cloud.netflix.feign.FeignClient", "feign.Feign"})
+	@ConditionalOnClass(name={BootCloudUtils.FEIGN_CLIENT_CLASS_NAME, BootCloudUtils.FEIGN_CLASS_NAME})
 	public CloudWebMvcRegistrations bootWebMvcRegistrations(){
 		return new CloudWebMvcRegistrations();
 	}

@@ -55,13 +55,18 @@ public class ActiveMQTTConfiguration {
 		
 		MqttConnectOptions options = new MqttConnectOptions();
 		options.setServerURIs(activeMQTTProperties.getServerUrls());
-		options.setUserName(activeMQTTProperties.getUsername());
-		options.setPassword(activeMQTTProperties.getPassword().toCharArray());
+		if (activeMQTTProperties.getUsername()!=null) {
+			options.setUserName(activeMQTTProperties.getUsername());
+		}
+		if (activeMQTTProperties.getPassword()!=null) {
+			options.setPassword(activeMQTTProperties.getPassword().toCharArray());
+		}
 		options.setCleanSession(activeMQTTProperties.isCleanSession());
 		options.setConnectionTimeout(activeMQTTProperties.getConnectionTimeout());
 		options.setKeepAliveInterval(activeMQTTProperties.getKeepAliveInterval());
 		options.setSSLProperties(activeMQTTProperties.getSsl());
 		clientFactory.setConsumerStopAction(activeMQTTProperties.getConsumerStopAction());
+		clientFactory.setConnectionOptions(options);
 		
 		return clientFactory;
 	}

@@ -68,6 +68,9 @@ public class BootServletContainerCustomizer implements WebServerFactoryCustomize
         		handler.setConnectionUploadTimeout(tomcatProperties.getConnectionUploadTimeout());
         	}
         	connector.setAsyncTimeout(tomcatProperties.getAsyncTimeout());
+        	
+        	connector.setProperty("relaxedQueryChars", tomcatProperties.getRelaxedQueryChars());
+        	connector.setProperty("relaxedPathChars", tomcatProperties.getRelaxedPathChars());
         };
 	}
 	

@@ -16,6 +16,9 @@ public class FixFeignClientsHandlerMapping extends ExtRequestMappingHandlerMappi
 
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
+//		if (beanType.getName().contains("CaptchaController")) {
+//			System.out.println("test");
+//		}
 		//避免springmvc 把抽象出来的带有RequestMapping注解的client接口扫描到controller注册
 		boolean isFeignClient = AnnotatedElementUtils.hasAnnotation(beanType, FeignClient.class);
 		if(BootCloudUtils.isNetflixFeignClientPresent() && isFeignClient){

@@ -14,16 +14,15 @@ import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.Dates;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.BoundZSetOperations;
@@ -58,12 +57,11 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	@Setter
     private long waitLockInSeconds = 60;
 	@Setter
-    private Map<String, Long> expires;
+    private Map<String, RedisCacheConfiguration> expires;
 	@Autowired(required=false)
 	private RedisCacheManager redisCacheManager;
 	final private CacheStatis cacheStatis = new CacheStatis();
     
-    @SuppressWarnings("unchecked")
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		redisTemplate = createReidsTemplate(redisConnectionFactory);
@@ -74,7 +72,8 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		this.stringRedisTemplate = template;
 		
 		if (redisCacheManager!=null) {
-			expires = (Map<String, Long>) SpringUtils.newPropertyAccessor(redisCacheManager, true).getPropertyValue("expires");
+//			expires = (Map<String, Long>) SpringUtils.newPropertyAccessor(redisCacheManager, true).getPropertyValue("expires");
+			redisCacheManager.getCacheConfigurations();
 		} else {
 			expires = Collections.emptyMap();
 		}
@@ -216,7 +215,7 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	private void configCacheData(BoundValueOperations<Object, Object> ops, String cacheKey, CacheData<?> cacheData) {
 		// 配置优先
 		if (this.expires.containsKey(cacheKey)) {
-			Long expireInSeconds = this.expires.get(cacheKey);
+			Long expireInSeconds = this.expires.get(cacheKey).getTtl().getSeconds();
 			ops.set(cacheData.getValue(), expireInSeconds, TimeUnit.SECONDS);
 		} else if (cacheData.getExpireAt()!=null) {
 			TimeUnit unit = TimeUnit.SECONDS;
@@ -271,7 +270,8 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		RedisSerializer<Object> keySerializer = getKeySerializer();
     	T value = this.redisTemplate.execute(new RedisCallback<T>() {
 
-    		public T doInRedis(RedisConnection connection) throws DataAccessException {
+    		@SuppressWarnings("unchecked")
+			public T doInRedis(RedisConnection connection) throws DataAccessException {
     			byte[] rawKey = keySerializer.serialize(cacheKey);
     			connection.multi();
     			connection.get(rawKey);

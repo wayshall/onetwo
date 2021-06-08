@@ -2,16 +2,17 @@ package org.onetwo.boot.module.swagger;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.plugin.core.PluginManager;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.ClassUtils;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
 
 import springfox.documentation.RequestHandler;
@@ -73,7 +74,7 @@ public class AutoScanPluginSwaggerConfig extends AbstractSwaggerConfig {
 								.ignoredParameterTypes(ApiIgnore.class)
 						//		.pathProvider(pathProvider)
 						        .select()
-						            .apis(Predicates.or(packages))
+						            .apis(LangOps.or(packages))
 						            .paths(PathSelectors.any())
 						        .build()
 						        .apiInfo(apiInfo(getServiceName()));
@@ -85,6 +86,6 @@ public class AutoScanPluginSwaggerConfig extends AbstractSwaggerConfig {
     }
     
     protected String getServiceName(){
-    	return "JFish Service";
+    	return BootJFishConfig.ZIFISH_CONFIG_PREFIX + " Service";
     }
 }

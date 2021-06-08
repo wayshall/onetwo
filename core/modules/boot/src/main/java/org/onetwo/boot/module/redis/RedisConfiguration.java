@@ -10,7 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 
@@ -115,7 +114,7 @@ public class RedisConfiguration {
 	@Bean
 	@Autowired
 	@ConditionalOnClass({RedisLockRegistry.class})
-	public RedisLockService redisLockService(@Autowired JedisConnectionFactory jedisConnectionFactory) {
+	public RedisLockService redisLockService(@Autowired RedisConnectionFactory jedisConnectionFactory) {
 		return new RedisLockService(redisLockRegistry(jedisConnectionFactory));
 	}
     

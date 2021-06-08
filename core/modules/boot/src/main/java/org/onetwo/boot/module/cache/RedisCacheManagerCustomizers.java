@@ -66,7 +66,7 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 			if (properties.isUseJsonRedisTemplate()) {
 				JsonMapper jsonMapper = JsonMapper.ignoreNull();
 				ObjectMapper mapper = jsonMapper.getObjectMapper();
-				mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);//用这个配置，如果写入的对象是list，并且元素是复合对象时，会抛错：Current context not Object but Array
+				mapper.activateDefaultTyping(mapper.getPolymorphicTypeValidator(), DefaultTyping.NON_FINAL, As.PROPERTY);//用这个配置，如果写入的对象是list，并且元素是复合对象时，会抛错：Current context not Object but Array
 //				mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
 				
 				RedisSerializer<String> keySerializer = new StringRedisSerializer();
