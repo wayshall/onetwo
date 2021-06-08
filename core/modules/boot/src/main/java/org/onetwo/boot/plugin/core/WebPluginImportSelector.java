@@ -18,7 +18,7 @@ import org.springframework.core.type.AnnotationMetadata;
 public class WebPluginImportSelector extends EnabledKeyCondition
 									implements EnvironmentAware, ImportBeanDefinitionRegistrar/*, DeferredImportSelector*/ {
 
-	private static final String PLUGIN_KEY = "jfish.plugin.";
+	private static final String PLUGIN_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".plugin.";
 	
 	private WebPlugin webPlugin;
 	private Environment environment;

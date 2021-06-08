@@ -12,7 +12,7 @@ import lombok.Data;
 @ConfigurationProperties(value=TimerProperties.PREFIX_KEY)
 @Data
 public class TimerProperties {
-	public static final String PREFIX_KEY = BootJFishConfig.PREFIX + ".timer";
+	public static final String PREFIX_KEY = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".timer";
 	public static final String THREADPOOL_ENABLED_KEY = PREFIX_KEY + ".scheduler.enabled";
 	
 	SchedulerProps scheduler = new SchedulerProps();

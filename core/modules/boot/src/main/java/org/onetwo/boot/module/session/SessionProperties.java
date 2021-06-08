@@ -14,7 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix=SessionProperties.PREFIX)
 public class SessionProperties {
 	
-	public static final String PREFIX = "jfish.session";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".session";
 	public static final String STRATEGE_CUSTOMIZABLE = "customizable";
 	public static final String STRATEGY_KEY = PREFIX + ".strategy";
 	

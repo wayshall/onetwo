@@ -27,7 +27,7 @@ import lombok.Data;
 @Data
 @ConfigurationProperties(ONSProperties.ONS_PREFIX)
 public class ONSProperties implements InitializingBean {
-	public static final String ONS_PREFIX = BootJFishConfig.PREFIX + ".ons";
+	public static final String ONS_PREFIX = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".ons";
 	
 	public static final String ONS_ENABLE_KEY = ONS_PREFIX + ".onsAddr";
 	public static final String PRODUCER_ENABLED_KEY = ONS_PREFIX + ".producer.enabled";

@@ -15,7 +15,7 @@ import lombok.Data;
 @ConfigurationProperties(value=MQProperties.PREFIX_KEY)
 @Data
 public class MQProperties {
-	public static final String PREFIX_KEY = "jfish.mq";
+	public static final String PREFIX_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mq";
 	public static final String ENABLE_KEY = PREFIX_KEY+".enabled";
 
 	public static final String TRANSACTIONAL_ENABLED_KEY = PREFIX_KEY+".transactional.enabled";

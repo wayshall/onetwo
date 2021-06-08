@@ -7,14 +7,13 @@ import org.onetwo.boot.core.web.filter.SpringMultipartFilterProxy;
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.cloud.bugfix.FixFormBodyWrapperFilterPostProcessor;
 import org.onetwo.cloud.core.BootJfishCloudConfig;
-import org.onetwo.common.file.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.MultipartProperties;
+import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
+import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +36,7 @@ public class ExtZuulContextConfig {
 
 	@Bean
 	@ConditionalOnProperty(value=TomcatProperties.ENABLED_CUSTOMIZER_TOMCAT, matchIfMissing=true, havingValue="true")
+	@ConditionalOnMissingBean(BootServletContainerCustomizer.class)
 	public BootServletContainerCustomizer bootServletContainerCustomizer(){
 		return new BootServletContainerCustomizer();
 	}
@@ -66,7 +66,7 @@ public class ExtZuulContextConfig {
 	@ConditionalOnMissingBean(name={MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME})
 	public MultipartResolver filterMultipartResolver(){
 		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
-		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
+		resolver.setMaxUploadSize(multipartProperties.getMaxRequestSize().toBytes());
 		return resolver;
 	}
 	

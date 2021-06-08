@@ -42,6 +42,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -56,6 +57,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /***
  * web环境的通用配置
+ * 
+ * 可引入自动修改一些默认配置的配置：BootFixedConfiguration
+ * 
  * @author wayshall
  *
  */

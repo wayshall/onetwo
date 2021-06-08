@@ -13,7 +13,7 @@ import org.onetwo.cloud.hystrix.exception.HystrixBadRequestCodeException;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;

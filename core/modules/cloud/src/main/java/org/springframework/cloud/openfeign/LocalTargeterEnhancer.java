@@ -1,4 +1,4 @@
-package org.springframework.cloud.netflix.feign;
+package org.springframework.cloud.openfeign;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -8,7 +8,7 @@ import org.onetwo.cloud.feign.EnhanceFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.cloud.netflix.feign.ExtTargeter.FeignTargetContext;
+import org.springframework.cloud.openfeign.ExtTargeter.FeignTargetContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 

@@ -17,7 +17,7 @@ import com.google.common.collect.Maps;
 @ConfigurationProperties(ZuulLimiterProperties.PREFIX)
 @Data
 public class ZuulLimiterProperties implements InitializingBean{
-	public static final String PREFIX = "jfish.cloud.zuul.limiter";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud.zuul.limiter";
 	public static final String ENABLED_KEY = PREFIX + ".enabled";
 	
 	Map<String, LimiterConfig> policies = Maps.newHashMap();

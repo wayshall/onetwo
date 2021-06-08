@@ -15,6 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +25,7 @@ import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.Closure;
 import org.onetwo.common.utils.map.KVEntry;
+
 
 /***
  * langutils for java8
@@ -339,6 +341,19 @@ final public class LangOps {
 	public static <T extends Comparable<? super T>> T max(Collection<T> datas, T def) {
 		T max = datas.stream().max(Comparator.naturalOrder()).orElse(def);
 		return max;
+	}
+	
+	public static <T> Predicate<T> or(Collection<? extends Predicate<T>> collection) {
+		Predicate<T> predicate = null;
+		for (Predicate<T> p : collection) {
+			if (predicate==null) {
+				predicate = p;
+			} else {
+				predicate = predicate.or(p);
+			}
+			
+		}
+		return predicate;
 	}
 	
 	private LangOps(){}

@@ -21,6 +21,8 @@ import org.springframework.util.Assert;
 /**
  * JmsAutoConfiguration
  * 
+ * JmxAutoConfiguration
+ * 
  * @author wayshall
  * <br/>
  */

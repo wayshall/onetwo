@@ -20,6 +20,16 @@ import org.springframework.security.access.method.MethodSecurityMetadataSource;
 @Import(BootSecurityCommonContextConfig.class)
 public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {
 	
+	/**
+	 * 复制自sb1.x版本的SecurityProperties，此属性在2.x被移除
+	 * 复制至此兼容
+	 * 
+	 * Order before the basic authentication access control provided by Boot. This is a
+	 * useful place to put user-defined access rules if you want to override the default
+	 * access rules.
+	 */
+	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 2;
+	
 	@Autowired
 	private BootSpringConfig bootSpringConfig;
 	
@@ -42,7 +52,7 @@ public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {
 
 
 	@Bean
-	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+	@Order(BootMethodBasedSecurityConfig.ACCESS_OVERRIDE_ORDER)
 	@ConditionalOnMissingBean(DefaultMethodSecurityConfigurer.class)
 	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
 		return super.defaultSecurityConfigurer();

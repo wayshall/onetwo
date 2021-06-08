@@ -4,7 +4,7 @@
 	<parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.8.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
     <artifactId>onetwo-cloud</artifactId>
@@ -17,11 +17,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         
-        <onetwo.version>4.8.0-SNAPSHOT</onetwo.version>
+        <onetwo.version>5.0.0-SNAPSHOT</onetwo.version>
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
-        <spring-cloud.version>Edgware.SR2</spring-cloud.version>
+        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
         <brave.version>5.6.1</brave.version>
     </properties>
 
@@ -38,7 +38,7 @@
           <artifactId>onetwo-dbm</artifactId>
           <optional>true</optional>
         </dependency>
-        
+	   
         <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-rocketmq</artifactId>
@@ -54,7 +54,7 @@
         
         <dependency>
           <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-eureka-server</artifactId>
+          <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
           <optional>true</optional>
         </dependency>
 	   
@@ -82,13 +82,13 @@
      
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <optional>true</optional>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-zuul</artifactId>
+            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
             <optional>true</optional>
         </dependency>
         
@@ -119,17 +119,17 @@
         <!-- feign hystrix -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-hystrix</artifactId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-ribbon</artifactId>
+          <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
           <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-feign</artifactId>
+          <artifactId>spring-cloud-starter-openfeign</artifactId>
           <optional>true</optional>
         </dependency>
         
@@ -172,11 +172,15 @@
         
         
         <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-zipkin</artifactId>
             <optional>true</optional>
         </dependency>
-		<dependency>
+		<!-- <dependency>
 		    <groupId>io.zipkin.reporter2</groupId>
 		    <artifactId>zipkin-sender-okhttp3</artifactId>
             <optional>true</optional>
@@ -190,7 +194,7 @@
           <groupId>io.zipkin.brave</groupId>
           <artifactId>brave-instrumentation-mysql</artifactId>
           <optional>true</optional>
-        </dependency>
+        </dependency> -->
         
         <!-- for logback jmx -->
         <dependency>
@@ -198,12 +202,6 @@
            <artifactId>jolokia-core</artifactId>
         </dependency>
         
-        
-        <!-- zipkin -->
-        <dependency>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-sleuth</artifactId>
-        </dependency>
         
         <!-- for test -->
         <dependency>
@@ -232,13 +230,13 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
-	    <dependency>
+	    <!-- <dependency>
 	        <groupId>io.zipkin.brave</groupId>
 	        <artifactId>brave-bom</artifactId>
 	        <version>${brave.version}</version>
 	        <type>pom</type>
 	        <scope>import</scope>
-	    </dependency>
+	    </dependency> -->
       </dependencies>
     </dependencyManagement>
     

@@ -95,7 +95,7 @@ public class DelayableSendMessageTask implements InitializingBean, DisposableBea
 			public Thread newThread(Runnable r) {
 				Thread delayTaskThread = new Thread(r);
 				delayTaskThread.setDaemon(false);
-				delayTaskThread.setName(BootJFishConfig.PREFIX.toUpperCase() + "-RMQ-DelayedTask");
+				delayTaskThread.setName(BootJFishConfig.ZIFISH_CONFIG_PREFIX.toUpperCase() + "-RMQ-DelayedTask");
 				return delayTaskThread;
 			}
 		};

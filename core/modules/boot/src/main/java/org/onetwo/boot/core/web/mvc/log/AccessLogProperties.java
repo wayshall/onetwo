@@ -13,10 +13,10 @@ import lombok.Data;
  * <br/>
  */
 
-@ConfigurationProperties("jfish.mvc.accessLog")
+@ConfigurationProperties(AccessLogProperties.PREFIX)
 @Data
 public class AccessLogProperties {
-	public static final String PREFIX = "jfish.mvc.accessLog";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.access-log";
 	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = PREFIX+".enabled";
 	/***
 	 * jfish.mvc.accessLog.fileLogger=true

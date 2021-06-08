@@ -12,7 +12,7 @@ import lombok.Data;
 @ConfigurationProperties(QLExpressProperties.PREFIX)
 @Data
 public class QLExpressProperties {
-	public static final String PREFIX = BootJFishConfig.PREFIX + ".qlexpress";
+	public static final String PREFIX = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".qlexpress";
 	public static final String ENABLE_KEY = PREFIX + ".enabled";
 
 	/**

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-		<version>4.8.0-SNAPSHOT</version>
+		<version>5.0.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -21,7 +21,12 @@
 	</properties>
 
 	<dependencies>
-		
+        <dependency> 
+            <groupId>org.springframework.boot</groupId> 
+            <artifactId>spring-boot-properties-migrator</artifactId> 
+            <scope>runtime</scope>
+        </dependency>
+        
 		<dependency>
 		  <groupId>org.onetwo4j</groupId>
 		  <artifactId>onetwo-common</artifactId>
@@ -50,8 +55,20 @@
         </dependency>
         
         <dependency>
+            <groupId>org.springframework.security.oauth.boot</groupId>
+            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-poi</artifactId>
+          <optional>true</optional>
+        </dependency>
+	        
+        <dependency>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
           <optional>true</optional>
         </dependency>
         
@@ -190,6 +207,13 @@
 	        <artifactId>spring-data-elasticsearch</artifactId>
             <optional>true</optional>
 	    </dependency>
+		<dependency>
+		    <groupId>org.elasticsearch</groupId>
+		    <artifactId>elasticsearch</artifactId>
+		    <version>2.4.6</version>
+            <optional>true</optional>
+		</dependency>
+			    
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
@@ -249,12 +273,17 @@
               </exclusion>
 		    </exclusions>
 		</dependency>
-        
 	    <dependency>
 	        <groupId>org.springframework.session</groupId>
-	        <artifactId>spring-session</artifactId>
-            <optional>true</optional>
+	        <artifactId>spring-session-core</artifactId>
+	        <optional>true</optional>
 	    </dependency>
+	    <dependency>
+	        <groupId>org.springframework.session</groupId>
+	        <artifactId>spring-session-data-redis</artifactId>
+	        <optional>true</optional>
+	    </dependency>
+      
 	    <dependency> 
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -291,11 +320,6 @@
 	      <artifactId>mybatis</artifactId>
           <optional>true</optional>
 	    </dependency>
-		<dependency>
-		  <groupId>org.mybatis</groupId>
-		  <artifactId>mybatis</artifactId>
-          <optional>true</optional>
-		</dependency>
 			    
 	    <dependency>
 	        <groupId>com.github.pagehelper</groupId>

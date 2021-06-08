@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class CanaryProperties {
 	
-	public static final String PREFIX = "jfish.cloud.cannary";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud.cannary";
 	
 	CanaryMode defaultMode = CanaryMode.SMOOTHNESS;
 	CanaryServerNotFoundActions serverNotFoundAction = CanaryServerNotFoundActions.SMOOTHNESS;

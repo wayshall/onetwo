@@ -138,7 +138,7 @@ public class SimpleSearchQueryBuilder {
 		this.matchAllIfQueryNotExists = matchAllIfQueryNotExists;
 	}
 	final public SimpleSearchQueryBuilder withPageable(int pageNo, int pageSize){
-		this.searchQueryBuilder.withPageable(new PageRequest(pageNo, pageSize));
+		this.searchQueryBuilder.withPageable(PageRequest.of(pageNo, pageSize));
 		return this;
 	}
 
@@ -238,7 +238,7 @@ public class SimpleSearchQueryBuilder {
 	public SimpleSearchQueryBuilder order(Direction direct, String...fields){
 		if(ArrayUtils.isEmpty(fields))
 			return this;
-		Sort sort = new Sort(direct, fields);
+		Sort sort = Sort.by(direct, fields);
 		this.sorts.add(sort);
 		return this;
 	}

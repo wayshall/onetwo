@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(MvcAsyncProperties.PREFIX)
 public class MvcAsyncProperties {
-	public static final String PREFIX = "jfish.mvc.async";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.async";
 	public static final String ENABLE_KEY = PREFIX+".enabled";
 
 	private int timeout = 60000;

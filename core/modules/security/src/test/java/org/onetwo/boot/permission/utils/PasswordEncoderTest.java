@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.profiling.TimeCounter;
 import org.onetwo.common.utils.LangOps;
-import org.springframework.security.authentication.encoding.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 public class PasswordEncoderTest {
@@ -74,9 +74,9 @@ public class PasswordEncoderTest {
 		
 		String rawPass = "test";
 		String salt = "@#%AS%&DF_=PJ}{EB23+42342*()*^%$)_(*%^)";
-		String res = encoder.encodePassword(rawPass, salt.getBytes());
+		String res = encoder.encode(rawPass);
 		System.out.println("res:"+res);
-		boolean valid = encoder.isPasswordValid(res, rawPass, "aasd@#$@3");
+		boolean valid = encoder.matches(rawPass, res);
 		Assert.assertTrue(valid);
 	}
 

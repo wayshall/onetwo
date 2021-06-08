@@ -18,7 +18,7 @@ public class AppConfig extends PropConfig {
 	public static final String APP_CODE = "app.code";
 	public static final String APP_ENVIRONMENT = "app.environment";
 	public static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
-//	public static final String JFISH_BASE_PACKAGES = "jfish.base.packages";
+//	public static final String JFISH_BASE_PACKAGES = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".base.packages";
 	public static final String CONFIG_LOADER = "config.loader";
 	/*public static final String APP_ENVIRONMENT_DEV = "dev";
 	public static final String APP_ENVIRONMENT_TEST = "test";

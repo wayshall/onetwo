@@ -23,7 +23,7 @@ public class RefreshEndpointWebCommand implements WebManagementCommand {
 
 	@Override
 	public Object invoke(Map<String, Object> data) {
-		Object result = refreshEndpoint.invoke();
+		Object result = refreshEndpoint.refresh();
 		return result;
 	}
 	

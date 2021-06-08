@@ -159,8 +159,12 @@ final public class FtlUtils {
 	}
 	public static String getParameterByString(Map<?, ?> params, String name, String def){
 		TemplateModel attr = getParameter(params, name, false);
-		if(attr!=null)
-			return attr.toString();
+		if(attr!=null) {
+			String attrVal = attr.toString();
+			if (StringUtils.isNotBlank(attrVal)) {
+				return attrVal;
+			}
+		}
 		return def;
 	}
 	

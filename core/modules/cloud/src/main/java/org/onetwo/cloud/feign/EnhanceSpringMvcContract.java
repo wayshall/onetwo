@@ -19,10 +19,9 @@ import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.cloud.netflix.feign.AnnotatedParameterProcessor;
-import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.cloud.netflix.feign.support.SpringMvcContract;
+import org.springframework.cloud.openfeign.AnnotatedParameterProcessor;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.support.SpringMvcContract;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.convert.ConversionService;
@@ -60,7 +59,7 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 	private static final String FEIGN_CONTEXT_PATH_KEY2 = "feignClient.basePaths.contextPath";
 
 	private ApplicationContext applicationContext;
-	private RelaxedPropertyResolver relaxedPropertyResolver;
+//	private RelaxedPropertyResolver relaxedPropertyResolver;
 	@Autowired
 	private FeignProperties feignProperties;
 	
@@ -76,14 +75,14 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		relaxedPropertyResolver = new RelaxedPropertyResolver(applicationContext.getEnvironment());
+//		relaxedPropertyResolver = new RelaxedPropertyResolver(applicationContext.getEnvironment());
 	}
 
 
 	@Override
-    public List<MethodMetadata> parseAndValidatateMetadata(Class<?> targetType) {
+    public List<MethodMetadata> parseAndValidateMetadata(Class<?> targetType) {
 		try {
-	    	return super.parseAndValidatateMetadata(targetType);
+	    	return super.parseAndValidateMetadata(targetType);
 		} catch (IllegalStateException e) {
 			
 			if(e.getMessage().startsWith("Only single-level inheritance supported")){
@@ -146,7 +145,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 					if (!pathValue.startsWith("/")) {
 						pathValue = "/" + pathValue;
 					}
-					data.template().insert(0, pathValue);
+					// insert is deprecated
+//					data.template().insert(0, pathValue);
+					data.template().uri(pathValue);
 				}
 			}
 		}
@@ -154,7 +155,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 			EnhanceFeignClient classAnnotation = findMergedAnnotation(clz, EnhanceFeignClient.class);
 			Optional<String> basePathOpt = getFeignBasePath(clz, classAnnotation);
 			if(basePathOpt.isPresent()){
-				data.template().insert(0, basePathOpt.get());
+				// insert is deprecated
+//				data.template().insert(0, basePathOpt.get());
+				data.template().uri(basePathOpt.get());
 			}
 		}
 	}
@@ -181,10 +184,11 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 			}
 			if(StringUtils.isBlank(pathValue)){
 				// jfish.cloud.feign.base.contextPath
-				pathValue = this.relaxedPropertyResolver.getProperty(FeignProperties.FEIGN_CONTEXT_PATH_KEY);
+				pathValue = this.resolveRelatedProperty(FeignProperties.FEIGN_CONTEXT_PATH_KEY);
 				//兼容旧配置
 				if(StringUtils.isBlank(pathValue)){
-					pathValue = this.relaxedPropertyResolver.getProperty(FEIGN_CONTEXT_PATH_KEY2);
+//					pathValue = this.relaxedPropertyResolver.getProperty(FEIGN_CONTEXT_PATH_KEY2);
+					pathValue = resolveRelatedProperty(FEIGN_CONTEXT_PATH_KEY2);
 				}
 			}
 		}/*else if(pathValue.startsWith(FEIGN_BASE_PATH_TAG)){
@@ -203,6 +207,10 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		}
 //			data.template().insert(0, pathValue);
 		return Optional.ofNullable(pathValue);
+	}
+	
+	private String resolveRelatedProperty(String name) {
+		return SpringUtils.resolvePlaceholders(applicationContext, name);
 	}
 
 	@Override
