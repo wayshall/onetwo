@@ -6,6 +6,7 @@ import org.onetwo.boot.module.activemq.mqtt.data.ConvertedMessage;
 import org.onetwo.boot.module.activemq.mqtt.data.LinkedMapMessage;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.util.Assert;
@@ -25,6 +26,9 @@ final public class Mqtts {
 	public static String getTopic(Message<?> message) {
 		Assert.notNull(message, "message can not be null");
 		String topic = (String)message.getHeaders().get(MqttHeaders.TOPIC);
+		if (StringUtils.isBlank(topic)) {
+			topic = (String)message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC);
+		}
 		return topic;
 	}
 	

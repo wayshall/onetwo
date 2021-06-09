@@ -79,6 +79,9 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		Collection<Predicate<RequestHandler>> predicates = createPackagePredicateByClass(rootClass);
 		
 		logger.info("register docket for rootClass: {}", rootClass);
+//		if (rootClass.getName().contains("LwrouterPlugin")) {
+//			System.out.println("test");
+//		}
 //		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
 		String docketBeanName = appName+"Docket";
 		logger.info("docket[{}] created...", docketBeanName);

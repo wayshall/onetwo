@@ -356,6 +356,19 @@ final public class LangOps {
 		return predicate;
 	}
 	
+	public static <T> Predicate<T> and(Collection<? extends Predicate<T>> collection) {
+		Predicate<T> predicate = null;
+		for (Predicate<T> p : collection) {
+			if (predicate==null) {
+				predicate = p;
+			} else {
+				predicate = predicate.and(p);
+			}
+			
+		}
+		return predicate;
+	}
+	
 	private LangOps(){}
 
 }
