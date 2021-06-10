@@ -20,7 +20,25 @@ import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
-	
+
+
+	@Test
+	public void testRadixString() {
+		String res = LangUtils.toRadixString(60, 60);
+		assertThat(res).isEqualTo("10");
+		res = LangUtils.toRadixString(121, 60);
+		assertThat(res).isEqualTo("21");
+		res = LangUtils.toRadixString(198263763892923L, 60);
+		assertThat(res).isEqualTo("1aPtPVN23");
+		res = LangUtils.toRadixString(198263763892928L, 60);
+		assertThat(res).isEqualTo("1aPtPVN28");
+		res = LangUtils.toRadixString(Long.MAX_VALUE, 60);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("ffdzxwVkfv7");
+		res = Long.toString(Long.MAX_VALUE, 36);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("1y2p0ij32e8e7");
+	}
 
 	@Test
 	public void testJoinMap() {

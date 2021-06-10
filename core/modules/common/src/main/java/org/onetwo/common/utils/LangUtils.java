@@ -111,12 +111,13 @@ abstract public class LangUtils {
 		SIMPLE_CLASS = Collections.unmodifiableSet(simples);
 	}
 	
-	public static final char[] WORD_CHARS = {  '1', '2', '3', '4', '5', '6', '7', 
-			'8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 
-			'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 
-			'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
-			'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 
-			'Y', 'Z' }; 
+	public static final char[] WORD_CHARS = {  
+			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 
+			'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 
+			'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 
+			'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 
+			'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' }; 
 
 	
 	public static final Comparator AscBeanOrderComparator = new Comparator() {
@@ -1122,6 +1123,39 @@ abstract public class LangUtils {
 		  
 		  return new String(result);
 	}
+	
+	/****
+	 * 转换为基于指定进制的字符串
+	 * @author weishao zeng
+	 * @param i
+	 * @param radix 2 <= radix <= 60
+	 * @return
+	 */
+    public static String toRadixString(long i, int radix) {
+        if (radix < 2 || radix > WORD_CHARS.length)
+            radix = 10;
+        if (radix == 10)
+            return toString(i);
+        char[] buf = new char[65];
+        int charPos = 64;
+        boolean negative = (i < 0);
+
+        if (!negative) {
+            i = -i;
+        }
+
+        while (i <= -radix) {
+            buf[charPos--] = WORD_CHARS[(int)(-(i % radix))];
+            i = i / radix;
+        }
+        buf[charPos] = WORD_CHARS[(int)(-i)];
+
+        if (negative) {
+            buf[--charPos] = '-';
+        }
+
+        return new String(buf, charPos, (65 - charPos));
+    }
 
 	public static String getRadomNumberString(int length) {
 		int val = ThreadLocalRandom.current().nextInt((int)Math.pow(10, length));
