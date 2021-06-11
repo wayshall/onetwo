@@ -10,6 +10,7 @@ import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
+import org.onetwo.ext.security.utils.SecurityConfig.StrictHttpFirewallConfig;
 import org.onetwo.ext.security.utils.SimpleThrowableAnalyzer;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -32,6 +33,7 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import lombok.Getter;
@@ -85,6 +87,16 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
     		web.ignoring().antMatchers(securityConfig.getIgnoringUrls());
     	}
     	web.debug(securityConfig.isDebug()); 
+    	
+    	StrictHttpFirewallConfig strictHttpFirewall = securityConfig.getStrictHttpFirewall();
+    	if (strictHttpFirewall!=null) {
+        	StrictHttpFirewall httpFirewall = new StrictHttpFirewall();
+        	/****
+        	 * 是否允许url路径带有分号
+        	 */
+        	httpFirewall.setAllowSemicolon(strictHttpFirewall.isAllowSemicolon());
+        	web.httpFirewall(httpFirewall);
+    	}
     }
     
 	@SuppressWarnings("rawtypes")

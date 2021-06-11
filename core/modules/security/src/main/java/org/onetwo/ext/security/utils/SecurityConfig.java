@@ -106,6 +106,8 @@ public class SecurityConfig {
 	
 	private boolean logSecurityError;
 	
+	private StrictHttpFirewallConfig strictHttpFirewall = new StrictHttpFirewallConfig();
+	
 	
 	public boolean isDebug(){
 		return debug;
@@ -354,5 +356,18 @@ public class SecurityConfig {
 		 * 允许所有预检请求
 		 */
 		boolean permitAllPreFlightRequest;
+	}
+	
+	/***
+	 * for StrictHttpFirewall
+	 * @author way
+	 *
+	 */
+	@Data
+	public static class StrictHttpFirewallConfig {
+		/***
+		 * 是否允许url带有分号
+		 */
+		boolean allowSemicolon;
 	}
 }
