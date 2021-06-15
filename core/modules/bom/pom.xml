@@ -98,6 +98,30 @@
   
 <dependencyManagement>
   <dependencies>
+  
+  <!-- for jdk11 jaxb start -->
+    <dependency>
+	    <groupId>javax.xml.bind</groupId>
+	    <artifactId>jaxb-api</artifactId>
+	    <version>2.2.11</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.sun.xml.bind</groupId>
+	    <artifactId>jaxb-core</artifactId>
+	    <version>2.2.11</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.sun.xml.bind</groupId>
+	    <artifactId>jaxb-impl</artifactId>
+	    <version>2.2.11</version>
+	</dependency>
+	<dependency>
+	    <groupId>javax.activation</groupId>
+	    <artifactId>activation</artifactId>
+	    <version>1.1.1</version>
+	</dependency>
+	<!-- for jdk11 jaxb end -->
+
   	<dependency>
 	    <groupId>com.google.zxing</groupId>
 	    <artifactId>core</artifactId>

@@ -22,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
  * <br/>
  */
 @Configuration
-@ConditionalOnClass(ConfigClientProperties.class)
+@ConditionalOnClass(name = "org.springframework.cloud.config.client.ConfigClientProperties")
 public class ConfigClientConfiguration {
 
 //	@ConditionalOnMissingBean(ConfigServicePropertySourceLocator.class)
