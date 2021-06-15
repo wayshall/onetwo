@@ -122,6 +122,12 @@
         <version>${spring-boot.version}</version>
         <type>pom</type>
         <scope>import</scope>
+        <exclusions>
+            <exclusion>
+	            <groupId>org.projectlombok</groupId>
+	            <artifactId>lombok</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
     
     <!-- boot plugin -->
