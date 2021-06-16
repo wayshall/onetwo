@@ -8,11 +8,14 @@ import org.onetwo.common.spring.validator.EmptyTraversableResolver;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /****
@@ -43,6 +46,23 @@ public class BootContextConfig {
 				vfb.setTraversableResolver(new EmptyTraversableResolver());
 			}
 			return ValidatorWrapper.wrap(validator);
+		}
+
+		/***
+		 * override ValidationAutoConfiguration#defaultValidator()
+		 * @author weishao zeng
+		 * @return
+		 */
+		@Bean
+		@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+//		@ConditionalOnMissingBean(Validator.class)
+		public static LocalValidatorFactoryBean springValidator(@Qualifier(ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE) MessageSource messageSource) {
+			LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
+			MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
+			factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
+			factoryBean.setValidationMessageSource(messageSource);
+			factoryBean.setTraversableResolver(new EmptyTraversableResolver());
+			return factoryBean;
 		}
 		
 		/*@Bean

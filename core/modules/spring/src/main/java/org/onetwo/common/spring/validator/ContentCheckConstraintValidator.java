@@ -1,21 +1,15 @@
 package org.onetwo.common.spring.validator;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.annotation.ContentCheck;
 import org.onetwo.common.utils.LangUtils;
-import org.springframework.beans.ConfigurablePropertyAccessor;
-
-import com.google.common.collect.Maps;
 
 /***
  * hibernate validator只把有限的一些变量放到了i18n错误信息的上下文里，参考文档：
@@ -34,10 +28,13 @@ https://jinnianshilongnian.iteye.com/blog/1990081
 
 所以这里暴力修改一下相关属性～
 
+新的相关文档:
+https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=6.0#section-message-interpolation
+
  * @author way
  *
  */
-public class ContentCheckConstraintValidator implements ConstraintValidator<ContentCheck, String> {
+public class ContentCheckConstraintValidator extends BaseConstraintValidator implements ConstraintValidator<ContentCheck, String> {
 	
 	private ContentChecker contentChecker;
 
@@ -60,16 +57,13 @@ public class ContentCheckConstraintValidator implements ConstraintValidator<Cont
 		if (LangUtils.isEmpty(sentitiveWords)) {
 			return true;
 		}
-		ConstraintValidatorContextImpl ctx = (ConstraintValidatorContextImpl)context;
-		
 		// 这种方法虽然可以动态显示错误信息，但是无法把错误信息放到i18n国际化资源文件里
 //		ctx.addExpressionVariable("invalidWords", StringUtils.join(sentitiveWords, ", "));
 //		ctx.buildConstraintViolationWithTemplate("${invalidWords}").addConstraintViolation();
 		
-		Map<String, Object> newAttributes = Maps.newHashMap(ctx.getConstraintDescriptor().getAttributes());
-		newAttributes.put("invalidWords", StringUtils.join(sentitiveWords, ", "));
-		ConfigurablePropertyAccessor constraintDescriptor = SpringUtils.newPropertyAccessor(ctx.getConstraintDescriptor(), true);
-		constraintDescriptor.setPropertyValue("attributes", newAttributes);
+		String invalidWords = StringUtils.join(sentitiveWords, ", ");
+		addMessageFormatVariable(context, "invalidWords", invalidWords);
+		
 		return false;
 	}
 
