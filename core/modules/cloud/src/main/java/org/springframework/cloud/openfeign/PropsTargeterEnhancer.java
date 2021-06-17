@@ -5,7 +5,6 @@ import org.onetwo.cloud.feign.FeignProperties.ServiceProps;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.ExtTargeter.FeignTargetContext;
 
 /**
  * @author weishao zeng

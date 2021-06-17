@@ -21,7 +21,7 @@ public class LocalFeignTargeterConfiguration {
 
 	@Bean
 	public Targeter feignTargeter() {
-		return new ExtTargeter();
+		return new LocalTargeter();
 	}
 	
 	@Bean

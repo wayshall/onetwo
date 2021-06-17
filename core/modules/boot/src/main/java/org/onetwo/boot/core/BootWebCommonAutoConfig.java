@@ -17,7 +17,6 @@ import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvide
 import org.onetwo.boot.core.listener.BootApplicationReadyListener;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
-import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
@@ -42,14 +41,11 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
@@ -119,13 +115,13 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 		return new SpringMultipartFilterProxy();
 	}*/
 	
-	@Bean
-	public FilterRegistrationBean requestContextFilter(){
-		FilterRegistrationBean registration = new FilterRegistrationBean(new BootRequestContextFilter());
-		registration.setOrder(Ordered.HIGHEST_PRECEDENCE+100);
-		registration.setName("requestContextFilter");
-		return registration;
-	}
+//	@Bean
+//	public FilterRegistrationBean requestContextFilter(){
+//		FilterRegistrationBean registration = new FilterRegistrationBean(new BootRequestContextFilter());
+//		registration.setOrder(Ordered.HIGHEST_PRECEDENCE+100);
+//		registration.setName("requestContextFilter");
+//		return registration;
+//	}
 	
 	/***
 	 * 注册自定义filter
