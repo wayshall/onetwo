@@ -12,6 +12,8 @@ import springfox.documentation.spring.web.json.Json;
 import springfox.documentation.spring.web.json.JsonSerializer;
 
 /**
+ * 参考下面问题实现：
+ * https://stackoverflow.com/questions/36198827/how-to-change-basepath-for-springfox-swagger-2-0
  * @author weishao zeng
  * <br/>
  */
