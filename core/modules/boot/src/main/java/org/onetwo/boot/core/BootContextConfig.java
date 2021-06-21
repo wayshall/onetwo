@@ -39,12 +39,13 @@ public class BootContextConfig {
 
 		@Bean
 		@Autowired
-		public ValidatorWrapper validatorWrapper(Validator validator, @Qualifier(ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE) MessageSource messageSource){
-			if (validator instanceof LocalValidatorFactoryBean) {
-				LocalValidatorFactoryBean vfb = (LocalValidatorFactoryBean) validator;
-				vfb.setValidationMessageSource(messageSource);
-				vfb.setTraversableResolver(new EmptyTraversableResolver());
-			}
+//		public ValidatorWrapper validatorWrapper(Validator validator, @Qualifier(ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE) MessageSource messageSource){
+		public ValidatorWrapper validatorWrapper(Validator validator){
+//			if (validator instanceof LocalValidatorFactoryBean) {
+//				LocalValidatorFactoryBean vfb = (LocalValidatorFactoryBean) validator;
+//				vfb.setValidationMessageSource(messageSource);
+//				vfb.setTraversableResolver(new EmptyTraversableResolver());
+//			}
 			return ValidatorWrapper.wrap(validator);
 		}
 

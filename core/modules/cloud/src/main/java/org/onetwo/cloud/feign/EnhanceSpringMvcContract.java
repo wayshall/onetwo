@@ -210,7 +210,9 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 	}
 	
 	private String resolveRelatedProperty(String name) {
-		return SpringUtils.resolvePlaceholders(applicationContext, name);
+		String value = SpringUtils.getPropertyResolver(applicationContext).getProperty(name, "");
+		return value;
+//		return SpringUtils.resolvePlaceholders(applicationContext, name);
 	}
 
 	@Override
