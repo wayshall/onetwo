@@ -1,7 +1,5 @@
 package org.onetwo.boot.module.swagger.plugin;
 
-import static springfox.documentation.swagger.schema.ApiModelProperties.findApiModePropertyAnnotation;
-
 import java.util.Optional;
 
 import org.springframework.core.annotation.Order;
@@ -28,7 +26,8 @@ public class ModelFileParameterBuilderPlugin implements
 
 	@Override
 	public void apply(ParameterExpansionContext context) {
-		Optional<ApiModelProperty> apiModelPropertyOptional = findApiModePropertyAnnotation(context.getField().getRawMember());
+//		Optional<ApiModelProperty> apiModelPropertyOptional = findApiModePropertyAnnotation(context.getField().getRawMember());
+		Optional<ApiModelProperty> apiModelPropertyOptional = context.findAnnotation(ApiModelProperty.class);
 		if (apiModelPropertyOptional.isPresent()) {
 			if(MultipartFile.class.isAssignableFrom(context.getFieldType().getErasedType())){
 				context.getRequestParameterBuilder().in(ParameterType.FORM);

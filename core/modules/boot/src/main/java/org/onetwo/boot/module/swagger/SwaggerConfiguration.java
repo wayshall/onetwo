@@ -2,7 +2,9 @@ package org.onetwo.boot.module.swagger;
 
 import java.util.List;
 
-import org.onetwo.boot.module.swagger.json.CustomBasePathSerializer;
+import org.onetwo.boot.module.swagger.json.CustomSwaggerBasePathSerializer;
+import org.onetwo.boot.module.swagger.plugin.ModelFileParameterBuilderPlugin;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,15 +21,22 @@ import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfi
 @ConditionalOnClass(Swagger2DocumentationConfiguration.class)
 @EnableConfigurationProperties(SwaggerProperties.class)
 public class SwaggerConfiguration {
+	
+	@Bean
+	@ConditionalOnBean(Swagger2DocumentationConfiguration.class)
+	public ModelFileParameterBuilderPlugin modelFileParameterBuilderPlugin() {
+		return new ModelFileParameterBuilderPlugin();
+	}
+	
 //	@Bean
 //	@ConditionalOnBean(Swagger2DocumentationConfiguration.class)
-//	public ModelFileParameterBuilderPlugin modelFileParameterBuilderPlugin() {
-//		return new ModelFileParameterBuilderPlugin();
+//	public SwaggerEnumParameterPlugin swaggerEnumParameterPlugin() {
+//		return new SwaggerEnumParameterPlugin();
 //	}
 	
 	@Bean
 	@Primary
-	public CustomBasePathSerializer customBasePathSerializer(List<JacksonModuleRegistrar> modules) {
-		return new CustomBasePathSerializer(modules);
+	public CustomSwaggerBasePathSerializer customBasePathSerializer(List<JacksonModuleRegistrar> modules) {
+		return new CustomSwaggerBasePathSerializer(modules);
 	}
 }

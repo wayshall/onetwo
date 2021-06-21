@@ -17,14 +17,14 @@ import springfox.documentation.spring.web.json.JsonSerializer;
  * @author weishao zeng
  * <br/>
  */
-public class CustomBasePathSerializer extends JsonSerializer {
+public class CustomSwaggerBasePathSerializer extends JsonSerializer {
 
 //	@Autowired
 //	private Environment env;
 	@Autowired
 	private SwaggerProperties swaggerProperties;
 	
-	public CustomBasePathSerializer(List<JacksonModuleRegistrar> modules) {
+	public CustomSwaggerBasePathSerializer(List<JacksonModuleRegistrar> modules) {
 		super(modules);
 	}
 
