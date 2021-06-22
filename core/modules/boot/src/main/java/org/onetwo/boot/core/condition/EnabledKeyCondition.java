@@ -64,7 +64,8 @@ abstract public class EnabledKeyCondition extends SpringBootCondition implements
 	protected boolean isEnabled(Environment environment, String key){
 //		return new RelaxedPropertyResolver(environment).getProperty(key, Boolean.class, defaultEnabledValue);
 		// upgrade-sb2: 
-		return environment.getProperty(key, Boolean.class, defaultEnabledValue);
+		boolean enabled = environment.getProperty(key, Boolean.class, defaultEnabledValue);
+		return enabled;
 	}
 	
 	protected AnnotationAttributes getAnnotationAttributes(AnnotatedTypeMetadata metadata){
