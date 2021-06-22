@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.module.swagger.annotation.SwaggerEnumConfig;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 
@@ -63,6 +64,8 @@ public class SwaggerEnumParameterPlugin implements ModelPropertyBuilderPlugin {
         
 //        final ResolvedType resolvedType = context.getResolver().resolve(fieldType);
         String desc = StringUtils.join(fieldDescList, ";");
+        ConfigurablePropertyAccessor builder = SpringUtils.newPropertyAccessor(context.getSpecificationBuilder(), true);
+        desc = StringUtils.defaultString((String)builder.getPropertyValue("description")) + desc;
         context.getSpecificationBuilder().description(desc);
 	}
 	
