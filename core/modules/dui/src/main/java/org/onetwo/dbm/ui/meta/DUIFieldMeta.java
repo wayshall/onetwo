@@ -112,6 +112,7 @@ public class DUIFieldMeta {
 		
 		boolean treeSelect;
 		boolean multiple;
+		boolean withRawModel;
 		
 		int queryLimit;
 		

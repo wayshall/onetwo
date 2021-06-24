@@ -176,7 +176,11 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 				.limit(0, field.getSelect().getQueryLimit())
 				.toQuery().list()
 				.stream().map(e -> {
-					return toEnumDataVO(field, e);
+					EnumDataVO d = toEnumDataVO(field, e);
+					if (uiselect.isWithRawModel()) {
+						d.setRawModel(e);
+					}
+					return d;
 				}).collect(Collectors.toList());
 		return dataList;
 	}

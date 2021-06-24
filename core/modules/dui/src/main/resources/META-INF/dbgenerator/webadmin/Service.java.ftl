@@ -105,6 +105,11 @@ public class ${serviceImplClassName} {
     public ${entityClassName} findById(${idType} id) {
         return baseEntityManager.findById(${entityClassName}.class, id);
     }
+    
+    @Transactional(readOnly=true)
+    public ${entityClassName} get(${idType} id) {
+        return baseEntityManager.load(${entityClassName}.class, id);
+    }
 
     @Transactional
     public void removeByIds(${idType}[] ids) {

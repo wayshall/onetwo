@@ -356,6 +356,7 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 			uiselectMeta.setExcludeEnumNames(uiselect.excludeEnumNames());
 			uiselectMeta.setMultiple(uiselect.multiple());
 			uiselectMeta.setQueryLimit(uiselect.queryLimit());
+			uiselectMeta.setWithRawModel(uiselect.withRawModel());
 			if (uiselect.cascadeEntity()!=Void.class) {
 				uiselectMeta.setCascadeEntity(uiselect.cascadeEntity());
 				if (uiselect.cascadeQueryFields().length==0) {
