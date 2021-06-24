@@ -2,13 +2,15 @@
 <#assign pagePath="${_globalConfig.requestModulePath}/${_tableContext.tableNameWithoutPrefix?replace('_', '-')}"/>
 
 <#assign servicePackage="${_globalConfig.javaModulePackage}.service"/>
-<#assign serviceImplPackage="${_globalConfig.javaModulePackage}.service.impl"/>
+<#-- assign serviceImplPackage="${_globalConfig.javaModulePackage}.service.impl"/ -->
+<#assign serviceImplPackage="${_globalConfig.javaModulePackage}.service"/>
 <#assign daoPackage="${_globalConfig.javaModulePackage}.dao"/>
 <#assign entityPackage="${_globalConfig.javaModulePackage}.entity"/>
 
 <#assign entityClassName="${entityClassName!(_tableContext.className+'Entity')}"/>
 <#assign entityClassName2="${_tableContext.className}"/>
-<#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
+<#-- assign serviceImplClassName="${_tableContext.className}ServiceImpl"/ -->
+<#assign serviceImplClassName="${_tableContext.className}Service"/>
 <#assign serviceImplPropertyName="${_tableContext.propertyName}Service"/>
 <#assign mapperClassName="${_tableContext.className}Mapper"/>
 <#assign mapperPropertyName="${_tableContext.propertyName}Mapper"/>
@@ -171,7 +173,7 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
         }
       </#if><#t>
     </#list><#t>
-        ${serviceImplPropertyName}.dymanicUpdate(${_tableContext.propertyName});
+        ${serviceImplPropertyName}.save(${_tableContext.propertyName});
         return DataResults.<${entityClassName}>success("保存成功！").data(${_tableContext.propertyName}).build();
     }
     

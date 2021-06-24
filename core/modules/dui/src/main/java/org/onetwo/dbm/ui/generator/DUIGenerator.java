@@ -350,6 +350,12 @@ public class DUIGenerator {
 			return this;
 		}
 		
+		public WebadminGenerator generateService(){
+			// packageName=service
+			tableGenerator.javaClassTemplate("service", templateName+"/Service.java.ftl");
+			return this;
+		}
+		
 		public WebadminGenerator generateController(Class<?> pluginBaseController){
 			context.put("pluginBaseController", pluginBaseController.getName());
 			tableGenerator.javaClassTemplate("controller", templateName+"/Controller.java.ftl");

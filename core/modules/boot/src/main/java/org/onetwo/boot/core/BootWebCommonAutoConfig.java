@@ -59,7 +59,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author wayshall
  *
  */
-@Import({DsRouterConfiguration.class, ApiClientConfiguration.class})
+@Import({DsRouterConfiguration.class, ApiClientConfiguration.class, BootConfigurationForFixSpringBoot2x.class})
 public class BootWebCommonAutoConfig implements DisposableBean {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
 	
@@ -215,16 +215,6 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 		viewManager.setAlwaysWrapDataResult(bootJfishConfig.getMvc().getJson().isAlwaysWrapDataResult());
 		return viewManager;
 	}
-	
-	/*
-	 * @see BootFixedConfiguration
-	 * @Bean(name=MultipartFilter.DEFAULT_MULTIPART_RESOLVER_BEAN_NAME)
-//	@ConditionalOnMissingBean(MultipartResolver.class)
-	public MultipartResolver filterMultipartResolver(){
-		BootStandardServletMultipartResolver resolver = new BootStandardServletMultipartResolver();
-		resolver.setMaxUploadSize(FileUtils.parseSize(multipartProperties.getMaxRequestSize()));
-		return resolver;
-	}*/
 
 	@Bean
 	@ConditionalOnMissingBean(SessionUserManager.class)
