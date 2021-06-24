@@ -111,6 +111,9 @@ public class DUIFieldMeta {
 		String valueField = "value";
 		
 		boolean treeSelect;
+		boolean multiple;
+		
+		int queryLimit;
 		
 		public boolean useEnumData() {
 			return dataEnumClass!=null && dataEnumClass!=NoEnums.class;

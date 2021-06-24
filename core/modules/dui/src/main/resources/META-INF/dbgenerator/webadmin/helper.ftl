@@ -22,6 +22,7 @@
           :data="${field.name}Datas"
     </#if -->
           ${spaces}entity="${DUIEntityMeta.name}"
+          ${spaces}:multiple="${field.select.multiple?c}"
         <#if isEditFormField>
           ${spaces}:disabled="${field.formDisabledValue}"
         </#if>
