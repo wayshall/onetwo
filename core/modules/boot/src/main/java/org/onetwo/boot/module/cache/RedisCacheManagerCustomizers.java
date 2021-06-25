@@ -12,6 +12,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
@@ -54,14 +55,18 @@ public class RedisCacheManagerCustomizers implements CacheManagerCustomizer<Redi
 		expires.putAll(properties.expiresInSeconds());
 		
 		Map<String, org.springframework.data.redis.cache.RedisCacheConfiguration> cacheConfigs = Maps.newHashMap();
-		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig();
-		if (properties.isUsePrefix()) {
-			config.usePrefix();
-		}
-		config = config.computePrefixWith(new ZifishRedisCachePrefix());
+		
 		for(String cacheName : cacheNames) {
+			RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
+			if (properties.isUsePrefix()) {
+				config.usePrefix();
+			}
+			config = config.computePrefixWith(new ZifishRedisCachePrefix());
+//			if (cacheName.contains("UNIT_CODE_MAPPING")) {
+//				System.out.println("test");
+//			}
 			if (expires.containsKey(cacheName)) {
-				config.entryTtl(Duration.ofSeconds(expires.get(cacheName)));
+				config = config.entryTtl(Duration.ofSeconds(expires.get(cacheName)));
 			}
 			if (properties.isUseJsonRedisTemplate()) {
 				JsonMapper jsonMapper = JsonMapper.ignoreNull();

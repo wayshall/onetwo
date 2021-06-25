@@ -17,7 +17,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 @ConditionalOnProperty(name=SpringCacheConfiguration.SPRING_CACHE_ENABLED_KEY, havingValue="redis")
 @ConditionalOnClass(RedisCacheManager.class)
 @EnableConfigurationProperties(RedisCacheProperties.class)
-public class RedisCacheConfiguration {
+public class JFishRedisCacheConfiguration {
 	
 	@Bean
 	@ConditionalOnMissingBean(RedisCacheManager.class)
