@@ -2,7 +2,12 @@ package org.onetwo.common.web.asyn;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.onetwo.common.data.Result;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.exception.ExceptionCodeMark;
+import org.onetwo.common.exception.SystemErrorCode;
+import org.onetwo.common.spring.mvc.utils.DataResults;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 
 public final class AsyncUtils {
@@ -27,6 +32,18 @@ public final class AsyncUtils {
 
 	public static String getAsyncCallbackName(String name){
 		return "parent.asyncCallbackManager."+name;
+	}
+	
+	public static Result throwableToResult(Throwable e) {
+		Throwable err = LangUtils.getFinalCauseException(e);
+		String code = null;
+		if (err instanceof ExceptionCodeMark) {
+			ExceptionCodeMark c = (ExceptionCodeMark) err;
+			code = c.getCode();
+		} else {
+			code = SystemErrorCode.UNKNOWN;
+		}
+		return DataResults.code(code).message(err.getMessage()).build();
 	}
 	
 	private AsyncUtils(){}
