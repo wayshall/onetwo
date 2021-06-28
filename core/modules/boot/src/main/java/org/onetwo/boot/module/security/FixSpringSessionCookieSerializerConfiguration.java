@@ -5,6 +5,7 @@ import org.onetwo.ext.security.utils.SecurityConfig.CookieConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,12 +20,14 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 @Configuration
 @ConditionalOnClass(Session.class)
 @EnableConfigurationProperties(BootSecurityConfig.class)
+@ConditionalOnProperty(value = "spring.session.storeType")
 public class FixSpringSessionCookieSerializerConfiguration {
 	
 	@Autowired
 	private BootSecurityConfig securityConfig;
 	
 	@Bean
+//	@ConditionalOnClass(name = "org.springframework.session.web.http.CookieSerializer")
 	@ConditionalOnMissingBean(CookieSerializer.class)
 	public CookieSerializer cookieSerializer(){
 		DefaultCookieSerializer serializer = new DefaultCookieSerializer();

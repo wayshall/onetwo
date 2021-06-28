@@ -43,7 +43,7 @@ public class OAuth2SsoSecurityConfigurer extends DefaultUrlSecurityConfigurer {
 
     
     @Bean
-	public SsoClientUserInfoRestTemplateCustomizer tobaccoRestTemplateCustomizer(OAuth2SsoClientProperties properties) {
+	public SsoClientUserInfoRestTemplateCustomizer ssoClientRestTemplateCustomizer(OAuth2SsoClientProperties properties) {
 		return new SsoClientUserInfoRestTemplateCustomizer(properties);
 	}
 	

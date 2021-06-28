@@ -11,6 +11,7 @@ import org.onetwo.boot.utils.PathMatcher;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * @author wayshall
@@ -36,6 +37,7 @@ public class BootJfishCloudConfig {
 	}
 
 	@Data
+	@ToString
 	static public class FixHeadersConfig {
 		List<String> pathPatterns;
 		String header;
