@@ -23,6 +23,7 @@ public class ConfigActiveMQConnectionFactory implements ActiveMQConnectionFactor
 			RedeliveryPolicy def = rpm.getDefaultEntry();
 			CopyUtils.copy(def, activemqProperties.getRedelivery().getDefaultPolicy());
 		}
+		factory.setPrefetchPolicy(activemqProperties.getPrefetchPolicy());
 	}
 
 }

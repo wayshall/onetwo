@@ -22,7 +22,7 @@ import lombok.Data;
 @Data
 public class BearerTokenProperties {
 	
-	public static final String BEARER_TOKEN_KEY = JFishOauth2Properties.CONFIG_PREFIX + ".bearerToken";
+	public static final String BEARER_TOKEN_KEY = JFishOauth2Properties.CONFIG_PREFIX + ".bearer-token";
 
 	Map<String, BearerHeadersConfig> headers = Maps.newHashMap();
 	boolean debug;

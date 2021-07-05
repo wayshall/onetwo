@@ -321,7 +321,7 @@
                     <dependency>
                         <groupId>org.springframework</groupId>
                         <artifactId>springloaded</artifactId>
-                        <version>1.2.5.RELEASE</version>
+                        <!-- <version>1.2.5.RELEASE</version> -->
                     </dependency>
                 </dependencies>
                 <executions>
@@ -333,29 +333,6 @@
                 </executions>
             </plugin>
             
-            <!-- db tools -->
-            <plugin>
-               <groupId>org.liquibase</groupId>
-               <artifactId>liquibase-maven-plugin</artifactId>
-               <version>3.5.0</version>
-               <configuration>                  
-                  <propertyFile>src/main/resources/liquibase/liquibase.properties</propertyFile>
-                  <changeLogFile>src/main/resources/liquibase/db.changelog.xml</changeLogFile>
-                  <driver>com.mysql.jdbc.Driver</driver>
-                  <url>jdbc:mysql://localhost:3306/web_admin?useUnicode=true&amp;characterEncoding=UTF-8</url>
-                  <username>root</username>
-                  <password>root</password>
-                  <outputChangeLogFile>src/main/resources/liquibase/db.xml</outputChangeLogFile>
-               </configuration>                
-               <executions>
-                 <execution>
-                   <phase>process-resources</phase>                                                                  
-                   <goals>
-                     <goal>update</goal>
-                   </goals>
-                 </execution>
-               </executions>
-            </plugin> 
             
             
             <!-- for test -->
@@ -425,14 +402,6 @@
 
     
     <repositories>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>

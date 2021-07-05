@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.onetwo.boot.core.EnableJFishBootExtension.AppcationType;
 import org.onetwo.boot.core.cors.CorsFilterConfiguration;
+import org.onetwo.boot.core.embedded.TomcatConfiguration;
 import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
 import org.onetwo.boot.core.shutdown.GraceKillConfiguration;
@@ -56,6 +57,8 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 	protected List<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		List<String> classNames = new ArrayList<String>();
 
+		classNames.add(TomcatConfiguration.class.getName());
+		
 		//store 在BootCommonServiceConfig之前初始化，因为BootCommonService依赖filestore来加载
 		classNames.add(OssConfiguration.class.getName());
 		classNames.add(CosConfiguration.class.getName());

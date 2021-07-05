@@ -11,15 +11,16 @@ import lombok.EqualsAndHashCode;
  * @author wayshall
  * <br/>
  */
-@ConfigurationProperties("jfish.redis")
+@ConfigurationProperties(org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis")
 @EqualsAndHashCode(callSuper=false)
 @Data
 public class JFishRedisProperties {
 
-	public static final String ENABLED_KEY = "jfish.redis.enabled";
-	public static final String SERIALIZER_KEY = "jfish.redis.serializer";
-//	public static final String ENABLED_LOCK_REGISTRY = "jfish.redis.lockRegistry.key";
-	private static final String LOCK_PREFX_KEY = "Zifish:RedisLock:";
+	public static final String ENABLED_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.enabled";
+	public static final String SERIALIZER_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.serializer";
+	public static final String ENABLED_LOCK_REGISTRY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redis.lockRegistry.key";
+	private static final String LOCK_PREFX_KEY = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ":RedisLock:";
+//	private static final String LOCK_PREFX_KEY = "Zifish:RedisLock:";
 
 	/*String hostName = "localhost";
 	int port = Protocol.DEFAULT_PORT;
@@ -41,7 +42,7 @@ public class JFishRedisProperties {
 	
 	@Data
 	public static class LockRegistryProperties {
-		public static final String DEFAULT_LOCK_KEY = "${"+BootJFishConfig.PREFIX+".redis.lockRegistry.key:${spring.application.name}}";
+		public static final String DEFAULT_LOCK_KEY = "${"+BootJFishConfig.ZIFISH_CONFIG_PREFIX+".redis.lockRegistry.key:${spring.application.name}}";
 		/***
 		 * default is 2 min
 		 */

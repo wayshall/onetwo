@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.HttpEncodingProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,8 @@ import org.springframework.core.Ordered;
  */
 @Configuration
 //@EnableConfigurationProperties({JFishBootConfig.class, SpringBootConfig.class})
-@EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class, TomcatProperties.class})
+//@EnableConfigurationProperties({HttpEncodingProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class, TomcatProperties.class})
+@EnableConfigurationProperties({ServerProperties.class, BootJFishConfig.class, BootSpringConfig.class, BootBusinessConfig.class, BootSiteConfig.class, TomcatProperties.class})
 @Import({BootContextConfig.class, 
 		ViewResolverConfiguration.class,
 		PluginContextConfig.class, 
@@ -46,8 +47,8 @@ import org.springframework.core.Ordered;
 public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
-//	@Autowired
-//	private HttpEncodingProperties httpEncodingProperties;
+	/*@Autowired
+	private HttpEncodingProperties httpEncodingProperties;*/
 	
 	public BootWebUIContextAutoConfig(){
 	}

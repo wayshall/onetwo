@@ -16,7 +16,7 @@ public class ExtendsDirective implements TemplateDirectiveModel {
 
 	public static final String PARAMS_FILE = "parent";
 	public static final String DEFAULT_LAYOUT_DIR = "/layout/";
-	public static final String DEFAULT_LAYOUT = "application.ftl";
+	public static final String DEFAULT_LAYOUT = "application.html";
 	public static final String FTL = ".ftl";
 
 	@Override

@@ -124,11 +124,13 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 		} else if (uiselect.getCascadeEntity()!=null) {
 			boolean loadById = (StringUtils.isBlank(request.getQuery()) || request.isInitQuery()) && 
 								StringUtils.isNotBlank(request.getSelectedValue());
+			List<EnumDataVO> list = null;
 			if (loadById) {
-				return _this.findByValueField(field, request.getSelectedValue());
+				list = _this.findByValueField(field, request.getSelectedValue());
 			} else {
-				return _this.queryFromCascade(field, request.isInitQuery()?null:request.getQuery());
+				list = _this.queryFromCascade(field, request.isInitQuery()?null:request.getQuery());
 			}
+			return list;
 		} else if (uiselect.useEnumData()) {
 			Enum<?>[] values = (Enum<?>[]) uiselect.getDataEnumClass().getEnumConstants();
 //			DataBase[] vals = DataBase.class.getEnumConstants();
@@ -171,10 +173,14 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 						.when(()->StringUtils.isNotBlank(query))
 						.like(query)
 					.end()
-				.limit(0, 10)
+				.limit(0, field.getSelect().getQueryLimit())
 				.toQuery().list()
 				.stream().map(e -> {
-					return toEnumDataVO(field, e);
+					EnumDataVO d = toEnumDataVO(field, e);
+					if (uiselect.isWithRawModel()) {
+						d.setRawModel(e);
+					}
+					return d;
 				}).collect(Collectors.toList());
 		return dataList;
 	}

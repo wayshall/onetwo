@@ -37,11 +37,10 @@
 	<profiles>
       
        <profile>
-           <id>microcloud</id>
-			<modules>
-                <module>modules/common</module>
-                <module>../../dbm</module>
-			</modules>
+        <id>microcloud</id>
+		<modules>
+                <module>modules/boot</module>
+		</modules>
            <build>
               <plugins>
                 <plugin>

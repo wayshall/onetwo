@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class KeepHeaderRequestInterceptor implements RequestInterceptor {
-	
 //	final public static Set<String> DEFAULT_HEADER_NAMES = Sets.newHashSet(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, "auth", CanaryUtils.HEADER_CLIENT_TAG);
 //	private Set<String> keepHeaders; // = DEFAULT_HEADER_NAMES;
 

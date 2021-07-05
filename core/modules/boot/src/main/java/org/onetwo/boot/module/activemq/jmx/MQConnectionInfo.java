@@ -27,6 +27,26 @@ public class MQConnectionInfo {
 		}
 	}
 
+	public boolean isSlow() {
+		return viewMBean.isSlow();
+	}
+
+	public boolean isBlocked() {
+		return viewMBean.isBlocked();
+	}
+
+	public boolean isConnected() {
+		return viewMBean.isConnected();
+	}
+
+	public boolean isActive() {
+		return viewMBean.isActive();
+	}
+
+	public String getRemoteAddress() {
+		return viewMBean.getRemoteAddress();
+	}
+
 	public String getName() {
 		return name;
 	}

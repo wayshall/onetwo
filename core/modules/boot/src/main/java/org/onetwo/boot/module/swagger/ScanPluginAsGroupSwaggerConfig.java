@@ -2,21 +2,20 @@ package org.onetwo.boot.module.swagger;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.boot.plugin.core.WebPlugin;
-import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.ClassUtils;
-
-import com.google.common.base.Predicate;
 
 import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -38,14 +37,18 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		BootUtils.asyncInit(() -> {
-			initWebPlugins();
-		});
+//		BootUtils.asyncInit(() -> {
+//			initWebPlugins();
+//		});
+		initWebPlugins();
 	}
 	
 	private void initWebPlugins() {
+		logger.info("start init web plugins: {}", getClass().getName());
 		int registedCount = this.registerDockets();
 		int index = registedCount;
+		
+		PropertyResolver resolver = SpringUtils.getPropertyResolver(applicationContext);
 		for(WebPlugin plugin : pluginManager.getPlugins()){
 			/*Predicate<RequestHandler> predicate = RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(plugin.getRootClass()));
 			Collection<Predicate<RequestHandler>> predicates = Arrays.asList(predicate);
@@ -55,8 +58,17 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 			SpringUtils.registerAndInitSingleton(applicationContext, appName+"Docket", docket);
 			Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
 			SpringUtils.registerAndInitSingleton(applicationContext, appName+"InnerDocket", innerDocket);*/
-			String appName = plugin.getPluginMeta().getName();
-			registerDocketsByWebApiAnnotation(index, appName, plugin.getRootClass());
+			String pluginName = plugin.getPluginMeta().getName();
+
+			String propertyName = SwaggerProperties.PREFIX + "." + pluginName + ".enabled";
+			boolean enabledPluginSwagger = resolver.getProperty(propertyName, boolean.class, true);
+			if (!enabledPluginSwagger) {
+				logger.info("ignore plugin[{}] swagger docket", pluginName, plugin.getRootClass());
+				continue;
+			}
+			logger.info("register pluginp[{}] swagger docket for rootClass: {}", pluginName, plugin.getRootClass());
+			
+			registerDocketsByWebApiAnnotation(index, pluginName, plugin.getRootClass());
 			index++;
 		}
 	}
@@ -79,7 +91,9 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 	final protected void registerDocketsByWebApiAnnotation(int index, String appName, Class<?> rootClass) {
 		Collection<Predicate<RequestHandler>> predicates = createPackagePredicateByClass(rootClass);
 		
-		logger.info("register docket for rootClass: {}", rootClass);
+//		if (rootClass.getName().contains("LwrouterPlugin")) {
+//			System.out.println("test");
+//		}
 //		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
 		String docketBeanName = appName+"Docket";
 		logger.info("docket[{}] created...", docketBeanName);

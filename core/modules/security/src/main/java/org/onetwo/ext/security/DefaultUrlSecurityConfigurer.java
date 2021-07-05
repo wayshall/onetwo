@@ -41,6 +41,7 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 		http.authorizeRequests().withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
 			@Override
 			public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
+				fsi.setRejectPublicInvocations(securityConfig.isRejectPublicInvocations());
 				if(securityMetadataSourceBuilder!=null){
 					securityMetadataSourceBuilder.setFilterSecurityInterceptor(fsi);
 					securityMetadataSourceBuilder.buildSecurityMetadataSource();

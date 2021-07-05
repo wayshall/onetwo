@@ -31,6 +31,22 @@ public @interface DUISelect {
 	
 	boolean treeSelect() default false;
 	
+	boolean multiple() default false;
+	
+	/***
+	 * 如果是关联实体，返回的数据是否包含未经转换的原始数据
+	 * @author weishao zeng
+	 * @return
+	 */
+	boolean withRawModel() default false;
+	
+	/***
+	 * 查询数量，默认为20
+	 * @author weishao zeng
+	 * @return
+	 */
+	int queryLimit() default 20;
+	
 //	String remoteUrl() default "/web-admin/dbm/uiselect/dataProvider";
 	
 	public enum NoEnums {

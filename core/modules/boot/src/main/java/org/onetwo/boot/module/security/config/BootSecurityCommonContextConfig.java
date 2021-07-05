@@ -115,12 +115,12 @@ public class BootSecurityCommonContextConfig{
 		return r;
 	}
 
-	@ConditionalOnProperty(name="hostName", prefix="jfish.security.redis")
+	@ConditionalOnProperty(name="hostName", prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".security.redis")
 	@Configuration
 	public static class BootRedisContextConfig extends RedisContextConfig {
 	}
 
-	@ConditionalOnProperty(name="signingKey", prefix="jfish.security.jwt")
+	@ConditionalOnProperty(name="signingKey", prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".security.jwt")
 	@Configuration
 	@ConditionalOnMissingBean(SecurityContextRepository.class)
 	public static class BootJwtContxtConfig extends JwtContxtConfig {

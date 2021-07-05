@@ -35,7 +35,15 @@ public class PluginHelperViewTools {
 		//先查找是否有相关的映射配置
 		String pluginName = pluginManager.getCurrentWebPlugin().get().getPluginMeta().getName();
 		PluginProperties pluginProps = plugins.get(pluginName);
+		if (pluginProps==null) {
+			pluginProps = initPluginProperties(plugins, pluginName);
+		}
 		return pluginProps;
+	}
+	
+	private synchronized PluginProperties initPluginProperties(Map<String, PluginProperties> plugins, String pluginName) {
+		PluginProperties pluginProps = new PluginProperties();
+		return plugins.putIfAbsent(pluginName, pluginProps);
 	}
 
 }

@@ -21,7 +21,7 @@ import lombok.Data;
 @ConfigurationProperties(CosProperties.PREFIX)
 @Data
 public class CosProperties {
-	public static final String PREFIX = BootJFishConfig.PREFIX + ".cos";
+	public static final String PREFIX = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".cos";
 	public static final String ENABLED_KEY = PREFIX + ".bucketName";
 	
 	String downloadEndPoint;

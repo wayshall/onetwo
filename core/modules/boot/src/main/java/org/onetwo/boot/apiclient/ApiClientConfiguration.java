@@ -46,7 +46,7 @@ public class ApiClientConfiguration {
 		/***
 		 * jfish.apiclient
 		 */
-		public static final String PREFIX = BootJFishConfig.PREFIX + ".apiclient";
+		public static final String PREFIX = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".apiclient";
 		
 		/***
 		 * jfish.apiclient.headers.Authorization=Bearer xxxx

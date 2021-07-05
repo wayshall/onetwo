@@ -98,7 +98,15 @@ public class SecurityConfig {
 	
 	private CorsConfig cors = new CorsConfig();
 	
+	/***
+	 * 是否拒绝公共调用
+	 * 当访问的方法或请求没有配置权限(即公共请求)时，是否拒绝访问
+	 */
+	private boolean rejectPublicInvocations = true;
+	
 	private boolean logSecurityError;
+	
+	private StrictHttpFirewallConfig strictHttpFirewall = new StrictHttpFirewallConfig();
 	
 	
 	public boolean isDebug(){
@@ -348,5 +356,18 @@ public class SecurityConfig {
 		 * 允许所有预检请求
 		 */
 		boolean permitAllPreFlightRequest;
+	}
+	
+	/***
+	 * for StrictHttpFirewall
+	 * @author way
+	 *
+	 */
+	@Data
+	public static class StrictHttpFirewallConfig {
+		/***
+		 * 是否允许url带有分号
+		 */
+		boolean allowSemicolon;
 	}
 }

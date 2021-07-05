@@ -20,7 +20,25 @@ import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
-	
+
+
+	@Test
+	public void testRadixString() {
+		String res = LangUtils.toRadixString(60, 60);
+		assertThat(res).isEqualTo("10");
+		res = LangUtils.toRadixString(121, 60);
+		assertThat(res).isEqualTo("21");
+		res = LangUtils.toRadixString(198263763892923L, 60);
+		assertThat(res).isEqualTo("1aPtPVN23");
+		res = LangUtils.toRadixString(198263763892928L, 60);
+		assertThat(res).isEqualTo("1aPtPVN28");
+		res = LangUtils.toRadixString(Long.MAX_VALUE, 60);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("ffdzxwVkfv7");
+		res = Long.toString(Long.MAX_VALUE, 36);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("1y2p0ij32e8e7");
+	}
 
 	@Test
 	public void testJoinMap() {
@@ -138,6 +156,11 @@ public class LangUtilsTest {
 	public void testTimeUnit(){
 		long i = TimeUnit.MINUTES.toHours(59);
 		System.out.println("unit: " + i);
+		assertThat(i).isEqualTo(0L);
+		
+		i = TimeUnit.MINUTES.toHours(119);
+		System.out.println("unit: " + i);
+		assertThat(i).isEqualTo(1L);
 		
 		List<String> list = LangUtils.newArrayList("aa", "bb", "cc");
 		List<String> sublist = list.subList(0, 2);
@@ -302,6 +325,20 @@ public class LangUtilsTest {
 		value = 0.775;
 		rs = (String)LangUtils.formatValue(value, "#0.00#");
 		Assert.assertEquals(String.valueOf(0.775), rs);
+	}
+	
+	@Test
+	public void test10to2(){
+		short numb = 2605;
+		System.out.println("numb: " + Integer.toBinaryString(numb));
+//		byte h8 = (byte)((numb & 0xFF00) >> 8);
+		byte h8 = LangUtils.high8(numb);
+		System.out.println("numb1: " + Integer.toBinaryString(numb & 0xFF00));
+		System.out.println("numb2: " + Integer.toBinaryString((numb & 0xFF00) >> 8));
+//		byte l8 = (byte)(numb & 0x00FF);
+		byte l8 = LangUtils.low8(numb);
+		System.out.println("h8: " + h8);
+		System.out.println("l8: " + l8);
 	}
 	
 	@Test

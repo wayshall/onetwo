@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class BootSecurityConfig extends SecurityConfig implements WebContextConfigProvider {
-	public static final String SECURITY_PREFIX = "jfish.security";
+	public static final String SECURITY_PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".security";
 	public static final String EXCEPTION_USER_CHECKER_ENABLE_KEY = SECURITY_PREFIX+".exceptionUserChecker";
 	
 	public static final String METADATA_SOURCE_KEY = "metadataSource";

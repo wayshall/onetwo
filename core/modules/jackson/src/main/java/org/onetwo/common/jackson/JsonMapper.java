@@ -176,7 +176,7 @@ public class JsonMapper {
 		return this;
 	}
 	public JsonMapper enableTyping(){
-		objectMapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+		objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), DefaultTyping.NON_FINAL, As.PROPERTY);
 		return this;
 	}
 	

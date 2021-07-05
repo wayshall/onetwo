@@ -1,4 +1,4 @@
-package org.springframework.cloud.netflix.feign;
+package org.springframework.cloud.openfeign;
 
 import org.onetwo.cloud.feign.FeignProperties;
 import org.onetwo.cloud.feign.FeignProperties.LocalProps;
@@ -17,11 +17,11 @@ import org.springframework.context.annotation.Configuration;
 //@ConditionalOnProperty(value=FeignProperties.LOCAL_ENABLE_KEY, havingValue="true", matchIfMissing=false)
 @EnableConfigurationProperties({FeignProperties.class})
 @ConditionalOnClass(feign.Feign.class)
-public class ExtFeignTargeterConfiguration {
+public class LocalFeignTargeterConfiguration {
 
 	@Bean
 	public Targeter feignTargeter() {
-		return new ExtTargeter();
+		return new LocalTargeter();
 	}
 	
 	@Bean

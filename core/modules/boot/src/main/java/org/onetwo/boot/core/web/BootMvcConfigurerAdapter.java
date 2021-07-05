@@ -1,7 +1,10 @@
 package org.onetwo.boot.core.web;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +41,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -48,7 +52,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentResolverAdapter;
 
 /****
@@ -56,7 +60,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentR
  * @author way
  *
  */
-public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements InitializingBean {
+public class BootMvcConfigurerAdapter implements WebMvcConfigurer, InitializingBean {
 	
 //	@Autowired //注释，由spring自动检测添加
 	private BootWebExceptionResolver bootWebExceptionResolver;
@@ -169,10 +173,15 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 		Properties mediaTypes = jfishBootConfig.getMvc().getMediaTypes();
 		if (!CollectionUtils.isEmpty(mediaTypes)) {
+			Map<String, MediaType> addMediaTypes = new HashMap<String, MediaType>();
 			for (Entry<Object, Object> entry : mediaTypes.entrySet()) {
 				String extension = ((String)entry.getKey()).toLowerCase(Locale.ENGLISH);
-				configurer.mediaType(extension, MediaType.valueOf((String) entry.getValue()));
+				addMediaTypes.put(extension, MediaType.valueOf((String) entry.getValue()));
 			}
+			configurer.mediaTypes(addMediaTypes);
+			configurer.strategies(Arrays.asList(
+						new PathExtensionContentNegotiationStrategy(addMediaTypes)
+					));
 		}
 	}
 	

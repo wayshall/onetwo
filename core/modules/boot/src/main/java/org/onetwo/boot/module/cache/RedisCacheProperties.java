@@ -25,7 +25,7 @@ import lombok.Data;
 public class RedisCacheProperties {
 //	public static final String SPRING_CACHE_ENABLED_KEY = "spring.cache.type";
 	
-	public static final String PREFIX = "jfish.cache.redis";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cache.redis";
 	
 	Collection<String> cacheNames;
 	boolean usePrefix = true;

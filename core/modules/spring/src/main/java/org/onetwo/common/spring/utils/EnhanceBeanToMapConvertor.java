@@ -28,6 +28,13 @@ public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
 		public Object getPropertyValue(PropertyDescriptor prop) {
 			return bw.getPropertyValue(prop.getName());
 		}
+		
+		public boolean isReadableProperty(PropertyDescriptor prop) {
+			return bw.isReadableProperty(prop.getName());
+		}
+		public boolean isWritableProperty(PropertyDescriptor prop) {
+			return bw.isWritableProperty(prop.getName());
+		}
 	}
 	
 
@@ -73,6 +80,11 @@ public class EnhanceBeanToMapConvertor extends BeanToMapConvertor {
 		public EnhanceBeanToMapBuilder enableJsonPropertyAnnotation() {
 			this.enableJsonPropertyAnnotation = true;
 			return this;
+		}
+
+		public EnhanceBeanToMapBuilder ignoreNull() {
+			this.propertyAcceptor = new IgnoreNullValuePropertyAcceptor(this.propertyAcceptor);
+			return self();
 		}
 
 		public EnhanceBeanToMapConvertor build(){

@@ -22,7 +22,7 @@ import org.onetwo.dbm.jpa.BaseEntity;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="cm_upload_resource")
+@Table(name="data_upload_resource")
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class UploadResourceEntity extends BaseEntity  {

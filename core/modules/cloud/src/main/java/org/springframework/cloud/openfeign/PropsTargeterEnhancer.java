@@ -1,11 +1,10 @@
-package org.springframework.cloud.netflix.feign;
+package org.springframework.cloud.openfeign;
 
 import org.onetwo.cloud.feign.FeignProperties;
 import org.onetwo.cloud.feign.FeignProperties.ServiceProps;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.netflix.feign.ExtTargeter.FeignTargetContext;
 
 /**
  * @author weishao zeng

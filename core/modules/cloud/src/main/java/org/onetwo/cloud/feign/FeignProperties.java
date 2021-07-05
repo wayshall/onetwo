@@ -22,7 +22,8 @@ import lombok.Data;
 @Data
 public class FeignProperties {
 
-	public static final String PROPERTIES_PREFIX = "jfish.cloud.feign";
+	public static final String PROPERTIES_PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud.feign";
+	
 	/***
 	 * jfish.cloud.feign.base.contextPath
 	 */
