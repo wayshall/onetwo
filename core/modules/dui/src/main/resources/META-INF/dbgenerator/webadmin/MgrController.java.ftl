@@ -8,6 +8,7 @@
 
 <#assign entityClassName="${entityClassName!(_tableContext.className+'Entity')}"/>
 <#assign entityClassName2="${_tableContext.className}"/>
+<#assign serviceClassName="${_tableContext.className}Service"/>
 <#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
 <#assign serviceImplPropertyName="${_tableContext.propertyName}Service"/>
 <#assign mapperClassName="${_tableContext.className}Mapper"/>
@@ -69,7 +70,7 @@ import ${serviceImplPackage}.${serviceImplClassName};
 public class ${_tableContext.className}MgrController extends ${pluginBaseController} implements DateInitBinder {
 
     @Autowired
-    private ${serviceImplClassName} ${serviceImplPropertyName};
+    private ${serviceClassName} ${serviceImplPropertyName};
 <#if DUIEntityMeta?? && DUIEntityMeta.hasFileField()==true>
     @Autowired
     private BootCommonService bootCommonService;
@@ -140,7 +141,7 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
         }
       </#if><#t>
     </#list><#t>
-        ${serviceImplPropertyName}.save(${_tableContext.propertyName});
+        ${serviceImplPropertyName}.persist(${_tableContext.propertyName});
         return DataResults.<${entityClassName}>success("保存成功！").data(${_tableContext.propertyName}).build();
     }
 

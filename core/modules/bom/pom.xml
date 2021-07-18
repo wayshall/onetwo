@@ -56,7 +56,7 @@
     <commons-io.version>2.4</commons-io.version>
     <poi.version>4.1.2</poi.version>
     <ooxml-schamas.version>4.1.2</ooxml-schamas.version>
-    <druid.version>1.0.26</druid.version>
+    <druid.version>1.2.6</druid.version>
     <mockito.version>1.10.19</mockito.version>
 	
 	<!-- for test -->
@@ -80,7 +80,7 @@
        <url>https://github.com/wayshall/onetwo</url>
        <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
        <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-       <tag>onetwo-modules-4.7.2</tag>
+       <tag>onetwo-modules-4.8.0</tag>
    </scm>
   <licenses>
     <license>

@@ -8,6 +8,7 @@
 
 <#assign entityClassName="${entityClassName!(_tableContext.className+'Entity')}"/>
 <#assign entityClassName2="${_tableContext.className}"/>
+<#assign serviceClassName="${_tableContext.className}Service"/>
 <#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
 <#assign serviceImplPropertyName="${_tableContext.propertyName}ServiceImpl"/>
 <#assign mapperClassName="${_tableContext.className}Mapper"/>
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 <#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.onetwo.common.tree.DefaultTreeModel;
@@ -38,7 +40,7 @@ import ${entityPackage}.${entityClassName};
 
 @Service
 @Transactional
-public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassName}, ${idType}> {
+public class ${serviceClassName} {
 <#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
     private static TreeModelCreator<DefaultTreeModel, ${entityClassName}> TREE_MODEL_CREATER = data -> {
         DefaultTreeModel tm = new DefaultTreeModel(data.get${idName?cap_first}(), data.getName(), data.getParent${idName?cap_first}());
@@ -47,9 +49,7 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
 </#if>
     
     @Autowired
-    public ${serviceImplClassName}(BaseEntityManager baseEntityManager) {
-        super(baseEntityManager);
-    }
+    private BaseEntityManager baseEntityManager;
     
 <#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
     public List<DefaultTreeModel> loadAsTree() {
@@ -75,7 +75,7 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
     
     @Transactional(readOnly=true)
     public Page<${entityClassName}> findPage(Page<${entityClassName}> page, ${entityClassName} example) {
-        return baseEntityManager.from(entityClass)
+        return baseEntityManager.from(${entityClassName}.class)
                                 .where()
                                     .addFields(example)
                                     .ignoreIfNull()
@@ -83,8 +83,12 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
                                 .toQuery()
                                 .page(page);
     }
+
+    public ${entityClassName} findById(${idType} id) {
+        return baseEntityManager.findById(${entityClassName}.class, id);
+    }
     
-    public ${entityClassName} save(${entityClassName} entity) {
+    public ${entityClassName} persist(${entityClassName} entity) {
     <#if DUIEntityMeta??>
       <#list DUIEntityMeta.hasDefaultFields as field>
         if (entity.get${field.column.capitalizePropertyName}()==null) {
@@ -96,15 +100,34 @@ public class ${serviceImplClassName} extends DbmCrudServiceImpl<${entityClassNam
         return entity;
     }
     
+    public ${entityClassName} update(${entityClassName} entity) {
+        baseEntityManager.update(entity);
+        return entity;
+    }
+    
+    public void dymanicUpdate(${entityClassName} entity) {
+        baseEntityManager.dymanicUpdate(entity);
+    }
+    
     @Transactional
-    @Override
     public ${entityClassName} removeById(${idType} id) {
     <#if DUIEntityMeta?? && DUIEntityMeta.editableEntities??>
       <#list DUIEntityMeta.editableEntities as editableEntity>
         baseEntityManager.removeById(${editableEntity.entityClass.name}.class, id);
       </#list>
     </#if>
-        return super.removeById(id);
+        return baseEntityManager.removeById(${entityClassName}.class, id);
+    }
+    
+    
+    @Transactional
+    public Collection<${entityClassName}> removeByIds(${idType}... ids) {
+        Collection<${entityClassName}> list = new ArrayList<>(ids.length);
+        for (${idType} id : ids) {
+            ${entityClassName} e = removeById(id);
+            list.add(e);
+        }
+        return list;
     }
     
 }
