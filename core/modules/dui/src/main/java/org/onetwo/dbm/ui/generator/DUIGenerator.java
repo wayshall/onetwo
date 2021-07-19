@@ -208,9 +208,10 @@ public class DUIGenerator {
 		if (duiEntityMeta.isPresent()) {
 			webadmin.duiEntityMeta = duiEntityMeta.get();
 			webadmin.duiEntityMeta.setStripPrefix(stripTablePrefix);
-		} else {
-			throw new DbmUIException("table meta not foud: " + tableName);
-		}
+		} 
+//		else {
+//			throw new DbmUIException("table meta not foud: " + tableName);
+//		}
 		
 		webadmin.tableGenerator = tableGenerator;
 		webadmin.initGenerator();
