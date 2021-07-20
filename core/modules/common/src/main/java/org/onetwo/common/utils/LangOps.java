@@ -33,6 +33,36 @@ import org.onetwo.common.utils.map.KVEntry;
 final public class LangOps {
 	
 	/***
+	 * java8以上的版本（不包括java8）
+	 * @author weishao zeng
+	 * @return
+	 */
+	public static boolean isHigherThanJava8() {
+		return getJavaVersion() > 8;
+	}
+	
+	/***
+	 * 
+	 * @author weishao zeng
+	 * @return 8, 9, 10, 11
+	 */
+	public static int getJavaVersion() {
+	    String version = System.getProperty("java.version");
+	    if (StringUtils.isBlank(version)) {
+	    	return -1; // unknow
+	    }
+	    if(version.startsWith("1.")) {
+	        version = version.substring(2, 3);
+	    } else {
+	        int dot = version.indexOf(".");
+	        if(dot != -1) { 
+	        	version = version.substring(0, dot); 
+	        }
+	    }
+	    return Integer.parseInt(version);
+	}
+	
+	/***
 	 * from java8 collectors
 	 * @author wayshall
 	 * @return
