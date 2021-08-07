@@ -18,6 +18,8 @@ import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
 import org.onetwo.boot.core.web.socket.WebsocketConfiguration;
+import org.onetwo.boot.ds.ConfiguratableDatasourceConfiguration;
+import org.onetwo.boot.ds.DatasourceRegistrar;
 import org.onetwo.boot.module.activemq.ActivemqConfiguration;
 import org.onetwo.boot.module.activemq.jmx.ActiveMQJmxConfiguration;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTConfiguration;
@@ -132,6 +134,9 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		
 		classNames.add(WebsocketConfiguration.class.getName());
 		
+		// datasource
+		classNames.add(DatasourceRegistrar.class.getName()); 
+		classNames.add(ConfiguratableDatasourceConfiguration.class.getName());
 		
 		return classNames;
 	}

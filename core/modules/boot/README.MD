@@ -137,6 +137,29 @@ jfish:
 
 ```
 
+### 多数据源
+在application.yaml文件配置数据源连接信息：
+```yaml
+jfish: 
+    datasources: 
+        enabled: datasource1,datasource2 #这里配置要注册的数据源名称
+        # 对应数据源详细配置
+        datasource1: 
+            driverClassName: org.postgresql.Driver
+            url: jdbc:mysql://127.0.0.1:3306/mysqldb?&useSSL=false&characterEncoding=UTF-8
+            username: mysqldb
+            password: mysqldb
+            testOnBorrow: true
+            validationQuery: select 1
+        datasource2: 
+            driverClassName: org.postgresql.Driver
+            url: jdbc:postgresql://127.0.0.1:5432/postgre?useSSL=false&socketTimeout=30&connectTimeout=30
+            username: postgre
+            password: postgre
+            testOnBorrow: true
+            validationQuery: select 1
+```
+
 ### 动态数据源
 ```yaml
 jfish: 
@@ -163,6 +186,7 @@ jfish:
                 username: 
                 password: 
 ```
+
 ### apiclient配置
 当使用@EnableRestApiClient 激活apiclient模块时，可以配置如下选项：
 ```yaml

@@ -2,6 +2,7 @@ package org.onetwo.boot.ds;
 
 import javax.sql.DataSource;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -16,7 +17,10 @@ import org.springframework.context.annotation.Primary;
  * <br/>
  */
 @Configuration
+@ConditionalOnProperty(value = ConfiguratableDatasourceConfiguration.ENABLED_DSNAMES)
 public class ConfiguratableDatasourceConfiguration {
+	final static String DATASOURCE_CONFIG_PREFIX = BootJFishConfig.PREFIX + ".datasources";
+	final static String ENABLED_DSNAMES = DATASOURCE_CONFIG_PREFIX + ".enabled";
 	
 
 	@SuppressWarnings("unchecked")
@@ -26,7 +30,7 @@ public class ConfiguratableDatasourceConfiguration {
 	}
 
 	/****
-	 * 启用 @EnableConfiguratableDatasource({"postgredb"}) 后，由于存在了DataSource类型的bean，
+	 * 使用 jfish.datasources.xxxx 的方式配置多个数据源后，由于存在了DataSource类型的bean，
 	 * DataSourceAutoConfiguration 自动配置会失效，不注册默认的DataSource，这里复制配置过来，启用默认的DataSource
 	 * @author way
 	 *
