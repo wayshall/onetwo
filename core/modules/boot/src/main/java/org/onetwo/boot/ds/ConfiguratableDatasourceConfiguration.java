@@ -52,6 +52,11 @@ public class ConfiguratableDatasourceConfiguration {
 			}
 			return dataSource;
 		}
+		
+		@Bean
+		public DefaultTransactionManagementConfigurer defaultTransactionManagementConfigurer() {
+			return new DefaultTransactionManagementConfigurer();
+		}
 
 	}
 }

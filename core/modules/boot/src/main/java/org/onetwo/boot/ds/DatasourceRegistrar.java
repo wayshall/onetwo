@@ -6,9 +6,11 @@ import javax.sql.DataSource;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.ds.DatasourceFactoryBean;
+import org.onetwo.common.ds.TransactionManagerFactoryBean;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -44,6 +46,7 @@ public class DatasourceRegistrar implements EnvironmentAware, ImportBeanDefiniti
 	private Environment environment;
 	private AnnotationAttributes attributes;
 //	private BeanDefinitionRegistry registry;
+	private String transactionManagerKey = "transactionManager";
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -63,10 +66,23 @@ public class DatasourceRegistrar implements EnvironmentAware, ImportBeanDefiniti
 		}
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment);
 		for (String dsname : dsnames) {
-			BeanDefinitionHolder holder = createDatasourceBeanBuilder(registry, dsname, resolver);
+			String configPrefix = datasourceConfigPrefix + dsname + ".";
+			Map<String, Object> configs = resolver.getSubProperties(configPrefix);
+			
+			String tmName = dsname + StringUtils.capitalize(transactionManagerKey);
+			if (configs.containsKey(transactionManagerKey)) {
+				tmName = (String)configs.remove(transactionManagerKey);
+			}
+			
+			BeanDefinitionHolder holder = createDatasourceBeanBuilder(dsname, configs);
 			if (holder!=null) {
 				BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
-				logger.info("register datasource: {}", dsname);
+				
+				BeanDefinitionHolder tmHolder = createDataSourceTransactionManagerBeanBuilder(tmName, dsname);
+				BeanDefinitionReaderUtils.registerBeanDefinition(tmHolder, registry);
+				
+				logger.info("register datasource: {}, dataSourceTransactionManager: {}", dsname, tmName);
+				
 			} else {
 				logger.info("ignore register datasource: {}", dsname);
 			}
@@ -74,9 +90,20 @@ public class DatasourceRegistrar implements EnvironmentAware, ImportBeanDefiniti
 		
 	}
 	
-	protected BeanDefinitionHolder createDatasourceBeanBuilder(BeanDefinitionRegistry registry, String dsname, RelaxedPropertyResolver resolver) {
-		String configPrefix = datasourceConfigPrefix + dsname + ".";
-		Map<String, Object> configs = resolver.getSubProperties(configPrefix);
+	protected BeanDefinitionHolder createDataSourceTransactionManagerBeanBuilder(String tmName, String dsname) {
+		
+		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(TransactionManagerFactoryBean.class);
+//		definition.addPropertyReference("dataSource", dsname);
+		definition.addConstructorArgReference(dsname);
+
+		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
+		beanDefinition.setPrimary(false);
+		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, tmName);
+		
+		return holder;
+	}
+	
+	protected BeanDefinitionHolder createDatasourceBeanBuilder(String dsname, Map<String, Object> configs) {
 		if (configs.isEmpty()) {
 			throw new BaseException("datasource config not fouond: " + dsname);
 		}

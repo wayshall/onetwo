@@ -16,13 +16,14 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DatasourceFactoryBean implements FactoryBean<DataSource>, InitializingBean {
+public class DatasourceFactoryBean implements FactoryBean<TransactionManagerAwareDataSource>, InitializingBean {
 
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private String implementClassName = "org.apache.tomcat.jdbc.pool.DataSource";
 	
-	private DataSource dataSource;
+//	private DataSource dataSource;
+	private TransactionManagerAwareDataSource dataSource;
 	
 	private Class<? extends DataSource> implementClass;
 	private Properties config;
@@ -45,6 +46,7 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 		}
 //		boolean hasPrefix = StringUtils.isNotBlank(prefix);
 		
+		DataSource dataSource;
 		if (implementClass!=null) {
 			dataSource = BeanUtils.instantiate(implementClass);
 		} else if (StringUtils.isNotBlank(implementClassName)) {
@@ -62,10 +64,12 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 		
 		BeanPropertiesMapper mapper = new BeanPropertiesMapper(config, prefix);
 		mapper.mapToObject(dataSource);
+		
+		this.dataSource = new TransactionManagerAwareDataSource(dataSource);
 	}
 
 	@Override
-	public DataSource getObject() throws Exception {
+	public TransactionManagerAwareDataSource getObject() throws Exception {
 		return dataSource;
 	}
 

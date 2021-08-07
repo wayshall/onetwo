@@ -16,7 +16,10 @@ import org.springframework.context.annotation.Import;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import({DatasourceRegistrar.class, ConfiguratableDatasourceConfiguration.class})
+@Import({DatasourceRegistrar.class, 
+	ConfiguratableDatasourceConfiguration.class, 
+//	PrimaryDataSourceTransactionManagerAutoConfiguration.class
+	})
 public @interface EnableConfiguratableDatasource {
 	
 	/***
