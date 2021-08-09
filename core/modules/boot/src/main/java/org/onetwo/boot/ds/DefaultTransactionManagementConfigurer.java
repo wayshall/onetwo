@@ -5,6 +5,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
 /**
+ * 多数据源多事务管理器多情况下，自定义设置默认的PlatformTransactionManager
  * @author weishao zeng
  * <br/>
  */
