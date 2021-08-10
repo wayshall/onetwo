@@ -97,12 +97,19 @@ public abstract class BaseFileProcessor<R extends BaseFileProcessor<R>> {
 		return andFile(FileMatcher.filePathContains(paths));
 	}
 	
-	public R andFilePathNotContains(String path){
+	public R andFilePathNotContains(String... path){
 		return andFile((baseDir, file)->{
 			return !FileMatcher.filePathContains(path).match(baseDir, file);
 		});
 	}
 
+
+	public R andIgnoreSubDirsOfChildModule(String...subDirsOfChildModule){
+		return andFile((baseDir, file) -> {
+			return !FileMatcher.subDirsOfChildModuleIs(subDirsOfChildModule).match(baseDir, file);
+		} );
+//		return andFile(FileMatcher.subDirsOfChildModuleIs(subDirsOfChildModule));
+	}
 	
 	public R andIgnoreDirContains(String...ignoreDirs){
 		return andRelativePathIgnore(ignoreDirs);

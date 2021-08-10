@@ -69,6 +69,21 @@ public interface FileMatcher {
 		};
 	}
 
+	static public FileMatcher subDirsOfChildModuleIs(String...subDirsOfChildModule){
+		Set<String> dirSet = Sets.newHashSet(subDirsOfChildModule);
+		return (baseDir, file) -> {
+			String childModuleBaseDir = FileUtils.getSubdirOf(file, baseDir);
+			if (StringUtils.isBlank(childModuleBaseDir)) {
+				return false;
+			}
+			String subDirOfChildModule = FileUtils.getSubdirOf(file, new File(baseDir, childModuleBaseDir));
+			if (StringUtils.isBlank(subDirOfChildModule)) {
+				return false;
+			}
+			return dirSet.contains(subDirOfChildModule);
+		};
+	}
+
 	static public FileMatcher subDirIs(String...dirs){
 		Set<String> dirSet = Sets.newHashSet(dirs);
 		return (baseDir, file) -> {
