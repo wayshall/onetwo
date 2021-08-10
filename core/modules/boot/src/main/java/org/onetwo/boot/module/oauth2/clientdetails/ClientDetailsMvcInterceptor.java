@@ -11,7 +11,6 @@ import org.onetwo.boot.module.oauth2.util.OAuth2Errors;
 import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 
@@ -55,6 +54,7 @@ public class ClientDetailsMvcInterceptor extends MvcInterceptorAdapter {
 	
 
 	protected boolean isEnabled(){
-		return new RelaxedPropertyResolver(applicationContext.getEnvironment()).getProperty(ClientDetailsResolverProps.ENABLED_KEY, Boolean.class, true);
+//		return new RelaxedPropertyResolver(applicationContext.getEnvironment()).getProperty(ClientDetailsResolverProps.ENABLED_KEY, Boolean.class, true);
+		return applicationContext.getEnvironment().getProperty(ClientDetailsResolverProps.ENABLED_KEY, Boolean.class, true);
 	}
 }

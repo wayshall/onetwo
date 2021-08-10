@@ -13,7 +13,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
@@ -46,21 +46,13 @@ public class DatasourceRegistrar implements EnvironmentAware, ImportBeanDefiniti
 //	private BeanDefinitionRegistry registry;
 	private String transactionManagerKey = "transactionManager";
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-//		Class<?> annotationType = EnableConfiguratableDatasource.class;
-//		AnnotationAttributes attributes = SpringUtils.getAnnotationAttributes(importingClassMetadata, annotationType);
-//		if (attributes == null) {
-//			throw new IllegalArgumentException(String.format("@%s is not present on importing class '%s' as expected", 
-//												annotationType.getSimpleName(), 
-//												importingClassMetadata.getClassName()));
-//		}
-//		this.attributes = attributes;
-//		
-//		String[] dsnames = attributes.getStringArray("value");
-
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment);
-		String enabledDsnames = resolver.getProperty(ConfiguratableDatasourceConfiguration.ENABLED_DSNAMES, "");
+//		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment);
+//		String enabledDsnames = resolver.getProperty(ConfiguratableDatasourceConfiguration.ENABLED_DSNAMES, "");
+		
+		String enabledDsnames = environment.getProperty(ConfiguratableDatasourceConfiguration.ENABLED_DSNAMES, "");
 		String[] dsnames = StringUtils.split(enabledDsnames, ",");
 		if (dsnames.length==0) {
 			logger.info("datasource not found");
@@ -68,7 +60,11 @@ public class DatasourceRegistrar implements EnvironmentAware, ImportBeanDefiniti
 		}
 		for (String dsname : dsnames) {
 			String configPrefix = datasourceConfigPrefix + "." + dsname + ".";
-			Map<String, Object> configs = Maps.newHashMap(resolver.getSubProperties(configPrefix));
+			
+//			Map<String, Object> configs = Maps.newHashMap(resolver.getSubProperties(configPrefix));
+			Map<String, Object> configs = Binder.get(environment)
+												.bind(configPrefix, Map.class)
+												.orElse(Maps.newHashMap());
 			
 			String tmName = dsname + StringUtils.capitalize(transactionManagerKey);
 			if (configs.containsKey(transactionManagerKey)) {
