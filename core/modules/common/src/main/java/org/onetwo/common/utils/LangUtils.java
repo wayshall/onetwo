@@ -1810,6 +1810,9 @@ abstract public class LangUtils {
 	}
 	
 	public static boolean isDigitString(String str){
+		if (StringUtils.isBlank(str)) {
+			return false;
+		}
 		return DIGIT.matcher(str).matches();
 	}
 	
