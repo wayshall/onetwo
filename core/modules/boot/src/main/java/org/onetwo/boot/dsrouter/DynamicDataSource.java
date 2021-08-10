@@ -80,6 +80,9 @@ public class DynamicDataSource extends AbstractRoutingDataSource implements Init
 			if(props.getBoolean("default", false)){//是否作为默认数据源
 				dsHouder.setValue(ds);
 			}
+			
+			// 注册到容器
+			SpringUtils.registerSingleton(applicationContext, key, ds);
 		});
 		if(dsHouder.hasValue()){
 			this.setDefaultTargetDataSource(dsHouder.getValue());

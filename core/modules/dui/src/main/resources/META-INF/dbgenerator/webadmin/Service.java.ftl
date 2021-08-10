@@ -8,8 +8,9 @@
 
 <#assign entityClassName="${entityClassName!(_tableContext.className+'Entity')}"/>
 <#assign entityClassName2="${_tableContext.className}"/>
-<#assign serviceImplClassName="${_tableContext.className}Service"/>
-<#assign serviceImplPropertyName="${_tableContext.propertyName}Service"/>
+<#assign serviceClassName="${_tableContext.className}Service"/>
+<#assign serviceImplClassName="${_tableContext.className}ServiceImpl"/>
+<#assign serviceImplPropertyName="${_tableContext.propertyName}ServiceImpl"/>
 <#assign mapperClassName="${_tableContext.className}Mapper"/>
 <#assign mapperPropertyName="${_tableContext.propertyName}Mapper"/>
 <#assign idName="${table.primaryKey.javaName}"/>
@@ -19,15 +20,14 @@ package ${_globalConfig.getJavaLocalPackage(_tableContext.localPackage)};
 
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.spi.BaseEntityManager;
-import org.onetwo.common.exception.ServiceException;
-import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
-<#--  import org.onetwo.dbm.core.internal.DbmCrudServiceImpl;  -->
+import org.onetwo.dbm.core.internal.DbmCrudServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 <#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.onetwo.common.tree.DefaultTreeModel;
@@ -40,7 +40,7 @@ import ${entityPackage}.${entityClassName};
 
 @Service
 @Transactional
-public class ${serviceImplClassName} {
+public class ${serviceClassName} {
 <#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
     private static TreeModelCreator<DefaultTreeModel, ${entityClassName}> TREE_MODEL_CREATER = data -> {
         DefaultTreeModel tm = new DefaultTreeModel(data.get${idName?cap_first}(), data.getName(), data.getParent${idName?cap_first}());
@@ -49,10 +49,7 @@ public class ${serviceImplClassName} {
 </#if>
     
     @Autowired
-    BaseEntityManager baseEntityManager;
-
-    public ${serviceImplClassName}() {
-    }
+    private BaseEntityManager baseEntityManager;
     
 <#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
     public List<DefaultTreeModel> loadAsTree() {
@@ -81,15 +78,17 @@ public class ${serviceImplClassName} {
         return baseEntityManager.from(${entityClassName}.class)
                                 .where()
                                     .addFields(example)
-                                    // .field("status").notEqualTo(CommonStatus.DELETE)
                                     .ignoreIfNull()
                                 .end()
                                 .toQuery()
                                 .page(page);
     }
-   
-    @Transactional 
-    public ${entityClassName} save(${entityClassName} entity) {
+
+    public ${entityClassName} findById(${idType} id) {
+        return baseEntityManager.findById(${entityClassName}.class, id);
+    }
+    
+    public ${entityClassName} persist(${entityClassName} entity) {
     <#if DUIEntityMeta??>
       <#list DUIEntityMeta.hasDefaultFields as field>
         if (entity.get${field.column.capitalizePropertyName}()==null) {
@@ -97,28 +96,17 @@ public class ${serviceImplClassName} {
         }
       </#list>
     </#if>
-        baseEntityManager.save(entity);
+        baseEntityManager.persist(entity);
         return entity;
     }
     
-    @Transactional(readOnly=true)
-    public ${entityClassName} findById(${idType} id) {
-        return baseEntityManager.findById(${entityClassName}.class, id);
+    public ${entityClassName} update(${entityClassName} entity) {
+        baseEntityManager.update(entity);
+        return entity;
     }
     
-    @Transactional(readOnly=true)
-    public ${entityClassName} get(${idType} id) {
-        return baseEntityManager.load(${entityClassName}.class, id);
-    }
-
-    @Transactional
-    public void removeByIds(${idType}[] ids) {
-		if(LangUtils.isEmpty(ids)) {
-			throw new ServiceException("id 不能为空！");
-		}
-		for (${idType} id : ids) {
-			this.removeById(id);
-		}
+    public void dymanicUpdate(${entityClassName} entity) {
+        baseEntityManager.dymanicUpdate(entity);
     }
     
     @Transactional
@@ -129,6 +117,17 @@ public class ${serviceImplClassName} {
       </#list>
     </#if>
         return baseEntityManager.removeById(${entityClassName}.class, id);
+    }
+    
+    
+    @Transactional
+    public Collection<${entityClassName}> removeByIds(${idType}... ids) {
+        Collection<${entityClassName}> list = new ArrayList<>(ids.length);
+        for (${idType} id : ids) {
+            ${entityClassName} e = removeById(id);
+            list.add(e);
+        }
+        return list;
     }
     
 }

@@ -36,7 +36,7 @@
 	  <groupId>org.onetwo4j</groupId>
 	  <artifactId>onetwo-common</artifactId>
 	</dependency>
-	
+    
 	<dependency>
 		<groupId>com.fasterxml.jackson.core</groupId>
 		<artifactId>jackson-core</artifactId>

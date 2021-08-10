@@ -7,6 +7,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -45,6 +46,7 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.CollectionUtils;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.Closure2;
@@ -1992,11 +1994,20 @@ public class ReflectUtils {
 
 	public static Object invokeDefaultMethod(MethodHandles.Lookup lookup, Method method, Object proxy, Object... args) {
 		Object result;
+		int javaVersion = LangOps.getJavaVersion();
 		try {
-			result = lookup.in(method.getDeclaringClass())
-					.unreflectSpecial(method, method.getDeclaringClass())
-			        .bindTo(proxy)
-			        .invokeWithArguments(args);
+			if (javaVersion>8) {
+				MethodType methodType = MethodType.methodType(method.getReturnType(), method.getParameterTypes());
+				result = MethodHandles.lookup()
+							.findSpecial(method.getDeclaringClass(), method.getName(), methodType, method.getDeclaringClass())
+							.bindTo(proxy)
+							.invokeWithArguments(args);
+			} else {
+				result = lookup.in(method.getDeclaringClass())
+						.unreflectSpecial(method, method.getDeclaringClass())
+				        .bindTo(proxy)
+				        .invokeWithArguments(args);
+			}
 		}catch (Throwable e) {
 			throw new BaseException("invoke default method error for : " + method, e);
 		}

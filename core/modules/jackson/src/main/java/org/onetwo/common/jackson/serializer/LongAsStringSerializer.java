@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 /**
  * 防止前端long类型超出精度，序列化为字符串
+ * 范型使用Object类型，避免Integer转为Long时出现类型转换错误
  */
 public class LongAsStringSerializer extends JsonSerializer<Long> {
 

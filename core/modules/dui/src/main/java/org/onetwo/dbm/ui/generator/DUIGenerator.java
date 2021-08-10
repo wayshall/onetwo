@@ -208,7 +208,10 @@ public class DUIGenerator {
 		if (duiEntityMeta.isPresent()) {
 			webadmin.duiEntityMeta = duiEntityMeta.get();
 			webadmin.duiEntityMeta.setStripPrefix(stripTablePrefix);
-		}
+		} 
+//		else {
+//			throw new DbmUIException("table meta not foud: " + tableName);
+//		}
 		
 		webadmin.tableGenerator = tableGenerator;
 		webadmin.initGenerator();
@@ -346,7 +349,7 @@ public class DUIGenerator {
 		}
 		
 		public WebadminGenerator generateServiceImpl(){
-			tableGenerator.serviceImplTemplate(templateName+"/ServiceImpl.java.ftl");
+			tableGenerator.serviceImplTemplate(templateName+"/Service.java.ftl");
 			return this;
 		}
 		

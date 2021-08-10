@@ -83,6 +83,7 @@ public class BeanPropertiesMapper {
 				setPropertyValue(obj, bw, propertyName, value);
 			}
 		}
+		logger.info("datasource has inited!");
 	}
 	
 	
