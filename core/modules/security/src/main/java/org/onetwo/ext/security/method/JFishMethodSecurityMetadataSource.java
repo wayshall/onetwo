@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.ext.permission.PermissionManager;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
@@ -23,6 +24,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 /****
+ * 参考：SecuredAnnotationSecurityMetadataSource
+ * 
+ * 
+ * 
  * 读取方法所需权限
  * @author way
  *
@@ -30,6 +35,9 @@ import com.google.common.collect.Lists;
 public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSecurityMetadataSource {
 	@Autowired(required=false)
 	private MenuInfoParser<? extends IPermission> menuInfoParser;
+	
+//	@Autowired
+//	protected PermissionManager permissionManager;
 	
 	private DefaultWebSecurityExpressionHandler securityExpressionHandler = new DefaultWebSecurityExpressionHandler();
 	
@@ -53,6 +61,12 @@ public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSec
 		return permlist;
 	}
 	
+	/***
+	 * DatabaseSecurityMetadataSource#createSecurityConfig
+	 * @author weishao zeng
+	 * @param codeClasses
+	 * @return
+	 */
 	private List<ConfigAttribute> extractAttributes(Class<?>...codeClasses){
 		if(codeClasses!=null){
 			List<ConfigAttribute> perms = Stream.of(codeClasses)

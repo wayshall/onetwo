@@ -2,14 +2,15 @@ package org.onetwo.ext.security.method;
 
 import java.util.List;
 
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
+import org.onetwo.ext.security.url.MultiWebExpressionVoter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
+import org.springframework.security.access.vote.AbstractAccessDecisionManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
@@ -40,9 +41,13 @@ public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration
 	@Override
 	protected AccessDecisionManager accessDecisionManager() {
 		AccessDecisionManager decisionManager = super.accessDecisionManager();
-		@SuppressWarnings("unchecked")
-		List<AccessDecisionVoter<? extends Object>> decisionVoters = (List<AccessDecisionVoter<? extends Object>>)ReflectUtils.getFieldValue(decisionManager, "decisionVoters");
-		decisionVoters.add(new MethodWebExpressionVoter());
+//		List<AccessDecisionVoter<? extends Object>> decisionVoters = (List<AccessDecisionVoter<? extends Object>>)ReflectUtils.getFieldValue(decisionManager, "decisionVoters");
+		AbstractAccessDecisionManager adm = (AbstractAccessDecisionManager) decisionManager;
+		List<AccessDecisionVoter<? extends Object>> decisionVoters = adm.getDecisionVoters();
+
+//		decisionVoters.add(new MethodWebExpressionVoter());
+		decisionVoters.add(new MultiWebExpressionVoter());
+		
 		return decisionManager;
 	}
 

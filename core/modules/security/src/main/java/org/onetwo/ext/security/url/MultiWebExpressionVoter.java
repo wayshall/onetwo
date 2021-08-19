@@ -15,6 +15,7 @@ import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
 /****
  * 可支持一个url映射到多个表达式
@@ -46,8 +47,10 @@ public class MultiWebExpressionVoter implements AccessDecisionVoter<FilterInvoca
 			return ACCESS_ABSTAIN;
 		}
 
-		EvaluationContext ctx = expressionHandler.createEvaluationContext(authentication,
-				fi);
+		// new WebSecurityExpressionRoot(authentication, fi),
+		// 创建的EvaluationContext，其root对象是WebSecurityExpressionRoot，所以acces表达式，可以是WebSecurityExpressionRoot的任何方法，
+		// 比如：permitAll()，isAuthenticated()，isFullyAuthenticated()，hasAuthority('authority')
+		EvaluationContext ctx = expressionHandler.createEvaluationContext(authentication, fi);
 
 //		return ExpressionUtils.evaluateAsBoolean(codeConfig.getAuthorizeExpression(), ctx) ? ACCESS_GRANTED
 //				: ACCESS_DENIED;

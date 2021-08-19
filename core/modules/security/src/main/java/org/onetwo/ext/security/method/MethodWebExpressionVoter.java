@@ -55,6 +55,7 @@ public class MethodWebExpressionVoter implements AccessDecisionVoter<MethodInvoc
 		this.expressionHandler = expressionHandler;
 	}
 
+	@SuppressWarnings("serial")
 	public static class WebExpressionConfigAttribute implements ConfigAttribute {
 		private final Expression authorizeExpression;
 

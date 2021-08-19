@@ -174,7 +174,14 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		});
 	}
 	
+	/***
+	 * 表达式：hasAuthority(auth.getAuthority())
+	 * @author weishao zeng
+	 * @param auth
+	 * @return
+	 */
 	protected SecurityConfig createSecurityConfig(AuthorityResource auth){
+		// auth.getAuthority()=perm.code
 		String exp = SecurityUtils.createSecurityExpression(auth.getAuthority());
 		Expression authorizeExpression = this.securityExpressionHandler.getExpressionParser().parseExpression(exp);
 		return new CodeSecurityConfig(auth, authorizeExpression);
@@ -264,7 +271,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 	@Data
 	@ToString
 	public static class AuthorityResource {
-		//权限标识
+		//权限标识, permision.code
 		private String authority;
 		private List<UrlResourceInfo> urlResourceInfo;
 		private Integer sort;
