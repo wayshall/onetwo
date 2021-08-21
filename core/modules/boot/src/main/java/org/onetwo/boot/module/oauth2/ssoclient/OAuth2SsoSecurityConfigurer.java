@@ -2,8 +2,8 @@ package org.onetwo.boot.module.oauth2.ssoclient;
 
 import org.onetwo.boot.module.oauth2.ssoclient.filter.OAuth2ClientFilterSecurityConfigurer;
 import org.onetwo.boot.module.oauth2.ssoclient.rest.SsoClientUserInfoRestTemplateCustomizer;
-import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
+import org.onetwo.ext.security.url.DefaultUrlSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

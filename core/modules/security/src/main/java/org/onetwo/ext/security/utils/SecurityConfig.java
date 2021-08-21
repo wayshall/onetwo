@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.ext.security.jwt.JwtAuthStores;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
@@ -317,9 +318,18 @@ public class SecurityConfig {
 		JwtAuthStores authStore = JwtAuthStores.HEADER;
 		String signingKey;
 		Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);
+		String expiration;
 		
 		public boolean isEnabled(){
 			return StringUtils.isNotBlank(signingKey);
+		}
+
+		public Long getExpirationInSeconds() {
+			if(StringUtils.isNotBlank(expiration)){
+				long inSeconds = LangOps.timeToSeconds(expiration, TimeUnit.HOURS.toSeconds(1));
+				return inSeconds;
+			}
+			return expirationInSeconds;
 		}
 		
 	}

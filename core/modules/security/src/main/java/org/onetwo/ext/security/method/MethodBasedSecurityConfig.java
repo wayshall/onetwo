@@ -2,8 +2,9 @@ package org.onetwo.ext.security.method;
 
 import java.util.List;
 
+import org.onetwo.ext.permission.MenuInfoParserFactory;
+import org.onetwo.ext.permission.SimplePermission;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
-import org.onetwo.ext.security.url.MultiWebExpressionVoter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -28,6 +29,12 @@ public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration
 	public SecurityCommonContextConfig securityCommonContextConfig(){
 		return new SecurityCommonContextConfig();
 	}*/
+
+	@Bean
+	public MenuInfoParserFactory<SimplePermission> menuInfoParserFactory(){
+		MenuInfoParserFactory<SimplePermission> facotry = new MenuInfoParserFactory<>(SimplePermission.class);
+		return facotry;
+	}
 	
 	@Bean
 	public JFishMethodSecurityMetadataSource jfishMethodSecurityMetadataSource(){
@@ -46,7 +53,7 @@ public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration
 		List<AccessDecisionVoter<? extends Object>> decisionVoters = adm.getDecisionVoters();
 
 //		decisionVoters.add(new MethodWebExpressionVoter());
-		decisionVoters.add(new MultiWebExpressionVoter());
+		decisionVoters.add(new MultiMethodExpressionVoter());
 		
 		return decisionManager;
 	}

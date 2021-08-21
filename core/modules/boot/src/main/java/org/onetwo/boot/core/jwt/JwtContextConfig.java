@@ -25,7 +25,7 @@ public class JwtContextConfig {
 	@ConditionalOnMissingBean(JwtMvcInterceptor.class)
 	public JwtMvcInterceptor jwtMvcInterceptor(){
 		JwtMvcInterceptor interceptor = new JwtMvcInterceptor();
-		interceptor.setAuthHeaderName(jfishConfig.getJwt().getAuthHeader());
+//		interceptor.setAuthHeaderName(jfishConfig.getJwt().getAuthHeader());
 		return interceptor;
 	}
 	

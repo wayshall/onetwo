@@ -6,8 +6,9 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import org.onetwo.ext.permission.MenuInfoParserFactory;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionConfig;
-import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
 import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
@@ -46,10 +47,12 @@ public class UrlBasedSecurityConfig {
 	
 	@Bean
 	@Autowired
-	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource, List<PermissionConfig<?>> configs){
+	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource, MenuInfoParserFactory<? extends IPermission> menuInfoParserFactory){
 		DatabaseSecurityMetadataSource ms = new DatabaseSecurityMetadataSource();
 		ms.setDataSource(dataSource);
 		ms.setResourceQuery(securityConfig.getRbac().getResourceQuery());
+		
+		List<? extends PermissionConfig<?>> configs = menuInfoParserFactory.getPermissionConfigList();
 		if(configs!=null){
 			List<String> appCodes = configs.stream().map(c->c.getAppCode()).collect(Collectors.toList());
 			ms.setAppCodes(appCodes);

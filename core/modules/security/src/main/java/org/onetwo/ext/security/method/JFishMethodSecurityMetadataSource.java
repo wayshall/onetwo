@@ -2,16 +2,18 @@ package org.onetwo.ext.security.method;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.ext.permission.PermissionManager;
+import org.onetwo.common.utils.LangUtils;
+import org.onetwo.ext.permission.MenuInfoParserFactory;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.annotation.ByPermissionClass;
-import org.onetwo.ext.permission.parser.MenuInfoParser;
-import org.onetwo.ext.security.method.MethodWebExpressionVoter.WebExpressionConfigAttribute;
+import org.onetwo.ext.security.metadata.CodeSecurityConfig;
 import org.onetwo.ext.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -20,7 +22,6 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.method.AbstractFallbackMethodSecurityMetadataSource;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 /****
@@ -33,14 +34,14 @@ import com.google.common.collect.Lists;
  *
  */
 public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSecurityMetadataSource {
-	@Autowired(required=false)
-	private MenuInfoParser<? extends IPermission> menuInfoParser;
-	
-//	@Autowired
-//	protected PermissionManager permissionManager;
-	
+	@Autowired
+	private MenuInfoParserFactory<? extends IPermission> menuFactory;
 	private DefaultWebSecurityExpressionHandler securityExpressionHandler = new DefaultWebSecurityExpressionHandler();
-	
+
+	public JFishMethodSecurityMetadataSource() {
+//		super();
+//		this.menuFactory = menuFactory;
+	}
 
 	@Override
 	public Collection<ConfigAttribute> getAllConfigAttributes() {
@@ -52,11 +53,17 @@ public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSec
 		List<ConfigAttribute> permlist = Lists.newArrayList();
 		ByPermissionClass byMenu = AnnotationUtils.findAnnotation(method, ByPermissionClass.class);
 		if(byMenu!=null){
-			permlist.addAll(extractAttributes(byMenu.value()));
+			permlist.addAll(extractByPermissionClassAttributes(byMenu.value()));
 		}
-		ByPermissionClass byFunc = AnnotationUtils.findAnnotation(method, ByPermissionClass.class);
+		return permlist;
+	}
+
+	@Override
+	protected Collection<ConfigAttribute> findAttributes(Class<?> clazz) {
+		List<ConfigAttribute> permlist = Lists.newArrayList();
+		ByPermissionClass byFunc = AnnotationUtils.findAnnotation(clazz, ByPermissionClass.class);
 		if(byFunc!=null){
-			permlist.addAll(extractAttributes(byFunc.value()));
+			permlist.addAll(extractByPermissionClassAttributes(byFunc.value()));
 		}
 		return permlist;
 	}
@@ -67,27 +74,25 @@ public class JFishMethodSecurityMetadataSource extends AbstractFallbackMethodSec
 	 * @param codeClasses
 	 * @return
 	 */
-	private List<ConfigAttribute> extractAttributes(Class<?>...codeClasses){
-		if(codeClasses!=null){
-			List<ConfigAttribute> perms = Stream.of(codeClasses)
-					.map(cls->{
-						if(menuInfoParser==null){
-							throw new BaseException("no menuInfoParser found!");
-						}
-						String code = SecurityUtils.createSecurityExpression(menuInfoParser.getCode(cls));
-						Expression exp = securityExpressionHandler.getExpressionParser().parseExpression(code);
-						WebExpressionConfigAttribute config = new WebExpressionConfigAttribute(exp);
-						return config;
-					})
-					.collect(Collectors.toList());
-			return perms;
+	private List<ConfigAttribute> extractByPermissionClassAttributes(Class<?>...codeClasses){
+		if (LangUtils.isEmpty(codeClasses)) {
+			return Collections.emptyList();
 		}
-		return ImmutableList.of();
-	}
-
-	@Override
-	protected Collection<ConfigAttribute> findAttributes(Class<?> clazz) {
-		return null;
+		
+		List<ConfigAttribute> perms = Stream.of(codeClasses)
+				.map(cls->{
+					Optional<String> permOpt = menuFactory.getPermissionCode(cls);
+					if (!permOpt.isPresent()) {
+						throw new BaseException("can not parse permission class: " + cls);
+					}
+					String code = SecurityUtils.createSecurityExpression(permOpt.get());
+					Expression exp = securityExpressionHandler.getExpressionParser().parseExpression(code);
+//					WebExpressionConfigAttribute config = new WebExpressionConfigAttribute(exp);
+					CodeSecurityConfig config = new CodeSecurityConfig(code, code, exp);
+					return config;
+				})
+				.collect(Collectors.toList());
+		return perms;
 	}
 	
 }

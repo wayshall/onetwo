@@ -1,11 +1,5 @@
 package org.onetwo.ext.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultClaims;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +18,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClaims;
 
 /**
  * @author wayshall
@@ -105,8 +105,10 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 			return claims;
 		} catch(ExpiredJwtException e){
 			throw new CredentialsExpiredException("session expired", e);
+//			throw new ServiceException(JwtErrors.CM_ERROR_TOKEN, e);
 		}catch (Exception e) {
-			throw new BadCredentialsException("error token", e);
+			throw new CredentialsExpiredException("error token", e);
+//			throw new ServiceException(JwtErrors.CM_ERROR_TOKEN, e);
 		}
 	}
 

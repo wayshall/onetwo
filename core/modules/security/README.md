@@ -11,7 +11,7 @@
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-security</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.8.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -79,7 +79,7 @@ jfish:
         memoryUsers: #配置基于内存的用户角色
             admin: #userName
                 roles: ADMIN
-        anyRequest: none
+        anyRequest: permitAll #除了指定要拦截的url的其他url权限配置
         alwaysUseDefaultTargetUrl: true
         afterLoginUrl: http://localhost/user/center #登录成功后跳转
         intercepters: 

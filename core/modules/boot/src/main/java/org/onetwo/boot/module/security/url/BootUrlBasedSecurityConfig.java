@@ -1,16 +1,15 @@
 package org.onetwo.boot.module.security.url;
 
-import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.onetwo.boot.module.oauth2.ssoclient.DisabledOauth2SsoCondition;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
-import org.onetwo.ext.permission.api.PermissionConfig;
-import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
+import org.onetwo.ext.permission.MenuInfoParserFactory;
+import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.provider.ExceptionUserChecker;
+import org.onetwo.ext.security.url.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.url.UrlBasedSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -50,8 +49,8 @@ public class BootUrlBasedSecurityConfig extends UrlBasedSecurityConfig {
 	@ConditionalOnProperty(name=BootSecurityConfig.METADATA_SOURCE_KEY, prefix=BootSecurityConfig.SECURITY_PREFIX, havingValue=BootSecurityConfig.METADATA_SOURCE_DATABASE, matchIfMissing=true)
 	@Bean
 	@Autowired
-	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource, List<PermissionConfig<?>> configs){
-		return super.securityMetadataSource(dataSource, configs);
+	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource, MenuInfoParserFactory<? extends IPermission> menuInfoParserFactory){
+		return super.securityMetadataSource(dataSource, menuInfoParserFactory);
 	}
 	
 	@Bean

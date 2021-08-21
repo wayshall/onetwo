@@ -2,9 +2,9 @@ package org.onetwo.boot.module.oauth2.token;
 
 import java.util.concurrent.TimeUnit;
 
-import org.onetwo.boot.core.jwt.JwtErrors;
 import org.onetwo.boot.module.redis.JsonValueRedisTemplate;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.ext.security.jwt.JwtErrors;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

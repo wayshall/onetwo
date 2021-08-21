@@ -25,6 +25,8 @@ public class JwtConfig {
 	
 	public static final String PREFIX = "jfish.jwt";
 	public static final String ENABLE_KEY = PREFIX + ".enable";
+	
+	boolean enabled;
 
 	String authHeader = JwtUtils.DEFAULT_HEADER_KEY;
 	String signingKey;
@@ -37,6 +39,10 @@ public class JwtConfig {
 
 	boolean canBeNotLogin = false;
 	boolean canBeAnonymous = true;
+	
+	public void setEnable(boolean enable) {
+		this.enabled = enable;
+	}
 	
 	public String getSigningKey(){
 		String key = this.signingKey;

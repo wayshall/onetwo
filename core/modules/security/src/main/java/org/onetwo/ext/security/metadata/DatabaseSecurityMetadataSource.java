@@ -318,28 +318,4 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		
 	}
 
-	@SuppressWarnings("serial")
-	public static class CodeSecurityConfig extends SecurityConfig {
-		private final AuthorityResource auth;
-		private final Expression authorizeExpression;
-		// for sprig security 4.1, 可支持变量url 
-//		private final EvaluationContextPostProcessor<FilterInvocation> postProcessor;
-		
-		public CodeSecurityConfig(AuthorityResource auth, Expression authorizeExpression) {
-			super(SecurityUtils.createSecurityExpression(auth.getAuthority()));
-			this.auth = auth;
-			this.authorizeExpression = authorizeExpression;
-		}
-		public String getAuthorityName() {
-			return auth.getAuthorityName();
-		}
-		
-		public String getCode(){
-			return auth.getAuthority();
-		}
-
-		public Expression getAuthorizeExpression() {
-			return authorizeExpression;
-		}
-	}
 }
