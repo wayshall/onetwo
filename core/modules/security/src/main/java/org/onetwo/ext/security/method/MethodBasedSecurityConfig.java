@@ -20,7 +20,10 @@ import org.springframework.security.config.annotation.method.configuration.Globa
  * @author way
  *
  */
-@EnableGlobalMethodSecurity(securedEnabled=true)
+@EnableGlobalMethodSecurity(
+		securedEnabled=true, // SecuredAnnotationSecurityMetadataSource
+		jsr250Enabled = true // Jsr250MethodSecurityMetadataSource, Jsr250Voter
+)
 @Configuration
 @Import(SecurityCommonContextConfig.class)
 public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration {
