@@ -3,12 +3,11 @@ package org.onetwo.boot.module.oauth2.ssoclient;
 import org.onetwo.boot.module.oauth2.ssoclient.filter.OAuth2ClientFilterSecurityConfigurer;
 import org.onetwo.boot.module.oauth2.ssoclient.rest.SsoClientUserInfoRestTemplateCustomizer;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
-import org.onetwo.ext.security.url.DefaultUrlSecurityConfigurer;
+import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 /**
@@ -22,7 +21,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 //// 定制oauth错误异常
 //@Import(OAuth2CustomResultConfiguration.class)
 @EnableConfigurationProperties(OAuth2SsoClientProperties.class)
-public class OAuth2SsoSecurityConfigurer extends DefaultUrlSecurityConfigurer {
+public class OAuth2SsoMethodbasedSecurityConfigurer extends DefaultMethodSecurityConfigurer {
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -31,9 +30,7 @@ public class OAuth2SsoSecurityConfigurer extends DefaultUrlSecurityConfigurer {
 	@Autowired(required=false)
 	private AjaxAuthenticationHandler authenticationHandler;
 	
-	
-	public OAuth2SsoSecurityConfigurer(AccessDecisionManager accessDecisionManager) {
-		super(accessDecisionManager);
+	public OAuth2SsoMethodbasedSecurityConfigurer() {
 	}
 	
 

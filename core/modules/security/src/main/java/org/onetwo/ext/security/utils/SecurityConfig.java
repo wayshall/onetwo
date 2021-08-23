@@ -107,6 +107,11 @@ public class SecurityConfig {
 	
 	private boolean logSecurityError;
 	
+	/****
+	 * 是否验证所有权限
+	 */
+	private boolean validateConfigAttributes = true;
+	
 	
 	public boolean isDebug(){
 		return debug;

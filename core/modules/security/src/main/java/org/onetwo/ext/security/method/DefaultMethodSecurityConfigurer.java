@@ -14,6 +14,7 @@ import org.onetwo.ext.security.utils.SimpleThrowableAnalyzer;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
@@ -117,12 +118,19 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests().withObjectPostProcessor(new ObjectPostProcessor<MethodSecurityInterceptor>() {
+			@Override
+			public <O extends MethodSecurityInterceptor> O postProcess(O fsi) {
+				fsi.setRejectPublicInvocations(securityConfig.isRejectPublicInvocations());
+				fsi.setValidateConfigAttributes(securityConfig.isValidateConfigAttributes());
+				return fsi;
+			}
+		});
 		//if basic method interceptor, ignore all url interceptor
 		configureAnyRequest(http);
 		defaultConfigure(http);
 	}
 	
-
 	protected void configureAnyRequest(HttpSecurity http) throws Exception {
 		defaultAnyRequest(http, securityConfig.getAnyRequest());
 	}

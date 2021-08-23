@@ -13,12 +13,12 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
  * @author way
  *
  */
-public class MultiWebExpressionVoter extends MultiExpressionVoter<FilterInvocation> implements AccessDecisionVoter<FilterInvocation> {
+public class MultiWebExpressionVoter extends MultiExpressionVoter implements AccessDecisionVoter<Object> {
 	private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
-	public boolean supports(Class<?> clazz) {
-		return FilterInvocation.class.isAssignableFrom(clazz);
-	}
+//	public boolean supports(Class<?> clazz) {
+//		return FilterInvocation.class.isAssignableFrom(clazz);
+//	}
 
 	public void setExpressionHandler(
 			SecurityExpressionHandler<FilterInvocation> expressionHandler) {
@@ -26,8 +26,8 @@ public class MultiWebExpressionVoter extends MultiExpressionVoter<FilterInvocati
 	}
 
 	@Override
-	protected EvaluationContext createEvaluationContext(Authentication authentication, FilterInvocation invocation) {
-		return expressionHandler.createEvaluationContext(authentication, invocation);
+	protected EvaluationContext createEvaluationContext(Authentication authentication, Object invocation) {
+		return expressionHandler.createEvaluationContext(authentication, (FilterInvocation)invocation);
 	}
 	
 }

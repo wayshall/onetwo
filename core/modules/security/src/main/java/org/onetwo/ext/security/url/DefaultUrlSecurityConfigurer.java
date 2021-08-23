@@ -42,6 +42,7 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 			@Override
 			public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
 				fsi.setRejectPublicInvocations(securityConfig.isRejectPublicInvocations());
+				fsi.setValidateConfigAttributes(securityConfig.isValidateConfigAttributes());
 				if(securityMetadataSourceBuilder!=null){
 					securityMetadataSourceBuilder.setFilterSecurityInterceptor(fsi);
 					securityMetadataSourceBuilder.buildSecurityMetadataSource();

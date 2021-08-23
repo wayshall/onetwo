@@ -21,14 +21,19 @@ import org.springframework.security.core.Authentication;
  * @author way
  *
  */
-abstract public class MultiExpressionVoter<T> {
+abstract public class MultiExpressionVoter {
 //	protected SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
 	protected boolean isAnonymousUser(Authentication authentication) {
 		return AnonymousAuthenticationToken.class.isInstance(authentication);
 	}
-	
-	public int vote(Authentication authentication, T invokcation,
+
+	public boolean supports(Class<?> clazz) {
+//		return MethodInvocation.class.isAssignableFrom(clazz);
+		return true;
+	}
+
+	public int vote(Authentication authentication, Object invokcation,
 			Collection<ConfigAttribute> attributes) {
 		assert authentication != null;
 		assert invokcation != null;
@@ -74,7 +79,7 @@ abstract public class MultiExpressionVoter<T> {
 		return result;
 	}
 
-	abstract protected EvaluationContext createEvaluationContext(Authentication authentication, T invocation);
+	abstract protected EvaluationContext createEvaluationContext(Authentication authentication, Object invocation);
 
 	public boolean supports(ConfigAttribute attribute) {
 		return attribute instanceof CodeSecurityConfig;

@@ -11,12 +11,8 @@ import org.springframework.security.core.Authentication;
 /****
  * @author way
  */
-public class MultiMethodExpressionVoter extends MultiExpressionVoter<MethodInvocation> implements AccessDecisionVoter<MethodInvocation> {
+public class MultiMethodExpressionVoter extends MultiExpressionVoter implements AccessDecisionVoter<Object> {
 	private SecurityExpressionHandler<MethodInvocation> expressionHandler = new DefaultMethodSecurityExpressionHandler();
-
-	public boolean supports(Class<?> clazz) {
-		return MethodInvocation.class.isAssignableFrom(clazz);
-	}
 
 	public void setExpressionHandler(
 			SecurityExpressionHandler<MethodInvocation> expressionHandler) {
@@ -24,8 +20,8 @@ public class MultiMethodExpressionVoter extends MultiExpressionVoter<MethodInvoc
 	}
 
 	@Override
-	protected EvaluationContext createEvaluationContext(Authentication authentication, MethodInvocation invocation) {
-		return expressionHandler.createEvaluationContext(authentication, invocation);
+	protected EvaluationContext createEvaluationContext(Authentication authentication, Object invocation) {
+		return expressionHandler.createEvaluationContext(authentication, (MethodInvocation)invocation);
 	}
 	
 }
