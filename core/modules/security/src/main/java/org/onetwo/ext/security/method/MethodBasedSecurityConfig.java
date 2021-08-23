@@ -17,6 +17,9 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 
 /*****
  * 此注解必须写在GlobalMethodSecurityConfiguration子类，否则无法起作用
+ * 
+ * SecuredAnnotationSecurityMetadataSource
+ * Jsr250MethodSecurityMetadataSource, Jsr250Voter
  * @author way
  *
  */
