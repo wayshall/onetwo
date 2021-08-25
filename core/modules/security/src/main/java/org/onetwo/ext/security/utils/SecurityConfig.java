@@ -365,6 +365,10 @@ public class SecurityConfig {
 
 	@Data
 	public static class CorsConfig {
+		/**
+		 * disable只是移除cors的配置类
+		 */
+		boolean disable = true;
 		/***
 		 * 允许所有预检请求
 		 */

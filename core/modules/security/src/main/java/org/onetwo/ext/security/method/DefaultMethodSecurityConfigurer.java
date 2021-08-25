@@ -34,6 +34,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsUtils;
 
 import lombok.Getter;
 
@@ -265,6 +266,17 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 				.key(securityConfig.getRememberMe().getKey());
 		}
 		configureCsrf(http);
+		configureCors(http);
 	}
 
+
+	protected void configureCors(HttpSecurity http) throws Exception{
+		// disable只是移除cors的配置类
+		if (securityConfig.getCors().isDisable()) {
+			http.cors().disable();
+		}
+		if (securityConfig.getCors().isPermitAllPreFlightRequest()) {
+			http.authorizeRequests().requestMatchers(req -> CorsUtils.isPreFlightRequest(req)).permitAll();
+		}
+	}
 }
