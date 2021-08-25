@@ -39,9 +39,9 @@ abstract public class MultiExpressionVoter {
 		assert invokcation != null;
 		assert attributes != null;
 		
-		if (isAnonymousUser(authentication)) {
-			throw new AccessDeniedCodeException(JwtErrors.CM_NOT_LOGIN);
-		}
+//		if (isAnonymousUser(authentication)) {
+//			throw new AccessDeniedCodeException(JwtErrors.CM_NOT_LOGIN);
+//		}
 
 		if (authentication!=null && authentication.getDetails() instanceof UserRoot) {
 			UserRoot user = (UserRoot) authentication.getDetails();
