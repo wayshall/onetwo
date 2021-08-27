@@ -58,7 +58,8 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 		if(RequestUtils.isAjaxRequest(request)){
 			DataResult<?> rs = DataResults.error(authException.getMessage())
-											.code(SecurityErrors.NOT_TRUSTED_USER)
+											.code(SecurityErrors.CM_NOT_LOGIN)
+//											.code(JwtErrors.CM_NOT_LOGIN)
 											.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);
