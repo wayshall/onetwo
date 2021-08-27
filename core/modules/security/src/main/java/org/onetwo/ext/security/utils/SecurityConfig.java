@@ -368,7 +368,7 @@ public class SecurityConfig {
 		/**
 		 * disable只是移除cors的配置类
 		 */
-		boolean disable = true;
+		boolean disable;
 		/***
 		 * 允许所有预检请求
 		 */
