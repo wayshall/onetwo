@@ -81,7 +81,7 @@ public class JwtUserDetail implements UserDetail {
 	}
 
 	@Override
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 

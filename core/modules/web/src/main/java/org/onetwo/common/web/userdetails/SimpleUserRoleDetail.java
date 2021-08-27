@@ -25,7 +25,7 @@ public class SimpleUserRoleDetail implements SsoTokenable, UserDetail, RoleDetai
 		this.token = token;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 

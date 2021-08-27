@@ -22,7 +22,7 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 		this.nickName = userName;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 

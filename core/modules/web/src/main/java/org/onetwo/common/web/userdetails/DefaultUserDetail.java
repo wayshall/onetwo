@@ -61,7 +61,7 @@ public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, 
 		this.lastSynchronizedTime = lastSynchronizedTime;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
