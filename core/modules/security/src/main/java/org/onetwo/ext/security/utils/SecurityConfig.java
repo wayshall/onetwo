@@ -318,6 +318,9 @@ public class SecurityConfig {
 	
 	@Data
 	public static class JwtConfig {
+		String issuer = "jfish";
+		String audience = "webclient";
+		
 		String authHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 		String authKey;
 		JwtAuthStores authStore = JwtAuthStores.HEADER;

@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.annotation.FieldName;
@@ -1851,6 +1853,17 @@ public class ReflectUtils {
 			throw new NoSuchElementException("no constructor find. index: " + constructorIndex);
 		}
 		Constructor<?> targetConstructor = constroctors[constructorIndex];
+		return targetConstructor;
+	}
+	
+	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... parameterTypes){
+		Constructor<?> targetConstructor;
+		try {
+			targetConstructor = clazz.getConstructor(parameterTypes);
+		} catch (Exception e) {
+			List<String> paramterTypeNames = Stream.of(parameterTypes).map(t -> t.getName()).collect(Collectors.toList());
+			throw new NoSuchElementException("constructor not found. class: " + clazz.getName() + ", parameterTypes: " + paramterTypeNames);
+		} 
 		return targetConstructor;
 	}
 	

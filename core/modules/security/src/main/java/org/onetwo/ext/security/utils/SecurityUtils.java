@@ -55,20 +55,20 @@ final public class SecurityUtils {
 						.findAny().isPresent();
 	}
 
-	public static LoginUserDetails getCurrentLoginUser(){
-		return (LoginUserDetails)getCurrentLoginUser(SecurityContextHolder.getContext());
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(){
+		return (GenericLoginUserDetails<?>)getCurrentLoginUser(SecurityContextHolder.getContext());
 	}
 	public static <T> T getCurrentLoginUser(Class<T> clazz){
 		return clazz.cast(getCurrentLoginUser());
 	}
-	public static LoginUserDetails getCurrentLoginUser(SecurityContext context){
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(SecurityContext context){
 		Authentication auth = context.getAuthentication();
-		return (LoginUserDetails)getCurrentLoginUser(auth);
+		return (GenericLoginUserDetails<?>)getCurrentLoginUser(auth);
 	}
-	public static LoginUserDetails getCurrentLoginUser(Authentication auth){
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(Authentication auth){
 		if(auth==null || AnonymousAuthenticationToken.class.isInstance(auth))
 			return null;
-		return (LoginUserDetails)auth.getPrincipal();
+		return (GenericLoginUserDetails<?>)auth.getPrincipal();
 	}
 	
 	public static Runnable runInThread(Runnable runnable){

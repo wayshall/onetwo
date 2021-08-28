@@ -2,6 +2,7 @@ package org.onetwo.ext.security.utils;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.UserRoot;
@@ -15,12 +16,16 @@ public class GenericLoginUserDetails<ID extends Serializable> extends User imple
 //	private String token;
 	private String nickname;
 	private String avatar;
-	private boolean systemRootUser;
+//	private boolean systemRootUser;
 	
 	public GenericLoginUserDetails(ID userId, String username, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(username, password, authorities);
 		this.userId = userId;
+	}
+	
+	public GenericLoginUserDetails(ID userId, String username) {
+		this(userId, username, "N/A", Collections.emptyList());
 	}
 
 	public ID getUserId() {
@@ -34,7 +39,7 @@ public class GenericLoginUserDetails<ID extends Serializable> extends User imple
 
 	@Override
 	public boolean isSystemRootUser() {
-		return systemRootUser;
+		return getUserId().equals(ROOT_USER_ID);
 	}
 
 	public String getNickname() {

@@ -2,7 +2,6 @@ package org.onetwo.boot.core.jwt;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,7 +44,7 @@ public class JwtContextConfig {
 
 	@Bean
 	@ConditionalOnProperty(value=JwtConfig.PREFIX + ".sessionManager.enabled", matchIfMissing=true, havingValue="true")
-	public SessionUserManager<UserDetail> sessionUserManager(){
+	public SessionUserManager<JwtUserDetail> sessionUserManager(){
 		return new JwtSessionUserManager(jfishConfig.getJwt().getAuthHeader());
 	}
 }

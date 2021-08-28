@@ -6,7 +6,7 @@ import java.util.Date;
 public class AdminActionLog implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private Long userId;
+    private Serializable userId;
     private String userName;
     private Date actionTime;
     private String permissionCode;
@@ -17,10 +17,10 @@ public class AdminActionLog implements Serializable {
     private String actionInput;
     private Boolean isSuccess;
     private String actionOutput;
-	public Long getUserId() {
+	public Serializable getUserId() {
 		return userId;
 	}
-	public void setUserId(Long userId) {
+	public void setUserId(Serializable userId) {
 		this.userId = userId;
 	}
 	public String getUserName() {

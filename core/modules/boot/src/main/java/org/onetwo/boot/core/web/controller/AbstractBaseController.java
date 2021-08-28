@@ -34,6 +34,7 @@ import org.onetwo.common.spring.validator.ValidationBindingResult;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.ReturnableClosure;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -74,12 +75,12 @@ abstract public class AbstractBaseController {
 	 */
 
 	@Autowired
-	private SessionUserManager<UserDetail> sessionUserManager;
+	private SessionUserManager<GenericUserDetail<?>> sessionUserManager;
 
 	protected AbstractBaseController() {
 	}
 
-	public SessionUserManager<UserDetail> getSessionUserManager() {
+	public SessionUserManager<GenericUserDetail<?>> getSessionUserManager() {
 		return sessionUserManager;
 	}
 
@@ -303,12 +304,12 @@ abstract public class AbstractBaseController {
 	 * 
 	 * @return
 	 */
-	protected UserDetail checkAndGetCurrentLoginUser() {
-		return checkAndGetCurrentLoginUser(UserDetail.class, true);
+	protected GenericUserDetail<?> checkAndGetCurrentLoginUser() {
+		return checkAndGetCurrentLoginUser(GenericUserDetail.class, true);
 	}
 
-	protected UserDetail checkAndGetCurrentLoginUser(boolean throwIfNotFound) {
-		return checkAndGetCurrentLoginUser(UserDetail.class, throwIfNotFound);
+	protected GenericUserDetail<?> checkAndGetCurrentLoginUser(boolean throwIfNotFound) {
+		return checkAndGetCurrentLoginUser(GenericUserDetail.class, throwIfNotFound);
 	}
 
 	/***
@@ -318,9 +319,9 @@ abstract public class AbstractBaseController {
 	 * @param throwIfNotFound true表示如果没有找到则抛出异常，false则忽略
 	 * @return
 	 */
-	protected <T extends UserDetail> T checkAndGetCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound) {
+	protected <T extends GenericUserDetail<?>> T checkAndGetCurrentLoginUser(Class<T> clazz, boolean throwIfNotFound) {
 		Assert.notNull(clazz, "class can not be null!");
-		UserDetail user = null;
+		GenericUserDetail<?> user = null;
 		try {
 			user = sessionUserManager.getCurrentUser();
 		} catch (RuntimeException e) {
@@ -343,7 +344,7 @@ abstract public class AbstractBaseController {
 				if (!jfishConfig.getJwt().isCanBeAnonymous() && throwIfNotFound) {
 //					throw new BaseException("current login user is anonymous").put("userName", jwtUser.getUserName());
 					throw new NotLoginException(JwtErrors.CM_NOT_LOGIN_ANONYMOUS);
-				} else if (JwtUserDetail.class == clazz) {
+				} else if (JwtUserDetail.class.isAssignableFrom(clazz)) {
 					return clazz.cast(jwtUser);
 				}
 			}
@@ -367,11 +368,11 @@ abstract public class AbstractBaseController {
 
 	// 获取当前登录的用户信息，但是没有登录，或者游客模式，也不会抛错
 	@ModelAttribute(name = UserDetail.USER_DETAIL_KEY)
-	public UserDetail getCurrentLoginUser() {
+	public GenericUserDetail<?> getCurrentLoginUser() {
 		return checkAndGetCurrentLoginUser(false);
 	}
 
-	public <T extends UserDetail> T getCurrentLoginUser(Class<T> clazz) {
+	public <T extends GenericUserDetail<?>> T getCurrentLoginUser(Class<T> clazz) {
 		return checkAndGetCurrentLoginUser(clazz, false);
 	}
 

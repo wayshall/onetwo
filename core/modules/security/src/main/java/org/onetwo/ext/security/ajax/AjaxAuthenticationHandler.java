@@ -19,12 +19,11 @@ import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
-import org.onetwo.ext.security.jwt.JwtAuthStores;
 import org.onetwo.ext.security.jwt.JwtAuthStores.StoreContext;
 import org.onetwo.ext.security.jwt.JwtSecurityTokenInfo;
 import org.onetwo.ext.security.jwt.JwtSecurityTokenService;
-import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.utils.CookieStorer;
+import org.onetwo.ext.security.utils.SecurityConfig.JwtConfig;
 import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,12 +65,13 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 //	private MessageSourceAccessor exceptionMessageAccessor;
 	private RequestCache requestCache = new NullRequestCache();
 	
-	private boolean useJwtToken;
+//	private boolean useJwtToken;
 	@Autowired(required=false)
 	private JwtSecurityTokenService jwtTokenService;
 	private String jwtAuthHeader;
-	private JwtAuthStores jwtAuthStores;
+//	private JwtAuthStores jwtAuthStores;
 	private CookieStorer cookieStorer;
+	private JwtConfig jwtConfig;
 
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
@@ -104,14 +104,16 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	}*/
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(useJwtToken){
+//		this.jwtAuthHeader = this.jwtConfig.getAuthHeader();
+		
+		if(this.jwtConfig.isEnabled()){
 			if(jwtTokenService==null){
 				throw new BaseException("not jwtTokenService found!");
 			}
-			if(StringUtils.isBlank(jwtAuthHeader)){
-				jwtAuthHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
-			}
-			Assert.notNull(jwtAuthStores, "jwt auth store can not be null");
+//			if(StringUtils.isBlank(jwtAuthHeader)){
+//				jwtAuthHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
+//			}
+			Assert.notNull(jwtConfig.getAuthStore(), "jwt auth store can not be null");
 		}
 		if(authenticationFailureUrl!=null){
 	    	this.failureHandler = new SimpleUrlAuthenticationFailureHandler(authenticationFailureUrl);
@@ -139,7 +141,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		JwtSecurityTokenInfo token = null;
-		if(useJwtToken){
+		if(jwtConfig.isEnabled()){
 			token = this.jwtTokenService.generateToken(authentication);
 //			response.addHeader(jwtAuthHeader, token.getToken());
 			/*DataResult<?> rs = DataResults.success("登录成功！")
@@ -155,7 +157,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 											.cookieStorer(cookieStorer)
 											.token(token)
 											.build();
-			jwtAuthStores.saveToken(ctx);
+			jwtConfig.getAuthStore().saveToken(ctx);
 		}
 		
 		if(RequestUtils.isAjaxRequest(request)){
@@ -248,19 +250,24 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	public void setAuthenticationFailureUrl(String authenticationFailureUrl) {
 		this.authenticationFailureUrl = authenticationFailureUrl;
 	}
-	public void setUseJwtToken(boolean useJwtToken) {
-		this.useJwtToken = useJwtToken;
-	}
+//	public void setUseJwtToken(boolean useJwtToken) {
+//		this.useJwtToken = useJwtToken;
+//	}
 	public void setJwtTokenService(JwtSecurityTokenService jwtTokenService) {
 		this.jwtTokenService = jwtTokenService;
 	}
-	public void setJwtAuthHeader(String jwtAuthHeader) {
-		this.jwtAuthHeader = jwtAuthHeader;
-	}
-	public void setJwtAuthStores(JwtAuthStores jwtAuthStores) {
-		this.jwtAuthStores = jwtAuthStores;
-	}
+//	public void setJwtAuthHeader(String jwtAuthHeader) {
+//		this.jwtAuthHeader = jwtAuthHeader;
+//	}
+//	public void setJwtAuthStores(JwtAuthStores jwtAuthStores) {
+//		this.jwtAuthStores = jwtAuthStores;
+//	}
 	public void setCookieStorer(CookieStorer cookieStorer) {
 		this.cookieStorer = cookieStorer;
 	}
+
+	public void setJwtConfig(JwtConfig jwtConfig) {
+		this.jwtConfig = jwtConfig;
+	}
+	
 }

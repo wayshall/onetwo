@@ -5,14 +5,13 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author wayshall
  * <br/>
  */
-public class JwtSessionUserManager implements SessionUserManager<UserDetail> {
+public class JwtSessionUserManager implements SessionUserManager<JwtUserDetail> {
 	
 	@Autowired
 	private HttpServletRequest request;

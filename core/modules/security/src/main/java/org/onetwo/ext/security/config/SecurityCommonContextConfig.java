@@ -1,8 +1,8 @@
 package org.onetwo.ext.security.config;
 
 import org.onetwo.common.spring.condition.OnMissingBean;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.ajax.AjaxLogoutSuccessHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
@@ -52,7 +52,7 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	}
 	
 	@Bean
-	public SessionUserManager<UserDetail> sessionUserManager(){
+	public SessionUserManager<GenericUserDetail<?>> sessionUserManager(){
 		return new SecuritySessionUserManager();
 	}
 	
@@ -89,9 +89,10 @@ public class SecurityCommonContextConfig implements InitializingBean{
 																			getSecurityConfig().getAfterLoginUrl(),
 																			getSecurityConfig().isAlwaysUseDefaultTargetUrl());
 		if(securityConfig.getJwt().isEnabled()){
-			handler.setUseJwtToken(securityConfig.getJwt().isEnabled());
-			handler.setJwtAuthHeader(securityConfig.getJwt().getAuthHeader());
-			handler.setJwtAuthStores(securityConfig.getJwt().getAuthStore());
+//			handler.setUseJwtToken(securityConfig.getJwt().isEnabled());
+//			handler.setJwtAuthHeader(securityConfig.getJwt().getAuthHeader());
+//			handler.setJwtAuthStores(securityConfig.getJwt().getAuthStore());
+			handler.setJwtConfig(securityConfig.getJwt());
 			handler.setCookieStorer(cookieStorer());
 		}
 		return handler;
