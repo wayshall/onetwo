@@ -5,8 +5,8 @@ import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.web.filter.RequestInfo;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SsoTokenable;
-import org.onetwo.common.web.userdetails.UserDetail;
 
 @SuppressWarnings("unchecked")
 final public class WebContextUtils {
@@ -70,17 +70,17 @@ final public class WebContextUtils {
 		session.removeAttribute(name);
 	}
 	
-	public static UserDetail getUserDetail(HttpSession session){
-		return getAttr(session, UserDetail.USER_DETAIL_KEY);
+	public static GenericUserDetail<?> getUserDetail(HttpSession session){
+		return getAttr(session, GenericUserDetail.USER_DETAIL_KEY);
 	}
 	
-	public static void setUserDetail(HttpSession session, UserDetail userDetail){
-		attr(session, UserDetail.USER_DETAIL_KEY, userDetail);
+	public static void setUserDetail(HttpSession session, GenericUserDetail<?> userDetail){
+		attr(session, GenericUserDetail.USER_DETAIL_KEY, userDetail);
 	}
 	
-	public static UserDetail removeUserDetail(HttpSession session){
-		UserDetail user = getAttr(session, UserDetail.USER_DETAIL_KEY);
-		remove(session, UserDetail.USER_DETAIL_KEY);
+	public static GenericUserDetail<?> removeUserDetail(HttpSession session){
+		GenericUserDetail<?> user = getAttr(session, GenericUserDetail.USER_DETAIL_KEY);
+		remove(session, GenericUserDetail.USER_DETAIL_KEY);
 		return user;
 	}
 	

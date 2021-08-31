@@ -1,13 +1,13 @@
 package org.onetwo.boot.core.web.userdetails;
 
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 
-public class BootSessionUserManager implements SessionUserManager<UserDetail> {
+public class BootSessionUserManager implements SessionUserManager<GenericUserDetail<?>> {
 
 	@Override
-	public UserDetail getCurrentUser() {
+	public GenericUserDetail<?> getCurrentUser() {
 		return BootWebUtils.getUserDetail();
 	}
 	

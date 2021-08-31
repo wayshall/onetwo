@@ -37,7 +37,6 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.ReturnableClosure;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;
 import org.onetwo.common.web.utils.ResponseUtils;
@@ -367,7 +366,7 @@ abstract public class AbstractBaseController {
 	}
 
 	// 获取当前登录的用户信息，但是没有登录，或者游客模式，也不会抛错
-	@ModelAttribute(name = UserDetail.USER_DETAIL_KEY)
+	@ModelAttribute(name = GenericUserDetail.USER_DETAIL_KEY)
 	public GenericUserDetail<?> getCurrentLoginUser() {
 		return checkAndGetCurrentLoginUser(false);
 	}
