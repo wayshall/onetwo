@@ -5,8 +5,6 @@ import java.util.Collection;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.userdetails.UserRoot;
-import org.onetwo.ext.security.exception.AccessDeniedCodeException;
-import org.onetwo.ext.security.jwt.JwtErrors;
 import org.onetwo.ext.security.metadata.CodeSecurityConfig;
 import org.slf4j.Logger;
 import org.springframework.expression.EvaluationContext;

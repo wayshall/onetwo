@@ -83,18 +83,22 @@ public class SecurityCommonContextConfig implements InitializingBean{
 
 	@Bean
 	@OnMissingBean(AjaxAuthenticationHandler.class)
-	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
-		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().isFailureUrlWithMessage(), 
-																			getSecurityConfig().getFailureUrl(), 
-																			getSecurityConfig().getAfterLoginUrl(),
-																			getSecurityConfig().isAlwaysUseDefaultTargetUrl());
-		if(securityConfig.getJwt().isEnabled()){
-//			handler.setUseJwtToken(securityConfig.getJwt().isEnabled());
-//			handler.setJwtAuthHeader(securityConfig.getJwt().getAuthHeader());
-//			handler.setJwtAuthStores(securityConfig.getJwt().getAuthStore());
-			handler.setJwtConfig(securityConfig.getJwt());
-			handler.setCookieStorer(cookieStorer());
-		}
+	public AjaxAuthenticationHandler ajaxAuthenticationHandler(SecurityConfig securityConfig){
+		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(
+				securityConfig.isFailureUrlWithMessage(), 
+				securityConfig.getFailureUrl(), 
+				securityConfig.getAfterLoginUrl(),
+				securityConfig.isAlwaysUseDefaultTargetUrl()
+		);
+//		if(securityConfig.getJwt().isEnabled()){
+////			handler.setUseJwtToken(securityConfig.getJwt().isEnabled());
+////			handler.setJwtAuthHeader(securityConfig.getJwt().getAuthHeader());
+////			handler.setJwtAuthStores(securityConfig.getJwt().getAuthStore());
+//			handler.setJwtConfig(securityConfig.getJwt());
+//			handler.setCookieStorer(cookieStorer());
+//		}
+		handler.setJwtConfig(securityConfig.getJwt());
+		handler.setCookieStorer(cookieStorer());
 		return handler;
 	}
 	

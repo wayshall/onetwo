@@ -1,4 +1,4 @@
-package org.onetwo.ext.security.jwt;
+package org.onetwo.boot.core.jwt;
 
 import java.util.stream.Stream;
 

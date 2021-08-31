@@ -13,7 +13,6 @@ import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
-import org.onetwo.ext.security.jwt.JwtErrors;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
 
