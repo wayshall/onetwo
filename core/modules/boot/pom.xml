@@ -462,6 +462,14 @@
 		    <artifactId>spring-integration-mqtt</artifactId>
             <optional>true</optional>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.fusesource.mqtt-client</groupId>
+		    <artifactId>mqtt-client</artifactId>
+		    <version>1.16</version>
+            <optional>true</optional>
+		</dependency>
+				
         
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
