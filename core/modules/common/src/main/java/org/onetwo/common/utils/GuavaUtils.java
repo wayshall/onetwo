@@ -10,13 +10,13 @@ import java.util.stream.StreamSupport;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.ImmutableSet;
 
 public final class GuavaUtils {
 
 	public static Iterable<String> EMPTY_ITERABLE = new Iterable<String>() {
 												      @Override public Iterator<String> iterator() {
-												          return Iterators.emptyIterator();
+												          return ImmutableSet.<String>of().iterator();
 												        }
 												    };
 												    

@@ -15,6 +15,7 @@ import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
 import org.onetwo.boot.core.json.ObjectMapperProvider;
 import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvider;
 import org.onetwo.boot.core.listener.BootApplicationReadyListener;
+import org.onetwo.boot.core.listener.PropertyDebuggerListener;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
@@ -257,6 +258,11 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 		fs.setStoreBaseDir(config.getFileStorePath());
 //		fs.setAppContextDir(config.getAppContextDir());
 		return fs;
+	}
+
+	@ConditionalOnProperty(name=BootJFishConfig.PROFILES_DEBUG)
+	public PropertyDebuggerListener propertyDebuggerListener() {
+		return new PropertyDebuggerListener();
 	}
 
 	
