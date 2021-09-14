@@ -391,16 +391,28 @@ jfish:
 ```
 
 ### cors配置
+
+使用spring mvc配置支持跨域
 ```yaml
 jfish: 
-	cors: 
-        - mapping: /v2/api-doc
-          allowedOrigins: *
-		  allowedMethods: GET, OPTION
-		  allowedHeaders: Content-Type
+    mvc: 
+        cors: 
+            - mapping: /**
+```
+
+使用corsfilter配置支持跨域。
+若项目有使用security时，推荐使用此filter配置。
+因为CorsFilter 须在所有filter之前，包括security的filter
+否则会抛 No 'Access-Control-Allow-Origin' header is present on the requested resource
+```yaml
+jfish:
+    corsfilter: 
+        enabled: true
 ```
 
 ### websocket和stomp配置
+
+
 ```yaml
 jfish:
 	websocket: 
@@ -412,6 +424,14 @@ jfish:
 			simplePrefixes: /broadcast
 			appPrefixes: /app
 			userPrefix: /user
+```
+
+如果使用了security，且需要跨域时，除了启用相关的跨域配置外，还需要把/stomp/**添加到忽略列表
+jfish:
+    security:
+        ignoringUrls:
+            - /static/js/**
+            - /stomp/**
 ```
 
 ### activemq之mqtt支持

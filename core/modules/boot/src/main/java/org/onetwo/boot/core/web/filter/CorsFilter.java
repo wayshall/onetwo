@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /***
  * 
+CorsFilter 须在所有filter之前，包括security的filter
+否则会抛 No 'Access-Control-Allow-Origin' header is present on the requested resource
+
 jfish:
     corsfilter: 
         enabled: true
