@@ -11,6 +11,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+/***
+ * 
+jfish:
+    corsfilter: 
+        enabled: true
+ * @author way
+ *
+ */
 public class CorsFilter implements Filter {
 	public static final String CORS_FILTER_NAME = "corsFilter";
 	private Map<String, String> headers;

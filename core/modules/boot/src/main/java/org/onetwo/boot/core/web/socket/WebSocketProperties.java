@@ -6,6 +6,26 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import lombok.Data;
 
 /***
+需要跨域时，需要配置corsfilter
+jfish:
+    corsfilter: 
+        enabled: true
+    websocket: 
+        enabled: true
+        stomp: 
+            allowedOrigins: '*'
+    mvc: 
+        corsFilter: true
+        cors: 
+            - mapping: /**
+            - allowCredentials: true
+如果使用了security，且需要跨域时，需要把/stomp/**添加到忽略列表
+jfish:
+    security:
+        ignoringUrls:
+            - /static/js/**
+            - /stomp/**
+            
  * 首先使用 SockJS 建立连接
 	var socket = new SockJS(StompProps.endpoint);
 	stompClient = Stomp.over(socket);

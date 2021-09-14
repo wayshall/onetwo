@@ -148,6 +148,16 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 		JsonConfig json = new JsonConfig();
 		List<ResourceHandlerConfig> resourceHandlers = new ArrayList<>();
 		
+		/***
+jfish:
+    #corsfilter: 
+        #enabled: true
+    mvc: 
+        corsFilter: true
+        cors: 
+            - mapping: /**
+            - allowCredentials: true
+		 */
 		boolean corsFilter;
 		List<CorsConfig> cors = new ArrayList<>();
 //		MvcAsyncProperties async = new MvcAsyncProperties();

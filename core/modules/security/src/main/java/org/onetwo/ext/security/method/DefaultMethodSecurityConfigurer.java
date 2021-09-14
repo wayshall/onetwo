@@ -249,6 +249,12 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		http.httpBasic()
 			.disable()
 			.headers()
+				// https://blog.csdn.net/zhuyiquan/article/details/52173735
+				// 常浏览器会根据响应头的Content-Type字段来分辨它们的类型。例如：”text/html”代表html文档，”image/png”是PNG图片，”text/css”是CSS样式文档。然而，有些资源的Content-Type是错的或者未定义。这时，某些浏览器会启用MIME-sniffing来猜测该资源的类型，解析内容并执行。
+				// 例如，我们即使给一个html文档指定Content-Type为”text/plain”，在IE8-中这个文档依然会被当做html来解析。利用浏览器的这个特性，攻击者甚至可以让原本应该解析为图片的请求被解析为JavaScript。
+				// 通过下面这个响应头可以禁用浏览器的类型猜测行为：
+				// X-Content-Type-Options: nosniff
+				.contentTypeOptions().disable()
 				.frameOptions()
 				.sameOrigin()
 				.xssProtection()
