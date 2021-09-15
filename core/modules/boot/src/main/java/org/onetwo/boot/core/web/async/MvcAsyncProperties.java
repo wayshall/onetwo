@@ -1,8 +1,8 @@
 package org.onetwo.boot.core.web.async;
 
-import lombok.Data;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 /**
  * 
@@ -19,6 +19,9 @@ public class MvcAsyncProperties {
 	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.async";
 	public static final String ENABLE_KEY = PREFIX+".enabled";
 
+	/***
+	 * 默认60秒
+	 */
 	private int timeout = 60_000;
 	private int corePoolSize = 5;
 	private int maxPoolSize = 50;
