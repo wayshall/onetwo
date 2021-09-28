@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Primary;
 @ConditionalOnProperty(value = ConfiguratableDatasourceConfiguration.ENABLED_DSNAMES)
 public class ConfiguratableDatasourceConfiguration {
 	public final static String DATASOURCE_CONFIG_PREFIX = BootJFishConfig.PREFIX + ".datasources";
-	public final static String ENABLED_DSNAMES = DATASOURCE_CONFIG_PREFIX + ".enabled";
+	public final static String ENABLED_DSNAMES = DATASOURCE_CONFIG_PREFIX + ".enabled"; // jfish.datasources.enabled: datasouceName1, datasouceName2
 	
 
 	@SuppressWarnings("unchecked")
