@@ -187,4 +187,12 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 		}
 	}
 
+	public void setSecurityConfig(SecurityConfig securityConfig) {
+		this.securityConfig = securityConfig;
+	}
+
+	public void setPropertyKey(String propertyKey) {
+		this.propertyKey = propertyKey;
+	}
+
 }
