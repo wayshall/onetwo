@@ -25,6 +25,8 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.Closure;
 import org.onetwo.common.utils.map.KVEntry;
 
+import com.google.common.collect.Maps;
+
 /***
  * langutils for java8
  * @author way
@@ -90,6 +92,15 @@ final public class LangOps {
 	public static <K, V> Map<K, V> toMap(List<V> data, Function<V, K> keyExtractor){
 		 return data.stream()
 				 	.collect(Collectors.toMap(item->keyExtractor.apply(item), item->item));
+	}
+	
+	public static <K, V> Map<K, V> toMapWithSilence(List<V> data, Function<V, K> keyExtractor){
+		 Map<K, V> result = Maps.newHashMapWithExpectedSize(data.size());
+		 data.forEach(d -> {
+			 K key = keyExtractor.apply(d);
+			 result.put(key, d);
+		 });
+		 return result;
 	}
 	
 	public static Object[] toArray(Map<?, ?> map){
