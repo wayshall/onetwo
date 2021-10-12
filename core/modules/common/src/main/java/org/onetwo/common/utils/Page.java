@@ -169,6 +169,9 @@ public class Page<T> implements Serializable {
 	}
 	
 	public int getSize(){
+		if (this.result==null) {
+			return 0;
+		}
 		return getResult().size();
 	}
 
