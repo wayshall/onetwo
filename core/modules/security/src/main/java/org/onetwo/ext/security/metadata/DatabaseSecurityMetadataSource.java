@@ -18,9 +18,13 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.ext.permission.MenuInfoParserFactory;
+import org.onetwo.ext.permission.api.IPermission;
+import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 import org.onetwo.ext.security.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.expression.Expression;
 import org.springframework.jdbc.core.RowMapper;
@@ -63,8 +67,24 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 	private boolean allowManyPermissionMapToOneUrl = true;
 
 	private FilterSecurityInterceptor filterSecurityInterceptor;
+	@Autowired(required = false)
+	private MenuInfoParserFactory<? extends IPermission> menuInfoParserFactory;
 	// from WebSecurityExpressionRoot
 //	private Set<String> keywords = ImmutableSet.of("permitAll", "denyAll", "is", "has");
+	
+
+	@Override
+	protected void checkDaoConfig() {
+		super.checkDaoConfig();
+		
+		if (menuInfoParserFactory!=null) {
+			List<? extends PermissionConfig<?>> configs = menuInfoParserFactory.getPermissionConfigList();
+			if(configs!=null){
+				List<String> appCodes = configs.stream().map(c->c.getAppCode()).collect(Collectors.toList());
+				setAppCodes(appCodes);
+			}
+		}
+	}
 	
 	protected List<AuthorityResource> fetchAuthorityResources(){
 		if(StringUtils.isBlank(resourceQuery)){

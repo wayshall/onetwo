@@ -47,16 +47,17 @@ public class UrlBasedSecurityConfig {
 	
 	@Bean
 	@Autowired
-	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource, MenuInfoParserFactory<? extends IPermission> menuInfoParserFactory){
+//	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource, MenuInfoParserFactory<? extends IPermission> menuInfoParserFactory){
+	public JdbcSecurityMetadataSourceBuilder securityMetadataSource(DataSource dataSource){
 		DatabaseSecurityMetadataSource ms = new DatabaseSecurityMetadataSource();
 		ms.setDataSource(dataSource);
 		ms.setResourceQuery(securityConfig.getRbac().getResourceQuery());
 		
-		List<? extends PermissionConfig<?>> configs = menuInfoParserFactory.getPermissionConfigList();
-		if(configs!=null){
-			List<String> appCodes = configs.stream().map(c->c.getAppCode()).collect(Collectors.toList());
-			ms.setAppCodes(appCodes);
-		}
+//		List<? extends PermissionConfig<?>> configs = menuInfoParserFactory.getPermissionConfigList();
+//		if(configs!=null){
+//			List<String> appCodes = configs.stream().map(c->c.getAppCode()).collect(Collectors.toList());
+//			ms.setAppCodes(appCodes);
+//		}
 		return ms;
 	}
 	

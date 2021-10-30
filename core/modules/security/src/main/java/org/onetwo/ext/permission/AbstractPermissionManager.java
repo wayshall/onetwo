@@ -9,8 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.permission.api.IPermission;
@@ -19,6 +17,7 @@ import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
@@ -28,7 +27,7 @@ import org.springframework.util.Assert;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-abstract public class AbstractPermissionManager<P extends IPermission> implements PermissionManager<P> {
+abstract public class AbstractPermissionManager<P extends IPermission> implements PermissionManager<P>, InitializingBean  {
 
 	protected final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 
@@ -43,9 +42,9 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	private Multimap<Method, IPermission> methodPermissionMapping;
 	@Autowired
 	private SecurityConfig securityConfig;
-	
-	@PostConstruct
-	public void initParsers(){
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		if(parsers==null || parsers.isEmpty()){
 			this.parsers = SpringUtils.getBeans(applicationContext, MenuInfoParser.class, new ParameterizedTypeReference<MenuInfoParser<P>>(){});
 		}
