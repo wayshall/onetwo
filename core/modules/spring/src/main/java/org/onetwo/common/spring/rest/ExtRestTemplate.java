@@ -259,7 +259,12 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 
 	public <T> T get(String url, Object request, Class<T> responseType){
 		String paramString = RestUtils.propertiesToParamString(request);
-		MultiValueMap<String, Object> urlVariables = RestUtils.toMultiValueMap(request, beanToMapConvertor);
+		// 使用toMultiValueMap，spring不会把参数值List展开获取，而是直接toString，从而导致参数错误
+//		MultiValueMap<String, Object> urlVariables = RestUtils.toMultiValueMap(request, beanToMapConvertor);
+		Map<String, Object> urlVariables = beanToMapConvertor.toMap(request);
+		if (logger.isDebugEnabled()) {
+			logger.debug("url Variables: {}", urlVariables);
+		}
 		String atualUrl = ParamUtils.appendParamString(url, paramString);
 		return getForObject(atualUrl, responseType, urlVariables);
 	}

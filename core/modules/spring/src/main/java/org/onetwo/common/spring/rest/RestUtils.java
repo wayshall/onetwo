@@ -101,7 +101,7 @@ public final class RestUtils {
 		
 		HttpHeaders formHeader = FORM_HEADER;//createHeader(MediaType.APPLICATION_FORM_URLENCODED);
 		
-		final MultiValueMap<String, Object> params = toMultiValueMap(obj, convertor);
+		final MultiValueMap<String, String> params = toMultiValueStringMap(obj, convertor);
 		return new HttpEntity<MultiValueMap<String, ?>>(params, formHeader);
 	}
 	
@@ -110,8 +110,12 @@ public final class RestUtils {
 	}
 	
 	public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj){
+		return toMultiValueStringMap(obj, BEAN_TO_MAP_CONVERTOR);
+	}
+	
+	public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj, BeanToMapConvertor convertor){
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		BEAN_TO_MAP_CONVERTOR.flatObject("", obj, (key, value, ctx)->params.set(key, value.toString()));
+		convertor.flatObject("", obj, (key, value, ctx)->params.set(key, value==null?"":value.toString()));
 		return params;
 	}
 	/*public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj, BeanToMapConvertor convertor){

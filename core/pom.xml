@@ -39,10 +39,9 @@
        <profile>
            <id>microcloud</id>
 			<modules>
-                <module>modules/security</module>
-                <module>modules/dui</module>
-                <module>modules/boot</module>
-                <module>../../zifish-plugins/parent</module>
+                <module>modules/common</module>
+                <module>modules/spring</module>
+                <module>modules/cloud</module>
 			</modules>
            <build>
               <plugins>
