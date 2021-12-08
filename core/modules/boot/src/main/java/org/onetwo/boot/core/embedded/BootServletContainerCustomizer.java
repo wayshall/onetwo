@@ -57,7 +57,7 @@ public class BootServletContainerCustomizer implements EmbeddedServletContainerC
                 		//最大连接数，默认10000
                 		handler.setMaxConnections(tomcatProperties.getMaxConnections());
                 	}
-                	if(tomcatProperties.getConnectionTimeout()!=-1){
+                	if(tomcatProperties.getConnectionTimeout()!=null){
                 		handler.setConnectionTimeout(tomcatProperties.getConnectionTimeout());
                 	}
                 	if(tomcatProperties.getConnectionUploadTimeout()>0){
