@@ -386,6 +386,9 @@ public class SheetStreamReaderBuilder<T> {
 		 */
 		public Date getDate(int cellnum, String pattern) {
 			Cell cell = getCell(cellnum);
+			if (cell==null) {
+				return null;
+			}
 			Date date;
 			CellType cellType = cell.getCellType();
 			if (cellType==CellType.NUMERIC) {
