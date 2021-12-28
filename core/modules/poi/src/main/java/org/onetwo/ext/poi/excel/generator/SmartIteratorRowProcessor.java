@@ -43,7 +43,7 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 	private Cell createSingleCell(CellContextData cellContext, int rowCount, int cellIndex, Object cellValue){
 		Cell cell = null;
 		if(cellContext==null)
-			throw new ExcelException("the cell of row has not created yet : " + cellContext.getFieldModel().getName());
+			throw new ExcelException("the cell of row has not created yet. row: " + rowCount + ", cell: " + cellIndex);
 
 		CellContextData subCellContext = createCellContext(cellContext.getObjectValue(), rowCount, cellContext.getRowContext(), cellContext.getFieldModel(), cellIndex);
 		cell = createCell(subCellContext);

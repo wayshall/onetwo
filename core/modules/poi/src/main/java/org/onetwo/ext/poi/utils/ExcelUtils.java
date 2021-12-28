@@ -34,6 +34,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.onetwo.common.utils.Page;
 import org.onetwo.ext.poi.excel.etemplate.ExcelTemplateValueProvider;
 import org.onetwo.ext.poi.excel.exception.ExcelException;
 import org.onetwo.ext.poi.excel.generator.DefaultPropertyStringParser;
@@ -673,7 +674,14 @@ abstract public class ExcelUtils {
 
         if (value instanceof Iterable) {
             iterator = ((Iterable) value).iterator();
-        } else if (value.getClass().isArray()) {
+        } else if (value instanceof Page) {
+        	Page<?> page = (Page<?>) value;
+        	List<?> dataList = page.getResult();
+        	if (dataList==null) {
+        		return null;
+        	}
+        	iterator = dataList.iterator();
+        }  else if (value.getClass().isArray()) {
             //need ability to support primitives; therefore, cannot
             //use Object[] casting.
             ArrayList list = new ArrayList(Array.getLength(value));
