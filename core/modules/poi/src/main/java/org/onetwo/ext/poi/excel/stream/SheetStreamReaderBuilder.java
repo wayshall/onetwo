@@ -314,7 +314,11 @@ public class SheetStreamReaderBuilder<T> {
 		 */
 		public String getString(int cellnum) {
 			Cell cell = getCell(cellnum);
-			return (String)ExcelUtils.getCellValue(cell, sheet.isCanConverToStringValue());
+			Object val = ExcelUtils.getCellValue(cell, sheet.isCanConverToStringValue());
+			if (val==null) {
+				return null;
+			}
+			return val.toString();
 		}
 		
 		/***
