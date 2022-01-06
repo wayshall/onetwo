@@ -387,6 +387,14 @@ public class NiceDate {
 //		return this;
 	}
 	
+	public NiceDate firstDateOfMonth(){
+		return precise(DateType.month).atTheBeginning();
+	}
+	
+	public NiceDate lastDateOfMonth(){
+		return precise(DateType.month).atTheEnd();
+	}
+	
 	/***
 	 * 精确到毫秒
 	 * @author weishao zeng

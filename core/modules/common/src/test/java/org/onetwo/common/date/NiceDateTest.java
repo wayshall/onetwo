@@ -129,6 +129,14 @@ public class NiceDateTest {
 		monthDate = NiceDate.currentYearWithDate(2020, "11月19日", "MM月dd日");
 		System.out.println("monthDate: " + monthDate.formatAsDateTime());
 		assertThat(monthDate.formatAsDateTime()).isEqualTo("2020-11-19 00:00:00");
+		
+		NiceDate theDate = NiceDate.New("2022-01-06");
+		str = theDate.firstDateOfMonth().formatAsDateTime();
+		System.out.println("firstDateOfMonth: " + str);
+		str = theDate.lastDateOfMonth().formatAsDateTime();
+		System.out.println("lastDateOfMonth: " + str);
+		str = theDate.nextMonth(1).firstDateOfMonth().formatAsDateTime();
+		System.out.println("firstDateOfMonth: " + str);
 	}
 
 	@Test
