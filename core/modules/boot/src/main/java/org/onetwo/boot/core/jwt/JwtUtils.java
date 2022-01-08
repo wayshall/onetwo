@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 
 import com.google.common.collect.Maps;
 
@@ -23,6 +24,7 @@ public abstract class JwtUtils {
 	public static final String CLAIM_USER_ID = "userId";
 	public static final String CLAIM_USER_NAME = "userName";
 	public static final String CLAIM_AUTHORITIES = "authorities";
+	public static final String CLAIM_ROLES = JwtSecurityUtils.CLAIM_ROLES;
 	
 	
 
@@ -34,6 +36,7 @@ public abstract class JwtUtils {
 		Map<String, Object> userMap = Maps.newHashMap(jwtUserDetail.getProperties());
 		userMap.put(JwtUtils.CLAIM_USER_ID, jwtUserDetail.getUserId());
 		userMap.put(JwtUtils.CLAIM_USER_NAME, jwtUserDetail.getUserName());
+		userMap.put(JwtUtils.CLAIM_ROLES, jwtUserDetail.getRoles());
 		T userDetail = SpringUtils.map2Bean(userMap, parameterType);
 		return userDetail;
 	}

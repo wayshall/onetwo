@@ -29,6 +29,7 @@ public class JwtUserDetail implements UserDetail {
 	private Claims claims;
 	private JwtTokenInfo newToken;
 //	private boolean anonymousLogin;
+	private String roles;
 	
 	public JwtUserDetail(long userId, String userName) {
 		this(userId, userName, null);
@@ -73,8 +74,16 @@ public class JwtUserDetail implements UserDetail {
 	public void setProperties(Map<String, Object> properties) {
 		this.getProperties().putAll(properties);
 	}
-
-
+	
+	public String getRoles() {
+		if (roles==null) {
+			return "";
+		}
+		return roles;
+	}
+	public void setRoles(String roles) {
+		this.roles = roles;
+	}
 	@Override
 	public String getUserName() {
 		return userName;

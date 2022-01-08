@@ -80,6 +80,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 //							.setId(jti)
 							.claim(JwtSecurityUtils.CLAIM_USER_ID, userDetail.getUserId())
 //							.claim(JwtUtils.CLAIM_AUTHORITIES, getAuthorities(userDetail))
+							.claim(JwtUtils.CLAIM_ROLES, userDetail.getRoles())
 							.setIssuedAt(Dates.toDate(issuteAt))
 							.setExpiration(expirationDate)
 							.signWith(SignatureAlgorithm.HS512, jwtConfig.getSigningKey());
@@ -143,7 +144,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 			anonymousLogin = Types.convertValue(anonymousLoginStr, Boolean.class);
 		}
 		JwtUserDetail userDetail = buildJwtUserDetail(anonymousLogin, userId, claims.getSubject(), properties);
-		userDetail.setClaims(claims);
+		fillJwtUserDetail(userDetail, claims);
 
 		long remainingSeconds = (claims.getExpiration().getTime() - System.currentTimeMillis())/1000;
 		if (remainingSeconds <= this.jwtConfig.getRefreshTokenIfRemainingSeconds()) {
@@ -155,6 +156,14 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		}
 		
 		return userDetail;
+	}
+	
+	private void fillJwtUserDetail(JwtUserDetail userDetail, Claims claims) {
+		Object roles = claims.get(JwtUtils.CLAIM_ROLES);
+		if (roles!=null) {
+			userDetail.setRoles(roles.toString());
+		}
+		userDetail.setClaims(claims);
 	}
 
 	protected JwtUserDetail buildJwtUserDetail(Boolean anonymousLogin, Long userId, String userName, Map<String, Object> properties){
