@@ -57,7 +57,7 @@ public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {
 
 
 	@Bean
-	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+	@Order(ACCESS_OVERRIDE_ORDER)
 //	@ConditionalOnMissingBean(DefaultMethodSecurityConfigurer.class)
 	@Conditional(DisabledOauth2SsoCondition.class)
 	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){

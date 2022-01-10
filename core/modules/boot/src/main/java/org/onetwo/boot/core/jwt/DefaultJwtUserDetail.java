@@ -31,6 +31,8 @@ public class DefaultJwtUserDetail implements GenericUserDetail<Serializable>, Jw
 	private JwtTokenInfo newToken;
 //	private boolean anonymousLogin;
 	
+	private String roles;
+	
 	public DefaultJwtUserDetail(Serializable userId, String userName) {
 		this(userId, userName, null);
 	}
@@ -106,6 +108,11 @@ public class DefaultJwtUserDetail implements GenericUserDetail<Serializable>, Jw
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-
+	public String getRoles() {
+		return roles;
+	}
+	public void setRoles(String roles) {
+		this.roles = roles;
+	}
 
 }

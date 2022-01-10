@@ -2,6 +2,7 @@ package org.onetwo.boot.core.embedded;
 
 import java.util.Arrays;
 
+import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
@@ -41,6 +42,10 @@ public class BootServletContainerCustomizer implements WebServerFactoryCustomize
 	 */
 	@Override
 	public void customize(TomcatServletWebServerFactory factory) {
+        if (tomcatProperties.isAprProtocol()) {
+        	factory.setProtocol("org.apache.coyote.http11.Http11AprProtocol");
+        	factory.addContextLifecycleListeners(new AprLifecycleListener());
+        }
 		factory.setTomcatConnectorCustomizers(Arrays.asList(tomcatConnectorCustomizer()));
 //		factory.setTomcatContextCustomizers(Arrays.asList(tomcatContextCustomizer()));
 	}
@@ -59,7 +64,7 @@ public class BootServletContainerCustomizer implements WebServerFactoryCustomize
         		//最大连接数，默认10000
         		handler.setMaxConnections(tomcatProperties.getMaxConnections());
         	}
-        	if(tomcatProperties.getConnectionTimeout()!=-1){
+        	if(tomcatProperties.getConnectionTimeout()!=null){
         		handler.setConnectionTimeout(tomcatProperties.getConnectionTimeout());
         	}
         	if(tomcatProperties.getConnectionUploadTimeout()>0){

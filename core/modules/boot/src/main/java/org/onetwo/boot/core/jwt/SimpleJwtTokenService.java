@@ -144,7 +144,8 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 			anonymousLogin = Types.convertValue(anonymousLoginStr, Boolean.class);
 		}
 		DefaultJwtUserDetail userDetail = buildJwtUserDetail(anonymousLogin, userId, claims.getSubject(), properties);
-		userDetail.setClaims(claims);
+//		userDetail.setClaims(claims);
+		fillJwtUserDetail(userDetail, claims);
 
 		long remainingSeconds = (claims.getExpiration().getTime() - System.currentTimeMillis())/1000;
 		if (remainingSeconds <= this.jwtConfig.getRefreshTokenIfRemainingSeconds()) {

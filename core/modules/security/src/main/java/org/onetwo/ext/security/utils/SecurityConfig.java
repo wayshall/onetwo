@@ -112,6 +112,8 @@ public class SecurityConfig {
 	 */
 	private boolean validateConfigAttributes = true;
 	
+	private StrictHttpFirewallConfig strictHttpFirewall = new StrictHttpFirewallConfig();
+	
 	
 	public boolean isDebug(){
 		return debug;

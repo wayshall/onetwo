@@ -6,8 +6,6 @@ import org.onetwo.boot.module.oauth2.ssoclient.DisabledOauth2SsoCondition;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
 import org.onetwo.boot.module.security.method.BootMethodBasedSecurityConfig;
-import org.onetwo.ext.permission.api.PermissionConfig;
-import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.provider.ExceptionUserChecker;
 import org.onetwo.ext.security.url.DefaultUrlSecurityConfigurer;

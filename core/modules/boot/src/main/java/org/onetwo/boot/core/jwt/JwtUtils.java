@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
+import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.utils.GenericLoginUserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
