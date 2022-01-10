@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.oauth2.ssoclient.tokeninfo;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,9 +20,14 @@ public class CustomSsoClientUserAuthenticationConverter extends DefaultUserAuthe
 		if (ssoUserDetailService==null) {
 			return super.extractAuthentication(map);
 		}
-		UserDetails userDetail = ssoUserDetailService.loadUserByOAuth2User(map);
+		Object userDetail = ssoUserDetailService.loadUserByOAuth2User(map);
 		if (userDetail!=null) {
-			return new UsernamePasswordAuthenticationToken(userDetail, "N/A", userDetail.getAuthorities());
+			if (userDetail instanceof UserDetails) {
+				UserDetails u = (UserDetails) userDetail;
+				return new UsernamePasswordAuthenticationToken(userDetail, "N/A", u.getAuthorities());
+			} else {
+				return new UsernamePasswordAuthenticationToken(userDetail, "N/A", Collections.emptyList());
+			}
 		}
 		return null;
 	}

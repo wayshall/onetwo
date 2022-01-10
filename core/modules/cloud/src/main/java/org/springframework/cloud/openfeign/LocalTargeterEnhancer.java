@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.onetwo.cloud.feign.EnhanceFeignClient;
+import org.onetwo.cloud.feign.FeignProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -23,6 +24,8 @@ public class LocalTargeterEnhancer implements TargeterEnhancer {
 	private ApplicationContext appContext;
 	@Autowired
 	private LocalFeignTransactionWrapper transactionWrapper;
+	@Autowired
+	private FeignProperties feignProperties;
 
 	public <T> T enhanceTargeter(FeignTargetContext<T> ctx) {
 		return enhanceTargeter0(appContext, ctx.getFeignClientfactory(), ()->{
@@ -67,6 +70,7 @@ public class LocalTargeterEnhancer implements TargeterEnhancer {
 //		T localProxy = (T)Proxys.interceptInterface(clientInterface, new SpringBeanMethodInterceptor(appContext, localBeanNameOpt.get()));
 		LocalFeignDelegateBean<T> localProxy = new LocalFeignDelegateBean<T>(appContext, clientInterface, localBeanNameOpt.get());
 		localProxy.setTransactionWrapper(transactionWrapper);
+		localProxy.setFeignProperties(feignProperties);
 		if(log.isInfoEnabled()){
 			log.info("local implement has been found for feign interface: {}, use local bean: {}", apiInterface, localBeanNameOpt.get());
 		}

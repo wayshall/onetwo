@@ -1,27 +1,34 @@
 package org.onetwo.ext.security.utils;
 
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.UserRoot;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 @SuppressWarnings("serial")
-public class LoginUserDetails extends User implements UserDetail, /*SsoTokenable,*/ UserRoot {
+public class GenericLoginUserDetails<ID extends Serializable> extends User implements GenericUserDetail<ID>, /*SsoTokenable,*/ UserRoot {
 
-	final private long userId;
+	final private ID userId;
 //	private String token;
 	private String nickname;
 	private String avatar;
+//	private boolean systemRootUser;
 	
-	public LoginUserDetails(long userId, String username, String password,
+	public GenericLoginUserDetails(ID userId, String username, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(username, password, authorities);
 		this.userId = userId;
 	}
+	
+	public GenericLoginUserDetails(ID userId, String username) {
+		this(userId, username, "N/A", Collections.emptyList());
+	}
 
-	public long getUserId() {
+	public ID getUserId() {
 		return userId;
 	}
 
@@ -32,7 +39,7 @@ public class LoginUserDetails extends User implements UserDetail, /*SsoTokenable
 
 	@Override
 	public boolean isSystemRootUser() {
-		return userId==ROOT_USER_ID;
+		return getUserId().equals(ROOT_USER_ID);
 	}
 
 	public String getNickname() {

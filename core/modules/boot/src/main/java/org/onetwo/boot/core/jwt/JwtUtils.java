@@ -1,14 +1,22 @@
 package org.onetwo.boot.core.jwt;
 
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
-import org.onetwo.common.web.userdetails.UserDetail;
-import org.onetwo.ext.security.jwt.JwtSecurityUtils;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
+import org.onetwo.ext.security.utils.GenericLoginUserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.util.ClassUtils;
 
 import com.google.common.collect.Maps;
 
@@ -26,18 +34,44 @@ public abstract class JwtUtils {
 	public static final String CLAIM_AUTHORITIES = "authorities";
 	public static final String CLAIM_ROLES = JwtSecurityUtils.CLAIM_ROLES;
 	
+	private static final String SECURITY_USER_CLASS = "org.springframework.security.core.userdetails.User";
 	
+	public static boolean isSecurityUserPresent(){
+		return ClassUtils.isPresent(SECURITY_USER_CLASS, ClassUtils.getDefaultClassLoader());
+	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends UserDetail> T createUserDetail(JwtUserDetail jwtUserDetail, Class<T> parameterType) {
-		if (parameterType==JwtUserDetail.class) {
+	public static <T extends GenericUserDetail<?>> T createUserDetail(JwtUserDetail jwtUserDetail, Class<T> parameterType) {
+		if (parameterType==jwtUserDetail.getClass()) {
 			return (T)jwtUserDetail;
 		}
 		Map<String, Object> userMap = Maps.newHashMap(jwtUserDetail.getProperties());
-		userMap.put(JwtUtils.CLAIM_USER_ID, jwtUserDetail.getUserId());
-		userMap.put(JwtUtils.CLAIM_USER_NAME, jwtUserDetail.getUserName());
-		userMap.put(JwtUtils.CLAIM_ROLES, jwtUserDetail.getRoles());
-		T userDetail = SpringUtils.map2Bean(userMap, parameterType);
+//		T userDetail = SpringUtils.map2Bean(userMap, parameterType);
+		T userDetail = null;
+		
+		if (isSecurityUserPresent()) {
+			Collection<GrantedAuthority> authorities = Collections.emptyList();
+			if (jwtUserDetail instanceof User) {
+				User user = (User) jwtUserDetail;
+				authorities = user.getAuthorities();
+			}
+			if (GenericLoginUserDetails.class.isAssignableFrom(parameterType)) {
+				Constructor<?> constructor = ReflectUtils.getConstructor(parameterType, Serializable.class, String.class, String.class, Collection.class);
+				userDetail = (T)ReflectUtils.newInstance(constructor, jwtUserDetail.getUserId(), jwtUserDetail.getUserName(), "N/A", authorities);
+				SpringUtils.setMap2Bean(userMap, userDetail);
+			} else {
+				userMap.put(JwtUtils.CLAIM_USER_ID, jwtUserDetail.getUserId());
+				userMap.put(JwtUtils.CLAIM_USER_NAME, jwtUserDetail.getUserName());
+				userMap.put(JwtUtils.CLAIM_AUTHORITIES, authorities);
+                userMap.put(JwtUtils.CLAIM_ROLES, jwtUserDetail.getRoles());
+				userDetail = SpringUtils.map2Bean(userMap, parameterType);
+			}
+		} else {
+			userMap.put(JwtUtils.CLAIM_USER_ID, jwtUserDetail.getUserId());
+			userMap.put(JwtUtils.CLAIM_USER_NAME, jwtUserDetail.getUserName());
+            userMap.put(JwtUtils.CLAIM_ROLES, jwtUserDetail.getRoles());
+			userDetail = SpringUtils.map2Bean(userMap, parameterType);
+		}
 		return userDetail;
 	}
 	

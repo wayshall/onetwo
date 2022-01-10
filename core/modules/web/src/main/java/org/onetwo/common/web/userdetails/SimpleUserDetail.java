@@ -3,9 +3,9 @@ package org.onetwo.common.web.userdetails;
 import java.io.Serializable;
 
 @SuppressWarnings("serial")
-public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
+public class SimpleUserDetail implements GenericUserDetail<Serializable>, UserRoot, Serializable {
 	
-	private long userId;
+	private Serializable userId;
 	private String userName;
 	private String nickName;
 //  @ApiModelProperty("头像")
@@ -15,18 +15,18 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 	public SimpleUserDetail(){ 
 	}
 	
-	public SimpleUserDetail(long userId, String userName) {
+	public SimpleUserDetail(Serializable userId, String userName) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
 		this.nickName = userName;
 	}
 
-	public long getUserId() {
+	public Serializable getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Serializable userId) {
 		this.userId = userId;
 	}
 	public String getUserName() {
@@ -39,7 +39,7 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 
 	@Override
 	public boolean isSystemRootUser() {
-		return UserRoot.ROOT_USER_ID==getUserId();
+		return getUserId().equals(ROOT_USER_ID);
 	}
 
 	public String getNickName() {

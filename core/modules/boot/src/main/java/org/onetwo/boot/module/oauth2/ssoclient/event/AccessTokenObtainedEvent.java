@@ -1,6 +1,6 @@
 package org.onetwo.boot.module.oauth2.ssoclient.event;
 
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
@@ -12,9 +12,9 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 public class AccessTokenObtainedEvent extends ApplicationEvent {
 	
 	final private OAuth2AccessToken accessToken;
-	final private UserDetail userDetails;
+	final private GenericUserDetail<?> userDetails;
 	
-	public AccessTokenObtainedEvent(Object source, UserDetail userDetails, OAuth2AccessToken accessToken) {
+	public AccessTokenObtainedEvent(Object source, GenericUserDetail<?> userDetails, OAuth2AccessToken accessToken) {
 		super(source);
 		this.userDetails = userDetails;
 		this.accessToken = accessToken;
@@ -24,7 +24,7 @@ public class AccessTokenObtainedEvent extends ApplicationEvent {
 		return accessToken;
 	}
 
-	public UserDetail getUserDetails() {
+	public GenericUserDetail<?> getUserDetails() {
 		return userDetails;
 	}
 

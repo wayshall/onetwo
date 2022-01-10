@@ -23,8 +23,15 @@ jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重
 @Data
 public class JwtConfig {
 	
+<<<<<<< HEAD
 	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".jwt";
 	public static final String ENABLE_KEY = PREFIX + ".enabled";
+=======
+	public static final String PREFIX = "jfish.jwt";
+	public static final String ENABLE_KEY = PREFIX + ".enable";
+	
+	boolean enabled;
+>>>>>>> 4.8
 
 	String authHeader = JwtUtils.DEFAULT_HEADER_KEY;
 	String signingKey;
@@ -37,6 +44,10 @@ public class JwtConfig {
 
 	boolean canBeNotLogin = false;
 	boolean canBeAnonymous = true;
+	
+	public void setEnable(boolean enable) {
+		this.enabled = enable;
+	}
 	
 	public String getSigningKey(){
 		String key = this.signingKey;

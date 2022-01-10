@@ -56,6 +56,18 @@ public class FeignProperties {
 	public static class LocalProps {
 		public static final String ENABLE_KEY = PROPERTIES_PREFIX + ".local.enabled";
 		boolean enabled;
+		LocalTransactionModes transactonMode = LocalTransactionModes.NONE;
+	}
+	
+	public static enum LocalTransactionModes {
+		/***
+		 * 无，直接调用
+		 */
+		NONE,
+		/****
+		 * 使用spring的required_new事务模拟
+		 */
+		REQUIRED_NEW
 	}
 
 	

@@ -17,7 +17,7 @@ public class TomcatProperties {
 	int backlog = 500;
 	int acceptCount = backlog;
 	int maxConnections = -1;
-	int connectionTimeout = 60000;
+	Integer connectionTimeout; // = 60000;
 	int asyncTimeout = 60000;
 	
 	/***

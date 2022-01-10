@@ -89,6 +89,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		
 		classNames.add(SsoClientCustomUserInfoUriConfiguration.class.getName());
 		classNames.add(SsoClientCustomTokenInfoUriConfiguration.class.getName());
+		
 		classNames.add(RedisConfiguration.class.getName());
 		classNames.add(AsyncMvcConfiguration.class.getName());
 		classNames.add(AsyncTaskConfiguration.class.getName());

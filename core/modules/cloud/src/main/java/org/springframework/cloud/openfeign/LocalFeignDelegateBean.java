@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.onetwo.cloud.feign.FeignProperties;
+import org.onetwo.cloud.feign.FeignProperties.LocalTransactionModes;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.aop.Proxys;
@@ -24,6 +26,7 @@ public class LocalFeignDelegateBean<T> implements MethodInterceptor {
 	private Object localBean;
 	private ApplicationContext applicationContext;
 	private LocalFeignTransactionWrapper transactionWrapper;
+	private FeignProperties feignProperties;
 	
 	public LocalFeignDelegateBean(ApplicationContext applicationContext, Class<T> clientInterface, String localBeanName) {
 		super();
@@ -51,13 +54,18 @@ public class LocalFeignDelegateBean<T> implements MethodInterceptor {
 			target = this.localBean;
 		}
 		
-		if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-			return invokeTarget(target, invocation);
-		} else {
-			return transactionWrapper.wrapRequiresNew(() -> {
+		if (feignProperties!=null && feignProperties.getLocal().getTransactonMode().equals(LocalTransactionModes.REQUIRED_NEW)) {
+			if (!TransactionSynchronizationManager.isActualTransactionActive()) {
 				return invokeTarget(target, invocation);
-			});
+			} else {
+				return transactionWrapper.wrapRequiresNew(() -> {
+					return invokeTarget(target, invocation);
+				});
+			}
+		} else {
+			return invokeTarget(target, invocation);
 		}
+		
 	}
 	
 	private Object invokeTarget(Object target, MethodInvocation invocation) {
@@ -72,6 +80,10 @@ public class LocalFeignDelegateBean<T> implements MethodInterceptor {
 
 	public void setTransactionWrapper(LocalFeignTransactionWrapper transactionWrapper) {
 		this.transactionWrapper = transactionWrapper;
+	}
+
+	public void setFeignProperties(FeignProperties feignProperties) {
+		this.feignProperties = feignProperties;
 	}
 
 	

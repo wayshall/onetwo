@@ -314,7 +314,11 @@ public class SheetStreamReaderBuilder<T> {
 		 */
 		public String getString(int cellnum) {
 			Cell cell = getCell(cellnum);
-			return (String)ExcelUtils.getCellValue(cell, sheet.isCanConverToStringValue());
+			Object val = ExcelUtils.getCellValue(cell, sheet.isCanConverToStringValue());
+			if (val==null) {
+				return null;
+			}
+			return val.toString();
 		}
 		
 		/***
@@ -386,6 +390,9 @@ public class SheetStreamReaderBuilder<T> {
 		 */
 		public Date getDate(int cellnum, String pattern) {
 			Cell cell = getCell(cellnum);
+			if (cell==null) {
+				return null;
+			}
 			Date date;
 			CellType cellType = cell.getCellType();
 			if (cellType==CellType.NUMERIC) {

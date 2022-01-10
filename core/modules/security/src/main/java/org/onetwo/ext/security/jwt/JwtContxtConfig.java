@@ -1,8 +1,6 @@
 package org.onetwo.ext.security.jwt;
 
 import org.onetwo.common.spring.condition.OnMissingBean;
-import org.onetwo.common.utils.StringUtils;
-import org.onetwo.ext.security.utils.CookieStorer;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,16 +32,19 @@ public class JwtContxtConfig {
 	public SecurityContextRepository securityContextRepository(JwtSecurityTokenService jwtSecurityTokenService){
 		JwtSecurityContextRepository jwt = new JwtSecurityContextRepository();
 		jwt.setJwtTokenService(jwtSecurityTokenService);
-		String authName = securityConfig.getJwt().getAuthKey();
-		if(StringUtils.isBlank(authName)){
-			authName = securityConfig.getJwt().getAuthHeader();
-		}
-		jwt.setAuthHeaderName(authName);
-		jwt.setAuthStore(securityConfig.getJwt().getAuthStore());
-		jwt.setCookieStorer(CookieStorer.builder()
-										.cookieDomain(securityConfig.getCookie().getDomain())
-										.cookiePath(securityConfig.getCookie().getPath())
-										.build());
+		jwt.setJwtConfig(securityConfig.getJwt());
+		jwt.setCookieConfig(securityConfig.getCookie());
+		
+//		String authName = securityConfig.getJwt().getAuthKey();
+//		if(StringUtils.isBlank(authName)){
+//			authName = securityConfig.getJwt().getAuthHeader();
+//		}
+//		jwt.setAuthHeaderName(authName);
+//		jwt.setAuthStore(securityConfig.getJwt().getAtuthStore());
+//		jwt.setCookieStorer(CookieStorer.builder()
+//										.cookieDomain(securityConfig.getCookie().getDomain())
+//										.cookiePath(securityConfig.getCookie().getPath())
+//										.build());
 		return jwt;
 	}
 }

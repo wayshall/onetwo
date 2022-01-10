@@ -98,7 +98,8 @@ public class PermClassParser {
 	}
 	
 	public boolean isFullyAuthenticated() {
-		return this.parentPermissionClass == FullyAuthenticated.class;
+//		return this.parentPermissionClass == FullyAuthenticated.class;
+		return this.permissionClass == FullyAuthenticated.class;
 	}
 	
 	public String generatedSimpleCode(){

@@ -19,7 +19,7 @@ import org.onetwo.common.ds.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishMathcer;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,7 +31,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 //	public static final int INTERCEPTOR_ORDER = BootFirstInterceptor.INTERCEPTOR_ORDER+100;
 
 	public static interface UserDetailRetriever {
-		UserDetail getUserDetail();
+		GenericUserDetail<?> getUserDetail();
 	}
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -136,7 +136,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 
 //		Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		UserDetail userdetail = userDetailRetriever!=null?userDetailRetriever.getUserDetail():null;//JFishWebUtils.getUserDetail();
+		GenericUserDetail<?> userdetail = userDetailRetriever!=null?userDetailRetriever.getUserDetail():null;//JFishWebUtils.getUserDetail();
 		if(userdetail!=null){
 			info.setOperatorId(userdetail.getUserId());
 			info.setOperatorName(userdetail.getUserName());

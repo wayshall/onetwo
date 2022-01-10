@@ -37,8 +37,8 @@ import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpFileStorer;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,7 +224,7 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 
 	@Bean
 	@ConditionalOnMissingBean(SessionUserManager.class)
-	public SessionUserManager<UserDetail> sessionUserManager(){
+	public SessionUserManager<GenericUserDetail<?>> sessionUserManager(){
 		return new BootSessionUserManager();
 	}
 

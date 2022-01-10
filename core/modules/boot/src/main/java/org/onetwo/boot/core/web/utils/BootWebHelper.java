@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ErrorMessage;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.utils.WebHolder;
@@ -105,11 +105,11 @@ public class BootWebHelper {
 		return action;
 	}*/
 	
-	public UserDetail getCurrentUserLogin(){
+	public GenericUserDetail<?> getCurrentUserLogin(){
 		return WebContextUtils.getUserDetail(request.getSession());
 	}
 	
-	public UserDetail getCurrentLoginUser(){
+	public GenericUserDetail<?> getCurrentLoginUser(){
 		return WebContextUtils.getUserDetail(request.getSession());
 	}
 	
@@ -117,7 +117,7 @@ public class BootWebHelper {
 		return getCurrentUserLogin()!=null;
 	}
 	
-	public UserDetail getCurrentUserLogin(String key){
+	public GenericUserDetail<?> getCurrentUserLogin(String key){
 		return WebContextUtils.getAttr(request.getSession(), key);
 	}
 	

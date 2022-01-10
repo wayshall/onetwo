@@ -478,6 +478,12 @@
             <optional>true</optional>
         </dependency>
         
+	    <dependency>
+	      <groupId>org.locationtech.spatial4j</groupId>
+	      <artifactId>spatial4j</artifactId>
+          <optional>true</optional>
+	    </dependency>
+        
         <!-- rxtx -->
         
     <!-- https://mvnrepository.com/artifact/org.rxtx/rxtx -->

@@ -1,4 +1,4 @@
-package org.onetwo.ext.security;
+package org.onetwo.ext.security.url;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.web.cors.CorsUtils;
 
 public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigurer {
 
@@ -42,6 +41,7 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 			@Override
 			public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
 				fsi.setRejectPublicInvocations(securityConfig.isRejectPublicInvocations());
+				fsi.setValidateConfigAttributes(securityConfig.isValidateConfigAttributes());
 				if(securityMetadataSourceBuilder!=null){
 					securityMetadataSourceBuilder.setFilterSecurityInterceptor(fsi);
 					securityMetadataSourceBuilder.buildSecurityMetadataSource();
@@ -57,9 +57,9 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 		for(InterceptersConfig interConfig : this.securityConfig.getIntercepters()){
 			http.authorizeRequests().antMatchers(interConfig.getPathPatterns()).access(interConfig.getAccess());
 		}*/
-		if (securityConfig.getCors().isPermitAllPreFlightRequest()) {
-			http.authorizeRequests().requestMatchers(req -> CorsUtils.isPreFlightRequest(req)).permitAll();
-		}
+		
+//		configureCors(http);
+		
 		// permitAll
 		if (this.securityConfig.isCheckAnyUrlpermitAll()) {
 			for(Entry<String[], String> entry : securityConfig.getIntercepterUrls().entrySet()) {

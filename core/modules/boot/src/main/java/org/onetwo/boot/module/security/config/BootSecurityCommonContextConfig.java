@@ -13,12 +13,14 @@ import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.BootSecurityExceptionMessager;
 import org.onetwo.boot.module.security.handler.BootSecurityAccessDeniedHandler;
+import org.onetwo.boot.module.security.jwt.BootJwtSecurityTokenService;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.ext.security.SecurityExceptionMessager;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.ext.security.jwt.JwtContxtConfig;
+import org.onetwo.ext.security.jwt.JwtSecurityTokenService;
 import org.onetwo.ext.security.redis.RedisContextConfig;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +54,7 @@ public class BootSecurityCommonContextConfig{
 	@Autowired(required=false)
 	private BootJsonView jsonView;
 	@Autowired
-	private SessionUserManager<UserDetail> sessionUserManager;
+	private SessionUserManager<GenericUserDetail<?>> sessionUserManager;
 
 	/*@Autowired
 	private BootSecurityConfig bootSecurityConfig;
@@ -66,6 +68,13 @@ public class BootSecurityCommonContextConfig{
 	public ExtRestTemplate extRestTemplate(){
 		return new ExtRestTemplate();
 	}*/
+	
+
+	@Bean
+	public JwtSecurityTokenService jwtSecurityTokenService(){
+		BootJwtSecurityTokenService jwtService = new BootJwtSecurityTokenService();
+		return jwtService;
+	}
 
 	
 	@Bean

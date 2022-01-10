@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.convert.Types;
+import org.onetwo.common.profiling.UtilTimerStackObject;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.excel.data.CellContextData;
 import org.onetwo.ext.poi.excel.data.RowContextData;
@@ -316,26 +317,36 @@ public class DefaultRowProcessor implements RowProcessor {
 //	protected void processSingleField(Object root, Row row, FieldModel field, Object defValue, int cellIndex){
 	protected void processSingleField(CellContextData cellContext){
 //		Row row = cellContext.row;
+		
+//		UtilTimerStackObject ts = UtilTimerStackObject.createObject();
+		
+
+//		ts.push("createCell");
 		Cell cell = createCell(cellContext);
 		FieldModel field = cellContext.getFieldModel();
 		Object v = cellContext.getFieldValue();
-		if(v==null)
+		if(v==null) {
 			v = getFieldValue(cellContext);
+		}
+//		ts.pop("createCell");
 
 		/*for(FieldListener fl : field.getListeners()){
 			v = fl.getCellValue(cell, v);
 		}*/
 
 		cellContext.setFieldValue(v);
-//		UtilTimerStack.push("doFieldValueExecutors");
-		this.doFieldValueExecutors(cellContext);
-//		UtilTimerStack.pop("doFieldValueExecutors");
 		
+//		ts.push("doFieldValueExecutors");
+		this.doFieldValueExecutors(cellContext);
+//		ts.pop("doFieldValueExecutors");
+		
+
+//		ts.push("setCellValue");
 //		v = formatValue(v, field.getDataFormat());
 		setCellValue(field, cell, v);
 		
-		
 		cellContext.addRowSpanCount(cellContext.getRowSpan());
+//		ts.pop("setCellValue");
 	}
 	
 

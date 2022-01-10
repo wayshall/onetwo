@@ -55,20 +55,20 @@ final public class SecurityUtils {
 						.findAny().isPresent();
 	}
 
-	public static LoginUserDetails getCurrentLoginUser(){
-		return (LoginUserDetails)getCurrentLoginUser(SecurityContextHolder.getContext());
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(){
+		return (GenericLoginUserDetails<?>)getCurrentLoginUser(SecurityContextHolder.getContext());
 	}
 	public static <T> T getCurrentLoginUser(Class<T> clazz){
 		return clazz.cast(getCurrentLoginUser());
 	}
-	public static LoginUserDetails getCurrentLoginUser(SecurityContext context){
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(SecurityContext context){
 		Authentication auth = context.getAuthentication();
-		return (LoginUserDetails)getCurrentLoginUser(auth);
+		return (GenericLoginUserDetails<?>)getCurrentLoginUser(auth);
 	}
-	public static LoginUserDetails getCurrentLoginUser(Authentication auth){
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(Authentication auth){
 		if(auth==null || AnonymousAuthenticationToken.class.isInstance(auth))
 			return null;
-		return (LoginUserDetails)auth.getPrincipal();
+		return (GenericLoginUserDetails<?>)auth.getPrincipal();
 	}
 	
 	public static Runnable runInThread(Runnable runnable){
@@ -87,7 +87,7 @@ final public class SecurityUtils {
 		AUTH_FAILED("认证失败"),
 //		NOT_AUTHED("未认证的用户"),
 		ACCESS_DENIED("未授权，访问拒绝"),
-		NOT_TRUSTED_USER("不受信任的用户");//包括匿名和rememberMe的用户
+		CM_NOT_LOGIN("用户未认证！");//包括匿名和rememberMe的用户
 		
 		@Getter
 		private final String label;
