@@ -68,7 +68,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 //	private boolean useJwtToken;
 	@Autowired(required=false)
 	private JwtSecurityTokenService jwtTokenService;
-	private String jwtAuthHeader;
+//	private String jwtAuthHeader;
 //	private JwtAuthStores jwtAuthStores;
 	private CookieStorer cookieStorer;
 	private JwtConfig jwtConfig;
@@ -151,7 +151,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			ResponseUtils.renderJsonByAgent(request, response, text);*/
 
 			StoreContext ctx = StoreContext.builder()
-											.authKey(jwtAuthHeader)
+											.authKey(jwtConfig.getAuthKey())
 											.request(request)
 											.response(response)
 											.cookieStorer(cookieStorer)
