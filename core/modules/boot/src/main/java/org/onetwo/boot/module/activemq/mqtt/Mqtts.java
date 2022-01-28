@@ -7,6 +7,7 @@ import org.onetwo.boot.module.activemq.mqtt.data.LinkedMapMessage;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.util.Assert;
@@ -17,6 +18,8 @@ import org.springframework.util.Assert;
  */
 
 final public class Mqtts {
+	
+	private static final Logger logger = JFishLoggerFactory.getLogger(Mqtts.class);
 	
 	public static final String OUTBOUND_CHANNEL = "mqttOutboundChannel";
 //	public static final String INBOUND_CHANNEL = "mqttInboundChannel";
@@ -50,7 +53,7 @@ final public class Mqtts {
 			T data = (T) typingJsonMapper.fromJson(message.getPayload(), type);
 			return data;
 		} catch (Exception e) {
-			JFishLoggerFactory.getCommonLogger().error("convert payload error!",e);
+			logger.error("convert payload error: " + e.getMessage());
 		}
 		return null;
 	}
@@ -69,7 +72,7 @@ final public class Mqtts {
 			T data = (T) jsonMapper.fromJson(message.getPayload(), type);
 			return data;
 		} catch (Exception e) {
-			JFishLoggerFactory.getCommonLogger().error("convert payload error!",e);
+			logger.error("convert payload error: " + e.getMessage());
 		}
 		return null;
 	}

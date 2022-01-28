@@ -356,9 +356,9 @@ public class JsonMapper {
 				if (json instanceof byte[]) {
 					jsonstr = LangUtils.newString((byte[])obj);
 				}
-				throw new JsonException("parse json to ["+objType+"] error, json: " + jsonstr, e);
+				throw new JsonException("parse json to ["+objType+"] error, reason: " + e.getMessage() + ", json: " + jsonstr, e);
 			} else {
-				throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
+				throw new JsonException("parse json to ["+objType+"] error, reason: " + e.getMessage() + ", json: " + json, e);
 			}
 		}
 		return (T)obj;
@@ -387,7 +387,7 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue(jsonstr, valueTypeRef);
 			}
 		} catch (Exception e) {
-			throw new JsonException("parse json to "+valueTypeRef+" error : " + json, e);
+			throw new JsonException("parse json to "+valueTypeRef+" error, reason: " + e.getMessage() + ", json: " + json, e);
 		}
 		return obj;
 	}
@@ -421,7 +421,7 @@ public class JsonMapper {
 		try {
 			obj = this.objectMapper.readValue(in, constructJavaType(objType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to object error : " + objType + " => " + e.getMessage(), e);
+			throw new JsonException("parse json to " + objType + " object error, reason: " + e.getMessage(), e);
 		}
 		return obj;
 	}
@@ -457,7 +457,7 @@ public class JsonMapper {
 		try {
 			return this.objectMapper.readValue(json, typeFactory.constructArrayType(objClass));
 		} catch (Exception e) {
-			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
+			throw new JsonException("parse json to " + objClass + " error, reason: " + e.getMessage() + ", json: " + json, e);
 		}
 	}
 	
@@ -475,7 +475,7 @@ public class JsonMapper {
 		try {
 			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ctype, itemType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to collection error : " + ctype + " => " + json, e);
+			throw new JsonException("parse json to collection[" + ctype + "] error, reason: " + e.getMessage() + ", json: " + json, e);
 		}
 		return datas;
 	}
