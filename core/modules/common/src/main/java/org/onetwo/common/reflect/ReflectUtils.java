@@ -12,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import org.onetwo.common.utils.func.Closure2;
 import org.onetwo.common.utils.map.BaseMap;
 import org.slf4j.Logger;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.jodah.typetools.TypeResolver;
@@ -701,6 +703,27 @@ public class ReflectUtils {
 			handleReflectionException(e);
 		}
 		return method;
+	}
+
+	/****
+	 * 查找所有静态方法
+	 * @author weishao zeng
+	 * @param objClass
+	 * @return
+	 */
+	public static List<Method> findAllStaticMethods(Class objClass) {
+		List<Method> methodList = Lists.newArrayList();
+		try {
+			Method[] methods = objClass.getMethods();
+			for (Method m : methods) {
+				if (Modifier.isStatic(m.getModifiers())) {
+					methodList.add(m);
+				}
+			}
+		} catch (Exception e) {
+			handleReflectionException(e);
+		}
+		return methodList;
 	}
 
 	/***************************************************************************
