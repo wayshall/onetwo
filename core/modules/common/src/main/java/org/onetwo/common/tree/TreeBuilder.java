@@ -72,6 +72,11 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			super();
 			this.rootIds = Arrays.asList(rootIds);
 		}
+		
+		public RootIdsFunc() {
+			super();
+			this.rootIds = Collections.emptyList();
+		}
 
 		@Override
 		public boolean isRootNode(T node, Map<Object, T> nodeMap) {
@@ -99,7 +104,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	private List<TM> rootNodes = new ArrayList<TM>();
 //	private Comparator<Object> comparator = null;
 //	private List<?> rootIds;
-	private RootNodeFunc<TM> rootNodeFunc;
+	private RootNodeFunc<TM> rootNodeFunc = new RootIdsFunc<TM>();
 	private ParentNodeNotFoundAction<TM> parentNotFoundAction = THROW_ERROR;
 	
 	/*private Set<Object> notFoundParentIds = Sets.newHashSet();
