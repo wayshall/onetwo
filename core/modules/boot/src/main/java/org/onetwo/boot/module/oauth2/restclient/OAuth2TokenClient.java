@@ -17,6 +17,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
+ * 来自配置 OAuthRestClientConfiguration 
  * @author weishao zeng
  * <br/>
  */
