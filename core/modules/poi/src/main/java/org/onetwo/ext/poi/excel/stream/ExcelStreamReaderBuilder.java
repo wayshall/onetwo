@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ExcelStreamReaderBuilder {
 	private List<SheetStreamReader<?>> sheetReaders = new ArrayList<>();
+	private boolean canConverToStringValue = false;
 	
 	public ExcelStreamReaderBuilder addSheetReader(SheetStreamReader<?> sheetReader) {
 		this.sheetReaders.add(sheetReader);
@@ -81,7 +82,16 @@ public class ExcelStreamReaderBuilder {
 	}
 	
 	protected ExcelStreamReader build(List<SheetStreamReader<?>> sheetReaders) {
-		ExcelStreamReader reader = new PoiExcelStreamReader(sheetReaders);
+		PoiExcelStreamReader reader = new PoiExcelStreamReader(sheetReaders);
+		reader.setCanConverToStringValue(isCanConverToStringValue());
 		return reader;
 	}
+	protected boolean isCanConverToStringValue() {
+		return canConverToStringValue;
+	}
+	public ExcelStreamReaderBuilder canConverToStringValue(boolean canConverToStringValue) {
+		this.canConverToStringValue = canConverToStringValue;
+		return this;
+	}
+	
 }

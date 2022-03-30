@@ -227,7 +227,7 @@ public class SheetStreamReaderBuilder<T> {
 		final private Sheet sheet;
 		final private int sheetIndex;
 		private Map<Integer, Map<Integer, PictureData>> pictureDatas;
-		private boolean canConverToStringValue = true;
+		private boolean canConverToStringValue = false;
 		public SheetData(Sheet sheet, int sheetIndex) {
 			super();
 			this.sheet = sheet;
