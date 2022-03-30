@@ -246,7 +246,8 @@ public abstract class WorkbookReaderFactory {
 	public static ExcelStreamReaderBuilder streamReader(int bufferSize, int rowCacheSize) {
 		return new ExcelStreamReaderBuilder() {
 			protected ExcelStreamReader build(List<SheetStreamReader<?>> sheetReaders) {
-				ExcelStreamReader reader = new MonitorExcelStreamReader(sheetReaders, bufferSize, rowCacheSize);
+				MonitorExcelStreamReader reader = new MonitorExcelStreamReader(sheetReaders, bufferSize, rowCacheSize);
+				reader.setCanConverToStringValue(isCanConverToStringValue());
 				return reader;
 			}
 		};

@@ -235,7 +235,7 @@ abstract public class ExcelUtils {
 		}
 		if(cell==null)
 			return null;
-		cell.setCellType(CellType.STRING);
+//		cell.setCellType(CellType.STRING);
 		String value = StringUtils.trimToEmpty(cell.getStringCellValue());
 		return value;
 	}
