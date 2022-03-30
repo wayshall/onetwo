@@ -17,11 +17,15 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 因为只配置下面这个not work:
 spring.http.multipart -> MultipartProperties
 
+因为配置修改为：
+spring:
+	servlet:
+		multipart
+            maxRequestSize: 50MB
+            maxFileSize: 50MB
 所以增加自定义容器，设置server最大上传
 根据spring.http.multipart自动设置内嵌tomcat的最大postsize
 也可以自行配置server.maxHttpPostSize
-server: 
-	maxHttpPostSize: 10*1024*1024
 serverProperties#maxHttpPostSize
 ServerProperties#Tomcat#customizeMaxHttpPostSize
 

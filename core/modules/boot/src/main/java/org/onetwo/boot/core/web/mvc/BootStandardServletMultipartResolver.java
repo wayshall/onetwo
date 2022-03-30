@@ -6,7 +6,6 @@ import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededExcepti
 import org.onetwo.boot.core.web.mvc.exception.UploadFileSizeLimitExceededException;
 import org.onetwo.boot.core.web.utils.WebErrors;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
@@ -66,7 +65,7 @@ public class BootStandardServletMultipartResolver extends StandardServletMultipa
 			}
 		}
 	}
-
+	
 	public void setMaxUploadSize(long maxUploadSize) {
 		this.maxUploadSize = maxUploadSize;
 	}
