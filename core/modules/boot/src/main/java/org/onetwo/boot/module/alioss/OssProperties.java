@@ -38,7 +38,7 @@ public class OssProperties {
 	SnapshotProperties snapshot = new SnapshotProperties();
 	
 	public String getUrl(String key){
-		String url = buildUrl(false, getDownloadEndPoint(), bucketName, key); //RequestUtils.HTTP_KEY + bucketName + "." + endpoint + "/" + key;
+		String url = buildUrl(true, getDownloadEndPoint(), bucketName, key); //RequestUtils.HTTP_KEY + bucketName + "." + endpoint + "/" + key;
 		return url;
 	}
 	
@@ -81,7 +81,7 @@ public class OssProperties {
 			}
 		}
 		url.append(endpoint)
-			.append(key);
+			.append(StringUtils.appendStartWithSlash(key));
 		return url.toString();
 	}
 
