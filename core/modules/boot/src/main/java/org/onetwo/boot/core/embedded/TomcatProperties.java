@@ -54,7 +54,7 @@ relaxedQueryChars="|{}[],"
 		if(StringUtils.isBlank(connectionUploadTimeoutTime)){
 			return connectionUploadTimeout;
 		}else{
-			Long val = LangOps.timeToMills(connectionUploadTimeoutTime, Long.valueOf(connectionUploadTimeoutTime));
+			Long val = LangOps.timeToMills(connectionUploadTimeoutTime, connectionUploadTimeout);
 			this.connectionUploadTimeout = val.intValue();
 		}
 		return connectionUploadTimeout;

@@ -1,6 +1,5 @@
 package org.onetwo.common.utils;
 
-
 /**
  * @author wayshall
  * <br/>
@@ -17,6 +16,14 @@ public class PageRequest {
 		pageObject.setAutoCount(autoCount);
 		return pageObject;
 	}
+	
+    @SuppressWarnings("unchecked")
+	public <T> T fromPageRequest(PageRequest request) {
+    	this.page = request.getPage();
+    	this.pageSize = request.getPageSize();
+    	this.pagination = request.isPagination();
+    	return (T) this;
+    }
 	
 	public void noLimited() {
 		this.setAutoCount(false);

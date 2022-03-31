@@ -71,10 +71,11 @@ public class BootServletContainerCustomizer implements WebServerFactoryCustomize
         	if(tomcatProperties.getConnectionTimeout()!=null){
         		handler.setConnectionTimeout(tomcatProperties.getConnectionTimeout());
         	}
-        	if(tomcatProperties.getConnectionUploadTimeout()>0){
+        	int connectionUploadTimeout = tomcatProperties.getConnectionUploadTimeout();
+        	if(connectionUploadTimeout > 0){
         		//为true，则上传文件时使用connectionTimeout, 为false，则使用connectionUploadTimeout
         		handler.setDisableUploadTimeout(false);
-        		handler.setConnectionUploadTimeout(tomcatProperties.getConnectionUploadTimeout());
+        		handler.setConnectionUploadTimeout(connectionUploadTimeout);
         	}
         	connector.setAsyncTimeout(tomcatProperties.getAsyncTimeout());
         	
