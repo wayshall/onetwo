@@ -1,7 +1,5 @@
 package org.onetwo.boot.module.alioss;
 
-import java.io.File;
-
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +39,10 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 	
     OssClientWrapper wraper;
     
-    String bucketName = "wxablum";
+    OssFileStore ossFileStore;
+
+	@Value("${jfish.alioss.bucketName}")
+    String bucketName;
 
 	@Before
 	public void setup() throws Exception{
@@ -53,7 +54,18 @@ public class OssClientWrapperTest extends AbstractJUnit4SpringContextTests {
 		
 		this.wraper = new OssClientWrapper(ossProperties);
 		wraper.afterPropertiesSet();
+		
+		this.ossFileStore = new OssFileStore(wraper, ossProperties);
+		this.ossFileStore.afterPropertiesSet();
 //		this.wraper.createBucketIfNotExists(bucketName);
+	}
+	
+
+	@Test 
+	public void testDelete() {
+		String storeKey = "test/picture/f1d5b745-f430-4334-aeec-959bbe042a82.jpg";
+//		this.wraper.objectOperation(bucketName, storeKey).delete();
+		this.ossFileStore.delete(storeKey);
 	}
 	
 	@Test 
