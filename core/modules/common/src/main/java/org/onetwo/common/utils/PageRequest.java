@@ -22,6 +22,7 @@ public class PageRequest {
     	this.page = request.getPage();
     	this.pageSize = request.getPageSize();
     	this.pagination = request.isPagination();
+    	this.autoCount = request.isAutoCount();
     	return (T) this;
     }
 	
