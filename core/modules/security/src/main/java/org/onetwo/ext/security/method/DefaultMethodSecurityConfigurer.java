@@ -1,5 +1,7 @@
 package org.onetwo.ext.security.method;
 
+import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.utils.LangUtils;
@@ -37,6 +39,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsUtils;
+
+import com.google.common.collect.Lists;
 
 import lombok.Getter;
 
@@ -247,8 +251,16 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 					.failureHandler(ajaxAuthenticationHandler)
 					.successHandler(ajaxAuthenticationHandler);
 		
+		// 配置登录时，删除cookies
+		List<String> cookieNames = Lists.newArrayList(); 
+		cookieNames.add(securityConfig.getCookie().getName());
+		if (securityConfig.getJwt().isEnabled() && securityConfig.getJwt().getAuthStore().isCookieStore()) {
+			cookieNames.add(securityConfig.getJwt().getAuthKey());
+		}
 		LogoutConfigurer<HttpSecurity> logoutConf = http.logout()
 										.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
+										// 删除sid cookies
+										.deleteCookies(cookieNames.toArray(new String[0]))
 										.logoutSuccessUrl(securityConfig.getLogoutSuccessUrl()).permitAll();
 
 		if (ajaxLogoutSuccessHandler!=null) {
