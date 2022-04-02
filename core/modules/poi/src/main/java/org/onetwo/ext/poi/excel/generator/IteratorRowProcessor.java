@@ -26,12 +26,14 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		if(rowContext.getRowModel().isRenderHeader()){
 //			RowModel header = rowModel.copy();
 //			header.setType(RowModel.Type.HEADER_KEY);
+			rowContext.setRenderingHeader(true);
 			this.titleRowProcessor.processRow(rowContext);
 		}
 		processIterator(rowContext);
 	}
 	
 	public int processIterator(RowContextData rowContext) {
+		rowContext.setRenderingHeader(false);
 		RowModel iterator = rowContext.getRowModel();
 		Object dataSourceValue = rowContext.parseValue(iterator.getDatasource());
 		int count = 0;
@@ -127,7 +129,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 //					UtilTimerStack.pop(name);
 				}
 			} catch (Exception e) {
-				throw new ExcelException("generate field["+iterator.getTemplate().getLabel()+","+iterator.getName()+","+field.getName()+"] error: "+e.getMessage() , e);
+				throw new ExcelException("generate field["+iterator.getTemplate().getLabel()+" -> "+iterator.getName()+" -> "+field.getName()+"] error: "+e.getMessage() , e);
 			}finally{
 				rowContext.setCurrentRow(null);
 				rowContext.setCurrentRowObject(null);

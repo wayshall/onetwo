@@ -15,6 +15,11 @@ public class RowContextData extends AbstractExcelContextData {
 	private Object currentRowObject;
 	private Map<String, CellContextData> childConextDatas = Maps.newHashMap();
 	
+	/****
+	 * 是否正在渲染标题
+	 */
+	private boolean renderingHeader;
+	
 	public RowContextData(SheetData sheetData, RowModel rowModel) {
 		super();
 		this.rowModel = rowModel;
@@ -82,6 +87,14 @@ public class RowContextData extends AbstractExcelContextData {
 
 	public void setCurrentRowObject(Object currentRowObject) {
 		this.currentRowObject = currentRowObject;
+	}
+
+	public boolean isRenderingHeader() {
+		return renderingHeader;
+	}
+
+	public void setRenderingHeader(boolean renderingHeader) {
+		this.renderingHeader = renderingHeader;
 	}
 
 }

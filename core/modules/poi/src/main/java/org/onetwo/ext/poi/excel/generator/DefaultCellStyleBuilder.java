@@ -5,12 +5,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.ext.poi.excel.data.CellContextData;
 import org.onetwo.ext.poi.utils.ClassIntroManager;
@@ -23,6 +25,9 @@ public class DefaultCellStyleBuilder {
 	private ConcurrentHashMap<String, CellStyle> styleCache = new ConcurrentHashMap<String, CellStyle>();
 	private Map<String, Object> alignmentMapper = CUtils.asMap("ALIGN_CENTER", HorizontalAlignment.CENTER);
 	private Map<String, Object> verticalAlignmentMapper = CUtils.asMap("VERTICAL_CENTER", VerticalAlignment.CENTER);
+	
+
+	private CellStyle linkStyle;
 
 	public DefaultCellStyleBuilder(PoiExcelGenerator generator) {
 		super();
@@ -36,6 +41,38 @@ public class DefaultCellStyleBuilder {
 	public String getFont(FieldModel field){
 		return field.getFont();
 	}
+	
+
+	public CellStyle getOrCreatelinkStyle(Workbook workbook) {
+		if (linkStyle!=null) {
+			return linkStyle;
+		}
+        // 生成并设置另一个样式
+        CellStyle linkStyle = workbook.createCellStyle();
+        //设置单元格边框
+        //        linkStyle.setBorderBottom((short) 1);
+        //        linkStyle.setBorderLeft((short) 1);
+        //        linkStyle.setBorderRight((short) 1);
+        //        linkStyle.setBorderTop((short) 1);
+        //设置单元格背景颜色
+        //        linkStyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+        //        linkStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        Font font = workbook.createFont();
+        //设置字体下划线
+        font.setUnderline((byte) 1);
+        //设置字体颜色
+        font.setColor(HSSFColorPredefined.BLUE.getIndex());
+        //设置字体
+        linkStyle.setFont(font);
+        // 生成另一个字体
+        //        font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
+        // 把字体应用到当前的样式
+        linkStyle.setFont(font);
+        linkStyle.setAlignment(HorizontalAlignment.CENTER);
+        
+        this.linkStyle = linkStyle;
+        return linkStyle;
+    }
 
 	protected CellStyle buildCellStyle(CellContextData cellContext){
 		FieldModel field = cellContext.getFieldModel();

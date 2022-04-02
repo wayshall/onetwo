@@ -48,7 +48,7 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 		CellContextData subCellContext = createCellContext(cellContext.getObjectValue(), rowCount, cellContext.getRowContext(), cellContext.getFieldModel(), cellIndex);
 		cell = createCell(subCellContext);
 		
-		setCellValue(cellContext.getFieldModel(), cell, cellValue);
+		setCellValue(cellContext, cell, cellValue);
 		
 		return cell;
 	}

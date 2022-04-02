@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.convert.Types;
-import org.onetwo.common.profiling.UtilTimerStackObject;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.excel.data.CellContextData;
 import org.onetwo.ext.poi.excel.data.RowContextData;
@@ -343,7 +346,7 @@ public class DefaultRowProcessor implements RowProcessor {
 
 //		ts.push("setCellValue");
 //		v = formatValue(v, field.getDataFormat());
-		setCellValue(field, cell, v);
+		setCellValue(cellContext, cell, v);
 		
 		cellContext.addRowSpanCount(cellContext.getRowSpan());
 //		ts.pop("setCellValue");
@@ -371,7 +374,7 @@ public class DefaultRowProcessor implements RowProcessor {
 		return actualValue;
 	}
 
-	protected void processCellTypeByValue(FieldModel field, Cell cell, Object value){
+	protected void processCellTypeByValue(CellContextData cellContext, Cell cell, Object value){
 		if(value==null){
 //			cell.setCellType(Cell.CELL_TYPE_BLANK);
 			cell.setBlank();
@@ -402,18 +405,36 @@ public class DefaultRowProcessor implements RowProcessor {
 			HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
 			cell.setCellValue(cellValue);
 		}*/
-		if (StringUtils.isNotBlank(field.getDataType())) {
-			Object convertedValue = Types.convertValue(value, ReflectUtils.loadClass(field.getDataType()));
-			ExcelUtils.setCellValue(cell, convertedValue);
+		
+//		if ("参与抽奖截图".equals(value) ) {
+//			System.out.println("test");
+//		}
+		boolean isTitleRow = cellContext.getRowContext().isRenderingHeader();
+		FieldModel field = cellContext.getFieldModel();
+		if (!isTitleRow && StringUtils.isNotBlank(field.getDataType())) {
+			if (HyperlinkType.URL.name().equalsIgnoreCase(field.getDataType())) {
+				Workbook workbook = cellContext.getWorkbookData().getWorkbook();
+				CreationHelper creationHelper = cellContext.getWorkbookData().getWorkbook().getCreationHelper();
+				Hyperlink hyperlink = creationHelper.createHyperlink(HyperlinkType.URL);
+				hyperlink.setAddress(value.toString());
+				cell.setHyperlink(hyperlink);
+				cell.setCellStyle(this.cellStyleBuilder.getOrCreatelinkStyle(workbook));
+				ExcelUtils.setCellValue(cell, value);
+			} else {
+				Object convertedValue = Types.convertValue(value, ReflectUtils.loadClass(field.getDataType()));
+				ExcelUtils.setCellValue(cell, convertedValue);
+			}
 		} else  {
 			ExcelUtils.setCellValue(cell, value);
 		}
 	}
-	protected void setCellValue(FieldModel field, Cell cell, Object value) {
+	
+	
+	protected void setCellValue(CellContextData cellContext, Cell cell, Object value) {
 		if(this.cellListener!=null)
 			this.cellListener.beforeSetValue(cell, value);
 //		ExcelUtils.setCellValue(cell, value);;
-		this.processCellTypeByValue(field, cell, value);
+		this.processCellTypeByValue(cellContext, cell, value);
 	}
 	
 	/*protected int parseIntValue(String expr, Object root) {
