@@ -28,6 +28,9 @@ public enum JwtAuthStores {
 		public boolean isCookieStore() {
 			return false;
 		}
+		@Override
+		public void removeToken(StoreContext ctx) {
+		}
 	},
 	COOKIES{
 		@Override
@@ -44,6 +47,10 @@ public enum JwtAuthStores {
 			ctx.getCookieStorer().save(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey(), ctx.getToken().getToken());
 		}
 		@Override
+		public void removeToken(StoreContext ctx) {
+			ctx.getCookieStorer().clear(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey());
+		}
+		@Override
 		public boolean isCookieStore() {
 			return true;
 		}
@@ -56,6 +63,9 @@ public enum JwtAuthStores {
 		@Override
 		public void saveToken(StoreContext ctx) {
 			ctx.getResponse().addHeader(ctx.getAuthKey(), ctx.getToken().getToken());
+		}
+		@Override
+		public void removeToken(StoreContext ctx) {
 		}
 		@Override
 		public boolean isCookieStore() {
@@ -77,6 +87,11 @@ public enum JwtAuthStores {
 			JwtAuthStores.HEADER.saveToken(ctx);
 		}
 		@Override
+		public void removeToken(StoreContext ctx) {
+			JwtAuthStores.COOKIES.removeToken(ctx);
+			JwtAuthStores.HEADER.removeToken(ctx);
+		}
+		@Override
 		public boolean isCookieStore() {
 			return true;
 		}
@@ -85,6 +100,7 @@ public enum JwtAuthStores {
 
 	abstract public String getToken(HttpServletRequest request, String authName);
 	abstract public void saveToken(StoreContext ctx);
+	abstract public void removeToken(StoreContext ctx);
 	abstract public boolean isCookieStore();
 	
 	@Data

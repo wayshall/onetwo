@@ -126,6 +126,7 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	@OnMissingBean(AjaxLogoutSuccessHandler.class)
 	public AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler(){
 		AjaxLogoutSuccessHandler handler = new AjaxLogoutSuccessHandler();
+		handler.setCookieStorer(cookieStorer());
 		return handler;
 	}
 }
