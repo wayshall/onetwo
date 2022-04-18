@@ -1,6 +1,7 @@
 package org.onetwo.boot.module.alioss;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
@@ -51,7 +52,7 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 	private String accessKeySecret;*/
 	private OssProperties ossProperties;
 	private OSSClient ossClient;
-	private ClientConfiguration clinetConfig;
+	private ClientConfiguration clientConfig;
 	
 	public OssClientWrapper(OssProperties ossProperties) {
 		super();
@@ -66,19 +67,42 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		this.ossClient.shutdown();
 	}
 
+	/***
+	 * alioss底层使用了httpclient，在没有设置超时的情况下，使用后没有及时关闭资源，导致死锁的bug
+	 * 
+	 * https://www.cnblogs.com/549294286/p/11241277.html
+	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(clinetConfig==null){
-			clinetConfig = new ClientConfiguration();
-		}
-		configClient(clinetConfig);
+		configClient(clientConfig);
 		DefaultCredentialProvider credential = new DefaultCredentialProvider(ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
 		this.ossClient = new OSSClient(ossProperties.getEndpoint(), 
 										credential, 
-										clinetConfig);
+										clientConfig);
 	}
 	
 	protected void configClient(ClientConfiguration clinetConfig){
+		if(clientConfig==null){
+			clientConfig = new ClientConfiguration();
+			// 从httpclient连接池获取连接时等待的超时时间，默认-1，表示阻塞，直接到连接获取为止
+			// 从连接池获取连接的timeout. MainClientExec.execute -> PoolingHttpClientConnectionManager.requestConnection
+			clientConfig.setConnectionRequestTimeout(30_000); // 设置为30秒
+			// 客户端和服务器建立连接的timeout
+			clientConfig.setConnectionTimeout(30_000);
+			// 连接建立后，request没有回应的timeout
+			clientConfig.setSocketTimeout(30_000);
+			// 决定是使用com.aliyun.oss.common.comm.TimeoutServiceClient，还是 com.aliyun.oss.common.comm.DefaultServiceClient
+			clientConfig.setRequestTimeoutEnabled(true);
+			// 默认5分钟
+			clientConfig.setRequestTimeout(ClientConfiguration.DEFAULT_REQUEST_TIMEOUT);
+			// 默认1024 ClientConfiguration.DEFAULT_MAX_CONNECTIONS
+			clientConfig.setMaxConnections(ClientConfiguration.DEFAULT_MAX_CONNECTIONS);
+		} else {
+			// 没有设置，则强制设置超时
+			if (clientConfig.getConnectionRequestTimeout()==ClientConfiguration.DEFAULT_CONNECTION_REQUEST_TIMEOUT) {
+				clientConfig.setConnectionRequestTimeout(30_000); // 设置为30秒
+			}
+		}
 	}
 
 
@@ -86,8 +110,8 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 		return getBucket(bucketName, true).get();
 	}
 	
-	public void setClinetConfig(ClientConfiguration clinetConfig) {
-		this.clinetConfig = clinetConfig;
+	public void setClientConfig(ClientConfiguration clinetConfig) {
+		this.clientConfig = clinetConfig;
 	}
 
 	public Optional<Bucket> getBucket(String bucketName, boolean createIfNotExist) {
@@ -144,7 +168,23 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 	}
 	
 	public PutObjectResult putObject(PutObjectRequest request){
-		return ossClient.putObject(request);
+		PutObjectResult result = null;
+		try {
+			result = ossClient.putObject(request);
+		} finally {
+			closeReponse(result);
+		}
+		return result;
+	}
+	
+	private void closeReponse(GenericResult result) {
+		if (result!=null) {
+			try {
+				result.getResponse().getHttpResponse().close();
+			} catch (IOException e) {
+				logger.error("oss关闭httpclient连接时出错：" + e.getMessage(), e);
+			}
+		}
 	}
 	
 	public boolean doesObjectExist(String objectKey){

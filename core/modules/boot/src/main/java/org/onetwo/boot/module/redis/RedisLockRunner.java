@@ -38,6 +38,11 @@ public class RedisLockRunner {
 		return createLocker(redisLockRegistry, lockkey, lockerTimeout);
 	}
 	
+	public static RedisLockRunner createLocker(RedisLockRegistry redisLockRegistry, String lockkey) {
+		// 默认一分钟超时
+		return createLocker(redisLockRegistry, lockkey, "1m");
+	}
+	
 	public static RedisLockRunner createLocker(RedisLockRegistry redisLockRegistry, String lockkey, String lockerTimeout) {
 		Pair<Integer, TimeUnit> timeout = null;
 		if (StringUtils.isNotBlank(lockerTimeout)) {

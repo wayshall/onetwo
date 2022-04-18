@@ -35,7 +35,7 @@ public class OssConfiguration {
 //	@ConditionalOnProperty(name=BootSiteConfig.ENABLE_STORETYPE_PROPERTY, havingValue="alioss")
 	public OssClientWrapper ossClientWrapper(){
 		OssClientWrapper wrapper = new OssClientWrapper(ossProperties);
-		wrapper.setClinetConfig(ossProperties.getClient());
+		wrapper.setClientConfig(ossProperties.getClient());
 		return wrapper;
 	}
 }
