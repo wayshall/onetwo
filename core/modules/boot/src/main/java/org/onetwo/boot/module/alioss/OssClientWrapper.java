@@ -170,6 +170,11 @@ public class OssClientWrapper implements InitializingBean, DisposableBean {
 	public PutObjectResult putObject(PutObjectRequest request){
 		PutObjectResult result = null;
 		try {
+//			Callback cb = new Callback();
+//			cb.setCalbackBodyType(CalbackBodyType.JSON);
+//			request.setCallback(cb);
+			// 随便设置一个字符串，让阿里云的sdk返回result，以便释放资源
+			request.setProcess("true");
 			result = ossClient.putObject(request);
 		} finally {
 			closeReponse(result);
