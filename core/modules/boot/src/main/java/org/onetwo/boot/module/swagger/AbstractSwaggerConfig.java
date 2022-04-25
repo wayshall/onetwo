@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import org.onetwo.boot.core.web.api.WebApi;
+import org.onetwo.boot.module.swagger.annotation.ExportableApi;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ abstract public class AbstractSwaggerConfig {
     protected boolean hasWebApiAnnotation(RequestHandler rh) {
     	return rh.findAnnotation(WebApi.class).isPresent() || rh.findControllerAnnotation(WebApi.class).isPresent();
     }
+    protected boolean hasExportableApiAnnotation(RequestHandler rh) {
+    	return rh.findAnnotation(ExportableApi.class).isPresent() || rh.findControllerAnnotation(ExportableApi.class).isPresent();
+    }
 
 //	@SuppressWarnings("deprecation")
 	protected Predicate<RequestHandler> webApi(Collection<Predicate<RequestHandler>> packages){
@@ -58,7 +62,7 @@ abstract public class AbstractSwaggerConfig {
 //        								WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
 //        															rh.declaringClass())
 //        															.isPresent();
-        	boolean match = LangOps.or(packages).test(rh) && hasWebApiAnnotation(rh);
+        	boolean match = LangOps.or(packages).test(rh) && hasWebApiAnnotation(rh) && hasExportableApiAnnotation(rh);
         	return match;
         };
 	}
@@ -70,7 +74,7 @@ abstract public class AbstractSwaggerConfig {
 //										!WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
 //																	rh.declaringClass())
 //																	.isPresent();
-        	return LangOps.or(packages).test(rh) && !hasWebApiAnnotation(rh);
+        	return LangOps.or(packages).test(rh) && !hasWebApiAnnotation(rh) && hasExportableApiAnnotation(rh);
         };
 	}
 

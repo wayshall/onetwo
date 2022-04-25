@@ -61,7 +61,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 			String pluginName = plugin.getPluginMeta().getName();
 
 			String propertyName = SwaggerProperties.PREFIX + "." + pluginName + ".enabled";
-			boolean enabledPluginSwagger = resolver.getProperty(propertyName, boolean.class, true);
+			boolean enabledPluginSwagger = resolver.getProperty(propertyName, boolean.class, false);
 			if (!enabledPluginSwagger) {
 				logger.info("ignore plugin[{}] swagger docket", pluginName, plugin.getRootClass());
 				continue;
@@ -88,7 +88,11 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 					.collect(Collectors.toSet());
 	}
 	
-	final protected int registerDocketsByWebApiAnnotation(int index, String appName, Class<?> rootClass) {
+	final protected int registerDocketsByWebApiAnnotation(int index, String appName, Class<?>... rootClass) {
+		return registerDocketsByWebApiAnnotation(true, index, appName, rootClass);
+	}
+	
+	final protected int registerDocketsByWebApiAnnotation(boolean alsoRegisterInnerApi, int index, String appName, Class<?>... rootClass) {
 		Collection<Predicate<RequestHandler>> predicates = createPackagePredicateByClass(rootClass);
 		
 //		if (rootClass.getName().contains("LwrouterPlugin")) {
@@ -107,17 +111,19 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 			logger.info("docket[{}] ignored", docketBeanName);
 		}*/
 		
-		registerCount = 2;
-		docketBeanName = appName+"InnerDocket";
-		logger.info("docket[{}] created...", docketBeanName);
-		this.registerDocketIfNotExist(docketBeanName, index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
-		/*Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
-		if (!applicationContext.containsBeanDefinition(docketBeanName)) {
-			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, innerDocket);
-			logger.info("docket[{}] registered", docketBeanName);
-		} else {
-			logger.info("docket[{}] ignored", docketBeanName);
-		}*/
+		if (alsoRegisterInnerApi) {
+			registerCount = 2;
+			docketBeanName = appName+"InnerDocket";
+			logger.info("docket[{}] created...", docketBeanName);
+			this.registerDocketIfNotExist(docketBeanName, index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
+			/*Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
+			if (!applicationContext.containsBeanDefinition(docketBeanName)) {
+				SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, innerDocket);
+				logger.info("docket[{}] registered", docketBeanName);
+			} else {
+				logger.info("docket[{}] ignored", docketBeanName);
+			}*/
+		}
 		return registerCount;
 	}
 	
