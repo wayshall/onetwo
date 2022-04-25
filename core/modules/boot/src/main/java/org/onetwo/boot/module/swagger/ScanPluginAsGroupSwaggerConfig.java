@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.onetwo.boot.module.swagger.annotation.ExportableApi;
 import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.boot.plugin.core.WebPlugin;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -34,6 +35,8 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 	private PluginManager pluginManager;
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private SwaggerProperties swaggerProperties;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -42,6 +45,13 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 //		});
 		initWebPlugins();
 	}
+
+    protected boolean hasExportableApiAnnotation(RequestHandler rh) {
+    	if (!swaggerProperties.isUseExportableApi()) {
+    		return true;
+    	}
+    	return rh.findAnnotation(ExportableApi.class).isPresent() || rh.findControllerAnnotation(ExportableApi.class).isPresent();
+    }
 	
 	private void initWebPlugins() {
 		logger.info("start init web plugins: {}", getClass().getName());
@@ -49,6 +59,8 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		int index = registedCount;
 		
 		PropertyResolver resolver = SpringUtils.getPropertyResolver(applicationContext);
+		boolean pluginDefaultEnabled = swaggerProperties.isPluginDefaultEnabled();
+
 		for(WebPlugin plugin : pluginManager.getPlugins()){
 			/*Predicate<RequestHandler> predicate = RequestHandlerSelectors.basePackage(ClassUtils.getPackageName(plugin.getRootClass()));
 			Collection<Predicate<RequestHandler>> predicates = Arrays.asList(predicate);
@@ -61,7 +73,12 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 			String pluginName = plugin.getPluginMeta().getName();
 
 			String propertyName = SwaggerProperties.PREFIX + "." + pluginName + ".enabled";
-			boolean enabledPluginSwagger = resolver.getProperty(propertyName, boolean.class, false);
+			boolean enabledPluginSwagger = resolver.getProperty(propertyName, boolean.class, pluginDefaultEnabled);
+//			if (resolver.containsProperty(propertyName)) {
+//				enabledPluginSwagger = resolver.getProperty(propertyName, boolean.class);
+//			} else {
+//				enabledPluginSwagger = pluginDefaultEnabled;
+//			}
 			if (!enabledPluginSwagger) {
 				logger.info("ignore plugin[{}] swagger docket", pluginName, plugin.getRootClass());
 				continue;
