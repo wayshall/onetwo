@@ -24,8 +24,6 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 	
 	private AccessDecisionManager accessDecisionManager;
 	
-	@Autowired(required=false)
-	private List<AuthenticationProvider> authenticationProviders;
 	
 	
 	public DefaultUrlSecurityConfigurer(AccessDecisionManager accessDecisionManager) {
@@ -34,9 +32,8 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 	}
 
 	protected void configure(HttpSecurity http) throws Exception {
-		if(LangUtils.isNotEmpty(authenticationProviders)){
-			authenticationProviders.forEach(authProvider->http.authenticationProvider(authProvider));
-		}
+		configAuthenticationProviders(http);
+		
 		http.authorizeRequests().withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
 			@Override
 			public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {

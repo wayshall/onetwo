@@ -50,7 +50,7 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 	
 	@Autowired
 	private SecurityConfig securityConfig;
-	private String propertyKey = JwtSecurityUtils.PROPERTY_KEY;
+	private String propertyKey = JwtSecurityUtils.PROPERTY_KEY; // p_
 	
 	protected Long getExpirationInSeconds(){
 		return securityConfig.getJwt().getExpirationInSeconds();
@@ -58,11 +58,24 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 	
 	protected GenericUserDetail<?> createUserDetailForAuthentication(Serializable userId, String username, 
 			Collection<? extends GrantedAuthority> authorities, Claims claims) {
-		return new GenericLoginUserDetails<>(userId, username, "N/A", authorities);
+//		return new GenericLoginUserDetails<>(userId, username, "N/A", authorities);
+		SecurityJwtUserDetail user = new SecurityJwtUserDetail(userId, username, "N/A", authorities);
+		user.setProperties(toMap(claims));
+		return user;
 	}
 	
 	protected GenericUserDetail<?> createUserDetailForToken(User user) {
 		return new GenericLoginUserDetails<>(0L, user.getUsername(), "N/A", user.getAuthorities());
+	}
+	
+	protected Map<String, Object> extractProperties(GenericUserDetail<?> userDetails) {
+//		return beanToMap.toFlatMap(userDetails);
+		if (userDetails instanceof JwtUserDetail) {
+			JwtUserDetail jwtUser = (JwtUserDetail) userDetails;
+			return jwtUser.getProperties();
+		} else {
+			return beanToMap.toFlatMap(userDetails);
+		}
 	}
 	
 	@Override
@@ -74,9 +87,14 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 		GenericUserDetail<?> userDetails = null;
 //		Collection<String> authorities = Collections.emptyList();
 		String authoritiesString = "";
+		Serializable userId = null;
+		String userName = null;
+		
 		if(authentication.getPrincipal() instanceof GenericUserDetail){
 			userDetails = (GenericUserDetail<?>)authentication.getPrincipal();
-		}else{
+			userId = userDetails.getUserId();
+			userName = userDetails.getUserName();
+		} else{
 			User user = (User)authentication.getPrincipal();
 			userDetails = createUserDetailForToken(user);
 			Collection<String> authorities = user.getAuthorities()
@@ -92,9 +110,13 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 		
 
 		JwtConfig jwtConfig = securityConfig.getJwt();
-		Map<String, Object> props = beanToMap.toFlatMap(userDetails);
-		Long userId = (Long)props.remove(JwtSecurityUtils.CLAIM_USER_ID);
-		String userName = (String)props.remove(JwtSecurityUtils.CLAIM_USER_NAME);
+		Map<String, Object> props = extractProperties(userDetails);
+		if (props.containsKey(JwtSecurityUtils.CLAIM_USER_ID)) {
+			userId = (Serializable)props.remove(JwtSecurityUtils.CLAIM_USER_ID);
+		}
+		if (props.containsKey(JwtSecurityUtils.CLAIM_USER_NAME)) {
+			userName = (String)props.remove(JwtSecurityUtils.CLAIM_USER_NAME);
+		}
 		LocalDateTime issuteAt = LocalDateTime.now();
 
 		Date expirationDate = Dates.toDate(issuteAt.plusSeconds(getExpirationInSeconds().intValue()));

@@ -6,7 +6,6 @@ import javax.servlet.http.HttpSession;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.web.filter.RequestInfo;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
-import org.onetwo.common.web.userdetails.SsoTokenable;
 
 @SuppressWarnings("unchecked")
 final public class WebContextUtils {
@@ -84,9 +83,9 @@ final public class WebContextUtils {
 		return user;
 	}
 	
-	public static String getCookieToken(HttpServletRequest request){
-		return ResponseUtils.getCookieValue(request, SsoTokenable.TOKEN_KEY);
-	}
+//	public static String getCookieToken(HttpServletRequest request){
+//		return ResponseUtils.getCookieValue(request, SsoTokenable.TOKEN_KEY);
+//	}
 
 	private WebContextUtils(){}
 }

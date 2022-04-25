@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
+import org.onetwo.ext.security.jwt.JwtUserDetail;
 
 import com.google.common.collect.Maps;
 

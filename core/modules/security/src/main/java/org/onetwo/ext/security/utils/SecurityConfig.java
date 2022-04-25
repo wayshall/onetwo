@@ -12,6 +12,7 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.ext.security.jwt.JwtAuthStores;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -113,7 +114,10 @@ public class SecurityConfig {
 	private boolean validateConfigAttributes = true;
 	
 	private StrictHttpFirewallConfig strictHttpFirewall = new StrictHttpFirewallConfig();
-	
+	/***
+	 * 会话
+	 */
+	private SessionConfig session = new SessionConfig();
 	
 	public boolean isDebug(){
 		return debug;
@@ -392,4 +396,10 @@ public class SecurityConfig {
 		 */
 		boolean allowSemicolon;
 	}
+	
+	@Data
+	public static class SessionConfig {
+		SessionCreationPolicy creationPolicy;
+	}
+
 }

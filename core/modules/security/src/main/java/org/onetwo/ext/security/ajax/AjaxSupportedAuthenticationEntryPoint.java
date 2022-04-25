@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 /****
  * 验证入口点
- * 当然filter检测到没有登录时，调用commence方法
+ * 当ExceptionTranslationFilter检测到登录异常（AuthenticationException）时，调用commence方法，跳转到登录入口
  * @author way
  *
  */

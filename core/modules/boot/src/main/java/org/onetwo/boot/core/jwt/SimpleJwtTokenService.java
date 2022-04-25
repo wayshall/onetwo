@@ -14,6 +14,7 @@ import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
+import org.onetwo.ext.security.jwt.JwtUserDetail;
 import org.springframework.beans.factory.InitializingBean;
 
 import io.jsonwebtoken.Claims;

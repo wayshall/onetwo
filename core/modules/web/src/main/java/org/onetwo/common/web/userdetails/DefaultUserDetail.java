@@ -13,7 +13,7 @@ import org.onetwo.common.utils.LangUtils;
  *
  */
 @Deprecated
-public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, UserRoot, PermissionDetail, Serializable {
+public class DefaultUserDetail implements UserDetail, RoleDetail, UserRoot, PermissionDetail, Serializable {
 	
 	protected Date lastActivityTime = new Date();
 	private long userId;

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
+import org.onetwo.ext.security.jwt.JwtUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

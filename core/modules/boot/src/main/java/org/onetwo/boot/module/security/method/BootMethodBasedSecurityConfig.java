@@ -15,12 +15,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 
-//@EnableGlobalMethodSecurity(
-//		securedEnabled=true, // SecuredAnnotationSecurityMetadataSource
-//		jsr250Enabled = true // Jsr250MethodSecurityMetadataSource, Jsr250Voter
-//)
+@EnableGlobalMethodSecurity(
+		prePostEnabled=true,
+		securedEnabled=true, // SecuredAnnotationSecurityMetadataSource
+		jsr250Enabled = true // Jsr250MethodSecurityMetadataSource, Jsr250Voter
+)
 //@Configuration
 @Import({BootSecurityCommonContextConfig.class})
 public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {

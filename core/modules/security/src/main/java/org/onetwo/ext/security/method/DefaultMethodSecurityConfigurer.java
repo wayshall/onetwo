@@ -9,15 +9,14 @@ import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.ajax.AjaxLogoutSuccessHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
+import org.onetwo.ext.security.login.LoginSecurityConfigurer;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecurityConfig.StrictHttpFirewallConfig;
-import org.onetwo.ext.security.utils.SimpleThrowableAnalyzer;
-import org.springframework.beans.ConfigurablePropertyAccessor;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
@@ -26,15 +25,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.config.annotation.web.configurers.DefaultLoginPageConfigurer;
-import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -80,6 +75,10 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	private SecurityContextRepository securityContextRepository;
 	@Autowired(required=false)
 	private LogoutSuccessHandler logoutSuccessHandler;
+	@Autowired
+	private List<LoginSecurityConfigurer> loginConfigurers;
+	@Autowired(required=false)
+	private List<AuthenticationProvider> authenticationProviders;
 	
 
     @Override
@@ -132,9 +131,18 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		daoProvider.afterPropertiesSet();
 		auth.authenticationProvider(daoProvider);*/
     }
+	
+
+	protected void configAuthenticationProviders(HttpSecurity http) throws Exception {
+		if(LangUtils.isNotEmpty(authenticationProviders)){
+			authenticationProviders.forEach(authProvider->http.authenticationProvider(authProvider));
+		}
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		configAuthenticationProviders(http);
+		
 		http.authorizeRequests().withObjectPostProcessor(new ObjectPostProcessor<MethodSecurityInterceptor>() {
 			@Override
 			public <O extends MethodSecurityInterceptor> O postProcess(O fsi) {
@@ -186,7 +194,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	protected void defaultConfigure(HttpSecurity http) throws Exception {
 		if(securityContextRepository!=null){
 			http.securityContext().securityContextRepository(securityContextRepository);
@@ -206,50 +214,16 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		.successHandler(ajaxAuthenticationHandler);
 		*/
 		
-		FormLoginConfigurer<HttpSecurity> formConfig = http.formLogin();
-		if(StringUtils.isNotBlank(securityConfig.getDefaultLoginPage())){
-			//if set default page, cannot set authenticationEntryPoint, see DefaultLoginPageConfigurer#configure
-//			securityConfig.setLoginUrl(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL);
-			http.getConfigurer(DefaultLoginPageConfigurer.class).withObjectPostProcessor(new ObjectPostProcessor<DefaultLoginPageGeneratingFilter>(){
-				@Override
-				public <O extends DefaultLoginPageGeneratingFilter> O postProcess(O filter) {
-					filter.setLoginPageUrl(securityConfig.getDefaultLoginPage());
-					filter.setLogoutSuccessUrl(securityConfig.getLogoutSuccessUrl());
-					filter.setFailureUrl(securityConfig.getFailureUrl());
-					return filter;
-				}
-			});
-			http.getConfigurer(ExceptionHandlingConfigurer.class).withObjectPostProcessor(new ObjectPostProcessor<ExceptionTranslationFilter>(){
-				@Override
-				public <O extends ExceptionTranslationFilter> O postProcess(O filter) {
-					ConfigurablePropertyAccessor accessor = PropertyAccessorFactory.forDirectFieldAccess(filter);
-					accessor.setPropertyValue("authenticationEntryPoint", authenticationEntryPoint);
-					// throwableAnalyzer
-//					ThrowableAnalyzer analyzer = (ThrowableAnalyzer)accessor.getPropertyValue("throwableAnalyzer");
-					if(securityConfig.isDebug()){
-						SimpleThrowableAnalyzer analyzer = new SimpleThrowableAnalyzer();
-						filter.setThrowableAnalyzer(analyzer);
-					}
-					return filter;
-				}
-			});
-			
-			/*formConfig.loginPage(securityConfig.getLoginUrl())
-						.permitAll();
-			PropertyAccessorFactory.forDirectFieldAccess(formConfig)
-									.setPropertyValue("customLoginPage", false);*/
-		}else{
-			formConfig.loginPage(securityConfig.getLoginUrl())
-						.permitAll();
-			http.exceptionHandling()
-				.authenticationEntryPoint(authenticationEntryPoint);
+		for (LoginSecurityConfigurer loginConfigurer : loginConfigurers) {
+//			WebFormLoginConfigurer webFormLoginConfigurer = new WebFormLoginConfigurer();
+			loginConfigurer.setAjaxAuthenticationHandler(ajaxAuthenticationHandler);
+//			loginConfigurer.setAjaxLogoutSuccessHandler(ajaxLogoutSuccessHandler);
+			loginConfigurer.setAjaxSupportedAccessDeniedHandler(ajaxSupportedAccessDeniedHandler);
+			loginConfigurer.setAuthenticationEntryPoint(authenticationEntryPoint);
+			loginConfigurer.applyConfig(http, securityConfig);
 		}
-		formConfig.loginProcessingUrl(securityConfig.getLoginProcessUrl()).permitAll()
-					.usernameParameter("username")
-					.passwordParameter("password")
-					.failureUrl(securityConfig.getFailureUrl())
-					.failureHandler(ajaxAuthenticationHandler)
-					.successHandler(ajaxAuthenticationHandler);
+		
+		
 		
 		// 配置登录时，删除cookies
 		List<String> cookieNames = Lists.newArrayList(); 
@@ -257,6 +231,10 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		if (securityConfig.getJwt().isEnabled() && securityConfig.getJwt().getAuthStore().isCookieStore()) {
 			cookieNames.add(securityConfig.getJwt().getAuthKey());
 		}
+		
+		http.exceptionHandling()
+			.authenticationEntryPoint(authenticationEntryPoint);
+		
 		LogoutConfigurer<HttpSecurity> logoutConf = http.logout()
 										.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
 										// 删除sid cookies
@@ -297,8 +275,15 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		}
 		configureCsrf(http);
 		configureCors(http);
+		configureSession(http);
 	}
 
+	protected void configureSession(HttpSecurity http) throws Exception{
+		SessionCreationPolicy creationPolicy = securityConfig.getSession().getCreationPolicy();
+		if (creationPolicy!=null) {
+			http.sessionManagement().sessionCreationPolicy(creationPolicy);
+		}
+	}
 
 	protected void configureCors(HttpSecurity http) throws Exception{
 		// disable只是移除cors的配置类

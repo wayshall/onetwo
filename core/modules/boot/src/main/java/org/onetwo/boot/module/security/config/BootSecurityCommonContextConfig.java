@@ -13,14 +13,14 @@ import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.module.security.BootSecurityConfig;
 import org.onetwo.boot.module.security.BootSecurityExceptionMessager;
 import org.onetwo.boot.module.security.handler.BootSecurityAccessDeniedHandler;
-import org.onetwo.boot.module.security.jwt.BootJwtSecurityTokenService;
 import org.onetwo.boot.module.security.mvc.SecurityWebExceptionResolver;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.ext.security.SecurityExceptionMessager;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
 import org.onetwo.ext.security.jwt.JwtContxtConfig;
-import org.onetwo.ext.security.jwt.JwtSecurityTokenService;
+import org.onetwo.ext.security.login.LoginSecurityConfigurer;
+import org.onetwo.ext.security.login.WebFormLoginSecurityConfigurer;
 import org.onetwo.ext.security.redis.RedisContextConfig;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,11 +70,11 @@ public class BootSecurityCommonContextConfig{
 	}*/
 	
 
-	@Bean
-	public JwtSecurityTokenService jwtSecurityTokenService(){
-		BootJwtSecurityTokenService jwtService = new BootJwtSecurityTokenService();
-		return jwtService;
-	}
+//	@Bean
+//	public JwtSecurityTokenService jwtSecurityTokenService(){
+//		BootJwtSecurityTokenService jwtService = new BootJwtSecurityTokenService();
+//		return jwtService;
+//	}
 
 	
 	@Bean
@@ -112,6 +112,13 @@ public class BootSecurityCommonContextConfig{
 	@Bean
 	public SecurityExceptionMessager securityExceptionMessager(){
 		return new BootSecurityExceptionMessager(new DefaultExceptionMessageFinder(exceptionMessageAccessor));
+	}
+	
+
+	@Bean
+	@ConditionalOnMissingBean(LoginSecurityConfigurer.class)
+	public LoginSecurityConfigurer webFormLoginConfigurer() {
+		return new WebFormLoginSecurityConfigurer();
 	}
 
 	@Bean(BootWebCommonAutoConfig.BEAN_NAME_EXCEPTION_RESOLVER)

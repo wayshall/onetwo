@@ -1,10 +1,9 @@
-package org.onetwo.boot.module.security.jwt;
+package org.onetwo.ext.security.jwt;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import org.onetwo.boot.core.jwt.JwtUserDetail;
 import org.onetwo.ext.security.utils.GenericLoginUserDetails;
 import org.springframework.security.core.GrantedAuthority;
 
