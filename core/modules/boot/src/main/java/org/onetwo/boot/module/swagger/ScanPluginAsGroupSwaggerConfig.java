@@ -66,7 +66,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 				logger.info("ignore plugin[{}] swagger docket", pluginName, plugin.getRootClass());
 				continue;
 			}
-			logger.info("register pluginp[{}] swagger docket for rootClass: {}", pluginName, plugin.getRootClass());
+			logger.info("register plugin[{}] swagger docket for rootClass: {}", pluginName, plugin.getRootClass());
 			
 			registerDocketsByWebApiAnnotation(index, pluginName, plugin.getRootClass());
 			index++;
@@ -88,13 +88,15 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 					.collect(Collectors.toSet());
 	}
 	
-	final protected void registerDocketsByWebApiAnnotation(int index, String appName, Class<?> rootClass) {
+	final protected int registerDocketsByWebApiAnnotation(int index, String appName, Class<?> rootClass) {
 		Collection<Predicate<RequestHandler>> predicates = createPackagePredicateByClass(rootClass);
 		
 //		if (rootClass.getName().contains("LwrouterPlugin")) {
 //			System.out.println("test");
 //		}
 //		Docket docket = createDocket(index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
+		
+		int registerCount = 1;
 		String docketBeanName = appName+"Docket";
 		logger.info("docket[{}] created...", docketBeanName);
 		this.registerDocketIfNotExist(docketBeanName, index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
@@ -105,6 +107,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 			logger.info("docket[{}] ignored", docketBeanName);
 		}*/
 		
+		registerCount = 2;
 		docketBeanName = appName+"InnerDocket";
 		logger.info("docket[{}] created...", docketBeanName);
 		this.registerDocketIfNotExist(docketBeanName, index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
@@ -115,6 +118,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		} else {
 			logger.info("docket[{}] ignored", docketBeanName);
 		}*/
+		return registerCount;
 	}
 	
 	protected void registerDocketIfNotExist(String docketBeanName, String groupName, String appName, Collection<Predicate<RequestHandler>> packages) {

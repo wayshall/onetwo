@@ -58,7 +58,8 @@ abstract public class AbstractSwaggerConfig {
 //        								WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
 //        															rh.declaringClass())
 //        															.isPresent();
-        	return LangOps.or(packages).test(rh) && hasWebApiAnnotation(rh);
+        	boolean match = LangOps.or(packages).test(rh) && hasWebApiAnnotation(rh);
+        	return match;
         };
 	}
 
