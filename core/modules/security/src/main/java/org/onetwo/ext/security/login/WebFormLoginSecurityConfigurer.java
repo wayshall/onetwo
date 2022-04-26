@@ -21,6 +21,8 @@ public class WebFormLoginSecurityConfigurer extends LoginSecurityConfigurer {
 	@SuppressWarnings("unchecked")
 	public void applyConfig(HttpSecurity http, SecurityConfig securityConfig) throws Exception {
 		FormLoginConfigurer<HttpSecurity> formConfig = http.formLogin();
+
+		
 		if(StringUtils.isNotBlank(securityConfig.getDefaultLoginPage())){
 			//if set default page, cannot set authenticationEntryPoint, see DefaultLoginPageConfigurer#configure
 //			securityConfig.setLoginUrl(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL);
@@ -30,6 +32,7 @@ public class WebFormLoginSecurityConfigurer extends LoginSecurityConfigurer {
 					filter.setLoginPageUrl(securityConfig.getDefaultLoginPage());
 					filter.setLogoutSuccessUrl(securityConfig.getLogoutSuccessUrl());
 					filter.setFailureUrl(securityConfig.getFailureUrl());
+					filter.setLoginPageUrl(securityConfig.getLoginUrl());
 					return filter;
 				}
 			});
@@ -40,17 +43,25 @@ public class WebFormLoginSecurityConfigurer extends LoginSecurityConfigurer {
 			PropertyAccessorFactory.forDirectFieldAccess(formConfig)
 									.setPropertyValue("customLoginPage", false);*/
 		}else{
-			formConfig.loginPage(securityConfig.getLoginUrl())
-						.permitAll();
 //			http.exceptionHandling()
 //				.authenticationEntryPoint(authenticationEntryPoint);
+			http.exceptionHandling()
+				.authenticationEntryPoint(authenticationEntryPoint);
 		}
-		formConfig.loginProcessingUrl(securityConfig.getLoginProcessUrl()).permitAll()
+
+		// 若设置了loginPage，相当于设置了自定义登录页，会导致默认登录页(DefaultLoginPageGeneratingFilter)失效
+		// 设置loginPage，可放到 withObjectPostProcessor 里设置
+//		formConfig.loginPage(securityConfig.getLoginUrl())
+//					.permitAll();
+		
+
+		formConfig.loginProcessingUrl(securityConfig.getLoginProcessUrl())
 					.usernameParameter("username")
 					.passwordParameter("password")
 					.failureUrl(securityConfig.getFailureUrl())
 					.failureHandler(ajaxAuthenticationHandler)
-					.successHandler(ajaxAuthenticationHandler);
+					.successHandler(ajaxAuthenticationHandler)
+					.permitAll(); // 设置 loginPage, loginProcessingUrl, failureUrl三个url允许访问
 	}
 
 	

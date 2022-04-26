@@ -1,9 +1,12 @@
 package org.onetwo.ext.security.method;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.ajax.AjaxLogoutSuccessHandler;
@@ -13,6 +16,7 @@ import org.onetwo.ext.security.login.LoginSecurityConfigurer;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
+import org.onetwo.ext.security.utils.SecurityConfig.InterceptersConfig;
 import org.onetwo.ext.security.utils.SecurityConfig.StrictHttpFirewallConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
@@ -38,8 +42,6 @@ import org.springframework.web.cors.CorsUtils;
 import com.google.common.collect.Lists;
 
 import lombok.Getter;
-
-
 
 public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapter {
 //	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -152,6 +154,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 			}
 		});
 		//if basic method interceptor, ignore all url interceptor
+		checkAndConfigIntercepterUrls(http);
 		configureAnyRequest(http);
 		defaultConfigure(http);
 	}
@@ -231,9 +234,9 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		if (securityConfig.getJwt().isEnabled() && securityConfig.getJwt().getAuthStore().isCookieStore()) {
 			cookieNames.add(securityConfig.getJwt().getAuthKey());
 		}
-		
-		http.exceptionHandling()
-			.authenticationEntryPoint(authenticationEntryPoint);
+
+//		http.exceptionHandling()
+//			.authenticationEntryPoint(authenticationEntryPoint);
 		
 		LogoutConfigurer<HttpSecurity> logoutConf = http.logout()
 										.logoutRequestMatcher(new AntPathRequestMatcher(securityConfig.getLogoutUrl()))
@@ -292,6 +295,34 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		}
 		if (securityConfig.getCors().isPermitAllPreFlightRequest()) {
 			http.authorizeRequests().requestMatchers(req -> CorsUtils.isPreFlightRequest(req)).permitAll();
+		}
+	}
+
+	protected void checkAndConfigIntercepterUrls(HttpSecurity http) throws Exception {
+		// permitAll
+		if (this.securityConfig.isCheckAnyUrlpermitAll()) {
+			for(Entry<String[], String> entry : securityConfig.getIntercepterUrls().entrySet()) {
+				if (ArrayUtils.contains(entry.getKey(), "/**") && 
+						("permitAll".equals(entry.getValue()) || "authenticated".equals(entry.getValue()))
+					) {
+					throw new BaseException("do not config /** -> permitAll or authenticated, it's very danger!");
+				}
+			}
+		}
+		configIntercepterUrls(http, securityConfig.getIntercepterUrls(), securityConfig.getIntercepters());
+	}
+
+	public static void configIntercepterUrls(HttpSecurity http, Map<String[], String> intercepterUrls, List<InterceptersConfig> intercepters) throws Exception {
+		if(LangUtils.isNotEmpty(intercepterUrls)){
+			for(Entry<String[], String> entry : intercepterUrls.entrySet()){
+				http.authorizeRequests().antMatchers(entry.getKey()).access(entry.getValue());
+			}
+		}
+		
+		if(LangUtils.isNotEmpty(intercepters)){
+			for(InterceptersConfig interConfig : intercepters){
+				http.authorizeRequests().antMatchers(interConfig.getPathPatterns()).access(interConfig.getAccess());
+			}
 		}
 	}
 }

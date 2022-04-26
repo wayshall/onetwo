@@ -24,6 +24,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
  *
  */
 @EnableGlobalMethodSecurity(
+		prePostEnabled=true,
 		securedEnabled=true, // SecuredAnnotationSecurityMetadataSource
 		jsr250Enabled = true // Jsr250MethodSecurityMetadataSource, Jsr250Voter
 )
@@ -72,6 +73,7 @@ public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration
 
 	@Bean
 	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
+//		return new DefaultUrlSecurityConfigurer(accessDecisionManager());
 		return new DefaultMethodSecurityConfigurer();
 	}
 	
