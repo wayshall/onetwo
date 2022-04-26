@@ -51,30 +51,30 @@ abstract public class AbstractSwaggerConfig {
     protected boolean hasWebApiAnnotation(RequestHandler rh) {
     	return rh.findAnnotation(WebApi.class).isPresent() || rh.findControllerAnnotation(WebApi.class).isPresent();
     }
-    protected boolean hasExportableApiAnnotation(RequestHandler rh) {
+    protected boolean hasExportableApiAnnotation(String appName, RequestHandler rh) {
     	return rh.findAnnotation(ExportableApi.class).isPresent() || rh.findControllerAnnotation(ExportableApi.class).isPresent();
     }
 
 //	@SuppressWarnings("deprecation")
-	protected Predicate<RequestHandler> webApi(Collection<Predicate<RequestHandler>> packages){
+	protected Predicate<RequestHandler> webApi(String appName, Collection<Predicate<RequestHandler>> packages){
     	return rh->{
 //        	return Predicates.or(packages).apply(rh) && 
 //        								WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
 //        															rh.declaringClass())
 //        															.isPresent();
-        	boolean match = LangOps.or(packages).test(rh) && hasWebApiAnnotation(rh) && hasExportableApiAnnotation(rh);
+        	boolean match = LangOps.or(packages).test(rh) && hasWebApiAnnotation(rh) && hasExportableApiAnnotation(appName, rh);
         	return match;
         };
 	}
 
 //	@SuppressWarnings("deprecation")
-	protected Predicate<RequestHandler> notWebApi(Collection<Predicate<RequestHandler>> packages){
+	protected Predicate<RequestHandler> notWebApi(String appName, Collection<Predicate<RequestHandler>> packages){
     	return rh->{
 //        	return Predicates.or(packages).apply(rh) && 
 //										!WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
 //																	rh.declaringClass())
 //																	.isPresent();
-        	return LangOps.or(packages).test(rh) && !hasWebApiAnnotation(rh) && hasExportableApiAnnotation(rh);
+        	return LangOps.or(packages).test(rh) && !hasWebApiAnnotation(rh) && hasExportableApiAnnotation(appName, rh);
         };
 	}
 

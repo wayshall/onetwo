@@ -46,8 +46,12 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		initWebPlugins();
 	}
 
-    protected boolean hasExportableApiAnnotation(RequestHandler rh) {
-    	if (!swaggerProperties.isUseExportableApi()) {
+    protected boolean hasExportableApiAnnotation(String pluginName, RequestHandler rh) {
+		// jfish.swagger.plugin.useExportableApi
+		String propertyName = SwaggerProperties.PREFIX + "." + pluginName + ".useExportableApi";
+		PropertyResolver resolver = SpringUtils.getPropertyResolver(applicationContext);
+		boolean useExportableApi = resolver.getProperty(propertyName, boolean.class, swaggerProperties.isUseExportableApi());
+    	if (!useExportableApi) {
     		return true;
     	}
     	return rh.findAnnotation(ExportableApi.class).isPresent() || rh.findControllerAnnotation(ExportableApi.class).isPresent();
@@ -72,6 +76,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 			SpringUtils.registerAndInitSingleton(applicationContext, appName+"InnerDocket", innerDocket);*/
 			String pluginName = plugin.getPluginMeta().getName();
 
+			// jfish.swagger.plugin.enabled
 			String propertyName = SwaggerProperties.PREFIX + "." + pluginName + ".enabled";
 			boolean enabledPluginSwagger = resolver.getProperty(propertyName, boolean.class, pluginDefaultEnabled);
 //			if (resolver.containsProperty(propertyName)) {
@@ -120,7 +125,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 		int registerCount = 1;
 		String docketBeanName = appName+"Docket";
 		logger.info("docket[{}] created...", docketBeanName);
-		this.registerDocketIfNotExist(docketBeanName, index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(predicates)));
+		this.registerDocketIfNotExist(docketBeanName, index+".1 ["+appName+"]外部接口", appName, Arrays.asList(webApi(appName, predicates)));
 		/*if (!applicationContext.containsBeanDefinition(docketBeanName)) {
 			SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, docket);
 			logger.info("docket[{}] registered", docketBeanName);
@@ -132,7 +137,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 			registerCount = 2;
 			docketBeanName = appName+"InnerDocket";
 			logger.info("docket[{}] created...", docketBeanName);
-			this.registerDocketIfNotExist(docketBeanName, index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
+			this.registerDocketIfNotExist(docketBeanName, index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(appName, predicates)));
 			/*Docket innerDocket = createDocket(index+".2 ["+appName+"]内部接口", appName, Arrays.asList(notWebApi(predicates)));
 			if (!applicationContext.containsBeanDefinition(docketBeanName)) {
 				SpringUtils.registerAndInitSingleton(applicationContext, docketBeanName, innerDocket);

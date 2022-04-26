@@ -54,12 +54,12 @@ public class AutoScanPluginSwaggerConfig extends AbstractSwaggerConfig {
 	
 	protected Predicate<RequestHandler> webApi(){
 		Set<Predicate<RequestHandler>> packages = getAllApiDocPackages();
-    	return webApi(packages);
+    	return webApi("", packages);
 	}
 
 	protected Predicate<RequestHandler> notWebApi(){
 		Set<Predicate<RequestHandler>> packages = getAllApiDocPackages();
-    	return notWebApi(packages);
+    	return notWebApi("", packages);
 	}
 
     @Bean
