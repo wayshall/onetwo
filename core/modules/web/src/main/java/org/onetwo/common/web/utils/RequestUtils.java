@@ -35,6 +35,7 @@ public final class RequestUtils {
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
 	
     public static final String CONTENT_LENGTH = "Content-length";
+	public static final String HEADER_X_REQUESTED_WITH = "X-Requested-With";
 	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 	
 	
@@ -94,9 +95,9 @@ public final class RequestUtils {
 	}
 	
 	public static boolean isAaXmlRequest(HttpServletRequest request){
-//		return AAUtils.isAjaxRequest(request);
 		return false;
 	}
+	
 	
 	public static String getJsonContextTypeByUserAgent(HttpServletRequest request){
 		BrowserMeta meta = RequestUtils.getBrowerMetaByAgent(request);
@@ -274,11 +275,27 @@ public final class RequestUtils {
 		}
 	}
 	
+	public static MediaType getContentTypeAsMediaType(HttpServletRequest request){
+		String accept = request.getHeader("Content-Type");
+		try {
+			MediaType mtype = MediaType.valueOf(accept);
+			return mtype;
+		} catch (Exception e) {
+			logger.error("parse [{}] as MediaType error: " + e.getMessage(), accept);
+			return null;
+		}
+	}
+
+	public static boolean isXMLHttpRequest(HttpServletRequest request){
+		return "XMLHttpRequest".equals(request.getHeader(HEADER_X_REQUESTED_WITH));
+	}
 
 	public static boolean isAjaxRequest(HttpServletRequest request){
 		MediaType mtype = getAcceptAsMediaType(request);
 		return MediaType.APPLICATION_JSON.isCompatibleWith(mtype) || 
+				MediaType.APPLICATION_JSON.isCompatibleWith(getContentTypeAsMediaType(request)) || 
 				MediaType.APPLICATION_ATOM_XML.isCompatibleWith(mtype) || 
+				isXMLHttpRequest(request) ||
 				RequestType.Ajax.equals(RequestTypeUtils.getRequestType(request)) || 
 				"json".equalsIgnoreCase(getRequestExtension(request)) || 
 				RequestType.Flash.equals(RequestTypeUtils.getRequestType(request)) || 
