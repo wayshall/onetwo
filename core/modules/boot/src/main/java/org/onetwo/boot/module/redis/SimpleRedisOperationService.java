@@ -73,7 +73,7 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 		
 		if (redisCacheManager!=null) {
 //			expires = (Map<String, Long>) SpringUtils.newPropertyAccessor(redisCacheManager, true).getPropertyValue("expires");
-			redisCacheManager.getCacheConfigurations();
+			expires = redisCacheManager.getCacheConfigurations();
 		} else {
 			expires = Collections.emptyMap();
 		}
