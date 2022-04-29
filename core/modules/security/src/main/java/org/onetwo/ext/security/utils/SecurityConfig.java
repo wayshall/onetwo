@@ -333,8 +333,12 @@ public class SecurityConfig {
 		String signingKey;
 		Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);
 		String expiration;
+		Boolean enabled;
 		
 		public boolean isEnabled(){
+			if (enabled!=null) {
+				return enabled;
+			}
 			return StringUtils.isNotBlank(signingKey);
 		}
 
