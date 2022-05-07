@@ -296,7 +296,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 
 		List<DefaultTreeModel> list = Arrays.asList(t1, t2, t3, t4, t5);
 
-		TreeBuilder<DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel>(list, new SimpleTreeModelCreator());
+		TreeBuilder<DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel>(list, new DefaultTreeModelCreator());
 		tb.rootIds(1, 4);
 		List<DefaultTreeModel> t = tb.buidTree(tb.IGNORE);
 		System.out.println(t.get(0));
