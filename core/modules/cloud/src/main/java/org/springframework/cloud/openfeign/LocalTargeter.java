@@ -6,14 +6,15 @@ import java.util.stream.Stream;
 
 import org.onetwo.cloud.feign.EnhanceFeignClient;
 import org.onetwo.cloud.feign.FeignProperties;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.aop.Proxys;
 import org.onetwo.common.spring.aop.Proxys.SpringBeanMethodInterceptor;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.cloud.openfeign.FeignContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LocalTargeter implements Targeter, ApplicationContextAware, InitializingBean {
 
 	public final static String CLASS_HYSTRIX_FEIGN = "feign.hystrix.HystrixFeign";
+	public final static String FIELD_FORCE_DECODING = "forceDecoding";
 	
 	private ApplicationContext applicationContext;
 	private Targeter defaultTargeter;
@@ -55,6 +57,14 @@ public class LocalTargeter implements Targeter, ApplicationContextAware, Initial
 			factory.setUrl(name);
 			factory.setName("");
 		}*/
+		
+		// 新版（10.x？）在SynchronousMethodHandler 包装了一个AsyncResponseHandler，若方法返回了void类型时，不会调用decoder（即此时自定义的decoder失效了）
+		// 此处直接修改 forceDecoding 为true，强制使用decoder
+		ConfigurablePropertyAccessor accessor = SpringUtils.newPropertyAccessor(feign, true);
+		if (accessor.isWritableProperty(FIELD_FORCE_DECODING)) {
+			accessor.setPropertyValue(FIELD_FORCE_DECODING, true);
+		}
+		
 		return defaultTargeter.target(factory, feign, context, target);
 	}
 
