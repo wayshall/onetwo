@@ -55,6 +55,8 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 
+import com.google.common.collect.ImmutableList;
+
 @SuppressWarnings("unchecked")
 public class FileUtils {
 
@@ -79,11 +81,23 @@ public class FileUtils {
 	public static final String SMB_PREFIX = "smb://";
 	public static final String COLON_DB_SLASH_HEAD = "://";
 	public static final String DB_SLASH_HEAD = "//";
+	
+
+	public static final List<String> IMAGE_POSTFIX = ImmutableList.of("jpg", "jpeg", "gif", "png", "bmp");
 
 	public static ResourceAdapter<?>[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = ExpressionFacotry.DOLOR;
 
 	private FileUtils() {
+	}
+	
+	public static boolean isImageSuffix(String suffix) {
+		return IMAGE_POSTFIX.contains(suffix);
+	}
+	
+	public static boolean isImageFile(String fileName) {
+		String suffix = getExtendName(fileName);
+		return isImageSuffix(suffix);
 	}
 
 	public static boolean delete(File file){
