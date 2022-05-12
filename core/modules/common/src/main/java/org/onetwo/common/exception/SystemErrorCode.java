@@ -9,6 +9,10 @@ public interface SystemErrorCode {
 		return Collections.emptyMap();
 	}
 	
+	default Map<String, Object> getErrorData() {
+		return Collections.emptyMap();
+	}
+	
 //	public String APP_ERROR_MESSAGE = "appErrorMessage";
 	public String DEFAULT_SYSTEM_ERROR_CODE = "SYSTEM_ERROR";
 	public String UNKNOWN = "UNKNOWN";
