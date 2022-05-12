@@ -1,6 +1,7 @@
 package org.onetwo.common.utils;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.onetwo.common.exception.ErrorType;
 import org.onetwo.common.exception.ServiceException;
@@ -12,6 +13,30 @@ import com.google.common.collect.ImmutableList;
  * <br/>
  */
 public class PasswordChecker {
+	/***
+	 * 字母或汉字开头
+	 * 至少一个汉字、数字、字母、下划线: "[a-zA-Z0-9_\u4e00-\u9fa5]+"
+	 */
+	private static final Pattern USER_NAME_PATTERN = Pattern.compile("^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+");
+	
+	/****
+	 * 是否有效的用户名
+	 * @author weishao zeng
+	 * @param str
+	 * @return
+	 */
+	public static boolean isValidUserName(String str){
+		if (StringUtils.isBlank(str)) {
+			return false;
+		}
+		return USER_NAME_PATTERN.matcher(str).matches();
+	}
+	public static void checkValidUserName(String str){
+		if (!isValidUserName(str)) {
+			throw new ServiceException("无效用户名");
+		}
+	}
+	
 	static private final List<Character> SPECIAL_CHARS = ImmutableList.of('~', '!', '@', '#', '$', '%', 
 			'^', '&', '*', '(', ')', '-', '_', 
 			'+', '=', '[', ']', ';', ':', '\'',
@@ -24,7 +49,7 @@ public class PasswordChecker {
 	
 	private int maxLength = 128;
 	/***
-	 * 必须包含大数字的个数
+	 * 必须包含数字的个数
 	 * 若配置了数量少于1，则不检查此规则
 	 */
 	private int digitCount = 1;

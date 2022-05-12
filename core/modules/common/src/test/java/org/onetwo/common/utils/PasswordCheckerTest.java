@@ -15,7 +15,7 @@ import org.onetwo.common.utils.PasswordChecker.PasswordErrors;
 public class PasswordCheckerTest {
 	
 	@Test
-	public void test() {
+	public void testPassword() {
 		PasswordChecker checker = new PasswordCheckerBuilder().build();
 		
 		try {
@@ -54,6 +54,34 @@ public class PasswordCheckerTest {
 		}
 		
 		checker.doCheck("sdsDfa1&1sdf");
+	}
+	
+
+	@Test
+	public void testIsValidUserName() {
+		String userName = "1test";
+		boolean isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isFalse();
+		
+		userName = "^test";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isFalse();
+		
+		userName = " test";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isFalse();
+		
+		userName = "user@2022";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isFalse();
+		
+		userName = "user_2022";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isTrue();
+		
+		userName = "测试user";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isTrue();
 	}
 
 }
