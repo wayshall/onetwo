@@ -6,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.onetwo.ext.permission.api.PermissionType;
-import org.onetwo.plugins.admin.vo.VueRouterTreeModel.RouteData;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
