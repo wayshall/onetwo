@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.onetwo.ext.permission.api.PermissionType;
+import org.onetwo.plugins.admin.vo.VueRouterTreeModel.RouteData;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -39,6 +40,7 @@ public @interface PermissionMeta {
 	
 	/****
 	 * 前端组件路径
+	 * 使用 RouteData router = new RouteData("cmsMgr/list") 代替
 	 * @author weishao zeng
 	 * @return
 	 */
