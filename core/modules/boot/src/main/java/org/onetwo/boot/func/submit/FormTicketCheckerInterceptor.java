@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 
 /**
+ * 需要事先调用SubmitTokenService#get方法生成token,
+ * 然后在提交的时候，用此token作为ticket参数的值
  * @author weishao zeng
  * <br/>
  */
-public class SubmitTokenInterceptor implements MvcInterceptor {
+public class FormTicketCheckerInterceptor implements MvcInterceptor {
 	
 	@Autowired
 	private SubmitTokenService submitTokenService;
