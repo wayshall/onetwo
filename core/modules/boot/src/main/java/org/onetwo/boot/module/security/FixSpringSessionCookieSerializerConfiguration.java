@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.security;
 
+import org.onetwo.boot.module.security.cookies.FilteredCookieSerializer;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.security.utils.SecurityConfig.CookieConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ public class FixSpringSessionCookieSerializerConfiguration {
 //	@ConditionalOnClass(name = "org.springframework.session.web.http.CookieSerializer")
 	@ConditionalOnMissingBean(CookieSerializer.class)
 	public CookieSerializer cookieSerializer(){
-		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+//		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+		DefaultCookieSerializer serializer = new FilteredCookieSerializer();
 		CookieConfig cookieConfig = securityConfig.getCookie();
 //		if(StringUtils.isNotBlank(cookieConfig.getPath())){
 		serializer.setCookiePath(cookieConfig.getPath());
