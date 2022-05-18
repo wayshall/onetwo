@@ -37,13 +37,18 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 	private ApplicationContext applicationContext;
 	@Autowired
 	private SwaggerProperties swaggerProperties;
+	private boolean initialized = false;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 //		BootUtils.asyncInit(() -> {
 //			initWebPlugins();
 //		});
+		if (initialized) {
+			return ;
+		}
 		initWebPlugins();
+		this.initialized = true;
 	}
 
     protected boolean hasExportableApiAnnotation(String pluginName, RequestHandler rh) {
@@ -85,7 +90,7 @@ public class ScanPluginAsGroupSwaggerConfig extends AbstractSwaggerConfig implem
 //				enabledPluginSwagger = pluginDefaultEnabled;
 //			}
 			if (!enabledPluginSwagger) {
-				logger.info("ignore plugin[{}] swagger docket", pluginName, plugin.getRootClass());
+				logger.info("ignore plugin[{}] swagger docket, root class: {}", pluginName, plugin.getRootClass());
 				continue;
 			}
 			logger.info("register plugin[{}] swagger docket for rootClass: {}", pluginName, plugin.getRootClass());
