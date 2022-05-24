@@ -14,10 +14,10 @@ import com.google.common.collect.ImmutableList;
  */
 public class PasswordChecker {
 	/***
-	 * 字母或汉字开头
-	 * 至少一个汉字、数字、字母、下划线: "[a-zA-Z0-9_\u4e00-\u9fa5]+"
+	 * 用户名必须由汉字、数字、字母和下划线组成: "[a-zA-Z0-9_\u4e00-\u9fa5]+"
+	 * 并且以字母或汉字开头，长度为：2到20
 	 */
-	private static final Pattern USER_NAME_PATTERN = Pattern.compile("^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+");
+	private static final Pattern USER_NAME_PATTERN = Pattern.compile("^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]{1,19}$");
 	
 	/****
 	 * 是否有效的用户名

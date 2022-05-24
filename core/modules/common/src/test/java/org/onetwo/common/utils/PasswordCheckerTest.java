@@ -82,6 +82,22 @@ public class PasswordCheckerTest {
 		userName = "测试user";
 		isValid = PasswordChecker.isValidUserName(userName);
 		assertThat(isValid).isTrue();
+		
+		userName = "user1user1user1user1";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isTrue();
+		
+		userName = "测1试2测3试4测5测6试7测8试9测1";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isTrue();
+		
+		userName = "测1试2测3试4测5测6试7测8试9测10";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isFalse();
+		
+		userName = "测试user1user1user1user1";
+		isValid = PasswordChecker.isValidUserName(userName);
+		assertThat(isValid).isFalse();
 	}
 
 }
