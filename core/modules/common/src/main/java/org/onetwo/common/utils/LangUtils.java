@@ -62,6 +62,11 @@ abstract public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
 	public final static long START_STMP = 1610374613027L; //2021-1-11 22:17的时间戳，用于某些基于时间戳算法的id减去基值
+	
+	// 正则验证身份证
+    /*     /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/   */
+	public final static String IDCARD_PATTERN = "(^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|" +
+            "(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}$)";
 
 	public static final String UTF8 = "utf-8";
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
@@ -461,6 +466,19 @@ abstract public class LangUtils {
 			clazz = obj.getClass();
 		return clazz;
 	}
+	
+	 /**
+     * 检测身份证号码格式
+     */
+    public static void checkIdCard(String idCardNumber) {
+        if (StringUtils.isBlank(idCardNumber)) {
+            throw new ServiceException("身份证号码格式错误");
+        }
+        
+        if (!idCardNumber.matches(IDCARD_PATTERN)) {
+            throw new ServiceException("身份证号码格式错误");
+        }
+    }
 	
 	public static Throwable getCauseServiceException(Throwable e){
 		Throwable se ;
