@@ -21,6 +21,8 @@ import org.onetwo.ext.permission.api.annotation.PermissionMetaData;
 import org.onetwo.ext.permission.api.annotation.ProxyMenu;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 
 public class PermClassParser {
 	public static final String APP_CODE = "appCode";
@@ -100,6 +102,21 @@ public class PermClassParser {
 	public boolean isFullyAuthenticated() {
 //		return this.parentPermissionClass == FullyAuthenticated.class;
 		return this.permissionClass == FullyAuthenticated.class;
+	}
+	
+	/***
+	 * 当前环境下是否启用
+	 * @author weishao zeng
+	 * @param env
+	 * @return
+	 */
+	public boolean isEnabledOnProfiles(Environment env) {
+		String[] conditionalOnProfiles = this.permissionMeta.conditionalOnProfiles();
+		if (LangUtils.isEmpty(conditionalOnProfiles)) {
+			return true;
+		}
+		Profiles profiles = Profiles.of(conditionalOnProfiles);
+		return env.acceptsProfiles(profiles);
 	}
 	
 	public String generatedSimpleCode(){

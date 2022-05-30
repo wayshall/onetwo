@@ -1,5 +1,7 @@
 package org.onetwo.ext.permission;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -9,5 +11,10 @@ import java.util.List;
 public interface RootMenuClassProvider {
 	
 	List<Class<?>> rootMenuClassList();
+
+	
+	default List<Class<?>> rootMenuClassListByProfiles(Collection<String> profiles) {
+		return Collections.emptyList();
+	};
 
 }

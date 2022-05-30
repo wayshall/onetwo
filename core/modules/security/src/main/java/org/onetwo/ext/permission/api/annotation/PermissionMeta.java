@@ -83,4 +83,11 @@ public @interface PermissionMeta {
 	 * @return
 	 
 	boolean routerView() default false;*/
+	
+	/***
+	 * 指定菜单在什么环境下可用，默认为空，即所有环境均可用
+	 * @author weishao zeng
+	 * @return
+	 */
+	String[] conditionalOnProfiles() default "";
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.JFishResourcesScanner;
 import org.onetwo.common.spring.utils.ResourcesScanner;
 import org.onetwo.common.spring.utils.ScanResourcesCallback;
@@ -25,10 +26,14 @@ import org.onetwo.ext.permission.api.PermissionType;
 import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
 import org.onetwo.ext.permission.api.annotation.MenuMapping;
 import org.slf4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.classreading.MetadataReader;
 
-public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoParser<P>, InitializingBean {
+public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoParser<P>, InitializingBean, ApplicationContextAware {
 	private final Logger logger = JFishLoggerFactory.logger(this.getClass());
 	
 	private static final String CODE_SEPRATOR = "_";
@@ -50,6 +55,8 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 //	private int sortStartIndex = 1000;
 	
 	private boolean parsed = false;
+	
+	private ApplicationContext applicationContext;
 	
 	
 	
@@ -158,6 +165,9 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 		
 		for(PermClassParser childMc : childMenuParser){
 			P childPerm =  parseMenuClass(childMc, appCode);
+			if (childPerm==null) {
+				continue;
+			}
 			rootMenu.addChild(childPerm);
 			/*if(MenuUtils.isMenu(childPerm)){
 				rootMenu.addChild(childPerm);
@@ -181,8 +191,15 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 //		Class<?> menuClass = parser.getPermissionClass();
 //		PermClassParser menuParser = getPermClassParser(menuClass);
 		try {
-			if(parser.isDeprecated())
+			if(parser.isDeprecated()) {
 				return null;
+			}
+			
+			Environment env = SpringUtils.getEnvironment(applicationContext);
+			if (!parser.isEnabledOnProfiles(env)) {
+				return null;
+			}
+			
 			perm = parsePermission(parser, syscode);
 		} catch (Exception e) {
 			throw new BaseException("parser permission error: " + e.getMessage(), e);
@@ -386,6 +403,11 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 	
 	public String toString(){
 		return "{rooteMenuClass:"+this.permissionConfig.getRootMenuClass()+"}";
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 	
 }

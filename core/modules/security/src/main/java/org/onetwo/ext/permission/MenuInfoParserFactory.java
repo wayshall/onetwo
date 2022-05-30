@@ -10,14 +10,18 @@ import java.util.stream.Collectors;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
 import org.onetwo.ext.permission.parser.DefaultMenuInfoParser;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.slf4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -26,13 +30,14 @@ import com.google.common.collect.Sets;
  * @author weishao zeng
  * <br/>
  */
-public class MenuInfoParserFactory<P extends IPermission> implements InitializingBean {
+public class MenuInfoParserFactory<P extends IPermission> implements InitializingBean, ApplicationContextAware {
 	
 	@Autowired(required = false)
 	private Map<String, RootMenuClassProvider> rootMenuClassProviders;
 	private Class<P> permissionClass;
 	private List<SimplePermissionConfig<P>> permissionConfigList;
 	private List<MenuInfoParser<P>> permissionParsers;
+	private ApplicationContext applicationContext;
 	
 
 	public MenuInfoParserFactory(Class<P> permissionClass) {
@@ -46,13 +51,16 @@ public class MenuInfoParserFactory<P extends IPermission> implements Initializin
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		Collection<String> profiles = SpringUtils.getProfiles(applicationContext);
 		List<SimplePermissionConfig<P>> list = Lists.newArrayList();
 		
 		if (LangUtils.isNotEmpty(rootMenuClassProviders)) {
 			Logger logger = JFishLoggerFactory.getCommonLogger();
 			if(logger.isInfoEnabled()){
 				rootMenuClassProviders.forEach((k, v)->{
-					List<Class<?>> rootMenuClass = v.rootMenuClassList();
+					List<Class<?>> rootMenuClass = Lists.newArrayList();//v.rootMenuClassList();
+					rootMenuClass.addAll(v.rootMenuClassList());
+					rootMenuClass.addAll(v.rootMenuClassListByProfiles(profiles));
 //					if(v instanceof RootMenuClassListProvider){
 //						rootMenuClass = ((RootMenuClassListProvider)v).rootMenuClassList();
 //					}else{
@@ -71,6 +79,7 @@ public class MenuInfoParserFactory<P extends IPermission> implements Initializin
 //					rooMenuClassList.add(provider.rootMenuClass());
 //				}
 				rooMenuClassList.addAll(provider.rootMenuClassList());
+				rooMenuClassList.addAll(provider.rootMenuClassListByProfiles(profiles));
 				
 				rooMenuClassList.forEach(rootMenuClass->{
 					SimplePermissionConfig<P> config = new SimplePermissionConfig<>(rootMenuClass, permissionClass);
@@ -125,6 +134,11 @@ public class MenuInfoParserFactory<P extends IPermission> implements Initializin
 
 	public void setPermissionClass(Class<P> permissionClass) {
 		this.permissionClass = permissionClass;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
 }

@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,6 +75,8 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -91,6 +94,7 @@ import org.springframework.util.ReflectionUtils.MethodFilter;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -818,6 +822,26 @@ final public class SpringUtils {
 			throw new BaseException("error applicationContext, it's not a PropertyResolver.");
 		}
 		return env;
+	}
+
+	public static Environment getEnvironment(ApplicationContext applicationContext){
+		ConfigurableEnvironment env = null;
+		if (applicationContext instanceof ConfigurableApplicationContext){
+			ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
+			env = appcontext.getEnvironment();
+		} else {
+			throw new BaseException("applicationContext can not resolve a Environment");
+		}
+		return env;
+	}
+
+	public static Collection<String> getProfiles(ApplicationContext applicationContext){
+		Environment env = getEnvironment(applicationContext);
+		String[] envProfiles = env.getActiveProfiles();
+		if (LangUtils.isEmpty(envProfiles)) {
+			envProfiles = env.getDefaultProfiles();
+		}
+		return ImmutableSet.copyOf(envProfiles);
 	}
 	
 	public static <T> T toBean(Map<String, ?> propValues, Class<T> beanClass){
