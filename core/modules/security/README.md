@@ -91,6 +91,40 @@ jfish:
             authStore: COOKIES
 ```
 
+### 根据运行环境决定加载菜单类
+
+可通过菜单提供者类新增的rootMenuClassListByProfiles方法控制，该方法5.x版本可用
+
+```Java
+@Configuration
+public class MgrConfiguration {
+    @Bean
+    public RootMenuClassProvider menuConfig() {
+        return new TestRootMenuClassProvider();
+    }
+    
+    public static class TestRootMenuClassProvider implements RootMenuClassProvider {
+
+        @Override
+        public List<Class<?>> rootMenuClassList() {
+            return Arrays.asList(CommonMgr.class);
+        }
+        
+        public List<Class<?>> rootMenuClassListByProfiles(Collection<String> profiles) {
+            if (profiles.contains("dev")) {
+                     return Arrays.asList(
+                                DevMgr1.class, 
+                                DevMgr2.class
+                            );
+            }
+            return Collections.emptyList();
+        };
+        
+    }
+}
+```
+
+
 **待续。。。**
 
 
