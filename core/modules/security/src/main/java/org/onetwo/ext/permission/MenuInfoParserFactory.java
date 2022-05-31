@@ -103,7 +103,10 @@ public class MenuInfoParserFactory<P extends IPermission> implements Initializin
 				throw new BaseException("duplicate config menu class : " + cfg.getRootMenuClass());
 			}
 			menuClasses.add(cfg.getRootMenuClass());
-			return new DefaultMenuInfoParser<P>(cfg);
+			DefaultMenuInfoParser<P> parser = new DefaultMenuInfoParser<P>(cfg);
+			parser.setApplicationContext(applicationContext);
+//			parser.afterPropertiesSet();
+			return parser;
 		})
 		.collect(Collectors.toList());
 		
