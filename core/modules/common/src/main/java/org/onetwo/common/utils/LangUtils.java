@@ -1647,8 +1647,8 @@ abstract public class LangUtils {
 	}
 	
 	public static BigDecimal roundHalfUp(BigDecimal number) {
-		number.setScale(2, BigDecimal.ROUND_HALF_UP); // 四色五入，保持两个小数点
-		return number;
+		BigDecimal newNumber = number.setScale(2, BigDecimal.ROUND_HALF_UP); // 四色五入，保持两个小数点
+		return newNumber;
 	}
 
 	public static String format(Number num, String pattern) {
