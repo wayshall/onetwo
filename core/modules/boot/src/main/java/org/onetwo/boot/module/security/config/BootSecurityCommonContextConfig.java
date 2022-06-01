@@ -136,7 +136,8 @@ public class BootSecurityCommonContextConfig{
 	public static class BootRedisContextConfig extends RedisContextConfig {
 	}
 
-	@ConditionalOnProperty(name="signingKey", prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".security.jwt")
+//	@ConditionalOnProperty(name="signingKey", prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".security.jwt")
+	@ConditionalOnProperty(name={"signingKey", "enabled"}, prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".security.jwt")
 	@Configuration
 	@ConditionalOnMissingBean(SecurityContextRepository.class)
 	public static class BootJwtContxtConfig extends JwtContxtConfig {
