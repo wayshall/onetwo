@@ -286,6 +286,10 @@ public class JsonMapperTest {
 		List<UserEntity> u2 = JsonMapper.defaultMapper().fromJsonAsList(json);
 		System.out.println(u2);
 		Assert.assertEquals(size, u2.size());
+		
+		String jsonListStr = "[{\"attributeId\":\"718797279100964864\",\"fieldType\":\"MSELECT\",\"selectedValue\":[{\"id\":\"719926646329872384\",\"attributeId\":\"718797279100964864\",\"listOrder\":100,\"value\":\"500克\"},{\"id\":\"719926763585835008\",\"attributeId\":\"718797279100964864\",\"listOrder\":100,\"value\":\"1000克\"},{\"id\":\"719926681687855104\",\"attributeId\":\"718797279100964864\",\"listOrder\":90,\"value\":\"250\"}]},{\"attributeId\":\"722194076098510848\",\"fieldType\":\"MSELECT\",\"selectedValue\":[{\"id\":\"722194294009380864\",\"attributeId\":\"722194076098510848\",\"listOrder\":100,\"value\":\"大果\"}]}]";
+		List<AttributeValueJsonTestVO> jsonList = JsonMapper.ignoreNull().fromJsonAsList(jsonListStr, AttributeValueJsonTestVO.class);
+		System.out.println("jsonList: " + jsonList);
 	}
 	
 	@Test
@@ -546,4 +550,68 @@ public class JsonMapperTest {
 		}
 		
 	}
+	
+	static public class AttributeValueJsonTestVO {
+
+	    private Long attributeId;
+	    private List<AttributeSelectedValueTestVO> selectedValue;
+	    private String textValue;
+	    private ProductAttributeFieldTypeTest fieldType;
+		public Long getAttributeId() {
+			return attributeId;
+		}
+		public void setAttributeId(Long attributeId) {
+			this.attributeId = attributeId;
+		}
+		public List<AttributeSelectedValueTestVO> getSelectedValue() {
+			return selectedValue;
+		}
+		public void setSelectedValue(List<AttributeSelectedValueTestVO> selectedValue) {
+			this.selectedValue = selectedValue;
+		}
+		public String getTextValue() {
+			return textValue;
+		}
+		public void setTextValue(String textValue) {
+			this.textValue = textValue;
+		}
+		public ProductAttributeFieldTypeTest getFieldType() {
+			return fieldType;
+		}
+		public void setFieldType(ProductAttributeFieldTypeTest fieldType) {
+			this.fieldType = fieldType;
+		}
+
+	}
+	
+	static public class AttributeSelectedValueTestVO {
+
+	    private Long id;
+	    private String value;
+		public Long getId() {
+			return id;
+		}
+		public void setId(Long id) {
+			this.id = id;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+	    
+	}
+	
+	public static enum ProductAttributeFieldTypeTest {
+        SELECT("单选下拉框"),
+        MSELECT("多选下拉框"),
+        TEXT("文本框");
+
+        String label;
+
+		private ProductAttributeFieldTypeTest(String label) {
+			this.label = label;
+		}
+    }
 }

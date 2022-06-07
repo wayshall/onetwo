@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -476,6 +477,19 @@ public class JsonMapper {
 			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ctype, itemType));
 		} catch (Exception e) {
 			throw new JsonException("parse json to collection[" + ctype + "] error, reason: " + e.getMessage() + ", json: " + json, e);
+		}
+		return datas;
+	}
+    
+
+	public <T> List<T> fromJsonAsList(String json, Class<T> itemType){
+		if(StringUtils.isBlank(json))
+			return Collections.emptyList();
+		List<T> datas;
+		try {
+			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, itemType));
+		} catch (Exception e) {
+			throw new JsonException("parse json to ArrayList error, reason: " + e.getMessage() + ", json: " + json, e);
 		}
 		return datas;
 	}
