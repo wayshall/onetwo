@@ -87,7 +87,7 @@ final public class SecurityUtils {
 		AUTH_FAILED("认证失败"),
 //		NOT_AUTHED("未认证的用户"),
 		ACCESS_DENIED("未授权，访问拒绝"),
-		CM_NOT_LOGIN("用户未认证！");//包括匿名和rememberMe的用户
+		CM_NOT_LOGIN("请先登录！");//包括匿名和rememberMe的用户
 		
 		@Getter
 		private final String label;
