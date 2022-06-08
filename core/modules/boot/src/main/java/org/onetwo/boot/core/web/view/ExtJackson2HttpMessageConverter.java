@@ -65,6 +65,9 @@ public class ExtJackson2HttpMessageConverter extends MappingJackson2HttpMessageC
 		if(requestOpt.isPresent()){
 			object = filterAndWrapModel(object, outputMessage, requestOpt.get());
 		}
+		if (object==null) {
+			return ;
+		}
 		super.writeInternal(object, type, outputMessage);
 	}
 
