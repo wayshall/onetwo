@@ -9,8 +9,6 @@ public class ToIntegerConvertor extends AbstractTypeConvert<Integer> {
 		this.longConvertor = new ToLongConvertor();
 	}
 
-
-
 	@Override
 	public Integer doConvert(Object value, Class<?> componentType) {
 		return longConvertor.convert(value, componentType).intValue();
