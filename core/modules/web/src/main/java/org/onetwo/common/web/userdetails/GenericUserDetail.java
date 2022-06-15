@@ -8,10 +8,14 @@ import java.io.Serializable;
  */
 public interface GenericUserDetail<ID extends Serializable> extends UserRoot {  
 	
-	public final static String USER_DETAIL_KEY = "loginUserInfo"; 
+	final static String USER_DETAIL_KEY = "loginUserInfo"; 
 
-	public String getUserName();
+	String getUserName();
 	
-	public ID getUserId();
+	ID getUserId();
+	
+	default UserTypes getUserType() {
+		return UserTypes.USER;
+	}
 	
 }
