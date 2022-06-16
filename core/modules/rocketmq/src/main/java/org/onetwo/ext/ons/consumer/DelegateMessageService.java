@@ -206,7 +206,7 @@ public class DelegateMessageService implements InitializingBean {
 		return msg;
 	}
 
-	@Transactional
+	@Transactional(noRollbackFor = MessageOnlyServiceException.class)
 	public void consumeMessageWithTransactional(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
 		this.consumeMessage(consumer, meta, currentConetxt);
 	}
