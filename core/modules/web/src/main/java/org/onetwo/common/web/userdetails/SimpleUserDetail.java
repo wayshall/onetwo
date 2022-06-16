@@ -11,6 +11,7 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 //  @ApiModelProperty("头像")
 	private String avatar;
 //	private String token;
+	private UserTypes userType;
 
 	public SimpleUserDetail(){ 
 	}
@@ -56,6 +57,14 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+
+	public UserTypes getUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserTypes userType) {
+		this.userType = userType;
 	}
 
 }
