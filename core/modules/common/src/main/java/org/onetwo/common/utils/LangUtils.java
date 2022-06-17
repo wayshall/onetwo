@@ -1986,4 +1986,27 @@ abstract public class LangUtils {
 		return unsensitive;
 	}
 	
+	/***
+	 * 两边脱敏
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param leftPlainTextSize
+	 * @param rightPlainTextSize
+	 * @param replacementString
+	 * @return
+	 */
+	public static String unsensitiveSurround(String sensitive, int leftPlainTextSize, int rightPlainTextSize, String replacementString) {
+		if (leftPlainTextSize<0 || rightPlainTextSize<0) {
+			throw new IllegalArgumentException("leftPlainTextSize or rightPlainTextSize can not be negative");
+		}
+		if (leftPlainTextSize + rightPlainTextSize >= sensitive.length()) {
+			return sensitive;
+		}
+		int padSize = sensitive.length() - leftPlainTextSize - rightPlainTextSize;
+		String unsensitive = org.apache.commons.lang3.StringUtils.left(sensitive, leftPlainTextSize) + 
+				LangUtils.repeatString(padSize, replacementString) + 
+				org.apache.commons.lang3.StringUtils.right(sensitive, rightPlainTextSize);
+		return unsensitive;
+	}
+	
 }
