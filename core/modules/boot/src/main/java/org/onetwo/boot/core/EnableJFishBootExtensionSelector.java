@@ -10,6 +10,7 @@ import org.onetwo.boot.core.cors.CorsFilterConfiguration;
 import org.onetwo.boot.core.embedded.TomcatConfiguration;
 import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
+import org.onetwo.boot.core.scheduler.BootTaskSchedulerCustomizer;
 import org.onetwo.boot.core.shutdown.GraceKillConfiguration;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
@@ -93,6 +94,7 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		classNames.add(RedisConfiguration.class.getName());
 		classNames.add(AsyncMvcConfiguration.class.getName());
 		classNames.add(AsyncTaskConfiguration.class.getName());
+		classNames.add(BootTaskSchedulerCustomizer.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
 		classNames.add(GraceKillConfiguration.class.getName());
 
