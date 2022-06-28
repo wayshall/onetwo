@@ -29,6 +29,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -249,9 +250,30 @@ abstract public class ExcelUtils {
 //			value = StringUtils.cleanInvisibleUnicode(cell.getStringCellValue().trim());
 			value = cell.getStringCellValue().trim();
 		}else if(CellType.NUMERIC==type){
-			value = cell.getNumericCellValue();
+			boolean isDateCell = DateUtil.isCellDateFormatted(cell);
+			if (isDateCell) {
+				value = cell.getDateCellValue();
+			} else {
+				value = cell.getNumericCellValue();
+			}
 		}else if(CellType.FORMULA==type){
-			value = cell.getCellFormula();
+			switch (cell.getCachedFormulaResultType()) {
+			case NUMERIC:
+				value = cell.getNumericCellValue();
+				break;
+			case STRING:
+				value = cell.getStringCellValue().trim();
+				break;
+			case BOOLEAN:
+				value = cell.getBooleanCellValue();
+				break;
+			case BLANK:
+				value = "";
+				break;
+			default:
+				value = cell.getCellFormula();
+				break;
+			}
 		}else if(CellType.BOOLEAN==type){
 			value = cell.getBooleanCellValue();
 		}else if(CellType.BLANK==type){
