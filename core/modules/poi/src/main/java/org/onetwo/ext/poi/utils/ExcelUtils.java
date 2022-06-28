@@ -257,7 +257,23 @@ abstract public class ExcelUtils {
 				value = cell.getNumericCellValue();
 			}
 		}else if(CellType.FORMULA==type){
-			value = cell.getCellFormula();
+			switch (cell.getCachedFormulaResultType()) {
+			case NUMERIC:
+				value = cell.getNumericCellValue();
+				break;
+			case STRING:
+				value = cell.getStringCellValue().trim();
+				break;
+			case BOOLEAN:
+				value = cell.getBooleanCellValue();
+				break;
+			case BLANK:
+				value = "";
+				break;
+			default:
+				value = cell.getCellFormula();
+				break;
+			}
 		}else if(CellType.BOOLEAN==type){
 			value = cell.getBooleanCellValue();
 		}else if(CellType.BLANK==type){
