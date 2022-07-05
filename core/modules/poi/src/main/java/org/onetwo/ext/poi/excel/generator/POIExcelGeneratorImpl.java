@@ -68,7 +68,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		RowProcessor rowProcessor;
 		
 		rowProcessor = new DefaultRowProcessor(this);
-		titleProcessor = new DefaultRowProcessor(this, new DefaultCellStyleBuilder(this){
+		FieldProccessor tilteFieldProcessor = new FieldProccessor(this, new DefaultCellStyleBuilder(this){
 
 			@Override
 			public String getFont(FieldModel field) {
@@ -79,14 +79,13 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			public String getStyle(FieldModel field) {
 				return field.getHeaderStyle();
 			}
-			
-			
-		}){
+		}) {
 			@Override
 			public Object getDefaultFieldValue(FieldModel field) {
 				return field.getLabel();
 			}
 		};
+		titleProcessor = new DefaultRowProcessor(this, tilteFieldProcessor);
 		iteratorProcessor = new SmartIteratorRowProcessor(this, titleProcessor);
 //		iteratorProcessor = new ExtIteratorRowProcessor(this, titleProcessor);
 		
