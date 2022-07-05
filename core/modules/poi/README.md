@@ -77,7 +77,9 @@ public class CardEntity {
 
 ```
 
-
+### 其它特性
+[url链接](https://github.com/wayshall/onetwo/issues/74)
+[动态列支持](https://github.com/wayshall/onetwo/issues/78)
 
 ### 与spring mvc集成
 
