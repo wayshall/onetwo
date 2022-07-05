@@ -9,7 +9,7 @@ import org.onetwo.ext.poi.excel.exception.ExcelException;
 public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 
 	public SmartIteratorRowProcessor(PoiExcelGenerator excelGenerator, RowProcessor titleRowProcessor) {
-		super(excelGenerator, titleRowProcessor, new FieldProccessor(excelGenerator));
+		super(excelGenerator, titleRowProcessor, new SmartFieldProccessor(excelGenerator));
 	}
 	
 	public static class SmartFieldProccessor extends FieldProccessor {
@@ -18,6 +18,9 @@ public class SmartIteratorRowProcessor extends IteratorRowProcessor {
 			super(generator);
 		}
 
+		/****
+		 * 当列（field）没有rootValue属性时，但其值却是一个集合时，自动循环迭代为多行
+		 */
 		@Override
 		protected void processSingleField(CellContextData cellContext){
 			int cellIndex = cellContext.getCellIndex();

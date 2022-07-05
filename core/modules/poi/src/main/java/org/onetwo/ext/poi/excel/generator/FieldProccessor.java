@@ -4,6 +4,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.onetwo.common.convert.Types;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.excel.data.CellContextData;
 import org.onetwo.ext.poi.excel.data.RowContextData;
@@ -44,6 +46,27 @@ public class FieldProccessor {
 	}
 
 	public void processField(Object root, RowContextData rowContext, FieldModel field) {
+		String iterator = field.getIterator();
+		if (StringUtils.isBlank(iterator)) {
+			this.processField0(root, rowContext, field);
+		} else {
+			Object iteratorValue = rowContext.parseValue(iterator);
+			if (!Iterable.class.isInstance(iteratorValue)) {
+				throw new BaseException("iterator of field[" + field.getName() + "] is not a Iterable object!");
+			}
+			Iterator<?> it = ((Iterable<?>)iteratorValue).iterator();
+			while(it.hasNext()) {
+				Object itValue = it.next();
+				try {
+					rowContext.getSelfContext().put(field.getName(), itValue);
+					this.processField0(root, rowContext, field);
+				} finally {
+					rowContext.getSelfContext().remove(field.getName());
+				}
+			}
+		}
+	}
+	public void processField0(Object root, RowContextData rowContext, FieldModel field) {
 		if(!canCreateCell(rowContext, field))
 			return ;
 		
@@ -199,6 +222,10 @@ public class FieldProccessor {
 		}
 		if(fieldValue==null){
 			fieldValue = cellData.getDefFieldValue();
+			// 若#开头，则再用ognl解释一次
+			if (fieldValue instanceof String && fieldValue.toString().startsWith("#")) {
+				fieldValue = cellData.parseValue(cellData.getDefFieldValue().toString());
+			}
 		}
 
 		fieldValue = formatValue(fieldValue, field.getDataFormat());
