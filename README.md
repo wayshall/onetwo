@@ -2,7 +2,7 @@
 ------
 基于spring boot的快速开发框架   
 
-spring-boot技术交流群：  604158262
+联系邮箱：wayshall@qq.com
 
 
 
