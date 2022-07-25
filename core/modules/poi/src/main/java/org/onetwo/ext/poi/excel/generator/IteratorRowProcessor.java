@@ -20,6 +20,11 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 		super(excelGenerator);
 		this.titleRowProcessor = titleRowProcessor;
 	}
+	
+	public IteratorRowProcessor(PoiExcelGenerator excelGenerator, RowProcessor titleRowProcessor, FieldProccessor fieldProccessor) {
+		super(excelGenerator, fieldProccessor);
+		this.titleRowProcessor = titleRowProcessor;
+	}
 
 	public void processRow(RowContextData rowContext) {
 		
@@ -124,8 +129,12 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 //					String name = "field-"+i;
 //					UtilTimerStack.push(name);
 					field = iterator.getField(i);
+//					if (field.getName().equals("properties")) {
+//						System.out.println("test");
+//					}
 					Object rootValue = getFieldRootValue(rowContext, field);
-					this.processField(rootValue, rowContext, field);
+//					this.processField(rootValue, rowContext, field);
+					this.fieldProccessor.processField(rootValue, rowContext, field);
 //					UtilTimerStack.pop(name);
 				}
 			} catch (Exception e) {

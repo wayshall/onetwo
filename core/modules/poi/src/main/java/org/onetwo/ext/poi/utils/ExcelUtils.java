@@ -55,8 +55,12 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.google.common.collect.Lists;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.security.NoTypePermission;
+import com.thoughtworks.xstream.security.NullPermission;
+import com.thoughtworks.xstream.security.PrimitiveTypePermission;
 
 import ognl.Ognl;
 
@@ -146,17 +150,36 @@ abstract public class ExcelUtils {
 
 	public static XStream registerExcelModel(){
 		XStream xstream = new XStream(new DomDriver());
+		xstream .addPermission(NoTypePermission.NONE); //forbid everything
+		xstream .addPermission(NullPermission.NULL);   // allow "null"
+		xstream .addPermission(PrimitiveTypePermission.PRIMITIVES); // allow primitive types
+		
+		List<Class<?>> allowTypes = Lists.newArrayList();
+		
 		xstream.alias("workbook", WorkbookModel.class);
+		allowTypes.add(WorkbookModel.class);
+		
 		xstream.alias("vars", List.class);
 		xstream.alias("var", VarModel.class);
+		allowTypes.add(VarModel.class);
+		
 		xstream.alias("sheets", List.class);
 		xstream.alias("template", TemplateModel.class);
 		xstream.alias("sheet", TemplateModel.class);
+		allowTypes.add(TemplateModel.class);
+		
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
+		allowTypes.add(RowModel.class);
+		
 		xstream.alias("field", FieldModel.class);
+		allowTypes.add(FieldModel.class);
+		
 		xstream.alias("valueExecutors", List.class);
 		xstream.alias("valueExecutor", ExecutorModel.class);
+		allowTypes.add(ExecutorModel.class);
+		
+		
 //		xstream.useAttributeFor(Number.class);
 //		xstream.useAttributeFor(boolean.class);
 //		xstream.useAttributeFor(String.class); 
@@ -165,6 +188,9 @@ abstract public class ExcelUtils {
 		for(Class<?> btype : getBaseTypeClass()){
 			xstream.useAttributeFor(btype);
 		}
+		
+
+		xstream.allowTypes(allowTypes.toArray(new Class<?>[0]));
 		return xstream;
 	}
 	

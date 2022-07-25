@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 
 @SuppressWarnings("serial")
 public class CardEntity {
@@ -73,6 +75,8 @@ public class CardEntity {
 	protected List<CardBean> cardBeans;
   
 	protected List<String> properties;
+	
+	private Map<String, Object> dynamicProperties = Maps.newHashMap();
 	
 	public CardEntity(){
 	}
@@ -225,6 +229,16 @@ public class CardEntity {
 
 	public void setProperties(List<String> properties) {
 		this.properties = properties;
+	}
+
+
+	public Map<String, Object> getDynamicProperties() {
+		return dynamicProperties;
+	}
+
+
+	public void setDynamicProperties(Map<String, Object> dynamicProperties) {
+		this.dynamicProperties = dynamicProperties;
 	}
 	
 }
