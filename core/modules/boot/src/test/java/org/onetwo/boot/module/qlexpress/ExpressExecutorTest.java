@@ -95,14 +95,14 @@ public class ExpressExecutorTest {
     public void testOperatorContextPut() throws Exception{
         ExpressRunner runner = new ExpressRunner();
         OperatorBase op = new OperatorContextPut("contextPut");
-        runner.addFunction("contextPut",op);
+        runner.addFunction("contextPut", op);
         String exp = "contextPut('success','false');contextPut('error','错误信息');contextPut('warning','提醒信息')";
         IExpressContext<String, Object> context = new DefaultContext<String, Object>();
         // success会被contextPut('success','false')覆盖
         context.put("success","true");
         Object result = runner.execute(exp,context,null,false,true);
-        System.out.println(result);
         System.out.println(context);
+//        assertThat((boolean)).isTrue();
     }
 	
 	@Test
@@ -117,6 +117,22 @@ public class ExpressExecutorTest {
 		r = runner.execute("1 join2 2", context, null, false, true);
 		System.out.println("testJoinOperator2: " + r);
 	}
+	
+
+	
+	@Test
+	public void testSystemFunc() throws Exception {
+		ExpressRunner runner = new ExpressRunner(true, true);
+		DefaultContext<String, Object> context = new DefaultContext<String, Object>();
+		context.put("name", "我叫什么名字？");
+		Object res = runner.execute("name like \"我叫什么%\"", context, null, false, true);
+		System.out.println("res: " + res);
+		assertThat((boolean)res).isTrue();
+		
+		runner.execute("name like '我叫什么名字？%'", context, null, false, true);
+		assertThat((boolean)res).isTrue();
+	}
+	
 	
 	class OperatorContextPut extends OperatorBase {
         
