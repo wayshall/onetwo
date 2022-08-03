@@ -186,6 +186,9 @@ public class NiceDateTest {
 		
 		date = NiceDate.New("2019-12-26 10:38:38").preciseAtDate().clearHour().getTime();
 		assertThat(date).isEqualTo(DateUtils.parse("2019-12-26"));
+		
+		date = NiceDate.New("2022-08-03 10:38:38").preciseAtDate().beforeDay(30).getTime();
+		assertThat(date).isEqualTo(DateUtils.parse("2022-7-4"));
 
 	}
 }

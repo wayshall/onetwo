@@ -282,6 +282,18 @@ public class NiceDate {
 //		return this;
 	}
 	
+	/***
+	 * number天之前，即减去number天
+	 * @param number
+	 * @return
+	 */
+	public NiceDate beforeDay(int number){
+		if (number<=0) {
+			throw new IllegalArgumentException("number must be greater than 0");
+		}
+		return nextDay(-number);
+	}
+	
 	public NiceDate nextHour(int amount){
 		NiceDate d = clone();
 		DateUtils.addHours(d.calendar, amount);
