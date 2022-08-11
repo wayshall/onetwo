@@ -42,6 +42,18 @@ final public class Types {
 			return defValue;
 		}
 	}
+	
+	public static Object convertObject(Object source, Class<?> clazz, Object defValue) {
+		try {
+			if(source==null)
+				return defValue;
+			Object val = convertor().convert(source, clazz);
+			return val==null?defValue:val;
+		} catch (Exception e) {
+			logger.error("convert source[{}] to class[{}] error: " + e.getMessage(), source, clazz);
+			return defValue;
+		}
+	}
 
 	/***
 	 * source为null，则返回默认值0

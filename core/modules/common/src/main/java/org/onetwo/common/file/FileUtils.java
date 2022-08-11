@@ -632,11 +632,15 @@ public class FileUtils {
 	public static String getFileNameWithoutExt(String fileName) {
 		if(fileName.indexOf('\\')!=-1)
 			fileName = fileName.replace('\\', SLASH_CHAR);
-		int start = fileName.lastIndexOf(SLASH_CHAR);
-		int index = fileName.lastIndexOf(DOT_CHAR);
-		if(index==-1)
-			index = fileName.length();
-		return fileName.substring(start+1, index);
+		int slashIndex = fileName.lastIndexOf(SLASH_CHAR);
+		int dotIndex = fileName.lastIndexOf(DOT_CHAR);
+		if(dotIndex==-1) {
+			dotIndex = fileName.length();
+		}
+		if (slashIndex >= dotIndex) {
+			return "";
+		}
+		return fileName.substring(slashIndex+1, dotIndex);
 	}
 
 	public static String getFileName(String fileName) {
