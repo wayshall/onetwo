@@ -354,24 +354,24 @@
           <groupId>io.springfox</groupId>
           <artifactId>springfox-swagger2</artifactId>
           <optional>true</optional>
-          <exclusions>
+          <!-- <exclusions>
             <exclusion>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-models</artifactId>
             </exclusion>
-          </exclusions>
+          </exclusions>-->
         </dependency>
         
         <dependency>
           <groupId>io.springfox</groupId>
           <artifactId>springfox-swagger-ui</artifactId>
           <optional>true</optional>
-          <exclusions>
+          <!-- <exclusions>
             <exclusion>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-models</artifactId>
             </exclusion>
-          </exclusions>
+          </exclusions>-->
         </dependency>
         
 		<dependency>
