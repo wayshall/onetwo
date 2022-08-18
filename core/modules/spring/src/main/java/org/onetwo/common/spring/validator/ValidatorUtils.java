@@ -66,7 +66,7 @@ public final class ValidatorUtils {
 				msg = info==null?fe.getField():info.value();
 //				msg = info==null?"":info.value();
 			}
-			msg += error.getDefaultMessage();
+			msg += " " + error.getDefaultMessage();
 			msglist.add(msg);
 		}
 		return msglist;

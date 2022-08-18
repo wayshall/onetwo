@@ -23,7 +23,7 @@ import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
-import org.onetwo.common.spring.converter.StringToJackson2ObjectNodeConverterFactory;
+import org.onetwo.common.spring.converter.StringToJackson2JsonNodeConverterFactory;
 import org.onetwo.common.spring.converter.StringToMapConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
 import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
@@ -207,7 +207,8 @@ public class BootMvcConfigurerAdapter implements WebMvcConfigurer, InitializingB
 		registry.addConverterFactory(new IntegerToEnumConverterFactory());
 		
 		registry.addConverterFactory(new StringToMapConverterFactory());
-		registry.addConverterFactory(new StringToJackson2ObjectNodeConverterFactory());
+//		registry.addConverterFactory(new StringToJackson2ObjectNodeConverterFactory());
+		registry.addConverterFactory(new StringToJackson2JsonNodeConverterFactory());
 	}
 
 	/***

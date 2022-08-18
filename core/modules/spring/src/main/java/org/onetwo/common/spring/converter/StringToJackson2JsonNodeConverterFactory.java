@@ -4,27 +4,25 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @author weishao zeng
- * @deprecated instead of StringToJackson2JsonNodeConverterFactory
  * <br/>
  */
-@Deprecated
-public class StringToJackson2ObjectNodeConverterFactory implements ConverterFactory<String, ObjectNode> {
+public class StringToJackson2JsonNodeConverterFactory implements ConverterFactory<String, JsonNode> {
 
 	@Override
-	public <R extends ObjectNode> Converter<String, R> getConverter(Class<R> targetType) {
-		return new StringToObjectNode<>(targetType);
+	public <R extends JsonNode> Converter<String, R> getConverter(Class<R> targetType) {
+		return new StringToJsonNode<>(targetType);
 	}
 
-	private class StringToObjectNode<T extends ObjectNode> implements Converter<String, T> {
+	private class StringToJsonNode<T extends JsonNode> implements Converter<String, T> {
 
 		private JsonMapper jsonMapper = JsonMapper.IGNORE_NULL;
 		private Class<T> targetType;
 		
-		public StringToObjectNode(Class<T> targetType) {
+		public StringToJsonNode(Class<T> targetType) {
 			this.targetType = targetType;
 		}
 

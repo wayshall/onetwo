@@ -80,7 +80,7 @@
        <url>https://github.com/wayshall/onetwo</url>
        <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
        <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-       <tag>onetwo-modules-4.8.0</tag>
+       <tag>onetwo-modules-5.0.0</tag>
    </scm>
   <licenses>
     <license>
