@@ -155,6 +155,11 @@
         <artifactId>spring-session-data-redis</artifactId>
         <version>2.3.3.RELEASE</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-jwt</artifactId>
+      <version>1.0.10.RELEASE</version>
+    </dependency>
 
 
 	<dependency>
