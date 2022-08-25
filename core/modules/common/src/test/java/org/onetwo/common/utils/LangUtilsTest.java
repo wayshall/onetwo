@@ -480,5 +480,20 @@ public class LangUtilsTest {
 		assertThat(value).isEqualTo(4286944383L);
 	}
 	
+	@Test
+	public void testGetNumber() {
+		String data = "测试一下阿123斯顿6798发了水电费0432开始的";
+		List<String> dataList = LangUtils.getNumbersFromString(data);
+		System.out.println("dataList: " + dataList);
+		assertThat(dataList).size().isEqualTo(3);
+		
+		Integer value = LangUtils.getNumberFromString(data);
+		System.out.println("val: " + value);
+		assertThat(value).isEqualTo(123);
+		value = LangUtils.getNumberFromString(data, -1);
+		System.out.println("val: " + value);
+		assertThat(value).isEqualTo(432);
+	}
+	
 }
 
