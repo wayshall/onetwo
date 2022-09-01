@@ -42,6 +42,10 @@ public interface TypeConvertable {
 	default Integer asInteger() {
 		return Types.asInteger(getConvertableValue());
 	}
+	
+	default Boolean asBoolean() {
+		return Types.asBoolean(getConvertableValue());
+	}
 
 	default String asString() {
 		return Types.asString(getConvertableValue());

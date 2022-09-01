@@ -40,7 +40,8 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/common</module>
-                <module>modules/jackson</module>
+                <module>modules/web</module>
+                <module>../../zifish-plugins/web-admin</module>
 			</modules>
            <build>
               <plugins>

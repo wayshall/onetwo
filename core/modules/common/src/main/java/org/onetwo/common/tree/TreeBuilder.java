@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.utils.LangUtils;
@@ -277,6 +278,13 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	
 	public List<TM> getRootNodes() {
 		return rootNodes;
+	}
+	
+	public TreeBuilder<TM> doIfChildrenIsEmpty(boolean recursion, Consumer<TM> action) {
+		for(TM node : this.rootNodes){
+			TreeUtils.doIfChildrenIsEmpty(node, action, recursion);
+		}
+		return this;
 	}
 	
 	

@@ -2,6 +2,10 @@ package org.onetwo.common.tree;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.onetwo.common.utils.LangUtils;
 
 
 final public class TreeUtils {
@@ -28,6 +32,25 @@ final public class TreeUtils {
 			spTemp += sp;
 			buildString(str, cnode, spTemp);
 			spTemp = sp;
+		}
+	}
+	
+	/****
+	 * 
+	 * @author weishao zeng
+	 * @param <TM>
+	 * @param treeNode
+	 * @param action
+	 * @param recursion 是否递归
+	 */
+	public static <TM extends TreeModel<TM>> void doIfChildrenIsEmpty(TM treeNode, Consumer<TM> action, boolean recursion) {
+		List<TM> children = treeNode.getChildren();
+		if (LangUtils.isEmpty(children)) {
+			action.accept(treeNode);
+		} else if (recursion) {
+			for (TM node : children) {
+				doIfChildrenIsEmpty(node, action, recursion);
+			}
 		}
 	}
 	
