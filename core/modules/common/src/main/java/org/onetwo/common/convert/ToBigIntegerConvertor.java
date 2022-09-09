@@ -3,6 +3,8 @@ package org.onetwo.common.convert;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.onetwo.common.utils.StringUtils;
+
 public class ToBigIntegerConvertor extends AbstractTypeConvert<BigInteger> {
 
 	protected ToBigIntegerConvertor() {
@@ -24,7 +26,13 @@ public class ToBigIntegerConvertor extends AbstractTypeConvert<BigInteger> {
             return BigInteger.valueOf(((Boolean) value).booleanValue() ? 1L : 0L);
         if (c == Character.class)
             return BigInteger.valueOf(((Character) value).charValue());
-        return new BigInteger(value.toString().trim());
+        
+
+    	String str = value.toString().trim();
+    	if (StringUtils.isBlank(str)) {
+    		return null;
+    	}
+        return new BigInteger(str);
 
 	}
 

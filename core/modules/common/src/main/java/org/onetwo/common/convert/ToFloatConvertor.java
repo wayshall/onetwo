@@ -11,7 +11,11 @@ public class ToFloatConvertor extends AbstractTypeConvert<Float> {
 	
 	@Override
 	public Float doConvert(Object value, Class<?> componentType) {
-		return doubleDelegate.convert(value, componentType).floatValue();
+		Double val = doubleDelegate.convert(value, componentType);
+		if (val==null) {
+			return null;
+		}
+		return val.floatValue();
 
 	}
 

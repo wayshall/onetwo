@@ -1,5 +1,7 @@
 package org.onetwo.common.convert;
 
+import org.onetwo.common.utils.StringUtils;
+
 public class ToDoubleConvertor extends AbstractTypeConvert<Double> {
 
 	public ToDoubleConvertor() {
@@ -17,7 +19,12 @@ public class ToDoubleConvertor extends AbstractTypeConvert<Double> {
             return ((Boolean) value).booleanValue() ? 1.0 : 0.0;
         if (c == Character.class)
             return (double)((Character) value).charValue();
-        return Double.parseDouble(value.toString().trim());
+
+    	String str = value.toString().trim();
+    	if (StringUtils.isBlank(str)) {
+    		return null;
+    	}
+        return Double.parseDouble(str);
 
 	}
 

@@ -1,5 +1,7 @@
 package org.onetwo.common.convert;
 
+import org.onetwo.common.utils.StringUtils;
+
 public class ToLongConvertor extends AbstractTypeConvert<Long> {
 	
 	public ToLongConvertor() {
@@ -15,8 +17,13 @@ public class ToLongConvertor extends AbstractTypeConvert<Long> {
             return ((Boolean) value).booleanValue() ? 1L : 0L;
         if (c == Character.class){
             return (long)((Character) value).charValue();
+        } else {
+        	String str = value.toString().trim();
+        	if (StringUtils.isBlank(str)) {
+        		return null;
+        	}
+        	return Long.parseLong(str);
         }
-        return Long.parseLong(value.toString().trim());
 
 	}
 
