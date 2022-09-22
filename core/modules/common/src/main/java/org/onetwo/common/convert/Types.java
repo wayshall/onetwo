@@ -74,6 +74,10 @@ final public class Types {
 	public static Integer asInteger(Object source) {
 		return convertor().convert(source, Integer.class);
 	}
+	
+	public static Boolean asBoolean(Object source) {
+		return convertor().convert(source, Boolean.class);
+	}
 
 	public static String asString(Object source) {
 		return convertor().convert(source, String.class);

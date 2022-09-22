@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 
@@ -57,6 +58,8 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.ArgsReturnableClosure;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
+import com.google.common.collect.Lists;
+
 @SuppressWarnings({"rawtypes", "unchecked"})
 abstract public class LangUtils {
 
@@ -70,6 +73,7 @@ abstract public class LangUtils {
 
 	public static final String UTF8 = "utf-8";
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
+	public static final Pattern DIGIT_SEGEMENT = Pattern.compile("([0-9]+)");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
 	public static final String EMPTY_STRING = "";
 	public static final Object EMPTY_OBJECT = new Object();
@@ -1833,6 +1837,52 @@ abstract public class LangUtils {
 			return false;
 		}
 		return DIGIT.matcher(str).matches();
+	}
+
+	public static Integer getNumberFromString(String str){
+		return getNumberFromString(str, 0);
+	}
+	
+	/***
+	 * 从字符串中提取数字
+	 * @author weishao zeng
+	 * @param str
+	 * @param index
+	 * @return
+	 */
+	public static Integer getNumberFromString(String str, int index){
+		if (StringUtils.isBlank(str)) {
+			return null;
+		}
+		
+		List<String> numbList = getNumbersFromString(str);
+		if (numbList.isEmpty()) {
+			return null;
+		}
+		
+		String numb = "";
+		if (index==-1) {
+			numb = numbList.get(numbList.size()-1);
+		} else {
+			numb = numbList.get(index);
+		}
+		Integer val = Types.asInteger(numb);
+		return val;
+	}
+
+	public static List<String> getNumbersFromString(String str){
+		List<String> numbList = Lists.newArrayList();
+		if (StringUtils.isBlank(str)) {
+			return numbList;
+		}
+		
+		Matcher m = DIGIT_SEGEMENT.matcher(str);
+		while(m.find()) {
+			String numbstr = m.group(0);
+			numbList.add(numbstr);
+		}
+		
+		return numbList;
 	}
 	
 	public static <T> T cast(Object obj, Class<T> clazz){
