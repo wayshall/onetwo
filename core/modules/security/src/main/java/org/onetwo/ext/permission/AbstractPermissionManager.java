@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.permission.api.IPermission;
-import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
+import org.onetwo.ext.permission.utils.PermissionUtils;
 import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
@@ -171,7 +171,8 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	}
 	
 	protected boolean isReversePermissions(String code) {
-		return code.equalsIgnoreCase(FullyAuthenticated.AUTH_CODE);
+		return PermissionUtils.isReservePermissioin(code);
+//		return code.equalsIgnoreCase(FullyAuthenticated.AUTH_CODE);
 	}
 	
 	protected void removeUnusedRootMenu(String rootCode) {
