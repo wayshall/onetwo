@@ -41,6 +41,9 @@ public class DefaultUISelectDataProviderService implements DUISelectDataProvider
 	private DefaultUISelectDataProviderService _this;
 	
 	public Object getDatas(UISelectDataRequest request) {
+		if (StringUtils.isBlank(request.getEntity())) {
+			return null;
+		}
 		DUIEntityMeta meta = uiclassMetaManager.get(request.getEntity());
 		DUIFieldMeta uifield = meta.getField(request.getField());
 		DUISelectMeta uiselect = uifield.getSelect();
