@@ -39,7 +39,10 @@ public @interface PermissionMeta {
 	
 	/****
 	 * 前端组件路径
-	 * 使用 RouteData router = new RouteData("cmsMgr/list") 代替
+	 * 使用 
+	 * @PermissionMetaData
+	 * RouteData router = new RouteData("cmsMgr/list") 
+	 * 代替
 	 * @author weishao zeng
 	 * @return
 	 */
