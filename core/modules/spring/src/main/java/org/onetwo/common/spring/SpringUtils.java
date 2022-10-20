@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
@@ -42,6 +43,7 @@ import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.spring.utils.MapToBeanConvertor;
+import org.onetwo.common.spring.utils.SpringMergedAnnotationFinder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -122,6 +124,11 @@ final public class SpringUtils {
 	private static final DateTimeFormatAnnotationFormatterFactory DATE_TIME_FORMAT = new DateTimeFormatAnnotationFormatterFactory();
 	
 	private SpringUtils(){
+	}
+	
+	public static AnnotationInfo createAnnotationInfo(Class<?> entityClass) {
+		AnnotationInfo annotationInfo = new AnnotationInfo(entityClass, entityClass, SpringMergedAnnotationFinder.INSTANCE);
+		return annotationInfo;
 	}
 	
 	public static Date parseDate(String text, Field field) {
