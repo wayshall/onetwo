@@ -59,7 +59,7 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 		this.avatar = avatar;
 	}
 
-	public UserTypes getUserType() {
+	public UserTypes getMallUserType() {
 		return userType;
 	}
 

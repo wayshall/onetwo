@@ -72,6 +72,10 @@ abstract public class LangUtils {
             "(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}$)";
 
 	public static final String UTF8 = "utf-8";
+	/***
+	 * dot和数字
+	 */
+	public static final Pattern VERSION = Pattern.compile("^[\\.0-9]+$");
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
 	public static final Pattern DIGIT_SEGEMENT = Pattern.compile("([0-9]+)");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
@@ -2057,6 +2061,13 @@ abstract public class LangUtils {
 				LangUtils.repeatString(padSize, replacementString) + 
 				org.apache.commons.lang3.StringUtils.right(sensitive, rightPlainTextSize);
 		return unsensitive;
+	}
+	
+	public static boolean isVersionString(String version) {
+		if (StringUtils.isBlank(version)) {
+			return false;
+		}
+		return VERSION.matcher(version).matches();
 	}
 	
 }

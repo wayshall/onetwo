@@ -394,6 +394,26 @@ public class LangUtilsTest {
 		str = "34 33";
 		Assert.assertFalse(LangUtils.isDigitString(str));
 	}
+	
+
+	@Test
+	public void testVersion(){
+		String str = "123";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "0.1.1";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "3.0.1";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "0.03";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "2.1.0";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "3ssd";
+		Assert.assertFalse(LangUtils.isVersionString(str));
+		str = "34 33";
+		Assert.assertFalse(LangUtils.isVersionString(str));
+	}
+	
 	@Test
 	public void testHasElement(){
 		Assert.assertTrue(LangUtils.isEmpty(Collections.EMPTY_MAP));

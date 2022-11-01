@@ -14,7 +14,7 @@ public interface GenericUserDetail<ID extends Serializable> extends UserRoot {
 	
 	ID getUserId();
 	
-	default UserTypes getUserType() {
+	default UserTypes getMallUserType() {
 		return UserTypes.USER;
 	}
 	
