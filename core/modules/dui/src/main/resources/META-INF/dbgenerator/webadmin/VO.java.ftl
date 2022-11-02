@@ -1,7 +1,7 @@
 <#assign requestPath="/${_globalConfig.getModuleName()}/${_tableContext.className}"/>
 <#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix}"/>
 
-<#assign entityClassName="${_tableContext.className}Entity"/>
+<#assign entityClassName="${_tableContext.className}VO"/>
 <#assign entityClassName2="${_tableContext.className}"/>
 <#assign idName="${table.primaryKey.javaName}"/>
 <#assign idType="${table.primaryKey.javaType.simpleName}"/>
@@ -10,6 +10,7 @@ package ${_tableContext.localFullPackage};
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.io.Serializable;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -24,41 +25,25 @@ import org.onetwo.dbm.jpa.BaseEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import io.swagger.annotations.ApiModelProperty;
 
 /***
  * ${(table.comments[0])!''}
  */
 @SuppressWarnings("serial")
-@Entity
-@Table(name="${table.name}")
 @Data
-@EqualsAndHashCode(callSuper=true)
-public class ${entityClassName} extends BaseEntity {
+public class ${entityClassName} implements Serializable {
 
-    @SnowflakeId
-    @NotNull
     ${table.primaryKey.javaType.simpleName} ${table.primaryKey.propertyName};
     
 <#list table.columns as column>
-<#if column.primaryKey == false && !( column.propertyName == 'createAt' || column.propertyName == 'updateAt' ) >
+    <#if column.primaryKey == false && !( column.propertyName == 'createAt' || column.propertyName == 'createBy' || column.propertyName == 'updateAt' || column.propertyName == 'updateBy' || column.propertyName == 'tenantId' ) >
     /***
      * ${(column.comments[0])!''}
      */
-    <#if !column.nullable>
-    @NotNull
-    </#if>
-    <#if column.isJsonType()>
-    @org.onetwo.dbm.annotation.DbmJsonField
-    <#elseif column.mapping.isStringType()>
-    @Length(max=${column.columnSize})
-    // @SafeHtml
-    <#elseif column.isEmailType()>
-    @Email
-    <#elseif column.isUrlType()>
-    @URL
-    </#if>
+    @ApiModelProperty("${(column.comments[0])!''}")
     ${column.mappingJavaClassLabel} ${column.propertyName};
     
-</#if>
+    </#if>
 </#list>
 }

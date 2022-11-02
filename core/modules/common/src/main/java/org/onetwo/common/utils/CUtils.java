@@ -40,6 +40,7 @@ import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.CollectionMap;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
@@ -666,6 +667,25 @@ final public class CUtils {
 				it.remove();
 			}
 		}
+	}
+	
+	/****
+	 * 对比容器里的元素是否相等
+	 * @param <E>
+	 * @param it1
+	 * @param it2
+	 * @return
+	 */
+	public static <E> boolean isEquals(Iterable<? extends E> it1, Iterable<? extends E> it2){
+		if (it1==null || it2==null) {
+			return false;
+		}
+		if (it1.equals(it2)) {
+			return true;
+		}
+		Set<E> set1 = Sets.newHashSet(it1);
+		Set<E> set2 = Sets.newHashSet(it2);
+		return set1.equals(set2);
 	}
 	
 	private CUtils(){

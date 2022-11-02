@@ -1,46 +1,38 @@
 <#assign requestPath="/${_globalConfig.getModuleName()}/${_tableContext.className}"/>
 <#assign pagePath="/${_globalConfig.getModuleName()}/${_tableContext.tableNameWithoutPrefix}"/>
 
-<#assign entityClassName="${_tableContext.className}Entity"/>
+<#assign entityClassName="${_tableContext.className}UpdateRequest"/>
 <#assign entityClassName2="${_tableContext.className}"/>
 <#assign idName="${table.primaryKey.javaName}"/>
 <#assign idType="${table.primaryKey.javaType.simpleName}"/>
+<#assign formFields=DUIEntityMeta.formFields/>
 
 package ${_tableContext.localFullPackage};
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
-// import org.hibernate.validator.constraints.SafeHtml;
 
-import org.onetwo.dbm.annotation.SnowflakeId;
-import org.onetwo.dbm.jpa.BaseEntity;
-
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /***
  * ${(table.comments[0])!''}
  */
 @SuppressWarnings("serial")
-@Entity
-@Table(name="${table.name}")
 @Data
-@EqualsAndHashCode(callSuper=true)
-public class ${entityClassName} extends BaseEntity {
+public class ${entityClassName} implements Serializable {
 
-    @SnowflakeId
-    @NotNull
     ${table.primaryKey.javaType.simpleName} ${table.primaryKey.propertyName};
     
-<#list table.columns as column>
-<#if column.primaryKey == false && !( column.propertyName == 'createAt' || column.propertyName == 'updateAt' ) >
+<#if formFields.isEmpty()==false>
+    <#list formFields as field>
+        <#assign column=field.column/>
+        <#if column.primaryKey == false && !( column.propertyName == 'createAt' || column.propertyName == 'createBy' || column.propertyName == 'updateAt' || column.propertyName == 'updateBy' || column.propertyName == 'tenantId' ) >
     /***
      * ${(column.comments[0])!''}
      */
@@ -57,8 +49,9 @@ public class ${entityClassName} extends BaseEntity {
     <#elseif column.isUrlType()>
     @URL
     </#if>
+    @ApiModelProperty("${(column.comments[0])!''}")
     ${column.mappingJavaClassLabel} ${column.propertyName};
-    
+        </#if>
+    </#list>
 </#if>
-</#list>
 }

@@ -359,6 +359,23 @@ public class DUIGenerator {
 			return this;
 		}
 		
+		public WebadminGenerator generatePageRequest(){
+			// packageName=service
+			tableGenerator.javaClassTemplate("vo.request", templateName+"/PageRequest.java.ftl");
+			return this;
+		}
+		
+		public WebadminGenerator generateVO(){
+			tableGenerator.javaClassTemplate("vo", templateName+"/VO.java.ftl");
+			return this;
+		}
+		
+		public WebadminGenerator generateUpdateRequest(){
+			// packageName=service
+			tableGenerator.javaClassTemplate("vo.request", templateName+"/UpdateRequest.java.ftl");
+			return this;
+		}
+		
 		public WebadminGenerator generateController(Class<?> pluginBaseController){
 			context.put("pluginBaseController", pluginBaseController.getName());
 			tableGenerator.javaClassTemplate("controller", templateName+"/Controller.java.ftl");

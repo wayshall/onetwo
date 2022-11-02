@@ -40,7 +40,7 @@
            <id>microcloud</id>
 			<modules>
                 <module>modules/common</module>
-                <module>modules/web</module>
+                <module>modules/dui</module>
 			</modules>
            <build>
               <plugins>
