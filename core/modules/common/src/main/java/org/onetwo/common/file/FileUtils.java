@@ -64,7 +64,7 @@ public class FileUtils {
 
 	public static final String JAVA_IO_TEMDIR = "java.io.tmpdir";
 	public static final String UTF8_BOM = "\uFEFF";
-	public static final String UNICODE_ZERO_WIDTH_SPACE = "\u200b";
+	public static final String UNICODE_ZERO_WIDTH_SPACE = "\u200b"; // 零宽空格是一种不可打印的Unicode字符，用于可能需要换行处。
 	public static final char UNICODE_ZERO_WIDTH_SPACE_CHAR = UNICODE_ZERO_WIDTH_SPACE.charAt(0);
 	
 	public static final String UTF8 = "utf-8";

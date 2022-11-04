@@ -3,6 +3,7 @@ package org.onetwo.common.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
@@ -17,6 +18,13 @@ import org.onetwo.common.utils.list.JFishList;
 
 public class FileUtilsTest {
 	
+	@Test
+	public void testTextToImagic() {
+		InputStream input = FileUtils.getResourceAsStream("imagic-data.txt");
+		String data = FileUtils.readAsString(input);
+		byte[] bytes = LangUtils.hex2Bytes(data);
+		FileUtils.writeByteArrayToFile(new File("/Users/way/data/testTextToImagic.jpg"), bytes);
+	}
 	@Test
 	public void testBomAndZwsp() throws Exception{
 		String str = "testC​,string";
