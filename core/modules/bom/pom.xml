@@ -771,6 +771,14 @@
         <optional>true</optional>
     </dependency>
     
+    
+    <!-- sm加密处理 -->    
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>1.56</version>
+    </dependency>
+    
      <!-- for test -->
      <dependency>
        <groupId>org.assertj</groupId>

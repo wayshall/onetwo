@@ -138,6 +138,12 @@
 	    <optional>true</optional>
 	</dependency>
 	
+    <!-- sm加密处理 -->    
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+    </dependency>
+	
 	
     <!-- swagger -->
     <dependency>

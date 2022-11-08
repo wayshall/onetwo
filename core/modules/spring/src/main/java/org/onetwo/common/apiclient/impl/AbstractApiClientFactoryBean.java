@@ -194,10 +194,6 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 
 			RequestContextData context = createRequestContextData(invocation, args, invokeMethod);
 			ApiInterceptorChain chain = new ApiInterceptorChain(invokeMethod.getInterceptors(), context, () -> {
-				if (RestUtils.isRequestBodySupportedMethod(context.getHttpMethod())) {
-					Object requestBody = invokeMethod.getRequestBody(args);
-					context.setRequestBody(requestBody);
-				}
 				return this.actualInvoke0(invokeMethod, context);
 			});
 			return chain.invoke();
@@ -271,6 +267,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			RequestMethod requestMethod = invokeMethod.getRequestMethod();
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			
+			
 			RequestContextData context = RequestContextData.builder()
 															.requestId(restExecutor.requestId())
 															.requestMethod(requestMethod)
@@ -282,6 +279,11 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 															.invocation(invocation)
 															.maxRetryCount(maxRetryCount)
 															.build();
+
+			if (RestUtils.isRequestBodySupportedMethod(requestMethod)) {
+				Object requestBody = invokeMethod.getRequestBody(args);
+				context.setRequestBody(requestBody);
+			}
 			
 			String actualUrl = getFullPath(invokeMethod.getPath());
 			actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
