@@ -1,20 +1,9 @@
 package org.onetwo.common.encrypt.sm4;
 
-import java.security.AlgorithmParameters;
-import java.security.Key;
-import java.security.SecureRandom;
 import java.security.Security;
-import java.util.Arrays;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import org.onetwo.common.encrypt.ByteCoders;
-import org.onetwo.common.exception.BaseException;
 
 public class Sm4Util {
     static {
