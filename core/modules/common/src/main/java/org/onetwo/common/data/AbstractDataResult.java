@@ -42,6 +42,10 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 	面向某些领域时，指示客户端是否只提取result里的data作为返回结果
 	 */
 	private Boolean extractableData;
+	/****
+	 * 显示时间, 秒。设为 0 则不会自动关闭
+	 */
+	private Integer duration;
 	
 	public AbstractDataResult(){
 //		this.code = SUCCESS;
@@ -134,6 +138,14 @@ abstract public class AbstractDataResult<T> implements DataResult<T>{
 
 	public void setShowMessage(Boolean showMessage) {
 		this.showMessage = showMessage;
+	}
+	
+	public Integer getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Integer duration) {
+		this.duration = duration;
 	}
 
 	@Override

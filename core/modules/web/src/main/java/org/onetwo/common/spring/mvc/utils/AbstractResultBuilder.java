@@ -18,6 +18,11 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	private Boolean showMessage;
 //	final protected Class<?> builderClass;
 //	private T data;
+	/****
+	 * 显示时间, 秒。设为 0 则不会自动关闭
+	 * 默认为5秒
+	 */
+	private Integer duration = 5;
 	
 	public AbstractResultBuilder() {
 		super();
@@ -30,6 +35,11 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 	
 	public B success(String message){
 		return code(AbstractDataResult.SUCCESS, message);
+	}
+	
+	public B duration(Integer duration){
+		this.duration = duration;
+		return (B)this;
 	}
 
 
@@ -116,6 +126,9 @@ abstract public class AbstractResultBuilder<T, B extends AbstractResultBuilder<T
 		SimpleDataResult<T> rs = creeateResult();
 		if (this.showMessage!=null) {
 			rs.setShowMessage(showMessage);
+		}
+		if (this.duration!=null) {
+			rs.setDuration(duration);
 		}
 		rs.setExtractableData(extractableData);
 		return rs;

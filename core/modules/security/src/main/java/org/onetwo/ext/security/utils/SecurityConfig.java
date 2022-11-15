@@ -322,7 +322,7 @@ public class SecurityConfig {
 		String audience = "webclient";
 		
 		String authHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
-		String authKey;
+		String authKey = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 		JwtAuthStores authStore = JwtAuthStores.HEADER;
 		String signingKey;
 		Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);

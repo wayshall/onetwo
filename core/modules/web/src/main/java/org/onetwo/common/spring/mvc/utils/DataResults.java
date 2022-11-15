@@ -46,6 +46,10 @@ final public class DataResults {
 	public static <T> SimpleResultBuilder<T> success(String message){
 		return SimpleResultBuilder.<T>builder().success(message);
 	}
+
+	public static <T> SimpleResultBuilder<T> success(String message, Integer duration){
+		return SimpleResultBuilder.<T>builder().success(message).duration(duration);
+	}
 	/***
 	 * SimpleResultBuilder
 	 * 把数据包装为{@linkplain org.onetwo.common.data.DataResult Result} ({@linkplain SimpleDataResult SimpleDataResult}) 类型返回
