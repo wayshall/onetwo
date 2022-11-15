@@ -60,6 +60,9 @@ public class DUIGenerator {
 		return generator;
 	}
 	
+	static interface DuiTemplateContextKeys {
+		String PLUGIN_BASE_CONTROLLER = "pluginBaseController";
+	}
 	private DbGenerator dbGenerator;
 	private String projectPath = FileUtils.getMavenProjectDir().getPath();
 	private String resourceDir = LangUtils.toString("${0}/src/main/resources", this.projectPath);
@@ -120,7 +123,7 @@ public class DUIGenerator {
 	}
 	
 	public DUIGenerator pluginBaseController(Class<?> pluginBaseControllerClass) {
-		context.put("pluginBaseController", pluginBaseControllerClass.getName());
+		context.put(DuiTemplateContextKeys.PLUGIN_BASE_CONTROLLER, pluginBaseControllerClass.getName());
 		return this;
 	}
 
@@ -377,19 +380,24 @@ public class DUIGenerator {
 		}
 		
 		public WebadminGenerator generateController(Class<?> pluginBaseController){
-			context.put("pluginBaseController", pluginBaseController.getName());
+			context.put(DuiTemplateContextKeys.PLUGIN_BASE_CONTROLLER, pluginBaseController.getName());
 			tableGenerator.javaClassTemplate("controller", templateName+"/Controller.java.ftl");
 			return this;
 		}
 		
 		public WebadminGenerator generateVueController(Class<?> pluginBaseController){
-			context.put("pluginBaseController", pluginBaseController.getName());
+			if (pluginBaseController!=null) {
+				context.put(DuiTemplateContextKeys.PLUGIN_BASE_CONTROLLER, pluginBaseController.getName());
+			}
 			tableGenerator.javaClassTemplate("controller", templateName+"/MgrController.java.ftl");
 			return this;
 		}
 		
 		public WebadminGenerator generateVueController(){
-			return generateVueController(AbstractBaseController.class);
+			if (!context.containsKey(DuiTemplateContextKeys.PLUGIN_BASE_CONTROLLER)) {
+				context.put(DuiTemplateContextKeys.PLUGIN_BASE_CONTROLLER, AbstractBaseController.class.getName());
+			}
+			return generateVueController(null);
 		}
 		
 		public WebadminGenerator generateEntity(){

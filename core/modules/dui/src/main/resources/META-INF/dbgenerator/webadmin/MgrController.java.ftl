@@ -5,6 +5,13 @@
 <#assign serviceImplPackage="${_globalConfig.javaModulePackage}.service.impl"/>
 <#assign daoPackage="${_globalConfig.javaModulePackage}.dao"/>
 <#assign entityPackage="${_globalConfig.javaModulePackage}.entity"/>
+<#assign pageRequestPackage="${_globalConfig.javaModulePackage}.vo.request"/>
+<#assign updateRequestPackage="${_globalConfig.javaModulePackage}.vo.request"/>
+<#assign voPackage="${_globalConfig.javaModulePackage}.vo"/>
+
+<#assign pageRequestClassName="${_tableContext.className}PageRequest"/>
+<#assign voClassName="${_tableContext.className}VO"/>
+<#assign updateRequestClassName="${_tableContext.className}UpdateRequest"/>
 
 <#assign entityClassName="${entityClassName!(_tableContext.className+'Entity')}"/>
 <#assign entityClassName2="${_tableContext.className}"/>
@@ -64,17 +71,16 @@ import org.onetwo.common.spring.validator.ValidatorUtils.ValidGroup.ValidWhenNew
 import ${_globalConfig.getJavaLocalPackage(_tableContext.localPackage)}.${DUIEntityMeta.parent.table.className}MgrController.${DUIEntityMeta.parent.table.className}Mgr.Edit${DUIEntityMeta.table.className};
 </#if>
 import ${entityPackage}.${entityClassName};
-import ${serviceImplPackage}.${serviceImplClassName};
+import ${servicePackage}.${serviceImplClassName};
+import ${pageRequestPackage}.${pageRequestClassName};
+import ${updateRequestPackage}.${updateRequestClassName};
+import ${voPackage}.${voClassName};
 
 @RestController
 public class ${_tableContext.className}MgrController extends ${pluginBaseController} implements DateInitBinder {
 
     @Autowired
     private ${serviceClassName} ${serviceImplPropertyName};
-<#if DUIEntityMeta?? && DUIEntityMeta.hasFileField()==true>
-    @Autowired
-    private BootCommonService bootCommonService;
-</#if>
     
 <#if DUIEntityMeta?? && DUIEntityMeta.editableEntity==true>
     @ByPermissionClass(Edit${DUIEntityMeta.table.className}.class)
@@ -99,8 +105,8 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     @ByPermissionClass(${_tableContext.className}Mgr.class)//在菜单类新建 ${_tableContext.className}Mgr 类后用import
 </#if>
     @GetMapping("${requestPath}")
-    public Page<${entityClassName}> list(PageRequest pageRequest, ${entityClassName} ${_tableContext.propertyName}){
-        Page<${entityClassName}> page = ${serviceImplPropertyName}.findPage(pageRequest.toPageObject(), ${_tableContext.propertyName});
+    public Page<${voClassName}> list(${pageRequestClassName} pageRequest){
+        Page<${voClassName}> page = ${serviceImplPropertyName}.findPage(pageRequest);
         return page;
     }
     
@@ -123,57 +129,28 @@ public class ${_tableContext.className}MgrController extends ${pluginBaseControl
     
     @ByPermissionClass(${_tableContext.className}Mgr.Create.class)
     @PostMapping("${requestPath}")
-    public DataResult<${entityClassName}> create(<#list formFields as field><#rt>
-                                                  <#if field.input.isFileType()==true><#t>
-                                                    <#lt><#if !field.column.nullable>@RequestParam(required=false) </#if>MultipartFile ${field.name}File, 
-                                                        <#assign hasFileFormField=true/><#t>
-                                                  </#if><#t>
-                                                </#list><#t>
-                                                    @Validated ${entityClassName} ${_tableContext.propertyName},<#if hasFileFormField==false><#lt></#if>
-                                                BindingResult br
-                                                ){
+    public DataResult<${voClassName}> create(@Validated ${updateRequestClassName} request, BindingResult br){
         ValidatorUtils.throwIfHasErrors(br, true);
-    <#list formFields as field><#t>
-      <#if field.input.isFileType()==true><#t>
-        if (${field.name}File!=null) {
-            FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
-            ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
-        }
-      </#if><#t>
-    </#list><#t>
-        ${serviceImplPropertyName}.persist(${_tableContext.propertyName});
-        return DataResults.<${entityClassName}>success("保存成功！").data(${_tableContext.propertyName}).build();
+        ${voClassName} vo = ${serviceImplPropertyName}.persist(request);
+        return DataResults.<${voClassName}>success("保存成功！").data(vo).build();
     }
 
     @ByPermissionClass(${_tableContext.className}Mgr.class)
     @GetMapping(value="${requestPath}/{${idName}}")
-    public ${entityClassName} get(@PathVariable("${idName}") ${idType} ${idName}){
-        ${entityClassName} ${_tableContext.propertyName} = ${serviceImplPropertyName}.findById(${idName});
+    public ${voClassName} get(@PathVariable("${idName}") ${idType} ${idName}){
+        ${voClassName} ${_tableContext.propertyName} = ${serviceImplPropertyName}.findById(${idName});
         return ${_tableContext.propertyName};
     }
     
     @ByPermissionClass(${_tableContext.className}Mgr.Update.class)
     @PutMapping(value="${requestPath}/{${idName}}")
-    public DataResult<${entityClassName}> update(@PathVariable("${idName}") ${idType} ${idName}, 
-                                                <#list formFields as field><#t>
-                                                  <#if field.input.isFileType()==true><#t>
-                                                    <#if !field.column.nullable>@RequestParam(required=false) </#if>MultipartFile ${field.name}File, 
-                                                  </#if><#t>
-                                                </#list><#t>
-                                                    @Validated ${entityClassName} ${_tableContext.propertyName}, 
+    public DataResult<${voClassName}> update(@PathVariable("${idName}") ${idType} ${idName}, 
+                                                @Validated ${updateRequestClassName} request, 
                                                     BindingResult br){
         ValidatorUtils.throwIfHasErrors(br, true);
-        ${_tableContext.propertyName}.set${idName?cap_first}(${idName});
-    <#list formFields as field><#t>
-      <#if field.input.isFileType()==true><#t>
-        if (${field.name}File!=null) {
-            FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
-            ${_tableContext.propertyName}.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
-        }
-      </#if><#t>
-    </#list><#t>
-        ${serviceImplPropertyName}.dymanicUpdate(${_tableContext.propertyName});
-        return DataResults.<${entityClassName}>success("保存成功！").data(${_tableContext.propertyName}).build();
+        request.set${idName?cap_first}(${idName});
+        ${voClassName} vo = ${serviceImplPropertyName}.update(request);
+        return DataResults.<${voClassName}>success("保存成功！").data(vo).build();
     }
     
     

@@ -6,6 +6,14 @@
 <#assign daoPackage="${_globalConfig.javaModulePackage}.dao"/>
 <#assign entityPackage="${_globalConfig.javaModulePackage}.entity"/>
 
+<#assign pageRequestPackage="${_globalConfig.javaModulePackage}.vo.request"/>
+<#assign updateRequestPackage="${_globalConfig.javaModulePackage}.vo.request"/>
+<#assign voPackage="${_globalConfig.javaModulePackage}.vo"/>
+
+<#assign pageRequestClassName="${_tableContext.className}PageRequest"/>
+<#assign voClassName="${_tableContext.className}VO"/>
+<#assign updateRequestClassName="${_tableContext.className}UpdateRequest"/>
+
 <#assign entityClassName="${entityClassName!(_tableContext.className+'Entity')}"/>
 <#assign entityClassName2="${_tableContext.className}"/>
 <#assign serviceClassName="${_tableContext.className}Service"/>
@@ -16,11 +24,15 @@
 <#assign idName="${table.primaryKey.javaName}"/>
 <#assign idType="${table.primaryKey.javaType.simpleName}"/>
 
+<#assign formFields=DUIEntityMeta.formFields/>
+<#assign hasFileFormField=false/>
+
 package ${_globalConfig.getJavaLocalPackage(_tableContext.localPackage)};
 
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.dbm.core.internal.DbmCrudServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +49,10 @@ import org.onetwo.common.tree.TreeUtils;
 </#if>
 
 import ${entityPackage}.${entityClassName};
+import ${servicePackage}.${serviceImplClassName};
+import ${pageRequestPackage}.${pageRequestClassName};
+import ${updateRequestPackage}.${updateRequestClassName};
+import ${voPackage}.${voClassName};
 
 @Service
 @Transactional
@@ -50,6 +66,10 @@ public class ${serviceClassName} {
     
     @Autowired
     private BaseEntityManager baseEntityManager;
+<#if DUIEntityMeta?? && DUIEntityMeta.hasFileField()==true>
+    @Autowired
+    private BootCommonService bootCommonService;
+</#if>
     
 <#if DUIEntityMeta?? && DUIEntityMeta.isTree()==true>
     public List<DefaultTreeModel> loadAsTree() {
@@ -74,21 +94,24 @@ public class ${serviceClassName} {
 </#if>
     
     @Transactional(readOnly=true)
-    public Page<${entityClassName}> findPage(Page<${entityClassName}> page, ${entityClassName} example) {
+    public Page<${voClassName}> findPage(${pageRequestClassName} pageRequest) {
         return baseEntityManager.from(${entityClassName}.class)
                                 .where()
-                                    .addFields(example)
+                                    .addFields(pageRequest)
                                     .ignoreIfNull()
                                 .end()
                                 .toQuery()
-                                .page(page);
+                                .page(pageRequest.toPageObject())
+                                .mapToNewPage(e -> e.asBean(${voClassName}.class));
     }
 
-    public ${entityClassName} findById(${idType} id) {
-        return baseEntityManager.findById(${entityClassName}.class, id);
+    public ${voClassName} findById(${idType} id) {
+        ${entityClassName} entity = baseEntityManager.findById(${entityClassName}.class, id);
+        return entity.asBean(${voClassName}.class);
     }
     
-    public ${entityClassName} persist(${entityClassName} entity) {
+    public ${voClassName} persist(${updateRequestClassName} request) {
+        ${entityClassName} entity =  CopyUtils.copy(${entityClassName}.class, request);
     <#if DUIEntityMeta??>
       <#list DUIEntityMeta.hasDefaultFields as field>
         if (entity.get${field.column.capitalizePropertyName}()==null) {
@@ -96,13 +119,23 @@ public class ${serviceClassName} {
         }
       </#list>
     </#if>
+    <#list formFields as field><#t>
+      <#if field.input.isFileType()==true><#t>
+        if (${field.name}File!=null) {
+            FileStoredMeta ${field.name}FileMeta = bootCommonService.uploadFile("${moduleName!_tableContext.className}", ${field.name}File);
+            entity.set${field.column.capitalizePropertyName}(${field.name}FileMeta.getAccessablePath());
+        }
+      </#if><#t>
+    </#list><#t>
         baseEntityManager.persist(entity);
-        return entity;
+        return entity.asBean(${voClassName}.class);
     }
     
-    public ${entityClassName} update(${entityClassName} entity) {
+    public ${voClassName} update(${updateRequestClassName} request) {
+        ${entityClassName} entity = baseEntityManager.load(${entityClassName}.class, request.${table.primaryKey.readMethodName}());
+        CopyUtils.copy(entity, request);
         baseEntityManager.update(entity);
-        return entity;
+        return entity.asBean(${voClassName}.class);
     }
     
     public void dymanicUpdate(${entityClassName} entity) {
