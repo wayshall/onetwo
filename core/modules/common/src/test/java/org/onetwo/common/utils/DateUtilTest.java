@@ -195,6 +195,13 @@ public class DateUtilTest {
 		parseDate = Dates.toDate(localDate);
 		System.out.println("parseDate3:" + parseDate.toLocaleString());
 
+		
+		parseDate = DateUtils.parseByPatterns("22/11/16,14:46:01", "yy/MM/dd,HH:mm:ss");
+		System.out.println("parseDate:" + parseDate.toLocaleString());
+		assertThat(parseDate).isEqualTo(DateUtils.parse("2022-11-16 14:46:01"));
+		
+		
+
 	}
 	
 	@Test
