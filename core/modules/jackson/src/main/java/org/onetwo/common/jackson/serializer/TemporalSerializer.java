@@ -10,6 +10,7 @@ import org.onetwo.common.date.Dates;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -36,9 +37,11 @@ public class TemporalSerializer extends JsonSerializer<Temporal>{
 
 	@Override
 	public void serializeWithType(Temporal value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-		typeSer.writeTypePrefixForScalar(value, gen);
+//		typeSer.writeTypePrefixForScalar(value, gen);
+		typeSer.writeTypePrefix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
 		serialize(value, gen, serializers);
-		typeSer.writeTypeSuffixForScalar(value, gen);
+		typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
+//		typeSer.writeTypeSuffixForScalar(value, gen);
 	}
 	
 }

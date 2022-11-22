@@ -1,4 +1,4 @@
-package org.onetwo.common.jackson.deserializer;
+package org.onetwo.common.jackson.serializer;
 
 import java.io.IOException;
 
