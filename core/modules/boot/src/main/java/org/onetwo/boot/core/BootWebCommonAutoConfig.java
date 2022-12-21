@@ -20,6 +20,7 @@ import org.onetwo.boot.core.listener.PropertyDebuggerListener;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.CorsFilter;
+import org.onetwo.boot.core.web.filter.HostPreventFilter;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
@@ -290,6 +291,23 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 	@Bean(name = CorsFilter.CORS_FILTER_NAME)
 	public CorsFilter corsFilter(){
 		CorsFilter filter = new CorsFilter();
+		return filter;
+	}
+
+	@Bean
+//	@ConditionalOnBean(name = HostPreventFilter.FILTER_NAME)
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_HOST_FILTER, havingValue="true", matchIfMissing=true)
+	public FilterRegistrationBean<?> hostPreventFilterFilterRegistration(@Qualifier(HostPreventFilter.FILTER_NAME) Filter filter){
+		FilterRegistrationBean<?> registration = new FilterRegistrationBean<>(filter);
+		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		registration.setName(HostPreventFilter.FILTER_NAME);
+		return registration;
+	}
+
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_HOST_FILTER, havingValue="true", matchIfMissing=true)
+	@Bean(name = HostPreventFilter.FILTER_NAME)
+	public HostPreventFilter hostPreventFilter(){
+		HostPreventFilter filter = new HostPreventFilter();
 		return filter;
 	}
 

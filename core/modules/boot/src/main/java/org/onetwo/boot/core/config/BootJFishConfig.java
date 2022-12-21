@@ -38,6 +38,7 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	 */
 	public static final String PROFILES_DEBUG = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".profiles.debug";
 	public static final String ENABLE_CORSFILTER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".corsfilter.enabled";
+	public static final String ENABLE_HOST_FILTER = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".hostfilter.enabled";
 	public static final String ENABLE_MVC_CORSFILTER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.cors-filter";
 	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.logger-level";
 	public static final String ENABLE_DYNAMIC_SETTING = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.setting";
@@ -82,6 +83,8 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	private Boolean logErrorDetail;
 	List<String> notifyThrowables = Lists.newArrayList("com.mysql.jdbc.MysqlDataTruncation", "SQLException");
 
+	private HostfilterConfig hostfilter = new HostfilterConfig();
+	
 	private String errorView = "error";
 	
 	/***
@@ -225,6 +228,16 @@ jfish:
 	@Data
 	public class GraceKillConfig {
 		Collection<String> signals;
+	}
+
+	@Data
+	public class HostfilterConfig {
+		List<String> allowIps = Lists.newArrayList();
+		/***
+		 * 不允许的host访问时，返回的状态码
+		 * 默认返回403（Forbidden）
+		 */
+		Integer denyStatus = 403;
 	}
 	
 }
