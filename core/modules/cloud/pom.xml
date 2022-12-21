@@ -164,13 +164,6 @@
             <artifactId>springfox-swagger-ui</artifactId>
         </dependency> -->
         
-        <!-- for health -->
-        <dependency>
-        	<groupId>org.springframework.boot</groupId>
- 			<artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        
-        
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-zipkin</artifactId>
