@@ -3,6 +3,7 @@ package org.onetwo.boot.core;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.Filter;
 
 import org.onetwo.boot.apiclient.ApiClientConfiguration;
 import org.onetwo.boot.core.config.BootJFishConfig;
@@ -18,6 +19,8 @@ import org.onetwo.boot.core.listener.BootApplicationReadyListener;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
 import org.onetwo.boot.core.web.filter.BootRequestContextFilter;
+import org.onetwo.boot.core.web.filter.CorsFilter;
+import org.onetwo.boot.core.web.filter.HostPreventFilter;
 import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
@@ -40,6 +43,7 @@ import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -267,6 +271,47 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 		fs.setStoreBaseDir(config.getFileStorePath());
 //		fs.setAppContextDir(config.getAppContextDir());
 		return fs;
+	}
+
+
+	/****
+	 * CorsFilter 须在所有filter之前，包括security的filter
+	 * 否则会抛 No 'Access-Control-Allow-Origin' header is present on the requested resource
+	 * filter
+	 * @return
+	 */
+	@Bean
+//	@ConditionalOnBean(name = CorsFilter.CORS_FILTER_NAME)
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_CORSFILTER, havingValue="true", matchIfMissing=false)
+	public FilterRegistrationBean corsFilterRegistration(@Qualifier(CorsFilter.CORS_FILTER_NAME) Filter filter){
+		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		registration.setName(CorsFilter.CORS_FILTER_NAME);
+		return registration;
+	}
+
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_CORSFILTER, havingValue="true", matchIfMissing=false)
+	@Bean(name = CorsFilter.CORS_FILTER_NAME)
+	public CorsFilter corsFilter(){
+		CorsFilter filter = new CorsFilter();
+		return filter;
+	}
+
+	@Bean
+//	@ConditionalOnBean(name = HostPreventFilter.FILTER_NAME)
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_HOST_FILTER, havingValue="true", matchIfMissing=true)
+	public FilterRegistrationBean hostPreventFilterFilterRegistration(@Qualifier(HostPreventFilter.FILTER_NAME) Filter filter){
+		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		registration.setName(HostPreventFilter.FILTER_NAME);
+		return registration;
+	}
+
+	@ConditionalOnProperty(name=BootJFishConfig.ENABLE_HOST_FILTER, havingValue="true", matchIfMissing=true)
+	@Bean(name = HostPreventFilter.FILTER_NAME)
+	public HostPreventFilter hostPreventFilter(){
+		HostPreventFilter filter = new HostPreventFilter();
+		return filter;
 	}
 
 	

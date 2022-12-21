@@ -33,6 +33,7 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	public static final String ENABLE_SWAGGER = PREFIX + ".swagger.enabled";
 	
 	public static final String ENABLE_CORSFILTER = PREFIX + ".corsfilter.enabled";
+	public static final String ENABLE_HOST_FILTER = PREFIX + ".hostfilter.enabled";
 	public static final String ENABLE_MVC_CORSFILTER = PREFIX + ".mvc.corsFilter";
 	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = PREFIX + ".dynamic.loggerLevel";
 	public static final String ENABLE_DYNAMIC_SETTING = PREFIX + ".dynamic.setting";
@@ -71,6 +72,8 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	private boolean profile;
 	private Boolean logErrorDetail;
 	List<String> notifyThrowables = Lists.newArrayList("com.mysql.jdbc.MysqlDataTruncation", "SQLException");
+	
+	private HostfilterConfig hostfilter = new HostfilterConfig();
 
 	private String errorView = "error";
 	
@@ -205,6 +208,16 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	@Data
 	public class GraceKillConfig {
 		Collection<String> signals;
+	}
+	
+	@Data
+	public class HostfilterConfig {
+		List<String> allowIps = Lists.newArrayList();
+		/***
+		 * 不允许的host访问时，返回的状态码
+		 * 默认返回403（Forbidden）
+		 */
+		Integer denyStatus = 403;
 	}
 	
 }
