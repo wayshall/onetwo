@@ -45,6 +45,9 @@ public class AESCaptchaChecker implements CaptchaChecker {
 	}
 	
 	public boolean check(String code, String hashStr){
+		return check(code, hashStr, false);
+	}
+	public boolean check(String code, String hashStr, boolean debug){
 		byte[] dencryptData = null;
 		try {
 			dencryptData = aesCoder.dencrypt(aesCoder.getKey(), codeType.decode(hashStr, FileUtils.UTF8));
@@ -61,6 +64,11 @@ public class AESCaptchaChecker implements CaptchaChecker {
 		if (System.currentTimeMillis() > validTime) {
 			logger.warn("captcha data has bean expired {}", validTime);
 			return false;
+		}
+
+		if (debug) {
+			Logger logger = JFishLoggerFactory.getCommonLogger();
+			logger.info("request code: {}, aes code: {}", code, values[0]);
 		}
 		boolean res = code.equalsIgnoreCase(values[0]);
 		return res;

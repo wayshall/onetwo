@@ -11,6 +11,7 @@ import lombok.Data;
  */
 public interface CaptchaChecker {
 	boolean check(String code, String hashStr);
+	boolean check(String code, String redisKey, boolean debug);
 	CaptchaSignedResult encode(String code);
 	
 	@Data

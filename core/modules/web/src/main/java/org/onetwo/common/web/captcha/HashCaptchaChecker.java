@@ -23,8 +23,16 @@ public class HashCaptchaChecker implements CaptchaChecker {
 	}
 	
 	public boolean check(String code, String hashStr){
+		return check(code, hashStr, false);
+	}
+	
+	public boolean check(String code, String hashStr, boolean debug){
 		long validTime = getValidTime();
 		String source = code.toUpperCase()+salt+validTime;
+		if (debug) {
+			Logger logger = JFishLoggerFactory.getCommonLogger();
+			logger.info("request code: {}, source: {}", code, source);
+		}
 		boolean res = hasher.checkHash(source, hashStr);
 		return res;
 	}
