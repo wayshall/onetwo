@@ -20,6 +20,7 @@ jfish:
     corsfilter: 
         enabled: true
  * @author way
+ * @deprecated 被 CorsFilterConfiguration 取代
  *
  */
 public class CorsFilter implements Filter {
