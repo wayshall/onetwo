@@ -1602,6 +1602,22 @@ abstract public class LangUtils {
 		number.setScale(2, BigDecimal.ROUND_HALF_UP); // 四色五入，保持两个小数点
 		return number;
 	}
+	
+	public static BigDecimal roundHalfUp(double number, int newScale) {
+		return round(number, newScale, RoundingMode.HALF_UP);
+	}
+	public static BigDecimal round(double number, int newScale, RoundingMode roundingMode) {
+		BigDecimal dec = BigDecimal.valueOf(number).setScale(newScale, roundingMode);
+		return dec;
+	}
+
+	public static BigDecimal roundHalfUp(float number, int newScale) {
+		return round(number, newScale, RoundingMode.HALF_UP);
+	}
+	public static BigDecimal round(float number, int newScale, RoundingMode roundingMode) {
+		BigDecimal dec = BigDecimal.valueOf(number).setScale(newScale, roundingMode);
+		return dec;
+	}
 
 	public static String format(Number num, String pattern) {
 		NumberFormat format = new DecimalFormat(pattern);
