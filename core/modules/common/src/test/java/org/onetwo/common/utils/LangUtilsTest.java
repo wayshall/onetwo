@@ -495,5 +495,16 @@ public class LangUtilsTest {
 		assertThat(value).isEqualTo(432);
 	}
 	
+	@Test
+	public void testRoundHalfUp() {
+		int count = LangUtils.roundHalfUp(1334 * 0.2, 0).intValue();
+		assertThat(count).isEqualTo(267);
+		
+		BigDecimal res = BigDecimal.valueOf(1334).multiply(BigDecimal.valueOf(0.2));
+		System.out.println("rs:" + res);
+		count = BigDecimal.valueOf(1334).multiply(BigDecimal.valueOf(0.2)).setScale(0, RoundingMode.HALF_UP).intValue();
+		assertThat(count).isEqualTo(267);
+	}
+	
 }
 
