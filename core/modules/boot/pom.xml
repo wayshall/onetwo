@@ -455,6 +455,13 @@
 	      <artifactId>QLExpress</artifactId>
 	      <optional>true</optional>
 	    </dependency>
+	    
+	    <!-- groovy -->
+        <dependency>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-all</artifactId>
+          <optional>true</optional>
+        </dependency>
         
         <!-- activemq mqtt -->
         <dependency>

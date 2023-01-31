@@ -38,7 +38,7 @@
 	
 	<shiro.version>1.2.3</shiro.version>
     <jjwt.version>0.7.0</jjwt.version>
-	<groovy.version>2.3.10</groovy.version>
+	<groovy.version>2.4.15</groovy.version>
 	
 	<mybatis.version>3.3.0</mybatis.version>
 	<mybatis.pagehelper.version>3.6.3</mybatis.pagehelper.version>
