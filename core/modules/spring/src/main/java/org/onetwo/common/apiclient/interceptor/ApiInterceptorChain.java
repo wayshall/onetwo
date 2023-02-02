@@ -17,6 +17,9 @@ public class ApiInterceptorChain {
 		Object invoke() throws Throwable;
 	}
 
+	/****
+	 * @see #RequestContextData
+	 */
 	final private Object requestContext;
 	final private ActionInvoker actualInvoker;
 	private Collection<ApiInterceptor> interceptors;
@@ -74,6 +77,11 @@ public class ApiInterceptorChain {
 //		return throwable;
 //	}
 
+	/***
+	 * @see #RequestContextData
+	 * @author weishao zeng
+	 * @return
+	 */
 	public Object getRequestContext() {
 		return requestContext;
 	}
