@@ -287,7 +287,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return values;
 	}
 
-	public Map<String, ?> getQueryStringParameters(Object[] args){
+	public Map<String, Object> getQueryStringParameters(Object[] args){
 		if(LangUtils.isEmpty(args)){
 			return Collections.emptyMap();
 		}
@@ -297,7 +297,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 												.collect(Collectors.toList());
 
 		boolean parameterNameAsPrefix = queryParameters.size()>1;
-		Map<String, ?> values = toMap(queryParameters, args, parameterNameAsPrefix).toSingleValueMap();
+		Map<String, Object> values = toMap(queryParameters, args, parameterNameAsPrefix).toSingleValueMap();
 		
 		return values;
 	}

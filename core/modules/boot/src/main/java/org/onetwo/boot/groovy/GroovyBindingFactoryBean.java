@@ -3,7 +3,9 @@ package org.onetwo.boot.groovy;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,9 +37,27 @@ public class GroovyBindingFactoryBean implements FactoryBean<Binding>, Applicati
 		binding.setVariable("sessionFactory", sessionFactory);
 		beanMap.forEach((name, bean) -> {
 			String varName = name;
-			GroovyBindingBean gbb = AnnotationUtils.getAnnotation(bean.getClass(), GroovyBindingBean.class);
-			if (StringUtils.isNoneBlank(gbb.alias())) {
+			Class<?> clazz = null;
+			GroovyBindingBean gbb = null;
+			boolean proxy = AopUtils.isJdkDynamicProxy(bean);
+			if (proxy) {
+				for (Class<?> c : bean.getClass().getInterfaces()) {
+					gbb = AnnotationUtils.getAnnotation(c, GroovyBindingBean.class);
+					if (gbb!=null) {
+						clazz = c;
+						break;
+					}
+				}
+			} else {
+				clazz =  AopUtils.getTargetClass(bean);
+				gbb = AnnotationUtils.getAnnotation(clazz, GroovyBindingBean.class);
+			}
+			if (StringUtils.isNotBlank(gbb.alias())) {
 				varName = gbb.alias();
+			}
+			if (binding.hasVariable(varName)) {
+				Object var = binding.getVariable(varName);
+				throw new BaseException("error var name: "+ varName + ", groovy binding var conflict, the var name has binding to : " + var);
 			}
 			binding.setVariable(varName, bean);
 		});

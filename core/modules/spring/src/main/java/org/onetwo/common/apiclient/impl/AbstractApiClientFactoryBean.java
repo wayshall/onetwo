@@ -32,6 +32,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -261,9 +262,8 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		}
 		
 		protected RequestContextData createRequestContextData(MethodInvocation invocation, Object[] args, M invokeMethod){
-			Map<String, ?> queryParameters = invokeMethod.getQueryStringParameters(args);
-			Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
-			uriVariables.putAll(queryParameters);
+			Map<String, Object> queryParameters = invokeMethod.getQueryStringParameters(args);
+			
 			RequestMethod requestMethod = invokeMethod.getRequestMethod();
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			
@@ -271,7 +271,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			RequestContextData context = RequestContextData.builder()
 															.requestId(restExecutor.requestId())
 															.requestMethod(requestMethod)
-															.uriVariables(uriVariables)
+//															.uriVariables(uriVariables)
 															.queryParameters(queryParameters)
 															.responseType(responseType)
 															.methodArgs(args)
@@ -285,36 +285,52 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				context.setRequestBody(requestBody);
 			}
 			
-			String actualUrl = getFullPath(invokeMethod.getPath());
-			actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
-			context.setRequestUrl(actualUrl);
+//			String actualUrl = getFullPath(invokeMethod.getPath());
+//			actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
+//			context.setRequestUrl(actualUrl);
 
 			//根据consumers 设置header，以指定messageConvertor
-			//写成callback以复用
-			context.headerCallback(headers->{
-				if (!invokeMethod.getAcceptHeaders().isEmpty()) {
-					headers.set(ACCEPT, StringUtils.join(invokeMethod.getAcceptHeaders(), ","));
-				}
-				//HttpEntityRequestCallback#doWithRequest -> requestContentType
-				invokeMethod.getContentType().ifPresent(contentType->{
-					headers.set(CONTENT_TYPE, contentType);
-				});
-				if(!LangUtils.isEmpty(invokeMethod.getHeaders())){
-					for (String header : invokeMethod.getHeaders()) {
-						int index = header.indexOf('=');
-						headers.set(header.substring(0, index), header.substring(index + 1).trim());
-					}
-				}
-				invokeMethod.getHttpHeaders(args)
-							.ifPresent(h->{
-								headers.putAll(h);
-							});
-				//回调
-				invokeMethod.getApiHeaderCallback(args)
-							.ifPresent(c->c.onHeader(headers));
+			HttpHeaders headers = context.getHeaders();
+			
+//			context.headerCallback(headers->{
+			if (!invokeMethod.getAcceptHeaders().isEmpty()) {
+				headers.set(ACCEPT, StringUtils.join(invokeMethod.getAcceptHeaders(), ","));
+			}
+			//HttpEntityRequestCallback#doWithRequest -> requestContentType
+			invokeMethod.getContentType().ifPresent(contentType->{
+				headers.set(CONTENT_TYPE, contentType);
 			});
+			if(!LangUtils.isEmpty(invokeMethod.getHeaders())){
+				for (String header : invokeMethod.getHeaders()) {
+					int index = header.indexOf('=');
+					headers.set(header.substring(0, index), header.substring(index + 1).trim());
+				}
+			}
+			invokeMethod.getHttpHeaders(args)
+						.ifPresent(h->{
+							headers.putAll(h);
+						});
+			// 回调
+			invokeMethod.getApiHeaderCallback(args)
+						.ifPresent(c->c.onHeader(headers));
+//			});
 			// 立即回调一次
-			context.acceptHeaderCallback();
+//			context.acceptHeaderCallback();
+			
+			context.apiRequestCallback(request -> {
+				request.getHeaders().putAll(context.getHeaders());
+			});
+			
+			context.beforeExecuteCallback(() -> {
+				Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
+				uriVariables.putAll(context.getQueryParameters());
+				context.setUriVariables(uriVariables);
+				
+				String actualUrl = getFullPath(invokeMethod.getPath());
+				actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
+				context.setRequestUrl(actualUrl);
+			});
+			
 			/*
 			if (RestUtils.isRequestBodySupportedMethod(context.getHttpMethod())) {
 				Object requestBody = invokeMethod.getRequestBody(args);
