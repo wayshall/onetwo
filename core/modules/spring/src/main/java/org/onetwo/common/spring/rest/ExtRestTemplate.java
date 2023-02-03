@@ -179,9 +179,11 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		}else{
 			throw new RestClientException("unsupported method: " + method);
 		}
-		if(context.hasHeaderCallback()){
+		if(context.hasApiRequestCallback()){
 			rc = wrapRequestCallback(context, rc);
 		}
+		// 执行url处理回调
+		context.applyBeforeExecuteCallback();
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
 	}
 	
@@ -231,7 +233,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	}
 	
 	public <T> RequestCallback wrapRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
-		return new ProcessHeaderRequestCallback(context, acceptHeaderRequestCallback);
+		return new ProcessApiClientRequestCallback(context, acceptHeaderRequestCallback);
 	}
 	
 
@@ -277,12 +279,12 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		throw new RestClientException("invoke rest interface["+url+"] error: " + response);
 	}
 
-	protected static class ProcessHeaderRequestCallback implements RequestCallback {
+	protected static class ProcessApiClientRequestCallback implements RequestCallback {
 		private final RequestCallback acceptHeaderRequestCallback;
 //		private final Consumer<HttpHeaders> callback;
 		private RequestContextData context;
 
-		public ProcessHeaderRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
+		public ProcessApiClientRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
 			super();
 			this.acceptHeaderRequestCallback = acceptHeaderRequestCallback;
 			this.context = context;
@@ -293,7 +295,10 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		public void doWithRequest(ClientHttpRequest request) throws IOException {
 			//再次回调header callback，此时为实际请求的header，前一次调用为匹配messageConverter
 //			this.callback.accept(request.getHeaders());
-			this.context.acceptHeaderCallback(request.getHeaders());
+//			this.context.acceptRequestCallback(request.getHeaders());
+			
+			this.context.acceptRequestCallback(request);
+			
 			/*if(ReflectUtils.getFieldsAsMap(acceptHeaderRequestCallback.getClass()).containsKey("requestEntity")){
 				HttpEntity<?> requestEntity = (HttpEntity<?>) ReflectUtils.getFieldValue(acceptHeaderRequestCallback, "requestEntity");
 				if(requestEntity!=null){
