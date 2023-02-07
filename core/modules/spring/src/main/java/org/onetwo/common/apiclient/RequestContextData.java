@@ -3,10 +3,9 @@ package org.onetwo.common.apiclient;
 import java.util.Map;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.onetwo.common.spring.rest.RestUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -16,12 +15,15 @@ import lombok.Getter;
  * <br/>
  */
 public class RequestContextData {
+	final private String baseURL;
+	final private String apiPath;
+	
 	final private String requestId;
 	final private HttpMethod httpMethod;
-	private String requestUrl;
+//	private String requestUrl;
 	private Class<?> responseType;
 //	private Object requestBody;
-	private Map<String, ?> uriVariables;
+	private Map<String, Object> uriVariables;
 	/***
 	 * 这里在判断是否queryString参数时，遵循浏览器规则:
 	 * 1. get和delete请求时，只要不是url变量和特定参数，都当做queryString参数处理
@@ -30,7 +32,7 @@ public class RequestContextData {
 	@Getter
 	final private Map<String, Object> queryParameters;
 //	private Consumer<HttpHeaders> headerCallback;
-	private ApiRequestCallback apiRequestCallback;
+//	private ApiRequestCallback apiRequestCallback;
 //	private RequestBodySupplier requestBodySupplier;
 	private Object requestBody;
 	
@@ -46,23 +48,30 @@ public class RequestContextData {
 	
 	private HttpHeaders headers = new HttpHeaders();
 	
-	private ApiBeforeExecuteCallback beforeExecuteCallback;
+//	private ApiBeforeExecuteCallback beforeExecuteCallback;
 	
 	@Builder
-	public RequestContextData(String requestId, RequestMethod requestMethod, 
+	public RequestContextData(String requestId, String httpMethod, 
 							Map<String, Object> queryParameters, 
+							Map<String, Object> uriVariables,
 							Class<?> responseType, Object[] methodArgs, ApiClientMethod invokeMethod, 
-							MethodInvocation invocation, int maxRetryCount) {
+							MethodInvocation invocation, int maxRetryCount, String baseURL, String apiPath) {
 		super();
-		this.httpMethod = HttpMethod.resolve(requestMethod.name());
-//		this.uriVariables = uriVariables;
+		this.httpMethod = HttpMethod.resolve(httpMethod);
 		this.queryParameters = queryParameters;
+		if (uriVariables==null) {
+			this.uriVariables = queryParameters;
+		} else {
+			this.uriVariables = uriVariables;
+		}
 		this.responseType = responseType;
 		this.requestId = requestId;
 		this.methodArgs = methodArgs;
 		this.invokeMethod = invokeMethod;
 		this.invocation = invocation;
 		this.maxRetryCount = maxRetryCount;
+		this.baseURL = baseURL;
+		this.apiPath = apiPath;
 	}
 	
 	public boolean isRetryable() {
@@ -80,14 +89,10 @@ public class RequestContextData {
 	public HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
-	public void setRequestUrl(String url) {
-		this.requestUrl = url;
-	}
-	public String getRequestUrl() {
-		return requestUrl;
-	}
 	
-	public Map<String, ?> getUriVariables() {
+	
+	public Map<String, Object> getUriVariables() {
+		uriVariables.putAll(getQueryParameters());
 		return uriVariables;
 	}
 	
@@ -111,43 +116,38 @@ public class RequestContextData {
 //		this.headerCallback = headerCallback;
 //		return this;
 //	}
-	public RequestContextData apiRequestCallback(ApiRequestCallback apiRequestCallback) {
-		this.apiRequestCallback = apiRequestCallback;
-		return this;
-	}
-	public RequestContextData beforeExecuteCallback(ApiBeforeExecuteCallback beforeExecuteCallback) {
-		this.beforeExecuteCallback = beforeExecuteCallback;
-		return this;
-	}
-	public void applyBeforeExecuteCallback() {
-		beforeExecuteCallback.apply();
-	}
+//	public RequestContextData apiRequestCallback(ApiRequestCallback apiRequestCallback) {
+//		this.apiRequestCallback = apiRequestCallback;
+//		return this;
+//	}
+	
 	/*public Consumer<HttpHeaders> getHeaderCallback() {
 		return headerCallback;
 	}*/
-	public boolean hasApiRequestCallback() {
-		return apiRequestCallback!=null;
-	}
+//	public boolean hasApiRequestCallback() {
+//		return apiRequestCallback!=null;
+//	}
 
 //	public void acceptHeaderCallback() {
 //		if (this.headerCallback!=null) {
 //			this.headerCallback.accept(headers);
 //		}
 //	}
-	public void acceptRequestCallback(ClientHttpRequest request) {
-		if (this.apiRequestCallback!=null) {
-			this.apiRequestCallback.doWithRequest(request);
-		} else {
-			// log no header callback
-		}
-	}
+//	public void acceptRequestCallback(ClientHttpRequest request) {
+//		if (this.apiRequestCallback!=null) {
+//			this.apiRequestCallback.doWithRequest(request);
+//		} else {
+//			// log no header callback
+//		}
+//	}
 	
 	@Override
 	public String toString() {
 		return "RequestContextData [httpMethod=" + httpMethod
-				+ ", requestUrl=" + requestUrl + ", responseType="
+				+ ", requestUrl=" + getRequestUrl() + ", responseType="
 				+ responseType + ", uriVariables=" + uriVariables + ", requestCallback="
-				+ apiRequestCallback + "]";
+//				+ apiRequestCallback 
+				+ "]";
 	}
 	
 	public static interface RequestBodySupplier {
@@ -174,8 +174,44 @@ public class RequestContextData {
 		return headers;
 	}
 
-	public void setUriVariables(Map<String, ?> uriVariables) {
+	public void setUriVariables(Map<String, Object> uriVariables) {
 		this.uriVariables = uriVariables;
 	}
+	
+	
+	/****
+	 * 解释pathvariable参数，并且把所有queryParameters转化为queryString参数
+	 * @author wayshall
+	 * @param invokeMethod
+	 * @param context
+	 * @return
+	 */
+	public String getRequestUrl(){
+		String actualUrl = RestUtils.concatPath(baseURL, apiPath, invokeMethod.getPath());
+		actualUrl = RestUtils.appendQueryParametersToURL(actualUrl, this.getQueryParameters());
+		return actualUrl;
+	}
+//	public void setRequestUrl(String url) {
+//		this.requestUrl = url;
+//	}
+//	public String getRequestUrl() {
+//		return requestUrl;
+//	}
+	
+//	static public interface ApiBeforeExecuteCallback {
+//		
+//		void apply();
+//
+//	}
+	
+//	public RequestContextData beforeExecuteCallback(ApiBeforeExecuteCallback beforeExecuteCallback) {
+//		this.beforeExecuteCallback = beforeExecuteCallback;
+//		return this;
+//	}
+//	public void applyBeforeExecuteCallback() {
+//		if (beforeExecuteCallback!=null) {
+//			beforeExecuteCallback.apply();
+//		}
+//	}
 
 }

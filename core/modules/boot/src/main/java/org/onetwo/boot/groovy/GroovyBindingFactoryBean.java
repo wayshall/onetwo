@@ -3,6 +3,7 @@ package org.onetwo.boot.groovy;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.springframework.aop.support.AopUtils;
@@ -25,6 +26,8 @@ public class GroovyBindingFactoryBean implements FactoryBean<Binding>, Applicati
 	private ApplicationContext applicationContext;
 	@Autowired(required = false)
 	private DbmSessionFactory sessionFactory;
+	@Autowired(required = false)
+	private RestExecutor restExecutor;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -35,6 +38,7 @@ public class GroovyBindingFactoryBean implements FactoryBean<Binding>, Applicati
 		Map<String, Object> beanMap = applicationContext.getBeansWithAnnotation(GroovyBindingBean.class);
 		Binding binding = new Binding();
 		binding.setVariable("sessionFactory", sessionFactory);
+		binding.setVariable("restExecutor", restExecutor);
 		beanMap.forEach((name, bean) -> {
 			String varName = name;
 			Class<?> clazz = null;

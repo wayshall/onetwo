@@ -7,8 +7,8 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
@@ -61,8 +61,6 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	@SuppressWarnings("rawtypes")
 	private ExtRestErrorHandler extErrorHandler;
 	private Type extErrorResultType;
-	
-	private AtomicLong requestIdGenerator = new AtomicLong(0);
 	
 	private Charset charset = FormHttpMessageConverter.DEFAULT_CHARSET;
 	
@@ -117,11 +115,6 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		}
 	}
 	
-	@Override
-	public String requestId() {
-		return String.valueOf(requestIdGenerator.getAndIncrement());
-	}
-
 	public final ExtRestTemplate addMessageConverters(HttpMessageConverter<?>... elements){
 		getMessageConverters().addAll(Arrays.asList(elements));
 		return this;
@@ -179,13 +172,13 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		}else{
 			throw new RestClientException("unsupported method: " + method);
 		}
-		if(context.hasApiRequestCallback()){
-			rc = wrapRequestCallback(context, rc);
-		}
-		// 执行url处理回调
-		context.applyBeforeExecuteCallback();
+//		if(context.hasApiRequestCallback()){
+//			rc = wrapRequestCallback(context, rc);
+//		}
+		rc = wrapRequestCallback(context, rc);
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
 	}
+	
 	
 	private void logData(Object requestBody, HttpHeaders headers) {
 		if(isLogableObject(requestBody) && logger.isDebugEnabled()){
@@ -259,6 +252,11 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		throw new RestClientException("invoke rest interface["+url+"] error: " + response);
 	}
 
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getAsMap(String url, Object request){
+		return get(url, request, HashMap.class);
+	}
+	
 	public <T> T get(String url, Object request, Class<T> responseType){
 		String paramString = RestUtils.propertiesToParamString(request);
 		// 使用toMultiValueMap，spring不会把参数值List展开获取，而是直接toString，从而导致参数错误
@@ -297,7 +295,8 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 //			this.callback.accept(request.getHeaders());
 //			this.context.acceptRequestCallback(request.getHeaders());
 			
-			this.context.acceptRequestCallback(request);
+			request.getHeaders().putAll(context.getHeaders());
+//			this.context.acceptRequestCallback(request);
 			
 			/*if(ReflectUtils.getFieldsAsMap(acceptHeaderRequestCallback.getClass()).containsKey("requestEntity")){
 				HttpEntity<?> requestEntity = (HttpEntity<?>) ReflectUtils.getFieldValue(acceptHeaderRequestCallback, "requestEntity");
