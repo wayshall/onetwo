@@ -40,8 +40,9 @@ public class BatchTaskInfo<T> extends ArrayList<TaskInfo> {
 			TaskInfo task = new TaskInfo();
 			task.setTaskIndex(i);
 			task.setTaskSize(taskSize);
+			task.setActualTaskSize(taskSize);
 			if (lastTaskSize> 0 && i==taskCount-1) {
-				task.setTaskSize(lastTaskSize);
+				task.setActualTaskSize(lastTaskSize);
 			}
 			
 			if (taskList.size() < concurrentTaskSize) {
@@ -102,10 +103,13 @@ public class BatchTaskInfo<T> extends ArrayList<TaskInfo> {
 		
 		int taskIndex;
 		int taskSize;
+		int actualTaskSize;
 		@Override
 		public String toString() {
-			return "(taskIndex=" + taskIndex + ", taskSize=" + taskSize + ")";
+			return "[taskIndex=" + taskIndex + ", taskSize=" + taskSize + ", actualTaskSize=" + actualTaskSize
+					+ "]";
 		}
+		
 	}
 
 }
