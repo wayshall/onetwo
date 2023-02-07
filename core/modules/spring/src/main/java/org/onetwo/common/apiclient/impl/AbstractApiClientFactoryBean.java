@@ -2,6 +2,7 @@ package org.onetwo.common.apiclient.impl;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -23,7 +24,6 @@ import org.onetwo.common.spring.aop.SpringMixinableInterfaceCreator;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.utils.ParamUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
@@ -76,6 +76,12 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	 */
 	protected int maxRetryCount = 0;
 	protected int retryWaitInMillis = 200;
+	
+	private AtomicLong requestIdGenerator = new AtomicLong(0);
+
+	public String requestId() {
+		return String.valueOf(requestIdGenerator.getAndIncrement());
+	}
 	
 	final public void setResponseHandler(ApiClientResponseHandler<M> responseHandler) {
 		this.responseHandler = responseHandler;
@@ -189,11 +195,15 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			super(methodCache);
 		}
 		
+		protected void afterCreateRequestContextData(M invokeMethod, RequestContextData ctx) {
+		}
+		
 		protected Object doInvoke(MethodInvocation invocation, M invokeMethod) throws Throwable {
 			Object[] args = processArgumentsBeforeRequest(invocation, invokeMethod);
 			invokeMethod.validateArgements(validatorWrapper, args);
 
 			RequestContextData context = createRequestContextData(invocation, args, invokeMethod);
+			afterCreateRequestContextData(invokeMethod, context);
 			ApiInterceptorChain chain = new ApiInterceptorChain(invokeMethod.getInterceptors(), context, () -> {
 				return this.actualInvoke0(invokeMethod, context);
 			});
@@ -263,14 +273,16 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		
 		protected RequestContextData createRequestContextData(MethodInvocation invocation, Object[] args, M invokeMethod){
 			Map<String, Object> queryParameters = invokeMethod.getQueryStringParameters(args);
+//			Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
+//			uriVariables.putAll(queryParameters);
 			
 			RequestMethod requestMethod = invokeMethod.getRequestMethod();
 			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
 			
 			
 			RequestContextData context = RequestContextData.builder()
-															.requestId(restExecutor.requestId())
-															.requestMethod(requestMethod)
+															.requestId(requestId())
+															.httpMethod(requestMethod.name())
 //															.uriVariables(uriVariables)
 															.queryParameters(queryParameters)
 															.responseType(responseType)
@@ -278,6 +290,8 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 															.invokeMethod(invokeMethod)
 															.invocation(invocation)
 															.maxRetryCount(maxRetryCount)
+															.baseURL(url)
+															.apiPath(path)
 															.build();
 
 			if (RestUtils.isRequestBodySupportedMethod(requestMethod)) {
@@ -317,19 +331,19 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			// 立即回调一次
 //			context.acceptHeaderCallback();
 			
-			context.apiRequestCallback(request -> {
-				request.getHeaders().putAll(context.getHeaders());
-			});
+//			context.apiRequestCallback(request -> {
+//				request.getHeaders().putAll(context.getHeaders());
+//			});
 			
-			context.beforeExecuteCallback(() -> {
-				Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
-				uriVariables.putAll(context.getQueryParameters());
-				context.setUriVariables(uriVariables);
-				
-				String actualUrl = getFullPath(invokeMethod.getPath());
-				actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
-				context.setRequestUrl(actualUrl);
-			});
+//			context.beforeExecuteCallback(() -> {
+//				Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
+//				uriVariables.putAll(context.getQueryParameters());
+//				context.setUriVariables(uriVariables);
+//				
+//				String actualUrl = getFullPath(invokeMethod.getPath());
+//				actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
+//				context.setRequestUrl(actualUrl);
+//			});
 			
 			/*
 			if (RestUtils.isRequestBodySupportedMethod(context.getHttpMethod())) {
@@ -343,26 +357,11 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			return context;
 		}
 		
-		/****
-		 * 解释pathvariable参数，并且把所有queryParameters转化为queryString参数
-		 * @author wayshall
-		 * @param url
-		 * @param invokeMethod
-		 * @param context
-		 * @return
-		 */
-		protected String processUrlBeforeRequest(final String url, M invokeMethod, RequestContextData context){
-			String actualUrl = url;
-			/*if(LangUtils.isNotEmpty(context.getPathVariables())){
-				actualUrl = ExpressionFacotry.newStrSubstitutor("{", "}", context.getPathVariables()).replace(actualUrl);
-			}*/
-			Map<String, ?> queryParameters = context.getQueryParameters();
-			if(!queryParameters.isEmpty()){
-				String paramString = RestUtils.keysToParamString(queryParameters);
-				actualUrl = ParamUtils.appendParamString(actualUrl, paramString);
-			}
-			return actualUrl;
-		}
+//		protected String processUrlBeforeRequest(final String actualUrl, M method, RequestContextData context){
+//			String actualUrl = RestUtils.concatPath(baseURL, apiPath, invokeMethod.getPath());
+//			actualUrl = RestUtils.appendQueryParametersToURL(actualUrl, this.getQueryParameters());
+//			return actualUrl;
+//		}
 		
 	}
 	

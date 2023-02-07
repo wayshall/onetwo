@@ -32,13 +32,13 @@ public class ApiClientException extends BaseException implements ExceptionCodeMa
 		initErrorCode(exceptionType.getErrorCode());
 		this.statusCode = exceptionType.getStatusCode();
 		this.errorType = exceptionType;
-		put("api method", method);
+		put("api method", method.getName());
 	}
 
 	public ApiClientException(String code, String msg, Method method) {
 		super(msg);
 		initErrorCode(code);
-		put("api method", method);
+		put("api method", method.getName());
 	}
 
 	public ApiClientException(ErrorType exceptionType, Integer statusCode, Throwable cause) {
