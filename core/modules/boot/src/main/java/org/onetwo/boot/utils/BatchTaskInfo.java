@@ -1,6 +1,8 @@
 package org.onetwo.boot.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -69,6 +71,20 @@ public class BatchTaskInfo<T> extends ArrayList<TaskInfo> {
 	}
 	
 	public List<T> getAll(Function<TaskInfo, CompletableFuture<T>> taskActioin) {
+		if (isEmpty()) {
+			return Collections.emptyList();
+		}
+		if (size()==1) {
+			CompletableFuture<T> f = taskActioin.apply(get(0));
+        	try {
+				T res = f.get();
+				return Arrays.asList(res);
+			} catch (Exception e) {
+	            throw new BaseException("execute batch task error: " + e.getMessage(), e);
+			}
+		}
+		
+		// 多个任务时，等待所有计算结束
 		List<CompletableFuture<T>> futures = stream().map(one -> {
         	CompletableFuture<T> f = taskActioin.apply(one);
         	return f;
