@@ -7,6 +7,8 @@ import org.onetwo.common.spring.rest.RestUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
+import com.google.common.collect.Maps;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -92,8 +94,9 @@ public class RequestContextData {
 	
 	
 	public Map<String, Object> getUriVariables() {
-		uriVariables.putAll(getQueryParameters());
-		return uriVariables;
+		Map<String, Object> map = Maps.newHashMap(uriVariables);
+		map.putAll(getQueryParameters());
+		return map;
 	}
 	
 	/*public RequestBodySupplier getRequestBodySupplier() {
