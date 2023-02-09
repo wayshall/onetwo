@@ -48,6 +48,9 @@ public class MatchAllFilterInvocationSecurityMetadataSource implements FilterInv
 		final HttpServletRequest request = ((FilterInvocation) object).getRequest();
 		Collection<ConfigAttribute> auths = Sets.newHashSet();
 		for (Map.Entry<RequestMatcher, Collection<ConfigAttribute>> entry : requestMap.entrySet()) {
+//			if (entry.getValue().toString().contains("Dsqls_DsqlInfoMgr_Update")) {
+//				System.out.println("test");
+//			}
 			if (entry.getKey().equals(AnyRequestMatcher.INSTANCE)) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("ignore any matcher for: {}", entry.getValue());
