@@ -67,6 +67,10 @@ public enum JNamedQueryKey {
 		Assert.assertTrue(1==Types.convertValue(true, Integer.class));
 		Assert.assertTrue(0==Types.convertValue(false, Integer.class));
 		Assert.assertTrue(111==Types.convertValue(111.11, Integer.class));
+		
+		Long val = Types.convertValue("00000000000000000000000010440111", Long.class);
+		System.out.println("val: " + val);
+		assertThat(val).isEqualTo(10440111);
 	}
 	
 	@Test

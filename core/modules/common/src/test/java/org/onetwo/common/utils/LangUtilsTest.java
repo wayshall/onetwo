@@ -21,6 +21,12 @@ import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
 	
+	@Test
+	public void testTrim() {
+		String str = "00000000000000000000000010440111";
+		String val = StringUtils.trimStartWith(str, "0");
+		System.out.println("val: " + val);
+	}
 
 	@Test
 	public void testJoinMap() {
