@@ -16,7 +16,10 @@ public class AsyncTaskProperties {
 
 //	private int timeout = 60000;
 	private int corePoolSize = 5;
+	/***
+	 * maxPoolSize依赖于queueCapacity，因为ThreadPoolTaskExecutor只会在其队列中的项目数超过queueCapacity时创建一个新线程。
+	 */
 	private int maxPoolSize = 50;
 //	private int keepAliveSeconds = 60;
-	private int queueCapacity = 100000;
+	private int queueCapacity = 10000;
 }
