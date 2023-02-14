@@ -36,5 +36,10 @@ public class GroovyConfiguration {
 		}
 		return groovyScriptEngine;
 	}
+	
+	@Bean
+	public GroovyJdbcTemplate groovyJdbcTemplate() {
+		return new GroovyJdbcTemplate();
+	}
 
 }
