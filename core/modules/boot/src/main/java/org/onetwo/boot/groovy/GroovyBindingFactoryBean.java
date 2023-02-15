@@ -52,7 +52,7 @@ public class GroovyBindingFactoryBean implements FactoryBean<Binding>, Applicati
 		bindingBeanClassList.forEach(clazz -> {
 			Object bean = SpringUtils.getBean(applicationContext, clazz);
 			String varName = StringUtils.uncapitalize(clazz.getSimpleName());
-			setBinding(binding, varName, bean);
+			setBinding(binding, varName, bean, clazz);
 		});
 		
 		Map<String, Object> beanMap = applicationContext.getBeansWithAnnotation(GroovyBindingBean.class);
@@ -76,16 +76,16 @@ public class GroovyBindingFactoryBean implements FactoryBean<Binding>, Applicati
 			if (StringUtils.isNotBlank(gbb.alias())) {
 				varName = gbb.alias();
 			}
-			setBinding(binding, varName, bean);
+			setBinding(binding, varName, bean, clazz);
 		});
 		
 		return binding;
 	}
 	
-	private void setBinding(Binding binding, String varName, Object bean) {
+	private void setBinding(Binding binding, String varName, Object bean, Class<?> clazz) {
 		if (binding.hasVariable(varName)) {
 			Object var = binding.getVariable(varName);
-			throw new BaseException("error var name: "+ varName + ", groovy binding var conflict, the var name has binding to : " + var);
+			throw new BaseException("error var ["+ varName + "] for class: " + clazz.getName() + ", groovy binding var conflict, the var name has binding to : " + var);
 		}
 		binding.setVariable(varName, bean);
 	}
