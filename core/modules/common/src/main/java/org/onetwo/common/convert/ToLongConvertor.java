@@ -1,5 +1,7 @@
 package org.onetwo.common.convert;
 
+import java.math.BigDecimal;
+
 import org.onetwo.common.utils.StringUtils;
 
 public class ToLongConvertor extends AbstractTypeConvert<Long> {
@@ -22,7 +24,8 @@ public class ToLongConvertor extends AbstractTypeConvert<Long> {
         	if (StringUtils.isBlank(str)) {
         		return null;
         	}
-        	return Long.parseLong(str);
+        	return new BigDecimal(str).longValue();
+//        	return Long.parseLong(str);
         }
 
 	}
