@@ -1,3 +1,5 @@
+package org.onetwo.boot.groovy;
+
 import org.onetwo.boot.groovy.TestRequest as TestRequest
 def map = [page: 2, pageSize: 1000]
 def req = map as TestRequest
