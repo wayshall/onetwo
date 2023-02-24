@@ -184,7 +184,7 @@ public abstract class StringUtils {
 			return str;
 		}
 		if (str.indexOf(op) == -1) {
-			str = str.toLowerCase();
+//			str = str.toLowerCase();
 			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
 				return str.substring(0, 1).toUpperCase() + str.substring(1);
 			} else {
