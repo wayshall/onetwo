@@ -9,15 +9,15 @@ import com.google.common.collect.Lists;
 
 public class RowModel implements PoiModel {
 	public static final String DEFAULT_NAME = "entity";
-	public static class Type {
-		public static final String TITLE_KEY = "title";
-		public static final String HEADER_KEY = "header";
-		public static final String ROW_KEY = "row";
-		public static final String ITERATOR_KEY = "iterator";
-	}
+//	public static class Type {
+//		public static final String TITLE_KEY = "title";
+//		public static final String HEADER_KEY = "header";
+//		public static final String ROW_KEY = "row";
+//		public static final String ITERATOR_KEY = "iterator";
+//	}
 	
 	private String name;
-	private String type;
+	private TemplateRowTypes rowType;
 	private String datasource;
 	private int space;
 	private String span;
@@ -76,15 +76,15 @@ public class RowModel implements PoiModel {
 	}
 	
 	public boolean isTitle(){
-		return Type.TITLE_KEY.equals(type);
+		return TemplateRowTypes.TITLE.equals(rowType);
 	}
 	
 	public boolean isRow(){
-		return Type.ROW_KEY.equals(type);
+		return TemplateRowTypes.ROW.equals(rowType);
 	}
 	
 	public boolean isIterator(){
-		return Type.ITERATOR_KEY.equals(type);
+		return TemplateRowTypes.ITERATOR.equals(rowType);
 	}
 
 	public String getName() {
@@ -99,13 +99,19 @@ public class RowModel implements PoiModel {
 	}
 
 	public String getType() {
-		if(StringUtils.isBlank(type))
-			this.type = Type.ROW_KEY;
-		return type;
+		return rowType.lowerName();
 	}
 
 	public void setType(String type) {
-		this.type = type;
+		this.rowType = TemplateRowTypes.of(type);
+	}
+
+	public TemplateRowTypes getRowType() {
+		return rowType;
+	}
+
+	public void setRowType(TemplateRowTypes type) {
+		this.rowType = type;
 	}
 
 	public String getDatasource() {
@@ -179,7 +185,7 @@ public class RowModel implements PoiModel {
 		clone.setRenderHeader(renderHeader);
 		clone.setSpace(space);
 		clone.setSpan(span);
-		clone.setType(type);
+		clone.rowType = rowType;
 		return clone;
 	}
 

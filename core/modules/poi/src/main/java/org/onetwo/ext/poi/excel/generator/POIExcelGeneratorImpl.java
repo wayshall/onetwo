@@ -90,10 +90,10 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 //		iteratorProcessor = new ExtIteratorRowProcessor(this, titleProcessor);
 		
 		rowProcessors = new HashMap<String, RowProcessor>();
-		rowProcessors.put(RowModel.Type.ROW_KEY, rowProcessor);
-		rowProcessors.put(RowModel.Type.HEADER_KEY, titleProcessor);
-		rowProcessors.put(RowModel.Type.TITLE_KEY, titleProcessor);
-		rowProcessors.put(RowModel.Type.ITERATOR_KEY, iteratorProcessor);
+		rowProcessors.put(TemplateRowTypes.ROW.lowerName(), rowProcessor);
+		rowProcessors.put(TemplateRowTypes.HEADER.lowerName(), titleProcessor);
+		rowProcessors.put(TemplateRowTypes.TITLE.lowerName(), titleProcessor);
+		rowProcessors.put(TemplateRowTypes.ITERATOR.lowerName(), iteratorProcessor);
 	}
 
 	public ExcelValueParser getExcelValueParser() {
