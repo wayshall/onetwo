@@ -297,7 +297,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 //					}
 //				}
 				RowContextData datacontext = createRowDataContext(sheetData, row);
-				datacontext.setRenderingHeader(RowModel.Type.TITLE_KEY.equals(row.getType()));
+				datacontext.setRenderingHeader(row.isTitle());
 				this.rowProcessors.get(row.getType()).processRow(datacontext);
 				/*if(printTime){
 					UtilTimerStack.pop(rowname);
