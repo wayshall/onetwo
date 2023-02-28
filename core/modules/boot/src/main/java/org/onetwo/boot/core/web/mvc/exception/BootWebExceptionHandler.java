@@ -44,6 +44,8 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	@Autowired(required=false)
 	private ExceptionMessageAccessor exceptionMessageAccessor;
 //	private List<String> notifyThrowables;
+	@Autowired(required = false)
+	private ErrorLogHandler errorLogHandler;
 	
 	
 	@Override
@@ -101,6 +103,9 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 //		errorMessage.setNotifyThrowables(bootJFishConfig.getNotifyThrowables());
 		errorMessage.setNotify(bootJFishConfig.isNotifyThrowable(errorMessage.getException()));
 		logError(request, errorMessage);
+		if (errorLogHandler!=null) {
+			errorLogHandler.handle(request, errorMessage);
+		}
 	}
 
 	@Override
