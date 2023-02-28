@@ -74,6 +74,8 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	@Autowired(required=false)
 	private WebRequest webRequest;
 	private View errorView;
+	@Autowired(required = false)
+	private ErrorLogHandler errorLogHandler;
 	
 //	protected String defaultRedirect;
 	
@@ -246,6 +248,9 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 //		errorMessage.setNotifyThrowables(jfishConfig.getNotifyThrowables());
 		errorMessage.setNotify(jfishConfig.isNotifyThrowable(errorMessage.getException()));
 		logError(request, errorMessage);
+		if (errorLogHandler!=null) {
+			errorLogHandler.handle(request, errorMessage);
+		}
 	}
 
 	@Override
