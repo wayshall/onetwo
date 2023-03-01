@@ -46,6 +46,7 @@ import org.onetwo.ext.poi.excel.generator.PoiModel;
 import org.onetwo.ext.poi.excel.generator.PropertyStringParser;
 import org.onetwo.ext.poi.excel.generator.RowModel;
 import org.onetwo.ext.poi.excel.generator.TemplateModel;
+import org.onetwo.ext.poi.excel.generator.TemplateRowTypes;
 import org.onetwo.ext.poi.excel.generator.VarModel;
 import org.onetwo.ext.poi.excel.generator.WorkbookModel;
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ import org.springframework.core.io.Resource;
 
 import com.google.common.collect.Lists;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.enums.EnumToStringConverter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.security.NoTypePermission;
 import com.thoughtworks.xstream.security.NullPermission;
@@ -189,7 +191,7 @@ abstract public class ExcelUtils {
 			xstream.useAttributeFor(btype);
 		}
 		
-
+		xstream.registerConverter(new EnumToStringConverter<>(TemplateRowTypes.class, TemplateRowTypes.toMap()));
 		xstream.allowTypes(allowTypes.toArray(new Class<?>[0]));
 		return xstream;
 	}

@@ -17,7 +17,8 @@ public class RowModel implements PoiModel {
 //	}
 	
 	private String name;
-	private TemplateRowTypes rowType;
+//	private TemplateRowTypes rowType;
+	private String type;
 	private String datasource;
 	private int space;
 	private String span;
@@ -76,15 +77,15 @@ public class RowModel implements PoiModel {
 	}
 	
 	public boolean isTitle(){
-		return TemplateRowTypes.TITLE.equals(rowType);
+		return TemplateRowTypes.TITLE.equals(getRowType());
 	}
 	
 	public boolean isRow(){
-		return TemplateRowTypes.ROW.equals(rowType);
+		return TemplateRowTypes.ROW.equals(getRowType());
 	}
 	
 	public boolean isIterator(){
-		return TemplateRowTypes.ITERATOR.equals(rowType);
+		return TemplateRowTypes.ITERATOR.equals(getRowType());
 	}
 
 	public String getName() {
@@ -98,20 +99,37 @@ public class RowModel implements PoiModel {
 		this.name = name;
 	}
 
-	public String getType() {
-		return rowType.lowerName();
-	}
-
-	public void setType(String type) {
-		this.rowType = TemplateRowTypes.of(type);
-	}
+//	public String getType() {
+//		String  type = this.type;
+//		if (StringUtils.isBlank(type)) {
+//			type = this.rowType.lowerName();
+//		}
+//		return type;
+//	}
+//
+//	public void setType(String type) {
+//		this.type = type;
+//		this.rowType = TemplateRowTypes.of(type);
+//	}
 
 	public TemplateRowTypes getRowType() {
-		return rowType;
+		return TemplateRowTypes.of(getType());
 	}
 
 	public void setRowType(TemplateRowTypes type) {
-		this.rowType = type;
+		this.type = type.lowerName();
+	}
+	
+	public String getType() {
+		String type = this.type;
+		if (StringUtils.isBlank(type)) {
+			type = TemplateRowTypes.ROW.lowerName();
+		}
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getDatasource() {
@@ -185,7 +203,7 @@ public class RowModel implements PoiModel {
 		clone.setRenderHeader(renderHeader);
 		clone.setSpace(space);
 		clone.setSpan(span);
-		clone.rowType = rowType;
+		clone.type = type;
 		return clone;
 	}
 
@@ -256,6 +274,7 @@ public class RowModel implements PoiModel {
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
+	
 	
 	/*public RowExecutor getExecutorInstance() {
 		if(StringUtils.isBlank(executorClass))
