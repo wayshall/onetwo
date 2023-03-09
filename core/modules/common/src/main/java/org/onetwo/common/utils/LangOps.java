@@ -203,6 +203,21 @@ final public class LangOps {
 		})
 		.orElse(BigDecimal.valueOf(0.0));
 	}
+	
+	public static <T> Double sumDouble(List<T> datas, Function<T, Double> mapper){
+		if(datas==null)
+			return 0D;
+		return datas.stream().map(mapper).reduce((n1, n2)->{
+			if (n1==null) {
+				n1 = 0.0;
+			}
+			if (n2==null) {
+				n2 = 0.0;
+			}
+			return n1 + n2;
+		})
+		.orElse(0D);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T, K> Map<K, List<T>> groupByProperty(List<T> datas, String propName){
