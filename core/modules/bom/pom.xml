@@ -31,7 +31,7 @@
 	<javatuples.version>1.2</javatuples.version>
 	<jackson.version>2.10.1</jackson.version>
 	
-	<validation.version>1.1.0.Final</validation.version>
+	<validation.version>2.0.1.Final</validation.version>
 	<dozer.version>5.4.0</dozer.version>
 	<lombok.version>1.18.10</lombok.version>
 	<mail.version>1.4.5</mail.version>
