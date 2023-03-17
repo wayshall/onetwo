@@ -27,6 +27,8 @@ public class UserEntity {
 	
 	private int[] bust;
 	
+	private UserGenders gender;
+	
 	public Long getId() {
 		return id;
 	}
@@ -113,5 +115,27 @@ public class UserEntity {
 		this.bust = bust;
 	}
 
+	public UserGenders getGender() {
+		return gender;
+	}
 
+	public void setGender(UserGenders gender) {
+		this.gender = gender;
+	}
+
+
+	public static enum UserGenders {
+		FEMALE("女性"),
+		MALE("男性");
+		
+		final private String label;
+		private UserGenders(String label) {
+			this.label = label;
+		}
+		public String getLabel() {
+			return label;
+		}
+		
+	}
+	
 }

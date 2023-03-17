@@ -7,17 +7,17 @@ import java.io.OutputStream;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
-
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.junit.Assert;
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.util.Assert;
+
+import lombok.Data;
 
 public class FtpClientManager {
 	
@@ -68,7 +68,7 @@ public class FtpClientManager {
 		}
 	}
 	public void upload(String remotePath, @NotNull InputStream local){
-		Assert.assertTrue("not initialized", initialized);
+		Assert.state(initialized, "not initialized");
 		this.checkLogin();
 		
 		if(StringUtils.isBlank(remotePath)){
@@ -91,7 +91,7 @@ public class FtpClientManager {
 	
 
 	public void retrieveFile(String storeAccessablePath, final OutputStream output){
-		Assert.assertTrue("not initialized", initialized);
+		Assert.state(initialized, "not initialized");
 		this.checkLogin();
 		
 		if(StringUtils.isBlank(storeAccessablePath)){
@@ -113,7 +113,7 @@ public class FtpClientManager {
 	
 
 	public InputStream retrieveFileStream(String storeAccessablePath){
-		Assert.assertTrue("not initialized", initialized);
+		Assert.state(initialized, "not initialized");
 		this.checkLogin();
 		
 		if(StringUtils.isBlank(storeAccessablePath)){
