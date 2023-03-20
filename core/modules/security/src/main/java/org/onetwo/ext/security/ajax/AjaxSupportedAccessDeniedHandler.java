@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.data.DataResult;
+import org.onetwo.common.data.Result;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
@@ -16,6 +17,8 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
 import org.onetwo.ext.security.SecurityExceptionMessager;
+import org.onetwo.ext.security.exception.ErrorMessageExtractor;
+import org.onetwo.ext.security.exception.SecurityErrorResult;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.slf4j.Logger;
@@ -45,6 +48,8 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 	private SecurityExceptionMessager securityExceptionMessager;
 	@Autowired
 	private SecurityConfig securityConfig;
+	@Autowired
+	private ErrorMessageExtractor errorMessageExtractor;
 	
 	public AjaxSupportedAccessDeniedHandler(){
 		delegateAccessDeniedHandler = new AccessDeniedHandlerImpl();
@@ -71,12 +76,21 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 		}
 		
 		if (RequestUtils.isAjaxRequest(request)){
-			SimpleResultBuilder<?> builder = DataResults.error(errorMsg+
-																	", at "+request.getRequestURI())
-															.code(SecurityErrors.ACCESS_DENIED)
-															.data(url);
-			
-			DataResult<?> rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).build();
+			SecurityErrorResult result = errorMessageExtractor.getErrorMessage(accessDeniedException);
+			Result rs = null;
+			if (result.isUnknowError()) {
+				SimpleResultBuilder<?> builder = DataResults.error(errorMsg+
+																		", at "+request.getRequestURI())
+																.code(SecurityErrors.ACCESS_DENIED)
+																.data(url);
+				
+				rs = WebUtils.buildErrorCode(builder, request, accessDeniedException).build();
+			} else {
+				rs = DataResults.error(result.getMessage())
+						.code(result.getCode())
+						.build();
+			}
+			errorMessageExtractor.handleErrorResponse(response, rs);
 			String text = mapper.toJson(rs);
 			
 			if (securityConfig.isLogSecurityError()) {

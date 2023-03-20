@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.data.DataResult;
+import org.onetwo.common.data.Result;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.jackson.JsonMapper;
@@ -19,6 +20,8 @@ import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
+import org.onetwo.ext.security.exception.ErrorMessageExtractor;
+import org.onetwo.ext.security.exception.SecurityErrorResult;
 import org.onetwo.ext.security.jwt.JwtAuthStores.StoreContext;
 import org.onetwo.ext.security.jwt.JwtSecurityTokenInfo;
 import org.onetwo.ext.security.jwt.JwtSecurityTokenService;
@@ -72,6 +75,8 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 //	private JwtAuthStores jwtAuthStores;
 	private CookieStorer cookieStorer;
 	private JwtConfig jwtConfig;
+	@Autowired
+	private ErrorMessageExtractor errorMessageExtractor;
 
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
@@ -206,20 +211,27 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
             ServletException {
 		logger.error("login error", exception);
 		if(RequestUtils.isAjaxRequest(request)){
-			String msg = exception.getMessage();
-			/*if(BadCredentialsException.class.isInstance(exception)){
-				msg = "用户密码不匹配！";
-			}*/
-			SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
-			
-			String errorCode = SecurityErrors.AUTH_FAILED.name();
-			if (exception instanceof ExceptionCodeMark) {
-				errorCode = ((ExceptionCodeMark)exception).getCode();
+			SecurityErrorResult result = errorMessageExtractor.getErrorMessage(exception);
+			Result rs = null;
+			if (result.isUnknowError()) {
+				String msg = exception.getMessage();
+				SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
+				
+				String errorCode = SecurityErrors.AUTH_FAILED.name();
+				if (exception instanceof ExceptionCodeMark) {
+					errorCode = ((ExceptionCodeMark)exception).getCode();
+				}
+				
+				rs = buildErrorCode(builder, request, exception)
+											.code(errorCode)
+											.build();
+			} else {
+				rs = DataResults.error(result.getMessage())
+						.code(result.getCode())
+						.build();
 			}
+			errorMessageExtractor.handleErrorResponse(response, rs);
 			
-			DataResult<?> rs = buildErrorCode(builder, request, exception)
-										.code(errorCode)
-										.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.render(response, text, ResponseUtils.JSON_TYPE, true);
 		}else{

@@ -11,6 +11,8 @@ import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
+import org.onetwo.ext.security.exception.ErrorMessageExtractor;
+import org.onetwo.ext.security.exception.SecurityErrorResult;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -37,6 +39,8 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 	private boolean forceHttps;
 	private Integer httpsPort;
 	private boolean contextRelative;
+	@Autowired
+	private ErrorMessageExtractor errorMessageExtractor;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -57,10 +61,18 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 		if(RequestUtils.isAjaxRequest(request)){
-			DataResult<?> rs = DataResults.error(SecurityErrors.CM_NOT_LOGIN.getLabel())
-											.code(SecurityErrors.CM_NOT_LOGIN)
-//											.code(JwtErrors.CM_NOT_LOGIN)
-											.build();
+			SecurityErrorResult result = errorMessageExtractor.getErrorMessage(authException);
+			DataResult<?> rs = null;
+			if (result.isUnknowError()) {
+				rs = DataResults.error(SecurityErrors.CM_NOT_LOGIN.getLabel())
+												.code(SecurityErrors.CM_NOT_LOGIN)
+												.build();
+			} else {
+				rs = DataResults.error(result.getMessage())
+												.code(result.getCode())
+												.build();
+			}
+			errorMessageExtractor.handleErrorResponse(response, rs);
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);
 		}else{
