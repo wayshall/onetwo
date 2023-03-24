@@ -133,6 +133,13 @@
 	    <version>3.4.1</version>
 	</dependency>
 	
+    <!-- 这个库已包含各平台本地文件，无需本地安装opencv -->
+    <dependency>
+        <groupId>org.openpnp</groupId>
+        <artifactId>opencv</artifactId>
+        <version>4.5.5-1</version>
+    </dependency>
+	
     <dependency>
 	    <groupId>io.reactivex.rxjava2</groupId>
 	    <artifactId>rxjava</artifactId>

@@ -1,17 +1,17 @@
-package org.onetwo.common.img;
+package org.onetwo.common.img.tpl;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Map;
 
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
-import org.onetwo.common.img.TemplateImage.DefinedData;
-import org.onetwo.common.img.TemplateImage.DefinedDrawHandler;
-import org.onetwo.common.img.TemplateImage.Horizontal;
-import org.onetwo.common.img.TemplateImage.ImageDefinedData;
-import org.onetwo.common.img.TemplateImage.ImageDrawing;
-import org.onetwo.common.img.TemplateImage.TextDefinedData;
-import org.onetwo.common.img.TemplateImage.TextDrawing;
+import org.onetwo.common.img.tpl.TemplateImage.DefinedData;
+import org.onetwo.common.img.tpl.TemplateImage.DefinedDrawHandler;
+import org.onetwo.common.img.tpl.TemplateImage.Horizontal;
+import org.onetwo.common.img.tpl.TemplateImage.ImageDefinedData;
+import org.onetwo.common.img.tpl.TemplateImage.ImageDrawing;
+import org.onetwo.common.img.tpl.TemplateImage.TextDefinedData;
+import org.onetwo.common.img.tpl.TemplateImage.TextDrawing;
 
 import com.google.common.collect.Maps;
 
