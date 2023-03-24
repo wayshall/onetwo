@@ -17,8 +17,18 @@ public class ImageComparatorTest {
 		imageComparator = new ImageComparator();
 	}
 	
-	@Test
+
+//	@Test
 	public void test() {
+		Mat image1 = Imgcodecs.imread("/Users/way/data/pic/8.jpeg");
+	    Mat image2 = Imgcodecs.imread("/Users/way/data/pic/9.jpeg");
+		double res = imageComparator.compareImages(image1, image2);
+		System.out.println("percent1: " + res);
+	}
+	
+	
+	@Test
+	public void testMutple() {
 
     	OpenCV.loadLocally();
     	System.out.println(System.getProperty("java.library.path"));
@@ -58,6 +68,11 @@ public class ImageComparatorTest {
 	    image2 = Imgcodecs.imread("/Users/way/data/pic/9.jpeg");
 		res = imageComparator.compareImages(image1, image2);
 		System.out.println("percent5 8-9: " + res);
+		
+		image1 = Imgcodecs.imread("/Users/way/data/pic/g1.png");
+	    image2 = Imgcodecs.imread("/Users/way/data/pic/g2.png");
+		res = imageComparator.compareImages(image1, image2);
+		System.out.println("percent6 g1-g2: " + res);
 	}
 
 }

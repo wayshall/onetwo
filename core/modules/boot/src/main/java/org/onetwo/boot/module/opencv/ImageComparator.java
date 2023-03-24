@@ -63,6 +63,8 @@ public class ImageComparator {
         Core.normalize(histImage2, histImage2, 0, 1, Core.NORM_MINMAX, -1, new Mat());
 
         // Compare histograms using one of the comparison methods 直方图比较
-        return Imgproc.compareHist(histImage1, histImage2, Imgproc.CV_COMP_CORREL);
+        double res = Imgproc.compareHist(histImage1, histImage2, Imgproc.CV_COMP_CORREL);
+        
+        return res;
     }
 }
