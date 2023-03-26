@@ -16,6 +16,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
@@ -146,6 +147,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		JwtSecurityTokenInfo token = null;
+		GenericUserDetail<?> userDetial = (GenericUserDetail<?>)authentication.getPrincipal();
 		if(jwtConfig.isEnabled()){
 			token = this.jwtTokenService.generateToken(authentication);
 //			response.addHeader(jwtAuthHeader, token.getToken());
@@ -154,6 +156,7 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 											.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);*/
+			token.setUserInfo(userDetial);
 
 			StoreContext ctx = StoreContext.builder()
 											.authKey(jwtConfig.getAuthKey())

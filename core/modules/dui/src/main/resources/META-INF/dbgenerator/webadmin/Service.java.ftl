@@ -32,6 +32,7 @@ package ${_globalConfig.getJavaLocalPackage(_tableContext.localPackage)};
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.dbm.core.internal.DbmCrudServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,9 +106,17 @@ public class ${serviceClassName} {
                                 .mapToNewPage(e -> e.asBean(${voClassName}.class));
     }
 
-    public ${voClassName} findById(${idType} id) {
+    public ${entityClassName} findById(${idType} id) {
         ${entityClassName} entity = baseEntityManager.findById(${entityClassName}.class, id);
-        return entity.asBean(${voClassName}.class);
+        return entity;
+    }
+
+    public ${entityClassName} get(${idType} id) {
+        ${entityClassName} entity = findById(id);
+        if (entity==null) {
+            throw new ServiceException("找不到数据: " + id);
+        }
+        return entity;
     }
     
     public ${voClassName} persist(${updateRequestClassName} request) {
