@@ -21,6 +21,7 @@ import org.onetwo.common.web.utils.Browsers.BrowserMeta;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebUtils;
+import org.onetwo.ext.security.AuthenticationExtractor;
 import org.onetwo.ext.security.exception.ErrorMessageExtractor;
 import org.onetwo.ext.security.exception.SecurityErrorResult;
 import org.onetwo.ext.security.jwt.JwtAuthStores.StoreContext;
@@ -78,6 +79,8 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	private JwtConfig jwtConfig;
 	@Autowired
 	private ErrorMessageExtractor errorMessageExtractor;
+	@Autowired
+	private AuthenticationExtractor authenticationExtractor;
 
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
@@ -147,7 +150,6 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		JwtSecurityTokenInfo token = null;
-		GenericUserDetail<?> userDetial = (GenericUserDetail<?>)authentication.getPrincipal();
 		if(jwtConfig.isEnabled()){
 			token = this.jwtTokenService.generateToken(authentication);
 //			response.addHeader(jwtAuthHeader, token.getToken());
@@ -156,7 +158,10 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 											.build();
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);*/
-			token.setUserInfo(userDetial);
+			if (authenticationExtractor!=null) {
+				GenericUserDetail<?> userDetial = authenticationExtractor.extract(authentication);
+				token.setUserInfo(userDetial);
+			}
 
 			StoreContext ctx = StoreContext.builder()
 											.authKey(jwtConfig.getAuthKey())
