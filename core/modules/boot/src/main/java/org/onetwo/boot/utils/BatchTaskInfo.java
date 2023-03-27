@@ -22,6 +22,15 @@ import lombok.Data;
 @SuppressWarnings("serial")
 public class BatchTaskInfo<T> extends ArrayList<TaskInfo> {
 
+	/****
+	 * 
+	 * @author weishao zeng
+	 * @param <R>
+	 * @param total 任务总数
+	 * @param taskSize 每个批量任务里的单个任务需要计算的数量
+	 * @param concurrentTaskSize 每个批量任务里，并发执行concurrentTaskSize个任务
+	 * @return
+	 */
 	public static <R> List<BatchTaskInfo<R>> splitTasks(int total, int taskSize, int concurrentTaskSize) {
 		if (total<=0) {
 			throw new IllegalArgumentException("tatal can be less than 0");
