@@ -108,7 +108,7 @@ public class DefaultUserDetail implements UserDetail, RoleDetail, UserRoot, Perm
 	}
 
 	@Override
-	public boolean isSystemRootUser() {
+	public Boolean isSystemRootUser() {
 		return getUserId() == ROOT_USER_ID;
 	}
 
