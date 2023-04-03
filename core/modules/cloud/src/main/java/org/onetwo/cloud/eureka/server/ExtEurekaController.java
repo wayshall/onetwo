@@ -52,6 +52,12 @@ public class ExtEurekaController extends EurekaController {
 		super(applicationInfoManager);
 	}
 
+	protected void populateBase(HttpServletRequest request, Map<String, Object> model) {
+		super.populateBase(request, model);
+		String basePath = request.getContextPath();
+		model.put("basePath", basePath);
+	}
+
 	@RequestMapping(path="admin", method = RequestMethod.GET)
 	public String admin(HttpServletRequest request, Map<String, Object> model) {
 		super.status(request, model);

@@ -98,18 +98,24 @@ public class ExpressExecutor {
 	}
 	
 	private void checkVars(String expressString, DefaultContext<String,Object> calcContext) {
-		String[] varNames;
-		try {
-			varNames = expressRunner.getOutVarNames(expressString);
-		} catch (Exception e) {
-			throw new ServiceException("表达式[" + expressString + "]语法可能有错: " + e.getMessage(), e);
-		}
+		String[] varNames = getVars(expressString);
 		for (String varName : varNames) {
 			if (!calcContext.containsKey(varName)) {
 				throw new ServiceException("表达式[" + expressString + "]有错，变量未定义：" + varName);
 			}
 		}
 	}
+
+	public String[] getVars(String expressString) {
+		String[] varNames;
+		try {
+			varNames = expressRunner.getOutVarNames(expressString);
+		} catch (Exception e) {
+			throw new ServiceException("表达式[" + expressString + "]语法可能有错: " + e.getMessage(), e);
+		}
+		return varNames;
+	}
+	
 	
 
 	public void checkSyntax(String expressString) {

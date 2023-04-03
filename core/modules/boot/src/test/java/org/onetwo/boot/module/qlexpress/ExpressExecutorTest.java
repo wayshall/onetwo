@@ -8,8 +8,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
+import org.onetwo.common.utils.CUtils;
+import org.onetwo.common.utils.LangUtils;
 
 import com.ql.util.express.ArraySwap;
 import com.ql.util.express.DefaultContext;
@@ -26,6 +29,35 @@ import com.ql.util.express.instruction.op.OperatorBase;
 import lombok.Data;
 
 public class ExpressExecutorTest {
+
+	QLExpressProperties props = new QLExpressProperties();
+	
+	@Test
+	public void testGerVars() {
+		props.setTrace(true);
+		ExpressRunner runner = new ExpressRunner();
+		ExpressExecutor executor = new ExpressExecutor(runner, props);
+		String exp = "(客户新品订购品规数==null || 客户所在档位新品投放规格数==null || 客户所在档位新品投放规格数==0)?0:(客户新品订购品规数/客户所在档位新品投放规格数)";
+		String[] vars = executor.getVars(exp);
+		System.out.println("vars: " + LangUtils.toString(vars));
+		
+		exp = "if (客户新品订购品规数==null || 客户所在档位新品投放规格数==null || 客户所在档位新品投放规格数==0){" +
+				 "return 0;" +
+			  "} else {" + 
+				 "double res = 客户新品订购品规数/客户所在档位新品投放规格数;" +
+				 "if (res>1) {" +
+				 	"return 1;" + 
+				 "} else {" + 
+				 	"return res;" + 
+				 "}" + 
+			  "}";
+		vars = executor.getVars(exp);
+		System.out.println("vars: " + LangUtils.toString(vars));
+		Map<String,Object> context = CUtils.asMap("客户新品订购品规数", 3.0, "客户所在档位新品投放规格数", 6.0);
+		Object res = executor.execute(exp, context);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo(0.5);
+	}
 
 	@Test
 	public void testForbiddenInvokeSecurityRiskMethods() throws Exception {
