@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -503,6 +504,15 @@ public class JsonMapperTest {
 		assertThat(json).isEqualTo("{\"test\":\"d:\\\\test\\\\test.jpg\",\"userName\":\"testUserName\"}");
 	}
 	
+	@Test
+	public void testGenericType() {
+		String json = "[{\"url\": \"https://test.com/test.jpg\", \"name\": \"test.jpg\", \"type\": \"PICTURE\", \"accessableUrl\": \"https://test.com/test.jpg\"}]";
+		List<ResourceInfo> resList = JsonMapper.IGNORE_NULL.fromJsonAsList(json, ResourceInfo.class);
+		System.out.println("Res: " + resList);
+		assertThat(resList).isNotEmpty();
+		assertThat(resList.get(0).getUrl()).isEqualTo("https://test.com/test.jpg");
+	}
+	
 	@JsonIgnoreType
 	static public interface IgnoreIOClassForTestMixin {
 
@@ -614,4 +624,30 @@ public class JsonMapperTest {
 			this.label = label;
 		}
     }
+	
+	private static class RouteNodeRecordEntity {
+		List<ResourceInfo> resourceList;
+		public List<ResourceInfo> getResourceList() {
+			return resourceList;
+		}
+		public void setResourceList(List<ResourceInfo> resourceList) {
+			this.resourceList = resourceList;
+		}
+	}
+	private static class ResourceInfo implements Serializable {
+	    private String name;
+	    private String url;
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getUrl() {
+			return url;
+		}
+		public void setUrl(String url) {
+			this.url = url;
+		}
+	}
 }
