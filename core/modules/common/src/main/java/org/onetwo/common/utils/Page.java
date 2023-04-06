@@ -159,9 +159,7 @@ public class Page<T> implements Serializable {
 		if(pageSize==null){
 			return ;
 		}
-		if(pageSize<=0) {
-			this.pageSize = DefaultPageSize;
-		} else if (pageSize > DefaultMaxPageSize) {
+		if (pageSize > DefaultMaxPageSize) {
 			throw new ServiceException("错误的分页数：" + pageSize);
 		} else {
 			this.pageSize = pageSize;
