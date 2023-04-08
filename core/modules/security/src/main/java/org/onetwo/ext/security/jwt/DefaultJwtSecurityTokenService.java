@@ -94,6 +94,10 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 			userDetails = (GenericUserDetail<?>)authentication.getPrincipal();
 			userId = userDetails.getUserId();
 			userName = userDetails.getUserName();
+			if (userDetails instanceof SecurityJwtUserDetail) {
+				SecurityJwtUserDetail sju = (SecurityJwtUserDetail) userDetails;
+				authoritiesString = GuavaUtils.join(sju.getAuthorities(), ",");
+			}
 		} else{
 			User user = (User)authentication.getPrincipal();
 			userDetails = createUserDetailForToken(user);
