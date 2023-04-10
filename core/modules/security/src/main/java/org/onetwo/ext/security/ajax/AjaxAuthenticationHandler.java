@@ -13,6 +13,7 @@ import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
 import org.onetwo.common.utils.LangUtils;
@@ -33,6 +34,7 @@ import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -77,10 +79,12 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 //	private JwtAuthStores jwtAuthStores;
 	private CookieStorer cookieStorer;
 	private JwtConfig jwtConfig;
-	@Autowired
+//	@Autowired
 	private ErrorMessageExtractor errorMessageExtractor;
 	@Autowired
 	private AuthenticationExtractor authenticationExtractor;
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	public AjaxAuthenticationHandler(){
 		this(null, null, false);
@@ -145,6 +149,8 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 	    	srHandler.setAlwaysUseDefaultTargetUrl(isAlwaysUseDefaultTargetUrl());
 	    }
         this.successHandler = srHandler;
+
+		this.errorMessageExtractor =  SpringUtils.getBean(applicationContext, ErrorMessageExtractor.class);
 	}
 	
 	@Override
@@ -159,8 +165,10 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);*/
 			if (authenticationExtractor!=null) {
-				GenericUserDetail<?> userDetial = authenticationExtractor.extract(authentication);
-				token.setUserInfo(userDetial);
+				Object userDetial = authenticationExtractor.extract(authentication);
+				if (userDetial instanceof GenericUserDetail) {
+					token.setUserInfo((GenericUserDetail<?>)userDetial);
+				}
 			}
 
 			StoreContext ctx = StoreContext.builder()

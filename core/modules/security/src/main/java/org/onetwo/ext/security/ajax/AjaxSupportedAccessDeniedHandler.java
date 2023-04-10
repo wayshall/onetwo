@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.Result;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataResults.SimpleResultBuilder;
 import org.onetwo.common.web.utils.RequestUtils;
@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
@@ -48,8 +49,10 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 	private SecurityExceptionMessager securityExceptionMessager;
 	@Autowired
 	private SecurityConfig securityConfig;
-	@Autowired
+//	@Autowired
 	private ErrorMessageExtractor errorMessageExtractor;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	public AjaxSupportedAccessDeniedHandler(){
 		delegateAccessDeniedHandler = new AccessDeniedHandlerImpl();
@@ -60,6 +63,7 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 		AccessDeniedHandlerImpl adh = new AccessDeniedHandlerImpl();
 		adh.setErrorPage(errorPage);
 		this.delegateAccessDeniedHandler = adh;
+		this.errorMessageExtractor =  SpringUtils.getBean(applicationContext, ErrorMessageExtractor.class);
 	}
 	
 	@Override

@@ -8,7 +8,10 @@ import org.springframework.security.core.Authentication;
 public class DefaultAuthenticationExtractor implements AuthenticationExtractor {
 
 	@Override
-	public GenericUserDetail<?> extract(Authentication authentication) {
+	public Object extract(Authentication authentication) {
+		if (!(authentication.getPrincipal() instanceof GenericUserDetail)) {
+			return authentication.getPrincipal(); 
+		}
 		// see SecurityJwtUserDetail
 		GenericUserDetail<?> user = (GenericUserDetail<?>)authentication.getPrincipal();
 		SimpleUserDetail userDetail = new SimpleUserDetail();

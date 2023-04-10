@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
@@ -18,6 +19,7 @@ import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.PortMapperImpl;
@@ -39,8 +41,10 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 	private boolean forceHttps;
 	private Integer httpsPort;
 	private boolean contextRelative;
-	@Autowired
+//	@Autowired
 	private ErrorMessageExtractor errorMessageExtractor;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -56,6 +60,7 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 			PropertyAccessorFactory.forDirectFieldAccess(entryPoint).setPropertyValue("redirectStrategy.contextRelative", contextRelative);
 			this.defaultAuthenticationEntryPoint = entryPoint;
 		}
+		this.errorMessageExtractor =  SpringUtils.getBean(applicationContext, ErrorMessageExtractor.class);
 	}
 
 	@Override
