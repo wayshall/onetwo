@@ -147,7 +147,9 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	@Override
 	@Transactional
 	public void syncMenuToDatabase(){
-		parsers.stream().forEach(parser->syncMenuToDatabase(parser));
+		parsers.stream().forEach(parser->{
+			syncMenuToDatabase(parser);
+		});
 
 		Set<String> memoryRootCodes = parsers.stream()
 											.filter(p -> p.getRootMenu().isPresent())

@@ -311,6 +311,12 @@ public class DefaultMenuInfoParser<P extends IPermission> implements MenuInfoPar
 	protected PermClassParser getPermClassParser(Class<?> permissionClass, Class<?> parentPermissionClass, boolean mustCreate){
 		PermClassParser parser = permClassParserMap.get(permissionClass);
 		if(parser==null){
+			// 若父菜单类是个spring component，则忽略
+//			if (parentPermissionClass!=null && AnnotationUtils.findAnnotation(parentPermissionClass, Component.class)!=null) {
+			// 若父菜单类不是接口类，则忽略
+			if (parentPermissionClass!=null && !parentPermissionClass.isInterface()) {
+				parentPermissionClass = null;
+			}
 			parser = PermClassParser.create(permissionClass, parentPermissionClass);
 			this.permClassParserMap.put(permissionClass, parser);
 		}else{
