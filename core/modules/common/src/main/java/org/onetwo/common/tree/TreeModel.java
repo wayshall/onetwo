@@ -13,5 +13,14 @@ public interface TreeModel<T>{
 	default public Comparable<?> getSort() {
 		return (Comparable<?>)getId();
 	}
+	
+	/****
+	 * 是否有孩子节点
+	 * @return
+	 */
+//	default public boolean isHasChildren() {
+//		boolean hasChildren = LangUtils.isNotEmpty(getChildren());
+//		return hasChildren;
+//	}
 
 }
