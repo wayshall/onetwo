@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.Dates;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.BeanToMapConvertor;
@@ -61,6 +62,15 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 //		return new GenericLoginUserDetails<>(userId, username, "N/A", authorities);
 		SecurityJwtUserDetail user = new SecurityJwtUserDetail(userId, username, "N/A", authorities);
 		user.setProperties(toMap(claims));
+		Object role = claims.get(JwtSecurityUtils.CLAIM_ROLES);
+		if (role!=null) {
+			user.setRoles(role.toString());
+		}
+		Object tenantId = claims.get(JwtSecurityUtils.CLAIM_TENANT_ID);
+		if (tenantId!=null) {
+			user.setTenantId(Types.asLong(tenantId.toString()));
+		}
+		
 		return user;
 	}
 	
@@ -89,6 +99,7 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 		String authoritiesString = "";
 		Serializable userId = null;
 		String userName = null;
+		Long tenantId = null;
 		
 		if(authentication.getPrincipal() instanceof GenericUserDetail){
 			userDetails = (GenericUserDetail<?>)authentication.getPrincipal();
@@ -97,6 +108,7 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 			if (userDetails instanceof SecurityJwtUserDetail) {
 				SecurityJwtUserDetail sju = (SecurityJwtUserDetail) userDetails;
 				authoritiesString = GuavaUtils.join(sju.getAuthorities(), ",");
+				tenantId = sju.getTenantId();
 			}
 		} else{
 			User user = (User)authentication.getPrincipal();
@@ -113,6 +125,7 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 		}
 		
 
+		String role = authoritiesString;
 		JwtConfig jwtConfig = securityConfig.getJwt();
 		Map<String, Object> props = extractProperties(userDetails);
 		if (props.containsKey(JwtSecurityUtils.CLAIM_USER_ID)) {
@@ -131,6 +144,8 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 		//				.setId(jti)
 						.claim(JwtSecurityUtils.CLAIM_USER_ID, userId)
 						.claim(JwtSecurityUtils.CLAIM_AUTHORITIES, authoritiesString)
+						.claim(JwtSecurityUtils.CLAIM_ROLES, role)
+						.claim(JwtSecurityUtils.CLAIM_TENANT_ID, tenantId)
 						.setIssuedAt(Dates.toDate(issuteAt))
 						.setExpiration(expirationDate)
 						.signWith(SignatureAlgorithm.HS512, jwtConfig.getSigningKey());

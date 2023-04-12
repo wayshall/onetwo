@@ -16,6 +16,7 @@ import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.jwt.JwtUserDetail;
 import org.onetwo.ext.security.utils.GenericLoginUserDetails;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.util.ClassUtils;
@@ -31,9 +32,9 @@ public abstract class JwtUtils {
 	public static final String DEFAULT_HEADER_KEY = "auth";
 	
 	public static final String PROPERTY_KEY = "p_";
-	public static final String CLAIM_USER_ID = "userId";
-	public static final String CLAIM_USER_NAME = "userName";
-	public static final String CLAIM_AUTHORITIES = "authorities";
+	public static final String CLAIM_USER_ID = JwtSecurityUtils.CLAIM_USER_ID;
+	public static final String CLAIM_USER_NAME = JwtSecurityUtils.CLAIM_USER_NAME;
+	public static final String CLAIM_AUTHORITIES = JwtSecurityUtils.CLAIM_AUTHORITIES;
 	public static final String CLAIM_ROLES = JwtSecurityUtils.CLAIM_ROLES;
 	
 	private static final String SECURITY_USER_CLASS = "org.springframework.security.core.userdetails.User";
@@ -47,7 +48,11 @@ public abstract class JwtUtils {
 		if (parameterType==jwtUserDetail.getClass()) {
 			return (T)jwtUserDetail;
 		}
+		
+		BeanWrapper bw = SpringUtils.newBeanWrapper(jwtUserDetail);
 		Map<String, Object> userMap = Maps.newHashMap(jwtUserDetail.getProperties());
+        userMap.put(JwtSecurityUtils.CLAIM_TENANT_ID, bw.getPropertyValue(JwtSecurityUtils.CLAIM_TENANT_ID));
+        
 //		T userDetail = SpringUtils.map2Bean(userMap, parameterType);
 		T userDetail = null;
 		

@@ -15,6 +15,7 @@ public abstract class JwtSecurityUtils {
 	public static final String CLAIM_USER_NAME = "userName";
 	public static final String CLAIM_AUTHORITIES = "authorities";
 	public static final String CLAIM_ROLES = "roles";
+	public static final String CLAIM_TENANT_ID = "tenantId";
 	
 	
 	private JwtSecurityUtils(){

@@ -22,6 +22,7 @@ public class SecurityJwtUserDetail extends GenericLoginUserDetails<Serializable>
 	private Map<String, Object> properties = Maps.newHashMap();
 	private boolean anonymousLogin;
 	private String roles;
+	private Long tenantId;
 
 	public SecurityJwtUserDetail(Serializable userId, String username, String password,
 			Collection<? extends GrantedAuthority> authorities) {
@@ -51,5 +52,10 @@ public class SecurityJwtUserDetail extends GenericLoginUserDetails<Serializable>
 	public void setRoles(String roles) {
 		this.roles = roles;
 	}
-
+	public Long getTenantId() {
+		return tenantId;
+	}
+	public void setTenantId(Long tenantId) {
+		this.tenantId = tenantId;
+	}
 }
