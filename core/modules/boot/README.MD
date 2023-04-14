@@ -133,7 +133,9 @@ jfish:
 #### 使用@ExcelEntity注解导出
 使用注解的方式可以直接在原来页面查询的controller里实现，而无需重新写一个方法，但是这种导出目前有数量限制，最大一万条，而返回类型只能是List或者Page。
 1、在返回的值类型里使用@ExcelEntity标注
+
 2、在值类型里，把需要导出的字段或属性使用@ExcelExportable标注
+
 3、如果是分页，不想只导出默认的一页20条数据，需要在controller里做一点小修改：
 ```Java
     @GetMapping("/export")
@@ -149,6 +151,7 @@ jfish:
         return page;
     }
 ```
+
 4、使用 .jfxls 后缀即可controller即可
 
 
