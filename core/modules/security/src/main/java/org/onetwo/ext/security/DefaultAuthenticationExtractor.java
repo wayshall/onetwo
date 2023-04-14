@@ -20,6 +20,8 @@ public class DefaultAuthenticationExtractor implements AuthenticationExtractor {
 //		userDetail.setUserType(null);
 		if (user instanceof SecurityJwtUserDetail) {
 			SecurityJwtUserDetail detail = (SecurityJwtUserDetail) user;
+			userDetail.setNickName(detail.getNickname());
+			userDetail.setAvatar(detail.getAvatar());
 			userDetail.setAdminRole(SimpleUserDetail.ADMIN_ROLES.contains(detail.getRoles()));
 		}
 		return userDetail;

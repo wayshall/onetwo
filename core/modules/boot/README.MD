@@ -90,6 +90,68 @@ jfish:
             "*": 400
 ```
 
+
+### 导出excel
+
+#### 使用xml模板导出
+1、在/src/main/resources/excel-view/目录下创建xml模板：
+```xml
+<template name="订单明细表" columnWidth="0:20;2:20;3:20;5:20;7:20;8:20">
+    <rows>
+       <!-- CellStyle -->
+        <row span="2" fieldStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldFont="boldweight:BOLDWEIGHT_BOLD">
+            <fields>
+                <field value="#title" rowspan="2" colspan="12"/>
+            </fields>
+        </row>
+        <row renderHeader="true" 
+              fieldHeaderStyle="alignment:ALIGN_CENTER;verticalAlignment:VERTICAL_CENTER;" fieldHeaderFont="boldweight:BOLDWEIGHT_BOLD"
+              name="element" type="iterator" datasource="#datas" span="item.size()" fieldFont="boldweight:BOLDWEIGHT_NORMAL;"> 
+            <fields>
+                <field label="订单id" name="orderId" dataType="java.lang.String"/>
+                <field label="用户姓名" name="nickname" dataType="java.lang.String"/>
+                <field label="用户手机" name="userMobile"/>
+                <field label="商品数量" name="itemCount"/>
+                <field label="所属商户" name="storeName"/>
+                <field label="订单总金额" name="totalAmount"/>
+                <field label="支付时间" name="payTime" dataFormat="yyyy-MM-dd HH:mm:ss"/>
+                <field label="菜品数量" name="skuCount" rootValue="item"/>
+            </fields>
+        </row>
+    </rows>
+</template>
+```
+2、在controller返回模板路径
+```Java
+    @GetMapping(path="export")
+    public ModelAndView list(){
+        return pluginMv("模板路径", "datas", datas);
+    }
+```
+3、使用 .jfxls 后缀访问controller即可，框架会自动使用xml模板生成excel文件
+
+#### 使用@ExcelEntity注解导出
+使用注解的方式可以直接在原来页面查询的controller里实现，而无需重新写一个方法，但是这种导出目前有数量限制，最大一万条，而返回类型只能是List或者Page。
+1、在返回的值类型里使用@ExcelEntity标注
+2、在值类型里，把需要导出的字段或属性使用@ExcelExportable标注
+3、如果是分页，不想只导出默认的一页20条数据，需要在controller里做一点小修改：
+```Java
+    @GetMapping("/export")
+    public Page<Data> list(PageRequest pageRequest){
+        Page<Data> page = null;
+        if (isResponseJFxls()) {
+            // 导出会执行此分支
+            pageRequest.noLimited();
+            page = service.findPage(pageRequest);
+        } else {
+            page = service.findPage(pageRequest);
+        }
+        return page;
+    }
+```
+4、使用 .jfxls 后缀即可controller即可
+
+
 ### 阿里ons配置
 注解启用
 ```Java

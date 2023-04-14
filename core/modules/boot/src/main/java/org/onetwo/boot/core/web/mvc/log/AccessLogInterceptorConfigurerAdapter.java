@@ -5,14 +5,14 @@ import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * jfish and cloud extends
  * @author wayshall
  * <br/>
  */
-public class AccessLogInterceptorConfigurerAdapter extends WebMvcConfigurerAdapter {
+public class AccessLogInterceptorConfigurerAdapter implements WebMvcConfigurer {
 	@Autowired
 	private LoggerInterceptor loggerInterceptor;
 	

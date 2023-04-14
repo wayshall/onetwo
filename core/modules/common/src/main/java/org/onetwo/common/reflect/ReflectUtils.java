@@ -419,9 +419,9 @@ public class ReflectUtils {
 	}
 
 	public static Class<?> getGenricType(final Object obj, final int index) {
-		return getGenricType(obj, index, Object.class);
+		return (Class<?>)getGenricType(obj, index, Object.class);
 	}
-	public static Class<?> getGenricType(final Object obj, final int index, Class<?> defaultCLass) {
+	public static Type getGenricType(final Object obj, final int index, Type defaultCLass) {
 
 		Class clazz = getObjectClass(obj);
 		Type genType = null;
@@ -449,10 +449,10 @@ public class ReflectUtils {
 			return Object.class;
 		}*/
 		if(Class.class.isInstance(params[index])){
-			return (Class) params[index];
+			return params[index];
 		}else if(ParameterizedType.class.isInstance(params[index])){
 			ParameterizedType ptype = (ParameterizedType) params[index];
-			return (Class)ptype.getRawType();
+			return ptype.getRawType();
 		}else{
 //			return Object.class;
 			return defaultCLass;

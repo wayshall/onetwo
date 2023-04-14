@@ -34,4 +34,9 @@ public class ExcelViewConfiguration {
 	public XmlTemplateGeneratorFactory xmlTemplateGeneratorFactory(){
 		return new DefaultXmlTemplateExcelFacotory();
 	}
+	
+	@Bean
+	public PoiExcelHttpMessageConverter poiExcelHttpMessageConverter() {
+		return new PoiExcelHttpMessageConverter();
+	}
 }

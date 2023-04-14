@@ -2,6 +2,8 @@ package org.onetwo.boot.module.poi;
 
 import java.util.Objects;
 
+import javax.annotation.PostConstruct;
+
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.plugin.core.PluginManager;
 import org.onetwo.ext.poi.excel.interfaces.XmlTemplateGeneratorFactory;
@@ -17,11 +19,17 @@ public class XmlTemplateExcelViewResolver extends UrlBasedViewResolver implement
 	private BootSiteConfig bootSiteConfig;
 	@Autowired
 	private PluginManager pluginManager;
+	@Autowired
+	private PoiProperties poiProperties;
 	
 	public XmlTemplateExcelViewResolver(){
 		this.setViewClass(requiredViewClass());
 		this.setPrefix(DEFAULT_BASE_TEMPLATE_DIR);
-		this.setContentType("application/jfxls;charset=utf-8");
+	}
+
+	@PostConstruct
+	public void init() {
+		this.setContentType(poiProperties.getContentType());
 		this.setSuffix(".xml");
 	}
 

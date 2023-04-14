@@ -13,9 +13,9 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.onetwo.common.reflect.ClassIntroManager;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.ext.poi.excel.data.CellContextData;
-import org.onetwo.ext.poi.utils.ClassIntroManager;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.springframework.beans.BeanWrapper;
 
