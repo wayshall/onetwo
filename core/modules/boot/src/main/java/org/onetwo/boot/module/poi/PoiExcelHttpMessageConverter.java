@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -23,6 +24,8 @@ import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.ResponseType;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.ext.poi.excel.generator.ExcelGenerators;
@@ -57,6 +60,24 @@ public class PoiExcelHttpMessageConverter extends AbstractGenericHttpMessageConv
 	public Object read(Type type, Class<?> contextClass, HttpInputMessage inputMessage)
 			throws IOException, HttpMessageNotReadableException {
 		throw new BaseException("not support read");
+	}
+
+	@Override
+	protected boolean supports(Class<?> clazz) {
+		HttpServletRequest request = WebHolder.getRequest().orElse(null);
+		if (request!=null) {
+			ResponseType type =RequestUtils.getResponseType(request);
+			if (type!=ResponseType.JFXLS) {
+				return false;
+			}
+		}
+		Type componentType = ReflectUtils.getGenricType(clazz, 0, null);
+		if (componentType==null) {
+			return false;
+		}
+		Intro<?> intro = ClassIntroManager.getInstance().getIntro((Class<?>)componentType);
+		ExcelEntity excelData = intro.getAnnotationWithSupers(ExcelEntity.class);
+		return excelData!=null;
 	}
 
 	private Intro<?> getAndCheckComponentType(Type type) {
