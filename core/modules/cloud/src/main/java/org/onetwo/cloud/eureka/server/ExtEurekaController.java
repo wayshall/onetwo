@@ -10,6 +10,7 @@ import org.onetwo.common.spring.rest.ExtRestTemplate;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
+import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.eureka.server.EurekaController;
@@ -29,6 +30,16 @@ import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 需要禁用默认的eureka看板
+ * 若actuator的刷新endpoint非默认，则需要配置到eureka：
+ * eureka:
+    instance:
+        metadata-map: 
+            #management.context-path: 
+            management.refresh-config-url: /gateway/jfish/management/refresh
+ * eureka:
+    dashboard: 
+        enabled: false
  * @author weishao zeng
  * <br/>
  */
@@ -41,7 +52,7 @@ public class ExtEurekaController extends EurekaController {
 	private HttpServletRequest request;
 	/*@Value("${eureka.dashboard.path:/}")
 	private String dashboardPath = "";*/
-	@Value("${eureka.dashboard.baseurl:/gateway/eureka}")
+	@Value("${eureka.dashboard.baseurl:}")
 	private String baseurl = "";
 	@Value("${eureka.dashboard.authHeaderName:sid}")
 	private String authHeaderName = "";
@@ -137,8 +148,8 @@ public class ExtEurekaController extends EurekaController {
 	
 	@ModelAttribute("dashboardBaseUrl")
 	public String getDashboardBaseurl(){
-		if (baseurl.equals("/")) {
-			return "";
+		if (StringUtils.isBlank(baseurl)) {
+			return WebHolder.getRequest().get().getContextPath();
 		}
 		return baseurl;
 	}
