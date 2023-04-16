@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.common.web.utils.RequestUtils;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.shared.Application;
@@ -64,8 +65,12 @@ public class InstanceInfoMeta {
 			if (StringUtils.isBlank(url)) {
 				url = isVersion2() ? "actuator" : "";
 			}
+			url = StringUtils.emptyIfNull(url);
+			url = url + "/refresh";
 		}
-		url = inst.getHomePageUrl() + StringUtils.emptyIfNull(url) + "/refresh";
+		if (!RequestUtils.isHttpPath(url)) {
+			url = StringUtils.trimEndWith(inst.getHomePageUrl(), "/") + url;
+		}
 		return url;
 	}
 	
