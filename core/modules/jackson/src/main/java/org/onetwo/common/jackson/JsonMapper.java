@@ -357,9 +357,9 @@ public class JsonMapper {
 				if (json instanceof byte[]) {
 					jsonstr = LangUtils.newString((byte[])obj);
 				}
-				throw new JsonException("parse json to ["+objType+"] error, reason: " + e.getMessage() + ", json: " + jsonstr, e);
+				throw new JsonException("parse json to ["+objType+"] error, reason: " + e.getMessage() + ". [json data]: " + jsonstr, e);
 			} else {
-				throw new JsonException("parse json to ["+objType+"] error, reason: " + e.getMessage() + ", json: " + json, e);
+				throw new JsonException("parse json to ["+objType+"] error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 			}
 		}
 		return (T)obj;
@@ -388,7 +388,7 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue(jsonstr, valueTypeRef);
 			}
 		} catch (Exception e) {
-			throw new JsonException("parse json to "+valueTypeRef+" error, reason: " + e.getMessage() + ", json: " + json, e);
+			throw new JsonException("parse json to "+valueTypeRef+" error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 		return obj;
 	}
@@ -458,7 +458,7 @@ public class JsonMapper {
 		try {
 			return this.objectMapper.readValue(json, typeFactory.constructArrayType(objClass));
 		} catch (Exception e) {
-			throw new JsonException("parse json to " + objClass + " error, reason: " + e.getMessage() + ", json: " + json, e);
+			throw new JsonException("parse json to " + objClass + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 	}
 	
@@ -476,7 +476,7 @@ public class JsonMapper {
 		try {
 			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ctype, itemType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to collection[" + ctype + "] error, reason: " + e.getMessage() + ", json: " + json, e);
+			throw new JsonException("parse json to collection[" + ctype + "] error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 		return datas;
 	}
@@ -489,7 +489,7 @@ public class JsonMapper {
 		try {
 			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, itemType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to ArrayList error, reason: " + e.getMessage() + ", json: " + json, e);
+			throw new JsonException("parse json to ArrayList error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 		return datas;
 	}
