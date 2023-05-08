@@ -568,6 +568,12 @@ public class DUIGenerator {
 			return this;
 		}
 		
+		public VuePageGenerator generateVueSelect(){
+			String mgrPath = templateName+"/component/Select.vue.ftl";
+			tableGenerator.pageTemplate(mgrPath, vueFileNameFuncCreator.apply(mgrPath));
+			return this;
+		}
+		
 		public VuePageGenerator generateVueJsApi(){
 //			String apiDir = "/src/api";
 			Function<String, OutfilePathFunc> outFileNameFuncCreator = path -> {

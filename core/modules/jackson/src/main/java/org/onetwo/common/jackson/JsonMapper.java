@@ -323,6 +323,11 @@ public class JsonMapper {
 		}
 	}
 
+	public <T> T convert(final JsonNode jsonNode, Class<T> objType){
+		T value = objectMapper.convertValue(jsonNode, objType);
+		return value;
+	}
+	
 	public <T> T fromJson(final Object json, Type objType){
 		return fromJson(json, objType, false);
 	}
