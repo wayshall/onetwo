@@ -42,25 +42,24 @@ public class ImageComparator {
 	}
 	
     public double compareImages(Mat image1, Mat image2) {
-        Mat hsvImage1 = new Mat();
-        Mat hsvImage2 = new Mat();
-        MatOfInt histSize = new MatOfInt(180);
-        MatOfFloat ranges = new MatOfFloat(0f, 180f);
-        MatOfInt channels = new MatOfInt(0);
+        Mat grayImage1 = new Mat();
+        Mat grayImage2 = new Mat();
+//        MatOfInt histSize = new MatOfInt(256);
+//        MatOfFloat ranges = new MatOfFloat(0f, 180f);
 
-        // Convert images to HSV color space 图片转HSV
-        Imgproc.cvtColor(image1, hsvImage1, Imgproc.COLOR_BGR2HSV);
-        Imgproc.cvtColor(image2, hsvImage2, Imgproc.COLOR_BGR2HSV);
+        // 将图片转换为灰度图像
+        Imgproc.cvtColor(image1, grayImage1, Imgproc.COLOR_BGR2HSV);
+        Imgproc.cvtColor(image2, grayImage2, Imgproc.COLOR_BGR2HSV);
 
         // Calculate histograms 直方图计算
         Mat histImage1 = new Mat();
         Mat histImage2 = new Mat();
-        Imgproc.calcHist(Arrays.asList(hsvImage1), channels, new Mat(), histImage1, histSize, ranges);
-        Imgproc.calcHist(Arrays.asList(hsvImage2), channels, new Mat(), histImage2, histSize, ranges);
+        Imgproc.calcHist(Arrays.asList(grayImage1), new MatOfInt(0), new Mat(), histImage1, new MatOfInt(256), new MatOfFloat(0, 256));
+        Imgproc.calcHist(Arrays.asList(grayImage2), new MatOfInt(0), new Mat(), histImage2, new MatOfInt(256), new MatOfFloat(0, 256));
 
         // Normalize histograms 图片归一化
-        Core.normalize(histImage1, histImage1, 0, 1, Core.NORM_MINMAX, -1, new Mat());
-        Core.normalize(histImage2, histImage2, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+        Core.normalize(histImage1, histImage1, 0, histImage1.rows(), Core.NORM_MINMAX, -1, new Mat());
+        Core.normalize(histImage2, histImage2, 0, histImage1.rows(), Core.NORM_MINMAX, -1, new Mat());
 
         // Compare histograms using one of the comparison methods 直方图比较
         double res = Imgproc.compareHist(histImage1, histImage2, Imgproc.CV_COMP_CORREL);
