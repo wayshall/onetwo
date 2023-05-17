@@ -100,7 +100,7 @@ public class ImageComparator {
     private void normalize(Mat histImage1) {
     	Mat mask = new Mat();
     	try {
-            Core.normalize(histImage1, histImage1, 0, histImage1.rows(), Core.NORM_MINMAX, -1, new Mat());
+            Core.normalize(histImage1, histImage1, 0, histImage1.rows(), Core.NORM_MINMAX, -1, mask);
 		} finally {
 			mask.release();
 		}
