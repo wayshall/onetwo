@@ -17,53 +17,93 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ImageComparator {
 
-	public double compareImages(MultipartFile file1, MultipartFile file2) {
-		try {
-			return compareImages(file1.getBytes(), file2.getBytes());
-		} catch (IOException e) {
-			throw new BaseException("read MultipartFile error: " + e.getMessage(), e);
-		}
-	}
+    public double compareImages(MultipartFile file1, MultipartFile file2) {
+        try {
+            return compareImages(file1.getBytes(), file2.getBytes());
+        } catch (IOException e) {
+            throw new BaseException("read MultipartFile error: " + e.getMessage(), e);
+        }
+    }
 
-	public double compareImages(InputStream input1, InputStream input2) {
-		return compareImages(FileUtils.toByteArray(input1), FileUtils.toByteArray(input2));
-	}
-	
-	public double compareImages(byte[] bytes1, byte[] bytes2) {
-		Mat image1 = Imgcodecs.imdecode(new MatOfByte(bytes1), Imgcodecs.IMREAD_UNCHANGED);
-	    Mat image2 = Imgcodecs.imdecode(new MatOfByte(bytes2), Imgcodecs.IMREAD_UNCHANGED);
-	    return compareImages(image1, image2);
-	}
-	
-	public double compareImages(String path1, String path2) {
-		Mat image1 = Imgcodecs.imread(path1);
-	    Mat image2 = Imgcodecs.imread(path2);
-	    return compareImages(image1, image2);
-	}
-	
+    public double compareImages(InputStream input1, InputStream input2) {
+        return compareImages(FileUtils.toByteArray(input1), FileUtils.toByteArray(input2));
+    }
+
+    public double compareImages(byte[] bytes1, byte[] bytes2) {
+        Mat image1 = Imgcodecs.imdecode(new MatOfByte(bytes1), Imgcodecs.IMREAD_UNCHANGED);
+        Mat image2 = Imgcodecs.imdecode(new MatOfByte(bytes2), Imgcodecs.IMREAD_UNCHANGED);
+        try {
+            return compareImages(image1, image2);
+        } finally {
+            image1.release();
+            image2.release();
+        }
+    }
+
+    public double compareImages(String path1, String path2) {
+        Mat image1 = Imgcodecs.imread(path1);
+        Mat image2 = Imgcodecs.imread(path2);
+        try {
+            return compareImages(image1, image2);
+        } finally {
+            image1.release();
+            image2.release();
+        }
+    }
+
     public double compareImages(Mat image1, Mat image2) {
         Mat grayImage1 = new Mat();
         Mat grayImage2 = new Mat();
-//        MatOfInt histSize = new MatOfInt(256);
-//        MatOfFloat ranges = new MatOfFloat(0f, 180f);
-
-        // 将图片转换为灰度图像
-        Imgproc.cvtColor(image1, grayImage1, Imgproc.COLOR_BGR2HSV);
-        Imgproc.cvtColor(image2, grayImage2, Imgproc.COLOR_BGR2HSV);
-
-        // Calculate histograms 直方图计算
         Mat histImage1 = new Mat();
         Mat histImage2 = new Mat();
-        Imgproc.calcHist(Arrays.asList(grayImage1), new MatOfInt(0), new Mat(), histImage1, new MatOfInt(256), new MatOfFloat(0, 256));
-        Imgproc.calcHist(Arrays.asList(grayImage2), new MatOfInt(0), new Mat(), histImage2, new MatOfInt(256), new MatOfFloat(0, 256));
 
-        // Normalize histograms 图片归一化
-        Core.normalize(histImage1, histImage1, 0, histImage1.rows(), Core.NORM_MINMAX, -1, new Mat());
-        Core.normalize(histImage2, histImage2, 0, histImage1.rows(), Core.NORM_MINMAX, -1, new Mat());
+        try {
+            // Convert images to grayscale 转为灰度
+            Imgproc.cvtColor(image1, grayImage1, Imgproc.COLOR_BGR2HSV);
+            Imgproc.cvtColor(image2, grayImage2, Imgproc.COLOR_BGR2HSV);
 
-        // Compare histograms using one of the comparison methods 直方图比较
-        double res = Imgproc.compareHist(histImage1, histImage2, Imgproc.CV_COMP_CORREL);
-        
-        return res;
+            // Calculate histograms 计算直方图
+            calcHist(grayImage1, histImage1);
+            calcHist(grayImage2, histImage2);
+
+            // Normalize histograms
+            normalize(histImage1);
+            normalize(histImage2);
+
+            // Compare histograms using one of the comparison methods
+            return Imgproc.compareHist(histImage1, histImage2, Imgproc.CV_COMP_CORREL);
+        } finally {
+            grayImage1.release();
+            grayImage2.release();
+            histImage1.release();
+            histImage2.release();
+        }
+    }
+    
+    private void calcHist(Mat grayImage, Mat histImage) {
+    	// Calculate histograms
+    	MatOfInt channels = new MatOfInt(0);
+    	Mat mask = new Mat();
+    	MatOfInt histSize = new MatOfInt(256);
+    	MatOfFloat ranges = new MatOfFloat(0, 256);
+    	try {
+            Imgproc.calcHist(Arrays.asList(grayImage), channels, mask, histImage,
+            		histSize, ranges);
+		} finally {
+			channels.release();
+			mask.release();
+			histSize.release();
+			ranges.release();
+		}
+    }
+    
+    private void normalize(Mat histImage1) {
+    	Mat mask = new Mat();
+    	try {
+            Core.normalize(histImage1, histImage1, 0, histImage1.rows(), Core.NORM_MINMAX, -1, new Mat());
+		} finally {
+			mask.release();
+		}
     }
 }
+
