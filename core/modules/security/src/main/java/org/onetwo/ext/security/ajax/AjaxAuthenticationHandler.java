@@ -234,8 +234,11 @@ public class AjaxAuthenticationHandler extends SimpleUrlAuthenticationSuccessHan
 				SimpleResultBuilder<?> builder = DataResults.error("验证失败："+msg);
 				
 				String errorCode = SecurityErrors.AUTH_FAILED.name();
-				if (exception instanceof ExceptionCodeMark) {
-					errorCode = ((ExceptionCodeMark)exception).getCode();
+				
+				ExceptionCodeMark exceptionCodeMark = LangUtils.getCauseException(exception, ExceptionCodeMark.class);
+				
+				if (exceptionCodeMark!=null) {
+					errorCode = ((ExceptionCodeMark)exceptionCodeMark).getCode();
 				}
 				
 				rs = buildErrorCode(builder, request, exception)

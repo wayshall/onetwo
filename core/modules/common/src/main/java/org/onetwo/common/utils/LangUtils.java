@@ -507,7 +507,7 @@ abstract public class LangUtils {
 		return se;
 	}
 	
-	public static <T extends Throwable> T getCauseException(Throwable e, Class<T> root){
+	public static <T> T getCauseException(Throwable e, Class<T> root){
 		Throwable se = e;
 		while(se.getCause()!=null){
 			se = se.getCause();
