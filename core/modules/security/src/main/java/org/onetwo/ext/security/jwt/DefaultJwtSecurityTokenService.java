@@ -124,15 +124,22 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 			User user = (User)authentication.getPrincipal();
 			BeanWrapper bw = SpringUtils.newBeanWrapper(user);
 			
-			userId = (Serializable)bw.getPropertyValue(JwtSecurityUtils.CLAIM_USER_ID);
+			if (bw.isReadableProperty(JwtSecurityUtils.CLAIM_USER_ID)) {
+				userId = (Serializable)bw.getPropertyValue(JwtSecurityUtils.CLAIM_USER_ID);
+			}
 			userDetails = createUserDetailForToken(userId, user);
 			Collection<String> authorities = user.getAuthorities()
 					.stream()
 					.map(auth->auth.getAuthority())
 					.collect(Collectors.toSet());
 			authoritiesString = GuavaUtils.join(authorities, ",");
-			tenantId = (Long)bw.getPropertyValue(JwtSecurityUtils.CLAIM_TENANT_ID);
-			nickName = (String)bw.getPropertyValue(JwtSecurityUtils.CLAIM_NICK_NAME);
+
+			if (bw.isReadableProperty(JwtSecurityUtils.CLAIM_TENANT_ID)) {
+				tenantId = (Long)bw.getPropertyValue(JwtSecurityUtils.CLAIM_TENANT_ID);
+			}
+			if (bw.isReadableProperty(JwtSecurityUtils.CLAIM_NICK_NAME)) {
+				nickName = (String)bw.getPropertyValue(JwtSecurityUtils.CLAIM_NICK_NAME);
+			}
 		}
 
 		userName = userDetails.getUserName();
