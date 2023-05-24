@@ -23,6 +23,7 @@ public class DefaultAuthenticationExtractor implements AuthenticationExtractor {
 			userDetail.setNickName(detail.getNickname());
 			userDetail.setAvatar(detail.getAvatar());
 			userDetail.setAdminRole(SimpleUserDetail.ADMIN_ROLES.contains(detail.getRoles()));
+			userDetail.setRoles(detail.getRoles());
 		}
 		return userDetail;
 	}

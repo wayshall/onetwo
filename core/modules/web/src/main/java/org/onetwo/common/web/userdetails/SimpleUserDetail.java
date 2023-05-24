@@ -18,6 +18,7 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 	private UserTypes userType;
 	private Boolean systemRootUser;
 	private Boolean adminRole;
+	private String roles;
 
 	public SimpleUserDetail(){ 
 	}
@@ -80,6 +81,14 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 
 	public void setAdminRole(Boolean adminRole) {
 		this.adminRole = adminRole;
+	}
+
+	public String getRoles() {
+		return roles;
+	}
+
+	public void setRoles(String roles) {
+		this.roles = roles;
 	}
 
 }
