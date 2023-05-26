@@ -15,9 +15,17 @@ import org.springframework.web.bind.annotation.InitBinder;
  */
 public interface DateInitBinder {
 
+	/***
+	 * 漏洞见：
+	 * http://blog.nsfocus.net/cve-2022-22965/
+	 * https://paper.seebug.org/1877/
+	 * @param binder
+	 */
 	@InitBinder
 	default public void initBinder(WebDataBinder binder){
 		binder.registerCustomEditor(Date.class, new JFishDateEditor());
 //		binder.registerCustomEditor(JsonNode.class, new JsonNodeEditor());
+		// 设置不允许绑定以下属性，避免webshell漏洞
+		binder.setDisallowedFields("class.*", "*.class.*", "Class.*", "*.Class.*");
 	}
 }

@@ -46,6 +46,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -78,6 +80,18 @@ abstract public class AbstractBaseController {
 
 	protected AbstractBaseController() {
 	}
+	
+	/***
+	 * 漏洞见：
+	 * http://blog.nsfocus.net/cve-2022-22965/
+	 * https://paper.seebug.org/1877/
+	 * @param dataBinder
+	 */
+	@InitBinder
+    public void fixWebShellVulnerability(WebDataBinder dataBinder) {
+		// 设置不允许绑定以下属性，避免webshell漏洞
+        dataBinder.setDisallowedFields("class.*", "*.class.*", "Class.*", "*.Class.*");
+    }
 
 	public SessionUserManager<GenericUserDetail<?>> getSessionUserManager() {
 		return sessionUserManager;
