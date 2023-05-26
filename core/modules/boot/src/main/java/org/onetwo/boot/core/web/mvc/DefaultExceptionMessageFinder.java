@@ -2,7 +2,6 @@ package org.onetwo.boot.core.web.mvc;
 
 import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author wayshall

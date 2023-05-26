@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -404,6 +405,24 @@ public class DUIGenerator {
 			tableGenerator.entityTemplate(templateName+"/Entity.java.ftl");
 			return this;
 		}
+
+		private boolean containsColumns(String... columnNames){
+			boolean match = Stream.of(columnNames).allMatch(column -> tableGenerator.tableMeta().hasColumn(column));
+			return match;
+		}
+		
+		public WebadminGenerator generateUIEntity(Class<?> tenantableWithAuditClass, Class<?> authidClass, Class<?> tenantableClass){
+			if(containsColumns("create_at", "update_at", "create_by", "update_by", "tenant_id")) {
+				generateUIEntity(tenantableWithAuditClass);
+			} else if (containsColumns("create_at", "update_at", "create_by", "update_by")) {
+				generateUIEntity(authidClass);
+			} else if (containsColumns("create_at", "update_at", "tenant_id")) {
+				generateUIEntity(tenantableClass);
+			} else {
+				return generateUIEntity(null);
+			}
+			return this;
+		}
 		
 		public WebadminGenerator generateUIEntity(){
 			return generateUIEntity(null);
@@ -546,6 +565,12 @@ public class DUIGenerator {
 		public VuePageGenerator generateVueMgrForm(){
 			String formPath = templateName+"/Form.vue.ftl";
 			tableGenerator.pageTemplate(formPath, vueFileNameFuncCreator.apply(formPath));
+			return this;
+		}
+		
+		public VuePageGenerator generateVueSelect(){
+			String mgrPath = templateName+"/component/Select.vue.ftl";
+			tableGenerator.pageTemplate(mgrPath, vueFileNameFuncCreator.apply(mgrPath));
 			return this;
 		}
 		

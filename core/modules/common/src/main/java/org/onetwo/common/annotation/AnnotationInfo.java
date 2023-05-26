@@ -5,13 +5,21 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 import java.util.Set;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.ClassUtils;
 
 import com.google.common.collect.ImmutableList;
 
 
 public class AnnotationInfo {
+
+	private static final String SPRING_ANNOTATED_ELEMENT_UTILS_CLASS = "org.springframework.core.annotation.AnnotatedElementUtils";
+	
+	public static boolean isAnnotatedElementUtilsPresent(){
+		return ClassUtils.isPresent(SPRING_ANNOTATED_ELEMENT_UTILS_CLASS, ClassUtils.getDefaultClassLoader());
+	}
 	
 	public static interface AnnotationFinder {
 		AnnotationFinder DEFAULT = new AnnotationFinder() {
@@ -97,7 +105,11 @@ public class AnnotationInfo {
 	}
 
 	public <T extends Annotation> Set<T> getMergedRepeatableAnnotations(Class<T> annoClass) {
-		return AnnotatedElementUtils.getMergedRepeatableAnnotations(annotatedElement, annoClass);
+		if (isAnnotatedElementUtilsPresent()) {
+			return AnnotatedElementUtils.getMergedRepeatableAnnotations(annotatedElement, annoClass);
+		} else {
+			throw new BaseException("not support operation");
+		}
 	}
 	
 	public AnnotatedElement getAnnotatedElement() {

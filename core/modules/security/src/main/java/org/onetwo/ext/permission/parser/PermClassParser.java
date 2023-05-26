@@ -61,7 +61,7 @@ public class PermClassParser {
 		super();
 		this.permissionClass = permClass;
 		this.parentPermissionClass = parentPermissionClass;
-
+		
 		permissionMeta = AnnotationUtils.getAnnotation(getActualPermissionClass(), PermissionMeta.class);
 		/*if (permissionMeta!=null) {
 			permissionMetaAttrs = AnnotationUtils.getAnnotationAttributes(getActualPermissionClass(), permissionMeta);
@@ -170,7 +170,13 @@ public class PermClassParser {
 	}
 	
 	public Class<?> getParentPermissionClass(){
-		return parentPermissionClass!=null?parentPermissionClass:permissionClass.getDeclaringClass();
+//		return parentPermissionClass!=null?parentPermissionClass:permissionClass.getDeclaringClass();
+		if (parentPermissionClass!=null) {
+			return parentPermissionClass;
+		} else if (permissionClass.getDeclaringClass()!=null && permissionClass.getDeclaringClass().isInterface()) {
+			return permissionClass.getDeclaringClass();
+		}
+		return null;
 	}
 	
 	protected Class<?>[] getChildren(){

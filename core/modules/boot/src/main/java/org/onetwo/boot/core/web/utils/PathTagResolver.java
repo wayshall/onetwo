@@ -27,6 +27,10 @@ public class PathTagResolver implements InitializingBean {
 	public PathTagResolver() {
 	}
 	
+	public void setSiteConfig(BootSiteConfig siteConfig) {
+		this.siteConfig = siteConfig;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 	}
@@ -90,7 +94,10 @@ public class PathTagResolver implements InitializingBean {
 				throw new BaseException("pathTag baseUrl not found: " + pathTag);
 			}
 			path = server.getPathTags().get(pathTag);
+//			Logger logger = JFishLoggerFactory.getCommonLogger();
+//			logger.info("PathTagResolver subPath1: {}", subPath);
 			subPath = trimPathTag(subPath);
+//			logger.info("PathTagResolver subPath2: {}", subPath);
 		}
 		path = fixPath(path, subPath);
 		

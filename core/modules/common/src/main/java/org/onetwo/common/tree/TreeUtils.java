@@ -9,8 +9,10 @@ import org.onetwo.common.utils.LangUtils;
 
 
 final public class TreeUtils {
-	
-	
+
+	public static <TM extends TreeModel<TM>, T> TreeBuilder<TM> newBuilder(Collection<TM> datas){
+		return new TreeBuilder<TM>(datas);
+	}
 
 	public static <TM extends TreeModel<TM>, T> TreeBuilder<TM> newBuilder(Collection<T> datas, TreeModelCreator<TM, T> treeNodeCreator){
 		return new TreeBuilder<TM>(datas, treeNodeCreator);

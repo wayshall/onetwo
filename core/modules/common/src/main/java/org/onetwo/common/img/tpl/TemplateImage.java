@@ -1,4 +1,4 @@
-package org.onetwo.common.img;
+package org.onetwo.common.img.tpl;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.img.ImageUtils;
 import org.onetwo.common.utils.CUtils;
 
 import com.google.common.collect.Maps;

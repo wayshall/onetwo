@@ -3,6 +3,8 @@ package org.onetwo.ext.security.config;
 import org.onetwo.common.spring.condition.OnMissingBean;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
+import org.onetwo.ext.security.AuthenticationExtractor;
+import org.onetwo.ext.security.DefaultAuthenticationExtractor;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.ajax.AjaxLogoutSuccessHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
@@ -79,6 +81,13 @@ public class SecurityCommonContextConfig implements InitializingBean{
 		AjaxSupportedAccessDeniedHandler adh = new AjaxSupportedAccessDeniedHandler();
 		adh.setErrorPage(securityConfig.getErrorPage());
 		return adh;
+	}
+	
+	@Bean
+	@OnMissingBean(AuthenticationExtractor.class)
+	public AuthenticationExtractor authenticationExtractor() {
+		DefaultAuthenticationExtractor extractor = new DefaultAuthenticationExtractor();
+		return extractor;
 	}
 
 	@Bean

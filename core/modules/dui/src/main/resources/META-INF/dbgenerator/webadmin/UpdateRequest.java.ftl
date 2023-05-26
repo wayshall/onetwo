@@ -60,9 +60,9 @@ public class ${updateRequestClassName} implements Serializable {
     </#if>
     @ApiModelProperty("${(column.comments[0])!''}")
       <#if field.input.isFileType()==true><#t>
-        MultipartFile ${column.propertyName}File;
+    MultipartFile ${column.propertyName}File;
       <#else>
-        ${column.mappingJavaClassLabel} ${column.propertyName};
+    ${column.mappingJavaClassLabel} ${column.propertyName};
       </#if>
         </#if>
     </#list>

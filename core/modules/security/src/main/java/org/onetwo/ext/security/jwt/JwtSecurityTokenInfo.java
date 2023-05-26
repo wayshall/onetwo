@@ -1,17 +1,28 @@
 package org.onetwo.ext.security.jwt;
 
+import org.onetwo.common.web.userdetails.GenericUserDetail;
+
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 /**
  * @author wayshall
  * <br/>
  */
-@Value
-@Builder
+@Data
 public class JwtSecurityTokenInfo {
 	
-	private String token;
-	private String refreshToken;
+	final private String token;
+	final private String refreshToken;
+	
+	@Builder
+	public JwtSecurityTokenInfo(String token, String refreshToken) {
+		super();
+		this.token = token;
+		this.refreshToken = refreshToken;
+	}
+
+
+	private GenericUserDetail<?> userInfo;
 
 }

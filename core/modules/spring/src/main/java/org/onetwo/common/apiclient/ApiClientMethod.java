@@ -129,7 +129,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	public ApiClientMethod(Method method) {
 		super(method);
-		componentType = ReflectUtils.getGenricType(method.getGenericReturnType(), 0, null);
+		componentType = (Class<?>)ReflectUtils.getGenricType(method.getGenericReturnType(), 0, null);
 	}
 	
 	public void initialize(){

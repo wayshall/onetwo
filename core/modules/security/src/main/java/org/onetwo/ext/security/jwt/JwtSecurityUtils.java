@@ -13,8 +13,10 @@ public abstract class JwtSecurityUtils {
 	public static final String PROPERTY_KEY = "p_";
 	public static final String CLAIM_USER_ID = "userId";
 	public static final String CLAIM_USER_NAME = "userName";
+	public static final String CLAIM_NICK_NAME = "nickName";
 	public static final String CLAIM_AUTHORITIES = "authorities";
 	public static final String CLAIM_ROLES = "roles";
+	public static final String CLAIM_TENANT_ID = "tenantId";
 	
 	
 	private JwtSecurityUtils(){

@@ -6,7 +6,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
+import org.onetwo.common.utils.StringUtils;
 
 /**
  * @author weishao zeng
@@ -37,6 +39,9 @@ public class GroovyResourceConnection extends URLConnection {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		this.connect();
+		if (StringUtils.isBlank(scriptData.getContent())) {
+			throw new BaseException("groovy script can not be blank");
+		}
 		return IOUtils.toInputStream(scriptData.getContent(), FileUtils.UTF8);
 	}
 	

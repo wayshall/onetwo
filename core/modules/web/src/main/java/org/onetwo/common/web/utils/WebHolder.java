@@ -65,7 +65,10 @@ public class WebHolder {
 	}
 	
 	public static Optional<HttpServletResponse> getResponse(){
-		return getRequest().map(req->(HttpServletResponse)req.getAttribute(RESPONSE_TAG));
+		return getRequest().map(req->{
+			HttpServletResponse resp = (HttpServletResponse)req.getAttribute(RESPONSE_TAG);
+			return resp;
+		});
 	}
 	
 	public static Optional<ServletRequestAttributes> getServletRequestAttributes(){

@@ -38,7 +38,7 @@ public class GenericLoginUserDetails<ID extends Serializable> extends User imple
 	}
 
 	@Override
-	public boolean isSystemRootUser() {
+	public Boolean isSystemRootUser() {
 		return getUserId().equals(ROOT_USER_ID);
 	}
 

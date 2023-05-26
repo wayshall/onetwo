@@ -59,7 +59,8 @@ public class DatasourceRegistrar implements EnvironmentAware, ImportBeanDefiniti
 			return ;
 		}
 		for (String dsname : dsnames) {
-			String configPrefix = datasourceConfigPrefix + "." + dsname + ".";
+//			String configPrefix = datasourceConfigPrefix + "." + dsname + ".";
+			String configPrefix = datasourceConfigPrefix + "." + dsname;
 			
 //			Map<String, Object> configs = Maps.newHashMap(resolver.getSubProperties(configPrefix));
 			Map<String, Object> configs = Binder.get(environment)

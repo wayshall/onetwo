@@ -13,6 +13,7 @@ import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.cloud.hystrix.exception.HystrixBadRequestCodeException;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.data.DataResult;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -58,6 +59,10 @@ public class ExtResponseEntityDecoder implements Decoder {
 			if(LangUtils.isEmpty(errorHeaders)){
 				//没有错误
 				res = decodeByType(response, type);
+
+				if (res==null && response.getStatusCode()!=HttpStatus.OK) {
+					throw new BaseException("[feign]remote inokve error, status code: " + response.getStatusCode().value() + ", reason: " + response.getStatusCode().getReasonPhrase());
+				}
 			}else{
 				SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 				/*if(isCutoutError(response, dr)){

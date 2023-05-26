@@ -88,6 +88,9 @@ public class BeanPropertiesMapper {
 	
 	
 	protected void setPropertyValue(Object obj, ConfigurablePropertyAccessor bw, String propertyName, Object value){
+		if (propertyName.indexOf('-')!=-1) {
+			propertyName = StringUtils.toCamel(propertyName, '-', false);
+		}
 		if(!bw.isWritableProperty(propertyName)){
 			if(!ignoreNotFoundProperty){
 				throw new NoSuchElementException("no setter found for property: " + propertyName+", target: " + obj);

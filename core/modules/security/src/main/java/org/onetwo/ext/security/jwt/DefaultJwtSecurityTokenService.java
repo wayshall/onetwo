@@ -10,16 +10,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.Dates;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.ext.security.utils.GenericLoginUserDetails;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecurityConfig.JwtConfig;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -61,11 +64,24 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 //		return new GenericLoginUserDetails<>(userId, username, "N/A", authorities);
 		SecurityJwtUserDetail user = new SecurityJwtUserDetail(userId, username, "N/A", authorities);
 		user.setProperties(toMap(claims));
+		Object role = claims.get(JwtSecurityUtils.CLAIM_ROLES);
+		if (role!=null) {
+			user.setRoles(role.toString());
+		}
+		Object tenantId = claims.get(JwtSecurityUtils.CLAIM_TENANT_ID);
+		if (tenantId!=null) {
+			user.setTenantId(Types.asLong(tenantId.toString()));
+		}
+		Object nickName = claims.get(JwtSecurityUtils.CLAIM_NICK_NAME);
+		if (nickName!=null) {
+			user.setNickname(nickName.toString());
+		}
+		
 		return user;
 	}
 	
-	protected GenericUserDetail<?> createUserDetailForToken(User user) {
-		return new GenericLoginUserDetails<>(0L, user.getUsername(), "N/A", user.getAuthorities());
+	protected GenericUserDetail<?> createUserDetailForToken(Serializable userId, User user) {
+		return new GenericLoginUserDetails<>(userId, user.getUsername(), "N/A", user.getAuthorities());
 	}
 	
 	protected Map<String, Object> extractProperties(GenericUserDetail<?> userDetails) {
@@ -89,34 +105,59 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 		String authoritiesString = "";
 		Serializable userId = null;
 		String userName = null;
+		Long tenantId = null;
+		String nickName = null;
 		
-		if(authentication.getPrincipal() instanceof GenericUserDetail){
-			userDetails = (GenericUserDetail<?>)authentication.getPrincipal();
-			userId = userDetails.getUserId();
-			userName = userDetails.getUserName();
+		if(authentication.getPrincipal() instanceof SecurityJwtUserDetail){
+			SecurityJwtUserDetail sju = (SecurityJwtUserDetail)authentication.getPrincipal();
+			Collection<String> authorities = sju.getAuthorities()
+					.stream()
+					.map(auth->auth.getAuthority())
+					.collect(Collectors.toSet());
+			authoritiesString = GuavaUtils.join(authorities, ",");
+
+			userId = sju.getUserId();
+			tenantId = sju.getTenantId();
+			nickName = sju.getNickname();
+			userDetails = sju;
 		} else{
 			User user = (User)authentication.getPrincipal();
-			userDetails = createUserDetailForToken(user);
+			BeanWrapper bw = SpringUtils.newBeanWrapper(user);
+			
+			if (bw.isReadableProperty(JwtSecurityUtils.CLAIM_USER_ID)) {
+				userId = (Serializable)bw.getPropertyValue(JwtSecurityUtils.CLAIM_USER_ID);
+			}
+			userDetails = createUserDetailForToken(userId, user);
 			Collection<String> authorities = user.getAuthorities()
 					.stream()
 					.map(auth->auth.getAuthority())
 					.collect(Collectors.toSet());
 			authoritiesString = GuavaUtils.join(authorities, ",");
+
+			if (bw.isReadableProperty(JwtSecurityUtils.CLAIM_TENANT_ID)) {
+				tenantId = (Long)bw.getPropertyValue(JwtSecurityUtils.CLAIM_TENANT_ID);
+			}
+			if (bw.isReadableProperty(JwtSecurityUtils.CLAIM_NICK_NAME)) {
+				nickName = (String)bw.getPropertyValue(JwtSecurityUtils.CLAIM_NICK_NAME);
+			}
 		}
+
+		userName = userDetails.getUserName();
 		
 		if (StringUtils.isBlank(userDetails.getUserName())) {
 			throw new BaseException("username can not be blank");
 		}
 		
 
+		String role = authoritiesString;
 		JwtConfig jwtConfig = securityConfig.getJwt();
 		Map<String, Object> props = extractProperties(userDetails);
-		if (props.containsKey(JwtSecurityUtils.CLAIM_USER_ID)) {
-			userId = (Serializable)props.remove(JwtSecurityUtils.CLAIM_USER_ID);
-		}
-		if (props.containsKey(JwtSecurityUtils.CLAIM_USER_NAME)) {
-			userName = (String)props.remove(JwtSecurityUtils.CLAIM_USER_NAME);
-		}
+//		if (props.containsKey(JwtSecurityUtils.CLAIM_USER_ID)) {
+//			userId = (Serializable)props.remove(JwtSecurityUtils.CLAIM_USER_ID);
+//		}
+//		if (props.containsKey(JwtSecurityUtils.CLAIM_USER_NAME)) {
+//			userName = (String)props.remove(JwtSecurityUtils.CLAIM_USER_NAME);
+//		}
 		LocalDateTime issuteAt = LocalDateTime.now();
 
 		Date expirationDate = Dates.toDate(issuteAt.plusSeconds(getExpirationInSeconds().intValue()));
@@ -126,7 +167,10 @@ public class DefaultJwtSecurityTokenService implements JwtSecurityTokenService {
 						.setAudience(jwtConfig.getAudience())
 		//				.setId(jti)
 						.claim(JwtSecurityUtils.CLAIM_USER_ID, userId)
+						.claim(JwtSecurityUtils.CLAIM_NICK_NAME, nickName)
 						.claim(JwtSecurityUtils.CLAIM_AUTHORITIES, authoritiesString)
+						.claim(JwtSecurityUtils.CLAIM_ROLES, role)
+						.claim(JwtSecurityUtils.CLAIM_TENANT_ID, tenantId)
 						.setIssuedAt(Dates.toDate(issuteAt))
 						.setExpiration(expirationDate)
 						.signWith(SignatureAlgorithm.HS512, jwtConfig.getSigningKey());

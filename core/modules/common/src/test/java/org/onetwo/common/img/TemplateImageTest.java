@@ -8,7 +8,9 @@ import java.util.Date;
 import org.junit.Test;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.file.FileUtils;
-import org.onetwo.common.img.TemplateImage.Horizontal;
+import org.onetwo.common.img.tpl.TemplateImage;
+import org.onetwo.common.img.tpl.TemplateImageBuilder;
+import org.onetwo.common.img.tpl.TemplateImage.Horizontal;
 
 public class TemplateImageTest {
 	

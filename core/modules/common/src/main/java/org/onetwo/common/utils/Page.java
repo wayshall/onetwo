@@ -25,6 +25,12 @@ public class Page<T> implements Serializable {
 		return new Page<E>();
 	}
 
+	public static <E> Page<E> createByPage(Page<E> p){
+		Page<E> page = createByPage(p, null);
+		page.setResult(p.getResult());
+		return page;
+	}
+	
 	public static <E2, E1> Page<E2> createByPage(Page<E1> p, Function<? super E1, ? extends E2> mapper){
 		Page<E2> page = Page.create();
 		page.pageNo = p.pageNo;
@@ -159,9 +165,7 @@ public class Page<T> implements Serializable {
 		if(pageSize==null){
 			return ;
 		}
-		if(pageSize<=0) {
-			this.pageSize = DefaultPageSize;
-		} else if (pageSize > DefaultMaxPageSize) {
+		if (pageSize > DefaultMaxPageSize) {
 			throw new ServiceException("错误的分页数：" + pageSize);
 		} else {
 			this.pageSize = pageSize;
@@ -396,5 +400,17 @@ public class Page<T> implements Serializable {
 	public <R> Page<R> mapToNewPage(Function<? super T, ? extends R> mapper){
 		return createByPage(this, mapper);
 	}
+
+	public void fromPage(Page<T> p) {
+		pageNo = p.pageNo;
+		pageSize = p.pageSize;
+		order = p.order;
+		orderBy = p.orderBy;
+		first = p.first;
+		autoCount = p.autoCount;
+		pagination = p.pagination;
+		totalCount = p.totalCount;
+		result = p.result;
+    }
 	
 }

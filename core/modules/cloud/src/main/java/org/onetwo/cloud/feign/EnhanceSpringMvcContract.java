@@ -15,6 +15,7 @@ import java.util.Optional;
 import org.onetwo.cloud.feign.FeignProperties.ServiceProps;
 import org.onetwo.common.expr.ExpressionFacotry;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -136,20 +137,21 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		if (clz.getInterfaces().length == 0 || 
 				//避免feignClient同时存在EnhanceFeignClient和FeignClient注解时，@RequestMapping路径多解释了一次的问题
 				(clz.isAnnotationPresent(EnhanceFeignClient.class) && !clz.isAnnotationPresent(FeignClient.class)) ) {
-			RequestMapping classAnnotation = findMergedAnnotation(clz, RequestMapping.class);
-			if (classAnnotation != null) {
-				// Prepend path from class annotation if specified
-				if (classAnnotation.value().length > 0) {
-					String pathValue = emptyToNull(classAnnotation.value()[0]);
-					pathValue = SpringUtils.resolvePlaceholders(applicationContext, pathValue);
-					if (!pathValue.startsWith("/")) {
-						pathValue = "/" + pathValue;
-					}
-					// insert is deprecated
-//					data.template().insert(0, pathValue);
-					data.template().uri(pathValue);
-				}
-			}
+//			RequestMapping classAnnotation = findMergedAnnotation(clz, RequestMapping.class);
+//			if (classAnnotation != null) {
+//				// Prepend path from class annotation if specified
+//				if (classAnnotation.value().length > 0) {
+//					String pathValue = emptyToNull(classAnnotation.value()[0]);
+//					pathValue = SpringUtils.resolvePlaceholders(applicationContext, pathValue);
+//					if (!pathValue.startsWith("/")) {
+//						pathValue = "/" + pathValue;
+//					}
+//					// insert is deprecated
+////					data.template().insert(0, pathValue);
+//					data.template().uri(pathValue);
+//				}
+//			}
+			this.parseApiRequestPath(data, clz, false);
 		}
 		if (clz.isAnnotationPresent(FeignClient.class)) {
 			EnhanceFeignClient classAnnotation = findMergedAnnotation(clz, EnhanceFeignClient.class);
@@ -158,6 +160,29 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 				// insert is deprecated
 //				data.template().insert(0, basePathOpt.get());
 				data.template().uri(basePathOpt.get());
+				Class<?>[] interfaceList = clz.getInterfaces();
+				if (LangUtils.isEmpty(interfaceList)) {
+					return ;
+				}
+				Class<?> apiInterface = interfaceList[0];
+				this.parseApiRequestPath(data, apiInterface, true);
+			}
+		}
+	}
+	
+	private void parseApiRequestPath(MethodMetadata data, Class<?> clz, boolean append) {
+		RequestMapping classAnnotation = findMergedAnnotation(clz, RequestMapping.class);
+		if (classAnnotation != null) {
+			// Prepend path from class annotation if specified
+			if (classAnnotation.value().length > 0) {
+				String pathValue = emptyToNull(classAnnotation.value()[0]);
+				pathValue = SpringUtils.resolvePlaceholders(applicationContext, pathValue);
+				if (!pathValue.startsWith("/")) {
+					pathValue = "/" + pathValue;
+				}
+				// insert is deprecated
+//				data.template().insert(0, pathValue);
+				data.template().uri(pathValue, append);
 			}
 		}
 	}

@@ -64,7 +64,7 @@ public class SimpleUserRoleDetail implements UserDetail, RoleDetail, UserRoot, S
 	}
 
 	@Override
-	public boolean isSystemRootUser() {
+	public Boolean isSystemRootUser() {
 		return false;
 	}
 	

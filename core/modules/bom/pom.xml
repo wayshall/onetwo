@@ -31,7 +31,7 @@
 	<javatuples.version>1.2</javatuples.version>
 	<jackson.version>2.10.1</jackson.version>
 	
-	<validation.version>1.1.0.Final</validation.version>
+	<validation.version>2.0.1.Final</validation.version>
 	<dozer.version>5.4.0</dozer.version>
 	<lombok.version>1.18.10</lombok.version>
 	<mail.version>1.4.5</mail.version>
@@ -132,6 +132,13 @@
 	    <artifactId>javase</artifactId>
 	    <version>3.4.1</version>
 	</dependency>
+	
+    <!-- 这个库已包含各平台本地文件，无需本地安装opencv -->
+    <dependency>
+        <groupId>org.openpnp</groupId>
+        <artifactId>opencv</artifactId>
+        <version>4.5.5-1</version>
+    </dependency>
 	
     <dependency>
 	    <groupId>io.reactivex.rxjava2</groupId>

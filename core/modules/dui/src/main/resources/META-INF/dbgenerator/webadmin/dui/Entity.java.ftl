@@ -17,7 +17,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
 
 import org.onetwo.dbm.annotation.SnowflakeId;
 import org.onetwo.dbm.jpa.BaseEntity;
@@ -48,7 +47,11 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     ${table.primaryKey.javaType.simpleName} ${table.primaryKey.propertyName};
     
 <#list table.columns as column>
-<#if column.primaryKey == false && !( column.propertyName == 'createAt' || column.propertyName == 'updateAt' ) >
+<#if column.primaryKey == false && 
+    !( column.propertyName == 'createAt' || 
+        column.propertyName == 'updateAt' || 
+        column.propertyName == 'createBy' ||
+        column.propertyName == 'updateBy')>
     /***
      * ${(column.comments[0])!''}
      */
@@ -56,7 +59,6 @@ public class ${entityClassName} extends <#if baseEntityClass??>${baseEntityClass
     @org.onetwo.dbm.annotation.DbmJsonField
     <#elseif column.mapping.isStringType()>
     @Length(max=${column.columnSize})
-    @SafeHtml
     <#elseif column.isEmailType()>
     @Email
     <#elseif column.isUrlType()>
