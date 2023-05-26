@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.boot.bugfix.FixWebDataBinder;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.jwt.JwtErrors;
@@ -81,16 +82,11 @@ abstract public class AbstractBaseController {
 	protected AbstractBaseController() {
 	}
 	
-	/***
-	 * 漏洞见：
-	 * http://blog.nsfocus.net/cve-2022-22965/
-	 * https://paper.seebug.org/1877/
-	 * @param dataBinder
-	 */
+	
 	@InitBinder
     public void fixWebShellVulnerability(WebDataBinder dataBinder) {
 		// 设置不允许绑定以下属性，避免webshell漏洞
-        dataBinder.setDisallowedFields("class.*", "*.class.*", "Class.*", "*.Class.*");
+		FixWebDataBinder.fixWebShellVulnerability(dataBinder);
     }
 
 	public SessionUserManager<GenericUserDetail<?>> getSessionUserManager() {

@@ -3,6 +3,7 @@ package org.onetwo.boot.core.web.controller;
 
 import java.util.Date;
 
+import org.onetwo.boot.bugfix.FixWebDataBinder;
 import org.onetwo.common.spring.copier.UnderlineBeanPropertyBindingResult;
 import org.onetwo.common.spring.propeditor.JFishDateEditor;
 import org.springframework.web.bind.WebDataBinder;
@@ -26,6 +27,6 @@ public interface DateInitBinder {
 		binder.registerCustomEditor(Date.class, new JFishDateEditor());
 //		binder.registerCustomEditor(JsonNode.class, new JsonNodeEditor());
 		// 设置不允许绑定以下属性，避免webshell漏洞
-		binder.setDisallowedFields("class.*", "*.class.*", "Class.*", "*.Class.*");
+		FixWebDataBinder.fixWebShellVulnerability(binder);
 	}
 }
