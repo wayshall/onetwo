@@ -23,7 +23,7 @@ public interface Permissions {
 	 * 使用hasRole判断时，用户的角色必须添加ROLE_前缀；
 	 * 使用hasAnyAuthority判断时，则不需要
 	 */
-	String ADMIN = "hasRole('ROLE_ADMIN') || hasAnyAuthority('ADMIN')";
+	String ADMIN = "hasRole('ROLE_ADMIN') || hasAnyAuthority('ADMIN') || hasAnyAuthority('ENT_ADMIN') || hasAnyAuthority('ROLE_ENT_ADMIN')";
 	/****
 	 * 企业用户
 	 */
