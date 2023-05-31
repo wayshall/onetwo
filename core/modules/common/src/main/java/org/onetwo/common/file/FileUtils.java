@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -82,6 +83,9 @@ public class FileUtils {
 	public static final String COLON_DB_SLASH_HEAD = "://";
 	public static final String DB_SLASH_HEAD = "//";
 	
+	private static final String WINDOWS_PATH = "^[a-zA-z]:\\\\([\\u4E00-\\u9FA5A-Za-z0-9_\\s\\.]+\\\\{0,1})+$";
+	private static final Pattern WINDOWS_PATH_PATTERN = Pattern.compile(WINDOWS_PATH);
+	
 
 	public static final List<String> IMAGE_POSTFIX = ImmutableList.of("jpg", "jpeg", "gif", "png", "bmp");
 
@@ -89,6 +93,13 @@ public class FileUtils {
 	private static final Expression PLACE_HODER_EXP = ExpressionFacotry.DOLOR;
 
 	private FileUtils() {
+	}
+	
+	public static boolean isWindowsPath(String path) {
+		String newPath = path.replaceAll("/", "\\\\");
+		Matcher matcher = WINDOWS_PATH_PATTERN.matcher(newPath);
+        return matcher.matches();
+        
 	}
 	
 	public static boolean isImageSuffix(String suffix) {

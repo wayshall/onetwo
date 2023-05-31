@@ -19,6 +19,30 @@ import org.onetwo.common.utils.list.JFishList;
 public class FileUtilsTest {
 	
 	@Test
+	public void testWindowsPath() {
+		String path = "C:\\Program Files\\test\\1.txt";
+		boolean res = FileUtils.isWindowsPath(path);
+		assertThat(res).isTrue();
+		
+		path = "C:/Program Files/test/1.txt";
+		res = FileUtils.isWindowsPath(path);
+		assertThat(res).isTrue();
+		
+		path = "C:/Program Files/test";
+		res = FileUtils.isWindowsPath(path);
+		assertThat(res).isTrue();
+		
+		path = "/home/user/test/1.txt";
+		res = FileUtils.isWindowsPath(path);
+		assertThat(res).isFalse();
+		
+		path = "http://host/test/1.txt";
+		res = FileUtils.isWindowsPath(path);
+		assertThat(res).isFalse();
+		
+	}
+	
+	@Test
 	public void testTextToImagic() {
 		InputStream input = FileUtils.getResourceAsStream("imagic-data.txt");
 		String data = FileUtils.readAsString(input);
