@@ -530,6 +530,7 @@
         <dependency>
           <groupId>net.bramp.ffmpeg</groupId>
           <artifactId>ffmpeg</artifactId>
+          <optional>true</optional>
         </dependency>
 	    
         <!-- test -->
