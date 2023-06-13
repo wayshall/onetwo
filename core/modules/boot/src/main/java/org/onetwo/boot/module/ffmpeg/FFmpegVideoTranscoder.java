@@ -16,7 +16,7 @@ public class FFmpegVideoTranscoder {
 	private FFmpegConfig fFmpegConfig;
 	
 	public StoredMeta toMP4(String inputPath, String baseDir) {
-		String subDir = NiceDate.New().format(DateUtils.DATEONLY);
+		String subDir = "video/" + NiceDate.New().format(DateUtils.DATEONLY);
 		String outputDir = FileUtils.convertDir(baseDir) + subDir;
 		String ts = NiceDate.New().format(DateUtils.DATEMILLS);
 		String fileName = FileUtils.getFileNameWithoutExt(inputPath) + "_" + ts + ".mp4";

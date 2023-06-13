@@ -1340,19 +1340,23 @@ public class FileUtils {
 		File outDir = new File(path);
 		if(file)
 			outDir = outDir.getParentFile();
-		
-		if(!outDir.exists())
+
+		while(!outDir.exists()){
 			if(!outDir.mkdirs())
-				throw new RuntimeException("can't create output dir:"+path);
+				throw new RuntimeException("can't create output dir:"+outDir.getPath());
+			outDir = outDir.getParentFile();
+		}
 	}
     
 	public static void makeDirs(File outDir, boolean file){
 		if(file)
 			outDir = outDir.getParentFile();
 		
-		if(!outDir.exists())
+		while(!outDir.exists()){
 			if(!outDir.mkdirs())
 				throw new RuntimeException("can't create output dir:"+outDir.getPath());
+			outDir = outDir.getParentFile();
+		}
 	}
 	
 	
