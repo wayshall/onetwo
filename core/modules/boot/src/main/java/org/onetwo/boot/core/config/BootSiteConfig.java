@@ -230,11 +230,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		WaterMaskConfig watermask = new WaterMaskConfig();
 		
 		public String getBasePath(){
-			if(StringUtils.isNotBlank(basePath)){
-				return basePath;
+			if(StringUtils.isBlank(basePath)){
+				return "";
 			}
-			String path = getBaseURL();
-			return path;
+			return basePath;
 		}
 		public void setBasePath(String basePath){
 			this.basePath = basePath;

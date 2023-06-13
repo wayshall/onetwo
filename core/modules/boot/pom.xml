@@ -525,6 +525,12 @@
             <artifactId>opencv</artifactId>
             <optional>true</optional>
         </dependency>
+        
+        <!-- ffmpeg command line wrapper -->
+        <dependency>
+          <groupId>net.bramp.ffmpeg</groupId>
+          <artifactId>ffmpeg</artifactId>
+        </dependency>
 	    
         <!-- test -->
         <!-- <dependency>

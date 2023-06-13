@@ -640,6 +640,11 @@ public class FileUtils {
 		return ClassUtils.getDefaultClassLoader();
 	}
 
+	/****
+	 *	/dir/fileName.ext => fileName
+	 * @param fileName
+	 * @return
+	 */
 	public static String getFileNameWithoutExt(String fileName) {
 		if(fileName.indexOf('\\')!=-1)
 			fileName = fileName.replace('\\', SLASH_CHAR);
