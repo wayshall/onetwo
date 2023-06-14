@@ -348,6 +348,8 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((InputStream)json, (Class<?>)objType);
 			}else if(json instanceof File){
 				obj = this.objectMapper.readValue((File)json, (Class<?>)objType);
+			}else if(json instanceof byte[]){
+				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
 				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else{
@@ -386,6 +388,8 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((InputStream)json, valueTypeRef);
 			}else if(json instanceof File){
 				obj = this.objectMapper.readValue((File)json, valueTypeRef);
+			}else if(json instanceof byte[]){
+				obj = this.objectMapper.readValue((byte[])json, valueTypeRef);
 			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
 				obj = this.objectMapper.readValue((byte[])json, valueTypeRef);
 			}else{

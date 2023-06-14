@@ -66,7 +66,7 @@
     
     <embededTomcat.version>8.0.53</embededTomcat.version>
     <tomat-jdbc.version>8.5.0</tomat-jdbc.version>
-    <rocketmq-client.version>3.5.3</rocketmq-client.version>
+    <rocketmq-client.version>4.2.0</rocketmq-client.version>
     <qlexpress.version>3.2.4</qlexpress.version>
     
     
@@ -683,7 +683,7 @@
 	     <version>${druid.version}</version>
 	</dependency>
     <dependency>
-        <groupId>com.alibaba.rocketmq</groupId>
+        <groupId>org.apache.rocketmq</groupId>
         <artifactId>rocketmq-client</artifactId>
         <version>${rocketmq-client.version}</version>
     </dependency>
@@ -703,7 +703,7 @@
     <dependency>
        <groupId>com.aliyun.openservices</groupId>
        <artifactId>ons-client</artifactId>
-       <version>1.7.0.Final</version>
+       <version>1.8.8.8.Final</version>
     </dependency>
         
     <!-- ssh -->

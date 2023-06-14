@@ -6,20 +6,20 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.SerializationUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
-import com.alibaba.rocketmq.client.exception.MQBrokerException;
-import com.alibaba.rocketmq.client.exception.MQClientException;
-import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
-import com.alibaba.rocketmq.client.producer.SendResult;
-import com.alibaba.rocketmq.client.producer.SendStatus;
-import com.alibaba.rocketmq.common.message.Message;
-import com.alibaba.rocketmq.remoting.exception.RemotingException;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.exception.MQBrokerException;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.exception.MQClientException;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.producer.DefaultMQProducer;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.producer.SendResult;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.producer.SendStatus;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.remoting.exception.RemotingException;
 
 public class RocketMQProducerService implements InitializingBean, DisposableBean {
 

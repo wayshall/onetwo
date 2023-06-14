@@ -36,12 +36,22 @@ public interface OnsMessage extends Serializable {
 		void setIdentityKey(String identityKey);
 		String getIdentityKey();
 		
+		/****
+		 * @see org.onetwo.ext.ons.ONSProperties.MessageSerializerType
+		 * @param serializer
+		 */
 		void setSerializer(String serializer);
 		String getSerializer();
 
 		
 		void setDebug(boolean debug);
 		boolean isDebug();
+		
+		/***
+		 * 延迟消息级别
+		 * @return
+		 */
+		Integer getDelayTimeLevel();
 		
 	}
 	

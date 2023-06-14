@@ -81,6 +81,7 @@ public class DelegateMessageService implements InitializingBean {
 			}
 			
 			String deserializer = message.getUserProperty(TracableMessage.SERIALIZER_KEY);
+			String dataId = message.getUserProperty(TracableMessage.DATA_ID_KEY);
 			MessageDeserializer messageDeserializer = getMessageDeserializer(deserializer);
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
@@ -96,6 +97,7 @@ public class DelegateMessageService implements InitializingBean {
 												.message(message)
 												.deserializedBody(body)
 												.messageDeserializer(messageDeserializer)
+												.dataId(dataId)
 //												.consumerMeta(meta)
 												.build();
 			}else{
@@ -105,6 +107,7 @@ public class DelegateMessageService implements InitializingBean {
 												.messageDeserializer(messageDeserializer)
 //												.deserializedBody(body)
 //												.consumerMeta(meta)
+												.dataId(dataId)
 												.build();
 			}
 			
