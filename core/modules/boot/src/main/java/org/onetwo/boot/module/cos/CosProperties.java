@@ -104,10 +104,10 @@ public class CosProperties {
 		if (!RequestUtils.isHttpPath(endpoint)) {
 			url.append(https?"https":"http");
 			url.append("://");
-			if (!endpoint.startsWith(bucketName)) {
-				url.append(bucketName)
-					.append(".");
-			}
+//			if (!endpoint.startsWith(bucketName)) {
+//				url.append(bucketName)
+//					.append(".");
+//			}
 		}
 		url.append(endpoint)
 			.append(key);
