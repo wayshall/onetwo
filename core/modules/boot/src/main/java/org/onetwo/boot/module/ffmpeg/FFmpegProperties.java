@@ -15,6 +15,7 @@ public class FFmpegProperties {
 	 * jfish.ffmpeg
 	 */
 	public static final String PREFIX = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".ffmpeg";
+	public static final String ENABLED_KEY = PREFIX + ".enabled";
 	
 	/***
 	 * jfish.ffmpeg.ffmpegPath
