@@ -21,14 +21,18 @@ public class FFmpegProperties {
 	 */
 	String ffmpegPath;
 	String ffprobePath;
+	boolean checkFFmpegPath = true;
 	
 	@PostConstruct
 	public void check() {
-		if (StringUtils.isBlank(ffmpegPath)) {
-			throw new IllegalArgumentException(PREFIX + ".ffmpegPath not found on properties");
-		}
-		if (StringUtils.isBlank(ffprobePath)) {
-			throw new IllegalArgumentException(PREFIX + ".ffprobePath not found on properties");
+		if (checkFFmpegPath) {
+			if (StringUtils.isBlank(ffmpegPath)) {
+				throw new IllegalArgumentException(PREFIX + ".ffmpegPath not found on properties");
+			}
+			if (StringUtils.isBlank(ffprobePath)) {
+				throw new IllegalArgumentException(PREFIX + ".ffprobePath not found on properties");
+			}
 		}
 	}
+	
 }
