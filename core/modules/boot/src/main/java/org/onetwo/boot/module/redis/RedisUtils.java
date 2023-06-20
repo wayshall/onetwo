@@ -35,8 +35,9 @@ final public class RedisUtils {
 		}
 		return template;
 	}
-	static public RedisTemplate<String, Object> createJsonValueRedisTemplate(RedisConnectionFactory jedisConnectionFactory) {
-		JsonValueRedisTemplate<Object> template = new JsonValueRedisTemplate<Object>(jedisConnectionFactory);
+	static public <T> RedisTemplate<String, T> createJsonValueRedisTemplate(RedisConnectionFactory jedisConnectionFactory) {
+		JsonValueRedisTemplate<T> template = new JsonValueRedisTemplate<T>(jedisConnectionFactory);
+		template.afterPropertiesSet();
 		return template;
 	}
 	
@@ -49,6 +50,14 @@ final public class RedisUtils {
 		return valueSerializer;
 	}
 	
+
+    static public JsonRedisTemplate createJsonRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    	JsonRedisTemplate redisTemplate = new JsonRedisTemplate();
+		redisTemplate.setConnectionFactory(redisConnectionFactory);
+		redisTemplate.afterPropertiesSet();
+		return redisTemplate;
+    }
+    
 	private RedisUtils() {
 	}
 

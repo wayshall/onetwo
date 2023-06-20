@@ -8,6 +8,7 @@ import org.onetwo.boot.module.cache.UserEntity;
 import org.onetwo.common.concurrent.ConcurrentRunnable;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import ch.qos.logback.classic.Level;
@@ -19,6 +20,8 @@ import ch.qos.logback.classic.Level;
 public class RedisOperationServiceTest extends RedisBaseTest {
 	@Autowired
 	SimpleRedisOperationService redisOperationService;
+	@Autowired
+	private RedisConnectionFactory redisConnectionFactory;
 	
 	@Test
 	public void testGetAndDel() throws Exception{
