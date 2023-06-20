@@ -455,6 +455,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			prefix = mp.getParameterName();
 		}
 		beanToMapConvertor.flatObject(prefix, paramValue, (k, v, ctx)->{
+			if (v==null) {
+				return ;
+			}
 			values.add(k, v);
 		});
 		
