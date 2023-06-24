@@ -14,6 +14,9 @@ public class ClientDetails implements OAuth2ClientDetail, Serializable {
 	
 	private Map<String, Object> properties;
 	
+	public ClientDetails() {
+	}
+	
 	public ClientDetails(String clientId) {
 		super();
 		this.clientId = clientId;
