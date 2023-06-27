@@ -50,6 +50,8 @@ public class RequestContextData {
 	
 	private HttpHeaders headers = new HttpHeaders();
 	
+	private ApiClientMethodConfig apiClientMethodConfig;
+	
 //	private ApiBeforeExecuteCallback beforeExecuteCallback;
 	
 	@Builder
@@ -194,6 +196,15 @@ public class RequestContextData {
 		actualUrl = RestUtils.appendQueryParametersToURL(actualUrl, this.getQueryParameters());
 		return actualUrl;
 	}
+
+	public ApiClientMethodConfig getApiClientMethodConfig() {
+		return apiClientMethodConfig;
+	}
+
+	public void setApiClientMethodConfig(ApiClientMethodConfig apiClientMethodConfig) {
+		this.apiClientMethodConfig = apiClientMethodConfig;
+	}
+	
 //	public void setRequestUrl(String url) {
 //		this.requestUrl = url;
 //	}
