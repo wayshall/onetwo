@@ -205,7 +205,7 @@ public class DelegateMessageService implements InitializingBean {
 		String msgId = ONSUtils.getMessageId(currentConetxt.getMessage());
 		String msg = "rmq-consumer["+meta.getConsumerId()+"] consumed message error. " + 
 					"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys() +
-					"topic: " + currentConetxt.getTopic() + ", tags: " + currentConetxt.getTags();
+					", topic: " + currentConetxt.getTopic() + ", tags: " + currentConetxt.getTags();
 		return msg;
 	}
 
