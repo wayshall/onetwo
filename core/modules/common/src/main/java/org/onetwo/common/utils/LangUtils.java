@@ -79,6 +79,8 @@ abstract public class LangUtils {
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
 	public static final Pattern DIGIT_SEGEMENT = Pattern.compile("([0-9]+)");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
+	public static final Pattern CHINESE = Pattern.compile("^[\u4e00-\u9fa5]+$");
+	
 	public static final String EMPTY_STRING = "";
 	public static final Object EMPTY_OBJECT = new Object();
 	public static final Object[] EMPTY_ARRAY = new Object[0];
@@ -1834,6 +1836,13 @@ abstract public class LangUtils {
 			}
 		}
 		return val;
+	}
+	
+	public static boolean isChinese(String str){
+		if (StringUtils.isBlank(str)) {
+			return false;
+		}
+		return CHINESE.matcher(str).matches();
 	}
 	
 	public static boolean isDigitString(String str){
