@@ -84,7 +84,12 @@ public abstract class BaseFileProcessor<R extends BaseFileProcessor<R>> {
 	public R andSubDirIsNot(String...dirs){
 		return andFile(FileMatcher.subDirIsNot(dirs));
 	}
+	
+	@SuppressWarnings("unchecked")
 	public R andSubDirIs(String dir, String dirSeperator){
+		if (StringUtils.isBlank(dir)) {
+			return (R)this;
+		}
 		String[] dirs = StringUtils.split(dir, dirSeperator);
 		return andFile(FileMatcher.subDirIs(dirs));
 	}
