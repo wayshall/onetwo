@@ -86,6 +86,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
 																		return  flatable &&
 																				!Resource.class.isInstance(obj) &&
+																				!ApiClientMethodConfig.class.isInstance(obj) &&
 																				!byte[].class.isInstance(obj) &&
 																				!MultipartFile.class.isInstance(obj);
 																	})
