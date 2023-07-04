@@ -216,8 +216,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 					
 					// 不可能被消费，记录错误并发送提醒
 					if (currentConetxt!=null && currentConetxt.isWillSkipConsume()) {
-						errorMsg = "message will skip. " + errorMsg;
-						logAndMail(errorMsg, e);
+						logger.warn("rocketmq message will skip. msgKey: {}, error: {}", currentConetxt.getMessage().getKeys(), errorMsg);
+//						logAndMail(errorMsg, e);
 						return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 					}
 
@@ -234,7 +234,11 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 
 	private void logAndMail(String errorMsg, Throwable e) {
 		logger.error(errorMsg, e);
-		JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+		try {
+			JFishLoggerFactory.findMailLogger().error(errorMsg, e);
+		} catch (Exception e2) {
+			logger.error("send rocketmq message consume mail error: ", e2.getMessage());
+		}
 	}
 
 	@Override

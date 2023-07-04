@@ -188,14 +188,20 @@ public class DelegateMessageService implements InitializingBean {
 		consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 		try {
 			consumer.doConsume(currentConetxt);
+		} catch (MessageOnlyServiceException e) {
+			// 此异常无需回滚
+			if (logger.isInfoEnabled()) {
+				String msg = buildErrorMessage(meta, currentConetxt);
+				logger.info("rocketmq consumer will not rollback: {}", msg);
+			}
+			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+			// 忽略消费，不再重复消费
+			currentConetxt.markWillSkipConsume();
 		} catch (Throwable e) {
 			String msg = buildErrorMessage(meta, currentConetxt);
 //			logger.error(msg, e);
 			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
 			ConsumeException consumeEx = new ConsumeException(msg, e);
-			if (e instanceof MessageOnlyServiceException) {
-				currentConetxt.markWillSkipConsume();
-			}
 			throw consumeEx;
 		}
 		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
