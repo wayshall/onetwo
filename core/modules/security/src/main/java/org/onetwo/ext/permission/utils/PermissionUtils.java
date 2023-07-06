@@ -1,6 +1,7 @@
 package org.onetwo.ext.permission.utils;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -9,16 +10,36 @@ import org.onetwo.common.tree.TreeModel;
 import org.onetwo.common.utils.func.Closure1;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionType;
+import org.onetwo.ext.permission.api.annotation.FullyAuthenticated;
+import org.onetwo.ext.permission.api.annotation.ReservePermission;
 import org.onetwo.ext.permission.entity.PermisstionTreeModel;
+
+import com.google.common.collect.Sets;
 
 
 final public class PermissionUtils {
+	private static final Set<String> RESERVE_PERMISSIONS = Sets.newHashSet(
+																	FullyAuthenticated.AUTH_CODE
+															);
+	
 	public static interface BuildBlock {
 		public void execute(StringBuilder str, IPermission perm);
 	}
 
 	public static void buildString(StringBuilder str, IPermission node, String sp){
 		buildString(str, node, sp, null);
+	}
+	
+	public static boolean isReservePermissioin(Class<?> permClass){
+		return ReservePermission.class.isAssignableFrom(permClass);
+	}
+	
+	public static boolean isReservePermissioin(IPermission node){
+		return isReservePermissioin(node.getCode());
+	}
+	
+	public static boolean isReservePermissioin(String code){
+		return RESERVE_PERMISSIONS.contains(code);
 	}
 	
 	public static boolean isFunction(IPermission node){

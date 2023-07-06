@@ -21,6 +21,7 @@ import org.onetwo.ext.permission.api.annotation.PermissionMetaData;
 import org.onetwo.ext.permission.api.annotation.ProxyMenu;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.Environment;
 
 public class PermClassParser {
 	public static final String APP_CODE = "appCode";
@@ -56,7 +57,7 @@ public class PermClassParser {
 		super();
 		this.permissionClass = permClass;
 		this.parentPermissionClass = parentPermissionClass;
-
+		
 		permissionMeta = AnnotationUtils.getAnnotation(getActualPermissionClass(), PermissionMeta.class);
 		/*if (permissionMeta!=null) {
 			permissionMetaAttrs = AnnotationUtils.getAnnotationAttributes(getActualPermissionClass(), permissionMeta);
@@ -102,6 +103,16 @@ public class PermClassParser {
 		return this.permissionClass == FullyAuthenticated.class;
 	}
 	
+	/***
+	 * 当前环境下是否启用
+	 * @author weishao zeng
+	 * @param env
+	 * @return
+	 */
+	public boolean isEnabledOnProfiles(Environment env) {
+		return true;
+	}
+	
 	public String generatedSimpleCode(){
 		return permissionClass.getSimpleName();
 	}
@@ -144,7 +155,13 @@ public class PermClassParser {
 	}
 	
 	public Class<?> getParentPermissionClass(){
-		return parentPermissionClass!=null?parentPermissionClass:permissionClass.getDeclaringClass();
+//		return parentPermissionClass!=null?parentPermissionClass:permissionClass.getDeclaringClass();
+		if (parentPermissionClass!=null) {
+			return parentPermissionClass;
+		} else if (permissionClass.getDeclaringClass()!=null && permissionClass.getDeclaringClass().isInterface()) {
+			return permissionClass.getDeclaringClass();
+		}
+		return null;
 	}
 	
 	protected Class<?>[] getChildren(){
