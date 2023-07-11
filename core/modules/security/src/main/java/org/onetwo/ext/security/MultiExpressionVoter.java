@@ -5,6 +5,8 @@ import java.util.Collection;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.userdetails.UserRoot;
+import org.onetwo.ext.security.exception.AccessDeniedCodeException;
+import org.onetwo.ext.security.exception.SecurityErrors;
 import org.onetwo.ext.security.metadata.CodeSecurityConfig;
 import org.slf4j.Logger;
 import org.springframework.expression.EvaluationContext;
@@ -37,9 +39,9 @@ abstract public class MultiExpressionVoter {
 		assert invokcation != null;
 		assert attributes != null;
 		
-//		if (isAnonymousUser(authentication)) {
-//			throw new AccessDeniedCodeException(JwtErrors.CM_NOT_LOGIN);
-//		}
+		if (isAnonymousUser(authentication)) {
+			throw new AccessDeniedCodeException(SecurityErrors.CM_NOT_LOGIN);
+		}
 
 		if (authentication!=null && authentication.getDetails() instanceof UserRoot) {
 			UserRoot user = (UserRoot) authentication.getDetails();
