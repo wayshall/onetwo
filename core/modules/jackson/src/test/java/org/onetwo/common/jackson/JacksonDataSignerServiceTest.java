@@ -13,7 +13,7 @@ import org.onetwo.common.utils.DataSigner.SimpleSignableRequest;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class JsonDataSignerTest {
+public class JacksonDataSignerServiceTest {
 
 
     private SigningConfig signing;

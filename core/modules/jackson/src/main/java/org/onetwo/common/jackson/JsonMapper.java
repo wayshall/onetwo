@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
@@ -468,6 +469,26 @@ public class JsonMapper {
 			return this.objectMapper.readValue(json, typeFactory.constructArrayType(objClass));
 		} catch (Exception e) {
 			throw new JsonException("parse json to " + objClass + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
+		}
+	}
+	
+	public ArrayNode fromJsonAsArrayNode(String json){
+		if(StringUtils.isBlank(json))
+			return null;
+		try {
+			return this.objectMapper.readValue(json, ArrayNode.class);
+		} catch (Exception e) {
+			throw new JsonException("parse json to " + ArrayNode.class.getSimpleName() + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
+		}
+	}
+	
+	public ObjectNode fromJsonAsObjectNode(String json){
+		if(StringUtils.isBlank(json))
+			return null;
+		try {
+			return this.objectMapper.readValue(json, ObjectNode.class);
+		} catch (Exception e) {
+			throw new JsonException("parse json to " + ObjectNode.class.getSimpleName() + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 	}
 	
