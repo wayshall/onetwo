@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JacksonDataSignerService extends DefaultDataSigner {
 	private JsonMapper jsonMapper = JsonMapper.IGNORE_NULL;
-	private String arrayNodeJoner = "&";
+	private String arrayNodeJoner = "|";
 	
 
 	public JacksonDataSignerService() {

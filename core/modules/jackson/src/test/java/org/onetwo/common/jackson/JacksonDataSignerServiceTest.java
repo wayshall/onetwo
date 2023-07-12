@@ -23,12 +23,12 @@ public class JacksonDataSignerServiceTest {
     public void setup() {
     	signing = new SigningConfig();
     	signing.setMaxDelayTimeInSeconds(60);
-    	signing.setSecretkey("just-test~");
+    	signing.setSecretkey("JustTestSecretkey");
     }
 
     @Test
     public void testSignJsonObject() {
-    	String json = "{username: \"test\", password: \"passwordtest\", validCode: \"validCodetest\"}";
+    	String json = "{username: \"user1\", password: \"test\"}";
     	ObjectNode params = JsonMapper.fromJsonString(json, ObjectNode.class);
 
     	long tsInSeconds = NiceDate.New().getTime().getTime()/1000;
@@ -55,8 +55,8 @@ public class JacksonDataSignerServiceTest {
     @Test
     public void testSignArrayObject() {
     	String json = "["
-    			+ "{username: \"user1\", password: \"passwordtest\", validCode: \"validCodetest\"},"
-    			+ "{username: \"user2\", password: \"passwordtest\", validCode: \"validCodetest\"}"
+    			+ "{username: \"user1\", password: \"test\"},"
+    			+ "{username: \"user2\", password: \"test\"}"
     			+ "]";
     	ArrayNode params = JsonMapper.fromJsonString(json, ArrayNode.class);
 
