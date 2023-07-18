@@ -8,7 +8,9 @@ import org.onetwo.common.web.userdetails.UserRoot;
 import org.onetwo.ext.security.exception.AccessDeniedCodeException;
 import org.onetwo.ext.security.exception.SecurityErrors;
 import org.onetwo.ext.security.metadata.CodeSecurityConfig;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
@@ -24,6 +26,9 @@ import org.springframework.security.core.Authentication;
 abstract public class MultiExpressionVoter {
 //	protected SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
+	@Autowired
+	protected SecurityConfig securityConfig;
+	
 	protected boolean isAnonymousUser(Authentication authentication) {
 		return AnonymousAuthenticationToken.class.isInstance(authentication);
 	}
@@ -39,7 +44,8 @@ abstract public class MultiExpressionVoter {
 		assert invokcation != null;
 		assert attributes != null;
 		
-		if (isAnonymousUser(authentication)) {
+		// 当会话超时当时候，Authentication会是AnonymousAuthenticationToken
+		if (securityConfig.isDenyAnonymousUser() && isAnonymousUser(authentication)) {
 			throw new AccessDeniedCodeException(SecurityErrors.CM_NOT_LOGIN);
 		}
 
