@@ -10,7 +10,6 @@ import org.onetwo.ext.security.exception.SecurityErrors;
 import org.onetwo.ext.security.metadata.CodeSecurityConfig;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
@@ -26,9 +25,13 @@ import org.springframework.security.core.Authentication;
 abstract public class MultiExpressionVoter {
 //	protected SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
-	@Autowired
 	protected SecurityConfig securityConfig;
 	
+	public MultiExpressionVoter(SecurityConfig securityConfig) {
+		super();
+		this.securityConfig = securityConfig;
+	}
+
 	protected boolean isAnonymousUser(Authentication authentication) {
 		return AnonymousAuthenticationToken.class.isInstance(authentication);
 	}
