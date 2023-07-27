@@ -6,8 +6,10 @@ import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 
 import org.onetwo.boot.apiclient.ApiClientConfiguration;
+import org.onetwo.boot.core.cleanup.UploadCleanupTimer;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
+import org.onetwo.boot.core.config.BootSiteConfig.CleanupProps;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
@@ -263,6 +265,12 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 		fs.setStoreBaseDir(config.getFileStorePath());
 //		fs.setAppContextDir(config.getAppContextDir());
 		return fs;
+	}
+
+	@ConditionalOnProperty(name = CleanupProps.ENABLED_KEY, havingValue = "true", matchIfMissing = false)
+	@Bean
+	public UploadCleanupTimer uploadCleanupTimer() {
+		return new UploadCleanupTimer();
 	}
 
 	@ConditionalOnProperty(name=BootJFishConfig.PROFILES_DEBUG)

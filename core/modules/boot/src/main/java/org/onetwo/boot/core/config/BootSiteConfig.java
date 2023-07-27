@@ -295,6 +295,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		 */
 		String maxFileUploadSize;
 		
+		CleanupProps cleanup = new CleanupProps();
+		
 		/***
 		 * -1为没有配置
 		 * @author weishao zeng
@@ -370,5 +372,19 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 			return Stream.of(values()).filter(t->t.name().equalsIgnoreCase(str))
 								.findFirst().orElse(LOCAL);
 		}
+	}
+	
+	@Data
+	public static class CleanupProps {
+		public static final String ENABLED_KEY = PREFIX + ".upload.cleanup.enabled";
+		/****
+		 * 每天零点零5分执行
+		 */
+		public static final String CRON = "${" + PREFIX + ".upload.cleanup.cron:0 5 0 * * *}";
+		/****
+		 * 清理N天之前的文件
+		 * 少于0为不清理
+		 */
+		int expiredInDays = -1;
 	}
 }
