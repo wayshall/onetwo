@@ -7,8 +7,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.onetwo.boot.core.config.BootSiteConfig.CleanupProps;
 import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 
 public class LocalFileCleanup implements FileStoreCleanup {
@@ -22,18 +24,18 @@ public class LocalFileCleanup implements FileStoreCleanup {
 
 	@Override
 	public void cleanup() {
-		File directory = new File(uploadConfig.getFileStorePath());
-        if (!directory.exists()) {
-			logger.warn("local cleanup ignore : store file is not exists");
-            return;
-        }
-        if (!directory.isDirectory()) {
-			logger.warn("local cleanup ignore : store path is not a directory");
-            return;
-        }
+		File baseUploadDir = new File(uploadConfig.getFileStorePath());
 
         long expiredDaysInMillis = TimeUnit.DAYS.toMillis(uploadConfig.getCleanup().getExpiredInDays());
-        cleanFiles(directory, expiredDaysInMillis);
+		CleanupProps cleanup = uploadConfig.getCleanup();
+		if (LangUtils.isNotEmpty(cleanup.getSubdirs())) {
+			cleanup.getSubdirs().forEach(subdir -> {
+				File cleanDir = new File(baseUploadDir, subdir);
+				cleanFiles(cleanDir, expiredDaysInMillis);
+			});
+		} else {
+			cleanFiles(baseUploadDir, expiredDaysInMillis);
+		}
 	}
 	
 	/****
@@ -47,11 +49,20 @@ public class LocalFileCleanup implements FileStoreCleanup {
 	}
 	
     private void cleanFiles(File directory, long expiredDaysInMillis) {
+        if (!directory.exists()) {
+			logger.warn("local cleanup ignore, directory is not exists : " + directory.getPath());
+            return;
+        }
+        if (!directory.isDirectory()) {
+			logger.warn("local cleanup ignore, path is not a directory : " + directory.getPath());
+            return;
+        }
         File[] files = directory.listFiles();
         if (files == null) {
             return;
         }
 
+        logger.info("cleaning directory: " + directory.getPath());
         for (File file : files) {
             if (file.isDirectory()) {
                 cleanFiles(file, expiredDaysInMillis); // 递归处理子目录

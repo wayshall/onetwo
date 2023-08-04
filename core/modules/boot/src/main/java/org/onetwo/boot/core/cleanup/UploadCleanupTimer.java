@@ -33,7 +33,7 @@ public class UploadCleanupTimer implements InitializingBean {
 		UploadConfig uploadConfig = siteConfig.getUpload();
 		StoreType storeType = uploadConfig.getStoreType();
         if (uploadConfig.getCleanup().getExpiredInDays()<0) {
-			logger.warn("{} cleanup ignore : site.upload.cleanup.expiredDays is less than 0");
+			logger.warn("{} cleanup ignore : site.upload.cleanup.expiredInDays is less than 0");
             return;
         }
         

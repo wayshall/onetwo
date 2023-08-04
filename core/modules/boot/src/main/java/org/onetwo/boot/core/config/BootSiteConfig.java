@@ -386,5 +386,7 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		 * 少于0为不清理
 		 */
 		int expiredInDays = -1;
+		
+		List<String> subdirs;
 	}
 }
