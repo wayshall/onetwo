@@ -91,6 +91,21 @@ public class NetUtils {
         }
     }
 	
+	/***
+	 * 是否内网ip地址
+	 * @param ipAddress
+	 * @return
+	 */
+	public static boolean isInternalIP(String ipAddress) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ipAddress);
+            return inetAddress.isSiteLocalAddress() || inetAddress.isLoopbackAddress();
+        } catch (UnknownHostException e) {
+            JFishLoggerFactory.getCommonLogger().error("UnknownHost: " + e.getMessage());
+        }
+        return false;
+    }
+	
 	private NetUtils(){
 	}
 

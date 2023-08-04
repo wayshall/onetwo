@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.NetUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -114,5 +115,18 @@ public class WebHolder {
 			JFishLoggerFactory.getCommonLogger().error("isRequestAttributesActive error: " + e.getMessage());
 			return true;
 		}
+	}
+	
+	/*****
+	 * 请求是否通过内网访问
+	 * @return
+	 */
+	public static boolean isRequestFromInternal() {
+		Optional<HttpServletRequest> reqOpt = getRequest();
+		if (!reqOpt.isPresent()) {
+			return false;
+		}
+		String ip = RequestUtils.getRemoteAddr(reqOpt.get());
+		return NetUtils.isInternalIP(ip);
 	}
 }
