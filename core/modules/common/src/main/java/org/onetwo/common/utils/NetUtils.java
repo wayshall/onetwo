@@ -97,10 +97,18 @@ public class NetUtils {
 	 * @return
 	 */
 	public static boolean isInternalIP(String ipAddress) {
+		if (StringUtils.isBlank(ipAddress)) {
+			return false;
+		}
         try {
+        	if (ipAddress.startsWith("http://") || ipAddress.startsWith("https://") ) {
+            	URL url = new URL(ipAddress);
+            	ipAddress = url.getHost();
+        	}
+        	
             InetAddress inetAddress = InetAddress.getByName(ipAddress);
             return inetAddress.isSiteLocalAddress() || inetAddress.isLoopbackAddress();
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | MalformedURLException e) {
             JFishLoggerFactory.getCommonLogger().error("UnknownHost: " + e.getMessage());
         }
         return false;
