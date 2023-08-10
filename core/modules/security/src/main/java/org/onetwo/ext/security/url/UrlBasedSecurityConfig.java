@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import javax.sql.DataSource;
 
+import org.onetwo.ext.security.base.ExtAffirmativeBased;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
 import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
@@ -36,7 +37,7 @@ public class UrlBasedSecurityConfig {
 	
 	@Bean
 	public AccessDecisionManager accessDecisionManager(){
-		AffirmativeBased affirmative = new AffirmativeBased(Arrays.asList(multiWebExpressionVoter(), new WebExpressionVoter(), new AuthenticatedVoter()));
+		AffirmativeBased affirmative = new ExtAffirmativeBased(Arrays.asList(multiWebExpressionVoter(), new WebExpressionVoter(), new AuthenticatedVoter()));
 		return affirmative;
 	}
 	
