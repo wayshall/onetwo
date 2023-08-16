@@ -7,6 +7,12 @@ import java.lang.annotation.Target;
 
 import org.onetwo.ext.permission.api.PermissionType;
 
+/****
+ * 列表权限DepartmentMgr.List单独列出时，controller注解引用DepartmentMgr.class即可，否则因为DepartmentMgr.List是权限不是菜单，导致没有设置url；
+ * 或者把List权限设置为PermissionType.MENU，但此时菜单会多了一个层级
+ * @author way
+ *
+ */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PermissionMeta {
