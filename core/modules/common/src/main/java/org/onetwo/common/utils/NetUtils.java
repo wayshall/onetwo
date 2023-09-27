@@ -91,6 +91,29 @@ public class NetUtils {
         }
     }
 	
+	/***
+	 * 是否内网ip地址
+	 * @param ipAddress
+	 * @return
+	 */
+	public static boolean isInternalIP(String ipAddress) {
+		if (StringUtils.isBlank(ipAddress)) {
+			return false;
+		}
+        try {
+        	if (ipAddress.startsWith("http://") || ipAddress.startsWith("https://") ) {
+            	URL url = new URL(ipAddress);
+            	ipAddress = url.getHost();
+        	}
+        	
+            InetAddress inetAddress = InetAddress.getByName(ipAddress);
+            return inetAddress.isSiteLocalAddress() || inetAddress.isLoopbackAddress();
+        } catch (UnknownHostException | MalformedURLException e) {
+            JFishLoggerFactory.getCommonLogger().error("UnknownHost: " + e.getMessage());
+        }
+        return false;
+    }
+	
 	private NetUtils(){
 	}
 

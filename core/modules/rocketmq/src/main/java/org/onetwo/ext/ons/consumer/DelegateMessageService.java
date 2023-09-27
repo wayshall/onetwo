@@ -81,6 +81,7 @@ public class DelegateMessageService implements InitializingBean {
 			}
 			
 			String deserializer = message.getUserProperty(TracableMessage.SERIALIZER_KEY);
+			String dataId = message.getUserProperty(TracableMessage.DATA_ID_KEY);
 			MessageDeserializer messageDeserializer = getMessageDeserializer(deserializer);
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
@@ -96,6 +97,7 @@ public class DelegateMessageService implements InitializingBean {
 												.message(message)
 												.deserializedBody(body)
 												.messageDeserializer(messageDeserializer)
+												.dataId(dataId)
 //												.consumerMeta(meta)
 												.build();
 			}else{
@@ -105,6 +107,7 @@ public class DelegateMessageService implements InitializingBean {
 												.messageDeserializer(messageDeserializer)
 //												.deserializedBody(body)
 //												.consumerMeta(meta)
+												.dataId(dataId)
 												.build();
 			}
 			
@@ -185,14 +188,20 @@ public class DelegateMessageService implements InitializingBean {
 		consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 		try {
 			consumer.doConsume(currentConetxt);
+		} catch (MessageOnlyServiceException e) {
+			// 此异常无需回滚
+			if (logger.isInfoEnabled()) {
+				String msg = buildErrorMessage(meta, currentConetxt);
+				logger.info("rocketmq consumer will not rollback: {}", msg);
+			}
+			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+			// 忽略消费，不再重复消费
+			currentConetxt.markWillSkipConsume();
 		} catch (Throwable e) {
 			String msg = buildErrorMessage(meta, currentConetxt);
 //			logger.error(msg, e);
 			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
 			ConsumeException consumeEx = new ConsumeException(msg, e);
-			if (e instanceof MessageOnlyServiceException) {
-				currentConetxt.markWillSkipConsume();
-			}
 			throw consumeEx;
 		}
 		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
@@ -202,7 +211,7 @@ public class DelegateMessageService implements InitializingBean {
 		String msgId = ONSUtils.getMessageId(currentConetxt.getMessage());
 		String msg = "rmq-consumer["+meta.getConsumerId()+"] consumed message error. " + 
 					"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys() +
-					"topic: " + currentConetxt.getTopic() + ", tags: " + currentConetxt.getTags();
+					", topic: " + currentConetxt.getTopic() + ", tags: " + currentConetxt.getTags();
 		return msg;
 	}
 

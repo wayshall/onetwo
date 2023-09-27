@@ -119,6 +119,7 @@ public final class RequestUtils {
 		return "Other";
 	}
 	
+	
 	/**
 	 * 获取客户端的IP地址
 	 * 
@@ -136,6 +137,10 @@ public final class RequestUtils {
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
+
+		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
 		
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("X-Forwarded-Host");//
@@ -145,6 +150,12 @@ public final class RequestUtils {
 			ip = request.getRemoteAddr();
 		}
 
+        // If multiple IP addresses are available, the first one is the client's IP
+        int commaIndex = ip.indexOf(',');
+        if (commaIndex != -1) {
+        	ip = ip.substring(0, commaIndex);
+        }
+        
 		return ip;
 	}
 	

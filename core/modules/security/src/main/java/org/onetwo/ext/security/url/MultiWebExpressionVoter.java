@@ -1,6 +1,7 @@
 package org.onetwo.ext.security.url;
 
 import org.onetwo.ext.security.MultiExpressionVoter;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
@@ -14,8 +15,13 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
  *
  */
 public class MultiWebExpressionVoter extends MultiExpressionVoter implements AccessDecisionVoter<Object> {
-	private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
+	private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
+	
+	public MultiWebExpressionVoter(SecurityConfig securityConfig) {
+		super(securityConfig);
+	}
+	
 //	public boolean supports(Class<?> clazz) {
 //		return FilterInvocation.class.isAssignableFrom(clazz);
 //	}

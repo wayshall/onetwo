@@ -14,8 +14,8 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.ext.security.exception.ErrorMessageExtractor;
 import org.onetwo.ext.security.exception.SecurityErrorResult;
+import org.onetwo.ext.security.exception.SecurityErrors;
 import org.onetwo.ext.security.utils.SecurityConfig;
-import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 			SecurityErrorResult result = errorMessageExtractor.getErrorMessage(authException);
 			DataResult<?> rs = null;
 			if (result.isUnknowError()) {
-				rs = DataResults.error(SecurityErrors.CM_NOT_LOGIN.getLabel())
+				rs = DataResults.error(SecurityErrors.CM_NOT_LOGIN.getErrorMessage())
 												.code(SecurityErrors.CM_NOT_LOGIN)
 												.build();
 			} else {

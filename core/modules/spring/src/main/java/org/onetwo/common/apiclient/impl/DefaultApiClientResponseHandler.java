@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.onetwo.common.apiclient.ApiClientMethod;
 import org.onetwo.common.apiclient.ApiClientResponseHandler;
+import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -36,6 +37,10 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 	}
 
 	@Override
+	public Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, RequestContextData context){
+		return handleResponse(invokeMethod, responseEntity, context.getResponseType());
+	}
+	
 	public Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Class<?> actualResponseType){
 		Object resposne = responseEntity.getBody();
 		if(responseEntity.getStatusCode().is2xxSuccessful()){
@@ -46,6 +51,7 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 		}
 		throw new RestClientException("error response: " + responseEntity.getStatusCodeValue());
 	}
+	
 	
 	@SuppressWarnings("unchecked")
 	protected Object convert2List(M invokeMethod, ResponseEntity<?> responseEntity) {

@@ -85,7 +85,8 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		if(customProps!=null){
 			producerProperties.putAll(customProps);
 		}
-		producerProperties.setProperty(PropertyKeyConst.ProducerId, producerId);
+//		producerProperties.setProperty(PropertyKeyConst.ProducerId, producerId);
+		producerProperties.setProperty(PropertyKeyConst.GROUP_ID, producerId);
 		
 		this.setProperties(producerProperties);
 		this.start();

@@ -3,8 +3,8 @@ package org.onetwo.ext.rocketmq.consumer;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
-import com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
 
 public class ConsumerMeta {
 	final private String groupName;

@@ -23,8 +23,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.google.common.collect.ImmutableSet;
 
-import lombok.Getter;
-
 final public class SecurityUtils {
 //	private static final Logger logger = JFishLoggerFactory.getLogger(SecurityUtils.class);
 	private static final Set<String> KEYWORDS = ImmutableSet.of("permitAll", "authenticated", "fullyAuthenticated", "denyAll", "is", "has");
@@ -101,18 +99,4 @@ final public class SecurityUtils {
 		};
 	}
 	
-	public static enum SecurityErrors {
-		AUTH_FAILED("认证失败"),
-//		NOT_AUTHED("未认证的用户"),
-		ACCESS_DENIED("未授权，访问拒绝"),
-		CM_NOT_LOGIN("请先登录！");//包括匿名和rememberMe的用户
-		
-		@Getter
-		private final String label;
-
-		private SecurityErrors(String label) {
-			this.label = label;
-		}
-		
-	}
 }

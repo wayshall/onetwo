@@ -79,6 +79,8 @@ abstract public class LangUtils {
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
 	public static final Pattern DIGIT_SEGEMENT = Pattern.compile("([0-9]+)");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
+	public static final Pattern CHINESE = Pattern.compile("^[\u4e00-\u9fa5]+$");
+	
 	public static final String EMPTY_STRING = "";
 	public static final Object EMPTY_OBJECT = new Object();
 	public static final Object[] EMPTY_ARRAY = new Object[0];
@@ -1665,8 +1667,41 @@ abstract public class LangUtils {
 		return format.format(num);
 	}
 	
+	/****
+	 * 格式化数字，并保留两位小数
+	 * @param num
+	 * @return
+	 */
 	public static String format(Number num) {
 		return new DecimalFormat("0.00").format(num);
+	}
+	
+	/****
+	 * 四舍五入，保留两位小数
+	 * @param num
+	 * @return
+	 */
+	public static Float roundNumber(Float num) {
+		if (num==null) {
+			return null;
+		}
+		// 将一个浮点数或一个双精度数值四舍五入为最接近的整数
+		float roundedNumber = Math.round(num * 100.0) / 100.0f;
+		return roundedNumber;
+	}
+	
+	/****
+	 * 四舍五入，保留两位小数
+	 * @param num
+	 * @return
+	 */
+	public static Double roundNumber(Double num) {
+		if (num==null) {
+			return null;
+		}
+		// 将一个浮点数或一个双精度数值四舍五入为最接近的整数
+		double roundedNumber = Math.round(num * 100.0) / 100.0;
+		return roundedNumber;
 	}
 	
 	/***
@@ -1834,6 +1869,13 @@ abstract public class LangUtils {
 			}
 		}
 		return val;
+	}
+	
+	public static boolean isChinese(String str){
+		if (StringUtils.isBlank(str)) {
+			return false;
+		}
+		return CHINESE.matcher(str).matches();
 	}
 	
 	public static boolean isDigitString(String str){

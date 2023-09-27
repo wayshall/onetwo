@@ -5,7 +5,10 @@ import java.util.Collection;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.userdetails.UserRoot;
+import org.onetwo.ext.security.exception.AccessDeniedCodeException;
+import org.onetwo.ext.security.exception.SecurityErrors;
 import org.onetwo.ext.security.metadata.CodeSecurityConfig;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.security.access.AccessDecisionVoter;
@@ -22,6 +25,13 @@ import org.springframework.security.core.Authentication;
 abstract public class MultiExpressionVoter {
 //	protected SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
+	protected SecurityConfig securityConfig;
+	
+	public MultiExpressionVoter(SecurityConfig securityConfig) {
+		super();
+		this.securityConfig = securityConfig;
+	}
+
 	protected boolean isAnonymousUser(Authentication authentication) {
 		return AnonymousAuthenticationToken.class.isInstance(authentication);
 	}
@@ -37,9 +47,10 @@ abstract public class MultiExpressionVoter {
 		assert invokcation != null;
 		assert attributes != null;
 		
-//		if (isAnonymousUser(authentication)) {
-//			throw new AccessDeniedCodeException(JwtErrors.CM_NOT_LOGIN);
-//		}
+		// 当会话超时当时候，Authentication会是AnonymousAuthenticationToken
+		if (securityConfig.isDenyAnonymousUser() && isAnonymousUser(authentication)) {
+			throw new AccessDeniedCodeException(SecurityErrors.CM_NOT_LOGIN);
+		}
 
 		if (authentication!=null && authentication.getDetails() instanceof UserRoot) {
 			UserRoot user = (UserRoot) authentication.getDetails();

@@ -5,6 +5,8 @@ import java.util.List;
 import org.onetwo.ext.permission.MenuInfoParserFactory;
 import org.onetwo.ext.permission.SimplePermission;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
+import org.onetwo.ext.security.utils.SecurityConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -31,6 +33,8 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 @Configuration
 @Import(SecurityCommonContextConfig.class)
 public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration {
+	@Autowired
+	private SecurityConfig securityConfig;
 	
 	/*@Bean
 	public SecurityCommonContextConfig securityCommonContextConfig(){
@@ -60,7 +64,7 @@ public class MethodBasedSecurityConfig extends GlobalMethodSecurityConfiguration
 		List<AccessDecisionVoter<? extends Object>> decisionVoters = adm.getDecisionVoters();
 
 //		decisionVoters.add(new MethodWebExpressionVoter());
-		decisionVoters.add(new MultiMethodExpressionVoter());
+		decisionVoters.add(new MultiMethodExpressionVoter(securityConfig));
 		
 		return decisionManager;
 	}
