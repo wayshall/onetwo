@@ -17,14 +17,14 @@ public class JFishRefactorTest {
 	public void upgradeVersions(){
 		String baseDir = "/Users/way/mydev/java/odysseus-ai";
 		String dir = baseDir + "/onetwo/core/";
-		String oldVersion = "4.7.1-SNAPSHOT";
-		String newVersion = "4.7.2-SNAPSHOT";
+		String oldVersion = "5.0.0-SNAPSHOT";
+		String newVersion = "5.2.7-SNAPSHOT";
 		
 
 		String dbmPath = baseDir + "/dbm";
 		String wechatPath = baseDir + "/onetwo-wechat";
 		String tccPath = baseDir + "/onetwo-tcc";
-		String pluginPath = baseDir + "/onetwo-tcc";
+		String pluginPath = baseDir + "/zifish-plugins";
 		
 		List<String> dirs = Lists.newArrayList();
 		dirs.add(dir);

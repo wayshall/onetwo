@@ -38,16 +38,16 @@ public class DataResultErrorController extends BasicErrorController {
 		super(errorAttributes, errorProperties, errorViewResolvers);
 	}
 
-	@RequestMapping
-	@ResponseBody
-	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.ALL));
-		HttpStatus status = getStatus(request);
-		SimpleDataResult<?> dr = DataResults.error(StringUtils.emptyIfNull(body.get("message")))
-											.code(StringUtils.emptyIfNull(body.get("error")))
-											.data(StringUtils.emptyIfNull(body.get("path")))
-											.build();
-		return new ResponseEntity<Map<String, Object>>(ReflectUtils.toMap(dr), status);
-	}
+//	@RequestMapping
+//	@ResponseBody
+//	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
+//		Map<String, Object> body = getErrorAttributes(request,
+//				isIncludeStackTrace(request, MediaType.ALL));
+//		HttpStatus status = getStatus(request);
+//		SimpleDataResult<?> dr = DataResults.error(StringUtils.emptyIfNull(body.get("message")))
+//											.code(StringUtils.emptyIfNull(body.get("error")))
+//											.data(StringUtils.emptyIfNull(body.get("path")))
+//											.build();
+//		return new ResponseEntity<Map<String, Object>>(ReflectUtils.toMap(dr), status);
+//	}
 }
