@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -70,14 +69,23 @@ public class ExtRequestMappingHandlerMapping extends RequestMappingHandlerMappin
 		RequestMappingInfo combine(Method method, Class<?> handlerType, RequestMappingInfo info);
 		
 		static RequestMappingInfo createRequestMappingInfo(String path, Method method, Class<?> handlerType, RequestMappingInfo info) {
-			return new RequestMappingInfo(
-					new PatternsRequestCondition(path),
-					info.getMethodsCondition(),
-					info.getParamsCondition(),
-					info.getHeadersCondition(),
-					info.getConsumesCondition(), 
-					info.getProducesCondition(),
-					info.getCustomCondition());
+//			BuilderConfiguration config = new BuilderConfiguration();
+//			config.setPathMatcher(new AntPathMatcher());
+//			config.setPatternParser(PathPatternParser.defaultInstance);
+//			return RequestMappingInfo.paths(path)
+////									.options(config)
+//									.build()
+//									.mutate()
+//									.build();
+			return info.mutate().paths(path).build();
+//			return new RequestMappingInfo(
+//					new PatternsRequestCondition(path),
+//					info.getMethodsCondition(),
+//					info.getParamsCondition(),
+//					info.getHeadersCondition(),
+//					info.getConsumesCondition(), 
+//					info.getProducesCondition(),
+//					info.getCustomCondition());
 		}
 	}
 

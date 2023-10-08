@@ -1,7 +1,9 @@
 package org.onetwo.boot.core.cors;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,12 @@ public class CorsFilterConfiguration {
 	@Bean
 	public UrlBasedCorsConfigurationSource corsConfigurationSource(ExtCorsRegistry corsRegistry) {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.setCorsConfigurations(corsRegistry.getCorsConfigurations());
+		Map<String, CorsConfiguration> corsConfigurations = corsRegistry.getCorsConfigurations()
+					.entrySet()
+					.stream()
+					.filter(e -> StringUtils.isNotBlank(e.getKey()))
+					.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+		source.setCorsConfigurations(corsConfigurations);
 		return source;
 	}
 	

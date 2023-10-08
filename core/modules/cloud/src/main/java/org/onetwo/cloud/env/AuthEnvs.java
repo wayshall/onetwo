@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 
 import org.onetwo.boot.core.jwt.JwtConfig;
 import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
-import org.onetwo.cloud.canary.CanaryUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
@@ -37,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final public class AuthEnvs implements InitializingBean {
 
-	final public static Set<String> DEFAULT_HEADER_NAMES = Sets.newHashSet(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, "auth", CanaryUtils.HEADER_CLIENT_TAG);//
+	final public static Set<String> DEFAULT_HEADER_NAMES = Sets.newHashSet(OAuth2Utils.OAUTH2_AUTHORIZATION_HEADER, "auth");//
 	private static final NamedThreadLocal<AuthEnv> CURRENT_ENVS = new NamedThreadLocal<>("auth env");
 	private static final String AUTH_ENV_KEY = "__AUTH_WEB_ENV__";
 

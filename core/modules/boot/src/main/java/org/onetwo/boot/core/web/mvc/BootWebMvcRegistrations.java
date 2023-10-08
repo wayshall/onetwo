@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
  */
 public class BootWebMvcRegistrations  /* extends WebMvcRegistrationsAdapter*/ implements WebMvcRegistrations {
 
+	
 	@Override
 	public ExtRequestMappingHandlerMapping getRequestMappingHandlerMapping() {
 		return new ExtRequestMappingHandlerMapping();

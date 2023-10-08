@@ -21,7 +21,7 @@
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
-        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
+        <spring-cloud.version>2021.0.8</spring-cloud.version>
         <brave.version>5.6.1</brave.version>
     </properties>
 
@@ -87,12 +87,6 @@
         
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
-            <optional>true</optional>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
             <optional>true</optional>
         </dependency>
@@ -114,16 +108,7 @@
           <artifactId>feign-okhttp</artifactId>
         </dependency>
         
-        <!-- feign hystrix -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
-        </dependency>
+        
         <dependency>
           <groupId>org.springframework.cloud</groupId>
           <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -172,26 +157,6 @@
           <artifactId>spring-cloud-starter-sleuth</artifactId>
           <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-zipkin</artifactId>
-            <optional>true</optional>
-        </dependency>
-		<!-- <dependency>
-		    <groupId>io.zipkin.reporter2</groupId>
-		    <artifactId>zipkin-sender-okhttp3</artifactId>
-            <optional>true</optional>
-		</dependency>
-        <dependency>
-          <groupId>io.zipkin.brave</groupId>
-          <artifactId>brave</artifactId>
-          <optional>true</optional>
-        </dependency>
-        <dependency>
-          <groupId>io.zipkin.brave</groupId>
-          <artifactId>brave-instrumentation-mysql</artifactId>
-          <optional>true</optional>
-        </dependency> -->
         
         <!-- for logback jmx -->
         <dependency>

@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionHandler;
 import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
-import org.onetwo.cloud.hystrix.exception.HystrixBadRequestCodeException;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.exception.BaseException;
@@ -21,7 +20,6 @@ import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.cloud.netflix.zuul.filters.route.okhttp.OkHttpRibbonCommand;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +29,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.UnknownContentTypeException;
 import org.springframework.web.context.request.async.DeferredResult;
-
-import com.netflix.hystrix.exception.HystrixRuntimeException;
-import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
 
 import feign.FeignException;
 import feign.Response;
@@ -94,10 +89,12 @@ public class ExtResponseEntityDecoder implements Decoder {
 			if(dr.isError()){
 				if(StringUtils.isNotBlank(dr.getCode())){
 //					throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
-					throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//					throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+					throw new ServiceException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 				}else{
 //					throw new HystrixBadRequestException(e.getMessage(), new ServiceException("decode error", e));
-					throw new HystrixBadRequestCodeException(e.getMessage(), new ServiceException("decode error", e));
+//					throw new HystrixBadRequestCodeException(e.getMessage(), new ServiceException("decode error", e));
+					throw new ServiceException(e.getMessage(), new ServiceException("decode error", e));
 				}
 			}
 			res = dr.getData();
@@ -114,11 +111,12 @@ public class ExtResponseEntityDecoder implements Decoder {
 				String message = "cutoutError, remote service error:"+dr.getMessage();
 				JFishLoggerFactory.findMailLogger().error(message);
 				
-				throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
+//				throw new HystrixRuntimeException(FailureType.SHORTCIRCUIT, OkHttpRibbonCommand.class, message, cause, null);
+				throw new ServiceException(message, cause);
 			}else if(!dr.isSuccess()){
 //				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
-				throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
-//				throw new ServiceException(dr.getMessage(), dr.getCode());
+//				throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+				throw new ServiceException(dr.getMessage(), dr.getCode());
 			}
 			res = dr.getData();
 		}
@@ -141,9 +139,9 @@ public class ExtResponseEntityDecoder implements Decoder {
 			response.getBody().reset();
 			SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 			if(dr.isError()){
-//				throw new ServiceException(dr.getMessage(), dr.getCode());
+				throw new ServiceException(dr.getMessage(), dr.getCode());
 //				throw new HystrixBadRequestException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
-				throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
+//				throw new HystrixBadRequestCodeException(dr.getMessage(), new ServiceException(dr.getMessage(), dr.getCode()));
 			}
 			res = dr.getData();
 		}

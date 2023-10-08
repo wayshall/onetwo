@@ -14,9 +14,6 @@ import org.onetwo.boot.core.config.BootSiteConfig.UploadConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.init.BootServletContextInitializer;
 import org.onetwo.boot.core.init.ConfigServletContextInitializer;
-import org.onetwo.boot.core.json.BootJackson2ObjectMapperBuilder;
-import org.onetwo.boot.core.json.ObjectMapperProvider;
-import org.onetwo.boot.core.json.ObjectMapperProvider.DefaultObjectMapperProvider;
 import org.onetwo.boot.core.listener.BootApplicationReadyListener;
 import org.onetwo.boot.core.listener.PropertyDebuggerListener;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
@@ -26,7 +23,6 @@ import org.onetwo.boot.core.web.mvc.interceptor.BootFirstInterceptor;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorManager;
 import org.onetwo.boot.core.web.mvc.interceptor.UploadValidateInterceptor;
 import org.onetwo.boot.core.web.userdetails.BootSessionUserManager;
-import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
 import org.onetwo.boot.core.web.view.MvcViewRender;
 import org.onetwo.boot.core.web.view.ResultBodyAdvice;
@@ -52,12 +48,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /***
  * web环境的通用配置
@@ -67,7 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author wayshall
  *
  */
-@Import({DsRouterConfiguration.class, ApiClientConfiguration.class, BootConfigurationForFixSpringBoot2x.class})
+@Import({JsonConfiguration.class, DsRouterConfiguration.class, ApiClientConfiguration.class, BootConfigurationForFixSpringBoot2x.class})
 public class BootWebCommonAutoConfig implements DisposableBean {
 	public static final String BEAN_NAME_EXCEPTION_RESOLVER = "bootWebExceptionResolver";
 	
@@ -87,9 +80,6 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 
 //	@Autowired
 //	private MultipartProperties multipartProperties;
-	
-	@Autowired
-	protected BootJsonView jsonView;
 	
 	@PostConstruct
 	public void init(){
@@ -319,36 +309,6 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 		return filter;
 	}
 
-	
-	@Configuration
-	protected static class JsonConfiguration {
-		@Autowired
-		protected BootJFishConfig bootJfishConfig;
-		@Bean
-		public BootJsonView bootJsonView(){
-			BootJsonView jv = new BootJsonView();
-			jv.setPrettyPrint(bootJfishConfig.getMvc().getJson().isPrettyPrint());
-			return jv;
-		}
-		
-		@Bean
-		@ConditionalOnMissingBean(ObjectMapperProvider.class)
-		public ObjectMapperProvider objectMapperProvider(){
-			return new DefaultObjectMapperProvider();
-		}
-
-		@Primary
-		@Bean
-		@ConditionalOnMissingBean(ObjectMapper.class)
-		public ObjectMapper objectMapper(){
-			return objectMapperProvider().createObjectMapper();
-		}
-		
-		@Bean
-		public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
-			return new BootJackson2ObjectMapperBuilder();
-		}
-	}
 	
 	@Configuration
 	protected static class ConfigureMessageConvertor {

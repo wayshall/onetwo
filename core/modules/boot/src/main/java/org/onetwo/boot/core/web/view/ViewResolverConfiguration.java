@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
@@ -32,6 +33,10 @@ public class ViewResolverConfiguration {
 //		viewResolver.setDefaultContentType(MediaType.TEXT_HTML);
 //		viewResolver.setIgnoreAcceptHeader(true);
 		viewResolver.setContentNegotiationManager(contentNegotiationManager);
+
+		ContentNegotiationManagerFactoryBean cnmFactoryBean = new ContentNegotiationManagerFactoryBean();
+		cnmFactoryBean.setFavorPathExtension(true);
+		viewResolver.setContentNegotiationManager(cnmFactoryBean.build());
 		return viewResolver;
 	}
 }

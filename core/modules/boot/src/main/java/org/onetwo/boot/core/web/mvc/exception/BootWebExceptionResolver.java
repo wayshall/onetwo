@@ -7,8 +7,10 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
+import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -17,6 +19,7 @@ import org.onetwo.common.web.utils.ResponseType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +79,8 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	private View errorView;
 	@Autowired(required = false)
 	private ErrorLogHandler errorLogHandler;
+	@Autowired
+	private ApplicationContext ctx;
 	
 //	protected String defaultRedirect;
 	
@@ -87,6 +92,10 @@ public class BootWebExceptionResolver extends SimpleMappingExceptionResolver imp
 	public void afterPropertiesSet() throws Exception {
 		initResolver();
 //		this.notifyThrowables = bootSiteConfig.getNotifyThrowables();
+		if (errorView==null) {
+			BootJsonView jsonView = SpringUtils.getBean(ctx, BootJsonView.class);
+			this.errorView = jsonView;
+		}
 	}
 	
 	protected void initResolver(){

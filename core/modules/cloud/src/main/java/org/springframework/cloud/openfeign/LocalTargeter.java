@@ -18,7 +18,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.util.ClassUtils;
 
 import feign.Feign;
 import feign.Target;
@@ -44,11 +43,12 @@ public class LocalTargeter implements Targeter, ApplicationContextAware, Initial
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (ClassUtils.isPresent(CLASS_HYSTRIX_FEIGN, ClassUtils.getDefaultClassLoader())) {
-			defaultTargeter = new HystrixTargeter();
-		} else {
-			defaultTargeter = new DefaultTargeter();
-		}
+//		if (ClassUtils.isPresent(CLASS_HYSTRIX_FEIGN, ClassUtils.getDefaultClassLoader())) {
+//			defaultTargeter = new HystrixTargeter();
+//		} else {
+//			defaultTargeter = new DefaultTargeter();
+//		}
+		defaultTargeter = new DefaultTargeter();
 	}
 	
 	private <T> T defaultTargeter(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {

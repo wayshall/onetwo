@@ -8,10 +8,12 @@ import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.embedded.TomcatProperties;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
+import org.onetwo.boot.core.web.view.BootJsonView;
 import org.onetwo.boot.core.web.view.ViewResolverConfiguration;
 import org.onetwo.boot.plugin.PluginContextConfig;
 import org.onetwo.boot.plugin.ftl.WebFtlsContextConfig;
 import org.onetwo.common.web.init.CommonWebFilterInitializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -42,6 +44,9 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 	/*@Autowired
 	private HttpEncodingProperties httpEncodingProperties;*/
 	
+//	@Autowired(required = false)
+//	private BootJsonView jsonView;
+	
 	public BootWebUIContextAutoConfig(){
 	}
 	/*@Bean
@@ -62,7 +67,7 @@ public class BootWebUIContextAutoConfig extends BootWebCommonAutoConfig {
 		BootWebExceptionResolver resolver = new BootWebExceptionResolver();
 //		resolver.setExceptionMessage(exceptionMessage);
 		resolver.setJfishConfig(bootJfishConfig);
-		resolver.setErrorView(jsonView);
+//		resolver.setErrorView(jsonView);
 		return resolver;
 	}
 

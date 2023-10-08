@@ -1,6 +1,5 @@
 package org.onetwo.boot.core.web.mvc;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -21,8 +20,12 @@ public class EnhanceRequestMappingConfiguration {
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean(BootWebMvcRegistrations.class)
 	public BootWebMvcRegistrations bootWebMvcRegistrations(){
 		return new BootWebMvcRegistrations();
 	}
+	
+//	@Bean
+//	public ExtRequestMappingHandlerMapping requestMappingHandlerMapping() {
+//		return new ExtRequestMappingHandlerMapping();
+//	}
 }

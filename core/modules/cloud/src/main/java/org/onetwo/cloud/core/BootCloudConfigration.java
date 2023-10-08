@@ -1,9 +1,10 @@
 package org.onetwo.cloud.core;
 
-import org.onetwo.cloud.util.BootCloudUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.onetwo.boot.core.web.mvc.ExtRequestMappingHandlerMapping;
+import org.onetwo.cloud.bugfix.FixFeignClientsHandlerMapping;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 /**
  * @author wayshall
@@ -12,10 +13,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BootCloudConfigration {
 
+//	@Bean
+//	@ConditionalOnClass(name={BootCloudUtils.FEIGN_CLIENT_CLASS_NAME, BootCloudUtils.FEIGN_CLASS_NAME})
+//	public BootWebMvcRegistrations bootWebMvcRegistrations(){
+//		return new CloudWebMvcRegistrations();
+//	}
+
 	@Bean
-	@ConditionalOnClass(name={BootCloudUtils.FEIGN_CLIENT_CLASS_NAME, BootCloudUtils.FEIGN_CLASS_NAME})
-	public CloudWebMvcRegistrations bootWebMvcRegistrations(){
-		return new CloudWebMvcRegistrations();
+	@Primary
+	public ExtRequestMappingHandlerMapping fixFeignClientsHandlerMapping() {
+		return new FixFeignClientsHandlerMapping();
 	}
 	
 }
