@@ -192,7 +192,7 @@ public class RequestContextData {
 	 * @return
 	 */
 	public String getRequestUrl(){
-		String actualUrl = RestUtils.concatPath(baseURL, apiPath, invokeMethod.getPath());
+		String actualUrl = RestUtils.concatPath(baseURL, apiPath, invokeMethod.getApiRequestPath(this.methodArgs));
 		actualUrl = RestUtils.appendQueryParametersToURL(actualUrl, this.getQueryParameters());
 		return actualUrl;
 	}

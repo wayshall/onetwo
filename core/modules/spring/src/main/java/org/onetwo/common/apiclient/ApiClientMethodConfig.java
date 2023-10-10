@@ -2,6 +2,8 @@ package org.onetwo.common.apiclient;
 
 public interface ApiClientMethodConfig {
 	
-	boolean isThrowIfError();
-
+	default boolean isThrowIfError() {
+		return true;
+	};
+	
 }

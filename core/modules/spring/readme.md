@@ -175,6 +175,11 @@ public class RestExecutorSimpleLogInterceptor implements ClientHttpRequestInterc
 }
 ```
 
+### 有用的注解
+
+#### @ApiRequestPath
+有时候，请求路径需要从参数传入，则可以使用@ApiRequestPath注解标注参数。参数值会被作为请求路径，此时api方法上的@RequestMapping等注解指定的path属性将会失效。
+
 
 ## 工具类
 ### 复制Bean

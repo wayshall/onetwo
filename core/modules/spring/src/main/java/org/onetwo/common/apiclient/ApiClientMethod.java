@@ -16,6 +16,7 @@ import org.onetwo.common.apiclient.ApiClientMethod.ApiClientMethodParameter;
 import org.onetwo.common.apiclient.ApiErrorHandler.DefaultErrorHandler;
 import org.onetwo.common.apiclient.CustomResponseHandler.NullHandler;
 import org.onetwo.common.apiclient.annotation.ApiClientInterceptor;
+import org.onetwo.common.apiclient.annotation.ApiRequestPath;
 import org.onetwo.common.apiclient.annotation.InjectProperties;
 import org.onetwo.common.apiclient.annotation.ResponseHandler;
 import org.onetwo.common.apiclient.interceptor.ApiInterceptor;
@@ -118,6 +119,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	private String[] headers;
 	private int apiHeaderCallbackIndex = -1;
 	private int headerParameterIndex = -1;
+	/****
+	 * 动态路径参数索引
+	 */
+	private int apiRequestPathParameterIndex = -1;
 	
 	private CustomResponseHandler<?> customResponseHandler;
 	private ApiErrorHandler apiErrorHandler;
@@ -163,6 +168,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		});
 		findParameterByType(HttpHeaders.class).ifPresent(p->{
 			this.headerParameterIndex = p.getParameterIndex();
+		});
+		findParameterByAnnotation(ApiRequestPath.class).ifPresent(p->{
+			this.apiRequestPathParameterIndex = p.getParameterIndex();
 		});
 //		findParameterByType(ApiClientMethodConfig.class).ifPresent(p->{
 //			this.methodConfigIndex = p.getParameterIndex();
@@ -253,6 +261,18 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	public Optional<HttpHeaders> getHttpHeaders(Object[] args){
 		return headerParameterIndex<0?Optional.empty():Optional.ofNullable((HttpHeaders)args[headerParameterIndex]);
+	}
+	
+	public String getApiRequestPath(Object[] args){
+		String apiPath = getPath();
+		if (apiRequestPathParameterIndex<0) {
+			return apiPath;
+		}
+		apiPath = (String)args[this.apiRequestPathParameterIndex];
+		if (StringUtils.isBlank(apiPath)) {
+			throw new ApiClientException("the path parameter that annotated by @"+ApiRequestPath.class.getSimpleName()+" can not be blank!");
+		}
+		return apiPath;
 	}
 	
 //	public Optional<ApiClientMethodConfig> getApiClientMethodConfig(Object[] args){
@@ -447,7 +467,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	
 	protected boolean isSpecalPemerater(ApiClientMethodParameter parameter){
 		return parameter.getParameterIndex()==apiHeaderCallbackIndex || 
-				parameter.getParameterIndex()==headerParameterIndex;
+				parameter.getParameterIndex()==headerParameterIndex ||
+				parameter.getParameterIndex()==apiRequestPathParameterIndex ||
+				ApiClientMethodConfigProvider.class.isAssignableFrom(parameter.getParameterType())
+				;
 //						parameter.getParameterIndex()==methodConfigIndex;
 	}
 	
@@ -512,7 +535,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		}*/
 	}
 
-	public String getPath() {
+	private String getPath() {
 		return path;
 	}
 
