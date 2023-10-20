@@ -112,6 +112,8 @@ public class SecurityConfig {
 	 */
 	private boolean validateConfigAttributes = true;
 	
+	private HttpBasicConfig httpBasic = new HttpBasicConfig();
+	
 	
 	public boolean isDebug(){
 		return debug;
@@ -376,5 +378,14 @@ public class SecurityConfig {
 		 * 允许所有预检请求
 		 */
 		boolean permitAllPreFlightRequest;
+	}
+
+
+	@Data
+	public static class HttpBasicConfig {
+		/**
+		 * disable只是移除cors的配置类
+		 */
+		boolean enable = false;
 	}
 }

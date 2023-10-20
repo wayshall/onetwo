@@ -10,6 +10,7 @@ import org.onetwo.ext.security.ajax.AjaxSupportedAuthenticationEntryPoint;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.utils.IgnoreCsrfProtectionRequestUrlMatcher;
 import org.onetwo.ext.security.utils.SecurityConfig;
+import org.onetwo.ext.security.utils.SecurityConfig.HttpBasicConfig;
 import org.onetwo.ext.security.utils.SimpleThrowableAnalyzer;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -242,10 +243,15 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		if (ajaxLogoutSuccessHandler!=null) {
 			logoutConf.logoutSuccessHandler(ajaxLogoutSuccessHandler);
 		}
-		
-		http.httpBasic()
-			.disable()
-			.headers()
+
+		HttpBasicConfig basicConfig = securityConfig.getHttpBasic();
+		if (basicConfig.isEnable()) {
+			http.httpBasic();
+		} else {
+			http.httpBasic()
+				.disable();
+		}
+		http.headers()
 				.frameOptions()
 				.sameOrigin()
 				.xssProtection()
