@@ -123,7 +123,7 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		}*/
 		List<UrlResourceInfo> infos = urlResourceInfoParser.parseToUrlResourceInfos(perm.getResourcesPattern());
 		
-		Set<String> urlPattterns = entry.getKey().getPatternsCondition().getPatterns();
+		Set<String> urlPattterns = getUrlPattterns(entry.getKey());
 		
 		if(urlPattterns.size()==1){
 			String url = urlPattterns.stream().findFirst().orElse("");
@@ -146,6 +146,16 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 		return url;
 	}*/
 	
+	private Set<String> getUrlPattterns(RequestMappingInfo info) {
+		Set<String> urlPattterns = null;
+		if (info.getPatternsCondition()!=null) {
+			urlPattterns = info.getPatternsCondition().getPatterns();
+		} else {
+			urlPattterns = info.getPathPatternsCondition().getDirectPaths();
+		}
+		return urlPattterns;
+	}
+	
 	private Optional<RequestMethod> getFirstMethod(RequestMappingInfo info){
 		//取第一个映射方法
 		return info.getMethodsCondition().getMethods().stream().findFirst();
@@ -153,7 +163,9 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 	
 	private String getFirstUrl(RequestMappingInfo info){
 		//取第一个映射地址
-		return info.getPatternsCondition().getPatterns().stream().findFirst().orElse("");
+//		return info.getPatternsCondition().getPatterns().stream().findFirst().orElse("");
+		String firstUrl = getUrlPattterns(info).stream().findFirst().orElse("");
+		return firstUrl;
 	}
 	
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {

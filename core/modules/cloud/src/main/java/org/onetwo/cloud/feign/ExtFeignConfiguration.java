@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.onetwo.boot.core.config.BootSpringConfig;
 import org.onetwo.boot.core.web.service.impl.SimpleLoggerManager;
-import org.onetwo.cloud.env.AuthEnvs;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -168,22 +167,22 @@ public class ExtFeignConfiguration implements InitializingBean {
 		}
 	}
 	
-	@Configuration
-	protected static class FeignRequestInterceptorConfiguration {
-//		@Autowired
-//		private FeignProperties feignProperties;
-		
-		@Bean
-		public KeepHeaderRequestInterceptor keepHeaderRequestInterceptor(AuthEnvs authEnvs){
-			KeepHeaderRequestInterceptor interceptor = new KeepHeaderRequestInterceptor();
-//			if(!LangUtils.isEmpty(feignProperties.getKeepHeaders())){
-//				interceptor.setKeepHeaders(ImmutableSet.copyOf(feignProperties.getKeepHeaders()));
-//			}
-			interceptor.setAuthEnvs(authEnvs);
-			return interceptor;
-		}
-		
-	}
+//	@Configuration
+//	protected static class FeignRequestInterceptorConfiguration {
+////		@Autowired
+////		private FeignProperties feignProperties;
+//		
+//		@Bean
+//		public KeepHeaderRequestInterceptor keepHeaderRequestInterceptor(AuthEnvs authEnvs){
+//			KeepHeaderRequestInterceptor interceptor = new KeepHeaderRequestInterceptor();
+////			if(!LangUtils.isEmpty(feignProperties.getKeepHeaders())){
+////				interceptor.setKeepHeaders(ImmutableSet.copyOf(feignProperties.getKeepHeaders()));
+////			}
+//			interceptor.setAuthEnvs(authEnvs);
+//			return interceptor;
+//		}
+//		
+//	}
 	
 	
 	@Configuration
