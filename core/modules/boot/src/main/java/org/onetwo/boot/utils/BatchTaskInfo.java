@@ -23,13 +23,14 @@ import lombok.Data;
 public class BatchTaskInfo<T> extends ArrayList<TaskInfo> {
 
 	/****
-	 * 
+	 * 比如一共有15554（total）条数据，每个任务（TaskInfo）需要计算100（taskSize）条数据，则一共会生成156（15554/100+1）个任务。
+	 * 若每个批量任务（BatchTaskInfo）并发计算量是10，则一共会生成16（156/10+1）个批量任务，最终返回ArrayList<BatchTaskInfo<TaskInfo>>(16).
 	 * @author weishao zeng
 	 * @param <R>
 	 * @param total 任务总数
-	 * @param taskSize 每个批量任务里的单个任务需要计算的数量
-	 * @param concurrentTaskSize 每个批量任务里，并发执行concurrentTaskSize个任务
-	 * @return
+	 * @param taskSize 每个任务（TaskInfo）需要计算（获取）的数量
+	 * @param concurrentTaskSize 并发任务数，即每个批量任务（BatchTaskInfo）里，包含的需要并发执行的任务（TaskInfo）数量
+	 * @return 返回根据条件生成的批量任务（BatchTaskInfo）
 	 */
 	public static <R> List<BatchTaskInfo<R>> splitTasks(int total, int taskSize, int concurrentTaskSize) {
 		if (total<=0) {

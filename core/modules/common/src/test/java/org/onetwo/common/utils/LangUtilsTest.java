@@ -23,9 +23,15 @@ public class LangUtilsTest {
 	
 	@Test
 	public void testTrim() {
-		String str = "00000000000000000000000010440111";
+		String str = "000000000000000000000000104401110";
 		String val = StringUtils.trimStartWith(str, "0");
 		System.out.println("val: " + val);
+		assertThat(val).isEqualTo("104401110");
+		
+		str = "1144170101";
+		val = StringUtils.substring(str, 0, str.length()-3);
+		System.out.println("val: " + val);
+		assertThat(val).isEqualTo("1144170");
 	}
 
 	@Test
