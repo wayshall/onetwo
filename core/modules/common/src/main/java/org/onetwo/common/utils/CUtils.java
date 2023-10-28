@@ -667,7 +667,43 @@ final public class CUtils {
 			}
 		}
 	}
+
+    public static Object[] arrayAdd(Object[] array, Object element) {
+        Object[] newArray = (Object[]) copyArrayGrow1(array);
+        newArray[newArray.length - 1] = element;
+        return newArray;
+    }
+
+    private static Object copyArrayGrow1(Object array) {
+        if (array != null) {
+            int arrayLength = Array.getLength(array);
+            Object newArray = Array.newInstance(array.getClass().getComponentType(), arrayLength + 1);
+            System.arraycopy(array, 0, newArray, 0, arrayLength);
+            return newArray;
+        }
+        return Array.newInstance(Object.class, 1);
+    }
 	
+    public static Object[] addAll(Object[] array1, Object[] array2) {
+        if (array1 == null) {
+            return clone(array2);
+        } else if (array2 == null) {
+            return clone(array1);
+        }
+        Object[] joinedArray = (Object[]) Array.newInstance(array1.getClass().getComponentType(),
+                                                            array1.length + array2.length);
+        System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+        System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+        return joinedArray;
+    }
+
+    public static Object[] clone(Object[] array) {
+        if (array == null) {
+            return null;
+        }
+        return (Object[]) array.clone();
+    }
+
 	private CUtils(){
 	}
 
