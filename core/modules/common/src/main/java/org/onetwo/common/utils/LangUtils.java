@@ -2112,19 +2112,4 @@ abstract public class LangUtils {
 		return VERSION.matcher(version).matches();
 	}
 
-    public static Object[] arrayAdd(Object[] array, Object element) {
-        Object[] newArray = (Object[]) copyArrayGrow1(array);
-        newArray[newArray.length - 1] = element;
-        return newArray;
-    }
-
-    private static Object copyArrayGrow1(Object array) {
-        if (array != null) {
-            int arrayLength = Array.getLength(array);
-            Object newArray = Array.newInstance(array.getClass().getComponentType(), arrayLength + 1);
-            System.arraycopy(array, 0, newArray, 0, arrayLength);
-            return newArray;
-        }
-        return Array.newInstance(Object.class, 1);
-    }
 }
