@@ -3,14 +3,19 @@ package org.onetwo.boot.core.jwt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.md.Hashs;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.userdetails.SimpleUserDetail;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -76,11 +81,48 @@ public class SimpleJwtTokenServiceTest {
 		System.out.println("token: " + token);
 	}
 	
+
+	@Test
+	public void testBcSign() {
+		// bigmodel token
+		Date ts = NiceDate.Now().getTime();
+
+		List<PropmtData> list = Lists.newArrayList();
+		PropmtData p1 = new PropmtData();
+		p1.setRole("user");
+		p1.setContent("你是一个把 中文 翻译为 英文 的得力助手。请翻译我说出的中文，只返回英文即可。");
+		list.add(p1);
+		
+		p1 = new PropmtData();
+		p1.setRole("user");
+		p1.setContent("足球");
+		
+		Map<String, Object> body = Maps.newHashMap();
+		body.put("prompt", list);
+		
+		String utcTs = String.valueOf(ts.getTime()/1000);
+		String bodyStr = JsonMapper.toJsonString(body);
+		String apiSecrect = "";
+		String source = apiSecrect + bodyStr + utcTs;
+		String sign = Hashs.MD5.hash(source);
+		
+		System.out.println("utcTs: " + utcTs);
+		System.out.println("bodyStr: " + bodyStr);
+		System.out.println("sign: " + sign);
+	}
+	
 	@Data
-	public static class ApiAuthParams {
+	private static class ApiAuthParams {
 		String api_key;
 		Long exp;
 		Long timestamp;
 	}
 
+	
+	@Data
+	private static class PropmtData {
+		String role;
+		String content;
+	}
+	
 }
