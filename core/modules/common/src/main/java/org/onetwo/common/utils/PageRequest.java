@@ -4,7 +4,7 @@ package org.onetwo.common.utils;
  * @author wayshall
  * <br/>
  */
-public class PageRequest {
+public class PageRequest implements PageableRequest {
 	protected int page = 1;
 	protected int pageSize = Page.getDefaultPageSize();
 	private boolean pagination = true;
