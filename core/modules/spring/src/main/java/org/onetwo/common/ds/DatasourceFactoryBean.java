@@ -59,8 +59,12 @@ public class DatasourceFactoryBean implements FactoryBean<DataSource>, Initializ
 		}
 		
 		if (this.configMap!=null) {
+			Boolean transactionManagerAware = (Boolean) this.configMap.remove("transactionManagerAware");
 			for (Entry<String, Object> config : this.configMap.entrySet()) {
 				this.config.setProperty(config.getKey(), config.getValue().toString());
+			}
+			if (transactionManagerAware!=null) {
+				this.transactionManagerAware = transactionManagerAware;
 			}
 		}
 		
