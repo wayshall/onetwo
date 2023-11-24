@@ -129,6 +129,7 @@ public class DatasourceRegistrar implements EnvironmentAware, ImportBeanDefiniti
 
 //		Class<? extends DataSource> implementClass = this.attributes.getClass("implementClass");
 		String implementClassName = (String)configs.remove("type");
+		configs.put("transactionManagerAware", true);
 		
 //		definition.addPropertyValue("prefix", configPrefix);
 		definition.addPropertyValue("prefix", "");
