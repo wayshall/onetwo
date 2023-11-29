@@ -1,6 +1,7 @@
 package org.onetwo.common.date;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,7 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.NiceDateRange.QuarterDateRange;
+import org.onetwo.common.exception.BaseException;
 
 
 
@@ -75,6 +77,17 @@ public class NiceDateTest {
 		q = now.getCurrentQuarter();
 		System.out.println("start: " + q.getStart().formatAsDate());
 		System.out.println("end: " + q.getEnd().formatAsDate());
+		
+		assertThat(QuarterDateRange.from("2023Q4").getStart().formatAsDate()).isEqualTo("2023-10-01");
+		assertThat(QuarterDateRange.from("2023Q4").getEnd().formatAsDate()).isEqualTo("2023-12-31");
+		assertThat(QuarterDateRange.from("202301", "0").getStart().formatAsDate()).isEqualTo("2023-01-01");
+		assertThat(QuarterDateRange.from("2023季度2", "季度").getStart().formatAsDate()).isEqualTo("2023-04-01");
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
+			QuarterDateRange.from("202305", "0");
+		});
+		assertThatExceptionOfType(BaseException.class).isThrownBy(() -> {
+			QuarterDateRange.from("202305");
+		}).withMessage("quarter tag not found!");
 		
 	}
 		
