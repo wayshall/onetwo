@@ -2,6 +2,7 @@ package org.onetwo.ext.security.jwt;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.onetwo.ext.security.utils.GenericLoginUserDetails;
@@ -15,6 +16,7 @@ import com.google.common.collect.Maps;
  */
 @SuppressWarnings("serial")
 public class SecurityJwtUserDetail extends GenericLoginUserDetails<Serializable> implements JwtUserDetail {
+	public static final String ANONYMOUS_LOGIN_KEY = "anonymousLogin";
 
 	/***
 	 * 把userdetail对象解释为token时，扩展属性properties会存储到claim，然后解释为token
@@ -27,6 +29,14 @@ public class SecurityJwtUserDetail extends GenericLoginUserDetails<Serializable>
 	public SecurityJwtUserDetail(Serializable userId, String username, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(userId, username, password, authorities);
+	}
+
+	public SecurityJwtUserDetail(Serializable userId, String userName, Boolean anonymousLogin) {
+		super(userId, userName, "N/A", Collections.emptySet());
+		if (anonymousLogin!=null) {
+			this.anonymousLogin = anonymousLogin; 
+			this.properties.put(ANONYMOUS_LOGIN_KEY, anonymousLogin);
+		}
 	}
 
 	@Override

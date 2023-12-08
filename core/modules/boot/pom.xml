@@ -449,6 +449,12 @@
             <optional>true</optional>
         </dependency>
         
+        <!-- activemq artemis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-artemis</artifactId>
+        </dependency>
+        
         <!-- ali qlexpress -->
 	    <dependency>
 	      <groupId>com.alibaba</groupId>
