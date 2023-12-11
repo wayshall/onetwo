@@ -5,6 +5,7 @@ import javax.jms.ConnectionFactory;
 import org.onetwo.boot.module.activemq.ActivemqProperties.TopicProps;
 import org.onetwo.boot.module.activemq.artemis.ActiveMQArtemisConfiguration;
 import org.onetwo.boot.module.activemq.classic.ActiveMQClassicConfiguration;
+import org.onetwo.boot.module.jms.IdenmpotentJmsConfiguration;
 import org.onetwo.boot.module.jms.JmsProducerService;
 import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
 import org.onetwo.boot.mq.MQTransactionalConfiguration;
@@ -33,7 +34,9 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 @Import({
 	MQTransactionalConfiguration.class,
 	ActiveMQClassicConfiguration.class,
-	ActiveMQArtemisConfiguration.class
+	ActiveMQArtemisConfiguration.class,
+	
+	IdenmpotentJmsConfiguration.class
 })
 public class ActivemqConfiguration implements InitializingBean {
 	

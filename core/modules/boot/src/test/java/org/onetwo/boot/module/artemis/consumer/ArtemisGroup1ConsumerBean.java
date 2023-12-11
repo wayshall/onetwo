@@ -1,7 +1,5 @@
 package org.onetwo.boot.module.artemis.consumer;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.onetwo.boot.module.activemq.producer.ProducerTestBean.MessageBody;
 import org.onetwo.boot.module.jms.JmsMessage;
 import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
@@ -9,25 +7,28 @@ import org.onetwo.common.convert.Types;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author wayshall
  * <br/>
  */
 @Component
 @Slf4j
-public class ArtemisTestBean {
+public class ArtemisGroup1ConsumerBean {
 
 	@JmsListener(destination = "sample.topic", containerFactory=ContainerFactorys.TOPIC, subscription="group1")
 	public void cosumerAOfGroup1(JmsMessage<String> msg) {
 		System.out.println(msg.getBody());
-		log.info("consumerA ConsumerTestBean receive topic message: "+msg.getBody());
+		log.info("consumerA@gourp1 ConsumerTestBean receive topic message: "+msg.getBody());
 	}
 
 	@JmsListener(destination = "sample.topic", containerFactory=ContainerFactorys.TOPIC, subscription="group1")
 	public void cosumerBOfGroup1(JmsMessage<String> msg) {
 		System.out.println(msg.getBody());
-		log.info("consumerB ConsumerTestBean receive topic message: "+msg.getBody());
+		log.info("consumerB@gourp1 ConsumerTestBean receive topic message: "+msg.getBody());
 	}
+
 
 	@JmsListener(destination = "sample.queue", containerFactory=ContainerFactorys.QUEUE)
 //	@JmsListener(destination = "sample.queue", subscription="ConsumerTestBean#receiveQueue")

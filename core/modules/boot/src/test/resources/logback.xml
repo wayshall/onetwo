@@ -30,6 +30,9 @@
     <logger name="org.onetwo.dbm.core.internal.LogSqlInterceptor" level="TRACE">
         <appender-ref ref="console" />
     </logger>
+    <logger name="org.springframework.jms.listener.DefaultMessageListenerContainer" level="DEBUG">
+        <appender-ref ref="console" />
+    </logger>
     
    <logger name="org.onetwo.common.spring.rest.ExtRestTemplate" level="DEBUG">  
        <appender-ref ref="logFile" />   
