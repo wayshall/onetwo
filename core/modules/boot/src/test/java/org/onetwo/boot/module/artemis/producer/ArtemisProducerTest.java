@@ -3,6 +3,7 @@ package org.onetwo.boot.module.artemis.producer;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onetwo.boot.module.activemq.ActivemqProperties;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 							"spring.artemis.user=admin", 
 							"spring.artemis.password=admin", 
 //							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.embedded.enabled=true", org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.jdbcStore.enabled=true"
+//							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".jms.converter=jackson2",
+							ActivemqProperties.CONVERTER_KEY+ "=jackson2",
 							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mq.transactional.enabled=true",
 							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mq.transactional.sendTask.enabled=true",
 							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mq.transactional.deleteTask.enabled=true",

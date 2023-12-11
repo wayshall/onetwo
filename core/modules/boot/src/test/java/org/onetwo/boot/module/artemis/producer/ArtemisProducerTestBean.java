@@ -56,7 +56,9 @@ public class ArtemisProducerTestBean {
 														.desinationType(DesinationType.TOPIC)
 														.body(msg)
 														.build(),
-										SendMessageFlags.EnableDatabaseTransactional);
+//										SendMessageFlags.EnableDatabaseTransactional
+										SendMessageFlags.DisableDatabaseTransactional
+										);
 	}
 	
 	public String sendReplyQueue(String msg){

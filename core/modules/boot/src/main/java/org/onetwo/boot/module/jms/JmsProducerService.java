@@ -34,6 +34,9 @@ public class JmsProducerService implements ProducerService<JmsMessageCreator, Ob
 	private List<SendMessageInterceptor> sendMessageInterceptors;
 	private InterceptableMessageSender<Object> interceptableMessageSender;
 
+	/***
+	 * MappingJackson2MessageConverter
+	 */
 	@Autowired
 	private JmsMessagingTemplate jmsMessagingTemplate;
 	@Autowired

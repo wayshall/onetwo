@@ -2,6 +2,7 @@ package org.onetwo.boot.module.artemis.consumer;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onetwo.boot.module.activemq.ActivemqProperties;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,9 +25,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 							"spring.artemis.port=61616", 
 							"spring.artemis.user=admin", 
 							"spring.artemis.password=admin", 
-//							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.messageConverter=jackson2",
+							ActivemqProperties.CONVERTER_KEY+ "=jackson2",
 //							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.embedded.enabled=true", org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.jdbcStore.enabled=true"
-
+//							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".jms.converter=jackson2",
 							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.type=artemis",
 							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.enabled=true",
 							org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.topic.subscriptionDurable=true",

@@ -2,10 +2,11 @@ package org.onetwo.boot.module.activemq;
 
 import javax.jms.ConnectionFactory;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.module.activemq.ActivemqProperties.TopicProps;
 import org.onetwo.boot.module.activemq.artemis.ActiveMQArtemisConfiguration;
 import org.onetwo.boot.module.activemq.classic.ActiveMQClassicConfiguration;
-import org.onetwo.boot.module.jms.IdenmpotentJmsConfiguration;
+import org.onetwo.boot.module.jms.JmsConfiguration;
 import org.onetwo.boot.module.jms.JmsProducerService;
 import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
 import org.onetwo.boot.mq.MQTransactionalConfiguration;
@@ -20,6 +21,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MessageConverter;
 
 /**
  * JmsAutoConfiguration
@@ -36,7 +39,7 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 	ActiveMQClassicConfiguration.class,
 	ActiveMQArtemisConfiguration.class,
 	
-	IdenmpotentJmsConfiguration.class
+	JmsConfiguration.class
 })
 public class ActivemqConfiguration implements InitializingBean {
 	
@@ -44,6 +47,8 @@ public class ActivemqConfiguration implements InitializingBean {
 	private ActiveMQConnectionFactory activeMQConnectionFactory;*/
 	@Autowired
 	private ActivemqProperties activemqProperties;
+	@Autowired(required = false)
+	private MessageConverter messageConverter;
 	
 	
 	
@@ -73,6 +78,9 @@ public class ActivemqConfiguration implements InitializingBean {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
 		factory.setPubSubDomain(false);
+		if (messageConverter!=null) {
+			factory.setMessageConverter(messageConverter);
+		}
 		return factory;
 	}
 	
@@ -87,6 +95,9 @@ public class ActivemqConfiguration implements InitializingBean {
 		factory.setSubscriptionDurable(topic.getSubscriptionDurable());
 		factory.setSubscriptionShared(topic.getSubscriptionShared());
 		factory.setClientId(topic.getClientId());
+		if (messageConverter!=null) {
+			factory.setMessageConverter(messageConverter);
+		}
 		return factory;
 	}
 
@@ -94,6 +105,18 @@ public class ActivemqConfiguration implements InitializingBean {
 	public JmsProducerService jmdProducerService(){
 		JmsProducerService producer = new JmsProducerService();
 		return producer;
+	}
+	
+	@Configuration
+	@ConditionalOnProperty(name = ActivemqProperties.CONVERTER_KEY, havingValue = "jackson2", matchIfMissing = false)
+	static public class JacksonMessageConverterConfiguration {
+		
+		@Bean
+		public MessageConverter jackson2MessageConverter() {
+			MappingJackson2MessageConverter jackson = new MappingJackson2MessageConverter();
+			jackson.setTypeIdPropertyName("__" + BootJFishConfig.ZIFISH_CONFIG_PREFIX + "_jackson2_type__");
+			return jackson;
+		}
 	}
 	
 	
