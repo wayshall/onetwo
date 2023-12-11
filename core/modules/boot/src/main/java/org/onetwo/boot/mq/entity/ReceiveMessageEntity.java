@@ -1,4 +1,4 @@
-package org.onetwo.ext.ons.entity;
+package org.onetwo.boot.mq.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

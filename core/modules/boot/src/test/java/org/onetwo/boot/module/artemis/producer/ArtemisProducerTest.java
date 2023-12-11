@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 //				properties={"spring.activemq.in-memory=false", "spring.activemq.pool.enabled=false", "spring.activemq.broker-url=tcp://localhost:61616"},
 				properties={
 //							"spring.activemq.in-memory=true", "spring.activemq.pool.enabled=false", 
+							"debug=true",
 							"spring.main.allow-bean-definition-overriding=true",
 							"spring.artemis.mode=native", 
 							"spring.artemis.host=localhost", 

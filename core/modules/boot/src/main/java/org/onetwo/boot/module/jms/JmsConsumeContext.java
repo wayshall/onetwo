@@ -6,8 +6,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.onetwo.boot.module.jms.annotation.IdempotentListener;
-import org.onetwo.boot.module.jms.exception.MQException;
 import org.onetwo.boot.mq.IdempotentType;
+import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.exception.BaseException;
 
 import lombok.Data;
@@ -47,6 +47,29 @@ public class JmsConsumeContext {
 			return message.getJMSMessageID();
 		} catch (JMSException e) {
 			throw new BaseException("get jms message id error", e);
+		}
+	}
+	
+	public boolean isBodyAssignableTo(Class<?> bodyType) {
+		try {
+			return message.isBodyAssignableTo(JmsMessage.class);
+		} catch (JMSException e) {
+			return false;
+		}
+	}
+	
+	public String getMessageKey() {
+		if (isBodyAssignableTo(JmsMessage.class)) {
+			JmsMessage<?> msg = getMessageBody(JmsMessage.class);
+			if (msg!=null) {
+				return msg.getKey();
+			}
+		}
+		try {
+			String msgkey = message.getStringProperty(JmsMessage.HEADER_MSG_KEY);
+			return msgkey;
+		} catch (JMSException e) {
+			throw new BaseException("get jms message key error", e);
 		}
 	}
 	

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.onetwo.boot.mq.exception.ImpossibleConsumeException;
+import org.onetwo.boot.mq.exception.MessageConsumedException;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -16,8 +18,6 @@ import org.onetwo.ext.ons.ListenerType;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.ConsumeFromWhereProps;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
-import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;

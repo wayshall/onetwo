@@ -5,8 +5,8 @@ import java.lang.reflect.Parameter;
 
 import javax.jms.Message;
 
-import org.onetwo.boot.module.jms.exception.ConsumeException;
-import org.onetwo.boot.module.jms.exception.MQException;
+import org.onetwo.boot.mq.exception.ConsumeException;
+import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
@@ -19,6 +19,8 @@ public class DelegateJmsMessageConsumer {
 	
 	@Autowired
 	private DelegateJmsMessageConsumer delegateJmsMessageConsumer;
+	@Autowired
+	private JmsConsumeMessageStoreService jmsConsumeMessageStoreService;
 	
 	public void processMessage(JmsConsumeContext context) {
 //		Object result = null;
@@ -76,6 +78,8 @@ public class DelegateJmsMessageConsumer {
 	
 	@Transactional(noRollbackFor = MessageOnlyServiceException.class)
 	public void consumeMessageWithTransactional(JmsConsumeContext context) {
+		// save consume to database
+		jmsConsumeMessageStoreService.save(context);
 		this.consumeMessage(context);
 	}
 	

@@ -77,7 +77,7 @@ public class MQProperties {
 		 * @return
 		 */
 		public int getIgnoreSendCreateAtRecentlyInSeconds() {
-			return (int)LangOps.timeToSeconds(getIgnoreCreateAtRecently(), 10);
+			return (int)LangOps.timeToSeconds(getIgnoreCreateAtRecently(), 30);
 		}
 	}
 	@Data

@@ -1,4 +1,4 @@
-package org.onetwo.boot.module.jms.exception;
+package org.onetwo.boot.mq.exception;
 
 import org.onetwo.common.exception.ErrorType;
 import org.onetwo.common.exception.ServiceException;

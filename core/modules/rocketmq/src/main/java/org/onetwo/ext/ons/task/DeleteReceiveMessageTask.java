@@ -3,13 +3,13 @@ package org.onetwo.ext.ons.task;
 import java.time.LocalDateTime;
 
 import org.onetwo.boot.module.redis.RedisLockRunner;
+import org.onetwo.boot.mq.entity.ReceiveMessageEntity;
+import org.onetwo.boot.mq.entity.ReceiveMessageEntity.ConsumeStates;
 import org.onetwo.common.db.builder.Querys;
 import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.ext.ons.ONSProperties.DeleteReceiveTask;
-import org.onetwo.ext.ons.entity.ReceiveMessageEntity;
-import org.onetwo.ext.ons.entity.ReceiveMessageEntity.ConsumeStates;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

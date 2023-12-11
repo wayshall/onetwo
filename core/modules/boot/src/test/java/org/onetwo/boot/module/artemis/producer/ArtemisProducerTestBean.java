@@ -44,7 +44,7 @@ public class ArtemisProducerTestBean {
 														.key("test_"+DateUtils.formatDateTimeMillis(new Date()))
 														.body(new MessageBody(msg))
 														.build(),
-										SendMessageFlags.EnableDatabaseTransactional);
+										SendMessageFlags.DisableDatabaseTransactional);
 	}
 	public void send2Topic(String msg){
 //		this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
@@ -55,7 +55,8 @@ public class ArtemisProducerTestBean {
 														.key("test_"+DateUtils.formatDateTimeMillis(new Date()))
 														.desinationType(DesinationType.TOPIC)
 														.body(msg)
-														.build());
+														.build(),
+										SendMessageFlags.EnableDatabaseTransactional);
 	}
 	
 	public String sendReplyQueue(String msg){

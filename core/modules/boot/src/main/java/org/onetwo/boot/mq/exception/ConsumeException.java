@@ -1,9 +1,10 @@
-package org.onetwo.boot.module.jms.exception;
+package org.onetwo.boot.mq.exception;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ErrorType;
 
 @SuppressWarnings("serial")
-public class ConsumeException extends MQException {
+public class ConsumeException extends BaseException{
 	
 	public ConsumeException() {
 		super("consume message error");
@@ -11,7 +12,7 @@ public class ConsumeException extends MQException {
 
 
 	public ConsumeException(ErrorType exceptionType, Throwable cause) {
-		super(exceptionType, cause);
+		super(exceptionType.getErrorMessage(), cause, exceptionType.getErrorCode());
 	}
 	
 	public ConsumeException(String msg, Throwable cause) {
@@ -22,4 +23,5 @@ public class ConsumeException extends MQException {
 		super(msg);
 	}
 
+	
 }
