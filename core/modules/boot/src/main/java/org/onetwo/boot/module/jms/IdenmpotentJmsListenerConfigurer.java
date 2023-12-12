@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.onetwo.boot.module.jms.annotation.IdempotentListener;
 import org.onetwo.boot.module.jms.annotation.JmsConsumer;
-import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.SpringMergedAnnotationFinder;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
@@ -26,8 +25,6 @@ import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpoint;
 import org.springframework.jms.config.JmsListenerEndpointRegistrar;
-import org.springframework.jms.config.MethodJmsListenerEndpoint;
-import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 import org.springframework.messaging.handler.annotation.support.MessageHandlerMethodFactory;
@@ -94,7 +91,7 @@ public class IdenmpotentJmsListenerConfigurer implements JmsListenerConfigurer, 
 	 */
 	protected JmsListenerEndpoint createJmsListenerEndpoint(Object bean, Method listenMethod, IdempotentListener jmsListener) {
 		Method invocableMethod = AopUtils.selectInvocableMethod(listenMethod, bean.getClass());
-		MethodJmsListenerEndpoint endpoint = new MethodJmsListenerEndpoint();
+		IdenmpotentMethodJmsListenerEndpoint endpoint = new IdenmpotentMethodJmsListenerEndpoint(jmsListener, delegateJmsMessageConsumer);
 		
 		endpoint.setBean(bean);
 		endpoint.setMethod(invocableMethod);

@@ -5,29 +5,34 @@ import java.lang.reflect.Method;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.onetwo.boot.module.jms.IdenmpotentMethodJmsListenerEndpoint.ConsumerAction;
 import org.onetwo.boot.module.jms.annotation.IdempotentListener;
 import org.onetwo.boot.mq.IdempotentType;
 import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.exception.BaseException;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 public class JmsConsumeContext {
 	
-	final Message message;
-	final Method listenMethod;
-	final Object consumer;
-	final IdempotentListener listener;
-	final String clientId;
+	private final Message message;
+	private final Method listenMethod;
+	private final Object consumer;
 	
-	public JmsConsumeContext(String clientId, Message message, Method listenMethod, Object consumer, IdempotentListener listener) {
+	private final IdempotentListener listener;
+	
+	private final ConsumerAction consumeAction;
+	
+	@Builder
+	public JmsConsumeContext(Message message, Method listenMethod, Object consumer, IdempotentListener listener, ConsumerAction consumeAction) {
 		super();
 		this.message = message;
 		this.listenMethod = listenMethod;
-		this.listener = listener;
 		this.consumer = consumer;
-		this.clientId = clientId;
+		this.listener = listener;
+		this.consumeAction = consumeAction;
 	}
 	
 	public String getConsumeGroup() {
@@ -81,16 +86,13 @@ public class JmsConsumeContext {
 		return IdempotentType.DATABASE == getIdempotentType();
 	}
 	
-	public String getClientId() {
-		return clientId;
-	}
-	
 	public String getDestination() {
 		return listener.destination();
 	}
 	
-	Object getConsumer() {
+	public Object getConsumer() {
 		return consumer;
 	}
+	
 	
 }

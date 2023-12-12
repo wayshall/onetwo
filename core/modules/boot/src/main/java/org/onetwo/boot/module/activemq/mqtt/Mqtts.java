@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import org.onetwo.boot.module.activemq.mqtt.data.ConvertedMessage;
 import org.onetwo.boot.module.activemq.mqtt.data.LinkedMapMessage;
+import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.utils.StringUtils;
@@ -23,7 +24,8 @@ final public class Mqtts {
 	
 	public static final String OUTBOUND_CHANNEL = "mqttOutboundChannel";
 //	public static final String INBOUND_CHANNEL = "mqttInboundChannel";
-	private static final JsonMapper typingJsonMapper = JsonMapper.ignoreNull().enableTyping();
+//	private static final JsonMapper typingJsonMapper = JsonMapper.ignoreNull().enableTyping();
+	private static final JsonMapper typingJsonMapper = MQUtils.TYPING_JSON_MAPPER;
 	private static final JsonMapper jsonMapper = JsonMapper.ignoreNull();
 	
 	public static String getTopic(Message<?> message) {

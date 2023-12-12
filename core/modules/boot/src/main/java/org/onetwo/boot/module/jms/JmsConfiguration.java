@@ -14,12 +14,6 @@ import org.springframework.context.annotation.Configuration;
 public class JmsConfiguration {
 	
 	@Bean
-//	@ConditionalOnProperty(name = JmsProperties.CONVERTER_KEY, havingValue = "jackson2", matchIfMissing = false)
-	static MessageConverterConfigurater messageConverterConfigurater() {
-		return new MessageConverterConfigurater();
-	}
-	
-	@Bean
 	public IdenmpotentJmsListenerConfigurer idenmpotentJmsListenerConfigurer() {
 		return new IdenmpotentJmsListenerConfigurer();
 	}
@@ -73,5 +67,26 @@ public class JmsConfiguration {
 //		};
 //	}
 	
+	
+//	@Bean
+////	@ConditionalOnProperty(name = JmsProperties.CONVERTER_KEY, havingValue = "jackson2", matchIfMissing = false)
+//	static MessageConverterConfigurater messageConverterConfigurater() {
+//		return new MessageConverterConfigurater();
+//	}
+//	
+//	static public class MessageConverterConfigurater implements BeanPostProcessor {
+//
+//		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+//			if (bean instanceof JmsTemplate) {
+//				MappingJackson2MessageConverter jackson = new MappingJackson2MessageConverter();
+//				jackson.setEncoding(MappingJackson2MessageConverter.DEFAULT_ENCODING);
+//				JmsTemplate jmsTemplate = (JmsTemplate) bean;
+////				jmsTemplate.setMessageConverter(jackson);
+//			} else if (bean instanceof MessageHandlerMethodFactory) {
+//			}
+//			return bean;
+//		}
+//
+//	}
 
 }

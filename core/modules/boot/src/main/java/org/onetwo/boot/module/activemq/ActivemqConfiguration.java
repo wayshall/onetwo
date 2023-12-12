@@ -2,7 +2,6 @@ package org.onetwo.boot.module.activemq;
 
 import javax.jms.ConnectionFactory;
 
-import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.module.activemq.ActivemqProperties.TopicProps;
 import org.onetwo.boot.module.activemq.artemis.ActiveMQArtemisConfiguration;
 import org.onetwo.boot.module.activemq.classic.ActiveMQClassicConfiguration;
@@ -10,6 +9,7 @@ import org.onetwo.boot.module.jms.JmsConfiguration;
 import org.onetwo.boot.module.jms.JmsProducerService;
 import org.onetwo.boot.module.jms.JmsUtils.ContainerFactorys;
 import org.onetwo.boot.mq.MQTransactionalConfiguration;
+import org.onetwo.boot.mq.MQUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -23,6 +23,7 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
+import org.springframework.jms.support.converter.MessageType;
 
 /**
  * JmsAutoConfiguration
@@ -108,13 +109,16 @@ public class ActivemqConfiguration implements InitializingBean {
 	}
 	
 	@Configuration
-	@ConditionalOnProperty(name = ActivemqProperties.CONVERTER_KEY, havingValue = "jackson2", matchIfMissing = false)
+	@ConditionalOnProperty(name = ActivemqProperties.CONVERTER_KEY, havingValue = MQUtils.CONVERTER_JACKSON2, matchIfMissing = false)
 	static public class JacksonMessageConverterConfiguration {
 		
 		@Bean
 		public MessageConverter jackson2MessageConverter() {
 			MappingJackson2MessageConverter jackson = new MappingJackson2MessageConverter();
-			jackson.setTypeIdPropertyName("__" + BootJFishConfig.ZIFISH_CONFIG_PREFIX + "_jackson2_type__");
+			jackson.setTargetType(MessageType.TEXT);
+			jackson.setEncoding(MappingJackson2MessageConverter.DEFAULT_ENCODING); // for MessageType.BYTES
+			jackson.setTypeIdPropertyName(MQUtils.TYPE_ID_PROPERTY_NAME);
+			jackson.setObjectMapper(MQUtils.TYPING_JSON_MAPPER.getObjectMapper());
 			return jackson;
 		}
 	}
