@@ -17,4 +17,10 @@ public class ActiveMQArtemisConfiguration {
 		return new ArtemisDestinationConverter();
 	}
 	
+	@Bean
+	@ConditionalOnProperty(value="spring.artemis.mode", havingValue = "embedded")
+	public ArtemisEmbeddedConfigurationCustomizer artemisEmbeddedConfigurationCustomizer() {
+		return new ArtemisEmbeddedConfigurationCustomizer();
+	}
+	
 }
