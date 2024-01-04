@@ -3,7 +3,7 @@ package org.onetwo.common.spring.validator;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.utils.JFishProperty;

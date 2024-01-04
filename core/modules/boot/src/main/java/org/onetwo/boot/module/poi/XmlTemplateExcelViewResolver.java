@@ -2,7 +2,7 @@ package org.onetwo.boot.module.poi;
 
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.plugin.core.PluginManager;

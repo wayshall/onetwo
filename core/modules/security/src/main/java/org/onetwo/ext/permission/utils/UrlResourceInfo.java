@@ -1,7 +1,7 @@
 package org.onetwo.ext.permission.utils;
 
 import org.onetwo.common.utils.StringUtils;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

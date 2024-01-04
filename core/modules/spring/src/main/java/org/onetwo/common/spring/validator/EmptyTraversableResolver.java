@@ -2,8 +2,8 @@ package org.onetwo.common.spring.validator;
 
 import java.lang.annotation.ElementType;
 
-import javax.validation.Path;
-import javax.validation.TraversableResolver;
+import jakarta.validation.Path;
+import jakarta.validation.TraversableResolver;
 
 public class EmptyTraversableResolver implements TraversableResolver {
 

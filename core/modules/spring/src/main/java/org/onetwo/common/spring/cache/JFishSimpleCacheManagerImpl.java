@@ -39,11 +39,17 @@ public class JFishSimpleCacheManagerImpl extends AbstractCacheManager implements
 		return cache;
 	}
 	
-	public Cache addCacheByName(String name){
+	@Override
+	protected Cache getMissingCache(String name) {
 		Cache cache = createCache(name);
-		addCache(cache);
 		return cache;
 	}
+	
+//	public Cache addCacheByName(String name){
+//		Cache cache = createCache(name);
+//		addCache(cache);
+//		return cache;
+//	}
 	
 	@Override
 	public SimpleCacheWrapper getSimpleCacheWrapper(String name){

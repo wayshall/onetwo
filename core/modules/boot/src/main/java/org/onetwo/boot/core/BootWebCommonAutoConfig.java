@@ -2,8 +2,8 @@ package org.onetwo.boot.core;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.Filter;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.Filter;
 
 import org.onetwo.boot.apiclient.ApiClientConfiguration;
 import org.onetwo.boot.core.cleanup.UploadCleanupTimer;

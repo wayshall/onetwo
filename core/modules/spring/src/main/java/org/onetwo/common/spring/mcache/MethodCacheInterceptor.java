@@ -1,6 +1,6 @@
 package org.onetwo.common.spring.mcache;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

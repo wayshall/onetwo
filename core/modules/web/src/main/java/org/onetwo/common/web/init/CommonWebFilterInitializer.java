@@ -3,11 +3,11 @@ package org.onetwo.common.web.init;
 import java.util.EnumSet;
 import java.util.Optional;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration.Dynamic;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration.Dynamic;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.web.filter.BaseInitFilter;

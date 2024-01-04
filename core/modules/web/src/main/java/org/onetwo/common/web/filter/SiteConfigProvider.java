@@ -1,6 +1,6 @@
 package org.onetwo.common.web.filter;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 public interface SiteConfigProvider<T extends SiteConfig> {
 

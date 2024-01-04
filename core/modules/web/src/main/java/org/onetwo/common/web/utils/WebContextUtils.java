@@ -1,7 +1,7 @@
 package org.onetwo.common.web.utils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.web.filter.RequestInfo;

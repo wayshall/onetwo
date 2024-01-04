@@ -7,7 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.reflect.ReflectUtils;

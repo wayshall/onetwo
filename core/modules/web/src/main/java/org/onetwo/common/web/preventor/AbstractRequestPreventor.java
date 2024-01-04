@@ -2,9 +2,9 @@ package org.onetwo.common.web.preventor;
 
 import java.lang.reflect.Method;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -52,7 +52,7 @@ abstract public class AbstractRequestPreventor implements RequestPreventor {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.onetwo.common.web.csrf.CsrfPreventor#validateToken(java.lang.Object, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 * @see org.onetwo.common.web.csrf.CsrfPreventor#validateToken(java.lang.Object, jakarta.servlet.http.HttpServletRequest, jakarta.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	public void validateToken(Method controller, HttpServletRequest request, HttpServletResponse response){
@@ -103,14 +103,14 @@ abstract public class AbstractRequestPreventor implements RequestPreventor {
 		return fieldOfTokenFieldName;
 	}*/
 	/* (non-Javadoc)
-	 * @see org.onetwo.common.web.csrf.CsrfPreventor#generateToken(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 * @see org.onetwo.common.web.csrf.CsrfPreventor#generateToken(jakarta.servlet.http.HttpServletRequest, jakarta.servlet.http.HttpServletResponse)
 	 */
 //	@Override
 //	public Token generateToken(HttpServletRequest request, HttpServletResponse response){
 //		return generateToken("", request, response);
 //	}
 	/* (non-Javadoc)
-	 * @see org.onetwo.common.web.csrf.CsrfPreventor#generateToken(java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 * @see org.onetwo.common.web.csrf.CsrfPreventor#generateToken(java.lang.String, jakarta.servlet.http.HttpServletRequest, jakarta.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	public RequestToken generateToken(HttpServletRequest request, HttpServletResponse response){

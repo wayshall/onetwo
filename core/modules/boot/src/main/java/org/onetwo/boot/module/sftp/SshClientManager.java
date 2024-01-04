@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.module.sftp.SftpProperties.UserAuthTypes;

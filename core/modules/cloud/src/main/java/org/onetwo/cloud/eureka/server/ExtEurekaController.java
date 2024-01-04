@@ -3,8 +3,6 @@ package org.onetwo.cloud.eureka.server;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.onetwo.common.data.AbstractDataResult.StringDataResult;
 import org.onetwo.common.spring.rest.ExtRestTemplate;
 import org.onetwo.common.spring.rest.RestUtils;
@@ -14,6 +12,7 @@ import org.onetwo.common.web.utils.WebHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.eureka.server.EurekaController;
+import org.springframework.cloud.netflix.eureka.server.EurekaProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,6 +26,7 @@ import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -59,8 +59,8 @@ public class ExtEurekaController extends EurekaController {
 	
 	private ExtRestTemplate restTemplate = new ExtRestTemplate();
 	
-	public ExtEurekaController(ApplicationInfoManager applicationInfoManager) {
-		super(applicationInfoManager);
+	public ExtEurekaController(ApplicationInfoManager applicationInfoManager, EurekaProperties eurekaProperties) {
+		super(applicationInfoManager, eurekaProperties);
 	}
 
 	@RequestMapping(path="admin", method = RequestMethod.GET)

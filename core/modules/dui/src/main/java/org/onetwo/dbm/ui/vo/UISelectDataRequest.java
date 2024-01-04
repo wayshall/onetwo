@@ -1,6 +1,6 @@
 package org.onetwo.dbm.ui.vo;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.onetwo.common.utils.StringUtils;
 

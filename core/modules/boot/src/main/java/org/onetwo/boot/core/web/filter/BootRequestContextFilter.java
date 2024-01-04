@@ -1,7 +1,7 @@
 package org.onetwo.boot.core.web.filter;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.utils.PostfixMatcher;
 import org.onetwo.common.web.utils.RequestUtils;

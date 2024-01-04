@@ -14,11 +14,11 @@ import lombok.Data;
 public class FeignTargetContext<T> {
 	private FeignClientFactoryBean feignClientfactory;
 	private Feign.Builder feign;
-	private FeignContext context;
+	private FeignClientFactory context;
 	private Target.HardCodedTarget<T> hardeCodetarget;
 	private Targeter cloudTargeter;
 	
-	public FeignTargetContext(FeignClientFactoryBean feignClientfactory, Builder feign, FeignContext context,
+	public FeignTargetContext(FeignClientFactoryBean feignClientfactory, Builder feign, FeignClientFactory context,
 			HardCodedTarget<T> hardeCodetarget, Targeter cloudTargeter) {
 		super();
 		this.feignClientfactory = feignClientfactory;

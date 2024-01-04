@@ -21,7 +21,7 @@ import org.onetwo.common.spring.copier.CopyUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Setter;

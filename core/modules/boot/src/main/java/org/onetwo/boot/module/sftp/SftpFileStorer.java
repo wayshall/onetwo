@@ -12,7 +12,7 @@ import org.onetwo.common.file.SimpleFileStorer.SimpleStoreFilePathStrategy;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author weishao zeng

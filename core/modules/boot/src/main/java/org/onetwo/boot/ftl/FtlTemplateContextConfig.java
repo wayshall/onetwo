@@ -1,6 +1,6 @@
 package org.onetwo.boot.ftl;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.spring.ftl.DefaultTemplateParser;

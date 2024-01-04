@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.onetwo.common.utils.StringUtils;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 
 @SuppressWarnings({ "serial"})

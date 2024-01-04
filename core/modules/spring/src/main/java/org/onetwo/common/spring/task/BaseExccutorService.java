@@ -9,7 +9,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author weishao zeng

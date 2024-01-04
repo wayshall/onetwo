@@ -16,7 +16,7 @@ import org.elasticsearch.search.suggest.phrase.PhraseSuggestionBuilder;
 import org.elasticsearch.search.suggest.term.TermSuggestionBuilder;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import com.google.common.collect.Lists;
 

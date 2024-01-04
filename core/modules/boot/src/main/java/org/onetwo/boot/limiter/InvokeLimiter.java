@@ -3,7 +3,7 @@ package org.onetwo.boot.limiter;
 import org.onetwo.boot.limiter.InvokeContext.InvokeType;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author wayshall

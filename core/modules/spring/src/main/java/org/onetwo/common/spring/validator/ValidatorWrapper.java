@@ -1,9 +1,9 @@
 package org.onetwo.common.spring.validator;
 
-import javax.validation.ValidationException;
-import javax.validation.Validator;
+import jakarta.validation.ValidationException;
+import jakarta.validation.Validator;
 
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 

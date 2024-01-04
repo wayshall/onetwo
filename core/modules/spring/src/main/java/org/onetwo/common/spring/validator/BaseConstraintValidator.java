@@ -2,7 +2,7 @@ package org.onetwo.common.spring.validator;
 
 import java.util.Map;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;

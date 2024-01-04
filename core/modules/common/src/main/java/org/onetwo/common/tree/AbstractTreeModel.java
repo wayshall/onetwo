@@ -4,17 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.onetwo.common.utils.Assert;
 
 @SuppressWarnings({ "unchecked", "serial" })
-@XmlType(name="TreeModel")
-@XmlAccessorType(XmlAccessType.FIELD)
 abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implements Serializable, TreeModel<T> {
  
 	protected Object id;

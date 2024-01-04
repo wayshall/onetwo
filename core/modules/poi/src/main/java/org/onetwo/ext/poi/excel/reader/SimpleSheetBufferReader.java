@@ -3,7 +3,7 @@ package org.onetwo.ext.poi.excel.reader;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.ext.poi.excel.exception.ExcelException;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 public class SimpleSheetBufferReader implements ExcelBufferReader<Row> {
 	

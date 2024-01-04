@@ -2,7 +2,7 @@ package org.onetwo.boot.module.oauth2.clientdetails;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.springframework.beans.factory.annotation.Autowired;

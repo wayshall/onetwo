@@ -2,7 +2,7 @@ package org.onetwo.boot.core.web.mvc.log;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.web.utils.WebContextUtils;
 import org.onetwo.common.web.utils.WebHolder;

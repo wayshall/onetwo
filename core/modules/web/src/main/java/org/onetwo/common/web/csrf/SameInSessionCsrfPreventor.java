@@ -2,8 +2,8 @@ package org.onetwo.common.web.csrf;
 
 import java.lang.reflect.Method;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.web.preventor.PreventRequestInfoManager;
 import org.onetwo.common.web.preventor.RequestToken;

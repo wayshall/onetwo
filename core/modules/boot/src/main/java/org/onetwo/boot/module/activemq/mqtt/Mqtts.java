@@ -10,7 +10,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author weishao zeng

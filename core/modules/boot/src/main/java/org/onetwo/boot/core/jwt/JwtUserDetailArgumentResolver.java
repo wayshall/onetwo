@@ -2,7 +2,7 @@ package org.onetwo.boot.core.jwt;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;

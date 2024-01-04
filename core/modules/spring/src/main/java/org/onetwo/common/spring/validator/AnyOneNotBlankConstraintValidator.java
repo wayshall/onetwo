@@ -2,8 +2,8 @@ package org.onetwo.common.spring.validator;
 
 import java.util.stream.Stream;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.validator.annotation.AnyOneNotBlank;

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ValidationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ValidationException;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.annotation.FieldName;

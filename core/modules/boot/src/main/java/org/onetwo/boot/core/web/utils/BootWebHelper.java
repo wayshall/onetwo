@@ -1,6 +1,6 @@
 package org.onetwo.boot.core.web.utils;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinder.ErrorMessage;
 import org.onetwo.common.exception.BaseException;

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.netflix.eureka.server.EurekaController;
+import org.springframework.cloud.netflix.eureka.server.EurekaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +21,8 @@ public class ExtEurekaServerConfiguration {
 
 	@Autowired
 	private ApplicationInfoManager applicationInfoManager;
+	@Autowired
+	private EurekaProperties eurekaProperties;
 
 	/****
 	 * eureka.dashboard.enabled: false
@@ -30,7 +33,7 @@ public class ExtEurekaServerConfiguration {
 //	@ConditionalOnProperty(prefix = "eureka.dashboard", name = "admin", matchIfMissing=true)
 	@ConditionalOnMissingBean(EurekaController.class)
 	public ExtEurekaController eurekaController() {
-		return new ExtEurekaController(this.applicationInfoManager);
+		return new ExtEurekaController(this.applicationInfoManager, eurekaProperties);
 	}
 	
 	public ExtEurekaServerConfiguration(){

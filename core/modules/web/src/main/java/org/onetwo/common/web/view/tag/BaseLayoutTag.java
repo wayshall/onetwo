@@ -1,7 +1,7 @@
 package org.onetwo.common.web.view.tag;
 
-import javax.servlet.jsp.tagext.BodyContent;
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import jakarta.servlet.jsp.tagext.BodyContent;
+import jakarta.servlet.jsp.tagext.BodyTagSupport;
 
 @SuppressWarnings("serial")
 public class BaseLayoutTag extends BodyTagSupport {

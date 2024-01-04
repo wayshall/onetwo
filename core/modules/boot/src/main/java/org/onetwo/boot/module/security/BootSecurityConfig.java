@@ -1,6 +1,6 @@
 package org.onetwo.boot.module.security;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;

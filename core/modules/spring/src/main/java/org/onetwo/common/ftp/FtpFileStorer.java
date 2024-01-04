@@ -8,7 +8,7 @@ import org.onetwo.common.file.SimpleFileStorer;
 import org.onetwo.common.file.StoringFileContext;
 import org.onetwo.common.ftp.FtpClientManager.FtpConfig;
 import org.onetwo.common.ftp.FtpClientManager.LoginParam;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 public class FtpFileStorer extends SimpleFileStorer  {
 	

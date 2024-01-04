@@ -1,6 +1,6 @@
 package org.onetwo.common.web.utils;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 abstract public class RequestTypeUtils {
 

@@ -1,6 +1,6 @@
 package org.onetwo.common.web.asyn;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.data.Result;
 import org.onetwo.common.exception.BaseException;

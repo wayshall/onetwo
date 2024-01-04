@@ -5,7 +5,7 @@ import net.jodah.typetools.TypeResolver;
 import org.onetwo.common.convert.Types;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class IntStringValueToEnumConverterFactory implements ConverterFactory<String, Enum> {

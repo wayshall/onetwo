@@ -7,7 +7,7 @@ import java.util.Map;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.util.ReflectionUtils;
 
 public class SimpleBeanCopier {

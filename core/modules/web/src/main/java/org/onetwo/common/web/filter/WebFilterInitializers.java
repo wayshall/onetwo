@@ -1,6 +1,6 @@
 package org.onetwo.common.web.filter;
 
-import javax.servlet.FilterConfig;
+import jakarta.servlet.FilterConfig;
 
 public interface WebFilterInitializers {
 

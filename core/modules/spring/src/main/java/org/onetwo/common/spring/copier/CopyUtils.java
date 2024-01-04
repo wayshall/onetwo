@@ -29,7 +29,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 @SuppressWarnings("unchecked")
 public class CopyUtils {

@@ -13,7 +13,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /****
  * web异步处理，如果容器不支持异步，web页面提交时可以提交到一个iframe上

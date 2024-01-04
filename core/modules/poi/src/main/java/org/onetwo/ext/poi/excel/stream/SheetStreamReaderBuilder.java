@@ -20,7 +20,7 @@ import org.onetwo.common.date.Dates;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.utils.ExcelUtils;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author weishao zeng

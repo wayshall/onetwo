@@ -7,7 +7,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.ext.poi.excel.stream.SheetStreamReaderBuilder.SheetData;
 import org.onetwo.ext.poi.excel.stream.SheetStreamReaderBuilder.SheetStreamReader;
 import org.onetwo.ext.poi.utils.ExcelUtils;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author weishao zeng

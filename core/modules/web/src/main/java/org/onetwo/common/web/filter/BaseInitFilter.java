@@ -3,14 +3,14 @@ package org.onetwo.common.web.filter;
 import java.io.IOException;
 import java.util.Locale;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.profiling.TimeProfileStack;
@@ -19,7 +19,7 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebLocaleUtils;
 import org.onetwo.common.web.xss.XssPreventRequestWrapper;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /****
  * 自定义的过滤器

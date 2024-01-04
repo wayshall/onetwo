@@ -61,7 +61,7 @@ public class RequestContextData {
 							Class<?> responseType, Object[] methodArgs, ApiClientMethod invokeMethod, 
 							MethodInvocation invocation, int maxRetryCount, String baseURL, String apiPath) {
 		super();
-		this.httpMethod = HttpMethod.resolve(httpMethod);
+		this.httpMethod = HttpMethod.valueOf(httpMethod);
 		this.queryParameters = queryParameters;
 		if (uriVariables==null) {
 			this.uriVariables = queryParameters;

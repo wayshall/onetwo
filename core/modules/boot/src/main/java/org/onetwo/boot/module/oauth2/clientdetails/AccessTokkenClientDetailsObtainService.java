@@ -2,7 +2,7 @@ package org.onetwo.boot.module.oauth2.clientdetails;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.springframework.beans.factory.InitializingBean;
@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * 这个解释器只负责解释出clientDetail，不做任何验证检查，这些应该在网关层做

@@ -5,7 +5,7 @@
  */
 package org.onetwo.common.spring.test;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.junit.Before;

@@ -2,10 +2,10 @@ package org.onetwo.boot.module.oauth2.ssoclient.filter;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.module.oauth2.ssoclient.event.AccessTokenObtainedEvent;
 import org.onetwo.common.exception.BaseException;

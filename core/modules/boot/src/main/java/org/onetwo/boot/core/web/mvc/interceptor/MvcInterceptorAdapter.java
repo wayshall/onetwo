@@ -1,7 +1,7 @@
 package org.onetwo.boot.core.web.mvc.interceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;

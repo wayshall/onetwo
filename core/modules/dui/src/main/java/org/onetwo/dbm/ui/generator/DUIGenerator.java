@@ -27,7 +27,7 @@ import org.onetwo.dbm.jpa.BaseEntity;
 import org.onetwo.dbm.ui.exception.DbmUIException;
 import org.onetwo.dbm.ui.meta.DUIEntityMeta;
 import org.onetwo.dbm.ui.spi.DUIMetaManager;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

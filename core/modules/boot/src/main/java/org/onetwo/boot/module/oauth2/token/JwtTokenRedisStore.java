@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * 基于jwt，把tokenid和jwt token映射保存到redis

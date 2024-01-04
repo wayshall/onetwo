@@ -4,7 +4,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.md.Hashs;
 import org.onetwo.common.md.MessageDigestHasher;
 import org.slf4j.Logger;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author weishao zeng

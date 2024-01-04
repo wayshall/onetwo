@@ -2,7 +2,7 @@ package org.onetwo.ext.permission.service.impl;
 
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.onetwo.common.tree.TreeBuilder;
 import org.onetwo.common.tree.TreeModel;

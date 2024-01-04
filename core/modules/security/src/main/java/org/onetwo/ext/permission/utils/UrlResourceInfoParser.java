@@ -8,7 +8,7 @@ import org.onetwo.common.expr.SimpleExpression;
 import org.onetwo.common.expr.ValueProvider;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.StringUtils;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

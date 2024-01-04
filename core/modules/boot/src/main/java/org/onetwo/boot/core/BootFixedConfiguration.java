@@ -3,7 +3,7 @@ package org.onetwo.boot.core;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 
-import javax.servlet.MultipartConfigElement;
+import jakarta.servlet.MultipartConfigElement;
 
 import org.onetwo.boot.core.web.mvc.BootStandardServletMultipartResolver;
 import org.onetwo.common.file.FileUtils;

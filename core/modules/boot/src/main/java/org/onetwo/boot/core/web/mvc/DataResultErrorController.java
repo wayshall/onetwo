@@ -3,7 +3,7 @@ package org.onetwo.boot.core.web.mvc;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.reflect.ReflectUtils;

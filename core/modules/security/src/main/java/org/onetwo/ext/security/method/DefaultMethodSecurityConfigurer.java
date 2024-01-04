@@ -27,7 +27,6 @@ import org.springframework.security.config.annotation.authentication.configurers
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer.UserDetailsBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -43,7 +42,9 @@ import com.google.common.collect.Lists;
 
 import lombok.Getter;
 
-public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapter {
+public class DefaultMethodSecurityConfigurer 
+//extends WebSecurityConfigurerAdapter
+{
 //	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Getter
@@ -83,15 +84,15 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	private List<AuthenticationProvider> authenticationProviders;
 	
 
-    @Override
+//    @Override
     public void configure(WebSecurity web) throws Exception {
 //        web.ignoring().antMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
     	//= new DefaultSecurityFilterChain(ignoredRequest) see: WebSecurity#performBuild
     	if(securityConfig.isIgnoringDefautStaticPaths()){
-    		web.ignoring().antMatchers("/webjars/**", "/images/**", "/static/**");
+//    		web.ignoring().antMatchers("/webjars/**", "/images/**", "/static/**");
     	}
     	if(!LangUtils.isEmpty(securityConfig.getIgnoringUrls())){
-    		web.ignoring().antMatchers(securityConfig.getIgnoringUrls());
+//    		web.ignoring().antMatchers(securityConfig.getIgnoringUrls());
     	}
     	web.debug(securityConfig.isDebug()); 
     	
@@ -107,7 +108,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
     }
     
 	@SuppressWarnings("rawtypes")
-	@Override
+//	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		if(userDetailsService!=null){
 			auth.userDetailsService(userDetailsService)
@@ -141,7 +142,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 		}
 	}
 
-	@Override
+//	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		configAuthenticationProviders(http);
 		
@@ -188,7 +189,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 			return ;
 		}
 		if(ArrayUtils.isNotEmpty(securityConfig.getCsrf().getIgnoringPaths())){
-			csrf.ignoringAntMatchers(securityConfig.getCsrf().getIgnoringPaths());
+//			csrf.ignoringAntMatchers(securityConfig.getCsrf().getIgnoringPaths());
 		}
 		if(ArrayUtils.isNotEmpty(securityConfig.getCsrf().getRequirePaths())){
 			csrf.requireCsrfProtectionMatcher(MatcherUtils.matchAntPaths(securityConfig.getCsrf().getRequirePaths()));
@@ -260,7 +261,7 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 				.frameOptions()
 				.sameOrigin()
 				.xssProtection()
-				.xssProtectionEnabled(true)
+//				.xssProtectionEnabled(true)
 			.and()
 		.and()
 			.exceptionHandling()
@@ -315,13 +316,13 @@ public class DefaultMethodSecurityConfigurer extends WebSecurityConfigurerAdapte
 	public static void configIntercepterUrls(HttpSecurity http, Map<String[], String> intercepterUrls, List<InterceptersConfig> intercepters) throws Exception {
 		if(LangUtils.isNotEmpty(intercepterUrls)){
 			for(Entry<String[], String> entry : intercepterUrls.entrySet()){
-				http.authorizeRequests().antMatchers(entry.getKey()).access(entry.getValue());
+//				http.authorizeRequests().antMatchers(entry.getKey()).access(entry.getValue());
 			}
 		}
 		
 		if(LangUtils.isNotEmpty(intercepters)){
 			for(InterceptersConfig interConfig : intercepters){
-				http.authorizeRequests().antMatchers(interConfig.getPathPatterns()).access(interConfig.getAccess());
+//				http.authorizeRequests().antMatchers(interConfig.getPathPatterns()).access(interConfig.getAccess());
 			}
 		}
 	}

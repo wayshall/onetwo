@@ -44,7 +44,7 @@ import org.springframework.security.oauth2.provider.error.OAuth2ExceptionRendere
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author wayshall
@@ -214,7 +214,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	
 	@Configuration
 	@Order(110)
-	protected class AuthorizationWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+	protected class AuthorizationWebSecurityConfigurerAdapter extends S6WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

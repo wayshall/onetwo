@@ -10,8 +10,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.boot.core.web.mvc.annotation.Interceptor;

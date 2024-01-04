@@ -9,10 +9,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.common.exception.ServiceException;
@@ -22,7 +22,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 abstract public class ResponseUtils {
 

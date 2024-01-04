@@ -34,7 +34,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.cache.Cache;

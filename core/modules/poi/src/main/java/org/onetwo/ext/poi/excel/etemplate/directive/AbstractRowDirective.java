@@ -14,7 +14,7 @@ import org.onetwo.ext.poi.excel.exception.ExcelException;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 abstract public class AbstractRowDirective<T extends AbstractDirectiveModel> implements ETRowDirective {
 

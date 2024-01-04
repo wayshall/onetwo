@@ -4,7 +4,7 @@ package org.onetwo.spring.validator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.Validator;
+import jakarta.validation.Validator;
 
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.validator.ContentChecker;

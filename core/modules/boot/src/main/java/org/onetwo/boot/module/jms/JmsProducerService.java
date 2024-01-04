@@ -16,7 +16,7 @@ import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicat
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsMessagingTemplate;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * JmsAutoConfiguration

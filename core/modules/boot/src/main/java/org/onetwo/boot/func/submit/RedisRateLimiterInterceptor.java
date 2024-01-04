@@ -2,8 +2,8 @@ package org.onetwo.boot.func.submit;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptor;
 import org.onetwo.boot.func.submit.RedisRateLimiter.ActionContext;

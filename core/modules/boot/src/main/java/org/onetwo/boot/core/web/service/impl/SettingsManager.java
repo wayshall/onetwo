@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.convert.Types;

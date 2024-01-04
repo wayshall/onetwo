@@ -24,7 +24,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * 应该是最后一个调用拦截

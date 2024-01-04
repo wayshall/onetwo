@@ -2,7 +2,7 @@ package org.onetwo.common.spring.cache;
 
 import java.util.Arrays;
 
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.util.StringUtils;
 
 /**

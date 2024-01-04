@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.ListExcelDataExtractor;
 import org.onetwo.ext.poi.utils.TableDataExtractor;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DefaultRowMapperWorkbookReader extends DefaultPOIExcelReader implements WorkbookReader {

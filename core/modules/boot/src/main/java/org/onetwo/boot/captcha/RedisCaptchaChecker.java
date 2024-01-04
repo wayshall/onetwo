@@ -4,7 +4,7 @@ import org.onetwo.boot.module.redis.RedisOperationService;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.web.captcha.CaptchaChecker;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author weishao zeng

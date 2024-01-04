@@ -2,14 +2,14 @@ package org.onetwo.common.web.filter;
 
 import java.util.List;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.spring.SpringUtils;
 import org.slf4j.Logger;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

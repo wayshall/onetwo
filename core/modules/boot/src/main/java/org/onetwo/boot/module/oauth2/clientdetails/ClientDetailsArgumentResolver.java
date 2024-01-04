@@ -3,7 +3,7 @@ package org.onetwo.boot.module.oauth2.clientdetails;
 import java.io.Serializable;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.module.oauth2.annotation.OAuth2ClientDetails;
 import org.onetwo.boot.module.oauth2.annotation.OAuth2ClientDetails.TokenNotFoundActions;

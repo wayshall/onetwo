@@ -1,6 +1,6 @@
 package org.onetwo.boot.module.ffmpeg;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootJFishConfig;

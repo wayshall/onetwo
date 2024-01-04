@@ -18,7 +18,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**

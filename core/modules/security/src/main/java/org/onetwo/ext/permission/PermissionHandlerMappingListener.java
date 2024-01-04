@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.exception.BaseException;
@@ -24,7 +24,7 @@ import org.onetwo.ext.security.utils.SecurityConfig.PermConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;

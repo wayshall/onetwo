@@ -10,7 +10,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 public class BaseMethodParameter extends MethodParameter {
 	protected final Parameter parameter;

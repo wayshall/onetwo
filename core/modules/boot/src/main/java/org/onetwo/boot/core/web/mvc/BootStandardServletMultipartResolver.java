@@ -1,6 +1,6 @@
 package org.onetwo.boot.core.web.mvc;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.onetwo.boot.core.web.mvc.exception.UploadFileSizeLimitExceededException;

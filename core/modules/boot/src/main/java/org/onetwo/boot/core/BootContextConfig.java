@@ -1,6 +1,6 @@
 package org.onetwo.boot.core;
 
-import javax.validation.Validator;
+import jakarta.validation.Validator;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
@@ -70,7 +70,7 @@ public class BootContextConfig {
 		@ConditionalOnMissingBean(Validator.class)
 		public Validator validator(@Qualifier(ExceptionMessageAccessor.BEAN_EXCEPTION_MESSAGE) MessageSource messageSource) {
 			Validator validator = null;
-//			if (ClassUtils.isPresent("javax.validation.Validator", getClass().getClassLoader())) {
+//			if (ClassUtils.isPresent("jakarta.validation.Validator", getClass().getClassLoader())) {
 			Class<?> clazz;
 			try {
 				String className = LOCAL_VALIDATOR_CLASS;

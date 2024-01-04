@@ -51,7 +51,9 @@ public class LocalTargeter implements Targeter, ApplicationContextAware, Initial
 		defaultTargeter = new DefaultTargeter();
 	}
 	
-	private <T> T defaultTargeter(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
+//	private <T> T defaultTargeter(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
+	private <T> T defaultTargeter(FeignClientFactoryBean factory, Feign.Builder feign, FeignClientFactory context,
+			Target.HardCodedTarget<T> target) {
 		/*String name = factory.getName();
 		if (RequestUtils.isHttpPath(name)) {
 			factory.setUrl(name);
@@ -69,7 +71,9 @@ public class LocalTargeter implements Targeter, ApplicationContextAware, Initial
 	}
 
 	@Override
-	public <T> T target(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
+//	public <T> T target(FeignClientFactoryBean factory, Feign.Builder feign, FeignContext context, Target.HardCodedTarget<T> target) {
+	public <T> T target(FeignClientFactoryBean factory, Feign.Builder feign, FeignClientFactory context,
+			Target.HardCodedTarget<T> target) {
 		if (!feignProperties.getLocal().isEnabled()) {
 			return defaultTargeter(factory, feign, context, target);
 		}

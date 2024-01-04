@@ -20,7 +20,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.util.ClassUtils;
 
 /****

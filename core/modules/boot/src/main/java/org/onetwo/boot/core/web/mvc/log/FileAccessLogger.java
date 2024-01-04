@@ -11,7 +11,7 @@ import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.event.EventListener;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 public class FileAccessLogger implements InitializingBean {
 

@@ -1,7 +1,7 @@
 package org.onetwo.common.spring.copier;
 
 import org.springframework.beans.BeanWrapper;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.validation.BeanPropertyBindingResult;
 
 @SuppressWarnings("serial")

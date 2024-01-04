@@ -1,6 +1,7 @@
 package org.onetwo.ext.security.config;
 
 import org.onetwo.common.spring.condition.OnMissingBean;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
 import org.onetwo.ext.security.AuthenticationExtractor;
@@ -17,9 +18,7 @@ import org.onetwo.ext.security.utils.UserPasswordEncoder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.util.Assert;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 /****
@@ -27,7 +26,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
  * @author way
  *
  */
-@Configuration
+//@Configuration
 public class SecurityCommonContextConfig implements InitializingBean{
 
 //	abstract public SecurityConfig getSecurityConfig();

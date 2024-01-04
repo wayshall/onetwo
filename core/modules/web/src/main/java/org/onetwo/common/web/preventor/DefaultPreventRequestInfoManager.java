@@ -3,7 +3,7 @@ package org.onetwo.common.web.preventor;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.exception.BaseException;
@@ -43,7 +43,7 @@ public class DefaultPreventRequestInfoManager implements PreventRequestInfoManag
 	private Cache<String, RequestPreventInfo> caches = CacheBuilder.newBuilder().build();
 	private boolean preventRepeateSubmitDefault = false;
 	/* (non-Javadoc)
-	 * @see org.onetwo.common.web.preventor.PreventRequestInfoManager#getRequestPreventInfo(java.lang.reflect.Method, javax.servlet.http.HttpServletRequest)
+	 * @see org.onetwo.common.web.preventor.PreventRequestInfoManager#getRequestPreventInfo(java.lang.reflect.Method, jakarta.servlet.http.HttpServletRequest)
 	 */
 	@Override
 	public RequestPreventInfo getRequestPreventInfo(Method controller, HttpServletRequest request){

@@ -1,6 +1,6 @@
 package org.onetwo.boot.module.security;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.common.web.preventor.DefaultPreventRequestInfoManager;

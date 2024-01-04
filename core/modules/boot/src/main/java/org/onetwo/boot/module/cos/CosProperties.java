@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.region.Region;

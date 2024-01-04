@@ -3,7 +3,7 @@ package org.onetwo.boot.module.oauth2.util;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.module.oauth2.clientdetails.ClientDetails;
 import org.onetwo.boot.module.oauth2.clientdetails.ClientDetailsObtainService;
@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author wayshall

@@ -2,7 +2,7 @@ package org.onetwo.common.web.async;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.LangOps;

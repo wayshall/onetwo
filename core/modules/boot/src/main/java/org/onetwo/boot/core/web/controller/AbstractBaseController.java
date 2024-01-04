@@ -7,10 +7,10 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ValidationException;
+import jakarta.annotation.Resource;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
 import org.onetwo.boot.bugfix.FixWebDataBinder;
@@ -45,7 +45,7 @@ import org.onetwo.ext.security.jwt.JwtUserDetail;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;

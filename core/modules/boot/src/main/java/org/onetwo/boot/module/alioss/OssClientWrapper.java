@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import com.aliyun.oss.ClientConfiguration;
 import com.aliyun.oss.OSSClient;

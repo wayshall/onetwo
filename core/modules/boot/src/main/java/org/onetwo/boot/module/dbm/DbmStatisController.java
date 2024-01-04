@@ -1,6 +1,6 @@
 package org.onetwo.boot.module.dbm;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.controller.AbstractBaseController;
 import org.onetwo.boot.core.web.utils.BootWebUtils;

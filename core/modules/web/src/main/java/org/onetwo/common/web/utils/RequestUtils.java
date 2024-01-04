@@ -5,9 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.ParamUtils;
@@ -272,7 +272,7 @@ public final class RequestUtils {
 	}
 	
 	public static boolean isServlet3(){
-		return ClassUtils.isPresent("javax.servlet.SessionCookieConfig", ClassUtils.getDefaultClassLoader());
+		return ClassUtils.isPresent("jakarta.servlet.SessionCookieConfig", ClassUtils.getDefaultClassLoader());
 	}
 	
 	public static MediaType getAcceptAsMediaType(HttpServletRequest request){

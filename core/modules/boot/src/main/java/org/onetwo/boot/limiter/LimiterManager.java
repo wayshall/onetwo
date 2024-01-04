@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.onetwo.boot.limiter.InvokeContext.InvokeType;
 import org.onetwo.boot.limiter.LimiterCreator.LimiterConfig;
 import org.onetwo.common.utils.LangOps;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 /**
  * @author wayshall

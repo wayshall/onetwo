@@ -3,7 +3,7 @@ package org.onetwo.common.ds;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;

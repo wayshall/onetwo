@@ -2,7 +2,7 @@ package org.onetwo.boot.bugfix;
 
 import java.util.Locale;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

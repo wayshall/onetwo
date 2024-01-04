@@ -6,14 +6,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.onetwo.common.exception.ServiceException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@XmlRootElement
 @JsonIgnoreProperties({"orderBy", "order", "autoCount", "pagination", "first", "prePage", "orderString", "nextPage"})
 public class Page<T> implements Serializable {
 	/**

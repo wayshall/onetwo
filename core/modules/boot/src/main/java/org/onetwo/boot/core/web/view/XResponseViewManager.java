@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.onetwo.boot.core.web.mvc.HandlerMappingListener;
 import org.onetwo.common.data.DataResultWrapper;

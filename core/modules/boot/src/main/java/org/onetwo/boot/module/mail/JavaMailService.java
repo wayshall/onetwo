@@ -2,9 +2,9 @@ package org.onetwo.boot.module.mail;
 
 import java.io.UnsupportedEncodingException;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeUtility;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeUtility;
 
 import org.onetwo.boot.module.mail.SendMailMessage.Attachment;
 import org.onetwo.common.exception.BaseException;

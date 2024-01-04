@@ -32,7 +32,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.integration.redis.util.RedisLockRegistry;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import lombok.Setter;
 

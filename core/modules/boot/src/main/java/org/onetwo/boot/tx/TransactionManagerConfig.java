@@ -1,6 +1,6 @@
 package org.onetwo.boot.tx;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;

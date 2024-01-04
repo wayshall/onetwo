@@ -2,8 +2,8 @@ package org.onetwo.boot.module.session;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.module.session.SessionProperties.SessionStrategies;
 import org.springframework.beans.factory.InitializingBean;
@@ -12,7 +12,7 @@ import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import lombok.Setter;
 

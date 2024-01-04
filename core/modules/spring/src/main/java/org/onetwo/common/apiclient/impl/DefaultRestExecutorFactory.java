@@ -55,7 +55,7 @@ public class DefaultRestExecutorFactory extends RestExecutorFactory {
 		} else if (RestUtils.isHttpComponentPresent()){
 			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 			requestFactory.setConnectTimeout(config.getConnectTimeout());
-			requestFactory.setReadTimeout(config.getReadTimeout());
+			requestFactory.setConnectionRequestTimeout(config.getReadTimeout());
 //			requestFactory.setWriteTimeout(config.getWriteTimeout());
 			return requestFactory;
 		} else {

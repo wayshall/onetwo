@@ -9,7 +9,7 @@ import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

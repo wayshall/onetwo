@@ -1,6 +1,6 @@
 package org.onetwo.ext.security.exception;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.data.Result;
 

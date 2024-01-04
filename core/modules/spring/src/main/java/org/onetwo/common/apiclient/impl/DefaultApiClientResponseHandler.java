@@ -17,7 +17,7 @@ import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.web.client.RestClientException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

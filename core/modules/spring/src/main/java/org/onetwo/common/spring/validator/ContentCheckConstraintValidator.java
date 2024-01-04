@@ -2,8 +2,8 @@ package org.onetwo.common.spring.validator;
 
 import java.util.List;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;

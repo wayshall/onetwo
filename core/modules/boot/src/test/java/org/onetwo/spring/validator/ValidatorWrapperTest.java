@@ -1,7 +1,7 @@
 package org.onetwo.spring.validator;
 
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.junit.Assert;
 import org.junit.Test;

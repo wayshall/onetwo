@@ -7,7 +7,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.spring.copier.CopyUtils;
 import org.onetwo.common.utils.LangUtils;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import com.aliyun.oss.model.ProcessObjectRequest;
 import com.google.common.collect.Maps;

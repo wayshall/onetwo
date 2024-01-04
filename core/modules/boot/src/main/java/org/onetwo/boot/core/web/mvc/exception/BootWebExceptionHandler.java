@@ -2,8 +2,6 @@ package org.onetwo.boot.core.web.mvc.exception;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.service.impl.ExceptionMessageAccessor;
 import org.onetwo.common.data.DataResult;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +22,8 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /***
  * TODO 
@@ -76,7 +77,7 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 	
 	@Override
-	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		ErrorMessage errorMessage = handleException(ex);
 		DataResult<?> result = DataResults.error(errorMessage.getMesage())
 				.code(errorMessage.getCode())

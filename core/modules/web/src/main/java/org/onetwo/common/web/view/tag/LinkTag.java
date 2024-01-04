@@ -1,6 +1,6 @@
 package org.onetwo.common.web.view.tag;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.apache.utils.URLEncoder;

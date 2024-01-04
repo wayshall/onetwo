@@ -17,8 +17,8 @@ public class JFishRefactorTest {
 	public void upgradeVersions(){
 		String baseDir = "/Users/way/mydev/java/odysseus-ai";
 		String dir = baseDir + "/onetwo/core/";
-		String oldVersion = "5.0.0-SNAPSHOT";
-		String newVersion = "5.2.7-SNAPSHOT";
+		String oldVersion = "5.2.7-SNAPSHOT";
+		String newVersion = "6.0.0-SNAPSHOT";
 		
 
 		String dbmPath = baseDir + "/dbm";

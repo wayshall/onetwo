@@ -1,6 +1,6 @@
 package org.onetwo.dbm.ui;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.junit.After;

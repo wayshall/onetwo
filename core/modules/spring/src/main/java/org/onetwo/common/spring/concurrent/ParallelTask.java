@@ -3,7 +3,7 @@ package org.onetwo.common.spring.concurrent;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.slf4j.Logger;

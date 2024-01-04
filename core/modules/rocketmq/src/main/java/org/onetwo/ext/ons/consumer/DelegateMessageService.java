@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;

@@ -4,10 +4,8 @@ package org.onetwo.ext.security.log;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.ext.security.metadata.CodeSecurityConfig;
 import org.onetwo.ext.security.utils.GenericLoginUserDetails;
@@ -17,13 +15,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.util.Assert;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /*****
  * 去掉了记录输入输出的代码，只在异常时记录异常信息。
@@ -31,14 +30,15 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  * @author way
  *
  */
-public class ActionLoggerInterceptor extends HandlerInterceptorAdapter implements HandlerInterceptor, InitializingBean {
+public class ActionLoggerInterceptor implements HandlerInterceptor, InitializingBean {
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private static final String ACTION_REQUEST_KEY = "__ACTION_REQUEST_KEY__";
 
-	@Autowired
-	private FilterSecurityInterceptor filterSecurityInterceptor;
+	@Autowired//(required = false)
+//	private FilterSecurityInterceptor filterSecurityInterceptor;
+	private SecurityMetadataSource securityMetadataSource;
 	
 	@Autowired(required=false)
 	private ActionLogHandler<AdminActionLog> actionLogHandler;
@@ -46,7 +46,7 @@ public class ActionLoggerInterceptor extends HandlerInterceptorAdapter implement
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(filterSecurityInterceptor);
+//		Assert.notNull(securityMetadataSource);
 	}
 	
 
@@ -84,7 +84,8 @@ public class ActionLoggerInterceptor extends HandlerInterceptorAdapter implement
 		AdminActionLog log = new AdminActionLog();
 		
 		FilterInvocation fi = new FilterInvocation(RequestUtils.getServletPath(request), request.getMethod());
-		Collection<ConfigAttribute> attrs = filterSecurityInterceptor.obtainSecurityMetadataSource().getAttributes(fi);
+//		Collection<ConfigAttribute> attrs = filterSecurityInterceptor.obtainSecurityMetadataSource().getAttributes(fi);
+		Collection<ConfigAttribute> attrs = securityMetadataSource.getAttributes(fi);
 		if(attrs!=null){
 			attrs.stream()
 					.filter(attr->CodeSecurityConfig.class.isInstance(attr))

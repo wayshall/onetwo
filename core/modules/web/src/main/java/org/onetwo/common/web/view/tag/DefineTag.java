@@ -2,7 +2,7 @@ package org.onetwo.common.web.view.tag;
 
 import java.io.IOException;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 @SuppressWarnings("serial")
 public class DefineTag extends BaseLayoutTag {

@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
 import org.onetwo.common.web.utils.ResponseType;
-import org.springframework.util.Assert;
+import org.onetwo.common.utils.Assert;
 import org.springframework.web.servlet.ModelAndView;
 
 
