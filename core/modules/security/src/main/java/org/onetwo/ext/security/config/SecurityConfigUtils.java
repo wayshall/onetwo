@@ -7,15 +7,23 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecurityConfig.InterceptersConfig;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 public class SecurityConfigUtils {
+
+	public static final AuthorizationDecision ALLOW = new AuthorizationDecision(true);
+	public static final AuthorizationDecision DENY = new AuthorizationDecision(false);
 	
-	public static void checkAndConfigIntercepterUrls(HttpSecurity http, SecurityConfig securityConfig) throws Exception {
+	public static void checkAndConfigIntercepterUrls(HttpSecurity http, SecurityConfig securityConfig, ApplicationContext applicationContext) throws Exception {
 		// permitAll
 		if (securityConfig.isCheckAnyUrlpermitAll()) {
 			for(Entry<String[], String> entry : securityConfig.getIntercepterUrls().entrySet()) {
@@ -26,10 +34,11 @@ public class SecurityConfigUtils {
 				}
 			}
 		}
-		configIntercepterUrls(http, securityConfig.getIntercepterUrls(), securityConfig.getIntercepters());
+		configIntercepterUrls(http, securityConfig.getIntercepterUrls(), securityConfig.getIntercepters(), applicationContext);
 	}
 
-	public static void configIntercepterUrls(HttpSecurity http, Map<String[], String> intercepterUrls, List<InterceptersConfig> intercepters) throws Exception {
+	@SuppressWarnings("unchecked")
+	public static void configIntercepterUrls(HttpSecurity http, Map<String[], String> intercepterUrls, List<InterceptersConfig> intercepters, ApplicationContext applicationContext) throws Exception {
 		if(LangUtils.isNotEmpty(intercepterUrls)){
 			for(Entry<String[], String> entry : intercepterUrls.entrySet()){
 //				http.authorizeRequests().antMatchers(entry.getKey()).access(entry.getValue());
@@ -43,7 +52,12 @@ public class SecurityConfigUtils {
 			for(InterceptersConfig interConfig : intercepters){
 //				http.authorizeRequests().antMatchers(interConfig.getPathPatterns()).access(interConfig.getAccess());
 				http.authorizeHttpRequests(authz -> {
-					authz.requestMatchers(interConfig.getPathPatterns()).access(accessExpression(interConfig.getAccess()));
+					if (StringUtils.isNotBlank(interConfig.getAuthorizationManager())) {
+						AuthorizationManager<RequestAuthorizationContext> authorizationManager = SpringUtils.getBean(applicationContext, interConfig.getAuthorizationManager(), AuthorizationManager.class);
+						authz.requestMatchers(interConfig.getPathPatterns()).access(authorizationManager);
+					} else {
+						authz.requestMatchers(interConfig.getPathPatterns()).access(accessExpression(interConfig.getAccess()));
+					}
 				});
 			}
 		}

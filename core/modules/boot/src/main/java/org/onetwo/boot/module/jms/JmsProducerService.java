@@ -3,8 +3,8 @@ package org.onetwo.boot.module.jms;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.jms.Destination;
-import javax.websocket.SendResult;
+import jakarta.jms.Destination;
+import jakarta.websocket.SendResult;
 
 import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.ProducerService;

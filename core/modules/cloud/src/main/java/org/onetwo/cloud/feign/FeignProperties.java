@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.onetwo.boot.module.oauth2.util.OAuth2Utils;
 import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -85,7 +84,7 @@ public class FeignProperties {
 			if (StringUtils.isBlank(authorization)) {
 				return authorization;
 			} else {
-				return StringUtils.appendStartWith(authorization, OAuth2Utils.BEARER_TYPE + " ");
+				return StringUtils.appendStartWith(authorization, "Bearer ");
 			}
 		}
 	}

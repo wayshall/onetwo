@@ -342,6 +342,10 @@ final public class SpringUtils {
 	public static <T> T getBean(ApplicationContext appContext, String beanName) {
 		return (T)appContext.getBean(beanName);
 	}
+	
+	public static <T> T getBean(ApplicationContext appContext, String beanName, Class<T> clazz) {
+		return (T)appContext.getBean(beanName, clazz);
+	}
 
 	
 	public static <T> T getHighestOrder(ApplicationContext appContext, Class<T> clazz){

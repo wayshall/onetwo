@@ -3,7 +3,7 @@ package org.onetwo.boot.module.activemq;
 import java.io.File;
 import java.io.IOException;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
 import org.apache.activemq.broker.BrokerService;

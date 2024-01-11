@@ -6,7 +6,6 @@ import java.util.Properties;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.onetwo.boot.module.activemq.ActivemqProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.integration.mqtt.core.ConsumerStopAction;
 
 import com.google.common.collect.Lists;
 
@@ -53,7 +52,7 @@ public class ActiveMQTTProperties {
 	 * 这样，当重新连接的时候，断开期间收到的消息将不会发送给订阅者。
 	 * 如果不想这样，推荐设置为UNSUBSCRIBE_NEVER, UNSUBSCRIBE_NEVER=UNSUBSCRIBE_CLEAN+cleanSession(false)
 	 */
-	ConsumerStopAction consumerStopAction = ConsumerStopAction.UNSUBSCRIBE_CLEAN;
+//	ConsumerStopAction consumerStopAction = ConsumerStopAction.UNSUBSCRIBE_CLEAN;
 	/***
 	 * 
 设置客户端和服务器是否应该记住重启和重新连接时的状态。

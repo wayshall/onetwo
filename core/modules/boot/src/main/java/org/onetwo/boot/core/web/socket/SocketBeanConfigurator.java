@@ -2,7 +2,7 @@ package org.onetwo.boot.core.web.socket;
 
 import java.util.Map;
 
-import javax.websocket.server.ServerEndpointConfig.Configurator;
+import jakarta.websocket.server.ServerEndpointConfig.Configurator;
 
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;

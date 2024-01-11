@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.annotation.PostConstruct;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -17,6 +15,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+
+import jakarta.annotation.PostConstruct;
 
 public class ClassPathTldsLoader  {
 
@@ -46,7 +46,8 @@ public class ClassPathTldsLoader  {
 	
 	@PostConstruct
     public void loadClassPathTlds() {
-		freeMarkerConfigurer.getTaglibFactory().setClasspathTlds(classPathTlds);
+		//TODO: 因为spring boot3 把servlet api迁移到了jakarta，而freemarker没有做对应迁移，不再支持这部分功能
+//		freeMarkerConfigurer.getTaglibFactory().setClasspathTlds(classPathTlds);
     }
 	
 	protected Optional<String> getPath(Resource res){

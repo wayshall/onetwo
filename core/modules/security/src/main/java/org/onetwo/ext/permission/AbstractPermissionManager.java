@@ -11,10 +11,11 @@ import java.util.stream.Collectors;
 
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.parser.MenuInfoParser;
 import org.onetwo.ext.permission.utils.PermissionUtils;
-import org.onetwo.ext.security.metadata.SecurityMetadataSourceBuilder;
+import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
 import org.onetwo.ext.security.utils.SecurityConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.transaction.annotation.Transactional;
-import org.onetwo.common.utils.Assert;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -34,7 +34,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	/*@Resource
 	protected MenuInfoParser<P> menuInfoParser;*/
 	private List<MenuInfoParser<P>> parsers;
-	private SecurityMetadataSourceBuilder securityMetadataSourceBuilder;
+	private JdbcSecurityMetadataSourceBuilder securityMetadataSourceBuilder;
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -222,15 +222,15 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		logger.info("menu data has synchronized to database...");
 	}
 
-	public SecurityMetadataSourceBuilder getSecurityMetadataSourceBuilder() {
-		SecurityMetadataSourceBuilder securityMetadataSourceBuilder = this.securityMetadataSourceBuilder;
+	public JdbcSecurityMetadataSourceBuilder getSecurityMetadataSourceBuilder() {
+		JdbcSecurityMetadataSourceBuilder securityMetadataSourceBuilder = this.securityMetadataSourceBuilder;
 		if (securityMetadataSourceBuilder==null) {
-			securityMetadataSourceBuilder = SpringUtils.getBean(applicationContext, SecurityMetadataSourceBuilder.class);
+			securityMetadataSourceBuilder = SpringUtils.getBean(applicationContext, JdbcSecurityMetadataSourceBuilder.class);
 		}
 		return securityMetadataSourceBuilder;
 	}
 
-	public void setSecurityMetadataSourceBuilder(SecurityMetadataSourceBuilder securityMetadataSourceBuilder) {
+	public void setSecurityMetadataSourceBuilder(JdbcSecurityMetadataSourceBuilder securityMetadataSourceBuilder) {
 		this.securityMetadataSourceBuilder = securityMetadataSourceBuilder;
 	}
 

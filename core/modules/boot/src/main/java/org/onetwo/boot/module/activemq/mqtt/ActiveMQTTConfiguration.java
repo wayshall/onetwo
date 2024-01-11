@@ -8,6 +8,7 @@ import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.MessageConverte
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTProperties.OutBoundClientProps;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,6 @@ import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.messaging.MessageChannel;
-import org.onetwo.common.utils.Assert;
 
 /**
  * @author weishao zeng
@@ -65,7 +65,7 @@ public class ActiveMQTTConfiguration {
 		options.setConnectionTimeout(activeMQTTProperties.getConnectionTimeout());
 		options.setKeepAliveInterval(activeMQTTProperties.getKeepAliveInterval());
 		options.setSSLProperties(activeMQTTProperties.getSsl());
-		clientFactory.setConsumerStopAction(activeMQTTProperties.getConsumerStopAction());
+//		clientFactory.setConsumerStopAction(activeMQTTProperties.getConsumerStopAction());
 		clientFactory.setConnectionOptions(options);
 		
 		return clientFactory;

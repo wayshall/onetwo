@@ -1,6 +1,6 @@
 package org.onetwo.boot.module.jms;
 
-import javax.jms.Destination;
+import jakarta.jms.Destination;
 
 /**
  * @author wayshall

@@ -388,6 +388,7 @@ public class SecurityConfig {
 	public static class InterceptersConfig {
 		String[] pathPatterns;
 		String access;
+		String authorizationManager;
 	}
 
 	@Data

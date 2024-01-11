@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -77,12 +78,14 @@ public class BootWebExceptionHandler extends ResponseEntityExceptionHandler impl
 	}
 	
 	@Override
-	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+	protected ResponseEntity<Object> handleExceptionInternal(
+			Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+//	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		ErrorMessage errorMessage = handleException(ex);
 		DataResult<?> result = DataResults.error(errorMessage.getMesage())
 				.code(errorMessage.getCode())
 				.build();
-		return super.handleExceptionInternal(ex, result, headers, errorMessage.getHttpStatus()==null?status:errorMessage.getHttpStatus(), request);
+		return super.handleExceptionInternal(ex, result, headers, errorMessage.getHttpStatus()==null?statusCode:errorMessage.getHttpStatus(), request);
 	}
 	
 	protected ErrorMessage handleException(Exception ex){

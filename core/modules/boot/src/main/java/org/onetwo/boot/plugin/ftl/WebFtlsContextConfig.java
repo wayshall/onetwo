@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.onetwo.boot.ftl.ClassPathTldsLoader;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.SpringUtils.WithAnnotationBeanData;
 import org.slf4j.Logger;
@@ -60,11 +59,11 @@ public class WebFtlsContextConfig {
 		return configurer;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean(ClassPathTldsLoader.class)
-	public ClassPathTldsLoader classPathTldsLoader(){
-		return new ClassPathTldsLoader();
-	}
+//	@Bean
+//	@ConditionalOnMissingBean(ClassPathTldsLoader.class)
+//	public ClassPathTldsLoader classPathTldsLoader(){
+//		return new ClassPathTldsLoader();
+//	}
 	
 	@Bean
 	public PluginHelperViewTools pluginViewTools(){

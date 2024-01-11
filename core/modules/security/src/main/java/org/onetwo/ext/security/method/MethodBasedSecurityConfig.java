@@ -1,22 +1,23 @@
 package org.onetwo.ext.security.method;
 
-import java.util.List;
-
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.onetwo.ext.permission.MenuInfoParserFactory;
 import org.onetwo.ext.permission.SimplePermission;
-import org.onetwo.ext.security.config.S6MethodWebSecurityConfigurer;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
-import org.onetwo.ext.security.utils.SecurityConfig;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.method.MethodSecurityMetadataSource;
-import org.springframework.security.access.vote.AbstractAccessDecisionManager;
+import org.springframework.context.annotation.Role;
+import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
+
+import io.micrometer.observation.ObservationRegistry;
 
 /*****
  * 此注解必须写在GlobalMethodSecurityConfiguration子类，否则无法起作用
@@ -31,22 +32,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 		securedEnabled=true, // SecuredAnnotationSecurityMetadataSource
 		jsr250Enabled = true // Jsr250MethodSecurityMetadataSource, Jsr250Voter
 )
-@Configuration
-@Import(SecurityCommonContextConfig.class)
+@Import({
+	SecurityCommonContextConfig.class,
+	DefaultMethodSecurityConfigurer.class
+})
+@Configuration(proxyBeanMethods = false)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class MethodBasedSecurityConfig {
-	@Autowired
-	private SecurityConfig securityConfig;
 	
-	/*@Bean
-	public SecurityCommonContextConfig securityCommonContextConfig(){
-		return new SecurityCommonContextConfig();
-	}*/
-
-    @Bean
-    public WebSecurityCustomizer configureWebSecurity() {
-        return new S6MethodWebSecurityConfigurer();
-    }
-
 	@Bean
 	public MenuInfoParserFactory<SimplePermission> menuInfoParserFactory(){
 		MenuInfoParserFactory<SimplePermission> facotry = new MenuInfoParserFactory<>(SimplePermission.class);
@@ -54,39 +47,19 @@ public class MethodBasedSecurityConfig {
 	}
 	
 	@Bean
-	public JFishMethodSecurityMetadataSource jfishMethodSecurityMetadataSource(){
-		return new JFishMethodSecurityMetadataSource();
-	}
-
-
-	/***
-	 * TODO
-	 * 对应的方法决策器
-	 */
-//	@Override
-//	protected AccessDecisionManager accessDecisionManager() {
-//		AccessDecisionManager decisionManager = super.accessDecisionManager();
-////		List<AccessDecisionVoter<? extends Object>> decisionVoters = (List<AccessDecisionVoter<? extends Object>>)ReflectUtils.getFieldValue(decisionManager, "decisionVoters");
-//		AbstractAccessDecisionManager adm = (AbstractAccessDecisionManager) decisionManager;
-//		List<AccessDecisionVoter<? extends Object>> decisionVoters = adm.getDecisionVoters();
-//
-////		decisionVoters.add(new MethodWebExpressionVoter());
-//		decisionVoters.add(new MultiMethodExpressionVoter(securityConfig));
-//		
-//		return decisionManager;
-//	}
-
-	
-	// TODO
-//	@Override
-//	protected MethodSecurityMetadataSource customMethodSecurityMetadataSource() {
-//		return jfishMethodSecurityMetadataSource();
-//	}
-
-	@Bean
-	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
-//		return new DefaultUrlSecurityConfigurer(accessDecisionManager());
-		return new DefaultMethodSecurityConfigurer();
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	static MethodInterceptor byPermissionAuthorizationMethodInterceptor(
+			ObjectProvider<SecurityContextHolderStrategy> strategyProvider,
+			ObjectProvider<ObservationRegistry> registryProvider) {
+		JFishMethodSecurityMetadataSource secured = new JFishMethodSecurityMetadataSource();
+		SecurityContextHolderStrategy strategy = strategyProvider
+			.getIfAvailable(SecurityContextHolder::getContextHolderStrategy);
+		AuthorizationManager<MethodInvocation> manager = new DeferringObservationAuthorizationManagerDelegate<>(
+				registryProvider, secured);
+		AuthorizationManagerBeforeMethodInterceptor interceptor = AuthorizationManagerBeforeMethodInterceptor
+			.secured(manager);
+		interceptor.setSecurityContextHolderStrategy(strategy);
+		return interceptor;
 	}
 	
 }

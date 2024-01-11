@@ -1,30 +1,32 @@
 package org.onetwo.boot.module.security.method;
 
 import org.onetwo.boot.core.config.BootSpringConfig;
-import org.onetwo.boot.module.oauth2.ssoclient.DisabledOauth2SsoCondition;
+//import org.onetwo.boot.module.oauth2.ssoclient.DisabledOauth2SsoCondition;
 import org.onetwo.boot.module.security.config.BootSecurityCommonContextConfig;
+import org.onetwo.ext.security.config.SecurityCommonContextConfig;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
 import org.onetwo.ext.security.method.MethodBasedSecurityConfig;
-import org.onetwo.ext.security.method.RelaodableDelegatingMethodSecurityMetadataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.method.MethodSecurityMetadataSource;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.context.annotation.Role;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 
-@EnableGlobalMethodSecurity(
+@EnableMethodSecurity(
 		prePostEnabled=true,
 		securedEnabled=true, // SecuredAnnotationSecurityMetadataSource
 		jsr250Enabled = true // Jsr250MethodSecurityMetadataSource, Jsr250Voter
 )
-//@Configuration
-@Import({BootSecurityCommonContextConfig.class})
+@Import({
+	SecurityCommonContextConfig.class,
+	DefaultMethodSecurityConfigurer.class,
+	BootSecurityCommonContextConfig.class // add
+	})
+@Configuration(proxyBeanMethods = false)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {
 	
 	/**
@@ -41,30 +43,30 @@ public class BootMethodBasedSecurityConfig extends MethodBasedSecurityConfig {
 	private BootSpringConfig bootSpringConfig;
 	
 
-	@ConditionalOnMissingBean(AccessDecisionManager.class)
-	@Bean
-	public AccessDecisionManager accessDecisionManager(){
-		return super.accessDecisionManager();
-	}
+//	@ConditionalOnMissingBean(AccessDecisionManager.class)
+//	@Bean
+//	public AccessDecisionManager accessDecisionManager(){
+//		return super.accessDecisionManager();
+//	}
+//
+//	@Override
+//	@Bean
+//	public MethodSecurityMetadataSource methodSecurityMetadataSource() {
+//		if(bootSpringConfig.isDev()){
+//			return new RelaodableDelegatingMethodSecurityMetadataSource(super.methodSecurityMetadataSource());
+//		}else{
+//			return super.methodSecurityMetadataSource();
+//		}
+//	}
 
-	@Override
-	@Bean
-	public MethodSecurityMetadataSource methodSecurityMetadataSource() {
-		if(bootSpringConfig.isDev()){
-			return new RelaodableDelegatingMethodSecurityMetadataSource(super.methodSecurityMetadataSource());
-		}else{
-			return super.methodSecurityMetadataSource();
-		}
-	}
 
-
-	@Bean
-	@Order(ACCESS_OVERRIDE_ORDER)
-//	@ConditionalOnMissingBean(DefaultMethodSecurityConfigurer.class)
-	@Conditional(DisabledOauth2SsoCondition.class)
-	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
-		return super.defaultSecurityConfigurer();
-	}
+//	@Bean
+//	@Order(ACCESS_OVERRIDE_ORDER)
+////	@ConditionalOnMissingBean(DefaultMethodSecurityConfigurer.class)
+//	@Conditional(DisabledOauth2SsoCondition.class)
+//	public DefaultMethodSecurityConfigurer defaultSecurityConfigurer(){
+//		return super.defaultSecurityConfigurer();
+//	}
 
 	/*protected RunAsManager runAsManager() {
 		return new RunAsManagerImpl();
