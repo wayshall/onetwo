@@ -1,5 +1,6 @@
 package org.onetwo.ext.security.metadata;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,14 +10,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource.AuthorityResource;
 import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource.SortableAntPathRequestMatcher;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.onetwo.ext.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.springframework.expression.Expression;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
@@ -26,6 +29,7 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +49,10 @@ public class DatabaseFilterInvocationSecurityMetadataSource implements FilterInv
 	private boolean allowManyPermissionMapToOneUrl = true;
 	private SecurityConfig securityConfig;
 
+	public DatabaseFilterInvocationSecurityMetadataSource() {
+		this.requestMap = Maps.newLinkedHashMap();
+	}
+	
 	public DatabaseFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap) {
 		this.requestMap = requestMap;
 	}
@@ -80,7 +88,8 @@ public class DatabaseFilterInvocationSecurityMetadataSource implements FilterInv
 		}
 		
 		if (auths.isEmpty()) {
-			return anyreq
+			ConfigAttribute anyRequest = createAnyRequestConfigAttribute();
+			return Arrays.asList(anyRequest);
 		}
 		
 		return auths;
@@ -93,6 +102,21 @@ public class DatabaseFilterInvocationSecurityMetadataSource implements FilterInv
 	public void setSecurityConfig(SecurityConfig securityConfig) {
 		this.securityConfig = securityConfig;
 	}
+	
+	private ConfigAttribute createAnyRequestConfigAttribute() {
+		String anyRequest = securityConfig.getAnyRequest();
+		//其它未标记管理的功能的默认权限
+		if(StringUtils.isBlank(anyRequest)){
+			return null;
+		}
+//		else if(SexcurityConfig.ANY_REQUEST_NONE.equals(anyRequest)){
+//			return null;
+//		}
+		else{
+			ConfigAttribute attr = createSecurityConfig("anyRequest", anyRequest);
+			return attr;
+		}
+	}
 
 	/***
 	 * 表达式：hasAuthority(auth.getAuthority())
@@ -100,11 +124,14 @@ public class DatabaseFilterInvocationSecurityMetadataSource implements FilterInv
 	 * @param auth
 	 * @return
 	 */
-	protected SecurityConfig createSecurityConfig(AuthorityResource auth){
+	protected ConfigAttribute createSecurityConfig(AuthorityResource auth){
 		return createSecurityConfig(auth.getAuthorityName(), auth.getAuthority());
 	}
 	
-	protected SecurityConfig createSecurityConfig(String authName, String authority){
+	protected ConfigAttribute createSecurityConfig(String authName, String authority){
+		if (StringUtils.isBlank(authority)) {
+			throw new BaseException("authority can not be blank: " + authName);
+		}
 		// auth.getAuthority()=perm.code
 		String exp = SecurityUtils.createSecurityExpression(authority);
 		Expression authorizeExpression = this.securityExpressionHandler.getExpressionParser().parseExpression(exp);

@@ -15,6 +15,7 @@ public class S6MethodWebSecurityConfigurer implements WebSecurityCustomizer {
 	
 	@Override
 	public void customize(WebSecurity web) {
+		web.debug(securityConfig.isDebug());
 //      web.ignoring().antMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
 	  	//= new DefaultSecurityFilterChain(ignoredRequest) see: WebSecurity#performBuild
 	  	if(securityConfig.isIgnoringDefautStaticPaths()){

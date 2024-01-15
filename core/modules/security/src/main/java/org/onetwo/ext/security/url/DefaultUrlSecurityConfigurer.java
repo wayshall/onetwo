@@ -41,30 +41,21 @@ public class DefaultUrlSecurityConfigurer extends DefaultMethodSecurityConfigure
 		
 //		configureCors(http);
 
-		webConfigure(http);
 		checkAndConfigIntercepterUrls(http);
 
+		if (databaseAuthorizationManager!=null) {
+			http.authorizeHttpRequests(authz -> {
+				authz.anyRequest().access(databaseAuthorizationManager);
+			});
+		} else {
+			configureAnyRequest(http);
+		}
+		
 //		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
-		configureAnyRequest(http);
 		
 //		webConfigure(http);
 		defaultConfigure(http);
 	}
 	
 	
-	/****
-	 * 属于url特有的配置部分在这里实现
-	 * @author wayshall
-	 * @param http
-	 * @throws Exception
-	 */
-	protected void webConfigure(HttpSecurity http) throws Exception {
-		if (databaseAuthorizationManager!=null) {
-			http.authorizeHttpRequests(authz -> {
-				authz.anyRequest().access(databaseAuthorizationManager);
-			});
-		}
-//		http.authorizeRequests()
-//			.accessDecisionManager(accessDecisionManager);
-	}
 }

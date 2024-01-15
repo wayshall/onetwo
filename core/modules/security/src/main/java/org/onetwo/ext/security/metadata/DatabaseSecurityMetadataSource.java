@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,6 +22,7 @@ import org.onetwo.ext.permission.api.IPermission;
 import org.onetwo.ext.permission.api.PermissionConfig;
 import org.onetwo.ext.permission.utils.UrlResourceInfo;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
+import org.onetwo.ext.security.utils.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,13 +30,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.object.MappingSqlQuery;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import com.google.common.collect.Maps;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -55,7 +52,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 	private String resourceQuery;
 	private List<String> appCodes;
 	
-	private LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = Maps.newLinkedHashMap();
+//	private LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = Maps.newLinkedHashMap();
 
 
 //	private FilterSecurityInterceptor filterSecurityInterceptor;
@@ -99,6 +96,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 				}
 			}else{
 				this.resourceQuery = "SELECT "
+										+ "perm.name as authority_name, "
 										+ "perm.code as authority, "
 										+ "perm.resources_pattern as resources_pattern, "
 										+ "perm.sort "
@@ -157,7 +155,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 //			this.requestMap.putAll(originRequestMap);
 //		}
 //		DefaultFilterInvocationSecurityMetadataSource fism = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
-		DatabaseFilterInvocationSecurityMetadataSource dfism = new DatabaseFilterInvocationSecurityMetadataSource(requestMap);
+		DatabaseFilterInvocationSecurityMetadataSource dfism = new DatabaseFilterInvocationSecurityMetadataSource();
 		dfism.setSecurityConfig(securityConfig);
 		dfism.buildRequestMap(authorities);
 //		this.filterSecurityInterceptor.setSecurityMetadataSource(fism);
@@ -198,7 +196,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 	
 	public static class ResourceMapping extends MappingSqlQuery<AuthorityResource> implements RowMapper<AuthorityResource> {
 		private UrlResourceInfoParser urlResourceInfoParser = new UrlResourceInfoParser();
-		private boolean hasAuthorityName;
+		private boolean hasAuthorityName = true;
 
 		public ResourceMapping(){
 		}

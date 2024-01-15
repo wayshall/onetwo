@@ -41,6 +41,14 @@
         <artifactId>logback-classic</artifactId>
         <optional>true</optional>
     </dependency>
+    
+    <dependency>
+        <groupId>org.openjdk.nashorn</groupId>
+        <artifactId>nashorn-core</artifactId>
+        <version>15.4</version>
+        <optional>true</optional>
+    </dependency>
+
 	
 	<dependency>
 	  <groupId>org.onetwo4j</groupId>

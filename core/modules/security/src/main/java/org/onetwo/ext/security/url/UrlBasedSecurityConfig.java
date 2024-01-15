@@ -44,6 +44,7 @@ public class UrlBasedSecurityConfig {
 		DatabaseSecurityMetadataSource ms = new DatabaseSecurityMetadataSource();
 		ms.setDataSource(dataSource);
 		ms.setResourceQuery(securityConfig.getRbac().getResourceQuery());
+		ms.setSecurityConfig(securityConfig);
 		
 //		List<? extends PermissionConfig<?>> configs = menuInfoParserFactory.getPermissionConfigList();
 //		if(configs!=null){

@@ -84,7 +84,7 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 //		menu.setMethod(method);
 		method.ifPresent(m->menu.setMethod(m.name()));
 //		String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();
-//		if (entry.getValue().getBeanType().getName().contains("TriggerTaskApplyMgrController")) {
+//		if (entry.getValue().getBeanType().getName().contains("LogErrorMgrController")) {
 //			System.out.println("test");
 //		}
 		String url = null;

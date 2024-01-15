@@ -3,6 +3,7 @@ package org.onetwo.ext.security.url;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+import org.onetwo.common.web.userdetails.UserRoot;
 import org.onetwo.ext.security.config.SecurityConfigUtils;
 import org.onetwo.ext.security.metadata.CodeSecurityConfig;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
@@ -30,6 +31,11 @@ public class DatabaseAuthorizationManager implements AuthorizationManager<Reques
 	public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext context) {
 		Collection<ConfigAttribute> permList = jdbcSecurityMetadataSource.getAttributes(context);
 		if (permList.isEmpty()) {
+			return SecurityConfigUtils.ALLOW;
+		}
+		
+		Object principal = authentication.get().getPrincipal();
+		if (principal instanceof UserRoot user && user.isSystemRootUser()) {
 			return SecurityConfigUtils.ALLOW;
 		}
 		

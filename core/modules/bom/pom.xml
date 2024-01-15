@@ -99,6 +99,12 @@
   
 <dependencyManagement>
   <dependencies>
+      
+    <dependency>
+        <groupId>org.openjdk.nashorn</groupId>
+        <artifactId>nashorn-core</artifactId>
+        <version>15.4</version>
+    </dependency>
   
   <!-- for jdk11 jaxb start 
     <dependency>

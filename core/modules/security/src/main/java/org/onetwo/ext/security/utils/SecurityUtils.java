@@ -66,6 +66,9 @@ final public class SecurityUtils {
 	}
 	
 	protected static boolean isKeyword(String authority){
+		if (StringUtils.isBlank(authority)) {
+			throw new IllegalArgumentException("authority can not be blank!");
+		}
 		String auth = StringUtils.uncapitalize(authority);
 		return KEYWORDS.stream().filter(key->auth.startsWith(key))
 						.findAny().isPresent();
