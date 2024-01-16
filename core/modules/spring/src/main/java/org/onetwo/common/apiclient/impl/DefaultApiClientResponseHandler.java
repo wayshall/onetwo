@@ -50,6 +50,7 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 			if (ptype.getRawType()==ResponseEntity.class) {
 				return responseEntity;
 			}
+			actualResponseType = ptype.getRawType();
 		}
 		Object resposne = responseEntity.getBody();
 		if(responseEntity.getStatusCode().is2xxSuccessful()){
