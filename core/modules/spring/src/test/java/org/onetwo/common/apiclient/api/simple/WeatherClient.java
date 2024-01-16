@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @author wayshall
  * <br/>
  */
-@RestApiClient
+@RestApiClient(url = WeatherClient.BASE_URL)
 public interface WeatherClient {
 	
 	String BASE_URL = "http://www.weather.com.cn/data";

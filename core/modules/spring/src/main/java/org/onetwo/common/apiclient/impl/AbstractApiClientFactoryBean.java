@@ -1,6 +1,7 @@
 package org.onetwo.common.apiclient.impl;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -23,6 +24,7 @@ import org.onetwo.common.spring.aop.MixinableInterfaceCreator;
 import org.onetwo.common.spring.aop.SpringMixinableInterfaceCreator;
 import org.onetwo.common.spring.rest.RestUtils;
 import org.onetwo.common.spring.validator.ValidatorWrapper;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +36,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.onetwo.common.utils.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.cache.Cache;
@@ -131,7 +132,9 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 	public Object getObject() throws Exception {
 		Object apiObject = this.apiObject;
 		if(apiObject==null){
-			Springs.initApplicationIfNotInitialized(applicationContext);
+			if (applicationContext!=null) {
+				Springs.initApplicationIfNotInitialized(applicationContext);
+			}
 			MethodInterceptor apiClient = createApiMethodInterceptor();
 			MixinableInterfaceCreator mixinableCreator = SpringMixinableInterfaceCreator.classNamePostfixMixin(interfaceClass);
 			apiObject = mixinableCreator.createMixinObject(apiClient);
@@ -207,7 +210,8 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			ApiInterceptorChain chain = new ApiInterceptorChain(invokeMethod.getInterceptors(), context, () -> {
 				return this.actualInvoke0(invokeMethod, context);
 			});
-			return chain.invoke();
+			Object res = chain.invoke();
+			return res;
 		}
 		
 		/*protected Object doInvoke2(MethodInvocation invocation, M invokeMethod) {
@@ -273,17 +277,17 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 		
 		protected RequestContextData createRequestContextData(MethodInvocation invocation, Object[] args, M invokeMethod){
 			Map<String, Object> queryParameters = invokeMethod.getQueryStringParameters(args);
-//			Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
+			Map<String, Object> uriVariables = invokeMethod.getUriVariables(args);
 //			uriVariables.putAll(queryParameters);
 			
 			RequestMethod requestMethod = invokeMethod.getRequestMethod();
-			Class<?> responseType = responseHandler.getActualResponseType(invokeMethod);
+			Type responseType = responseHandler.getActualResponseType(invokeMethod);
 			
 			
 			RequestContextData context = RequestContextData.builder()
 															.requestId(requestId())
 															.httpMethod(requestMethod.name())
-//															.uriVariables(uriVariables)
+															.uriVariables(uriVariables)
 															.queryParameters(queryParameters)
 															.responseType(responseType)
 															.methodArgs(args)

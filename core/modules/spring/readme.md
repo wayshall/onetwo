@@ -10,8 +10,8 @@
 
 
 ## 要求
-JDK 1.8+
-spring 4.0+
+JDK 17+
+spring 6.0+
 
 ## maven
 添加仓储：
@@ -32,7 +32,7 @@ spring 4.0+
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-spring</artifactId>
-    <version>4.7.2-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
 </dependency>
 
 ```
@@ -180,6 +180,12 @@ public class RestExecutorSimpleLogInterceptor implements ClientHttpRequestInterc
 #### @ApiRequestPath
 有时候，请求路径需要从参数传入，则可以使用@ApiRequestPath注解标注参数。参数值会被作为请求路径，此时api方法上的@RequestMapping等注解指定的path属性将会失效。
 
+### 便捷的创建方法
+6.0之前需要启动spring容器才可以使用，6.0及其后面版本可以直接使用工具方法创建实例，以便用于一些简单的场景。
+工具方法创建实例代码如下：
+```Java
+WeatherClient client = ApiClients.newClient(WeatherClient.class);
+```
 
 ## 工具类
 ### 复制Bean

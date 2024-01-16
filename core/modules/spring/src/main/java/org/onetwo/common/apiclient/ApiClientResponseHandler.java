@@ -1,5 +1,7 @@
 package org.onetwo.common.apiclient;
 
+import java.lang.reflect.Type;
+
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -8,7 +10,7 @@ import org.springframework.http.ResponseEntity;
  */
 public interface ApiClientResponseHandler<M extends ApiClientMethod> /*extends ApiErrorHandler*/ {
 	
-	Class<?> getActualResponseType(M invokeMethod);
+	Type getActualResponseType(M invokeMethod);
 	
 	Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, RequestContextData context);
 	

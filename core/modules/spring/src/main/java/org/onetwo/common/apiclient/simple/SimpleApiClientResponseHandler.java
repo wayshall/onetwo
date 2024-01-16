@@ -1,5 +1,6 @@
 package org.onetwo.common.apiclient.simple;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.onetwo.common.apiclient.ApiClientMethod;
@@ -45,16 +46,16 @@ public class SimpleApiClientResponseHandler<M extends ApiClientMethod> extends D
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Class<?> actualResponseType){
+	public Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Type actualResponseType){
 		Object response = responseEntity.getBody();
 		ApiResponsable<?> baseResponse = null;
 		if(responseEntity.getStatusCode().is2xxSuccessful()){
 			if(ApiResponsable.class.isInstance(response)){
 				baseResponse = (ApiResponsable<?>) response;
-			} else if (Result.class.isAssignableFrom(actualResponseType)) {
+			} else if (Result.class.isAssignableFrom((Class<?>)actualResponseType)) {
 				Result result = (Result) response;
 				baseResponse = new DataResultApiResponsableAdaptor(result);
-			} else if (Map.class.isAssignableFrom(actualResponseType)){
+			} else if (Map.class.isAssignableFrom((Class<?>)actualResponseType)){
 				//reponseType have not define errcode and errmsg
 				Map<String, ?> map = (Map<String, ?>) response;
 				if (hasResultCodeField(map)) {

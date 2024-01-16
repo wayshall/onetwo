@@ -3,11 +3,11 @@ package org.onetwo.common.apiclient.impl;
 import org.onetwo.common.apiclient.RestExecutor;
 import org.onetwo.common.apiclient.RestExecutorFactory;
 import org.onetwo.common.spring.rest.ExtRestTemplate;
-import org.onetwo.common.spring.rest.RestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.client.ReactorNettyClientRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 /**
@@ -46,25 +46,40 @@ public class DefaultRestExecutorFactory extends RestExecutorFactory {
 	}
 	
 	public static ClientHttpRequestFactory createClientHttpRequestFactory(RestExecutorConfig config) {
-		if (RestUtils.isOkHttp3Present()) {
-			OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory();
-			requestFactory.setConnectTimeout(config.getConnectTimeout());
-			requestFactory.setReadTimeout(config.getReadTimeout());
-			requestFactory.setWriteTimeout(config.getWriteTimeout());
-			return requestFactory;
-		} else if (RestUtils.isHttpComponentPresent()){
-			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-			requestFactory.setConnectTimeout(config.getConnectTimeout());
-			requestFactory.setConnectionRequestTimeout(config.getReadTimeout());
-//			requestFactory.setWriteTimeout(config.getWriteTimeout());
-			return requestFactory;
-		} else {
-			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-			requestFactory.setConnectTimeout(config.getConnectTimeout());
-			requestFactory.setReadTimeout(config.getReadTimeout());
-//			requestFactory.setWriteTimeout(config.getWriteTimeout());
-			return requestFactory;
-		}
+		String clientFactory = config.getClientFactory();
+		
+		ClientHttpRequestFactory hcFactory = switch (clientFactory) {
+			case "httpClient" -> {
+				HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+				requestFactory.setConnectTimeout(config.getConnectTimeout());
+				requestFactory.setConnectionRequestTimeout(config.getReadTimeout());
+				yield requestFactory;
+			}
+			case "reactorNetty" -> {
+				ReactorNettyClientRequestFactory requestFactory = new ReactorNettyClientRequestFactory();
+				requestFactory.setConnectTimeout(config.getConnectTimeout());
+//				requestFactory.setConnectionRequestTimeout(config.getReadTimeout());
+				requestFactory.setConnectTimeout(config.getConnectTimeout());
+				requestFactory.setReadTimeout(config.getReadTimeout());
+				yield requestFactory;
+			}
+			case "okhttp" -> {
+				OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory();
+				requestFactory.setConnectTimeout(config.getConnectTimeout());
+				requestFactory.setReadTimeout(config.getReadTimeout());
+				requestFactory.setWriteTimeout(config.getWriteTimeout());
+				yield requestFactory;
+			}
+			default -> {
+				SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+				requestFactory.setConnectTimeout(config.getConnectTimeout());
+				requestFactory.setReadTimeout(config.getReadTimeout());
+//				requestFactory.setWriteTimeout(config.getWriteTimeout());
+				yield requestFactory;
+			}
+		};
+		
+		return hcFactory;
 	}
 
 

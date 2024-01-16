@@ -1,6 +1,8 @@
 package org.onetwo.common.apiclient.impl;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,13 +13,13 @@ import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.JFishProperty;
 import org.onetwo.common.utils.JFishPropertyInfoImpl;
 import org.onetwo.common.utils.LangUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.http.ResponseEntity;
-import org.onetwo.common.utils.Assert;
 import org.springframework.web.client.RestClientException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,8 +34,9 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 	protected final Logger logger = ApiClientUtils.getApiclientlogger();
 	
 	@Override
-	public Class<?> getActualResponseType(M invokeMethod) {
-		return invokeMethod.getMethodReturnType();
+	public Type getActualResponseType(M invokeMethod) {
+		return invokeMethod.getGenericReturnType();
+//		return invokeMethod.getMethodReturnType();
 	}
 
 	@Override
@@ -41,15 +44,21 @@ public class DefaultApiClientResponseHandler<M extends ApiClientMethod> implemen
 		return handleResponse(invokeMethod, responseEntity, context.getResponseType());
 	}
 	
-	public Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Class<?> actualResponseType){
+	public Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Type actualResponseType){
+		if (actualResponseType instanceof ParameterizedType) {
+			ParameterizedType ptype = (ParameterizedType) actualResponseType;
+			if (ptype.getRawType()==ResponseEntity.class) {
+				return responseEntity;
+			}
+		}
 		Object resposne = responseEntity.getBody();
 		if(responseEntity.getStatusCode().is2xxSuccessful()){
-			if (List.class.isAssignableFrom(actualResponseType)) {
+			if (List.class.isAssignableFrom((Class<?>)actualResponseType)) {
 				return convert2List(invokeMethod, responseEntity);
 			}
 			return resposne;
 		}
-		throw new RestClientException("error response: " + responseEntity.getStatusCodeValue());
+		throw new RestClientException("error response: " + responseEntity.getStatusCode());
 	}
 	
 	

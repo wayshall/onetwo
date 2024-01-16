@@ -4,10 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.validation.Valid;
 
 import org.onetwo.common.apiclient.utils.ApiClientUtils;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -20,6 +19,8 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.validation.Valid;
 
 public abstract class AbstractMethodResolver<T extends MethodParameter> {
 	protected final Method method;
@@ -40,6 +41,16 @@ public abstract class AbstractMethodResolver<T extends MethodParameter> {
 	public Class<?> getMethodReturnType() {
 		return method.getReturnType();
 	}
+	
+	/***
+	 * 返回泛型
+	 * @author wayshall
+	 * @return
+	 */
+	public Type getGenericReturnType() {
+		return method.getGenericReturnType();
+	}
+	
 	
 	public boolean isReturnVoid(){
 		return getMethodReturnType() == void.class;

@@ -1,5 +1,6 @@
 package org.onetwo.common.apiclient;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.aopalliance.intercept.MethodInvocation;
@@ -23,7 +24,7 @@ public class RequestContextData {
 	final private String requestId;
 	final private HttpMethod httpMethod;
 //	private String requestUrl;
-	private Class<?> responseType;
+	private Type responseType;
 //	private Object requestBody;
 	private Map<String, Object> uriVariables;
 	/***
@@ -58,7 +59,7 @@ public class RequestContextData {
 	public RequestContextData(String requestId, String httpMethod, 
 							Map<String, Object> queryParameters, 
 							Map<String, Object> uriVariables,
-							Class<?> responseType, Object[] methodArgs, ApiClientMethod invokeMethod, 
+							Type responseType, Object[] methodArgs, ApiClientMethod invokeMethod, 
 							MethodInvocation invocation, int maxRetryCount, String baseURL, String apiPath) {
 		super();
 		this.httpMethod = HttpMethod.valueOf(httpMethod);
@@ -86,7 +87,7 @@ public class RequestContextData {
 		this.invokeCount = this.invokeCount + times;
 	}
 	
-	public Class<?> getResponseType() {
+	public Type getResponseType() {
 		return responseType;
 	}
 

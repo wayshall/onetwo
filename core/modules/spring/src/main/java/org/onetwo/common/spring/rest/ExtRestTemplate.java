@@ -3,6 +3,7 @@ package org.onetwo.common.spring.rest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -41,6 +42,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
@@ -178,7 +180,42 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		rc = wrapRequestCallback(context, rc);
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
 	}
+
+	public <T> ResponseExtractor<ResponseEntity<T>> responseEntityExtractor(Type responseType) {
+		return new ApiClientResponseExtractor<>(responseType);
+	}
 	
+	private class ApiClientResponseExtractor<T> implements ResponseExtractor<ResponseEntity<T>> {
+		private HttpMessageConverterExtractor<T> delegate;
+
+		public ApiClientResponseExtractor(Type responseType) {
+			if (responseType instanceof ParameterizedType) {
+				ParameterizedType ptype = (ParameterizedType) responseType;
+				responseType = ptype.getRawType();
+				if (responseType==ResponseEntity.class) {
+					responseType = ptype.getActualTypeArguments()[0];
+					this.delegate = new HttpMessageConverterExtractor<T>(responseType, getMessageConverters());
+				} else {
+					this.delegate = new HttpMessageConverterExtractor<T>(responseType, getMessageConverters());
+				}
+			} else {
+				if (responseType != null && Void.class != responseType) {
+					this.delegate = new HttpMessageConverterExtractor<T>(responseType, getMessageConverters());
+				}
+			}
+		}
+
+		@Override
+		public ResponseEntity<T> extractData(ClientHttpResponse response) throws IOException {
+			if (this.delegate != null) {
+				T body = this.delegate.extractData(response);
+				return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(body);
+			}
+			else {
+				return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).build();
+			}
+		}
+	}
 	
 	private void logData(Object requestBody, HttpHeaders headers) {
 		if(isLogableObject(requestBody) && logger.isDebugEnabled()){

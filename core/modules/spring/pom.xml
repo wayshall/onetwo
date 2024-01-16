@@ -186,6 +186,13 @@
        <artifactId>okhttp</artifactId>
        <optional>true</optional>
      </dependency>
+     
+     <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <optional>true</optional>
+    </dependency>
+
 	
 	<dependency>
         <groupId>org.hibernate.validator</groupId>

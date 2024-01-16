@@ -14,6 +14,7 @@ import org.onetwo.common.spring.rest.RestUtilsTest;
 @SuiteClasses({
 	RestUtilsTest.class,
 	WeatherClientTest.class,
+	WeatherClientForApiClientsTest.class,
 	Ys7AccessTokenClientTest.class
 })
 public class ApiClientTestSuite {

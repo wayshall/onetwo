@@ -11,6 +11,8 @@ public class RestExecutorConfig {
 	int connectTimeout = 50_000;
 	int readTimeout = 50_000;
 	int writeTimeout = 50_000;
+	
+	String clientFactory = "httpClient";
 
 	public RestExecutorConfig() {
 		super();
