@@ -24,17 +24,29 @@ final public class ClassUtils {
 		return innerClassName.replaceAll("\\$", ".");
 	}
 
-	public static ClassLoader getDefaultClassLoader(){
-		ClassLoader cld = null;
+
+	public static ClassLoader getDefaultClassLoader() {
+		ClassLoader cl = null;
 		try {
-			cld = Thread.currentThread().getContextClassLoader();
-		} catch (Exception e) {
-			//ignore
+			cl = Thread.currentThread().getContextClassLoader();
 		}
-		if(cld==null){
-			cld = ClassUtils.class.getClassLoader();
+		catch (Throwable ex) {
+			// Cannot access thread context ClassLoader - falling back...
 		}
-		return cld;
+		if (cl == null) {
+			// No thread context class loader -> use class loader of this class.
+			cl = ClassUtils.class.getClassLoader();
+			if (cl == null) {
+				// getClassLoader() returning null indicates the bootstrap ClassLoader
+				try {
+					cl = ClassLoader.getSystemClassLoader();
+				}
+				catch (Throwable ex) {
+					// Cannot access system ClassLoader - oh well, maybe the caller can live with null...
+				}
+			}
+		}
+		return cl;
 	}
 	
 
