@@ -49,6 +49,9 @@ public class MatchAllFilterInvocationSecurityMetadataSource implements FilterInv
 		final HttpServletRequest request = ((FilterInvocation) object).getRequest();
 		Collection<ConfigAttribute> auths = Sets.newHashSet();
 		for (Map.Entry<RequestMatcher, Collection<ConfigAttribute>> entry : requestMap.entrySet()) {
+//			if (entry.getValue().toString().toLowerCase().contains("fullyauthenticated")) {
+//				System.out.println("test");
+//			}
 			if (ignoreAnyRequestMatcher && entry.getKey().equals(AnyRequestMatcher.INSTANCE)) {
 				if (logger.isInfoEnabled()) {
 					logger.info("ignore any matcher for: {}", entry.getValue());

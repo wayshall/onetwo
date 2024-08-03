@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 public class LocalFeignTargeterConfiguration {
 
 	@Bean
+	@ConditionalOnProperty(name = LocalProps.ENABLE_KEY, havingValue = "true")
 	public Targeter feignTargeter() {
 		return new LocalTargeter();
 	}

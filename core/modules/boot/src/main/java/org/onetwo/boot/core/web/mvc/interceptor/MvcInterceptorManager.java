@@ -382,7 +382,14 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 														.map(inter->AnnotationUtils.getAnnotationAttributes(null, inter))
 														.collect(Collectors.toSet());
 		boolean hasDisabledFlag = attrs.stream()
-										.anyMatch(attr->asMvcInterceptorMeta(attr).getInterceptorType()==DisableMvcInterceptor.class);
+										.anyMatch(attr->{
+											try {
+												boolean disabled = asMvcInterceptorMeta(attr).getInterceptorType()==DisableMvcInterceptor.class;
+												return disabled;
+											} catch (Exception e) {
+												throw new BaseException("find disalbed flag error: " + e.getMessage(), e);
+											}
+										});
 		if(hasDisabledFlag){
 			return Collections.emptyList();
 		}

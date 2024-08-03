@@ -52,6 +52,7 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentResolverAdapter;
@@ -170,6 +171,11 @@ public class BootMvcConfigurerAdapter implements WebMvcConfigurer, InitializingB
 				}
 			});
 		}
+	}
+
+	@Override
+	public void configurePathMatch(PathMatchConfigurer configurer) {
+		configurer.setUseSuffixPatternMatch(true);
 	}
 
 	@Override

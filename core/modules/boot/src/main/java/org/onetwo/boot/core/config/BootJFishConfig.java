@@ -12,6 +12,7 @@ import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinderConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -170,6 +171,16 @@ jfish:
 
 		private Map<String, Integer> exceptionsStatusMapping = Maps.newHashMap();
 		private Map<String, ExceptionMapping> exceptionsMapping = Maps.newHashMap();
+		
+		/***
+		 * spring mvc 某个版本（5？）之后，默认不再使用后缀匹配模式
+		 * 即若controller配置的mapping是"/requestPath"，当请求"/requestPath.json"时，将会匹配不到对应的controller
+		 * 这会影响旧版本的运行，这里提供配置激活后缀匹配模式。
+		 * 配合mediaTypes（PathExtensionContentNegotiationStrategy）使用更佳, @see {@link org.onetwo.boot.core.web.BootMvcConfigurerAdapter#configureContentNegotiation}
+		 * 
+		 * @see {@link org.onetwo.boot.core.web.BootMvcConfigurerAdapter#configurePathMatch}
+		 */
+		private boolean useSuffixPatternMatch = true;
 
 		public MvcConfig() {
 			this.mediaTypes = new Properties();

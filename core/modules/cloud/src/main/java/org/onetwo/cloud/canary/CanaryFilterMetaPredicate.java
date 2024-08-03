@@ -13,7 +13,6 @@ import org.onetwo.common.web.utils.RequestUtils;
 
 import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.PredicateKey;
-import com.netflix.niws.loadbalancer.DiscoveryEnabledServer;
 
 /**
 eureka:
@@ -34,12 +33,13 @@ public class CanaryFilterMetaPredicate extends AbstractServerPredicate {
 
 	@Override
 	public boolean apply(PredicateKey input) {
-		if(!DiscoveryEnabledServer.class.isInstance(input.getServer())){
-			return false;
-		}
-		DiscoveryEnabledServer server = (DiscoveryEnabledServer) input.getServer();
-		Map<String, String> metaData = server.getInstanceInfo().getMetadata();
-		return matchMetaData(metaData);
+//		if(!DiscoveryEnabledServer.class.isInstance(input.getServer())){
+//			return false;
+//		}
+//		DiscoveryEnabledServer server = (DiscoveryEnabledServer) input.getServer();
+//		Map<String, String> metaData = server.getInstanceInfo().getMetadata();
+//		return matchMetaData(metaData);
+		return true;
 	}
 	
 	protected boolean matchMetaData(Map<String, String> metaData){

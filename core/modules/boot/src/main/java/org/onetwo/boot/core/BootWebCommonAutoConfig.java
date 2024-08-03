@@ -88,9 +88,6 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 //	@Autowired
 //	private MultipartProperties multipartProperties;
 	
-	@Autowired
-	protected BootJsonView jsonView;
-	
 	@PostConstruct
 	public void init(){
 		Springs.initApplicationIfNotInitialized(applicationContext);
@@ -319,36 +316,35 @@ public class BootWebCommonAutoConfig implements DisposableBean {
 		return filter;
 	}
 
+	/*********json*********/
 	
-	@Configuration
-	protected static class JsonConfiguration {
-		@Autowired
-		protected BootJFishConfig bootJfishConfig;
-		@Bean
-		public BootJsonView bootJsonView(){
-			BootJsonView jv = new BootJsonView();
-			jv.setPrettyPrint(bootJfishConfig.getMvc().getJson().isPrettyPrint());
-			return jv;
-		}
-		
-		@Bean
-		@ConditionalOnMissingBean(ObjectMapperProvider.class)
-		public ObjectMapperProvider objectMapperProvider(){
-			return new DefaultObjectMapperProvider();
-		}
-
-		@Primary
-		@Bean
-		@ConditionalOnMissingBean(ObjectMapper.class)
-		public ObjectMapper objectMapper(){
-			return objectMapperProvider().createObjectMapper();
-		}
-		
-		@Bean
-		public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
-			return new BootJackson2ObjectMapperBuilder();
-		}
+	@Bean
+	public BootJsonView bootJsonView(){
+		BootJsonView jv = new BootJsonView();
+		jv.setPrettyPrint(bootJfishConfig.getMvc().getJson().isPrettyPrint());
+		jv.setXresponseViewManager(xresponseViewManager());
+		return jv;
 	}
+	
+	@Bean
+	@ConditionalOnMissingBean(ObjectMapperProvider.class)
+	public ObjectMapperProvider objectMapperProvider(){
+		return new DefaultObjectMapperProvider();
+	}
+
+	@Primary
+	@Bean
+	@ConditionalOnMissingBean(ObjectMapper.class)
+	public ObjectMapper objectMapper(){
+		return objectMapperProvider().createObjectMapper();
+	}
+	
+	@Bean
+	public BootJackson2ObjectMapperBuilder bootJackson2ObjectMapperBuilder(){
+		return new BootJackson2ObjectMapperBuilder();
+	}
+	
+	
 	
 	@Configuration
 	protected static class ConfigureMessageConvertor {

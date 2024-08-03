@@ -478,13 +478,21 @@ final public class SpringUtils {
 	}
 
 	public static <T> void injectAndInitialize(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
-		acb.autowireBeanProperties(bean, autowireMode, false);
+		try {
+			acb.autowireBeanProperties(bean, autowireMode, false);
+		} catch (Exception e) {
+			throw new BaseException("occur error on autowire bean for class: " + bean.getClass().getName() + ", msg: " + e.getMessage(), e);
+		}
 		initializeBean(acb, bean);
 	}
 
 	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean) {
 		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
-		acb.initializeBean(bean, beanName);
+		try {
+			acb.initializeBean(bean, beanName);
+		} catch (Exception e) {
+			throw new BaseException("occur error on initializing bean for class: " + bean.getClass().getName() + ", msg: " + e.getMessage(), e);
+		}
 	}
 
 	public static <T> void initializeBean(ApplicationContext appContext, T bean) {

@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import org.onetwo.common.db.generator.dialet.DatabaseMetaDialet;
 import org.onetwo.common.db.generator.dialet.DelegateDatabaseMetaDialet;
 import org.onetwo.common.db.generator.meta.TableMeta;

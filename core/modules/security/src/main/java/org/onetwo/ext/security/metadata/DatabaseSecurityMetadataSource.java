@@ -141,7 +141,7 @@ public class DatabaseSecurityMetadataSource extends JdbcDaoSupport implements Jd
 		List<AuthorityResource> authorities = fetchAuthorityResources();
 		final Map<SortableAntPathRequestMatcher, Collection<ConfigAttribute>> resouceMap = new HashMap<>(authorities.size());
 		authorities.forEach(auth->{
-//			if (auth.getAuthority().equals("test")) {
+//			if (auth.getAuthority().toLowerCase().contains("fullyauthenticated")) {
 //				System.out.println("test");
 //			}
 			auth.getUrlResourceInfo().forEach(r->{

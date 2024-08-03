@@ -41,8 +41,8 @@ public class DataResultErrorController extends BasicErrorController {
 	@RequestMapping
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.ALL));
+//		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
+		Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
 		SimpleDataResult<?> dr = DataResults.error(StringUtils.emptyIfNull(body.get("message")))
 											.code(StringUtils.emptyIfNull(body.get("error")))

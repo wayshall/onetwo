@@ -198,7 +198,7 @@ public class EnhanceSpringMvcContract extends SpringMvcContract implements Appli
 		String pathValue = classAnnotation.basePath();
 		if(StringUtils.isBlank(pathValue)){
 			FeignClient feignClient = findMergedAnnotation(clz, FeignClient.class);
-			String serviceName = StringUtils.isNotBlank(feignClient.name())?feignClient.name():feignClient.serviceId();
+			String serviceName = StringUtils.isNotBlank(feignClient.name())?feignClient.name():feignClient.value();
 			serviceName = SpringUtils.resolvePlaceholders(applicationContext, serviceName);
 			//不填，默认查找对应的配置 -> jfish.cloud.feign.basePath.serviceName
 			/*pathValue = FEIGN_BASE_PATH_KEY + serviceName;
