@@ -175,7 +175,9 @@ public class BootMvcConfigurerAdapter implements WebMvcConfigurer, InitializingB
 
 	@Override
 	public void configurePathMatch(PathMatchConfigurer configurer) {
-		configurer.setUseSuffixPatternMatch(true);
+		// RequestMappingHandlerMapping#useSuffixPatternMatch
+		configurer.setUseSuffixPatternMatch(jfishBootConfig.getMvc().isUseSuffixPatternMatch());
+		configurer.setUseTrailingSlashMatch(jfishBootConfig.getMvc().isUseTrailingSlashMatch());
 	}
 
 	@Override

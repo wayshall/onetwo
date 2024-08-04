@@ -12,7 +12,6 @@ import org.onetwo.boot.core.web.mvc.exception.ExceptionMessageFinderConfig;
 import org.onetwo.common.utils.LangOps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -178,9 +177,17 @@ jfish:
 		 * 这会影响旧版本的运行，这里提供配置激活后缀匹配模式。
 		 * 配合mediaTypes（PathExtensionContentNegotiationStrategy）使用更佳, @see {@link org.onetwo.boot.core.web.BootMvcConfigurerAdapter#configureContentNegotiation}
 		 * 
+		 * spring 默认为false
 		 * @see {@link org.onetwo.boot.core.web.BootMvcConfigurerAdapter#configurePathMatch}
+		 * @see {@link org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#useSuffixPatternMatch}
 		 */
 		private boolean useSuffixPatternMatch = true;
+		/***
+		 * 启用尾部斜杠匹配，例如，/user和/user/将被视为相同的URL。
+		 * spring 默认为true
+		 * @see {@link org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#useTrailingSlashMatch}
+		 */
+		private boolean useTrailingSlashMatch = true;
 
 		public MvcConfig() {
 			this.mediaTypes = new Properties();
