@@ -21,8 +21,8 @@ import com.netflix.loadbalancer.ServerList;
 
 /***
  * spring-cloud-netfix-eureka-client已经把Ribbon利用Eureka取注册在其上的信息这部分代码已经移除了。所以Zuul只能利用静态信息了。
+ * 参考实现：https://stackoverflow.com/questions/65744022/zuul-forwarding-error-load-balancer-does-not-have-available-server-for-client/66669071#66669071
  * @author way
- *
  */
 @Configuration
 @ConditionalOnBean(SpringClientFactory.class)
