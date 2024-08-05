@@ -35,6 +35,7 @@ public class S6MethodWebSecurityConfigurer implements WebSecurityCustomizer {
 	      	 * 是否允许url路径带有分号
 	      	 */
 	      	httpFirewall.setAllowSemicolon(strictHttpFirewall.isAllowSemicolon());
+	      	httpFirewall.setAllowBackSlash(strictHttpFirewall.isAllowBackSlash());
 	      	web.httpFirewall(httpFirewall);
 	  	}
 	}

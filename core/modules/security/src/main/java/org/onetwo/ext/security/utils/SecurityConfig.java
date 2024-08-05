@@ -414,6 +414,10 @@ public class SecurityConfig {
 		 * 是否允许url带有分号
 		 */
 		boolean allowSemicolon;
+		/***
+		 * 是否允许url带"//"
+		 */
+		boolean allowBackSlash;
 	}
 	
 	@Data
