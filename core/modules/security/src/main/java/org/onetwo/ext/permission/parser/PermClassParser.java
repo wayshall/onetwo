@@ -22,6 +22,7 @@ import org.onetwo.ext.permission.api.annotation.MenuMapping;
 import org.onetwo.ext.permission.api.annotation.PermissionMeta;
 import org.onetwo.ext.permission.api.annotation.PermissionMetaData;
 import org.onetwo.ext.permission.api.annotation.ProxyMenu;
+import org.onetwo.ext.permission.api.annotation.ReservePermission;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
@@ -97,7 +98,7 @@ public class PermClassParser {
 	
 	public String getAppCode(){
 		if (isFullyAuthenticated()) {
-			return FullyAuthenticated.AUTH_CODE;
+			return FullyAuthenticated.APP_CODE;
 		}
 		return getFieldValue(APP_CODE, String.class, getActualPermissionClass().getSimpleName());
 	}
@@ -105,6 +106,10 @@ public class PermClassParser {
 	public boolean isFullyAuthenticated() {
 //		return this.parentPermissionClass == FullyAuthenticated.class;
 		return this.permissionClass == FullyAuthenticated.class;
+	}
+
+	public boolean isReservePermission() {
+		return ReservePermission.class.isAssignableFrom(parentPermissionClass);
 	}
 	
 	/***

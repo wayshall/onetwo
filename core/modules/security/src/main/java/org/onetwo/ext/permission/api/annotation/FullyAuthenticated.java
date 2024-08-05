@@ -13,6 +13,7 @@ import org.onetwo.ext.permission.api.PermissionType;
  */
 @PermissionMeta(name = "已登录认证", permissionType = PermissionType.FUNCTION, hidden = true)
 public interface FullyAuthenticated extends ReservePermission {
+	String APP_CODE = "FullyAuthenticated";
 	String AUTH_CODE = "fullyAuthenticated";
 	
 	default String authCode() {
