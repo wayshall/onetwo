@@ -47,7 +47,8 @@ public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext
 	}
 	
 	public boolean isDelayMessage() {
-		return getMessage().getStartDeliverTime() > 0;
+		Long startDeliverTime = getMessage().getStartDeliverTime();
+		return startDeliverTime!=null && startDeliverTime > 0;
 	}
 	
 
