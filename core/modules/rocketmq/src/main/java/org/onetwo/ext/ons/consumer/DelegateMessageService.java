@@ -3,6 +3,8 @@ package org.onetwo.ext.ons.consumer;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.common.message.MessageExt;
 import org.onetwo.boot.mq.exception.ConsumeException;
 import org.onetwo.boot.mq.exception.DeserializeMessageException;
 import org.onetwo.boot.mq.exception.ImpossibleConsumeException;
@@ -22,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Lists;
 

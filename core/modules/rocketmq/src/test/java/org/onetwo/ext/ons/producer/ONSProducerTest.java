@@ -1,12 +1,9 @@
 package org.onetwo.ext.ons.producer;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import org.apache.rocketmq.client.producer.SendResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
 import org.onetwo.ext.ons.annotation.ONSProducer;
@@ -17,7 +14,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.aliyun.openservices.ons.api.SendResult;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author wayshall
@@ -47,22 +47,22 @@ public class ONSProducerTest {
 																	  .build());
 		System.out.println("res: " + res);
 		
-		res = onsProducerService.sendMessage(SimpleMessage.builder()
-				  .topic(TOPIC)
-				  .tags(ORDER_CANCEL)
-				  .key("1")
-				  .body(OrderTestMessage.builder()
-			  				.orderId(1L)
-			  				.title("取消")
-			  				.build())
-				  .build());
-		System.out.println("res: " + res);
-//		LangUtils.CONSOLE.exitIf("test");
+//		res = onsProducerService.sendMessage(SimpleMessage.builder()
+//				  .topic(TOPIC)
+//				  .tags(ORDER_CANCEL)
+//				  .key("1")
+//				  .body(OrderTestMessage.builder()
+//			  				.orderId(1L)
+//			  				.title("取消")
+//			  				.build())
+//				  .build());
+//		System.out.println("res: " + res);
+		LangUtils.CONSOLE.exitIf("test");
 	}
 	
 	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
 	@Configuration
-	@PropertySource("classpath:ons-test.properties")
+	@PropertySource("classpath:ons.properties")
 	public static class ProducerTestContext {
 	}
 	

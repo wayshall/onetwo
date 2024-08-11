@@ -6,11 +6,10 @@ import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 import org.onetwo.cloud.env.AuthEnvs;
 import org.onetwo.cloud.env.AuthEnvs.AuthEnv;
 import org.onetwo.common.utils.StringUtils;
+import org.onetwo.ext.alimq.ExtMessage;
 import org.onetwo.ext.ons.ONSUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.aliyun.openservices.ons.api.Message;
 
 /**
  * @author weishao zeng
@@ -70,7 +69,7 @@ public class AuthEnvRmqMessageInterceptor implements SendMessageInterceptor {
 	}
 	
 	private void fillMessageAuthEnvs(AuthEnv env, SendMessageInterceptorChain chain) {
-		Message message = (Message)chain.getSendMessageContext().getMessage();
+		ExtMessage message = (ExtMessage)chain.getSendMessageContext().getMessage();
 		env.getHeaders().forEach(header -> {
 			// 排除auth
 			if (config!=null && header.getName().equals(config.getJwt().getAuthHeader())) {

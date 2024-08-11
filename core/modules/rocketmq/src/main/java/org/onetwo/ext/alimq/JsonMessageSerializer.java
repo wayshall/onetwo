@@ -1,7 +1,5 @@
 package org.onetwo.ext.alimq;
 
-import java.io.IOException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.jackson.JsonMapper;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -56,7 +54,7 @@ public class JsonMessageSerializer implements MessageSerializer {
 
 	@Override
 	public byte[] serialize(Object body, MessageDelegate messageDelegate) {
-		if (messageDelegate.isDebug()) {
+		if (messageDelegate!=null && messageDelegate.isDebug()) {
 			if (logger.isInfoEnabled()) {
 				String jsonstr = jsonMapper.toJson(body);
 				logger.info("ons message body json: {}", jsonstr);

@@ -3,6 +3,12 @@ package org.onetwo.ext.ons;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.common.message.MessageConst;
+import org.apache.rocketmq.common.message.MessageExt;
+import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.BaseException;
@@ -10,26 +16,34 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.slf4j.Logger;
 
-import com.aliyun.openservices.ons.api.Message;
-import com.aliyun.openservices.ons.api.SendResult;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageConst;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
-
 /**
  * @author wayshall
  * <br/>
  */
 final public class ONSUtils {
 	private final static int MAX_KEY_LENGTH = 128;
+    public static final String ProducerId = "ProducerId";
 	
 	public static final SendResult ONS_SUSPEND;
 	static {
 		SendResult res = new SendResult();
-		res.setMessageId("SUSPEND");
+//		res.setMessageId("SUSPEND");
+		res.setMsgId("STORED_LOCAL_NOT_SENT");
 		ONS_SUSPEND = res;
 	}
 	
 	public static final String LOGGER_NAME = "org.onetwo.ext.ons.ONSMessageLog";
+	
+//	public static SendResult newSusupendSendResult(String topic) {
+//		return new SendResult();
+//	}
+	
+
+	public static void checkSendResult(SendResult result) {
+		if (result.getSendStatus()!=SendStatus.SEND_OK) {
+			throw new MQException("send rocketmq transaction message error: " + result.getSendStatus());
+		}
+	}
 	
 	/****
 	 * 把普通格式的日期字符串重新格式化为rocketmq要求的格式字符串：yyyyMMddHHmmss
@@ -48,7 +62,7 @@ final public class ONSUtils {
 	}
 	
 	static public boolean isDebugMessage(Message message) {
-		String debug = message.getUserProperties(TracableMessage.DEBUG_KEY);
+		String debug = message.getUserProperty(TracableMessage.DEBUG_KEY);
 		return Types.asValue(debug, boolean.class, false);
 	}
 	

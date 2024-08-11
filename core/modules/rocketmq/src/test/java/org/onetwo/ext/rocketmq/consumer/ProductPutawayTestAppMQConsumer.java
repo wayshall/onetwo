@@ -1,11 +1,12 @@
 package org.onetwo.ext.rocketmq.consumer;
 
-import org.onetwo.ext.rocketmq.consumer.AppMQConsumer;
-import org.onetwo.ext.rocketmq.consumer.ConsumerMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class ProductPutawayTestAppMQConsumer implements AppMQConsumer<Long> {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	
 	@Override
@@ -17,6 +18,7 @@ public class ProductPutawayTestAppMQConsumer implements AppMQConsumer<Long> {
 
 	@Override
 	public void doConsume(Long productId) {
+		logger.info("receive productId: {}", productId);
 	}
 
 }

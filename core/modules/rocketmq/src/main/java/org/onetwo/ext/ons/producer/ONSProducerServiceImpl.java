@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.SendResult;
 import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
@@ -12,6 +14,7 @@ import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicat
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.ext.alimq.ExtMessage;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.onetwo.ext.alimq.MessageSerializer.MessageDelegate;
 import org.onetwo.ext.alimq.OnsMessage;
@@ -20,32 +23,23 @@ import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
 import org.onetwo.ext.ons.ONSUtils;
-import org.slf4j.Logger;
+import org.onetwo.ext.rocketmq.producer.RocketMQProducerService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
-import com.aliyun.openservices.ons.api.Message;
-import com.aliyun.openservices.ons.api.PropertyKeyConst;
-import com.aliyun.openservices.ons.api.SendResult;
-import com.aliyun.openservices.ons.api.bean.ProducerBean;
-import com.aliyun.openservices.ons.api.exception.ONSClientException;
-
 /**
+ * https://rocketmq.apache.org/zh/docs/4.x/producer/02message1
+ * 
  * @author wayshall
  * <br/>
  */
-public class ONSProducerServiceImpl extends ProducerBean implements InitializingBean, DisposableBean, DefaultProducerService, ProducerService {
-
-	private final Logger logger = ONSUtils.getONSLogger();
-	
-	private MessageSerializer messageSerializer;
+public class ONSProducerServiceImpl extends RocketMQProducerService implements InitializingBean, DisposableBean, DefaultProducerService, ProducerService {
 
 	private ONSProperties onsProperties;
-	private String producerId;
-	
+//	private String producerId;
 //	private ONSProducerListenerComposite producerListenerComposite;
 	@Autowired
 	private List<SendMessageInterceptor> sendMessageInterceptors;
@@ -53,27 +47,26 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	
 	@Autowired
 	private ApplicationContext applicationContext;
+
 	
 	public ONSProducerServiceImpl() {
 	}
-
+	
+	
 	@Autowired
 	public void setOnsProperties(ONSProperties onsProperties) {
 		this.onsProperties = onsProperties;
 	}
 	
 	public void setProducerId(String producerId) {
-		this.producerId = producerId;
+//		this.producerId = producerId;
+		this.setGroupName(producerId);
 	}
 
-	@Autowired
-	public void setMessageSerializer(MessageSerializer messageSerializer) {
-		this.messageSerializer = messageSerializer;
-	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.hasText(producerId, "produerId must has text");
+		Assert.hasText(getGroupName(), "groupName must has text");
 		Assert.notNull(onsProperties, "onsProperties can not be null");
 		Assert.notNull(messageSerializer, "messageSerializer can not be null");
 		
@@ -81,20 +74,21 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		this.interceptableMessageSender = new InterceptableMessageSender<SendResult>(sendMessageInterceptors);
 		
 		Properties producerProperties = onsProperties.baseProperties();
-		Properties customProps = onsProperties.getProducers().get(producerId);
+		Properties customProps = onsProperties.getProducers().get(getGroupName());
 		if(customProps!=null){
 			producerProperties.putAll(customProps);
 		}
 //		producerProperties.setProperty(PropertyKeyConst.ProducerId, producerId);
-		producerProperties.setProperty(PropertyKeyConst.GROUP_ID, producerId);
+//		producerProperties.setProperty(PropertyKeyConst.GROUP_ID, getGroupName());
 		
-		this.setProperties(producerProperties);
-		this.start();
+		this.setNamesrvAddr(onsProperties.getNamesrvAddr());		
+		this.setProducerProperties(producerProperties);
+		super.afterPropertiesSet();
 	}
 	
 	@Override
 	public void destroy() throws Exception {
-		this.shutdown();
+		super.destroy();
 	}
 	
 	@Override
@@ -104,7 +98,8 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 											.tags(tags)
 											.body(body)
 											.build();
-		this.sendMessage(message);
+		SendResult result = this.sendMessage(message);
+		checkSendResult(result);
 	}
 	
 	/*public SendResult sendBytesMessage(String topic, String tags, byte[] body){
@@ -119,25 +114,33 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	}
 	
 
+	public void send(OnsMessage onsMessage){
+		SendResult result = sendMessage(onsMessage, SendMessageFlags.Default);
+		checkSendResult(result);
+	}
+	
+
 	@Override
-	public SendResult send(Serializable onsMessage, InterceptorPredicate interceptorPredicate) {
-		if(onsMessage instanceof Message){
-			return sendRawMessage((Message)onsMessage, interceptorPredicate);
+	public void send(Serializable onsMessage, InterceptorPredicate interceptorPredicate) {
+		SendResult result; 
+		if(onsMessage instanceof ExtMessage){
+			result = sendRawMessage((ExtMessage)onsMessage, interceptorPredicate);
 		}else if(onsMessage instanceof OnsMessage){
-			return sendMessage((OnsMessage)onsMessage, interceptorPredicate);
+			result = sendMessage((OnsMessage)onsMessage, interceptorPredicate);
 		}else{
 			throw new IllegalArgumentException("error message type: " + onsMessage.getClass());
 		}
+		checkSendResult(result);
 	}
 
 	@Override
 	public SendResult sendMessage(OnsMessage onsMessage, InterceptorPredicate interceptorPredicate){
 		Object body = onsMessage.getBody();
-		if(body instanceof Message){
-			return sendRawMessage((Message)body, interceptorPredicate);
+		if(body instanceof ExtMessage){
+			return sendRawMessage((ExtMessage)body, interceptorPredicate);
 		}
 		
-		Message message = onsMessage.toMessage();
+		ExtMessage message = onsMessage.toMessage();
 		
 		String topic = resolvePlaceholders(message.getTopic());
 		checkTopicOrTag(topic);
@@ -147,15 +150,25 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		message.setTag(tag);
 		checkTopicOrTag(tag);
 		
-		MessageSerializer messageSerializer = getMessageSerializer(onsMessage);
 		configMessage(message, onsMessage);
 		if(needSerialize(body)){
-			message.setBody(messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(message)));
+			message.setBody(serializeMessage(onsMessage));
 		}else{
 			message.setBody((byte[])body);
 		}
 		
 		return sendRawMessage(message, interceptorPredicate);
+	}
+
+	protected byte[] serializeMessage(Object body) {
+		if (body instanceof OnsMessage) {
+			OnsMessage onsMessage = (OnsMessage)body;
+			MessageSerializer messageSerializer = getMessageSerializer(onsMessage);
+			byte[] data = messageSerializer.serialize(onsMessage.getBody(), new MessageDelegate(onsMessage.toMessage()));
+			return data;
+		} else {
+			return super.serializeMessage(body);
+		}
 	}
 	
 	private void checkTopicOrTag(String name) {
@@ -217,7 +230,7 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		return !byte[].class.isInstance(body);
 	}
 */	
-	public SendResult sendRawMessage(Message message, final InterceptorPredicate interPredicate) {
+	public SendResult sendRawMessage(ExtMessage message, final InterceptorPredicate interPredicate) {
 		return this.sendRawMessage(message, interPredicate, ()->this.doSendRawMessage(message));
 	}
 	
@@ -249,13 +262,14 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 	}*/
 	
 
-	public SendResult doSendRawMessage(Message message){
+	public SendResult doSendRawMessage(ExtMessage message){
 		try {
 			if (logger.isInfoEnabled()) {
 				logger.info("do send raw message: {}", message.getKey());
 			}
-			return send(message);
-		} catch (ONSClientException e) {
+//			return this.send(message);
+			return this.defaultMQProducer.send(message);
+		} catch (MQClientException e) {
 			handleException(e, message);
 		}catch (Throwable e) {
 			handleException(e, message);
@@ -278,5 +292,8 @@ public class ONSProducerServiceImpl extends ProducerBean implements Initializing
 		return interceptableMessageSender;
 	}
 	
+	protected void checkSendResult(SendResult result) {
+		ONSUtils.checkSendResult(result);
+	}
 	
 }

@@ -50,6 +50,7 @@ public enum SendMessageFlags implements InterceptorPredicate {
 			}
 			if (inter instanceof DatabaseTransactionMessageInterceptor) {
 				DatabaseTransactionMessageInterceptor inst = (DatabaseTransactionMessageInterceptor) inter;
+				// 支持非批量模式，批量模式见：OnsBatchDatabaseTransactionMessageInterceptor
 				return !inst.useBatchMode();
 			}
 			return true;

@@ -1,11 +1,10 @@
 package org.onetwo.ext.ons.consumer;
 
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.annotation.ONSConsumer;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.producer.ONSProducerTest;
-
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 
 
 /**

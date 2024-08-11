@@ -19,7 +19,10 @@ final public class MQUtils {
 	
 	public static final JsonMapper TYPING_JSON_MAPPER = JsonMapper.ignoreNull().enableTyping();
 	
-	public static final MQResult DEFAULT_SUSPEND = new MQResult("SUSPEND");
+	/****
+	 * 此状态用于基于本地数据库实现的事务消息时，调用producer发送消息时，实际不会发送，只存到了数据库
+	 */
+	public static final MQResult DEFAULT_SUSPEND = new MQResult("STORED_LOCAL_NOT_SENT");
 	
 	@Data
 	public static class MQResult {

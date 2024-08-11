@@ -4,22 +4,19 @@ import java.util.Date;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.producer.SendResult;
 import org.onetwo.boot.mq.InterceptableMessageSender;
 import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 import org.onetwo.common.convert.Types;
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.ext.alimq.ExtMessage;
 import org.onetwo.ext.alimq.OnsMessage;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.ons.ONSUtils;
 import org.onetwo.ext.ons.TracableMessageKey;
-import org.slf4j.Logger;
 
-import com.aliyun.openservices.ons.api.Message;
-import com.aliyun.openservices.ons.api.SendResult;
-import com.aliyun.openservices.ons.api.exception.ONSClientException;
 
 /**
  * @author weishao zeng
@@ -37,26 +34,12 @@ public interface DefaultProducerService extends TraceableProducer {
 		return !byte[].class.isInstance(body);
 	}
 
-	default void handleException(Throwable e, Message message){
-		final Logger logger = ONSUtils.getONSLogger();
-		if(logger.isErrorEnabled()){
-			logger.error("send message topic: {}, tags: {}, key: {}, msgId: {}", message.getTopic(), message.getTag(), message.getKey(), message.getMsgID());
-		}
-		
-		if(e instanceof ONSClientException){
-			throw (ONSClientException)e;
-		}else{
-			throw new BaseException("发送消息失败", e);
-		}
-	}
-
-	
-	default void configMessage(Message message, OnsMessage onsMessage) {
+	default void configMessage(ExtMessage message, OnsMessage onsMessage) {
 		if(onsMessage instanceof TracableMessage) {
 			//自动生成key
 			//如果是延迟消息，用实际延迟发送的时间替换已存在的发生时间
 			TracableMessage tracableMessage = (TracableMessage) onsMessage;
-			if (message.getStartDeliverTime()>0) {
+			if (message.getStartDeliverTime()!=null && message.getStartDeliverTime()>0) {
 				tracableMessage.setOccurOn(new Date(message.getStartDeliverTime()));
 			}
 
@@ -85,7 +68,7 @@ public interface DefaultProducerService extends TraceableProducer {
 		}
 	}
 	
-	default public SendResult sendRawMessage(Message message, final InterceptorPredicate interPredicate, Supplier<Object> actualInvoker){
+	default public SendResult sendRawMessage(ExtMessage message, final InterceptorPredicate interPredicate, Supplier<Object> actualInvoker){
 		final InterceptorPredicate interceptorPredicate = interPredicate==null?SendMessageFlags.Default:interPredicate;
 		
 		return getInterceptableMessageSender().sendIntercetableMessage(interPredicate, messageInterceptors->{

@@ -19,9 +19,9 @@ public class ProductProduerTest {
 	@Test
 	public void testSendMessage(){
 		rocketMQProducerService.sendMessage("PRODUCT", "index-update", 2L);
-		LangOps.ntimesRun("test", 1000, index->{
-			rocketMQProducerService.sendMessage("PRODUCT-TOPIC", "", index);
-		});
+//		LangOps.ntimesRun("test", 1000, index->{
+//			rocketMQProducerService.sendMessage("PRODUCT-TOPIC", "", index);
+//		});
 //		rocketMQProducerService.sendMessage(MQTopic.PRODUCT.name(), MQTag.UPDATE_INDEX.name(), 2L);
 	}
 	

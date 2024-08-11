@@ -8,6 +8,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.message.MessageConst;
+import org.apache.rocketmq.common.message.MessageExt;
 import org.onetwo.ext.rocketmq.annotation.RMQConsumer;
 import org.onetwo.ext.rocketmq.annotation.RMQSubscribe;
 import org.slf4j.Logger;
@@ -22,13 +29,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.exception.MQClientException;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageConst;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
