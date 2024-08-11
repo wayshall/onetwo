@@ -37,8 +37,20 @@ public class SendMessageEntity extends BaseEntity {
 	private Boolean delay;
 	
 	public static enum SendStates {
+		/***
+		 * 未发送
+		 */
 		UNSEND,
-		SENT;
+		/***
+		 * 已发送
+		 */
+		SENT,
+		/****
+		 * 半消息，已发送到broker暂存，未发送到消费者，基于rocketmq的事务消息
+		 * 是一种特殊的消息类型，该状态的消息暂时不能被Consumer消费。
+		 * 当一条事务消息被成功投递到Broker上，但是Broker并没有接收到Producer发出的二次确认时，该事务消息就处于"暂时不可被消费"状态，该状态的事务消息被称为半消息。
+		 */
+		HALF;
 	}
 
 }

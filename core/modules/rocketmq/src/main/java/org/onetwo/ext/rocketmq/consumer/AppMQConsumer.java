@@ -1,8 +1,8 @@
 package org.onetwo.ext.rocketmq.consumer;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.rocketmq.common.message.MessageExt;
 
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 
 public interface AppMQConsumer<T> {
 

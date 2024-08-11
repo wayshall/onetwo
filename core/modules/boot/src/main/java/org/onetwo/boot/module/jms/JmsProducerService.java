@@ -42,9 +42,9 @@ public class JmsProducerService implements ProducerService<JmsMessageCreator, Ob
 	}
 
 	@Override
-	public Object send(Serializable message, InterceptorPredicate interceptorPredicate) {
+	public void send(Serializable message, InterceptorPredicate interceptorPredicate) {
 		if(message instanceof JmsMessageCreator){
-			return sendMessage((JmsMessageCreator)message);
+			sendMessage((JmsMessageCreator)message);
 		}
 		throw new IllegalArgumentException("error message type:"+message.getClass());
 	}
@@ -72,6 +72,7 @@ public class JmsProducerService implements ProducerService<JmsMessageCreator, Ob
 															.message(jmsMessage)
 															.chain(chain)
 															.debug(false)
+															.key(message.getKey())
 															.threadId(Thread.currentThread().getId())
 															.build();
 			chain.setSendMessageContext(ctx);

@@ -2,11 +2,10 @@ package org.onetwo.ext.ons.consumer;
 
 import java.util.Properties;
 
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
+import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.onetwo.ext.ons.ListenerType;
 import org.onetwo.ext.ons.annotation.ONSSubscribe.IdempotentType;
-
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
 
 import lombok.Builder;
 import lombok.Data;

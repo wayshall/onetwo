@@ -3,6 +3,11 @@ package org.onetwo.ext.ons.consumer;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.common.message.MessageExt;
+import org.onetwo.boot.mq.exception.ConsumeException;
+import org.onetwo.boot.mq.exception.DeserializeMessageException;
+import org.onetwo.boot.mq.exception.ImpossibleConsumeException;
 import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.alimq.BatchConsumContext;
@@ -13,17 +18,12 @@ import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.exception.ConsumeException;
-import org.onetwo.ext.ons.exception.DeserializeMessageException;
-import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.onetwo.common.utils.Assert;
+import org.springframework.util.Assert;
 
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Lists;
 

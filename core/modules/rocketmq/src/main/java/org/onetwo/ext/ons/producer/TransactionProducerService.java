@@ -1,9 +1,7 @@
 package org.onetwo.ext.ons.producer;
 
-import org.onetwo.ext.alimq.OnsMessage;
-
-import com.aliyun.openservices.ons.api.SendResult;
-import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
+import org.onetwo.ext.alimq.ExtMessage;
+import org.onetwo.ext.rocketmq.transaction.RmqTransactionContext;
 
 /**
  * @author wayshall
@@ -11,14 +9,13 @@ import com.aliyun.openservices.ons.api.transaction.LocalTransactionExecuter;
  */
 public interface TransactionProducerService extends TraceableProducer {
 
-	SendResult sendMessage(OnsMessage onsMessage,
-			LocalTransactionExecuter executer, Object arg);
-
 	/***
-	 * 伪装一个非事务producer，简化调用
-	 * @author wayshall
+	 * 
+	 * @param onsMessage
+	 * @param executer
+	 * @param tranactionListenerArg 应用自定义参数，该参数可以传入本地事务执行器
 	 * @return
 	 */
-	ProducerService fakeProducerService();
+	void sendMessage(ExtMessage message, RmqTransactionContext tranactionListenerArg);
 
 }

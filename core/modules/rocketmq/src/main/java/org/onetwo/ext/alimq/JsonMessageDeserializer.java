@@ -2,14 +2,14 @@ package org.onetwo.ext.alimq;
 
 import java.util.Map;
 
-import org.onetwo.common.exception.BaseException;
+import org.apache.rocketmq.common.message.MessageExt;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.jackson.exception.JsonException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.ons.ONSUtils;
 import org.slf4j.Logger;
 import org.springframework.util.ClassUtils;
 
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.google.common.collect.Maps;
 
 /**
@@ -46,13 +46,13 @@ public class JsonMessageDeserializer implements MessageDeserializer {
 			if(compatibilityTypeMappings.containsKey(typeName)){
 				typeName = compatibilityTypeMappings.get(typeName);
 			}
-			return jsonMapper.fromJson(body, ClassUtils.forName(typeName, null), debug);
+			return jsonMapper.fromJson(body, ClassUtils.forName(typeName, ClassUtils.getDefaultClassLoader()), debug);
 		} catch (Exception e) {
 			if (debug) {
 				logger.error("deserialize message body : {}", LangUtils.newString(body));
-				throw new BaseException("deserialize message error for type: " + typeName, e);
+				throw new JsonException("deserialize message error for type: " + typeName, e);
 			} else {
-				throw new BaseException("deserialize message error for type: " + typeName, e);
+				throw new JsonException("deserialize message error for type: " + typeName, e);
 			}
 		}
 	}
@@ -62,7 +62,7 @@ public class JsonMessageDeserializer implements MessageDeserializer {
 		try {
 			return jsonMapper.fromJson(body, messageType);
 		} catch (Exception e) {
-			throw new BaseException("deserialize message error for class: " + messageType.getName(), e);
+			throw new JsonException("deserialize message error for class: " + messageType.getName(), e);
 		}
 	}
 

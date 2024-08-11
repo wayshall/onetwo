@@ -277,22 +277,28 @@ public final class RequestUtils {
 	
 	public static MediaType getAcceptAsMediaType(HttpServletRequest request){
 		String accept = request.getHeader("Accept");
+		if (StringUtils.isBlank(accept)) {
+			return null;
+		}
 		try {
 			MediaType mtype = MediaType.valueOf(accept);
 			return mtype;
 		} catch (Exception e) {
-			logger.error("parse [{}] as MediaType error: " + e.getMessage(), accept);
+			logger.debug("parse Accept Header [{}] as MediaType error: " + e.getMessage(), accept);
 			return null;
 		}
 	}
 	
 	public static MediaType getContentTypeAsMediaType(HttpServletRequest request){
-		String accept = request.getHeader("Content-Type");
+		String contentType = request.getHeader("Content-Type");
+		if (StringUtils.isBlank(contentType)) {
+			return null;
+		}
 		try {
-			MediaType mtype = MediaType.valueOf(accept);
+			MediaType mtype = MediaType.valueOf(contentType);
 			return mtype;
 		} catch (Exception e) {
-			logger.error("parse [{}] as MediaType error: " + e.getMessage(), accept);
+			logger.debug("parse Content-Type Header [{}] as MediaType error: " + e.getMessage(), contentType);
 			return null;
 		}
 	}

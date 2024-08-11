@@ -4,10 +4,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.MQPushConsumer;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.message.MessageExt;
+import org.onetwo.boot.mq.exception.ImpossibleConsumeException;
+import org.onetwo.boot.mq.exception.MessageConsumedException;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
-import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.BatchConsumContext;
@@ -16,25 +24,13 @@ import org.onetwo.ext.ons.ListenerType;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.ConsumeFromWhereProps;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
-import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.onetwo.common.utils.Assert;
+import org.springframework.util.Assert;
 
-import com.aliyun.openservices.ons.api.Consumer;
-import com.aliyun.openservices.ons.api.MessageListener;
-import com.aliyun.openservices.ons.api.ONSFactory;
-import com.aliyun.openservices.ons.api.PropertyKeyConst;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.exception.MQClientException;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -47,7 +43,7 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	private ApplicationContext applicationContext;
 //	private MessageDeserializer messageDeserializer;
 	
-	private List<Consumer> consumers = Lists.newArrayList();
+	private List<MQPushConsumer> consumers = Lists.newArrayList();
 	
 	private ONSProperties onsProperties;
 	
@@ -76,7 +72,8 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		logger.info("ons consumer init. namesrvAddr: {}", onsProperties.getOnsAddr());
+//		logger.info("ons consumer init. namesrvAddr: {}", onsProperties.getOnsAddr());
+		logger.info("ons consumer init. namesrvAddr: {}", onsProperties.getNamesrvAddr());
 //		Assert.notNull(messageDeserializer);
 //		Assert.notNull(consumerListenerComposite);
 		ConsumerScanner scanner = new ConsumerScanner(applicationContext, this.consumerProcessors);
@@ -100,8 +97,18 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 	}
 	
 
-    protected Consumer createConsumer(final Properties comsumerProperties) {
-        return ONSFactory.createConsumer(comsumerProperties);
+    protected MQPushConsumer createConsumer(final Properties comsumerProperties, ConsumerMeta meta) {
+    	DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(meta.getConsumerId());
+    	consumer.setMessageModel(meta.getMessageModel());
+    	if (meta.getMaxReconsumeTimes()>0){
+    		consumer.setMaxReconsumeTimes(meta.getMaxReconsumeTimes());
+    	}
+    	if (meta.getConsumeTimeoutInMinutes()>0) {
+    		consumer.setConsumeTimeout(meta.getConsumeTimeoutInMinutes());
+    	}
+    	SpringUtils.getMapToBean().injectBeanProperties(comsumerProperties, consumer);
+    	consumer.setNamesrvAddr(onsProperties.getNamesrvAddr());
+    	return consumer;
     }
 
 	private void initializeConsumers(ConsumerMeta meta) throws InterruptedException, MQClientException {
@@ -110,18 +117,6 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		logger.info("create mq consumerId: {}", meta.getConsumerId());
 
 		Properties comsumerProperties = onsProperties.baseProperties();
-		comsumerProperties.setProperty(PropertyKeyConst.ConsumerId, meta.getConsumerId());
-		comsumerProperties.setProperty(PropertyKeyConst.MessageModel, meta.getMessageModel().name());
-		if (meta.getMaxReconsumeTimes()>0){
-			comsumerProperties.setProperty(PropertyKeyConst.MaxReconsumeTimes, String.valueOf(meta.getMaxReconsumeTimes()));
-		}
-		if (meta.getConsumeTimeoutInMinutes()>0) {
-			comsumerProperties.setProperty(PropertyKeyConst.ConsumeTimeout, meta.getConsumeTimeoutInMinutes()+"");
-		}
-		
-		if (meta.getComsumerProperties()!=null) {
-			comsumerProperties.putAll(meta.getComsumerProperties());
-		}
 		// 配置覆盖注解
 		Properties customProps = onsProperties.getConsumers().get(meta.getConsumerId());
 		if (customProps!=null){
@@ -129,8 +124,9 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		}
 //		rawConsumer.setMessageModel(meta.getMessageModel());
 		
-		Consumer consumer = createConsumer(comsumerProperties);
-		DefaultMQPushConsumer rawConsumer = (DefaultMQPushConsumer)ReflectUtils.getFieldValue(consumer, "defaultMQPushConsumer");
+		MQPushConsumer consumer = createConsumer(comsumerProperties, meta);
+//		DefaultMQPushConsumer rawConsumer = (DefaultMQPushConsumer)ReflectUtils.getFieldValue(consumer, "defaultMQPushConsumer");
+		DefaultMQPushConsumer rawConsumer = (DefaultMQPushConsumer)consumer;
 		rawConsumer.setConsumeFromWhere(meta.getConsumeFromWhere());
 		rawConsumer.setConsumeMessageBatchMaxSize(meta.getConsumeMessageBatchMaxSize());
 		
@@ -148,17 +144,14 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 		
 //		consumer.subscribe(meta.getTopic(), meta.getSubExpression(), listener);
 		ListenerType listenerType = meta.getListenerType(); 
-		if(listenerType==ListenerType.CUSTOM){
+		if (listenerType==ListenerType.CUSTOM) {
 			rawConsumer.subscribe(meta.getTopic(), meta.getSubExpression());
 			registerONSConsumerListener(rawConsumer, meta);
 			rawConsumer.start();
-		}else if(listenerType==ListenerType.RMQ){
+		} else {
 			rawConsumer.subscribe(meta.getTopic(), meta.getSubExpression());
 			rawConsumer.registerMessageListener((MessageListenerConcurrently)meta.getConsumerAction());
 			rawConsumer.start();
-		}else{
-			consumer.subscribe(meta.getTopic(), meta.getSubExpression(), (MessageListener)meta.getConsumerAction());
-			consumer.start();
 		}
 		logger.info("ONSConsumer[{}] started! meta: {}", meta.getConsumerId(), meta);
 	}

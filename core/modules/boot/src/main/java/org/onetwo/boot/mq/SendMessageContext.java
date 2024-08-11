@@ -21,11 +21,11 @@ public class SendMessageContext<M extends Serializable> {
 	private SendMessageEntity messageEntity;
 	final private long threadId;
 	private boolean debug;
-	private String key;
+	final private String key;
 	
 
 	@Builder(builderMethodName="newBuilder")
-	public SendMessageContext(M message, SendMessageInterceptorChain chain,
+	public SendMessageContext(String key, M message, SendMessageInterceptorChain chain,
 			SendMessageEntity messageEntity, long threadId, boolean debug) {
 		super();
 		this.message = message;
@@ -33,6 +33,7 @@ public class SendMessageContext<M extends Serializable> {
 		this.messageEntity = messageEntity;
 		this.threadId = threadId;
 		this.debug = debug;
+		this.key = key;
 	}
 	
 	public boolean isDebug() {

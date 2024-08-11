@@ -5,14 +5,13 @@ import java.util.Date;
 import org.onetwo.boot.mq.SendMessageContext;
 import org.onetwo.boot.mq.entity.SendMessageEntity;
 import org.onetwo.boot.mq.interceptor.SimpleDatabaseTransactionMessageInterceptor;
+import org.onetwo.ext.alimq.ExtMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.MqServerTypes;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-
-import com.aliyun.openservices.ons.api.Message;
 
 /**
  * @author wayshall
@@ -43,7 +42,7 @@ public class OnsDatabaseTransactionMessageInterceptor extends SimpleDatabaseTran
 	
 	@Override
 	protected SendMessageEntity createSendMessageEntity(SendMessageContext<?> ctx){
-		Message onsMessage = (Message)ctx.getMessage();
+		ExtMessage onsMessage = (ExtMessage)ctx.getMessage();
 		SendMessageEntity send = super.createSendMessageEntity(ctx);
 		
 		if(ctx.isDelayMessage()){

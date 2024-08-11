@@ -13,7 +13,7 @@ public interface ProducerService<M, R> {
 
 	R sendMessage(M message);
 	R sendMessage(M message, InterceptorPredicate interceptorPredicate);
-	R send(Serializable message, InterceptorPredicate interceptorPredicate);
+	void send(Serializable message, InterceptorPredicate interceptorPredicate);
 
 
 }

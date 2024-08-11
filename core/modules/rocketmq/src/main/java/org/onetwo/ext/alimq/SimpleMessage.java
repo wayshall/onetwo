@@ -7,9 +7,6 @@ import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 
-import com.aliyun.openservices.ons.api.ExtMessage;
-import com.aliyun.openservices.ons.api.Message;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -82,6 +79,7 @@ level > maxLevel，则level== maxLevel，例如level==20，延迟2
     private String serializer;
     
     private boolean debug;
+    private ExtMessage message;
 
     public SimpleMessage putUserProperty(String key, String value) {
     	if(this.userProperties==null) {
@@ -92,11 +90,14 @@ level > maxLevel，则level== maxLevel，例如level==20，延迟2
     }
     
 	
-	public Message toMessage(){
+	public ExtMessage toMessage(){
+		if (message!=null) {
+			return message;
+		}
 //		Message message = new Message();
 		ExtMessage message = new ExtMessage();
 		message.setTopic(topic);
-		message.setTag(tags);
+		message.setTags(tags);
 		if(delayTimeInMillis!=null){
 			this.delayTimeInMillis = System.currentTimeMillis()+delayTimeInMillis;
 			message.setStartDeliverTime(delayTimeInMillis);
@@ -108,8 +109,10 @@ level > maxLevel，则level== maxLevel，例如level==20，延迟2
 			message.setStartDeliverTime(delayTimeInMillis);
 		}
 		message.setUserProperties(userProperties);
-		message.setKey(key);
+		message.setKeys(key);
 		message.setDelayTimeLevel(delayTimeLevel);
+		
+		this.message = message;
 		
 		return message;
 	}

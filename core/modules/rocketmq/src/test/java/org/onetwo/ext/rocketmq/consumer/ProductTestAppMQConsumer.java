@@ -1,11 +1,10 @@
 package org.onetwo.ext.rocketmq.consumer;
 
+import org.apache.rocketmq.common.message.MessageExt;
 import org.onetwo.ext.rocketmq.annotation.RMQConsumer;
 import org.onetwo.ext.rocketmq.annotation.RMQSubscribe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 
 @RMQConsumer
 public class ProductTestAppMQConsumer{

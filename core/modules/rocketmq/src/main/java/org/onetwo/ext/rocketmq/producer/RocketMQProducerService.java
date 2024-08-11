@@ -1,52 +1,72 @@
 package org.onetwo.ext.rocketmq.producer;
 
 import java.io.Serializable;
+import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.exception.RemotingException;
+import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.ext.alimq.MessageSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.exception.MQBrokerException;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.exception.MQClientException;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.producer.DefaultMQProducer;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.producer.SendResult;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.producer.SendStatus;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.Message;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.remoting.exception.RemotingException;
 
 public class RocketMQProducerService implements InitializingBean, DisposableBean {
 
-	final private Logger logger = LoggerFactory.getLogger(this.getClass());
+	final protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private String namesrvAddr;
-	private String groupName = "defaultProduerGroup";
-	private DefaultMQProducer defaultMQProducer;
+	protected String namesrvAddr;
+	protected String groupName = "defaultProduerGroup";
+	protected DefaultMQProducer defaultMQProducer;
 //	private JsonMapper jsonMapper = JsonMapper.defaultMapper();
 	private Consumer<Throwable> errorHandler = null;
-	private MessageSerializer messageSerializer = (body, messageDelegate)->SerializationUtils.serialize((Serializable)body);
+	protected MessageSerializer messageSerializer = (body, messageDelegate)->SerializationUtils.serialize((Serializable)body);
+	private Properties producerProperties;
 
 	public RocketMQProducerService() {
 	}
 	
+	@Autowired
+	public void setMessageSerializer(MessageSerializer messageSerializer) {
+		this.messageSerializer = messageSerializer;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.hasText(groupName);
-//		Assert.hasText(namesrvAddr);
+		Assert.hasText(namesrvAddr);
 		
-		DefaultMQProducer defaultMQProducer = new DefaultMQProducer(groupName);
-		defaultMQProducer.setNamesrvAddr(namesrvAddr);
-		defaultMQProducer.setVipChannelEnabled(false);
+		DefaultMQProducer defaultMQProducer = newMQProducer(groupName);
+		configMQProducer(defaultMQProducer);
 		defaultMQProducer.start();
 		this.defaultMQProducer = defaultMQProducer;
 	}
+	
+	protected DefaultMQProducer configMQProducer(DefaultMQProducer defaultMQProducer) {
+//		defaultMQProducer.setNamesrvAddr(namesrvAddr);
+//		defaultMQProducer.setVipChannelEnabled(false);
+		SpringUtils.getMapToBean().injectBeanProperties(producerProperties, defaultMQProducer);
+		defaultMQProducer.setNamesrvAddr(namesrvAddr);
+		return defaultMQProducer;
+	}
 
+	protected DefaultMQProducer newMQProducer(String groupName) {
+		return new DefaultMQProducer(groupName);
+	}
 
 	public void setErrorHandler(Consumer<Throwable> errorHandler) {
 		this.errorHandler = errorHandler;
@@ -60,15 +80,19 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 	}*/
 
 	public void sendMessage(String topic, String tags, Object body){
-		Assert.notNull(messageSerializer);
-		sendBytesMessage(topic, tags, messageSerializer.serialize(body, null));
+		sendBytesMessage(topic, tags, serializeMessage(body));
 	}
 	
 	public void sendBytesMessage(String topic, String tags, byte[] body){
 		SendResult result =  sendBytesMessage(topic, tags, body, errorHandler);
 		if(result.getSendStatus()!=SendStatus.SEND_OK){
-			throw BaseException.formatMessage("发送消息失败!(%s)", result.getSendStatus());
+			throw new MQException("发送消息失败: " + result.getSendStatus());
 		}
+	}
+	
+	protected byte[] serializeMessage(Object body) {
+		Assert.notNull(messageSerializer);
+		return messageSerializer.serialize(body, null);
 	}
 
 	public SendResult sendBytesMessage(String topic, String tags, byte[] body, Consumer<Throwable> errorHandler){
@@ -78,10 +102,11 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 		message.setBody(body);
 		return sendRawMessage(message, errorHandler);
 	}
+	
 	public void sendRawMessage(Message message){
 		SendResult result = sendRawMessage(message, errorHandler);
 		if(result.getSendStatus()!=SendStatus.SEND_OK){
-			throw BaseException.formatMessage("发送消息失败!(%s)", result.getSendStatus());
+			throw new MQException("send rocketmq message error: " + result.getSendStatus());
 		}
 	}
 	
@@ -92,9 +117,17 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 			return sendResult;
 		} catch (MQClientException | RemotingException | MQBrokerException
 				| InterruptedException e) {
-			this.handleException(e, message);
+			if (errorHandler!=null) {
+				errorHandler.accept(e);
+			} else {
+				this.handleException(e, message);
+			}
 		}catch (Throwable e) {
-			this.handleException(e, message);
+			if (errorHandler!=null) {
+				errorHandler.accept(e);
+			} else {
+				this.handleException(e, message);
+			}
 		}
 		return null;
 	}
@@ -123,6 +156,30 @@ public class RocketMQProducerService implements InitializingBean, DisposableBean
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public String getNamesrvAddr() {
+		return namesrvAddr;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public DefaultMQProducer getProducer() {
+		return defaultMQProducer;
+	}
+
+	public Properties getProducerProperties() {
+		return producerProperties;
+	}
+
+	public void setProducerProperties(Properties producerProperties) {
+		this.producerProperties = producerProperties;
+	}
+
+	public MessageSerializer getMessageSerializer() {
+		return messageSerializer;
 	}
 	
 }
