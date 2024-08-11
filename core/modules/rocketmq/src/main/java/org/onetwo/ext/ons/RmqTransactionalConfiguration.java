@@ -6,13 +6,11 @@ import org.onetwo.boot.mq.cosume.ReceiveMessageRepository;
 import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.repository.SendMessageRepository;
 import org.onetwo.boot.mq.serializer.MessageBodyStoreSerializer;
-import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.ext.ons.consumer.StoreConsumerListener;
 import org.onetwo.ext.ons.producer.OnsDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.rocketmq.transaction.GenericTransactionListener;
 import org.onetwo.ext.rocketmq.transaction.RmqTransactionLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,6 +43,7 @@ public class RmqTransactionalConfiguration {
 	}
 
 	@Bean
+//	@ConditionalOnBean(BaseEntityManager.class)
 	public StoreConsumerListener storeConsumerListener() {
 		StoreConsumerListener listener = new StoreConsumerListener();
 		return listener;
@@ -52,7 +51,7 @@ public class RmqTransactionalConfiguration {
 	
 	@Bean
 	@ConditionalOnMissingBean(ReceiveMessageRepository.class)
-	@ConditionalOnBean(BaseEntityManager.class)
+//	@ConditionalOnBean(BaseEntityManager.class)
 	public ReceiveMessageRepository receiveMessageRepository() {
 		return new DbmReceiveMessageRepository();
 	}

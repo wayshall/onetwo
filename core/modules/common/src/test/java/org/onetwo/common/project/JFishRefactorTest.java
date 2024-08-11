@@ -15,16 +15,16 @@ public class JFishRefactorTest {
 	
 	@Test
 	public void upgradeVersions(){
-		String baseDir = "/Users/way/mydev/java/odysseus-ai";
+		String baseDir = "/Users/way/mydev/java/odysseus-branch";
 		String dir = baseDir + "/onetwo/core/";
-		String oldVersion = "5.2.7-SNAPSHOT";
-		String newVersion = "6.0.0-SNAPSHOT";
+		String oldVersion = "5.0.0-SNAPSHOT";
+		String newVersion = "5.2.7-SNAPSHOT";
 		
 
 		String dbmPath = baseDir + "/dbm";
 		String wechatPath = baseDir + "/onetwo-wechat";
 		String tccPath = baseDir + "/onetwo-tcc";
-		String pluginPath = baseDir + "/zifish-plugins";
+		String pluginPath = baseDir + "/onetwo-tcc";
 		
 		List<String> dirs = Lists.newArrayList();
 		dirs.add(dir);

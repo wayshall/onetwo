@@ -8,6 +8,7 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.onetwo.boot.mq.exception.ConsumeException;
 import org.onetwo.boot.mq.exception.DeserializeMessageException;
 import org.onetwo.boot.mq.exception.ImpossibleConsumeException;
+import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.alimq.BatchConsumContext;
@@ -85,10 +86,22 @@ public class DelegateMessageService implements InitializingBean {
 			MessageDeserializer messageDeserializer = getMessageDeserializer(deserializer);
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
+			// 是否自动反序列化
 			if(meta.isAutoDeserialize()){
-				Class<?> bodyClass = consumer.getMessageBodyClass(currentConetxt);
-				if (bodyClass!=null) {
-					message.putUserProperty(JsonMessageSerializer.PROP_BODY_TYPE, bodyClass.getName());
+				// 消息原始数据类型
+				String sourceClassName = message.getUserProperty(JsonMessageSerializer.PROP_BODY_TYPE);
+				// 根据consumer方法（@ONSSubscribe注解的方法）定义的参数，获取需要反序列化的目标类型
+				Class<?> targetBodyClass = consumer.getMessageBodyClass(currentConetxt);
+				if (targetBodyClass!=null) {
+					if (!targetBodyClass.getName().equals(sourceClassName)) {
+						// 消息的原始类型和目标类型不符
+						throw new MQException("The original type(" + sourceClassName + ") of the message "
+								+ "does not match the target type(" + targetBodyClass + "), "
+								+ "consumer group: " + meta.getConsumerId() + ", "
+								+ "consumer bean: " + meta.getConsumerBeanName());
+					}
+					// 把目标类型设置到property，以供反序列化器使用，注意：如果consumer方法定义的类型和原始类型不兼容，则反序列化的时候会出错
+					message.putUserProperty(JsonMessageSerializer.PROP_BODY_TYPE, targetBodyClass.getName());
 				}
 //				body = messageDeserializer.deserialize(message.getBody(), message);
 				body = deserializeMessage(messageDeserializer, message);

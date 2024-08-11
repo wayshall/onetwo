@@ -1,4 +1,4 @@
-package org.onetwo.ext.rmqwithonsclient.producer;
+package org.onetwo.ext.rmqwithonsclient.consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +17,7 @@ import org.onetwo.ext.ons.annotation.ONSSubscribe.IdempotentType;
 import org.onetwo.ext.ons.consumer.ConsumerMeta;
 import org.onetwo.ext.ons.consumer.ONSSubscribeProcessor;
 import org.onetwo.ext.ons.producer.ONSProducerTest;
-import org.onetwo.ext.rmqwithonsclient.producer.RmqONSConsumerTest.RmqConsumerTestContext;
+import org.onetwo.ext.rmqwithonsclient.consumer.RmqONSConsumerTest.RmqConsumerTestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ContextConfiguration;
