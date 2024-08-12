@@ -7,7 +7,7 @@ import org.onetwo.ext.alimq.OnsMessage;
  * @author wayshall
  * <br/>
  */
-public interface ProducerService extends TraceableProducer, org.onetwo.boot.mq.ProducerService<OnsMessage, SendResult> {
+public interface RmqProducerService extends org.onetwo.boot.mq.ProducerService<OnsMessage, SendResult> {
 
 	void sendMessage(String topic, String tags, Object body);
 	void send(OnsMessage onsMessage);

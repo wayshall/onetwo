@@ -10,7 +10,7 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.exception.RemotingException;
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.boot.mq.exception.MQException;
 
 public class DefaultMQProducerImplExt extends DefaultMQProducerImpl {
 	
@@ -40,7 +40,7 @@ public class DefaultMQProducerImplExt extends DefaultMQProducerImpl {
         final Throwable localException) throws RemotingException, MQBrokerException, InterruptedException, UnknownHostException {
     	super.endTransaction(msg, sendResult, localTransactionState, localException);
     	if (localException!=null) {
-    		throw new BaseException("executeLocalTransactionBranch exception: " + localException.getMessage(), localException);
+    		throw new MQException("executeLocalTransactionBranch exception: " + localException.getMessage(), localException);
     	}
     }
 

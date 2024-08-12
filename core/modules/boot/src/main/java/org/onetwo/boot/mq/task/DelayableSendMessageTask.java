@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.module.redis.RedisLockRunner;
@@ -27,12 +28,14 @@ import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.db.generator.meta.TableMeta;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.log.JFishLoggerFactory;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.core.spi.DbmSessionFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.onetwo.common.utils.Assert;
@@ -61,7 +64,7 @@ public class DelayableSendMessageTask implements InitializingBean, DisposableBea
 	private MessageBodyStoreSerializer messageBodyStoreSerializer;
 	@Autowired
 	private SendMessageRepository sendMessageRepository;
-	@Autowired
+//	@Autowired
 	private ProducerService<?, ?> producerService;
 	
 	private boolean useReidsLock;
@@ -76,14 +79,30 @@ public class DelayableSendMessageTask implements InitializingBean, DisposableBea
 //	@Autowired(required=false)
 //	private AsyncTaskExecutor asyncTaskExecutor;
 	private ExecutorService executorService;
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(useReidsLock){
 			Assert.notNull(redisLockRegistry, "redisLockRegistry not found!");
 		}
-		if (mqProperties.getTransactional().getSendTask().isCheckMessageTable()) {
+		SendTaskProps sendTask = mqProperties.getTransactional().getSendTask();
+		if (sendTask.isCheckMessageTable()) {
 			checkMessageTable();
+		}
+		
+		if (StringUtils.isBlank(sendTask.getProducerId())) {
+			this.producerService = SpringUtils.getBean(applicationContext, ProducerService.class);
+		} else {
+			this.producerService = SpringUtils.getBean(applicationContext, sendTask.getProducerId());
+		}
+		if (this.producerService==null) {
+			throw new BaseException("producerService not found!");
+		}
+		if (this.producerService.isTransactional()) {
+			// 补偿发送的生产者不能是事务消息生产者
+			throw new BaseException("producerService can not be a transactional producer: " + this.producerService.getClass());
 		}
 		executorService = Executors.newFixedThreadPool(1, newThreadFactory());
 		startDelayedTask();

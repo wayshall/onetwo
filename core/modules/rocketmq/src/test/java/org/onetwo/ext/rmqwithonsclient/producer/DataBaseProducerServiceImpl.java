@@ -11,7 +11,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.dbm.id.SnowflakeIdGenerator;
 import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.producer.ProducerService;
+import org.onetwo.ext.ons.producer.RmqProducerService;
 import org.onetwo.ext.rmqwithonsclient.producer.RmqONSProducerTest.OrderTestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DataBaseProducerServiceImpl {
 
 	@Autowired
-	ProducerService onsProducerService;
+	RmqProducerService onsProducerService;
 	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
 	
 

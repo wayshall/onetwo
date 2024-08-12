@@ -17,7 +17,7 @@ import lombok.EqualsAndHashCode;
 public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext<ExtMessage>{
 	
 //	final private Message message;
-	final private TraceableProducer source;
+	final private RmqProducerService source;
 //	final private ProducerBean producer;
 //	final private TransactionProducerBean transactionProducer;
 //	final private SendMessageInterceptorChain chain;
@@ -29,7 +29,7 @@ public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext
 	@Builder
 	public ONSSendMessageContext(ExtMessage message,
 			SendMessageEntity messageEntity, long threadId,
-			boolean debug, TraceableProducer source, 
+			boolean debug, RmqProducerService source, 
 			/*ProducerBean producer,
 			TransactionProducerBean transactionProducer,*/
 			SendMessageInterceptorChain chain) {

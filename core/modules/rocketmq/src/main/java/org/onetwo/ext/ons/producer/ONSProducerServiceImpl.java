@@ -36,7 +36,7 @@ import org.onetwo.common.utils.Assert;
  * @author wayshall
  * <br/>
  */
-public class ONSProducerServiceImpl extends RocketMQProducerService implements InitializingBean, DisposableBean, DefaultProducerService, ProducerService {
+public class ONSProducerServiceImpl extends RocketMQProducerService implements InitializingBean, DisposableBean, DefaultProducerService, RmqProducerService {
 
 	private ONSProperties onsProperties;
 //	private String producerId;
@@ -46,7 +46,7 @@ public class ONSProducerServiceImpl extends RocketMQProducerService implements I
 	private InterceptableMessageSender<SendResult> interceptableMessageSender;
 	
 	@Autowired
-	private ApplicationContext applicationContext;
+	protected ApplicationContext applicationContext;
 
 	
 	public ONSProducerServiceImpl() {
@@ -277,9 +277,8 @@ public class ONSProducerServiceImpl extends RocketMQProducerService implements I
 		return null;
 	}
 	
-	@Override
 	public <T> T getRawProducer(Class<T> targetClass) {
-		return targetClass.cast(this);
+		return targetClass.cast(this.defaultMQProducer);
 	}
 
 	@Override

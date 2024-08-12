@@ -22,7 +22,7 @@ import org.onetwo.ext.ons.TracableMessageKey;
  * @author weishao zeng
  * <br/>
  */
-public interface DefaultProducerService extends TraceableProducer {
+public interface DefaultProducerService extends RmqProducerService {
 
 	InterceptableMessageSender<SendResult> getInterceptableMessageSender();
 	

@@ -1,4 +1,4 @@
-package org.onetwo.ext.rmqwithonsclient.transactionmessage;
+package org.onetwo.ext.transactionmessage;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +11,7 @@ import org.onetwo.dbm.spring.EnableDbm;
 import org.onetwo.ext.ons.annotation.EnableONSClient;
 import org.onetwo.ext.ons.annotation.ONSProducer;
 import org.onetwo.ext.ons.consumer.TestConsumer;
-import org.onetwo.ext.rmqwithonsclient.consumer.RmqONSConsumerTest.RmqConsumerTestContext;
+import org.onetwo.ext.transactionmessage.TransactionMessageConsumerTest.RmqTransactionConsumerTestContext;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author way
  *
  */
-@ContextConfiguration(classes=RmqConsumerTestContext.class)
+@ContextConfiguration(classes=RmqTransactionConsumerTestContext.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TransactionMessageConsumerTest {
 
@@ -38,10 +38,10 @@ public class TransactionMessageConsumerTest {
 	
 	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
 	@Configuration
-	@PropertySource("classpath:transaction-message-test.properties")
+	@PropertySource("classpath:transaction-message-consumer.properties")
 	@ComponentScan
 	@EnableDbm
-	public static class RmqConsumerTestContext {
+	public static class RmqTransactionConsumerTestContext {
 		@Bean
 		public TestConsumer testConsumer(){
 			return new TestConsumer();
@@ -57,7 +57,7 @@ public class TransactionMessageConsumerTest {
 		
 		@Bean
 		public PropertyPlaceholderConfigurer jfishPropertyPlaceholder(){
-			return SpringUtils.newApplicationConf("transaction-message-test.properties");
+			return SpringUtils.newApplicationConf("transaction-message-consumer.properties");
 		}
 		
 		@Bean

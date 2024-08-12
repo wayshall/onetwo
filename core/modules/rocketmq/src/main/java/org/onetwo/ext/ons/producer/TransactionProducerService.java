@@ -7,7 +7,7 @@ import org.onetwo.ext.rocketmq.transaction.RmqTransactionContext;
  * @author wayshall
  * <br/>
  */
-public interface TransactionProducerService extends TraceableProducer {
+public interface TransactionProducerService extends RmqProducerService {
 
 	/***
 	 * 
