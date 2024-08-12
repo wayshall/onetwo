@@ -59,6 +59,7 @@ public class MQProperties {
 		String locker;
 		private String redisLockTimeout;
 		private boolean checkMessageTable = true;
+		String producerId;
 		
 		public String getLocker(){
 			String locker = this.locker;

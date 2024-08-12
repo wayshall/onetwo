@@ -14,6 +14,13 @@ public interface ProducerService<M, R> {
 	R sendMessage(M message);
 	R sendMessage(M message, InterceptorPredicate interceptorPredicate);
 	void send(Serializable message, InterceptorPredicate interceptorPredicate);
-
+	
+	/***
+	 * 是否事务的producer
+	 * @return
+	 */
+	default boolean isTransactional() {
+		return false;
+	}
 
 }

@@ -5,7 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.onetwo.boot.mq.MQTransactionalConfiguration;
 import org.onetwo.ext.ons.ONSConfiguration;
+import org.onetwo.ext.ons.RmqTransactionalConfiguration;
 import org.onetwo.ext.ons.producer.ProducerRegistar;
 import org.springframework.context.annotation.Import;
 
@@ -15,7 +17,7 @@ import org.springframework.context.annotation.Import;
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import({ONSConfiguration.class, ProducerRegistar.class})
+@Import({ONSConfiguration.class, ProducerRegistar.class, MQTransactionalConfiguration.class, RmqTransactionalConfiguration.class})
 public @interface EnableONSClient {
 //	String[] producerIds() default {};
 	ONSProducer[] producers() default {};

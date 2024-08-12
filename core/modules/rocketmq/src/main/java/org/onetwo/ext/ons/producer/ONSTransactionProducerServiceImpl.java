@@ -2,12 +2,12 @@ package org.onetwo.ext.ons.producer;
 
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.ExtMessage;
 import org.onetwo.ext.rocketmq.transaction.DefaultMQProducerImplExt;
-import org.onetwo.ext.rocketmq.transaction.GenericTransactionListener;
 import org.onetwo.ext.rocketmq.transaction.RmqTransactionContext;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.factory.DisposableBean;
@@ -22,14 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ONSTransactionProducerServiceImpl extends ONSProducerServiceImpl implements InitializingBean, DisposableBean, DefaultProducerService, TransactionProducerService {
 	
-	@Autowired
-	private GenericTransactionListener transactionListener;
+	private TransactionListener transactionListener;
 	
 	protected TransactionMQProducer newMQProducer(String groupName) {
+//		GenericRmqTransactionListener transactionListener = SpringUtils.getBean(applicationContext, GenericRmqTransactionListener.class);
 		TransactionMQProducer producer = new TransactionMQProducer(groupName);
 		DefaultMQProducerImplExt producerExt = new DefaultMQProducerImplExt(producer);
 		producer.setTransactionListener(transactionListener);
-		ConfigurablePropertyAccessor bw = SpringUtils.newPropertyAccessor(producerExt, true);
+		ConfigurablePropertyAccessor bw = SpringUtils.newPropertyAccessor(producer, true);
 		// 替换掉默认的defaultMQProducerImpl
 		bw.setPropertyValue("defaultMQProducerImpl", producerExt);
 		return producer;
@@ -47,20 +47,25 @@ public class ONSTransactionProducerServiceImpl extends ONSProducerServiceImpl im
 	}
 
 	public SendResult doSendRawMessage(ExtMessage message){
+		TransactionSendResult result = null;
 		try {
 			if (logger.isInfoEnabled()) {
-				logger.info("do send raw transactional message: {}", message.getKey());
+				logger.info("do send raw transactional message. keys: {}", message.getKey());
 			}
 //			return this.send(message);
 			RmqTransactionContext ctx = new RmqTransactionContext();
-			TransactionSendResult result = this.getProducer().sendMessageInTransaction(message, ctx);
+			result = this.getProducer().sendMessageInTransaction(message, ctx);
+
+			if (logger.isInfoEnabled()) {
+				logger.info("transactional message has been sent. key: {}, result: {}", message.getKey(), result);
+			}
 			checkSendResult(result);
 		} catch (MQClientException e) {
 			handleException(e, message);
 		}catch (Throwable e) {
 			handleException(e, message);
 		}
-		return null;
+		return result;
 	}
 
 	@Override
@@ -74,5 +79,12 @@ public class ONSTransactionProducerServiceImpl extends ONSProducerServiceImpl im
 			handleException(e, message);
 		}
 	}
+
+	@Autowired
+	public void setTransactionListener(TransactionListener transactionListener) {
+		this.transactionListener = transactionListener;
+	}
+	
+	
 	
 }

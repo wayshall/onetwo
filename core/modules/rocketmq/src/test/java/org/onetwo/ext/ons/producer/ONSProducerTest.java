@@ -32,7 +32,7 @@ public class ONSProducerTest {
 	public static final String ORDER_CANCEL = "${tags.orderCancel}";
 
 	@Autowired
-	ProducerService onsProducerService;
+	RmqProducerService onsProducerService;
 	
 	@Test
 	public void testSendMessage(){

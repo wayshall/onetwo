@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @EnableConfigurationProperties({MQProperties.class, ONSProperties.class})
-@Import({MQTransactionalConfiguration.class, RmqTransactionalConfiguration.class})
+//@Import({MQTransactionalConfiguration.class})
 public class ONSConfiguration {
 	@Autowired
 	private ONSProperties onsProperties;

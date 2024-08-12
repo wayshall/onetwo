@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author way
  *
  */
-public class GenericTransactionListener implements TransactionListener {
+public class GenericRmqTransactionListener implements TransactionListener {
 //	private final Logger logger = JFishLoggerFactory.getLogger(getClass());
 	
 	@Autowired
