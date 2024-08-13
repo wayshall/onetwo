@@ -1,12 +1,11 @@
 package org.onetwo.ext.transactionmessage;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import org.hibernate.validator.constraints.Length;
 import org.onetwo.dbm.annotation.SnowflakeId;
 import org.onetwo.dbm.jpa.BaseEntity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

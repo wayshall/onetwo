@@ -2,6 +2,7 @@ package org.onetwo.common.web.tomcatmini;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
+import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.ContextConfig;
@@ -18,8 +19,9 @@ public class JFishTomcat extends Tomcat {
 	/****
 	 * 设置扫描目录，让实现了ServletContainerInitializer和WebApplicationInitializer接口而不在jar里面的类被扫描到
 	 */
-	public Context addWebapp(Host host, String url, String name, String path) {
-		Context ctx = super.addWebapp(host, url, name, path);
+	public Context addWebapp(Host host, String contextPath, String docBase,
+            LifecycleListener config) {
+		Context ctx = super.addWebapp(host, contextPath, docBase, config);
 		StandardJarScanner jarScanner = new StandardJarScanner();
 		jarScanner.setScanAllDirectories(true);
 		ctx.setJarScanner(jarScanner);

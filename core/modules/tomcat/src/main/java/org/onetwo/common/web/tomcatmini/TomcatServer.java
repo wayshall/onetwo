@@ -174,7 +174,8 @@ public class TomcatServer {
 				 */
 				AbstractHttp11Protocol<?> hp = (AbstractHttp11Protocol<?>) protocol;
 				hp.setCompression("on");
-				hp.setCompressableMimeTypes("text/html,text/xml,text/plain,application/octet-stream");
+//				hp.setCompressableMimeTypes("text/html,text/xml,text/plain,application/octet-stream");
+				hp.setCompressibleMimeType("text/html,text/xml,text/plain,application/octet-stream");
 			}
 			
 			

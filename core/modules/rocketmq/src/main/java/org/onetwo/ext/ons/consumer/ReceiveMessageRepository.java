@@ -1,6 +1,5 @@
 package org.onetwo.ext.ons.consumer;
 
-import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.entity.ReceiveMessageEntity;
 
 /**
@@ -8,8 +7,8 @@ import org.onetwo.ext.ons.entity.ReceiveMessageEntity;
  * <br/>
  */
 public interface ReceiveMessageRepository {
-	
-	ReceiveMessageEntity save(ConsumerMeta consumerMeta, ConsumContext context);
+
+	ReceiveMessageEntity save(String msgKey, String msgId, String consumerGroup);
 
 }
 

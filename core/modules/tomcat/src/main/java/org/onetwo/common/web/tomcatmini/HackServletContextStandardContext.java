@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.catalina.core.StandardContext;
+
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.RequestDispatcher;
@@ -20,8 +22,6 @@ import jakarta.servlet.ServletRegistration.Dynamic;
 import jakarta.servlet.SessionCookieConfig;
 import jakarta.servlet.SessionTrackingMode;
 import jakarta.servlet.descriptor.JspConfigDescriptor;
-
-import org.apache.catalina.core.StandardContext;
 
 public class HackServletContextStandardContext extends StandardContext {
 	private Map<String, String> initParametersMapper = new HashMap<String, String>();
@@ -92,25 +92,11 @@ public class HackServletContextStandardContext extends StandardContext {
 			return servletContext.getNamedDispatcher(name);
 		}
 
-		public Servlet getServlet(String name) throws ServletException {
-			return servletContext.getServlet(name);
-		}
-
-		public Enumeration<Servlet> getServlets() {
-			return servletContext.getServlets();
-		}
-
-		public Enumeration<String> getServletNames() {
-			return servletContext.getServletNames();
-		}
 
 		public void log(String msg) {
 			servletContext.log(msg);
 		}
 
-		public void log(Exception exception, String msg) {
-			servletContext.log(exception, msg);
-		}
 
 		public void log(String message, Throwable throwable) {
 			servletContext.log(message, throwable);
@@ -262,7 +248,41 @@ public class HackServletContextStandardContext extends StandardContext {
 		public String getVirtualServerName() {
 			return servletContext.getVirtualServerName();
 		}
-		
+
+		@Override
+		public Dynamic addJspFile(String jspName, String jspFile) {
+			return servletContext.addJspFile(jspName, jspFile);
+		}
+
+		@Override
+		public int getSessionTimeout() {
+			return servletContext.getSessionTimeout();
+		}
+
+		@Override
+		public void setSessionTimeout(int sessionTimeout) {
+			servletContext.setSessionTimeout(sessionTimeout);
+		}
+
+		@Override
+		public String getRequestCharacterEncoding() {
+			return servletContext.getRequestCharacterEncoding();
+		}
+
+		@Override
+		public void setRequestCharacterEncoding(String encoding) {
+			servletContext.setRequestCharacterEncoding(encoding);
+		}
+
+		@Override
+		public String getResponseCharacterEncoding() {
+			return servletContext.getResponseCharacterEncoding();
+		}
+
+		@Override
+		public void setResponseCharacterEncoding(String encoding) {
+			servletContext.setResponseCharacterEncoding(encoding);
+		}
 		
 	}
 

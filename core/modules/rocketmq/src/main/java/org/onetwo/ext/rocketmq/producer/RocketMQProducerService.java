@@ -13,7 +13,6 @@ import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.onetwo.boot.mq.exception.MQException;
-import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.Assert;

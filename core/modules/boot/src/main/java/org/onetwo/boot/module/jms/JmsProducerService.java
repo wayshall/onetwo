@@ -60,11 +60,13 @@ public class JmsProducerService implements ProducerService<JmsMessageCreator, Ob
 		
 		Destination dest = jmsDestinationConverter.getDestination(jmsMessage);
 		Assert.notNull(dest, "jms Destination can not be null");
+		JmsMessage<? extends Serializable> message = jmsMessage.getJmsMessage();
+		
 		return interceptableMessageSender.sendIntercetableMessage(interPredicate, messageInterceptors->{
 			SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
 					interceptorPredicate,
 					()->{
-						this.jmsMessagingTemplate.convertAndSend(dest, jmsMessage.getJmsMessage());
+						this.jmsMessagingTemplate.convertAndSend(dest, message);
 						return null;
 					});
 			

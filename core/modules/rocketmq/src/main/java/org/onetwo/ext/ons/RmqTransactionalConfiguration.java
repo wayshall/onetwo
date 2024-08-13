@@ -2,10 +2,10 @@ package org.onetwo.ext.ons;
 
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.onetwo.boot.mq.MQProperties;
-import org.onetwo.boot.mq.cosume.DbmReceiveMessageRepository;
-import org.onetwo.boot.mq.cosume.ReceiveMessageRepository;
 import org.onetwo.boot.mq.interceptor.DatabaseTransactionMessageInterceptor;
 import org.onetwo.boot.mq.repository.SendMessageRepository;
+import org.onetwo.ext.ons.consumer.DbmReceiveMessageRepository;
+import org.onetwo.ext.ons.consumer.ReceiveMessageRepository;
 import org.onetwo.ext.ons.consumer.StoreConsumerListener;
 import org.onetwo.ext.ons.producer.OnsDatabaseTransactionMessageInterceptor;
 import org.onetwo.ext.rocketmq.transaction.GenericRmqTransactionListener;

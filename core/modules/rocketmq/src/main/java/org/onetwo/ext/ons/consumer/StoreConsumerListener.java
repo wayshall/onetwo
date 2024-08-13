@@ -1,11 +1,10 @@
 package org.onetwo.ext.ons.consumer;
 
 import org.apache.rocketmq.common.message.MessageExt;
-import org.onetwo.boot.mq.cosume.ReceiveMessageRepository;
-import org.onetwo.boot.mq.exception.MessageConsumedException;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.ConsumerListener;
 import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
