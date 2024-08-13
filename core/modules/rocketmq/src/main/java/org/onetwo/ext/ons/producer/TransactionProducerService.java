@@ -16,6 +16,8 @@ public interface TransactionProducerService extends RmqProducerService {
 	 * @param tranactionListenerArg 应用自定义参数，该参数可以传入本地事务执行器
 	 * @return
 	 */
-	void sendMessage(ExtMessage message, RmqTransactionContext tranactionListenerArg);
+	void sendMessageInTransaction(ExtMessage message, RmqTransactionContext tranactionListenerArg);
+
+	void sendMessageInTransaction(String topic, String tags, Object body);
 
 }

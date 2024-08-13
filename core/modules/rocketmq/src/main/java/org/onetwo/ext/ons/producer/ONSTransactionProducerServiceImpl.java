@@ -5,8 +5,11 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.client.producer.TransactionSendResult;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.ext.alimq.ExtMessage;
+import org.onetwo.ext.alimq.OnsMessage;
+import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.rocketmq.transaction.DefaultMQProducerImplExt;
 import org.onetwo.ext.rocketmq.transaction.RmqTransactionContext;
 import org.springframework.beans.ConfigurablePropertyAccessor;
@@ -41,12 +44,35 @@ public class ONSTransactionProducerServiceImpl extends ONSProducerServiceImpl im
 		return true;
 	}
 
-
 	public TransactionMQProducer getProducer() {
 		return getRawProducer(TransactionMQProducer.class);
 	}
 
-	public SendResult doSendRawMessage(ExtMessage message){
+	@Override
+	public void sendMessageInTransaction(String topic, String tags, Object body){
+		SimpleMessage message = SimpleMessage.builder()
+											.topic(topic)
+											.tags(tags)
+											.body(body)
+											.build();
+		SendResult result = this.sendMessageInTransaction(message, null);
+		checkSendResult(result);
+	}
+	
+
+	public SendResult sendMessageInTransaction(OnsMessage onsMessage, InterceptorPredicate interceptorPredicate){
+		Object body = onsMessage.getBody();
+		if(body instanceof ExtMessage){
+			return sendRawMessageInTransaction((ExtMessage)body, interceptorPredicate);
+		}
+		
+		ExtMessage message = onsMessage.toMessage();
+		configMessage(message, onsMessage);
+		
+		return sendRawMessageInTransaction(message, interceptorPredicate);
+	}
+	
+	protected SendResult doSendRawMessageInTransaction(ExtMessage message){
 		TransactionSendResult result = null;
 		try {
 			if (logger.isInfoEnabled()) {
@@ -68,16 +94,25 @@ public class ONSTransactionProducerServiceImpl extends ONSProducerServiceImpl im
 		return result;
 	}
 
+	public SendResult sendRawMessageInTransaction(ExtMessage message, final InterceptorPredicate interPredicate) {
+		return this.sendRawMessage(message, null, () -> this.doSendRawMessageInTransaction(message), ctx -> {
+			ctx.setTransactional(true);
+		});
+	}
+	
 	@Override
-	public void sendMessage(ExtMessage message, RmqTransactionContext tranactionListenerArg) {
-		TransactionSendResult result;
-		try {
-			result = this.getProducer().sendMessageInTransaction(message, tranactionListenerArg);
-			this.checkSendResult(result);
-		} catch (MQClientException e) {
-//			throw new MQException("send rocketmq transaction message error: " + e.getMessage(), e);
-			handleException(e, message);
-		}
+	public void sendMessageInTransaction(ExtMessage message, RmqTransactionContext tranactionListenerArg) {
+		this.sendRawMessage(message, null, () -> this.doSendRawMessageInTransaction(message), ctx -> {
+			ctx.setTransactional(true);
+		});
+//		TransactionSendResult result;
+//		try {
+//			result = this.getProducer().sendMessageInTransaction(message, tranactionListenerArg);
+//			this.checkSendResult(result);
+//		} catch (MQClientException e) {
+////			throw new MQException("send rocketmq transaction message error: " + e.getMessage(), e);
+//			handleException(e, message);
+//		}
 	}
 
 	@Autowired

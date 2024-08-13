@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.function.BooleanSupplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
@@ -2110,6 +2111,21 @@ abstract public class LangUtils {
 			return false;
 		}
 		return VERSION.matcher(version).matches();
+	}
+	
+	/****
+	 * 等待知道supplier返回true
+	 * @param waitInsecondsPerTimes 每次等待时间
+	 * @param supplier
+	 */
+	public static void waitIf(int waitInsecondsPerTimes, BooleanSupplier supplier) {
+		while(true) {
+			if (supplier.getAsBoolean()) {
+				break;
+			} else {
+				LangUtils.await(waitInsecondsPerTimes);
+			}
+		}
 	}
 
 }

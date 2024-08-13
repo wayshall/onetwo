@@ -100,10 +100,10 @@ public class DelayableSendMessageTask implements InitializingBean, DisposableBea
 		if (this.producerService==null) {
 			throw new BaseException("producerService not found!");
 		}
-		if (this.producerService.isTransactional()) {
-			// 补偿发送的生产者不能是事务消息生产者
-			throw new BaseException("producerService can not be a transactional producer: " + this.producerService.getClass());
-		}
+//		if (this.producerService.isTransactional()) {
+//			// 补偿发送的生产者不能是事务消息生产者
+//			throw new BaseException("producerService can not be a transactional producer: " + this.producerService.getClass());
+//		}
 		executorService = Executors.newFixedThreadPool(1, newThreadFactory());
 		startDelayedTask();
 	}
