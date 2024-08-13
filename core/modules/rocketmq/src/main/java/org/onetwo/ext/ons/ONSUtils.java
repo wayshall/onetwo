@@ -29,6 +29,7 @@ final public class ONSUtils {
 		SendResult res = new SendResult();
 //		res.setMessageId("SUSPEND");
 		res.setMsgId("STORED_LOCAL_NOT_SENT");
+		res.setSendStatus(SendStatus.SEND_OK);
 		ONS_SUSPEND = res;
 	}
 	

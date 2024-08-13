@@ -9,11 +9,14 @@ import org.onetwo.boot.mq.entity.SendMessageEntity;
 import org.onetwo.boot.mq.entity.SendMessageEntity.SendStates;
 import org.onetwo.boot.mq.repository.SendMessageRepository;
 import org.onetwo.boot.mq.serializer.MessageBodyStoreSerializer;
+import org.onetwo.common.log.JFishLoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 public class RmqTransactionLogService {
+	protected final Logger logger = JFishLoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private MessageBodyStoreSerializer messageBodyStoreSerializer;
@@ -44,6 +47,7 @@ public class RmqTransactionLogService {
 			// 说明本地事务成功，提交事务消息
 			msgEntity.setState(SendStates.SENT);
 			sendMessageRepository.update(msgEntity);
+			logger.info("the transaction message log has found, commit the message. key: {}", msg.getKeys());
 			return LocalTransactionState.COMMIT_MESSAGE;
 		} else {
 			// 未知，可能本地事务未完成

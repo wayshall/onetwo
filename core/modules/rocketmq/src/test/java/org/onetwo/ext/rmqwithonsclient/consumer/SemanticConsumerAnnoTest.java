@@ -1,4 +1,4 @@
-package org.onetwo.ext.rmqwithonsclient.producer;
+package org.onetwo.ext.rmqwithonsclient.consumer;
 /**
  * @author weishao zeng
  * <br/>
@@ -13,7 +13,7 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.annotation.ONSSubscribe.IdempotentType;
-import org.onetwo.ext.rmqwithonsclient.producer.SemanticONSConsumerTest.SemanticConsumer;
+import org.onetwo.ext.rmqwithonsclient.consumer.SemanticONSConsumerTest.SemanticConsumer;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 

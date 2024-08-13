@@ -1,5 +1,7 @@
 package org.onetwo.ext.rmqwithonsclient.producer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Date;
 
 import org.apache.rocketmq.client.producer.SendResult;
@@ -8,7 +10,8 @@ import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.dbm.id.SnowflakeIdGenerator;
 import org.onetwo.ext.alimq.SimpleMessage;
-import org.onetwo.ext.ons.producer.ProducerService;
+import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.producer.RmqProducerService;
 import org.onetwo.ext.rmqwithonsclient.producer.RmqONSProducerTest.OrderTestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DataBaseProducerServiceImpl {
 
 	@Autowired
-	ProducerService onsProducerService;
+	RmqProducerService onsProducerService;
 	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
 	
 
@@ -38,7 +41,9 @@ public class DataBaseProducerServiceImpl {
 				  .deliverAt(deliverTime)
 				  .body(msg)
 				  .build(), SendMessageFlags.EnableDatabaseTransactional);
+		
 		System.out.println("res: " + res);
+		assertThat(res).isEqualTo(ONSUtils.ONS_SUSPEND);
 		return msg;
 	}
 
@@ -53,6 +58,7 @@ public class DataBaseProducerServiceImpl {
 																			  				.build())
 																	  .build());
 		System.out.println("res: " + res);
+		ONSUtils.checkSendResult(res);
 		
 		SendResult sendResult = onsProducerService.sendMessage(
 				SimpleMessage.builder()
@@ -72,6 +78,7 @@ public class DataBaseProducerServiceImpl {
 				  SendMessageFlags.EnableDatabaseTransactional);// 启动消息本地事务，以保持一致性
 		
 		System.out.println("sendResult: " + sendResult);
+		assertThat(sendResult).isEqualTo(ONSUtils.ONS_SUSPEND);
 	}
 
 	public void sendMessageWithException(){
@@ -96,6 +103,9 @@ public class DataBaseProducerServiceImpl {
 			  				.build())
 				  .build(), SendMessageFlags.EnableDatabaseTransactional);
 		System.out.println("res: " + res);
+		
+		assertThat(res).isEqualTo(ONSUtils.ONS_SUSPEND);
+		assertThat(res.getMsgId()).isEqualTo(ONSUtils.ONS_SUSPEND.getMsgId());
 		
 		if(true){
 			throw new ServiceException("发消息后出错！");

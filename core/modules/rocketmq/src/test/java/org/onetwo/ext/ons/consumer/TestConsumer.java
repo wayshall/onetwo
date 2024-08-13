@@ -34,7 +34,7 @@ public class TestConsumer implements CustomONSConsumer /*MessageListener*/ {
 			count++;
 			throw new ServiceException("抛错");
 		}*/
-		System.out.println(DateUtils.formatDateTime(new Date()) + ": 收到消息：" + consumContext.getDeserializedBody());
+		System.out.println(this.getClass().getName() +" " + DateUtils.formatDateTime(new Date()) + ": 收到消息：" + consumContext.getDeserializedBody());
 		if (RmqONSProducerDelayMessageTest.messages.remove(consumContext.getDeserializedBody())) {
 			RmqONSProducerDelayMessageTest.delayCountDownLatch.countDown();
 		}

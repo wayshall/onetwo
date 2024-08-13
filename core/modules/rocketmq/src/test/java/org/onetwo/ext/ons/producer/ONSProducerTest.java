@@ -32,7 +32,7 @@ public class ONSProducerTest {
 	public static final String ORDER_CANCEL = "${tags.orderCancel}";
 
 	@Autowired
-	ProducerService onsProducerService;
+	RmqProducerService onsProducerService;
 	
 	@Test
 	public void testSendMessage(){
@@ -57,7 +57,7 @@ public class ONSProducerTest {
 //			  				.build())
 //				  .build());
 //		System.out.println("res: " + res);
-		LangUtils.CONSOLE.exitIf("test");
+//		LangUtils.CONSOLE.exitIf("test");
 	}
 	
 	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
