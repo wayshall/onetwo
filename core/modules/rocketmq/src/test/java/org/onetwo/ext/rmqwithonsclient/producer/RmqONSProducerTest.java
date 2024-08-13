@@ -66,7 +66,7 @@ public class RmqONSProducerTest {
 		dataBaseProducerService.sendMessage();
 		messageCount = baseEntityManager.countRecord(SendMessageEntity.class).intValue();
 		assertThat(messageCount).isEqualTo(1);
-		LangUtils.CONSOLE.exitIf("test");
+//		LangUtils.CONSOLE.exitIf("test");
 	}
 	
 	@Test

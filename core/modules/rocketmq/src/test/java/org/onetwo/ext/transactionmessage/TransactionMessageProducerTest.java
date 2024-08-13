@@ -71,7 +71,11 @@ public class TransactionMessageProducerTest {
 
 		int userCount = baseEntityManager.countRecord(UserTestEntity.class).intValue();
 		assertThat(userCount).isEqualTo(1);
-		LangUtils.CONSOLE.exitIf("test");
+		
+		LangUtils.waitIf(6, () -> {
+			SendMessageEntity newMsg = baseEntityManager.findById(SendMessageEntity.class, msg.getKey());
+			return newMsg.getState()==SendStates.SENT;
+		});
 	}
 	
 	@Test

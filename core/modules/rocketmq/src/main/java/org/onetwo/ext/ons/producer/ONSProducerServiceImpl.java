@@ -1,16 +1,21 @@
 package org.onetwo.ext.ons.producer;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.onetwo.boot.mq.InterceptableMessageSender;
+import org.onetwo.boot.mq.MQUtils;
 import org.onetwo.boot.mq.SendMessageFlags;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor;
+import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptor.InterceptorPredicate;
+import org.onetwo.common.convert.Types;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.SpringUtils;
@@ -23,6 +28,7 @@ import org.onetwo.ext.alimq.SimpleMessage;
 import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
 import org.onetwo.ext.ons.ONSUtils;
+import org.onetwo.ext.ons.TracableMessageKey;
 import org.onetwo.ext.rocketmq.producer.RocketMQProducerService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -91,6 +97,99 @@ public class ONSProducerServiceImpl extends RocketMQProducerService implements I
 		super.destroy();
 	}
 	
+
+	protected boolean needSerialize(Object body){
+		if(body==null){
+			return false;
+		}
+		return !byte[].class.isInstance(body);
+	}
+
+	protected void configMessage(ExtMessage message, OnsMessage onsMessage) {
+		String topic = resolvePlaceholders(message.getTopic());
+		checkTopicOrTag(topic);
+		message.setTopic(topic);
+		
+		String tag = resolvePlaceholders(message.getTag());
+		message.setTag(tag);
+		checkTopicOrTag(tag);
+		
+		if(onsMessage instanceof TracableMessage) {
+			//自动生成key
+			//如果是延迟消息，用实际延迟发送的时间替换已存在的发生时间
+			TracableMessage tracableMessage = (TracableMessage) onsMessage;
+			if (message.getStartDeliverTime()!=null && message.getStartDeliverTime()>0) {
+				tracableMessage.setOccurOn(new Date(message.getStartDeliverTime()));
+			}
+
+			if (StringUtils.isNotBlank(tracableMessage.getUserId())) {
+				message.putUserProperties(TracableMessage.USER_ID_KEY, tracableMessage.getUserId());
+			}
+			if (StringUtils.isNotBlank(tracableMessage.getDataId())) {
+				message.putUserProperties(TracableMessage.DATA_ID_KEY, tracableMessage.getDataId());
+			}
+			if (tracableMessage.getOccurOn()==null) {
+				tracableMessage.setOccurOn(new Date());
+			}
+			message.putUserProperties(TracableMessage.OCCUR_ON_KEY, String.valueOf(tracableMessage.getOccurOn().getTime()));
+			message.putUserProperties(TracableMessage.SERIALIZER_KEY, tracableMessage.getSerializer());
+			message.putUserProperties(TracableMessage.DEBUG_KEY, String.valueOf(tracableMessage.isDebug()));
+
+			TracableMessageKey key = ONSUtils.toKey(message.getTopic(), message.getTag(), tracableMessage);
+			if (StringUtils.isBlank(message.getKey())) {
+				message.setKey(key.getKey());
+			}
+			if (StringUtils.isBlank(tracableMessage.getIdentityKey())) {
+				tracableMessage.setIdentityKey(key.getIdentityKey());
+//				message.putUserProperties(TracableMessage.IDENTITY_KEY, key.getIdentityKey());
+			}
+		}
+
+		Object body = onsMessage.getBody();
+		if(needSerialize(body)){
+			message.setBody(serializeMessage(onsMessage));
+		}else{
+			message.setBody((byte[])body);
+		}
+	}
+	
+	protected SendResult sendRawMessage(ExtMessage message, final InterceptorPredicate interPredicate, Supplier<Object> actualInvoker){
+		return sendRawMessage(message, interPredicate, actualInvoker, null);
+	}
+	
+	protected SendResult sendRawMessage(ExtMessage message, final InterceptorPredicate interPredicate, Supplier<Object> actualInvoker, SendMessageContextConfigurer configurer){
+		final InterceptorPredicate interceptorPredicate = interPredicate==null?SendMessageFlags.Default:interPredicate;
+		
+		return getInterceptableMessageSender().sendIntercetableMessage(interPredicate, messageInterceptors->{
+			SendMessageInterceptorChain chain = new SendMessageInterceptorChain(messageInterceptors, 
+					interceptorPredicate,
+					actualInvoker);
+//					()->this.doSendRawMessage(message));
+			
+			boolean debug = Types.asValue(message.getUserProperties(TracableMessage.DEBUG_KEY), boolean.class, false);
+			ONSSendMessageContext ctx = ONSSendMessageContext.builder()
+															.message(message)
+															.source(this)
+//															.producer((ProducerBean)this)
+															.chain(chain)
+															.debug(debug)
+															.threadId(Thread.currentThread().getId())
+															.build();
+			
+			if (configurer!=null) {
+				configurer.apply(ctx);
+			}
+			chain.setSendMessageContext(ctx);
+			chain.setDebug(debug);
+			
+			Object res = chain.invoke();
+			if(MQUtils.isSuspendResult(res)){
+				return ONSUtils.ONS_SUSPEND;
+			}
+			return (SendResult)res;
+		});
+	}
+	
 	@Override
 	public void sendMessage(String topic, String tags, Object body){
 		SimpleMessage message = SimpleMessage.builder()
@@ -114,10 +213,10 @@ public class ONSProducerServiceImpl extends RocketMQProducerService implements I
 	}
 	
 
-	public void send(OnsMessage onsMessage){
-		SendResult result = sendMessage(onsMessage, SendMessageFlags.Default);
-		checkSendResult(result);
-	}
+//	public void send(OnsMessage onsMessage){
+//		SendResult result = sendMessage(onsMessage, SendMessageFlags.Default);
+//		checkSendResult(result);
+//	}
 	
 
 	@Override
@@ -141,25 +240,11 @@ public class ONSProducerServiceImpl extends RocketMQProducerService implements I
 		}
 		
 		ExtMessage message = onsMessage.toMessage();
-		
-		String topic = resolvePlaceholders(message.getTopic());
-		checkTopicOrTag(topic);
-		message.setTopic(topic);
-		
-		String tag = resolvePlaceholders(message.getTag());
-		message.setTag(tag);
-		checkTopicOrTag(tag);
-		
 		configMessage(message, onsMessage);
-		if(needSerialize(body)){
-			message.setBody(serializeMessage(onsMessage));
-		}else{
-			message.setBody((byte[])body);
-		}
 		
 		return sendRawMessage(message, interceptorPredicate);
 	}
-
+	
 	protected byte[] serializeMessage(Object body) {
 		if (body instanceof OnsMessage) {
 			OnsMessage onsMessage = (OnsMessage)body;
@@ -171,7 +256,7 @@ public class ONSProducerServiceImpl extends RocketMQProducerService implements I
 		}
 	}
 	
-	private void checkTopicOrTag(String name) {
+	protected void checkTopicOrTag(String name) {
 		if (StringUtils.isBlank(name) || name.contains(" ") || name.contains(FileUtils.UNICODE_ZERO_WIDTH_SPACE)) {
 			throw new BaseException("invalid topic or tag: [" + name + "]");
 		}
@@ -281,7 +366,7 @@ public class ONSProducerServiceImpl extends RocketMQProducerService implements I
 		return targetClass.cast(this.defaultMQProducer);
 	}
 
-	@Override
+//	@Override
 	public boolean isTransactional() {
 		return false;
 	}

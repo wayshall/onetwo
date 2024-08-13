@@ -25,6 +25,10 @@ public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext
 	/*
 	final private long threadId;
 	private boolean debug;*/
+	/***
+	 * 是否事务消息
+	 */
+	boolean transactional = false;
 
 	@Builder
 	public ONSSendMessageContext(ExtMessage message,
@@ -42,10 +46,6 @@ public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext
 //		this.messageEntity = messageEntity;
 	}
 
-	public boolean isTransactional(){
-		return source.isTransactional();
-	}
-	
 	public boolean isDelayMessage() {
 		Long startDeliverTime = getMessage().getStartDeliverTime();
 		return startDeliverTime!=null && startDeliverTime > 0;
