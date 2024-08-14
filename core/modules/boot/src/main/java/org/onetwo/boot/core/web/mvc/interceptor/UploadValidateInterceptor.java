@@ -40,7 +40,7 @@ public class UploadValidateInterceptor extends WebInterceptorAdapter {
 	
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		HandlerMethod handlerMethod = getHandlerMethod(handler);
-		if(isSupport(request, handlerMethod)){
+		if(isSupport(request, handlerMethod) && handlerMethod!=null){
 			this.doValidate(request, response, handlerMethod);
 		}
 		return true;

@@ -11,7 +11,7 @@
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-security</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.8.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -79,7 +79,7 @@ jfish:
         memoryUsers: #配置基于内存的用户角色
             admin: #userName
                 roles: ADMIN
-        anyRequest: none
+        anyRequest: permitAll #除了指定要拦截的url的其他url权限配置
         alwaysUseDefaultTargetUrl: true
         afterLoginUrl: http://localhost/user/center #登录成功后跳转
         intercepters: 
@@ -90,6 +90,40 @@ jfish:
             signingKey: # 随机字符串
             authStore: COOKIES
 ```
+
+### 根据运行环境决定加载菜单类
+
+可通过菜单提供者类新增的rootMenuClassListByProfiles方法控制，该方法5.x版本可用
+
+```Java
+@Configuration
+public class MgrConfiguration {
+    @Bean
+    public RootMenuClassProvider menuConfig() {
+        return new TestRootMenuClassProvider();
+    }
+    
+    public static class TestRootMenuClassProvider implements RootMenuClassProvider {
+
+        @Override
+        public List<Class<?>> rootMenuClassList() {
+            return Arrays.asList(CommonMgr.class);
+        }
+        
+        public List<Class<?>> rootMenuClassListByProfiles(Collection<String> profiles) {
+            if (profiles.contains("dev")) {
+                     return Arrays.asList(
+                                DevMgr1.class, 
+                                DevMgr2.class
+                            );
+            }
+            return Collections.emptyList();
+        };
+        
+    }
+}
+```
+
 
 **待续。。。**
 

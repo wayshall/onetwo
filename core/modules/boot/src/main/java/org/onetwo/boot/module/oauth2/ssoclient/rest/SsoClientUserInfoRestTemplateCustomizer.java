@@ -31,8 +31,6 @@ public class SsoClientUserInfoRestTemplateCustomizer implements UserInfoRestTemp
 
 	@Override
 	public void customize(OAuth2RestTemplate template) {
-//		ConfigurablePropertyAccessor accessor = SpringUtils.newPropertyAccessor(template, true);
-//		accessor.getPropertyValue("accessTokenProvider");
 		AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();
 		accessTokenProvider.setTokenRequestEnhancer(new AcceptJsonRequestEnhancer());
 		accessTokenProvider.setStateMandatory(properties.isStateMandatory());

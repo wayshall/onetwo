@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 
@@ -62,14 +61,14 @@ public abstract class ParamUtils {
 		return toParamString(params, (BiFunction<K, Object, String>)null, joiner);
 	}
 
-	public static <K> String toParamString(Map<K, Object> params, BiFunction<K, Object, String> toStringFunc){
+	public static <K> String toParamString(Map<K, ?> params, BiFunction<K, Object, String> toStringFunc){
 		return toParamString(params, toStringFunc, URL_PARAM_JOINER);
 	}
 	
-	public static <K> String toParamString(Map<K, Object> params, BiFunction<K, Object, String> toStringFunc, String joiner){
+	public static <K> String toParamString(Map<K, ?> params, BiFunction<K, Object, String> toStringFunc, String joiner){
 		StringBuilder sb = new StringBuilder();
 		int index = 0;
-		for(Map.Entry<K, Object> entry : (Set<Map.Entry<K, Object>>)params.entrySet()){
+		for(Map.Entry<K, ?> entry : params.entrySet()){
 			Object entryValue = entry.getValue();
 			if (entryValue==null || StringUtils.isBlank(entryValue.toString()) || LangUtils.isEmpty(entryValue)) {
 				continue;
@@ -87,7 +86,7 @@ public abstract class ParamUtils {
 				if(toStringFunc!=null){
 					sb.append(toStringFunc.apply(entry.getKey(), value));
 				}else{
-					sb.append(entry.getKey()).append("=").append(value.toString());
+					sb.append(entry.getKey()).append("=").append(value==null?"":value.toString());
 				}
 				index++;
 			}

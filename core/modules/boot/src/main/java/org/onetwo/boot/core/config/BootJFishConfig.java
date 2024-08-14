@@ -25,17 +25,28 @@ import lombok.Data;
  * @author way
  *
  */
-@ConfigurationProperties(prefix=BootJFishConfig.PREFIX)
+@ConfigurationProperties(prefix=BootJFishConfig.ZIFISH_CONFIG_PREFIX)
 @Data
 public class BootJFishConfig implements ExceptionMessageFinderConfig {
-	public static final String PREFIX = "jfish";
-	public static final String ENABLE_GRACEKILL = PREFIX + ".graceKill.enabled";
-	public static final String ENABLE_SWAGGER = PREFIX + ".swagger.enabled";
+	public static final String ZIFISH_CONFIG_PREFIX = "jfish";
 	
-	public static final String ENABLE_CORSFILTER = PREFIX + ".corsfilter.enabled";
-	public static final String ENABLE_MVC_CORSFILTER = PREFIX + ".mvc.corsFilter";
-	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = PREFIX + ".dynamic.loggerLevel";
-	public static final String ENABLE_DYNAMIC_SETTING = PREFIX + ".dynamic.setting";
+	public static final String ENABLE_GRACEKILL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".grace-kill.enabled";
+	public static final String ENABLE_SWAGGER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".swagger.enabled";
+	
+	/***
+	 * jfish.profiles.debug: true
+	 */
+	public static final String PROFILES_DEBUG = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".profiles.debug";
+	public static final String ENABLE_CORSFILTER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".corsfilter.enabled";
+	public static final String ENABLE_HOST_FILTER = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".hostfilter.enabled";
+	public static final String ENABLE_MVC_CORSFILTER = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.cors-filter";
+	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.logger-level";
+	public static final String ENABLE_DYNAMIC_SETTING = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dynamic.setting";
+//	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".mvc.loggerInterceptor";
+//	public static final String ENABLE_CORSFILTER = PREFIX + ".corsfilter.enabled";
+//	public static final String ENABLE_MVC_CORSFILTER = PREFIX + ".mvc.corsFilter";
+//	public static final String ENABLE_DYNAMIC_LOGGER_LEVEL = PREFIX + ".dynamic.loggerLevel";
+//	public static final String ENABLE_DYNAMIC_SETTING = PREFIX + ".dynamic.setting";
 //	public static final String ENABLE_MVC_LOGGER_INTERCEPTOR = "jfish.mvc.loggerInterceptor";
 //	public static final String VALUE_AUTO_CONFIG_WEB_UI = "web-ui";
 //	public static final String VALUE_AUTO_CONFIG_WEB_MS = "web-ms";
@@ -72,6 +83,8 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	private Boolean logErrorDetail;
 	List<String> notifyThrowables = Lists.newArrayList("com.mysql.jdbc.MysqlDataTruncation", "SQLException");
 
+	private HostfilterConfig hostfilter = new HostfilterConfig();
+	
 	private String errorView = "error";
 	
 	/***
@@ -138,6 +151,16 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 		JsonConfig json = new JsonConfig();
 		List<ResourceHandlerConfig> resourceHandlers = new ArrayList<>();
 		
+		/***
+jfish:
+    #corsfilter: 
+        #enabled: true
+    mvc: 
+        corsFilter: true
+        cors: 
+            - mapping: /**
+            - allowCredentials: true
+		 */
 		boolean corsFilter;
 		List<CorsConfig> cors = new ArrayList<>();
 //		MvcAsyncProperties async = new MvcAsyncProperties();
@@ -147,6 +170,24 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 
 		private Map<String, Integer> exceptionsStatusMapping = Maps.newHashMap();
 		private Map<String, ExceptionMapping> exceptionsMapping = Maps.newHashMap();
+		
+		/***
+		 * spring mvc 某个版本（5？）之后，默认不再使用后缀匹配模式
+		 * 即若controller配置的mapping是"/requestPath"，当请求"/requestPath.json"时，将会匹配不到对应的controller
+		 * 这会影响旧版本的运行，这里提供配置激活后缀匹配模式。
+		 * 配合mediaTypes（PathExtensionContentNegotiationStrategy）使用更佳, @see {@link org.onetwo.boot.core.web.BootMvcConfigurerAdapter#configureContentNegotiation}
+		 * 
+		 * spring 默认为false
+		 * @see {@link org.onetwo.boot.core.web.BootMvcConfigurerAdapter#configurePathMatch}
+		 * @see {@link org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#useSuffixPatternMatch}
+		 */
+		private boolean useSuffixPatternMatch = true;
+		/***
+		 * 启用尾部斜杠匹配，例如，/user和/user/将被视为相同的URL。
+		 * spring 默认为true
+		 * @see {@link org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#useTrailingSlashMatch}
+		 */
+		private boolean useTrailingSlashMatch = true;
 
 		public MvcConfig() {
 			this.mediaTypes = new Properties();
@@ -205,6 +246,16 @@ public class BootJFishConfig implements ExceptionMessageFinderConfig {
 	@Data
 	public class GraceKillConfig {
 		Collection<String> signals;
+	}
+
+	@Data
+	public class HostfilterConfig {
+		List<String> allowIps = Lists.newArrayList();
+		/***
+		 * 不允许的host访问时，返回的状态码
+		 * 默认返回403（Forbidden）
+		 */
+		Integer denyStatus = 403;
 	}
 	
 }

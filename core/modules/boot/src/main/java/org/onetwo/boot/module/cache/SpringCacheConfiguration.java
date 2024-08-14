@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ConditionalOnProperty(name=SpringCacheConfiguration.SPRING_CACHE_ENABLED_KEY)
 @EnableCaching
-@Import(RedisCacheConfiguration.class)
+@Import(JFishRedisCacheConfiguration.class)
 @AutoConfigureAfter(CacheAutoConfiguration.class)
 //@AutoConfigureBefore(CacheAutoConfiguration.class)
 public class SpringCacheConfiguration {

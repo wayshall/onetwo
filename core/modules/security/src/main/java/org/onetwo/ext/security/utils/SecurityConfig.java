@@ -7,10 +7,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.spring.Springs;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.ext.security.jwt.JwtAuthStores;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
 import org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -98,9 +100,45 @@ public class SecurityConfig {
 	
 	private CorsConfig cors = new CorsConfig();
 	
+	/***
+	 * 是否拒绝公共调用
+	 * 当访问的方法或请求没有配置权限(即公共请求)时，是否拒绝访问
+	 */
+	private boolean rejectPublicInvocations = true;
+	
+	private boolean logSecurityError;
+	
+	/****
+	 * 是否验证所有权限
+	 */
+	private boolean validateConfigAttributes = true;
+	
+	private StrictHttpFirewallConfig strictHttpFirewall = new StrictHttpFirewallConfig();
+	/***
+	 * 会话
+	 */
+	private SessionConfig session = new SessionConfig();
+	
+	/***
+	 * 当security当Authentication为AnonymousAuthenticationToken时，是否直接拒绝，抛出AccessDeniedCodeException异常
+	 * 默认为false
+	 */
+	boolean denyAnonymousUser;
+	
+	/***
+	 * @see org.onetwo.ext.security.MultiExpressionVoter
+	 * @return
+	 */
+	public boolean isDenyAnonymousUser() {
+		return denyAnonymousUser;
+	}
 	
 	public boolean isDebug(){
 		return debug;
+	}
+	
+	public boolean isLogSecurityError() {
+		return logSecurityError;
 	}
 	
 	public void setSyncPermissionData(boolean syncPermissionData) {
@@ -300,14 +338,30 @@ public class SecurityConfig {
 	
 	@Data
 	public static class JwtConfig {
+		String issuer = "jfish";
+		String audience = "webclient";
+		
 		String authHeader = JwtSecurityUtils.DEFAULT_HEADER_KEY;
-		String authKey;
+		String authKey = JwtSecurityUtils.DEFAULT_HEADER_KEY;
 		JwtAuthStores authStore = JwtAuthStores.HEADER;
 		String signingKey;
 		Long expirationInSeconds = TimeUnit.HOURS.toSeconds(1);
+		String expiration;
+		Boolean enabled;
 		
 		public boolean isEnabled(){
+			if (enabled!=null) {
+				return enabled;
+			}
 			return StringUtils.isNotBlank(signingKey);
+		}
+
+		public Long getExpirationInSeconds() {
+			if(StringUtils.isNotBlank(expiration)){
+				long inSeconds = LangOps.timeToSeconds(expiration, TimeUnit.HOURS.toSeconds(1));
+				return inSeconds;
+			}
+			return expirationInSeconds;
 		}
 		
 	}
@@ -338,9 +392,36 @@ public class SecurityConfig {
 
 	@Data
 	public static class CorsConfig {
+		/**
+		 * disable只是移除cors的配置类
+		 */
+		boolean disable;
 		/***
 		 * 允许所有预检请求
 		 */
 		boolean permitAllPreFlightRequest;
 	}
+	
+	/***
+	 * for StrictHttpFirewall
+	 * @author way
+	 *
+	 */
+	@Data
+	public static class StrictHttpFirewallConfig {
+		/***
+		 * 是否允许url带有分号
+		 */
+		boolean allowSemicolon;
+		/***
+		 * 是否允许url带"//"
+		 */
+		boolean allowBackSlash;
+	}
+	
+	@Data
+	public static class SessionConfig {
+		SessionCreationPolicy creationPolicy;
+	}
+
 }

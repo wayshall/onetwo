@@ -247,6 +247,7 @@ abstract public class ResponseUtils {
 		render(response, html, HTML_TYPE, true);
 	}
 	public static void render(HttpServletResponse response, String text, String contentType, boolean noCache){
+		PrintWriter pr = null;
 		try {
 			if(!StringUtils.isBlank(contentType))
 				response.setContentType(contentType);
@@ -258,11 +259,13 @@ abstract public class ResponseUtils {
 				response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 				response.setDateHeader("Expires", 0);
 			}
-			PrintWriter pr = response.getWriter();
+			pr = response.getWriter();
 			pr.write(text);
 			pr.flush();
 		} catch (Exception e) {
 			logger.error("render error: " + e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(pr);
 		}
 	}
 

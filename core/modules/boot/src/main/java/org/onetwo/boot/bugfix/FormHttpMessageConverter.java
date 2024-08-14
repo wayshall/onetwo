@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +30,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.MultiValueMap;
@@ -231,16 +232,17 @@ public class FormHttpMessageConverter extends org.springframework.http.converter
 		return decodedValue;
 	}
 
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void write(MultiValueMap<String, ?> map, @Nullable MediaType contentType, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
 
-		if (!isMultipart(map, contentType)) {
-			writeForm((MultiValueMap<String, String>) map, contentType, outputMessage);
+		if (isMultipart(map, contentType)) {
+			writeMultipart((MultiValueMap<String, Object>) map, contentType, outputMessage);
 		}
 		else {
-			writeMultipart((MultiValueMap<String, Object>) map, outputMessage);
+			writeForm((MultiValueMap<String, Object>) map, contentType, outputMessage);
 		}
 	}
 
@@ -259,16 +261,16 @@ public class FormHttpMessageConverter extends org.springframework.http.converter
 		return false;
 	}
 
-	private void writeForm(MultiValueMap<String, String> formData, @Nullable MediaType contentType,
+	private void writeForm(MultiValueMap<String, Object> formData, @Nullable MediaType contentType,
 			HttpOutputMessage outputMessage) throws IOException {
 
-		contentType = getMediaType(contentType);
+		contentType = getFormContentType(contentType);
 		outputMessage.getHeaders().setContentType(contentType);
 
 		Charset charset = contentType.getCharset();
 		Assert.notNull(charset, "No charset"); // should never occur
 
-		final byte[] bytes = serializeForm(formData, charset).getBytes(charset);
+		byte[] bytes = serializeForm(formData, charset).getBytes(charset);
 		outputMessage.getHeaders().setContentLength(bytes.length);
 
 		if (outputMessage instanceof StreamingHttpOutputMessage) {
@@ -292,9 +294,14 @@ public class FormHttpMessageConverter extends org.springframework.http.converter
 		}
 	}
 
-	protected String serializeForm(MultiValueMap<String, String> formData, Charset charset) {
+
+	protected String serializeForm(MultiValueMap<String, Object> formData, Charset charset) {
 		StringBuilder builder = new StringBuilder();
-		formData.forEach((name, values) ->
+		formData.forEach((name, values) -> {
+				if (name == null) {
+					Assert.isTrue(CollectionUtils.isEmpty(values), "Null name in form data: " + formData);
+					return;
+				}
 				values.forEach(value -> {
 					try {
 						if (builder.length() != 0) {
@@ -303,30 +310,39 @@ public class FormHttpMessageConverter extends org.springframework.http.converter
 						builder.append(URLEncoder.encode(name, charset.name()));
 						if (value != null) {
 							builder.append('=');
-							builder.append(URLEncoder.encode(value, charset.name()));
+							builder.append(URLEncoder.encode(String.valueOf(value), charset.name()));
 						}
 					}
 					catch (UnsupportedEncodingException ex) {
 						throw new IllegalStateException(ex);
 					}
-				}));
+				});
+		});
 
 		return builder.toString();
 	}
 
-	private void writeMultipart(final MultiValueMap<String, Object> parts,
-			HttpOutputMessage outputMessage) throws IOException {
+	private void writeMultipart(
+			MultiValueMap<String, Object> parts, @Nullable MediaType contentType, HttpOutputMessage outputMessage)
+			throws IOException {
 
-		final byte[] boundary = generateMultipartBoundary();
-		Map<String, String> parameters = new HashMap<>(2);
-		parameters.put("boundary", new String(boundary, "US-ASCII"));
+		// If the supplied content type is null, fall back to multipart/form-data.
+		// Otherwise rely on the fact that isMultipart() already verified the
+		// supplied content type is multipart.
+		if (contentType == null) {
+			contentType = MediaType.MULTIPART_FORM_DATA;
+		}
+
+		byte[] boundary = generateMultipartBoundary();
+		Map<String, String> parameters = new LinkedHashMap<>(2);
 		if (!isFilenameCharsetSet()) {
 			parameters.put("charset", this.charset.name());
 		}
+		parameters.put("boundary", new String(boundary, StandardCharsets.US_ASCII));
 
-		MediaType contentType = new MediaType(MediaType.MULTIPART_FORM_DATA, parameters);
-		HttpHeaders headers = outputMessage.getHeaders();
-		headers.setContentType(contentType);
+		// Add parameters to output content type
+		contentType = new MediaType(contentType, parameters);
+		outputMessage.getHeaders().setContentType(contentType);
 
 		if (outputMessage instanceof StreamingHttpOutputMessage) {
 			StreamingHttpOutputMessage streamingOutputMessage = (StreamingHttpOutputMessage) outputMessage;

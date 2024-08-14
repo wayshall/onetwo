@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.onetwo.common.data.AbstractDataResult;
-import org.onetwo.ext.security.utils.LoginUserDetails;
+import org.onetwo.ext.security.utils.GenericLoginUserDetails;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 
 public abstract class SecurityTestUtils {
 
-	public static LoginUserDetails mockLogin(MockMvc mockMvcs, String loginUrl, String userName, String password){
+	public static GenericLoginUserDetails<?> mockLogin(MockMvc mockMvcs, String loginUrl, String userName, String password){
 		MvcResult result = mockLogin(mockMvcs, post(loginUrl)
 												.accept(MediaType.APPLICATION_JSON_UTF8)
 												.param("username", userName)
@@ -42,12 +42,12 @@ public abstract class SecurityTestUtils {
 		return securityContext;
 	}
 	
-	public static LoginUserDetails getLoginUserDetails(MvcResult result){
+	public static GenericLoginUserDetails<?> getLoginUserDetails(MvcResult result){
 		SecurityContext securityContext = getSecurityContext(result);
 		if(securityContext==null){
 			return null;
 		}
-		LoginUserDetails loginUserDetails = (LoginUserDetails)securityContext.getAuthentication().getPrincipal();
+		GenericLoginUserDetails<?> loginUserDetails = (GenericLoginUserDetails<?>)securityContext.getAuthentication().getPrincipal();
 		return loginUserDetails;
 	}
 }

@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.onetwo.common.utils.LangUtils;
@@ -72,6 +73,11 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 			super();
 			this.rootIds = Arrays.asList(rootIds);
 		}
+		
+		public RootIdsFunc() {
+			super();
+			this.rootIds = Collections.emptyList();
+		}
 
 		@Override
 		public boolean isRootNode(T node, Map<Object, T> nodeMap) {
@@ -99,7 +105,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 	private List<TM> rootNodes = new ArrayList<TM>();
 //	private Comparator<Object> comparator = null;
 //	private List<?> rootIds;
-	private RootNodeFunc<TM> rootNodeFunc;
+	private RootNodeFunc<TM> rootNodeFunc = new RootIdsFunc<TM>();
 	private ParentNodeNotFoundAction<TM> parentNotFoundAction = THROW_ERROR;
 	
 	/*private Set<Object> notFoundParentIds = Sets.newHashSet();
@@ -274,6 +280,13 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 		return rootNodes;
 	}
 	
+	public TreeBuilder<TM> doIfChildrenIsEmpty(boolean recursion, Consumer<TM> action) {
+		for(TM node : this.rootNodes){
+			TreeUtils.doIfChildrenIsEmpty(node, action, recursion);
+		}
+		return this;
+	}
+	
 	
 	public Map<Object, TM> getNodeMap() {
 		return nodeMap;
@@ -291,7 +304,7 @@ public class TreeBuilder<TM extends TreeModel<TM>> {
 
 		List<DefaultTreeModel> list = Arrays.asList(t1, t2, t3, t4, t5);
 
-		TreeBuilder<DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel>(list, new SimpleTreeModelCreator());
+		TreeBuilder<DefaultTreeModel> tb = new TreeBuilder<DefaultTreeModel>(list, new DefaultTreeModelCreator());
 		tb.rootIds(1, 4);
 		List<DefaultTreeModel> t = tb.buidTree(tb.IGNORE);
 		System.out.println(t.get(0));

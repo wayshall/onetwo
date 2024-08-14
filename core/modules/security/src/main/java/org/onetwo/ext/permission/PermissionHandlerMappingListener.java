@@ -31,7 +31,6 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class PermissionHandlerMappingListener implements InitializingBean {
@@ -85,6 +84,9 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 //		menu.setMethod(method);
 		method.ifPresent(m->menu.setMethod(m.name()));
 //		String url = entry.getKey().getPatternsCondition().getPatterns().iterator().next();
+//		if (entry.getValue().getBeanType().getName().contains("TriggerTaskApplyMgrController")) {
+//			System.out.println("test");
+//		}
 		String url = null;
 		if(StringUtils.isNotBlank(menu.getUrl())){
 			//如果自定义了，忽略自动解释
@@ -165,6 +167,9 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 				continue ;
 			}
 			for(Class<?> codeClass : permClassInst.value()){
+//				if (codeClass.getName().contains("DeviceMgr")) {
+//					System.out.println("test");
+//				}
 				this.autoConifgPermission(codeClass, entry, permClassInst);
 			}
 		}

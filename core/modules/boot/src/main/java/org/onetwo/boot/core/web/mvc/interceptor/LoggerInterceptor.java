@@ -19,7 +19,7 @@ import org.onetwo.common.ds.ContextHolder;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.spring.utils.JFishMathcer;
 import org.onetwo.common.utils.LangUtils;
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,7 +31,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 //	public static final int INTERCEPTOR_ORDER = BootFirstInterceptor.INTERCEPTOR_ORDER+100;
 
 	public static interface UserDetailRetriever {
-		UserDetail getUserDetail();
+		GenericUserDetail<?> getUserDetail();
 	}
 	
 	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
@@ -45,7 +45,6 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	 * 用于记录日志时，避免记录一些敏感参数
 	 */
 	private JFishMathcer parameterMatcher ;
-	private String[] excludes;
 	private UserDetailRetriever userDetailRetriever;
 //	@Autowired
 //	private BootSiteConfig bootSiteConfig;
@@ -58,10 +57,11 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	}
 	
 	public void afterPropertiesSet() throws Exception{
-		if(LangUtils.isEmpty(excludes)){
-			this.excludes = new String[]{"*password*"};
+		String[] excludeParameters = this.accessLogProperties.getIgnoreParameters().toArray(new String[0]);
+		if(LangUtils.isEmpty(excludeParameters)){
+			excludeParameters = new String[]{"*password*"};
 		}
-		this.parameterMatcher = JFishMathcer.excludes(false, excludes);
+		this.parameterMatcher = JFishMathcer.excludes(false, excludeParameters);
 		/*if(isLogOperation() && accessLogger==null){
 			DefaultAccessLogger defaultLogger = new DefaultAccessLogger();
 //			if(bootSiteConfig!=null)
@@ -113,6 +113,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 		
 		info.setRemoteAddr(RequestUtils.getRemoteAddr(request));
 		info.setUserAgent(RequestUtils.getUserAgent(request));
+		info.setEndTime(System.currentTimeMillis());
 //		info.setParameters(request.getParameterMap());
 		for(Entry<String, String[]> entry : request.getParameterMap().entrySet()){
 			/*try {
@@ -135,7 +136,7 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 
 //		Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		UserDetail userdetail = userDetailRetriever!=null?userDetailRetriever.getUserDetail():null;//JFishWebUtils.getUserDetail();
+		GenericUserDetail<?> userdetail = userDetailRetriever!=null?userDetailRetriever.getUserDetail():null;//JFishWebUtils.getUserDetail();
 		if(userdetail!=null){
 			info.setOperatorId(userdetail.getUserId());
 			info.setOperatorName(userdetail.getUserName());
@@ -181,6 +182,6 @@ public class LoggerInterceptor extends WebInterceptorAdapter implements Initiali
 	public void setUserDetailRetriever(UserDetailRetriever userDetailRetriever) {
 		this.userDetailRetriever = userDetailRetriever;
 	}
-	
+
 	
 }

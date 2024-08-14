@@ -17,7 +17,7 @@ public class ToEnumConvertor extends AbstractTypeConvert<Enum<?>> {
 		if(Integer.class.isInstance(value)){
 			return ordinalToEnum(value, componentType);
 		}else{
-	        String name = value.toString();
+	        String name = value.toString().trim();
 	        if(StringUtils.isBlank(name)) {
 	        	return null;
 	        }

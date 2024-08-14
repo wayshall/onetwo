@@ -51,8 +51,12 @@ public class OssFileStore implements FileStorer, InitializingBean {
 	}
 	
 	public void delete(String key) {
-		key = StringUtils.trimStartWith(key, FileUtils.SLASH);
-		ObjectOperation operation = wrapper.objectOperation(ossProperties.getBucketName(), key);
+		String actualkey = key;
+		if (actualkey.contains(ossProperties.getEndPoint())) {
+			actualkey = StringUtils.substringAfter(actualkey, ossProperties.getEndPoint());
+		}
+		actualkey = StringUtils.trimStartWith(actualkey, FileUtils.SLASH);
+		ObjectOperation operation = wrapper.objectOperation(ossProperties.getBucketName(), actualkey);
 		operation.delete();
 	}
 	

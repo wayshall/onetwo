@@ -37,12 +37,6 @@ public class SsoClientCustomTokenInfoUriConfiguration {
 		DefaultAccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
 		CustomSsoClientUserAuthenticationConverter userTokenConverter = new CustomSsoClientUserAuthenticationConverter();
 		userTokenConverter.setSsoUserDetailService(userDetailsService);
-//		userTokenConverter.setUserDetailsService(new UserDetailsService() {
-//			@Override
-//			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//				return userDetailsService.loadUserByUsername(username);
-//			}
-//		});
 		tokenConverter.setUserTokenConverter(userTokenConverter);
 		
 		RemoteTokenServices services = new RemoteTokenServices();

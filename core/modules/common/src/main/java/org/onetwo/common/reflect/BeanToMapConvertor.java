@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -400,6 +399,9 @@ public class BeanToMapConvertor implements Cloneable {
 		Stream.of(ow.desribProperties()).forEach(prop -> {
 //		ReflectUtils.listProperties(obj.getClass(), prop-> {
 //			Object val = ReflectUtils.getProperty(obj, prop);
+			if (!ow.isReadableProperty(prop)) {
+				return ;
+			}
 			Object val = ow.getPropertyValue(prop);
 //			System.out.println("prefixName:"+prefixName+",class:"+obj.getClass()+", prop:"+prop.getName()+", value:"+val);
 			
@@ -444,6 +446,8 @@ public class BeanToMapConvertor implements Cloneable {
 	protected static interface ObjectWrapper {
 		PropertyDescriptor[] desribProperties();
 		Object getPropertyValue(PropertyDescriptor prop);
+		boolean isReadableProperty(PropertyDescriptor prop);
+		boolean isWritableProperty(PropertyDescriptor prop);
 	}
 	
 	protected static class DefaultObjectWrapper implements ObjectWrapper {
@@ -458,6 +462,16 @@ public class BeanToMapConvertor implements Cloneable {
 		}
 		public Object getPropertyValue(PropertyDescriptor prop) {
 			return ReflectUtils.getProperty(object, prop);
+		}
+		@Override
+		public boolean isReadableProperty(PropertyDescriptor prop) {
+			Method method = prop.getReadMethod();
+			return method!=null;
+		}
+		@Override
+		public boolean isWritableProperty(PropertyDescriptor prop) {
+			Method method = prop.getWriteMethod();
+			return method!=null;
 		}
 	}
 	
@@ -592,6 +606,9 @@ public class BeanToMapConvertor implements Cloneable {
 		}
 		public T excludeProperties(String... properties) {
 //			this.checkPropertyAcceptor();
+			if (LangUtils.isEmpty(properties)) {
+				return self();
+			}
 			this.propertyAcceptor = new ExcludePropertyAcceptor(this.propertyAcceptor, Arrays.asList(properties));
 			return self();
 		}

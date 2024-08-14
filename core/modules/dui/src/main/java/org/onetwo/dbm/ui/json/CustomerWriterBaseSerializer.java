@@ -38,7 +38,12 @@ abstract public class CustomerWriterBaseSerializer<T> extends StdSerializer<T> {
 		
 		Optional<DUIEntityMeta> meta = getDUIMetaManager().find(object.getClass());
 		if (meta.isPresent()) {
-			DUIFieldMeta field = meta.get().getField(fieldName);
+//			DUIFieldMeta field = meta.get().getField(fieldName);
+			DUIFieldMeta field = meta.get().findField(fieldName);
+			if (field==null) {
+				writeObject(jgen, value);
+				return ;
+			}
 			Optional<DUIJsonValueWriter<T>> transfer = getDUIJsonValueWriter(field);
 			if (transfer.isPresent()) {
 				transfer.get().write(value, field, jgen);

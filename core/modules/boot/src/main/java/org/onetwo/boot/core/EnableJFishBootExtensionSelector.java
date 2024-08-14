@@ -7,8 +7,10 @@ import java.util.List;
 
 import org.onetwo.boot.core.EnableJFishBootExtension.AppcationType;
 import org.onetwo.boot.core.cors.CorsFilterConfiguration;
+import org.onetwo.boot.core.embedded.TomcatConfiguration;
 import org.onetwo.boot.core.jwt.JwtContextConfig;
 import org.onetwo.boot.core.ms.BootMSContextAutoConfig;
+import org.onetwo.boot.core.scheduler.BootTaskSchedulerCustomizer;
 import org.onetwo.boot.core.shutdown.GraceKillConfiguration;
 import org.onetwo.boot.core.web.BootWebUIContextAutoConfig;
 import org.onetwo.boot.core.web.async.AsyncMvcConfiguration;
@@ -18,6 +20,8 @@ import org.onetwo.boot.core.web.mvc.ErrorHandleConfiguration;
 import org.onetwo.boot.core.web.mvc.log.AccessLogConfiguration;
 import org.onetwo.boot.core.web.service.BootCommonServiceConfig;
 import org.onetwo.boot.core.web.socket.WebsocketConfiguration;
+import org.onetwo.boot.ds.ConfiguratableDatasourceConfiguration;
+import org.onetwo.boot.ds.DatasourceRegistrar;
 import org.onetwo.boot.module.activemq.ActivemqConfiguration;
 import org.onetwo.boot.module.activemq.jmx.ActiveMQJmxConfiguration;
 import org.onetwo.boot.module.activemq.mqtt.ActiveMQTTConfiguration;
@@ -56,6 +60,8 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 	protected List<String> doSelect(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		List<String> classNames = new ArrayList<String>();
 
+		classNames.add(TomcatConfiguration.class.getName());
+		
 		//store 在BootCommonServiceConfig之前初始化，因为BootCommonService依赖filestore来加载
 		classNames.add(OssConfiguration.class.getName());
 		classNames.add(CosConfiguration.class.getName());
@@ -84,9 +90,11 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		
 		classNames.add(SsoClientCustomUserInfoUriConfiguration.class.getName());
 		classNames.add(SsoClientCustomTokenInfoUriConfiguration.class.getName());
+		
 		classNames.add(RedisConfiguration.class.getName());
 		classNames.add(AsyncMvcConfiguration.class.getName());
 		classNames.add(AsyncTaskConfiguration.class.getName());
+		classNames.add(BootTaskSchedulerCustomizer.class.getName());
 		classNames.add(AccessLogConfiguration.class.getName());
 		classNames.add(GraceKillConfiguration.class.getName());
 
@@ -132,6 +140,9 @@ public class EnableJFishBootExtensionSelector extends AbstractImportSelector<Ena
 		
 		classNames.add(WebsocketConfiguration.class.getName());
 		
+		// datasource
+		classNames.add(DatasourceRegistrar.class.getName()); 
+		classNames.add(ConfiguratableDatasourceConfiguration.class.getName());
 		
 		return classNames;
 	}

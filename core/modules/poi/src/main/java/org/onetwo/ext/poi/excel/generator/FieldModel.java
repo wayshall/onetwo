@@ -52,6 +52,8 @@ public class FieldModel implements PoiModel {
 	private boolean autoSizeColumn;
 	private boolean useMergedCells;
 	
+	private String iterator;
+	
 	public FieldModel() {
 	}
 
@@ -350,5 +352,12 @@ public class FieldModel implements PoiModel {
 		this.dataType = dataType;
 	}
 
+	public String getIterator() {
+		return iterator;
+	}
+
+	public void setIterator(String iterator) {
+		this.iterator = iterator;
+	}
 	
 }

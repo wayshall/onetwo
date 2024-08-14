@@ -7,9 +7,16 @@ import org.onetwo.ext.permission.api.PermissionType;
  * 此权限不会显示在菜单权限分配列表（被过滤）
  * 也不会在同步的时候被移除
  * @author weishao zeng
+ * @see org.springframework.security.web.access.expression.WebSecurityExpressionRoot
+ * @see org.springframework.security.access.expression.method.MethodSecurityExpressionRoot
  * <br/>
  */
 @PermissionMeta(name = "已登录认证", permissionType = PermissionType.FUNCTION, hidden = true)
-public interface FullyAuthenticated {
+public interface FullyAuthenticated extends ReservePermission {
+	String APP_CODE = "FullyAuthenticated";
 	String AUTH_CODE = "fullyAuthenticated";
+	
+	default String authCode() {
+		return AUTH_CODE;
+	}
 }

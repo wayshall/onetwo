@@ -62,7 +62,10 @@ public class DefaultTypeConvertors implements Convertor {
 		return convert;
 	}
 	
-	/* (non-Javadoc)
+	/* * *
+	 * 当目标类型为基本类型时，如果source为null，则返回配置的基本类型的默认值
+	 * 否则，返回null
+	 * (non-Javadoc)
 	 * @see org.onetwo.common.utils.convert.TypeConvertor#convert(java.lang.Object, java.lang.Class)
 	 */
 	@Override

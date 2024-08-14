@@ -35,6 +35,14 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 		se.setArgs(args);
 		return se;
 	}
+	
+	public static ServiceException formatMessage(ErrorType exceptionType, String message, Object...args){
+		String formatMsg = String.format(message, args);
+		ServiceException se = new ServiceException(formatMsg, exceptionType.getErrorCode());
+		se.exceptionType = exceptionType;
+		se.setArgs(args);
+		return se;
+	}
 
 
 	/**
@@ -59,13 +67,13 @@ public class ServiceException extends BaseException implements ExceptionCodeMark
 	}
 
 	public ServiceException(ErrorType exceptionType) {
-		this(exceptionType, null);
+		this(exceptionType, (Throwable)null);
 	}
 
 	public ServiceException(ErrorType exceptionType, Throwable cause) {
 		this(exceptionType, cause, null);
 	}
-	
+
 	public ServiceException(ErrorType exceptionType, Throwable cause, String message) {
 		super(exceptionType.getErrorMessage() + StringUtils.emptyIfNull(message), cause);
 		initErrorCode(exceptionType.getErrorCode());

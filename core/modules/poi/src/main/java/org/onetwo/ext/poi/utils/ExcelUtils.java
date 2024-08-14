@@ -29,11 +29,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.onetwo.common.utils.Page;
 import org.onetwo.ext.poi.excel.etemplate.ExcelTemplateValueProvider;
 import org.onetwo.ext.poi.excel.exception.ExcelException;
 import org.onetwo.ext.poi.excel.generator.DefaultPropertyStringParser;
@@ -44,6 +46,7 @@ import org.onetwo.ext.poi.excel.generator.PoiModel;
 import org.onetwo.ext.poi.excel.generator.PropertyStringParser;
 import org.onetwo.ext.poi.excel.generator.RowModel;
 import org.onetwo.ext.poi.excel.generator.TemplateModel;
+import org.onetwo.ext.poi.excel.generator.TemplateRowTypes;
 import org.onetwo.ext.poi.excel.generator.VarModel;
 import org.onetwo.ext.poi.excel.generator.WorkbookModel;
 import org.slf4j.Logger;
@@ -53,8 +56,13 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.google.common.collect.Lists;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.enums.EnumToStringConverter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.security.NoTypePermission;
+import com.thoughtworks.xstream.security.NullPermission;
+import com.thoughtworks.xstream.security.PrimitiveTypePermission;
 
 import ognl.Ognl;
 
@@ -144,17 +152,36 @@ abstract public class ExcelUtils {
 
 	public static XStream registerExcelModel(){
 		XStream xstream = new XStream(new DomDriver());
+		xstream .addPermission(NoTypePermission.NONE); //forbid everything
+		xstream .addPermission(NullPermission.NULL);   // allow "null"
+		xstream .addPermission(PrimitiveTypePermission.PRIMITIVES); // allow primitive types
+		
+		List<Class<?>> allowTypes = Lists.newArrayList();
+		
 		xstream.alias("workbook", WorkbookModel.class);
+		allowTypes.add(WorkbookModel.class);
+		
 		xstream.alias("vars", List.class);
 		xstream.alias("var", VarModel.class);
+		allowTypes.add(VarModel.class);
+		
 		xstream.alias("sheets", List.class);
 		xstream.alias("template", TemplateModel.class);
 		xstream.alias("sheet", TemplateModel.class);
+		allowTypes.add(TemplateModel.class);
+		
 		xstream.alias("rows", List.class);
 		xstream.alias("row", RowModel.class);
+		allowTypes.add(RowModel.class);
+		
 		xstream.alias("field", FieldModel.class);
+		allowTypes.add(FieldModel.class);
+		
 		xstream.alias("valueExecutors", List.class);
 		xstream.alias("valueExecutor", ExecutorModel.class);
+		allowTypes.add(ExecutorModel.class);
+		
+		
 //		xstream.useAttributeFor(Number.class);
 //		xstream.useAttributeFor(boolean.class);
 //		xstream.useAttributeFor(String.class); 
@@ -163,6 +190,9 @@ abstract public class ExcelUtils {
 		for(Class<?> btype : getBaseTypeClass()){
 			xstream.useAttributeFor(btype);
 		}
+		
+		xstream.registerConverter(new EnumToStringConverter<>(TemplateRowTypes.class, TemplateRowTypes.toMap()));
+		xstream.allowTypes(allowTypes.toArray(new Class<?>[0]));
 		return xstream;
 	}
 	
@@ -234,7 +264,7 @@ abstract public class ExcelUtils {
 		}
 		if(cell==null)
 			return null;
-		cell.setCellType(CellType.STRING);
+//		cell.setCellType(CellType.STRING);
 		String value = StringUtils.trimToEmpty(cell.getStringCellValue());
 		return value;
 	}
@@ -248,9 +278,30 @@ abstract public class ExcelUtils {
 //			value = StringUtils.cleanInvisibleUnicode(cell.getStringCellValue().trim());
 			value = cell.getStringCellValue().trim();
 		}else if(CellType.NUMERIC==type){
-			value = cell.getNumericCellValue();
+			boolean isDateCell = DateUtil.isCellDateFormatted(cell);
+			if (isDateCell) {
+				value = cell.getDateCellValue();
+			} else {
+				value = cell.getNumericCellValue();
+			}
 		}else if(CellType.FORMULA==type){
-			value = cell.getCellFormula();
+			switch (cell.getCachedFormulaResultType()) {
+			case NUMERIC:
+				value = cell.getNumericCellValue();
+				break;
+			case STRING:
+				value = cell.getStringCellValue().trim();
+				break;
+			case BOOLEAN:
+				value = cell.getBooleanCellValue();
+				break;
+			case BLANK:
+				value = "";
+				break;
+			default:
+				value = cell.getCellFormula();
+				break;
+			}
 		}else if(CellType.BOOLEAN==type){
 			value = cell.getBooleanCellValue();
 		}else if(CellType.BLANK==type){
@@ -673,7 +724,14 @@ abstract public class ExcelUtils {
 
         if (value instanceof Iterable) {
             iterator = ((Iterable) value).iterator();
-        } else if (value.getClass().isArray()) {
+        } else if (value instanceof Page) {
+        	Page<?> page = (Page<?>) value;
+        	List<?> dataList = page.getResult();
+        	if (dataList==null) {
+        		return null;
+        	}
+        	iterator = dataList.iterator();
+        }  else if (value.getClass().isArray()) {
             //need ability to support primitives; therefore, cannot
             //use Object[] casting.
             ArrayList list = new ArrayList(Array.getLength(value));

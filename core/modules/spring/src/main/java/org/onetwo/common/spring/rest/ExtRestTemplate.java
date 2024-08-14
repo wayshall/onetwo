@@ -7,8 +7,8 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.onetwo.common.apiclient.RequestContextData;
 import org.onetwo.common.apiclient.RestExecutor;
@@ -61,8 +61,6 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	@SuppressWarnings("rawtypes")
 	private ExtRestErrorHandler extErrorHandler;
 	private Type extErrorResultType;
-	
-	private AtomicLong requestIdGenerator = new AtomicLong(0);
 	
 	private Charset charset = FormHttpMessageConverter.DEFAULT_CHARSET;
 	
@@ -117,11 +115,6 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		}
 	}
 	
-	@Override
-	public String requestId() {
-		return String.valueOf(requestIdGenerator.getAndIncrement());
-	}
-
 	public final ExtRestTemplate addMessageConverters(HttpMessageConverter<?>... elements){
 		getMessageConverters().addAll(Arrays.asList(elements));
 		return this;
@@ -179,11 +172,13 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		}else{
 			throw new RestClientException("unsupported method: " + method);
 		}
-		if(context.hasHeaderCallback()){
-			rc = wrapRequestCallback(context, rc);
-		}
+//		if(context.hasApiRequestCallback()){
+//			rc = wrapRequestCallback(context, rc);
+//		}
+		rc = wrapRequestCallback(context, rc);
 		return execute(context.getRequestUrl(), method, rc, responseExtractor, context.getUriVariables());
 	}
+	
 	
 	private void logData(Object requestBody, HttpHeaders headers) {
 		if(isLogableObject(requestBody) && logger.isDebugEnabled()){
@@ -231,7 +226,7 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 	}
 	
 	public <T> RequestCallback wrapRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
-		return new ProcessHeaderRequestCallback(context, acceptHeaderRequestCallback);
+		return new ProcessApiClientRequestCallback(context, acceptHeaderRequestCallback);
 	}
 	
 
@@ -257,9 +252,19 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		throw new RestClientException("invoke rest interface["+url+"] error: " + response);
 	}
 
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getAsMap(String url, Object request){
+		return get(url, request, HashMap.class);
+	}
+	
 	public <T> T get(String url, Object request, Class<T> responseType){
 		String paramString = RestUtils.propertiesToParamString(request);
-		MultiValueMap<String, Object> urlVariables = RestUtils.toMultiValueMap(request, beanToMapConvertor);
+		// 使用toMultiValueMap，spring不会把参数值List展开获取，而是直接toString，从而导致参数错误
+//		MultiValueMap<String, Object> urlVariables = RestUtils.toMultiValueMap(request, beanToMapConvertor);
+		Map<String, Object> urlVariables = beanToMapConvertor.toMap(request);
+		if (logger.isDebugEnabled()) {
+			logger.debug("url Variables: {}", urlVariables);
+		}
 		String atualUrl = ParamUtils.appendParamString(url, paramString);
 		return getForObject(atualUrl, responseType, urlVariables);
 	}
@@ -272,12 +277,12 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		throw new RestClientException("invoke rest interface["+url+"] error: " + response);
 	}
 
-	protected static class ProcessHeaderRequestCallback implements RequestCallback {
+	protected static class ProcessApiClientRequestCallback implements RequestCallback {
 		private final RequestCallback acceptHeaderRequestCallback;
 //		private final Consumer<HttpHeaders> callback;
 		private RequestContextData context;
 
-		public ProcessHeaderRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
+		public ProcessApiClientRequestCallback(RequestContextData context, RequestCallback acceptHeaderRequestCallback) {
 			super();
 			this.acceptHeaderRequestCallback = acceptHeaderRequestCallback;
 			this.context = context;
@@ -288,7 +293,11 @@ public class ExtRestTemplate extends RestTemplate implements RestExecutor {
 		public void doWithRequest(ClientHttpRequest request) throws IOException {
 			//再次回调header callback，此时为实际请求的header，前一次调用为匹配messageConverter
 //			this.callback.accept(request.getHeaders());
-			this.context.acceptHeaderCallback(request.getHeaders());
+//			this.context.acceptRequestCallback(request.getHeaders());
+			
+			request.getHeaders().putAll(context.getHeaders());
+//			this.context.acceptRequestCallback(request);
+			
 			/*if(ReflectUtils.getFieldsAsMap(acceptHeaderRequestCallback.getClass()).containsKey("requestEntity")){
 				HttpEntity<?> requestEntity = (HttpEntity<?>) ReflectUtils.getFieldValue(acceptHeaderRequestCallback, "requestEntity");
 				if(requestEntity!=null){

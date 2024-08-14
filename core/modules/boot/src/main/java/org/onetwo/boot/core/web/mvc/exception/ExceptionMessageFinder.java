@@ -20,6 +20,7 @@ import org.onetwo.boot.core.web.utils.BootWebHelper;
 import org.onetwo.boot.core.web.utils.BootWebUtils;
 import org.onetwo.boot.core.web.utils.RemoteClientUtils;
 import org.onetwo.boot.utils.BootUtils;
+import org.onetwo.common.data.Result;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ExceptionCodeMark;
@@ -36,6 +37,8 @@ import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.onetwo.dbm.exception.DbmException;
+import org.onetwo.ext.security.exception.ErrorMessageExtractor;
+import org.onetwo.ext.security.exception.SecurityErrorResult;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
@@ -54,7 +57,7 @@ import lombok.Setter;
  * @author wayshall
  *
  */
-public interface ExceptionMessageFinder {
+public interface ExceptionMessageFinder extends ErrorMessageExtractor {
 	public String ERROR_RESPONSE_HEADER = ResponseUtils.ERROR_RESPONSE_HEADER;
 	//TODO: 必要时加上serviceName头，一边追踪，待实现
 	public String ERROR_JSERVICE_HEADER = "X-Response-JService";
@@ -101,6 +104,10 @@ public interface ExceptionMessageFinder {
 	
 	default boolean isInternalError(Exception ex) {
 		return getExceptionMessageFinderConfig().isInternalError(ex);
+	}
+
+	public default void handleErrorResponse(HttpServletResponse response, Result result) {
+		response.setHeader(ERROR_RESPONSE_HEADER, result.getCode());
 	}
 	
 	default ErrorMessage getErrorMessage(Exception throwable){
@@ -163,7 +170,8 @@ public interface ExceptionMessageFinder {
 			}
 		}
 		WebHolder.getResponse().ifPresent(response->{
-			response.setHeader(ERROR_RESPONSE_HEADER, error.getCode());
+//			response.setHeader(ERROR_RESPONSE_HEADER, error.getCode());
+			handleErrorResponse(response, error);
 		});
 		WebHolder.getRequest().ifPresent(request->{
 			BootWebUtils.webHelper(request).setErrorMessage(error);
@@ -258,12 +266,14 @@ public interface ExceptionMessageFinder {
 			detail = false;
 			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
 			error.setHttpStatus(HttpStatus.BAD_REQUEST);
-		} else if(ex instanceof IllegalArgumentException){
-			findMsgByCode = false;
-			detail = true;
-			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
-			error.setHttpStatus(HttpStatus.BAD_REQUEST);
-		} else{
+		} 
+//		else if(ex instanceof IllegalArgumentException){
+//			findMsgByCode = false;
+//			detail = true;
+//			errorCode = SystemErrorCode.ERR_PARAMETER_VALIDATE;
+//			error.setHttpStatus(HttpStatus.BAD_REQUEST);
+//		} 
+		else{
 			errorCode = SystemErrorCode.UNKNOWN;
 			error.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -292,6 +302,13 @@ public interface ExceptionMessageFinder {
 		error.setCode(errorCode);
 //		detail = product?detail:true;
 		error.setMesage(errorMsg);
+		
+		if (ex instanceof SystemErrorCode) {
+			Map<String, Object> errorData = ((SystemErrorCode)ex).getErrorData();
+			if (LangUtils.isNotEmpty(errorData)) {
+				error.setErrorData(errorData);
+			}
+		}
 		
 	}
 	
@@ -397,15 +414,20 @@ public interface ExceptionMessageFinder {
 	
 
 	@SuppressWarnings("serial")
-	public static class ErrorMessage implements Serializable {
+	public static class ErrorMessage implements Serializable, SecurityErrorResult {
 		private String code;
-		private String mesage;
+		@Getter
+		private String message;
 		boolean detail;
 		private HttpStatus httpStatus;
 //		private boolean authentic = false;
 		private String viewName;
 		
 		final private Exception exception;
+		
+		@Setter
+		@Getter
+		private Object errorData;
 		
 		@Setter
 		@Getter
@@ -444,7 +466,7 @@ public interface ExceptionMessageFinder {
 			return code;
 		}
 		public String getMesage() {
-			return mesage;
+			return message;
 		}
 		public boolean isDetail() {
 			return detail;
@@ -464,7 +486,7 @@ public interface ExceptionMessageFinder {
 			this.code = code;
 		}
 		public void setMesage(String mesage) {
-			this.mesage = mesage;
+			this.message = mesage;
 		}
 		public void setDetail(boolean detail) {
 			this.detail = detail;
@@ -480,6 +502,9 @@ public interface ExceptionMessageFinder {
 		}
 		public void setHttpStatus(HttpStatus httpStatus) {
 			this.httpStatus = httpStatus;
+		}
+		public boolean isUnknowError() {
+			return SystemErrorCode.UNKNOWN.equals(code) || SystemErrorCode.DEFAULT_SYSTEM_ERROR_CODE.equals(code);
 		}
 		/*
 		public void setAuthentic(boolean authentic) {

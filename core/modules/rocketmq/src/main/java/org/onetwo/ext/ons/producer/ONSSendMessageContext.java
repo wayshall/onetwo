@@ -2,8 +2,7 @@ package org.onetwo.ext.ons.producer;
 
 import org.onetwo.boot.mq.entity.SendMessageEntity;
 import org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain;
-
-import com.aliyun.openservices.ons.api.Message;
+import org.onetwo.ext.alimq.ExtMessage;
 
 import lombok.Builder;
 import lombok.Data;
@@ -15,10 +14,10 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper=true)
-public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext<Message>{
+public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext<ExtMessage>{
 	
 //	final private Message message;
-	final private TraceableProducer source;
+	final private RmqProducerService source;
 //	final private ProducerBean producer;
 //	final private TransactionProducerBean transactionProducer;
 //	final private SendMessageInterceptorChain chain;
@@ -26,29 +25,30 @@ public class ONSSendMessageContext extends org.onetwo.boot.mq.SendMessageContext
 	/*
 	final private long threadId;
 	private boolean debug;*/
+	/***
+	 * 是否事务消息
+	 */
+	boolean transactional = false;
 
 	@Builder
-	public ONSSendMessageContext(Message message,
+	public ONSSendMessageContext(ExtMessage message,
 			SendMessageEntity messageEntity, long threadId,
-			boolean debug, TraceableProducer source, 
+			boolean debug, RmqProducerService source, 
 			/*ProducerBean producer,
 			TransactionProducerBean transactionProducer,*/
 			SendMessageInterceptorChain chain) {
-		super(message, chain, messageEntity, threadId, debug);
+		super(message.getKeys(), message, chain, messageEntity, threadId, debug);
 		this.source = source;
 //		this.producer = producer;
 //		this.transactionProducer = transactionProducer;
-		this.setKey(message.getKey());
+//		this.setKey(message.getKeys());
 //		this.chain = chain;
 //		this.messageEntity = messageEntity;
 	}
 
-	public boolean isTransactional(){
-		return source.isTransactional();
-	}
-	
 	public boolean isDelayMessage() {
-		return getMessage().getStartDeliverTime() > 0;
+		Long startDeliverTime = getMessage().getStartDeliverTime();
+		return startDeliverTime!=null && startDeliverTime > 0;
 	}
 	
 

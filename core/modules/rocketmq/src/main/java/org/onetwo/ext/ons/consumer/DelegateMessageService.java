@@ -3,6 +3,12 @@ package org.onetwo.ext.ons.consumer;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.common.message.MessageExt;
+import org.onetwo.boot.mq.exception.ConsumeException;
+import org.onetwo.boot.mq.exception.DeserializeMessageException;
+import org.onetwo.boot.mq.exception.ImpossibleConsumeException;
+import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.exception.MessageOnlyServiceException;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.alimq.BatchConsumContext;
@@ -13,17 +19,12 @@ import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
 import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.exception.ConsumeException;
-import org.onetwo.ext.ons.exception.DeserializeMessageException;
-import org.onetwo.ext.ons.exception.ImpossibleConsumeException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Lists;
 
@@ -81,13 +82,26 @@ public class DelegateMessageService implements InitializingBean {
 			}
 			
 			String deserializer = message.getUserProperty(TracableMessage.SERIALIZER_KEY);
+			String dataId = message.getUserProperty(TracableMessage.DATA_ID_KEY);
 			MessageDeserializer messageDeserializer = getMessageDeserializer(deserializer);
 //			Object body = consumer.deserialize(message);
 			Object body = message.getBody();
+			// 是否自动反序列化
 			if(meta.isAutoDeserialize()){
-				Class<?> bodyClass = consumer.getMessageBodyClass(currentConetxt);
-				if (bodyClass!=null) {
-					message.putUserProperty(JsonMessageSerializer.PROP_BODY_TYPE, bodyClass.getName());
+				// 消息原始数据类型
+				String sourceClassName = message.getUserProperty(JsonMessageSerializer.PROP_BODY_TYPE);
+				// 根据consumer方法（@ONSSubscribe注解的方法）定义的参数，获取需要反序列化的目标类型
+				Class<?> targetBodyClass = consumer.getMessageBodyClass(currentConetxt);
+				if (targetBodyClass!=null) {
+					if (!targetBodyClass.getName().equals(sourceClassName)) {
+						// 消息的原始类型和目标类型不符
+						throw new MQException("The original type(" + sourceClassName + ") of the message "
+								+ "does not match the target type(" + targetBodyClass + "), "
+								+ "consumer group: " + meta.getConsumerId() + ", "
+								+ "consumer bean: " + meta.getConsumerBeanName());
+					}
+					// 把目标类型设置到property，以供反序列化器使用，注意：如果consumer方法定义的类型和原始类型不兼容，则反序列化的时候会出错
+					message.putUserProperty(JsonMessageSerializer.PROP_BODY_TYPE, targetBodyClass.getName());
 				}
 //				body = messageDeserializer.deserialize(message.getBody(), message);
 				body = deserializeMessage(messageDeserializer, message);
@@ -96,6 +110,7 @@ public class DelegateMessageService implements InitializingBean {
 												.message(message)
 												.deserializedBody(body)
 												.messageDeserializer(messageDeserializer)
+												.dataId(dataId)
 //												.consumerMeta(meta)
 												.build();
 			}else{
@@ -105,6 +120,7 @@ public class DelegateMessageService implements InitializingBean {
 												.messageDeserializer(messageDeserializer)
 //												.deserializedBody(body)
 //												.consumerMeta(meta)
+												.dataId(dataId)
 												.build();
 			}
 			
@@ -185,14 +201,20 @@ public class DelegateMessageService implements InitializingBean {
 		consumerListenerComposite.beforeConsumeMessage(meta, currentConetxt);
 		try {
 			consumer.doConsume(currentConetxt);
+		} catch (MessageOnlyServiceException e) {
+			// 此异常无需回滚
+			if (logger.isInfoEnabled()) {
+				String msg = buildErrorMessage(meta, currentConetxt);
+				logger.info("rocketmq consumer will not rollback: {}", msg);
+			}
+			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
+			// 忽略消费，不再重复消费
+			currentConetxt.markWillSkipConsume();
 		} catch (Throwable e) {
 			String msg = buildErrorMessage(meta, currentConetxt);
 //			logger.error(msg, e);
 			consumerListenerComposite.onConsumeMessageError(currentConetxt, e);
 			ConsumeException consumeEx = new ConsumeException(msg, e);
-			if (e instanceof MessageOnlyServiceException) {
-				currentConetxt.markWillSkipConsume();
-			}
 			throw consumeEx;
 		}
 		consumerListenerComposite.afterConsumeMessage(meta, currentConetxt);
@@ -202,11 +224,11 @@ public class DelegateMessageService implements InitializingBean {
 		String msgId = ONSUtils.getMessageId(currentConetxt.getMessage());
 		String msg = "rmq-consumer["+meta.getConsumerId()+"] consumed message error. " + 
 					"id: " +  msgId + ", key: " + currentConetxt.getMessage().getKeys() +
-					"topic: " + currentConetxt.getTopic() + ", tags: " + currentConetxt.getTags();
+					", topic: " + currentConetxt.getTopic() + ", tags: " + currentConetxt.getTags();
 		return msg;
 	}
 
-	@Transactional
+	@Transactional(noRollbackFor = MessageOnlyServiceException.class)
 	public void consumeMessageWithTransactional(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
 		this.consumeMessage(consumer, meta, currentConetxt);
 	}

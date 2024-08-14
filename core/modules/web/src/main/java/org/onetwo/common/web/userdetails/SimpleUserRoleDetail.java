@@ -6,10 +6,9 @@ import java.util.List;
 
 
 @SuppressWarnings("serial")
-@Deprecated
-public class SimpleUserRoleDetail implements SsoTokenable, UserDetail, RoleDetail, UserRoot, Serializable {
+public class SimpleUserRoleDetail implements UserDetail, RoleDetail, UserRoot, Serializable {
 	
-	private long userId;
+	private Long userId;
 	private String userName;
 	private String token;
 	private List<String> roles = new ArrayList<String>();
@@ -25,7 +24,7 @@ public class SimpleUserRoleDetail implements SsoTokenable, UserDetail, RoleDetai
 		this.token = token;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
@@ -65,7 +64,7 @@ public class SimpleUserRoleDetail implements SsoTokenable, UserDetail, RoleDetai
 	}
 
 	@Override
-	public boolean isSystemRootUser() {
+	public Boolean isSystemRootUser() {
 		return false;
 	}
 	

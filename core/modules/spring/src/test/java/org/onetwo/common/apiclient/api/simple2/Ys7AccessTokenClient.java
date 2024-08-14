@@ -2,6 +2,7 @@ package org.onetwo.common.apiclient.api.simple2;
 
 import org.onetwo.common.apiclient.annotation.RestApiClient;
 import org.onetwo.common.apiclient.api.simple2.Ys7AccessTokenClient.GetAccessTokenResponse.AccessTokenInfo;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -23,6 +24,18 @@ public interface Ys7AccessTokenClient {
     
     @RequestMapping(value = "/token/get", method = RequestMethod.POST)
     GetAccessTokenResponse getAccessTokenWithBody(GetAccessTokenRequst request);
+
+    
+    @RequestMapping(value = "/device/delete", method = RequestMethod.POST)
+    SimpleResponse deleteDevice(@RequestBody DeleteDeviceRequest request);
+    
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class DeleteDeviceRequest {
+    	String accessToken;
+    	String deviceSerial;
+    }
     
     @Data
     @NoArgsConstructor
@@ -50,6 +63,12 @@ public interface Ys7AccessTokenClient {
 	    String code;
 	    String msg;
 	    T data;
+	}
+	
+	@Data
+	public class SimpleResponse {
+	    String code;
+	    String msg;
 	}
 
 }

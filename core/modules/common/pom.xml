@@ -4,7 +4,7 @@
 	<parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.8.0-SNAPSHOT</version>
+        <version>5.2.7-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 	
@@ -17,7 +17,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <onetwo.version>4.8.0-SNAPSHOT</onetwo.version>
+    <onetwo.version>5.2.7-SNAPSHOT</onetwo.version>
   </properties>
   
   <dependencyManagement>
@@ -130,13 +130,19 @@
         <artifactId>commons-collections4</artifactId>
     </dependency>
     
-    <!-- for aes PKCS7Padding -->
+    <!-- for aes PKCS7Padding 
     <dependency>
 	    <groupId>org.bouncycastle</groupId>
 	    <artifactId>bcprov-jdk16</artifactId>
 	    <version>1.46</version>
 	    <optional>true</optional>
-	</dependency>
+	</dependency> -->
+	
+    <!-- sm加密处理 -->    
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+    </dependency>
 	
 	
     <!-- swagger -->
@@ -151,6 +157,29 @@
         </exclusion>
       </exclusions>
     </dependency>
+    
+    <!-- for jdk11 -->
+    <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-core</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    
     
     <dependency>
         <groupId>junit</groupId>

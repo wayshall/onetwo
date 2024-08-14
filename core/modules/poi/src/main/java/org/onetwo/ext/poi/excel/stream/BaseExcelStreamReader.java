@@ -15,6 +15,7 @@ import org.springframework.util.Assert;
  */
 abstract public class BaseExcelStreamReader implements ExcelStreamReader {
 	protected List<SheetStreamReader<?>> sheetReaders;
+	private boolean canConverToStringValue = false;
 	
 	protected BaseExcelStreamReader(List<SheetStreamReader<?>> sheetReaders) {
 		super();
@@ -51,6 +52,7 @@ abstract public class BaseExcelStreamReader implements ExcelStreamReader {
 	
 	protected SheetData createSheetData(Sheet sheet, int sheetIndex) {
 		SheetData sheetData = new SheetData(sheet, sheetIndex);
+		sheetData.setCanConverToStringValue(isCanConverToStringValue());
 		return sheetData;
 	}
 	
@@ -58,6 +60,14 @@ abstract public class BaseExcelStreamReader implements ExcelStreamReader {
 		return sheet.getPhysicalNumberOfRows()<1;
 	}
 	
+	public boolean isCanConverToStringValue() {
+		return canConverToStringValue;
+	}
+
+	public void setCanConverToStringValue(boolean canConverToStringValue) {
+		this.canConverToStringValue = canConverToStringValue;
+	}
+
 	public static interface SheeDataModelConsumer {
 		/****
 		 * 当整个sheet读取完毕时，触发此回调

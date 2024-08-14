@@ -84,7 +84,11 @@ public abstract class BaseFileProcessor<R extends BaseFileProcessor<R>> {
 	public R andSubDirIsNot(String...dirs){
 		return andFile(FileMatcher.subDirIsNot(dirs));
 	}
+	@SuppressWarnings("unchecked")
 	public R andSubDirIs(String dir, String dirSeperator){
+		if (StringUtils.isBlank(dir)) {
+			return (R)this;
+		}
 		String[] dirs = StringUtils.split(dir, dirSeperator);
 		return andFile(FileMatcher.subDirIs(dirs));
 	}
@@ -97,16 +101,33 @@ public abstract class BaseFileProcessor<R extends BaseFileProcessor<R>> {
 		return andFile(FileMatcher.filePathContains(paths));
 	}
 	
-	public R andFilePathNotContains(String path){
+	public R andFilePathNotContains(String... path){
 		return andFile((baseDir, file)->{
 			return !FileMatcher.filePathContains(path).match(baseDir, file);
 		});
 	}
 
+
+	public R andIgnoreSubDirsOfChildModule(String...subDirsOfChildModule){
+		return andFile((baseDir, file) -> {
+			return !FileMatcher.subDirsOfChildModuleIs(subDirsOfChildModule).match(baseDir, file);
+		} );
+//		return andFile(FileMatcher.subDirsOfChildModuleIs(subDirsOfChildModule));
+	}
 	
 	public R andIgnoreDirContains(String...ignoreDirs){
+		return andRelativePathIgnore(ignoreDirs);
+	}
+
+	public R andRelativePathIgnore(String...relativeDirs){
 		return andFile((baseDir, file)-> {
-			return !FileUtils.relativeDirPathContains(file, baseDir, ignoreDirs);
+			return !FileUtils.relativeDirPathContains(file, baseDir, relativeDirs);
+		});
+	}
+	
+	public R andRelativePathContains(String...relativeDirs){
+		return andFile((baseDir, file)-> {
+			return FileUtils.relativeDirPathContains(file, baseDir, relativeDirs);
 		});
 	}
 

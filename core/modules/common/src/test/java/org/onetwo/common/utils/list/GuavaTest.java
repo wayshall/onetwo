@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.onetwo.common.utils.ArrayUtils;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.UserEntity;
 
 import com.google.common.base.Function;
@@ -43,6 +44,25 @@ public class GuavaTest {
 		List<String> datas = CUtils.iterableToList(Splitter.on(Pattern.compile(":|：")).trimResults().omitEmptyStrings().split(line));
 		assertThat(datas.size()).isEqualTo(3);
 		assertThat(datas.get(2)).isEqualTo("testc");
+		
+		line = "-aa--bb";
+		String[] strs = StringUtils.split(line, "-");
+		assertThat(strs.length).isEqualTo(2);
+		
+		List<String> strsList = Splitter.on("-").trimResults().splitToList(line);
+		assertThat(strsList.size()).isEqualTo(4);
+		assertThat(strsList.get(0)).isEmpty();
+		assertThat(strsList.get(2)).isEmpty();
+
+		line = "-aa、-、-b，b";
+		strsList = Splitter.on("，、").trimResults().splitToList(line);
+		assertThat(strsList.size()).isEqualTo(1);
+		
+
+		strsList = Splitter.on(Pattern.compile("，|、")).trimResults().splitToList(line);
+		assertThat(strsList.size()).isEqualTo(4);
+		assertThat(strsList.get(0)).isEqualTo("-aa");
+		assertThat(strsList.get(3)).isEqualTo("b");
 	}
 	
 	public UserEntity createUser(String userName, int age){

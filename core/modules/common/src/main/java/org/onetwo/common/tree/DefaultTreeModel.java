@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @SuppressWarnings("serial")
 @JsonIgnoreProperties({"parent", "level", "index", "first", "last"})
 public class DefaultTreeModel extends AbstractTreeModel<DefaultTreeModel> {
+	
+	private Boolean hasChildren;
 
 	public DefaultTreeModel() {
 	    super();
@@ -29,5 +31,17 @@ public class DefaultTreeModel extends AbstractTreeModel<DefaultTreeModel> {
 	public String getLabel() {
 		return getName();
 	}
+	
+	public boolean isHasChildren() {
+		if (hasChildren==null) {
+			return !isLeafage();
+		}
+		return hasChildren;
+	}
+
+	public void setHasChildren(boolean hasChildren) {
+		this.hasChildren = hasChildren;
+	}
+	
  
 }

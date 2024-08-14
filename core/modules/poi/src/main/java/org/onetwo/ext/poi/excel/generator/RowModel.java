@@ -9,14 +9,15 @@ import com.google.common.collect.Lists;
 
 public class RowModel implements PoiModel {
 	public static final String DEFAULT_NAME = "entity";
-	public static class Type {
-		public static final String TITLE_KEY = "title";
-		public static final String HEADER_KEY = "header";
-		public static final String ROW_KEY = "row";
-		public static final String ITERATOR_KEY = "iterator";
-	}
+//	public static class Type {
+//		public static final String TITLE_KEY = "title";
+//		public static final String HEADER_KEY = "header";
+//		public static final String ROW_KEY = "row";
+//		public static final String ITERATOR_KEY = "iterator";
+//	}
 	
 	private String name;
+//	private TemplateRowTypes rowType;
 	private String type;
 	private String datasource;
 	private int space;
@@ -76,15 +77,15 @@ public class RowModel implements PoiModel {
 	}
 	
 	public boolean isTitle(){
-		return Type.TITLE_KEY.equals(type);
+		return TemplateRowTypes.TITLE.equals(getRowType());
 	}
 	
 	public boolean isRow(){
-		return Type.ROW_KEY.equals(type);
+		return TemplateRowTypes.ROW.equals(getRowType());
 	}
 	
 	public boolean isIterator(){
-		return Type.ITERATOR_KEY.equals(type);
+		return TemplateRowTypes.ITERATOR.equals(getRowType());
 	}
 
 	public String getName() {
@@ -98,9 +99,32 @@ public class RowModel implements PoiModel {
 		this.name = name;
 	}
 
+//	public String getType() {
+//		String  type = this.type;
+//		if (StringUtils.isBlank(type)) {
+//			type = this.rowType.lowerName();
+//		}
+//		return type;
+//	}
+//
+//	public void setType(String type) {
+//		this.type = type;
+//		this.rowType = TemplateRowTypes.of(type);
+//	}
+
+	public TemplateRowTypes getRowType() {
+		return TemplateRowTypes.of(getType());
+	}
+
+	public void setRowType(TemplateRowTypes type) {
+		this.type = type.lowerName();
+	}
+	
 	public String getType() {
-		if(StringUtils.isBlank(type))
-			this.type = Type.ROW_KEY;
+		String type = this.type;
+		if (StringUtils.isBlank(type)) {
+			type = TemplateRowTypes.ROW.lowerName();
+		}
 		return type;
 	}
 
@@ -179,7 +203,7 @@ public class RowModel implements PoiModel {
 		clone.setRenderHeader(renderHeader);
 		clone.setSpace(space);
 		clone.setSpan(span);
-		clone.setType(type);
+		clone.type = type;
 		return clone;
 	}
 
@@ -250,6 +274,7 @@ public class RowModel implements PoiModel {
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
+	
 	
 	/*public RowExecutor getExecutorInstance() {
 		if(StringUtils.isBlank(executorClass))

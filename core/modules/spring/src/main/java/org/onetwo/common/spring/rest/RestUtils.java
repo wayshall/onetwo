@@ -9,6 +9,7 @@ import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.spring.utils.EnhanceBeanToMapConvertor.EnhanceBeanToMapBuilder;
 import org.onetwo.common.utils.CharsetUtils;
 import org.onetwo.common.utils.ParamUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -101,7 +102,7 @@ public final class RestUtils {
 		
 		HttpHeaders formHeader = FORM_HEADER;//createHeader(MediaType.APPLICATION_FORM_URLENCODED);
 		
-		final MultiValueMap<String, Object> params = toMultiValueMap(obj, convertor);
+		final MultiValueMap<String, String> params = toMultiValueStringMap(obj, convertor);
 		return new HttpEntity<MultiValueMap<String, ?>>(params, formHeader);
 	}
 	
@@ -110,8 +111,12 @@ public final class RestUtils {
 	}
 	
 	public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj){
+		return toMultiValueStringMap(obj, BEAN_TO_MAP_CONVERTOR);
+	}
+	
+	public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj, BeanToMapConvertor convertor){
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		BEAN_TO_MAP_CONVERTOR.flatObject("", obj, (key, value, ctx)->params.set(key, value.toString()));
+		convertor.flatObject("", obj, (key, value, ctx)->params.set(key, value==null?"":value.toString()));
 		return params;
 	}
 	/*public static MultiValueMap<String, String> toMultiValueStringMap(final Object obj, BeanToMapConvertor convertor){
@@ -160,6 +165,54 @@ public final class RestUtils {
 	public static <T> HttpEntity<T> createHttpEntity(T obj, HttpHeaders headers){
 		HttpEntity<T> entity = new HttpEntity<T>(obj, headers);
 		return entity;
+	}
+	
+	/****
+	 * 解释pathvariable参数，并且把所有queryParameters转化为queryString参数
+	 * @author wayshall
+	 * @param url
+	 * @param invokeMethod
+	 * @param context
+	 * @return
+	 */
+	public static String appendQueryParametersToURL(final String url, Map<String, ?> queryParameters){
+		String actualUrl = url;
+		/*if(LangUtils.isNotEmpty(context.getPathVariables())){
+			actualUrl = ExpressionFacotry.newStrSubstitutor("{", "}", context.getPathVariables()).replace(actualUrl);
+		}*/
+		if(!queryParameters.isEmpty()){
+			String paramString = RestUtils.keysToParamString(queryParameters);
+			actualUrl = ParamUtils.appendParamString(actualUrl, paramString);
+		}
+		return actualUrl;
+	}
+	
+	/***
+	 * 把路径串联起来
+	 * @author weishao zeng
+	 * @param url
+	 * @param path
+	 * @param requestPath
+	 * @return
+	 */
+	public static String concatPath(String url, String path, String requestPath){
+		StringBuilder fullPath = new StringBuilder();
+		if(StringUtils.isNotBlank(url)){
+			fullPath.append(StringUtils.trimEndWith(url, "/"));
+		}
+		if(StringUtils.isNotBlank(path)){
+			if(!path.startsWith("/")){
+				fullPath.append("/");
+			}
+			fullPath.append(StringUtils.trimEndWith(path, "/"));
+		}
+		if(StringUtils.isNotBlank(requestPath)){
+			if(!requestPath.startsWith("/")){
+				fullPath.append("/");
+			}
+			fullPath.append(requestPath);
+		}
+		return fullPath.toString();
 	}
 
 	private RestUtils(){}

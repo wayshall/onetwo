@@ -9,7 +9,7 @@ import java.io.Serializable;
 public interface JmsMessageCreator extends Serializable {
 	
 	String getDestinationName();
-	JmsMessage getJmsMessage();
+	JmsMessage<? extends Serializable> getJmsMessage();
 	DesinationType getDesinationType();
 	
 	

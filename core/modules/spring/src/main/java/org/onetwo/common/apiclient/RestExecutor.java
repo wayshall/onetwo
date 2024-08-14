@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
  */
 public interface RestExecutor {
 	
-	String requestId();
+//	String requestId();
 	
 	<T> ResponseEntity<T> execute(RequestContextData context);
 

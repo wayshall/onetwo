@@ -34,7 +34,7 @@ public class ExtInMemoryUserDetailsManagerConfigurer extends UserDetailsManagerC
 			UserDetails user = super.loadUserByUsername(username);
 			MemoryUser muser = this.memoryUsers.get(user.getUsername());
 			if (muser.getUserId()!=null) {
-				user = new LoginUserDetails(muser.getUserId(), username, user.getPassword(), user.getAuthorities());
+				user = new GenericLoginUserDetails<>(muser.getUserId(), username, user.getPassword(), user.getAuthorities());
 			}
 			return user;
 		}

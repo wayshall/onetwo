@@ -7,10 +7,12 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.onetwo.common.annotation.AnnotationUtils;
 import org.onetwo.common.annotation.FieldName;
@@ -45,12 +49,14 @@ import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.CUtils;
 import org.onetwo.common.utils.ClassUtils;
 import org.onetwo.common.utils.CollectionUtils;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.func.Closure2;
 import org.onetwo.common.utils.map.BaseMap;
 import org.slf4j.Logger;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.jodah.typetools.TypeResolver;
@@ -413,9 +419,9 @@ public class ReflectUtils {
 	}
 
 	public static Class<?> getGenricType(final Object obj, final int index) {
-		return getGenricType(obj, index, Object.class);
+		return (Class<?>)getGenricType(obj, index, Object.class);
 	}
-	public static Class<?> getGenricType(final Object obj, final int index, Class<?> defaultCLass) {
+	public static Type getGenricType(final Object obj, final int index, Type defaultCLass) {
 
 		Class clazz = getObjectClass(obj);
 		Type genType = null;
@@ -443,10 +449,10 @@ public class ReflectUtils {
 			return Object.class;
 		}*/
 		if(Class.class.isInstance(params[index])){
-			return (Class) params[index];
+			return params[index];
 		}else if(ParameterizedType.class.isInstance(params[index])){
 			ParameterizedType ptype = (ParameterizedType) params[index];
-			return (Class)ptype.getRawType();
+			return ptype.getRawType();
 		}else{
 //			return Object.class;
 			return defaultCLass;
@@ -697,6 +703,27 @@ public class ReflectUtils {
 			handleReflectionException(e);
 		}
 		return method;
+	}
+
+	/****
+	 * 查找所有静态方法
+	 * @author weishao zeng
+	 * @param objClass
+	 * @return
+	 */
+	public static List<Method> findAllStaticMethods(Class objClass) {
+		List<Method> methodList = Lists.newArrayList();
+		try {
+			Method[] methods = objClass.getMethods();
+			for (Method m : methods) {
+				if (Modifier.isStatic(m.getModifiers())) {
+					methodList.add(m);
+				}
+			}
+		} catch (Exception e) {
+			handleReflectionException(e);
+		}
+		return methodList;
 	}
 
 	/***************************************************************************
@@ -958,17 +985,19 @@ public class ReflectUtils {
 		}, valueConvertor);
 	}
 	
-	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor) {
+	public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, String... excludeProperties) {
 		return toMap(obj, (prop, val) -> {
 			return acceptor.apply(prop, val);
-		}, null);
+		}, (ValueConvertor)null, excludeProperties);
 	}
 	
 	// public static Map<String, Object> toMap(Object obj, BiFunction<PropertyContext, Object, Boolean> acceptor, BiFunction<PropertyDescriptor, Object, Object> valueConvertor) {
-	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor) {
+//	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor) {
+	public static Map<String, Object> toMap(Object obj, PropertyAcceptor acceptor, ValueConvertor valueConvertor, String... excludeProperties) {
 		return BeanToMapBuilder.newBuilder()
 						.propertyAcceptor(acceptor)
 						.valueConvertor(valueConvertor)
+						.excludeProperties(excludeProperties)
 						.build()
 						.toMap(obj);
 	}
@@ -1850,6 +1879,17 @@ public class ReflectUtils {
 		return targetConstructor;
 	}
 	
+	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... parameterTypes){
+		Constructor<?> targetConstructor;
+		try {
+			targetConstructor = clazz.getConstructor(parameterTypes);
+		} catch (Exception e) {
+			List<String> paramterTypeNames = Stream.of(parameterTypes).map(t -> t.getName()).collect(Collectors.toList());
+			throw new NoSuchElementException("constructor not found. class: " + clazz.getName() + ", parameterTypes: " + paramterTypeNames);
+		} 
+		return targetConstructor;
+	}
+	
 	public static <T> T newByConstructor(Class<T> clazz, int constructorIndex, Object...initargs){
 		Constructor<?> constructor = getConstructor(clazz, constructorIndex);
 		try {
@@ -1990,11 +2030,20 @@ public class ReflectUtils {
 
 	public static Object invokeDefaultMethod(MethodHandles.Lookup lookup, Method method, Object proxy, Object... args) {
 		Object result;
+		int javaVersion = LangOps.getJavaVersion();
 		try {
-			result = lookup.in(method.getDeclaringClass())
-					.unreflectSpecial(method, method.getDeclaringClass())
-			        .bindTo(proxy)
-			        .invokeWithArguments(args);
+			if (javaVersion>8) {
+				MethodType methodType = MethodType.methodType(method.getReturnType(), method.getParameterTypes());
+				result = MethodHandles.lookup()
+							.findSpecial(method.getDeclaringClass(), method.getName(), methodType, method.getDeclaringClass())
+							.bindTo(proxy)
+							.invokeWithArguments(args);
+			} else {
+				result = lookup.in(method.getDeclaringClass())
+						.unreflectSpecial(method, method.getDeclaringClass())
+				        .bindTo(proxy)
+				        .invokeWithArguments(args);
+			}
 		}catch (Throwable e) {
 			throw new BaseException("invoke default method error for : " + method, e);
 		}

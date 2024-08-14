@@ -11,6 +11,7 @@ import org.onetwo.boot.utils.PathMatcher;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * @author wayshall
@@ -20,8 +21,8 @@ import lombok.Data;
 @Data
 public class BootJfishCloudConfig {
 	
-	public static final String CONFIG_PREFIX = "jfish.cloud"; 
-	public static final String ZUUL_FIXHEADERS_ENABLED = CONFIG_PREFIX + ".zuul.endabledFixHeader";
+	public static final String CONFIG_PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud"; 
+	public static final String ZUUL_FIXHEADERS_ENABLED = CONFIG_PREFIX + ".zuul.endabledFixHeader"; 
 	
 	public static final String EUREKA_EMBEDDED_KEY = "jfish.cloud.eureka.embedded";
 	
@@ -36,6 +37,7 @@ public class BootJfishCloudConfig {
 	}
 
 	@Data
+	@ToString
 	static public class FixHeadersConfig {
 		List<String> pathPatterns;
 		String header;

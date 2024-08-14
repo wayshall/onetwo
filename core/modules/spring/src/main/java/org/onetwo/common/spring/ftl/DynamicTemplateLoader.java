@@ -8,7 +8,7 @@ import java.util.Locale;
 import org.onetwo.common.file.FileUtils;
 
 import freemarker.cache.TemplateLoader;
-
+// 动态模版加载器
 public class DynamicTemplateLoader implements TemplateLoader {
 
 	private StringTemplateProvider templateProvidor;
@@ -19,7 +19,7 @@ public class DynamicTemplateLoader implements TemplateLoader {
 
 	public void closeTemplateSource(Object templateSource) throws IOException {
 	}
-
+	// 根据名称查找模版
 	public Object findTemplateSource(String name) throws IOException {
 		String noPostfix = FileUtils.getFileNameWithoutExt(name);
 		if(noPostfix.endsWith(Locale.CHINA.toString()) || noPostfix.endsWith(Locale.CHINESE.toString())){

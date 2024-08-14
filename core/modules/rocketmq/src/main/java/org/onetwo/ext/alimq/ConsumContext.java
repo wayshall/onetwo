@@ -2,7 +2,8 @@ package org.onetwo.ext.alimq;
 
 import java.util.Map;
 
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
+import org.apache.rocketmq.common.message.MessageExt;
+
 import com.google.common.collect.Maps;
 
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class ConsumContext {
 	MessageDeserializer messageDeserializer;
 	@Builder.Default
 	Map<String, Object> datas = Maps.newHashMap();
-	
+	String dataId;
 
 	private boolean willSkipConsume;
 	

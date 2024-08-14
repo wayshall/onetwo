@@ -1,5 +1,6 @@
 package org.onetwo.boot.module.activemq;
 
+import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -12,28 +13,52 @@ import lombok.Data;
 @ConfigurationProperties(value=ActivemqProperties.PREFIX_KEY)
 @Data
 public class ActivemqProperties {
-	public static final String PREFIX_KEY = "jfish.activemq";
+	public static final String PREFIX_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq";
+	public static final String TYPE_KEY = PREFIX_KEY+".type";
 	public static final String ENABLE_KEY = PREFIX_KEY+".enabled";
 	public static final String EMBEDDED_ENABLE_KEY = PREFIX_KEY+".embedded.enabled";
+	/***
+	 * jfish.activemq.message.converter
+	 */
+	public static final String CONVERTER_KEY = PREFIX_KEY+".message.converter";
 	
 
-	public static final String MESSAGE_CONVERTER_KEY = "jfish.activemq.messageConverter";
+//	public static final String MESSAGE_CONVERTER_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.messageConverter";
 	
 //	Properties connectionFactory = new Properties();
 	KahaDBStoreProps kahadbStore = new KahaDBStoreProps();
 	JdbcStoreProps jdbcStore = new JdbcStoreProps();
 	RedeliveryProps redelivery = new RedeliveryProps();
-	String messageConverter = "simple";
+//	String messageConverter = "simple";
+	
+	TopicProps topic = new TopicProps();
+	
+	ActiveMQTypes type;
+	
+	/***
+	 * 消息预取策略
+	 * jfish.activemq:
+	 * 		prefetchPolicy:
+	 * 			queuePrefetch: 1
+	 * 			topicPrefetch: 1
+	 */
+	ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
 	
 	@Data
+	static public class TopicProps {
+		Boolean subscriptionDurable;
+		Boolean subscriptionShared;
+		String clientId;
+	}
+	@Data
 	static public class KahaDBStoreProps {
-		public static final String ENABLE_KEY = "jfish.activemq.kahadbStore.enabled";
+		public static final String ENABLE_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.kahadbStore.enabled";
 		String dataDir;
 	}
 	
 	@Data
 	static public class JdbcStoreProps {
-		public static final String ENABLE_KEY = "jfish.activemq.jdbcStore.enabled";
+		public static final String ENABLE_KEY = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".activemq.jdbcStore.enabled";
 		boolean createTablesOnStartup = true;
 	}
 	

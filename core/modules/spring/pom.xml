@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.8.0-SNAPSHOT</version>
+        <version>5.2.7-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 	
@@ -173,18 +173,30 @@
        <artifactId>okhttp</artifactId>
        <optional>true</optional>
      </dependency>
-        
-    <dependency>
-        <groupId>org.hibernate</groupId>
+	
+	<dependency>
+        <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
         <optional>true</optional>
     </dependency>
 	
-	<dependency>
-		<groupId>junit</groupId>
-		<artifactId>junit</artifactId>
-		<scope>provided</scope>
-	</dependency>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+       <groupId>org.mockito</groupId>
+       <artifactId>mockito-all</artifactId>
+       <scope>test</scope>
+     </dependency>
+     
+     <dependency>
+       <groupId>org.assertj</groupId>
+       <artifactId>assertj-core</artifactId>
+       <scope>test</scope>
+     </dependency>
 	
 	<!-- for test -->
     <dependency>

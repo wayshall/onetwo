@@ -13,7 +13,7 @@ import org.onetwo.common.spring.utils.BeanPropertiesMapper;
 import org.onetwo.common.utils.ValueHolder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.util.Assert;
@@ -80,6 +80,9 @@ public class DynamicDataSource extends AbstractRoutingDataSource implements Init
 			if(props.getBoolean("default", false)){//是否作为默认数据源
 				dsHouder.setValue(ds);
 			}
+			
+			// 注册到容器
+			SpringUtils.registerSingleton(applicationContext, key, ds);
 		});
 		if(dsHouder.hasValue()){
 			this.setDefaultTargetDataSource(dsHouder.getValue());

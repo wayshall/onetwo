@@ -66,7 +66,7 @@ public class ExceptionUserChecker implements InitializingBean, AuthenticationPro
 		AtomicInteger errorTimes = getExceptionTimesByUser(userName);
 		int times = errorTimes.get();
 		if(times>=maxLoginTimes){
-			throw new LockedException("登录错误超过"+maxLoginTimes+"次，请稍后尝试！");
+			throw new LockedException("用户[" + userName + "]登录错误超过"+maxLoginTimes+"次，请稍后尝试！");
 		}
 	}
 	

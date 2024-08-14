@@ -7,6 +7,12 @@ import java.lang.annotation.Target;
 
 import org.onetwo.ext.permission.api.PermissionType;
 
+/****
+ * 列表权限DepartmentMgr.List单独列出时，controller注解引用DepartmentMgr.class即可，否则因为DepartmentMgr.List是权限不是菜单，导致没有设置url；
+ * 或者把List权限设置为PermissionType.MENU，但此时菜单会多了一个层级
+ * @author way
+ *
+ */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PermissionMeta {
@@ -39,6 +45,10 @@ public @interface PermissionMeta {
 	
 	/****
 	 * 前端组件路径
+	 * 使用 
+	 * @PermissionMetaData
+	 * RouteData router = new RouteData("cmsMgr/list") 
+	 * 代替
 	 * @author weishao zeng
 	 * @return
 	 */
@@ -82,4 +92,11 @@ public @interface PermissionMeta {
 	 * @return
 	 
 	boolean routerView() default false;*/
+	
+	/***
+	 * 指定菜单在什么环境下可用，默认为空，即所有环境均可用
+	 * @author weishao zeng
+	 * @return
+	 */
+	String[] conditionalOnProfiles() default "";
 }

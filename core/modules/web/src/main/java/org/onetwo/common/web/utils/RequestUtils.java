@@ -35,6 +35,7 @@ public final class RequestUtils {
 	public static final String REQUEST_URI = "org.onetwo.web.requestUri";
 	
     public static final String CONTENT_LENGTH = "Content-length";
+	public static final String HEADER_X_REQUESTED_WITH = "X-Requested-With";
 	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 	
 	
@@ -94,9 +95,9 @@ public final class RequestUtils {
 	}
 	
 	public static boolean isAaXmlRequest(HttpServletRequest request){
-//		return AAUtils.isAjaxRequest(request);
 		return false;
 	}
+	
 	
 	public static String getJsonContextTypeByUserAgent(HttpServletRequest request){
 		BrowserMeta meta = RequestUtils.getBrowerMetaByAgent(request);
@@ -118,6 +119,7 @@ public final class RequestUtils {
 		return "Other";
 	}
 	
+	
 	/**
 	 * 获取客户端的IP地址
 	 * 
@@ -135,6 +137,10 @@ public final class RequestUtils {
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
+
+		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
 		
 		if (StringUtils.isBlank(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getHeader("X-Forwarded-Host");//
@@ -144,6 +150,12 @@ public final class RequestUtils {
 			ip = request.getRemoteAddr();
 		}
 
+        // If multiple IP addresses are available, the first one is the client's IP
+        int commaIndex = ip.indexOf(',');
+        if (commaIndex != -1) {
+        	ip = ip.substring(0, commaIndex);
+        }
+        
 		return ip;
 	}
 	
@@ -265,20 +277,42 @@ public final class RequestUtils {
 	
 	public static MediaType getAcceptAsMediaType(HttpServletRequest request){
 		String accept = request.getHeader("Accept");
+		if (StringUtils.isBlank(accept)) {
+			return null;
+		}
 		try {
 			MediaType mtype = MediaType.valueOf(accept);
 			return mtype;
 		} catch (Exception e) {
-			logger.error("parse [{}] as MediaType error: " + e.getMessage(), accept);
+			logger.debug("parse Accept Header [{}] as MediaType error: " + e.getMessage(), accept);
 			return null;
 		}
 	}
 	
+	public static MediaType getContentTypeAsMediaType(HttpServletRequest request){
+		String contentType = request.getHeader("Content-Type");
+		if (StringUtils.isBlank(contentType)) {
+			return null;
+		}
+		try {
+			MediaType mtype = MediaType.valueOf(contentType);
+			return mtype;
+		} catch (Exception e) {
+			logger.debug("parse Content-Type Header [{}] as MediaType error: " + e.getMessage(), contentType);
+			return null;
+		}
+	}
+
+	public static boolean isXMLHttpRequest(HttpServletRequest request){
+		return "XMLHttpRequest".equals(request.getHeader(HEADER_X_REQUESTED_WITH));
+	}
 
 	public static boolean isAjaxRequest(HttpServletRequest request){
 		MediaType mtype = getAcceptAsMediaType(request);
 		return MediaType.APPLICATION_JSON.isCompatibleWith(mtype) || 
+				MediaType.APPLICATION_JSON.isCompatibleWith(getContentTypeAsMediaType(request)) || 
 				MediaType.APPLICATION_ATOM_XML.isCompatibleWith(mtype) || 
+				isXMLHttpRequest(request) ||
 				RequestType.Ajax.equals(RequestTypeUtils.getRequestType(request)) || 
 				"json".equalsIgnoreCase(getRequestExtension(request)) || 
 				RequestType.Flash.equals(RequestTypeUtils.getRequestType(request)) || 

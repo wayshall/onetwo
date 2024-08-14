@@ -8,8 +8,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author weishao zeng
+ * @deprecated instead of StringToJackson2JsonNodeConverterFactory
  * <br/>
  */
+@Deprecated
 public class StringToJackson2ObjectNodeConverterFactory implements ConverterFactory<String, ObjectNode> {
 
 	@Override

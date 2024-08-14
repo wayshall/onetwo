@@ -21,6 +21,7 @@ import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.core.Environment;
+import freemarker.core._MessageUtil;
 import freemarker.ext.beans.ArrayModel;
 import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.BeansWrapper;
@@ -32,6 +33,7 @@ import freemarker.template.Configuration;
 import freemarker.template.SimpleNumber;
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateBooleanModel;
+import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -159,8 +161,12 @@ final public class FtlUtils {
 	}
 	public static String getParameterByString(Map<?, ?> params, String name, String def){
 		TemplateModel attr = getParameter(params, name, false);
-		if(attr!=null)
-			return attr.toString();
+		if(attr!=null) {
+			String attrVal = attr.toString();
+			if (StringUtils.isNotBlank(attrVal)) {
+				return attrVal;
+			}
+		}
 		return def;
 	}
 	
@@ -221,6 +227,27 @@ final public class FtlUtils {
 		else
 			throw LangUtils.asBaseException("the param["+name+"] can not be null.");*/
 	}
+	
+
+    public static TemplateCollectionModel getCollectionMethodArg(List<?> args, int argIdx, String methodName)
+            throws TemplateModelException {
+        TemplateModel arg = (TemplateModel) args.get(argIdx);
+        if (!(arg instanceof TemplateCollectionModel)) {
+            throw _MessageUtil.newMethodArgUnexpectedTypeException(methodName, argIdx, "collection", arg);
+        } else {
+            return (TemplateCollectionModel)arg;
+        }
+    }
+    
+    public static StringModel getStringMethodArg(List<?> args, int argIdx, String methodName)
+            throws TemplateModelException {
+        TemplateModel arg = (TemplateModel) args.get(argIdx);
+        if (!(arg instanceof StringModel)) {
+            throw _MessageUtil.newMethodArgUnexpectedTypeException(methodName, argIdx, "string", arg);
+        } else {
+            return (StringModel)arg;
+        }
+    }
 	
 	public static TemplateLoader getTemplateLoader(ResourceLoader resourceLoader, String... templateLoaderPaths) {
 		Assert.notEmpty(templateLoaderPaths);

@@ -29,7 +29,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
@@ -39,11 +38,9 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 
-import lombok.Value;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -56,15 +53,15 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	private static final String INTERCEPTORS_KEY = MvcInterceptorManager.class.getName() + ".interceptors";
 	
 	private Cache<Method, HandlerMethodInterceptorMeta> interceptorMetaCaces = CacheBuilder.newBuilder().build();
-	private LoadingCache<MvcInterceptorMeta, MvcInterceptor> interceptorCaces = CacheBuilder.newBuilder()
-																					.build(new CacheLoader<MvcInterceptorMeta, MvcInterceptor>(){
-
-																						@Override
-																						public MvcInterceptor load(MvcInterceptorMeta attr) throws Exception {
-																							return getMvcInterceptor(attr);
-																						}
-																						
-																					});
+//	private LoadingCache<MvcInterceptorMeta, MvcInterceptor> interceptorCaces = CacheBuilder.newBuilder()
+//																					.build(new CacheLoader<MvcInterceptorMeta, MvcInterceptor>(){
+//
+//																						@Override
+//																						public MvcInterceptor load(MvcInterceptorMeta attr) throws Exception {
+//																							return getMvcInterceptor(attr);
+//																						}
+//																						
+//																					});
 	private ApplicationContext applicationContext;
 	private PropertyAnnotationReader propertyAnnotationReader = PropertyAnnotationReader.INSTANCE;
 	/*
@@ -87,8 +84,17 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 			return true;
 		}
 		
-		List<? extends MvcInterceptor> interceptors = meta.get().getInterceptors();
+
+		List<? extends MvcInterceptor> interceptors = meta.get().getInterceptorMetaList().stream().map(m -> {
+			MvcInterceptor inter = m.getMvcInterceptor();
+			if (inter==null) {
+//				m.isAlwaysCreate()
+				inter = getMvcInterceptor(m);
+			}
+			return inter;
+		}).collect(Collectors.toList());
 		request.setAttribute(INTERCEPTORS_KEY, interceptors);
+		
 		for(MvcInterceptor inter : interceptors){
 			try {
 				boolean nextPreHandle = inter.preHandle(request, response, hmethod);
@@ -171,14 +177,14 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	@Override
 	public void onHandlerMethodsInitialized(Map<RequestMappingInfo, HandlerMethod> handlerMethods) {
 		for(HandlerMethod hm : handlerMethods.values()){
-			List<? extends MvcInterceptor> interceptors = null;
+			List<MvcInterceptorMeta> interceptors = null;
 			try {
 				interceptors = findMvcInterceptors(hm);
 			} catch (Exception e) {
 				throw new BaseException("find MvcInterceptor error for HandlerMethod: " + hm.getMethod(), e);
 			}
 			if(!interceptors.isEmpty()){
-				AnnotationAwareOrderComparator.sort(interceptors);
+//				AnnotationAwareOrderComparator.sort(interceptors);
 				HandlerMethodInterceptorMeta meta = new HandlerMethodInterceptorMeta(hm, interceptors);
 				interceptorMetaCaces.put(hm.getMethod(), meta);
 				if(log.isDebugEnabled()){
@@ -188,7 +194,7 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		}
 	}
 	
-	protected List<? extends MvcInterceptor> findMvcInterceptors(HandlerMethod hm){
+	protected List<MvcInterceptorMeta> findMvcInterceptors(HandlerMethod hm){
 		/*if(hm.getBeanType().getName().contains("FollowApiController")){
 			System.out.println("test");
 		}*/
@@ -201,14 +207,15 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		}
 //		AnnotationAttributes attrs = attrsOpt.get();
 //		Class<? extends MvcInterceptor>[] interClasses = (Class<? extends MvcInterceptor>[])attrs.get("value");
-		List<? extends MvcInterceptor> interceptors = attrsList.stream()
+		List<MvcInterceptorMeta> interceptors = attrsList.stream()
 															.map(attr->{
 																	MvcInterceptorMeta meta = asMvcInterceptorMeta(attr);
-																	try {
-																		return this.interceptorCaces.get(meta);
-																	} catch (Exception e) {
-																		throw new BaseException("get MvcInterceptor error", e);
-																	}
+//																	try {
+//																		return this.interceptorCaces.get(meta);
+//																	} catch (Exception e) {
+//																		throw new BaseException("get MvcInterceptor error", e);
+//																	}
+																	return meta;
 																})
 															.collect(Collectors.toList());
 		return interceptors;
@@ -217,16 +224,29 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 	@SuppressWarnings("unchecked")
 	protected MvcInterceptorMeta asMvcInterceptorMeta(AnnotationAttributes attr){
 		List<PropertyAnnoMeta> properties = propertyAnnotationReader.readProperties(attr);
-		return new MvcInterceptorMeta((Class<? extends MvcInterceptor>)attr.getClass("value"), 
+		MvcInterceptorMeta meta = new MvcInterceptorMeta((Class<? extends MvcInterceptor>)attr.getClass("value"), 
 										attr.getBoolean("alwaysCreate"), 
 										properties);
+		if (!meta.isAlwaysCreate()) {
+			MvcInterceptor mvcInterceptor = getMvcInterceptor(meta);
+			meta.setMvcInterceptor(mvcInterceptor);
+		}
+		return meta;
 	}
 	
-	@Value
+	@Data
 	public static class MvcInterceptorMeta {
-		Class<? extends MvcInterceptor> interceptorType;
-		boolean alwaysCreate;
-		List<PropertyAnnoMeta> properties;
+		final Class<? extends MvcInterceptor> interceptorType;
+		final boolean alwaysCreate;
+		final List<PropertyAnnoMeta> properties;
+		MvcInterceptor mvcInterceptor;
+		public MvcInterceptorMeta(Class<? extends MvcInterceptor> interceptorType, boolean alwaysCreate,
+				List<PropertyAnnoMeta> properties) {
+			super();
+			this.interceptorType = interceptorType;
+			this.alwaysCreate = alwaysCreate;
+			this.properties = properties;
+		}
 	}
 
 //	@SuppressWarnings("unchecked")
@@ -362,7 +382,14 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 														.map(inter->AnnotationUtils.getAnnotationAttributes(null, inter))
 														.collect(Collectors.toSet());
 		boolean hasDisabledFlag = attrs.stream()
-										.anyMatch(attr->asMvcInterceptorMeta(attr).getInterceptorType()==DisableMvcInterceptor.class);
+										.anyMatch(attr->{
+											try {
+												boolean disabled = asMvcInterceptorMeta(attr).getInterceptorType()==DisableMvcInterceptor.class;
+												return disabled;
+											} catch (Exception e) {
+												throw new BaseException("find disalbed flag error: " + e.getMessage(), e);
+											}
+										});
 		if(hasDisabledFlag){
 			return Collections.emptyList();
 		}
@@ -408,24 +435,15 @@ public class MvcInterceptorManager extends WebInterceptorAdapter implements Hand
 		return after(FIRST);
 	}
 	
+	@Data
 	static class HandlerMethodInterceptorMeta {
 		final private HandlerMethod handlerMethod;
-		private List<? extends MvcInterceptor> interceptors;
-		public HandlerMethodInterceptorMeta(HandlerMethod handlerMethod, List<? extends MvcInterceptor> interceptors) {
+		final private List<MvcInterceptorMeta> interceptorMetaList;
+		public HandlerMethodInterceptorMeta(HandlerMethod handlerMethod, List<MvcInterceptorMeta> interceptors) {
 			super();
 			this.handlerMethod = handlerMethod;
-			this.interceptors = ImmutableList.copyOf(interceptors);
+			this.interceptorMetaList = ImmutableList.copyOf(interceptors);
 		}
-		public HandlerMethod getHandlerMethod() {
-			return handlerMethod;
-		}
-		public List<? extends MvcInterceptor> getInterceptors() {
-			return interceptors;
-		}
-		public void setInterceptors(List<? extends MvcInterceptor> interceptors) {
-			this.interceptors = interceptors;
-		}
-		
 	}
 	
 

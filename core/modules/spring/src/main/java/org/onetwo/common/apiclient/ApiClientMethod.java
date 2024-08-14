@@ -86,6 +86,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 																		boolean flatable = BeanToMapConvertor.DEFAULT_FLATABLE.apply(obj);
 																		return  flatable &&
 																				!Resource.class.isInstance(obj) &&
+																				!ApiClientMethodConfig.class.isInstance(obj) &&
 																				!byte[].class.isInstance(obj) &&
 																				!MultipartFile.class.isInstance(obj);
 																	})
@@ -127,9 +128,11 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	 */
 	private boolean autoThrowIfErrorCode = true;
 	
+//	private int methodConfigIndex = -1;
+	
 	public ApiClientMethod(Method method) {
 		super(method);
-		componentType = ReflectUtils.getGenricType(method.getGenericReturnType(), 0, null);
+		componentType = (Class<?>)ReflectUtils.getGenricType(method.getGenericReturnType(), 0, null);
 	}
 	
 	public void initialize(){
@@ -161,6 +164,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		findParameterByType(HttpHeaders.class).ifPresent(p->{
 			this.headerParameterIndex = p.getParameterIndex();
 		});
+//		findParameterByType(ApiClientMethodConfig.class).ifPresent(p->{
+//			this.methodConfigIndex = p.getParameterIndex();
+//		});
 		
 
 		this.initHandlers();
@@ -248,6 +254,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	public Optional<HttpHeaders> getHttpHeaders(Object[] args){
 		return headerParameterIndex<0?Optional.empty():Optional.ofNullable((HttpHeaders)args[headerParameterIndex]);
 	}
+	
+//	public Optional<ApiClientMethodConfig> getApiClientMethodConfig(Object[] args){
+//		return methodConfigIndex<0?Optional.empty():Optional.ofNullable((ApiClientMethodConfig)args[headerParameterIndex]);
+//	}
 
 	public String[] getHeaders() {
 		return headers;
@@ -287,7 +297,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		return values;
 	}
 
-	public Map<String, ?> getQueryStringParameters(Object[] args){
+	public Map<String, Object> getQueryStringParameters(Object[] args){
 		if(LangUtils.isEmpty(args)){
 			return Collections.emptyMap();
 		}
@@ -297,7 +307,7 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 												.collect(Collectors.toList());
 
 		boolean parameterNameAsPrefix = queryParameters.size()>1;
-		Map<String, ?> values = toMap(queryParameters, args, parameterNameAsPrefix).toSingleValueMap();
+		Map<String, Object> values = toMap(queryParameters, args, parameterNameAsPrefix).toSingleValueMap();
 		
 		return values;
 	}
@@ -346,6 +356,16 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 		Map<String, ?> values = toMap(pathVariables, args).toSingleValueMap();
 		
 		return values;
+	}
+	
+	public ApiClientMethodConfig getApiClientMethodConfig(Object[] args){
+		for (Object arg : args) {
+			if (arg instanceof ApiClientMethodConfigProvider) {
+				ApiClientMethodConfigProvider provider = (ApiClientMethodConfigProvider) arg;
+				return provider.toApiClientMethodConfig();
+			}
+		}
+		return null;
 	}
 	
 	public Object getRequestBody(Object[] args){
@@ -426,7 +446,9 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 	}
 	
 	protected boolean isSpecalPemerater(ApiClientMethodParameter parameter){
-		return parameter.getParameterIndex()==apiHeaderCallbackIndex || parameter.getParameterIndex()==headerParameterIndex;
+		return parameter.getParameterIndex()==apiHeaderCallbackIndex || 
+				parameter.getParameterIndex()==headerParameterIndex;
+//						parameter.getParameterIndex()==methodConfigIndex;
 	}
 	
 	protected void handleArg(MultiValueMap<String, Object> values, ApiClientMethodParameter mp, final Object pvalue, boolean parameterNameAsPrefix){
@@ -455,6 +477,10 @@ public class ApiClientMethod extends AbstractMethodResolver<ApiClientMethodParam
 			prefix = mp.getParameterName();
 		}
 		beanToMapConvertor.flatObject(prefix, paramValue, (k, v, ctx)->{
+			// 忽略这些参数
+			if (v==null || v instanceof ApiClientMethodConfig) {
+				return ;
+			}
 			values.add(k, v);
 		});
 		

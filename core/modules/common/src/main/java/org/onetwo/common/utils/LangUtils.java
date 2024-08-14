@@ -39,6 +39,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.function.BooleanSupplier;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 
@@ -57,15 +59,29 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.ArgsReturnableClosure;
 import org.onetwo.common.utils.map.CaseInsensitiveMap;
 
+import com.google.common.collect.Lists;
+
 @SuppressWarnings({"rawtypes", "unchecked"})
 abstract public class LangUtils {
 
 //	private static final Logger logger = LoggerFactory.getLogger(LangUtils.class); 
 	public final static long START_STMP = 1610374613027L; //2021-1-11 22:17的时间戳，用于某些基于时间戳算法的id减去基值
+	
+	// 正则验证身份证
+    /*     /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/   */
+	public final static String IDCARD_PATTERN = "(^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|" +
+            "(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}$)";
 
 	public static final String UTF8 = "utf-8";
+	/***
+	 * dot和数字
+	 */
+	public static final Pattern VERSION = Pattern.compile("^[\\.0-9]+$");
 	public static final Pattern DIGIT = Pattern.compile("^[0-9]+$");
+	public static final Pattern DIGIT_SEGEMENT = Pattern.compile("([0-9]+)");
 	public static final Pattern AWORD = Pattern.compile("^\\w+$", Pattern.CASE_INSENSITIVE);
+	public static final Pattern CHINESE = Pattern.compile("^[\u4e00-\u9fa5]+$");
+	
 	public static final String EMPTY_STRING = "";
 	public static final Object EMPTY_OBJECT = new Object();
 	public static final Object[] EMPTY_ARRAY = new Object[0];
@@ -111,11 +127,13 @@ abstract public class LangUtils {
 		SIMPLE_CLASS = Collections.unmodifiableSet(simples);
 	}
 	
-	public static final char[] WORD_CHARS = {  '1', '2', '3', '4', '5', '6', '7', 
-			'8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 
-			'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 
-			'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
-			'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 
+	public static final char[] WORD_CHARS = {  
+			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 
+			'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 
+			'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
+			'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 
+			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 
 			'Y', 'Z' }; 
 
 	
@@ -461,6 +479,19 @@ abstract public class LangUtils {
 		return clazz;
 	}
 	
+	 /**
+     * 检测身份证号码格式
+     */
+    public static void checkIdCard(String idCardNumber) {
+        if (StringUtils.isBlank(idCardNumber)) {
+            throw new ServiceException("身份证号码格式错误");
+        }
+        
+        if (!idCardNumber.matches(IDCARD_PATTERN)) {
+            throw new ServiceException("身份证号码格式错误");
+        }
+    }
+	
 	public static Throwable getCauseServiceException(Throwable e){
 		Throwable se ;
 		if(!(e instanceof BaseException) && e!=null && e.getCause()!=null){
@@ -479,7 +510,7 @@ abstract public class LangUtils {
 		return se;
 	}
 	
-	public static <T extends Throwable> T getCauseException(Throwable e, Class<T> root){
+	public static <T> T getCauseException(Throwable e, Class<T> root){
 		Throwable se = e;
 		while(se.getCause()!=null){
 			se = se.getCause();
@@ -837,6 +868,21 @@ abstract public class LangUtils {
 		return true;
 	}
 	
+	/***
+	 * 取16位无符号整数高8位
+	 * @param int16
+	 * @return
+	 */
+	public static byte high8(short int16) {
+		byte h8 = (byte)((int16 & 0xFF00) >> 8);
+		return h8;
+	}
+	
+	public static byte low8(short int16) {
+		byte l8 = (byte)(int16 & 0x00FF);
+		return l8;
+	}
+	
 
 	public static String append(Object... strings) {
 		return appendWith(false, strings);
@@ -1107,6 +1153,39 @@ abstract public class LangUtils {
 		  
 		  return new String(result);
 	}
+	
+	/****
+	 * 转换为基于指定进制的字符串
+	 * @author weishao zeng
+	 * @param i
+	 * @param radix 2 <= radix <= 60
+	 * @return
+	 */
+    public static String toRadixString(long i, int radix) {
+        if (radix < 2 || radix > WORD_CHARS.length)
+            radix = 10;
+        if (radix == 10)
+            return toString(i);
+        char[] buf = new char[65];
+        int charPos = 64;
+        boolean negative = (i < 0);
+
+        if (!negative) {
+            i = -i;
+        }
+
+        while (i <= -radix) {
+            buf[charPos--] = WORD_CHARS[(int)(-(i % radix))];
+            i = i / radix;
+        }
+        buf[charPos] = WORD_CHARS[(int)(-i)];
+
+        if (negative) {
+            buf[--charPos] = '-';
+        }
+
+        return new String(buf, charPos, (65 - charPos));
+    }
 
 	public static String getRadomNumberString(int length) {
 		int val = ThreadLocalRandom.current().nextInt((int)Math.pow(10, length));
@@ -1580,8 +1659,8 @@ abstract public class LangUtils {
 	}
 	
 	public static BigDecimal roundHalfUp(BigDecimal number) {
-		number.setScale(2, BigDecimal.ROUND_HALF_UP); // 四色五入，保持两个小数点
-		return number;
+		BigDecimal newNumber = number.setScale(2, BigDecimal.ROUND_HALF_UP); // 四色五入，保持两个小数点
+		return newNumber;
 	}
 
 	public static String format(Number num, String pattern) {
@@ -1589,8 +1668,41 @@ abstract public class LangUtils {
 		return format.format(num);
 	}
 	
+	/****
+	 * 格式化数字，并保留两位小数
+	 * @param num
+	 * @return
+	 */
 	public static String format(Number num) {
 		return new DecimalFormat("0.00").format(num);
+	}
+	
+	/****
+	 * 四舍五入，保留两位小数
+	 * @param num
+	 * @return
+	 */
+	public static Float roundNumber(Float num) {
+		if (num==null) {
+			return null;
+		}
+		// 将一个浮点数或一个双精度数值四舍五入为最接近的整数
+		float roundedNumber = Math.round(num * 100.0) / 100.0f;
+		return roundedNumber;
+	}
+	
+	/****
+	 * 四舍五入，保留两位小数
+	 * @param num
+	 * @return
+	 */
+	public static Double roundNumber(Double num) {
+		if (num==null) {
+			return null;
+		}
+		// 将一个浮点数或一个双精度数值四舍五入为最接近的整数
+		double roundedNumber = Math.round(num * 100.0) / 100.0;
+		return roundedNumber;
 	}
 	
 	/***
@@ -1760,8 +1872,64 @@ abstract public class LangUtils {
 		return val;
 	}
 	
+	public static boolean isChinese(String str){
+		if (StringUtils.isBlank(str)) {
+			return false;
+		}
+		return CHINESE.matcher(str).matches();
+	}
+	
 	public static boolean isDigitString(String str){
+		if (StringUtils.isBlank(str)) {
+			return false;
+		}
 		return DIGIT.matcher(str).matches();
+	}
+
+	public static Integer getNumberFromString(String str){
+		return getNumberFromString(str, 0);
+	}
+	
+	/***
+	 * 从字符串中提取数字
+	 * @author weishao zeng
+	 * @param str
+	 * @param index
+	 * @return
+	 */
+	public static Integer getNumberFromString(String str, int index){
+		if (StringUtils.isBlank(str)) {
+			return null;
+		}
+		
+		List<String> numbList = getNumbersFromString(str);
+		if (numbList.isEmpty()) {
+			return null;
+		}
+		
+		String numb = "";
+		if (index==-1) {
+			numb = numbList.get(numbList.size()-1);
+		} else {
+			numb = numbList.get(index);
+		}
+		Integer val = Types.asInteger(numb);
+		return val;
+	}
+
+	public static List<String> getNumbersFromString(String str){
+		List<String> numbList = Lists.newArrayList();
+		if (StringUtils.isBlank(str)) {
+			return numbList;
+		}
+		
+		Matcher m = DIGIT_SEGEMENT.matcher(str);
+		while(m.find()) {
+			String numbstr = m.group(0);
+			numbList.add(numbstr);
+		}
+		
+		return numbList;
 	}
 	
 	public static <T> T cast(Object obj, Class<T> clazz){
@@ -1915,4 +2083,49 @@ abstract public class LangUtils {
 		return unsensitive;
 	}
 	
+	/***
+	 * 两边脱敏
+	 * @author weishao zeng
+	 * @param sensitive
+	 * @param leftPlainTextSize
+	 * @param rightPlainTextSize
+	 * @param replacementString
+	 * @return
+	 */
+	public static String unsensitiveSurround(String sensitive, int leftPlainTextSize, int rightPlainTextSize, String replacementString) {
+		if (leftPlainTextSize<0 || rightPlainTextSize<0) {
+			throw new IllegalArgumentException("leftPlainTextSize or rightPlainTextSize can not be negative");
+		}
+		if (leftPlainTextSize + rightPlainTextSize >= sensitive.length()) {
+			return sensitive;
+		}
+		int padSize = sensitive.length() - leftPlainTextSize - rightPlainTextSize;
+		String unsensitive = org.apache.commons.lang3.StringUtils.left(sensitive, leftPlainTextSize) + 
+				LangUtils.repeatString(padSize, replacementString) + 
+				org.apache.commons.lang3.StringUtils.right(sensitive, rightPlainTextSize);
+		return unsensitive;
+	}
+	
+	public static boolean isVersionString(String version) {
+		if (StringUtils.isBlank(version)) {
+			return false;
+		}
+		return VERSION.matcher(version).matches();
+	}
+	
+	/****
+	 * 等待知道supplier返回true
+	 * @param waitInsecondsPerTimes 每次等待时间
+	 * @param supplier
+	 */
+	public static void waitIf(int waitInsecondsPerTimes, BooleanSupplier supplier) {
+		while(true) {
+			if (supplier.getAsBoolean()) {
+				break;
+			} else {
+				LangUtils.await(waitInsecondsPerTimes);
+			}
+		}
+	}
+
 }

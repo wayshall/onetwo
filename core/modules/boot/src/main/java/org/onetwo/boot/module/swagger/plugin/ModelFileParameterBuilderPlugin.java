@@ -1,13 +1,12 @@
 package org.onetwo.boot.module.swagger.plugin;
 
-import static springfox.documentation.swagger.schema.ApiModelProperties.findApiModePropertyAnnotation;
-import io.swagger.annotations.ApiModelProperty;
+import java.util.Optional;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.common.base.Optional;
-
+import io.swagger.annotations.ApiModelProperty;
+import springfox.documentation.service.ParameterType;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.ExpandedParameterBuilderPlugin;
 import springfox.documentation.spi.service.contexts.ParameterExpansionContext;
@@ -27,10 +26,11 @@ public class ModelFileParameterBuilderPlugin implements
 
 	@Override
 	public void apply(ParameterExpansionContext context) {
-		Optional<ApiModelProperty> apiModelPropertyOptional = findApiModePropertyAnnotation(context.getField().getRawMember());
+//		Optional<ApiModelProperty> apiModelPropertyOptional = findApiModePropertyAnnotation(context.getField().getRawMember());
+		Optional<ApiModelProperty> apiModelPropertyOptional = context.findAnnotation(ApiModelProperty.class);
 		if (apiModelPropertyOptional.isPresent()) {
-			if(MultipartFile.class.isAssignableFrom(context.getField().getType().getErasedType())){
-				context.getParameterBuilder().parameterType("form");
+			if(MultipartFile.class.isAssignableFrom(context.getFieldType().getErasedType())){
+				context.getRequestParameterBuilder().in(ParameterType.FORM);
 			}
 		}
 	}

@@ -3,15 +3,13 @@ package org.onetwo.ext.alimq;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.aliyun.openservices.ons.api.Message;
-
 /**
  * @author wayshall
  * <br/>
  */
 public interface OnsMessage extends Serializable {
 	Object getBody();
-	Message toMessage();
+	ExtMessage toMessage();
 	
 	public interface TracableMessage {
 		String PREFIX = "__jfish_";
@@ -36,12 +34,22 @@ public interface OnsMessage extends Serializable {
 		void setIdentityKey(String identityKey);
 		String getIdentityKey();
 		
+		/****
+		 * @see org.onetwo.ext.ons.ONSProperties.MessageSerializerType
+		 * @param serializer
+		 */
 		void setSerializer(String serializer);
 		String getSerializer();
 
 		
 		void setDebug(boolean debug);
 		boolean isDebug();
+		
+		/***
+		 * 延迟消息级别
+		 * @return
+		 */
+		Integer getDelayTimeLevel();
 		
 	}
 	

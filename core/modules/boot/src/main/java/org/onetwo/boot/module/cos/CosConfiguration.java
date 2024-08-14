@@ -41,6 +41,7 @@ public class CosConfiguration {
 	
 	@Configuration
 	@ConditionalOnClass(CosStsClient.class)
+	@ConditionalOnProperty(name=CosProperties.ENABLED_KEY)
 	protected static class CosStsConfiguration {
 
 		@Bean

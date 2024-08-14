@@ -13,6 +13,7 @@ import org.onetwo.common.db.spi.BaseEntityManager;
 import org.onetwo.common.ds.DatasourceFactoryBean;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.spring.SpringUtils;
+import org.onetwo.common.utils.LangUtils;
 import org.onetwo.dbm.mapping.DbmConfig;
 import org.onetwo.dbm.mapping.DefaultDbmConfig;
 import org.onetwo.dbm.spring.EnableDbm;
@@ -46,7 +47,7 @@ import lombok.NoArgsConstructor;
 //@Transactional
 public class RmqONSProducerTest {
 	public static final String TOPIC = "${topic}";
-	public static final String PRODUER_ID = "${producerId}";
+	public static final String PRODUER_ID = "RmqONSProducerTestProducer";
 	public static final String ORDER_PAY = "${tags.orderPay}";
 	public static final String ORDER_CANCEL = "${tags.orderCancel}";
 
@@ -96,7 +97,7 @@ public class RmqONSProducerTest {
 
 		int messageCount = baseEntityManager.countRecord(SendMessageEntity.class).intValue();
 		assertThat(messageCount).isEqualTo(1);
-//		LangUtils.CONSOLE.exitIf("test");
+		LangUtils.CONSOLE.exitIf("test");
 	}
 
 	@EnableONSClient(producers=@ONSProducer(producerId=PRODUER_ID))
@@ -106,7 +107,7 @@ public class RmqONSProducerTest {
 	@EnableTransactionManagement
 	public static class ProducerTestContext {
 		@Bean
-		public DatasourceFactoryBean datasourceFactoryBean(){
+		public DatasourceFactoryBean dataSource(){
 			DatasourceFactoryBean ds = new DatasourceFactoryBean();
 			ds.setImplementClass(org.apache.tomcat.jdbc.pool.DataSource.class);
 			ds.setPrefix("jdbc.");

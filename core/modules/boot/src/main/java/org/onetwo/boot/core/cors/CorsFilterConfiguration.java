@@ -6,6 +6,7 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.BootMvcConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -33,10 +34,18 @@ public class CorsFilterConfiguration {
 	private BootJFishConfig jfishConfig;
 	
 	@Bean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
+//	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public CorsFilter corsFilter(UrlBasedCorsConfigurationSource configSource) {
 		CorsFilter corsFilter = new CorsFilter(configSource);
 		return corsFilter;
+	}
+	
+	@Bean
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	public FilterRegistrationBean corsFilterRegistrationBean(CorsFilter corsFilter) {
+		FilterRegistrationBean frb = new FilterRegistrationBean(corsFilter);
+		frb.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		return frb;
 	}
 	
 	@Bean

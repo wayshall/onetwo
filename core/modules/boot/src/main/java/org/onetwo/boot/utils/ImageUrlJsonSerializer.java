@@ -16,7 +16,7 @@ import org.onetwo.common.spring.Springs;
 public class ImageUrlJsonSerializer extends UrlJsonSerializer {
 	protected List<String> fileTypes = Arrays.asList("jpg", "jpeg", "gif", "png", "bmp");
 
-	protected String getServerFullPath(String subPath){
+	public String getServerFullPath(String subPath){
 		if (StringUtils.isBlank(subPath)) {
 			return subPath;
 		}

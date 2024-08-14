@@ -67,4 +67,9 @@ public class DefaultRestExecutorFactory extends RestExecutorFactory {
 		}
 	}
 
+
+	public void setRestExecutorConfig(RestExecutorConfig restExecutorConfig) {
+		this.restExecutorConfig = restExecutorConfig;
+	}
+	
 }

@@ -1,8 +1,10 @@
 package org.onetwo.ext.security.config;
 
 import org.onetwo.common.spring.condition.OnMissingBean;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.ext.security.AuthenticationExtractor;
+import org.onetwo.ext.security.DefaultAuthenticationExtractor;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
 import org.onetwo.ext.security.ajax.AjaxLogoutSuccessHandler;
 import org.onetwo.ext.security.ajax.AjaxSupportedAccessDeniedHandler;
@@ -52,7 +54,7 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	}
 	
 	@Bean
-	public SessionUserManager<UserDetail> sessionUserManager(){
+	public SessionUserManager<GenericUserDetail<?>> sessionUserManager(){
 		return new SecuritySessionUserManager();
 	}
 	
@@ -80,20 +82,32 @@ public class SecurityCommonContextConfig implements InitializingBean{
 		adh.setErrorPage(securityConfig.getErrorPage());
 		return adh;
 	}
+	
+	@Bean
+	@OnMissingBean(AuthenticationExtractor.class)
+	public AuthenticationExtractor authenticationExtractor() {
+		DefaultAuthenticationExtractor extractor = new DefaultAuthenticationExtractor();
+		return extractor;
+	}
 
 	@Bean
 	@OnMissingBean(AjaxAuthenticationHandler.class)
-	public AjaxAuthenticationHandler ajaxAuthenticationHandler(){
-		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(getSecurityConfig().isFailureUrlWithMessage(), 
-																			getSecurityConfig().getFailureUrl(), 
-																			getSecurityConfig().getAfterLoginUrl(),
-																			getSecurityConfig().isAlwaysUseDefaultTargetUrl());
-		if(securityConfig.getJwt().isEnabled()){
-			handler.setUseJwtToken(securityConfig.getJwt().isEnabled());
-			handler.setJwtAuthHeader(securityConfig.getJwt().getAuthHeader());
-			handler.setJwtAuthStores(securityConfig.getJwt().getAuthStore());
-			handler.setCookieStorer(cookieStorer());
-		}
+	public AjaxAuthenticationHandler ajaxAuthenticationHandler(SecurityConfig securityConfig){
+		AjaxAuthenticationHandler handler = new AjaxAuthenticationHandler(
+				securityConfig.isFailureUrlWithMessage(), 
+				securityConfig.getFailureUrl(), 
+				securityConfig.getAfterLoginUrl(),
+				securityConfig.isAlwaysUseDefaultTargetUrl()
+		);
+//		if(securityConfig.getJwt().isEnabled()){
+////			handler.setUseJwtToken(securityConfig.getJwt().isEnabled());
+////			handler.setJwtAuthHeader(securityConfig.getJwt().getAuthHeader());
+////			handler.setJwtAuthStores(securityConfig.getJwt().getAuthStore());
+//			handler.setJwtConfig(securityConfig.getJwt());
+//			handler.setCookieStorer(cookieStorer());
+//		}
+		handler.setJwtConfig(securityConfig.getJwt());
+		handler.setCookieStorer(cookieStorer());
 		return handler;
 	}
 	
@@ -121,6 +135,8 @@ public class SecurityCommonContextConfig implements InitializingBean{
 	@OnMissingBean(AjaxLogoutSuccessHandler.class)
 	public AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler(){
 		AjaxLogoutSuccessHandler handler = new AjaxLogoutSuccessHandler();
+		handler.setCookieStorer(cookieStorer());
 		return handler;
 	}
+	
 }

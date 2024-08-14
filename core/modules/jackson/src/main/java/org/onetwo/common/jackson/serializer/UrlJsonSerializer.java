@@ -7,6 +7,7 @@ import java.util.zip.CRC32;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.WritableTypeId;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -41,24 +42,38 @@ public class UrlJsonSerializer extends JsonSerializer<Object> {
 	/****
 	 * 序列化需要类型形式时，即objectMapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY)，必须实现此方法
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void serializeWithType(Object value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
 		if(value==null)
 			return ;
-		if(value.getClass().isArray()){
-			typeSer.writeTypePrefix(gen, typeSer.typeId(value, value.getClass(), JsonToken.START_ARRAY));
-//			typeSer.writeTypePrefixForArray(value, gen, value.getClass());
-			serialize(value, gen, serializers);
-//			typeSer.writeTypeSuffixForArray(value, gen);
-			typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.START_ARRAY));
-		}else if(value instanceof Collection){
-			typeSer.writeTypePrefix(gen, typeSer.typeId(value, value.getClass(), JsonToken.START_ARRAY));
-			serialize(value, gen, serializers);
-			typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.START_ARRAY));
+//		if(value.getClass().isArray()){
+//			WritableTypeId typeId = typeSer.typeId(value, value.getClass(), JsonToken.START_ARRAY);
+//			typeSer.writeTypePrefix(gen, typeId);
+////			typeSer.writeTypePrefixForArray(value, gen, value.getClass());
+//			
+//			for(String s: (String[])value){
+//				gen.writeString(getServerFullPath(s));
+//			}
+//			
+////			typeSer.writeTypeSuffixForArray(value, gen);
+//			typeSer.writeTypeSuffix(gen, typeId);
+//		}else 
+		if(value instanceof Collection){
+			WritableTypeId typeId = typeSer.typeId(value, value.getClass(), JsonToken.START_ARRAY);
+			typeSer.writeTypePrefix(gen, typeId);
+			
+//			gen.writeStartArray();
+			for(String s: (Collection<String>)value){
+				gen.writeString(getServerFullPath(s));
+			}
+//			gen.writeEndArray();
+			
+			typeSer.writeTypeSuffix(gen, typeId);
 		}else{
-			typeSer.writeTypePrefix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
+			WritableTypeId typeId = typeSer.typeId(value, value.getClass(), JsonToken.VALUE_STRING);
 			serialize(value, gen, serializers);
-			typeSer.writeTypeSuffix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
+			typeSer.writeTypeSuffix(gen, typeId);
 		}
 //		typeSer.writeTypePrefix(gen, typeSer.typeId(value, JsonToken.VALUE_STRING));
 //		serialize(value, gen, serializers);

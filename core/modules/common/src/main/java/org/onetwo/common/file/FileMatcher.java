@@ -69,6 +69,21 @@ public interface FileMatcher {
 		};
 	}
 
+	static public FileMatcher subDirsOfChildModuleIs(String...subDirsOfChildModule){
+		Set<String> dirSet = Sets.newHashSet(subDirsOfChildModule);
+		return (baseDir, file) -> {
+			String childModuleBaseDir = FileUtils.getSubdirOf(file, baseDir);
+			if (StringUtils.isBlank(childModuleBaseDir)) {
+				return false;
+			}
+			String subDirOfChildModule = FileUtils.getSubdirOf(file, new File(baseDir, childModuleBaseDir));
+			if (StringUtils.isBlank(subDirOfChildModule)) {
+				return false;
+			}
+			return dirSet.contains(subDirOfChildModule);
+		};
+	}
+
 	static public FileMatcher subDirIs(String...dirs){
 		Set<String> dirSet = Sets.newHashSet(dirs);
 		return (baseDir, file) -> {
@@ -101,10 +116,24 @@ public interface FileMatcher {
 		};
 	}
 	
+	/***
+	 * 文件名（包括路径）
+	 * @author weishao zeng
+	 * @param fileNames
+	 * @return
+	 */
 	static public FileMatcher fileNameIs(String...fileNames){
 		return (baseDir, file)->{
 			return Stream.of(fileNames).anyMatch(fileName->{
 				return file.isFile() && file.getName().equals(fileName);
+			});
+		};
+	}
+	
+	static public FileMatcher fileShortNameIs(String...shortNames){
+		return (baseDir, file)->{
+			return Stream.of(shortNames).anyMatch(fileName->{
+				return file.isFile() && FileUtils.getFileName(file.getName()).equals(fileName);
 			});
 		};
 	}

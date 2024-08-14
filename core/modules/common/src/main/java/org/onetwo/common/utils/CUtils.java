@@ -40,6 +40,7 @@ import org.onetwo.common.utils.map.BaseMap;
 import org.onetwo.common.utils.map.CollectionMap;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 final public class CUtils {
@@ -668,6 +669,61 @@ final public class CUtils {
 		}
 	}
 	
+	/****
+	 * 对比容器里的元素是否相等
+	 * @param <E>
+	 * @param it1
+	 * @param it2
+	 * @return
+	 */
+	public static <E> boolean isEquals(Iterable<? extends E> it1, Iterable<? extends E> it2){
+		if (it1==null || it2==null) {
+			return false;
+		}
+		if (it1.equals(it2)) {
+			return true;
+		}
+		Set<E> set1 = Sets.newHashSet(it1);
+		Set<E> set2 = Sets.newHashSet(it2);
+		return set1.equals(set2);
+	}
+	
+    public static Object[] arrayAdd(Object[] array, Object element) {
+        Object[] newArray = (Object[]) copyArrayGrow1(array);
+        newArray[newArray.length - 1] = element;
+        return newArray;
+    }
+
+    private static Object copyArrayGrow1(Object array) {
+        if (array != null) {
+            int arrayLength = Array.getLength(array);
+            Object newArray = Array.newInstance(array.getClass().getComponentType(), arrayLength + 1);
+            System.arraycopy(array, 0, newArray, 0, arrayLength);
+            return newArray;
+        }
+        return Array.newInstance(Object.class, 1);
+    }
+	
+    public static Object[] addAll(Object[] array1, Object[] array2) {
+        if (array1 == null) {
+            return clone(array2);
+        } else if (array2 == null) {
+            return clone(array1);
+        }
+        Object[] joinedArray = (Object[]) Array.newInstance(array1.getClass().getComponentType(),
+                                                            array1.length + array2.length);
+        System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+        System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+        return joinedArray;
+    }
+
+    public static Object[] clone(Object[] array) {
+        if (array == null) {
+            return null;
+        }
+        return (Object[]) array.clone();
+    }
+    
 	private CUtils(){
 	}
 

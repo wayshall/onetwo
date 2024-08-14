@@ -20,7 +20,40 @@ import org.onetwo.common.md.Hashs;
 import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
-	
+
+	@Test
+	public void testIsChinese() {
+		String str = "test";
+		boolean res = LangUtils.isChinese(str);
+		assertThat(res).isFalse();
+		res = LangUtils.isChinese("中国人");
+		assertThat(res).isTrue();
+		res = LangUtils.isChinese("中国ren");
+		assertThat(res).isFalse();
+		res = LangUtils.isChinese("1个中国人");
+		assertThat(res).isFalse();
+//		System.out.println("res: " + "中国人".substring(0, 1));
+	}
+
+	@Test
+	public void testRadixString() {
+		String res = LangUtils.toRadixString(60, 60);
+		assertThat(res).isEqualTo("10");
+		res = LangUtils.toRadixString(121, 60);
+		assertThat(res).isEqualTo("21");
+		res = LangUtils.toRadixString(198263763892923L, 60);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("1aNsNTM23");
+		res = LangUtils.toRadixString(198263763892928L, 60);
+		System.out.println("res2: " + res);
+		assertThat(res).isEqualTo("1aNsNTM28");
+		res = LangUtils.toRadixString(Long.MAX_VALUE, 60);
+		System.out.println("res3: " + res);
+		assertThat(res).isEqualTo("ffdywvTkfu7");
+		res = Long.toString(Long.MAX_VALUE, 36);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("1y2p0ij32e8e7");
+	}
 
 	@Test
 	public void testJoinMap() {
@@ -138,6 +171,11 @@ public class LangUtilsTest {
 	public void testTimeUnit(){
 		long i = TimeUnit.MINUTES.toHours(59);
 		System.out.println("unit: " + i);
+		assertThat(i).isEqualTo(0L);
+		
+		i = TimeUnit.MINUTES.toHours(119);
+		System.out.println("unit: " + i);
+		assertThat(i).isEqualTo(1L);
 		
 		List<String> list = LangUtils.newArrayList("aa", "bb", "cc");
 		List<String> sublist = list.subList(0, 2);
@@ -305,6 +343,20 @@ public class LangUtilsTest {
 	}
 	
 	@Test
+	public void test10to2(){
+		short numb = 2605;
+		System.out.println("numb: " + Integer.toBinaryString(numb));
+//		byte h8 = (byte)((numb & 0xFF00) >> 8);
+		byte h8 = LangUtils.high8(numb);
+		System.out.println("numb1: " + Integer.toBinaryString(numb & 0xFF00));
+		System.out.println("numb2: " + Integer.toBinaryString((numb & 0xFF00) >> 8));
+//		byte l8 = (byte)(numb & 0x00FF);
+		byte l8 = LangUtils.low8(numb);
+		System.out.println("h8: " + h8);
+		System.out.println("l8: " + l8);
+	}
+	
+	@Test
 	public void test10to16(){
 		String cardNo10 = "6124895493223875970";
 		System.out.println("cardno: " + cardNo10.length());
@@ -357,6 +409,26 @@ public class LangUtilsTest {
 		str = "34 33";
 		Assert.assertFalse(LangUtils.isDigitString(str));
 	}
+	
+
+	@Test
+	public void testVersion(){
+		String str = "123";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "0.1.1";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "3.0.1";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "0.03";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "2.1.0";
+		Assert.assertTrue(LangUtils.isVersionString(str));
+		str = "3ssd";
+		Assert.assertFalse(LangUtils.isVersionString(str));
+		str = "34 33";
+		Assert.assertFalse(LangUtils.isVersionString(str));
+	}
+	
 	@Test
 	public void testHasElement(){
 		Assert.assertTrue(LangUtils.isEmpty(Collections.EMPTY_MAP));
@@ -459,6 +531,21 @@ public class LangUtilsTest {
 		long value = LangUtils.getCrc32(data);
 		System.out.println(Long.toString(value, 36));
 		assertThat(value).isEqualTo(4286944383L);
+	}
+	
+	@Test
+	public void testGetNumber() {
+		String data = "测试一下阿123斯顿6798发了水电费0432开始的";
+		List<String> dataList = LangUtils.getNumbersFromString(data);
+		System.out.println("dataList: " + dataList);
+		assertThat(dataList).size().isEqualTo(3);
+		
+		Integer value = LangUtils.getNumberFromString(data);
+		System.out.println("val: " + value);
+		assertThat(value).isEqualTo(123);
+		value = LangUtils.getNumberFromString(data, -1);
+		System.out.println("val: " + value);
+		assertThat(value).isEqualTo(432);
 	}
 	
 }

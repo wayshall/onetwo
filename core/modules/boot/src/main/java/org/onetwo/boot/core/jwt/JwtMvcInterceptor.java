@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorAdapter;
 import org.onetwo.common.exception.ServiceException;
+import org.onetwo.ext.security.jwt.JwtUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 
@@ -18,8 +19,8 @@ import org.springframework.web.method.HandlerMethod;
  */
 
 public class JwtMvcInterceptor extends MvcInterceptorAdapter {
-	private String authHeaderName = JwtUtils.DEFAULT_HEADER_KEY;
-	@Autowired
+//	private String authHeaderName = JwtUtils.DEFAULT_HEADER_KEY;
+	@Autowired(required = false)
 	private JwtTokenService jwtTokenService;
 	@Autowired
 	private BootJFishConfig jfishConfig;
@@ -28,6 +29,11 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
+		// 没有启用，直接忽略
+		if (!jfishConfig.getJwt().isEnabled()) {
+			return true;
+		}
+		String authHeaderName = jfishConfig.getJwt().getAuthHeader();
 		String token = request.getHeader(authHeaderName);
 		// 如果token为空，并且有允许不登录，直接返回true
 		boolean canBeNotLogin = jfishConfig.getJwt().isCanBeNotLogin();
@@ -72,9 +78,9 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 		return jfishConfig.getJwt().isCanBeAnonymous();
 	}
 
-	public void setAuthHeaderName(String authHeaderName) {
-		this.authHeaderName = authHeaderName;
-	}
+//	public void setAuthHeaderName(String authHeaderName) {
+//		this.authHeaderName = authHeaderName;
+//	}
 
 
 	public void setCanBeAnonymous(Boolean canBeAnonymous) {
@@ -88,7 +94,7 @@ public class JwtMvcInterceptor extends MvcInterceptorAdapter {
 
 	@Override
 	public String toString() {
-		return "JwtMvcInterceptor [authHeaderName=" + authHeaderName + "]";
+		return "JwtMvcInterceptor [authHeaderName=" + jfishConfig.getJwt().getAuthHeader() + "]";
 	}
 
 }

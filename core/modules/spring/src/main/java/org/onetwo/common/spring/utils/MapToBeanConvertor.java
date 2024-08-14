@@ -6,11 +6,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import lombok.Builder;
 
 import org.onetwo.common.annotation.FieldName;
 import org.onetwo.common.log.JFishLoggerFactory;
@@ -23,6 +22,8 @@ import org.springframework.beans.BeanWrapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
+import lombok.Builder;
 
 /**
  * @author wayshall
@@ -73,6 +74,22 @@ public class MapToBeanConvertor {
 				value = SpringUtils.getFormattingConversionService().convert(value, pd.getPropertyType());
 			}
 			bw.setPropertyValue(pd.getName(), value);
+		}
+		return bean;
+	}
+
+	public <T> T injectBeanProperties(Properties properties, T bean){
+		Class<?> beanClass = bean.getClass();
+		BeanWrapper bw = SpringUtils.newBeanWrapper(bean);
+		for(PropertyDescriptor pd : bw.getPropertyDescriptors()){
+			PropertyContext pc = new PropertyContext(beanClass, pd);
+			String key = getMapKey(pc);
+			String value = properties.getProperty(key);
+			if(value==null){
+				continue;
+			}
+			Object convertedValue = SpringUtils.getFormattingConversionService().convert(value, pd.getPropertyType());
+			bw.setPropertyValue(pd.getName(), convertedValue);
 		}
 		return bean;
 	}

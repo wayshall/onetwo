@@ -1,8 +1,12 @@
 package org.onetwo.ext.security.utils;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.utils.GuavaUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.ext.security.matcher.MatcherUtils;
 import org.onetwo.ext.security.matcher.MutipleRequestMatcher;
@@ -10,6 +14,8 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -17,13 +23,23 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.google.common.collect.ImmutableSet;
 
-import lombok.Getter;
-
 final public class SecurityUtils {
 //	private static final Logger logger = JFishLoggerFactory.getLogger(SecurityUtils.class);
 	private static final Set<String> KEYWORDS = ImmutableSet.of("permitAll", "authenticated", "fullyAuthenticated", "denyAll", "is", "has");
 	
 	public static final RequestMatcher READ_METHOD_MATCHER = new CommonReadMethodMatcher();
+	
+	public static Collection<? extends GrantedAuthority> createAuthorityList(String roles) {
+		return createAuthorityList(roles, ",");
+	}
+    public static Collection<? extends GrantedAuthority> createAuthorityList(String roles, String splitor) {
+    	if (StringUtils.isBlank(roles)) {
+    		return Collections.emptyList();
+    	}
+    	String[] authorities = GuavaUtils.split(roles, splitor);
+    	List<GrantedAuthority> authList = AuthorityUtils.createAuthorityList(authorities);
+    	return authList;
+    }
 	
 	public static RequestMatcher checkCsrfIfRequestNotMatch(String...paths){
 		return MatcherUtils.notMatcher(antPathsAndReadMethodMatcher(paths));
@@ -55,20 +71,20 @@ final public class SecurityUtils {
 						.findAny().isPresent();
 	}
 
-	public static LoginUserDetails getCurrentLoginUser(){
-		return (LoginUserDetails)getCurrentLoginUser(SecurityContextHolder.getContext());
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(){
+		return (GenericLoginUserDetails<?>)getCurrentLoginUser(SecurityContextHolder.getContext());
 	}
 	public static <T> T getCurrentLoginUser(Class<T> clazz){
 		return clazz.cast(getCurrentLoginUser());
 	}
-	public static LoginUserDetails getCurrentLoginUser(SecurityContext context){
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(SecurityContext context){
 		Authentication auth = context.getAuthentication();
-		return (LoginUserDetails)getCurrentLoginUser(auth);
+		return (GenericLoginUserDetails<?>)getCurrentLoginUser(auth);
 	}
-	public static LoginUserDetails getCurrentLoginUser(Authentication auth){
+	public static GenericLoginUserDetails<?> getCurrentLoginUser(Authentication auth){
 		if(auth==null || AnonymousAuthenticationToken.class.isInstance(auth))
 			return null;
-		return (LoginUserDetails)auth.getPrincipal();
+		return (GenericLoginUserDetails<?>)auth.getPrincipal();
 	}
 	
 	public static Runnable runInThread(Runnable runnable){
@@ -83,18 +99,4 @@ final public class SecurityUtils {
 		};
 	}
 	
-	public static enum SecurityErrors {
-		AUTH_FAILED("认证失败"),
-//		NOT_AUTHED("未认证的用户"),
-		ACCESS_DENIED("未授权，访问拒绝"),
-		NOT_TRUSTED_USER("不受信任的用户");//包括匿名和rememberMe的用户
-		
-		@Getter
-		private final String label;
-
-		private SecurityErrors(String label) {
-			this.label = label;
-		}
-		
-	}
 }

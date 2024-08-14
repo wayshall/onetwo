@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
@@ -176,7 +178,7 @@ public class JsonMapper {
 		return this;
 	}
 	public JsonMapper enableTyping(){
-		objectMapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+		objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), DefaultTyping.NON_FINAL, As.PROPERTY);
 		return this;
 	}
 	
@@ -322,6 +324,11 @@ public class JsonMapper {
 		}
 	}
 
+	public <T> T convert(final JsonNode jsonNode, Class<T> objType){
+		T value = objectMapper.convertValue(jsonNode, objType);
+		return value;
+	}
+	
 	public <T> T fromJson(final Object json, Type objType){
 		return fromJson(json, objType, false);
 	}
@@ -342,6 +349,8 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((InputStream)json, (Class<?>)objType);
 			}else if(json instanceof File){
 				obj = this.objectMapper.readValue((File)json, (Class<?>)objType);
+			}else if(json instanceof byte[]){
+				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
 				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else{
@@ -356,9 +365,9 @@ public class JsonMapper {
 				if (json instanceof byte[]) {
 					jsonstr = LangUtils.newString((byte[])obj);
 				}
-				throw new JsonException("parse json to ["+objType+"] error, json: " + jsonstr, e);
+				throw new JsonException("parse json to ["+objType+"] error, reason: " + e.getMessage() + ". [json data]: " + jsonstr, e);
 			} else {
-				throw new JsonException("parse json to ["+objType+"] error, json: " + json, e);
+				throw new JsonException("parse json to ["+objType+"] error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 			}
 		}
 		return (T)obj;
@@ -380,6 +389,8 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((InputStream)json, valueTypeRef);
 			}else if(json instanceof File){
 				obj = this.objectMapper.readValue((File)json, valueTypeRef);
+			}else if(json instanceof byte[]){
+				obj = this.objectMapper.readValue((byte[])json, valueTypeRef);
 			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
 				obj = this.objectMapper.readValue((byte[])json, valueTypeRef);
 			}else{
@@ -387,7 +398,7 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue(jsonstr, valueTypeRef);
 			}
 		} catch (Exception e) {
-			throw new JsonException("parse json to "+valueTypeRef+" error : " + json, e);
+			throw new JsonException("parse json to "+valueTypeRef+" error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 		return obj;
 	}
@@ -421,7 +432,7 @@ public class JsonMapper {
 		try {
 			obj = this.objectMapper.readValue(in, constructJavaType(objType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to object error : " + objType + " => " + e.getMessage(), e);
+			throw new JsonException("parse json to " + objType + " object error, reason: " + e.getMessage(), e);
 		}
 		return obj;
 	}
@@ -457,7 +468,27 @@ public class JsonMapper {
 		try {
 			return this.objectMapper.readValue(json, typeFactory.constructArrayType(objClass));
 		} catch (Exception e) {
-			throw new JsonException("parse json to object error : " + objClass + " => " + json, e);
+			throw new JsonException("parse json to " + objClass + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
+		}
+	}
+	
+	public ArrayNode fromJsonAsArrayNode(String json){
+		if(StringUtils.isBlank(json))
+			return null;
+		try {
+			return this.objectMapper.readValue(json, ArrayNode.class);
+		} catch (Exception e) {
+			throw new JsonException("parse json to " + ArrayNode.class.getSimpleName() + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
+		}
+	}
+	
+	public ObjectNode fromJsonAsObjectNode(String json){
+		if(StringUtils.isBlank(json))
+			return null;
+		try {
+			return this.objectMapper.readValue(json, ObjectNode.class);
+		} catch (Exception e) {
+			throw new JsonException("parse json to " + ObjectNode.class.getSimpleName() + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 	}
 	
@@ -475,7 +506,20 @@ public class JsonMapper {
 		try {
 			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ctype, itemType));
 		} catch (Exception e) {
-			throw new JsonException("parse json to collection error : " + ctype + " => " + json, e);
+			throw new JsonException("parse json to collection[" + ctype + "] error, reason: " + e.getMessage() + ". [json data]: " + json, e);
+		}
+		return datas;
+	}
+    
+
+	public <T> List<T> fromJsonAsList(String json, Class<T> itemType){
+		if(StringUtils.isBlank(json))
+			return Collections.emptyList();
+		List<T> datas;
+		try {
+			datas = objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, itemType));
+		} catch (Exception e) {
+			throw new JsonException("parse json to ArrayList error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 		return datas;
 	}

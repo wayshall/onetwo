@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.common.annotation.AnnotationInfo;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.expr.Expression;
 import org.onetwo.common.expr.ExpressionFacotry;
@@ -41,6 +43,7 @@ import org.onetwo.common.spring.config.JFishPropertyPlaceholder;
 import org.onetwo.common.spring.utils.BeanMapWrapper;
 import org.onetwo.common.spring.utils.JFishPropertiesFactoryBean;
 import org.onetwo.common.spring.utils.MapToBeanConvertor;
+import org.onetwo.common.spring.utils.SpringMergedAnnotationFinder;
 import org.onetwo.common.utils.Assert;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
@@ -74,6 +77,8 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -91,6 +96,7 @@ import org.springframework.util.ReflectionUtils.MethodFilter;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -118,6 +124,11 @@ final public class SpringUtils {
 	private static final DateTimeFormatAnnotationFormatterFactory DATE_TIME_FORMAT = new DateTimeFormatAnnotationFormatterFactory();
 	
 	private SpringUtils(){
+	}
+	
+	public static AnnotationInfo createAnnotationInfo(Class<?> entityClass) {
+		AnnotationInfo annotationInfo = new AnnotationInfo(entityClass, entityClass, SpringMergedAnnotationFinder.INSTANCE);
+		return annotationInfo;
 	}
 	
 	public static Date parseDate(String text, Field field) {
@@ -467,13 +478,21 @@ final public class SpringUtils {
 	}
 
 	public static <T> void injectAndInitialize(AutowireCapableBeanFactory acb, T bean, int autowireMode) {
-		acb.autowireBeanProperties(bean, autowireMode, false);
+		try {
+			acb.autowireBeanProperties(bean, autowireMode, false);
+		} catch (Exception e) {
+			throw new BaseException("occur error on autowire bean for class: " + bean.getClass().getName() + ", msg: " + e.getMessage(), e);
+		}
 		initializeBean(acb, bean);
 	}
 
 	public static <T> void initializeBean(AutowireCapableBeanFactory acb, T bean) {
 		String beanName = StringUtils.uncapitalize(bean.getClass().getSimpleName());
-		acb.initializeBean(bean, beanName);
+		try {
+			acb.initializeBean(bean, beanName);
+		} catch (Exception e) {
+			throw new BaseException("occur error on initializing bean for class: " + bean.getClass().getName() + ", msg: " + e.getMessage(), e);
+		}
 	}
 
 	public static <T> void initializeBean(ApplicationContext appContext, T bean) {
@@ -818,6 +837,26 @@ final public class SpringUtils {
 			throw new BaseException("error applicationContext, it's not a PropertyResolver.");
 		}
 		return env;
+	}
+
+	public static Environment getEnvironment(ApplicationContext applicationContext){
+		ConfigurableEnvironment env = null;
+		if (applicationContext instanceof ConfigurableApplicationContext){
+			ConfigurableApplicationContext appcontext = (ConfigurableApplicationContext)applicationContext;
+			env = appcontext.getEnvironment();
+		} else {
+			throw new BaseException("applicationContext can not resolve a Environment");
+		}
+		return env;
+	}
+
+	public static Collection<String> getProfiles(ApplicationContext applicationContext){
+		Environment env = getEnvironment(applicationContext);
+		String[] envProfiles = env.getActiveProfiles();
+		if (LangUtils.isEmpty(envProfiles)) {
+			envProfiles = env.getDefaultProfiles();
+		}
+		return ImmutableSet.copyOf(envProfiles);
 	}
 	
 	public static <T> T toBean(Map<String, ?> propValues, Class<T> beanClass){

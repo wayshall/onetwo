@@ -34,5 +34,12 @@
             </else>
         </if>
     </root>
+    
+    <!-- https://github.com/springfox/springfox/issues/2265 -->
+    <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="ERROR">
+    </logger>
+    <logger name="org.onetwo.cloud.bugfix.FixFeignClientsHandlerMapping" level="TRACE">
+    </logger>
+    
 </included>
 

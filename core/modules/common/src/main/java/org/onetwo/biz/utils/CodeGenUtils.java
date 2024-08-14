@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.propconf.AppConfig;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.MyUtils;
+import org.onetwo.common.utils.LangUtils;
 
 abstract public class CodeGenUtils {
 
@@ -130,7 +130,7 @@ abstract public class CodeGenUtils {
 			seq = Long.valueOf(genNumber.toString());
 		}
 		
-		String numbStr = MyUtils.append(seq.toString(), maxNumber.toString().length(), appendChar);
+		String numbStr = LangUtils.padLeft(seq.toString(), maxNumber.toString().length(), appendChar);
 		StringBuilder resultCode = new StringBuilder();
 		resultCode.append(prefix).append(DateUtils.getString(format)).append(numbStr);
 		return resultCode.toString();

@@ -13,12 +13,14 @@ import org.onetwo.cloud.feign.ResultErrorDecoder.FeignResponseAdapter;
 import org.onetwo.cloud.hystrix.exception.HystrixBadRequestCodeException;
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
 import org.onetwo.common.data.DataResult;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.netflix.zuul.filters.route.okhttp.OkHttpRibbonCommand;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.UnknownContentTypeException;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
@@ -42,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ExtResponseEntityDecoder implements Decoder {
+	private final Logger logger = JFishLoggerFactory.getLogger(getClass());
+	
 	private ObjectFactory<HttpMessageConverters> messageConverters;
 
 	public ExtResponseEntityDecoder(ObjectFactory<HttpMessageConverters> messageConverter) {
@@ -57,6 +63,10 @@ public class ExtResponseEntityDecoder implements Decoder {
 			if(LangUtils.isEmpty(errorHeaders)){
 				//没有错误
 				res = decodeByType(response, type);
+
+				if (res==null && response.getStatusCode()!=HttpStatus.OK) {
+					throw new BaseException("[feign]remote inokve error, status code: " + response.getStatusCode().value() + ", reason: " + response.getStatusCode().getReasonPhrase());
+				}
 			}else{
 				SimpleDataResult dr = decodeByType(response, SimpleDataResult.class);
 				/*if(isCutoutError(response, dr)){
@@ -144,8 +154,13 @@ public class ExtResponseEntityDecoder implements Decoder {
 	protected <T> T decodeByType(FeignResponseAdapter response, Type type) throws IOException, FeignException {
 		HttpMessageConverterExtractor<SimpleDataResult> extractor = new HttpMessageConverterExtractor(
 				type, this.messageConverters.getObject().getConverters());
-		T dr = (T)extractor.extractData(response);
-		return dr;
+		try {
+			T dr = (T)extractor.extractData(response);
+			return dr;
+		} catch (UnknownContentTypeException e) {
+			logger.error("decodeByType error: " + e.getMessage(), e);
+		}
+		return null;
 	}
 
 
@@ -165,6 +180,12 @@ public class ExtResponseEntityDecoder implements Decoder {
 			Type actualType = ReflectUtils.getGenricType(type, 0);
 			Object result = decode(responseAdapter, actualType);
 			return Optional.ofNullable(result);
+		} else if (isSpringDeferredResult(type)) {
+			Type actualType = ReflectUtils.getGenricType(type, 0);
+			Object result = decode(responseAdapter, actualType);
+			DeferredResult<Object> deferredResult = new DeferredResult<>();
+			deferredResult.setResult(result);
+			return deferredResult;
 		}
 		else {
 			return decode(responseAdapter, type);
@@ -175,6 +196,15 @@ public class ExtResponseEntityDecoder implements Decoder {
 	private boolean isParameterizeHttpEntity(Type type) {
 		if (type instanceof ParameterizedType) {
 			return isHttpEntity(((ParameterizedType) type).getRawType());
+		}
+		return false;
+	}
+
+	private boolean isSpringDeferredResult(Type type) {
+		if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			Type rawType = parameterizedType.getRawType();
+			return DeferredResult.class.equals(rawType);
 		}
 		return false;
 	}

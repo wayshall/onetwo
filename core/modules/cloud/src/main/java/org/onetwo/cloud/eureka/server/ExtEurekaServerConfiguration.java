@@ -21,6 +21,11 @@ public class ExtEurekaServerConfiguration {
 	@Autowired
 	private ApplicationInfoManager applicationInfoManager;
 
+	/****
+	 * eureka.dashboard.enabled: false
+	 * @see #{EurekaServerAutoConfiguration#eurekaController}
+	 * @return
+	 */
 	@Bean
 //	@ConditionalOnProperty(prefix = "eureka.dashboard", name = "admin", matchIfMissing=true)
 	@ConditionalOnMissingBean(EurekaController.class)

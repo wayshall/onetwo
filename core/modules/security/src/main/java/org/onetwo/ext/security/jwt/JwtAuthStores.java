@@ -3,6 +3,7 @@ package org.onetwo.ext.security.jwt;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.ext.security.utils.CookieStorer;
 
@@ -23,6 +24,13 @@ public enum JwtAuthStores {
 		public void saveToken(StoreContext ctx) {
 			ctx.getResponse().addHeader(ctx.getAuthKey(), ctx.getToken().getToken());
 		}
+		@Override
+		public boolean isCookieStore() {
+			return false;
+		}
+		@Override
+		public void removeToken(StoreContext ctx) {
+		}
 	},
 	COOKIES{
 		@Override
@@ -38,6 +46,14 @@ public enum JwtAuthStores {
 			ctx.getCookieStorer().clear(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey());
 			ctx.getCookieStorer().save(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey(), ctx.getToken().getToken());
 		}
+		@Override
+		public void removeToken(StoreContext ctx) {
+			ctx.getCookieStorer().clear(ctx.getRequest(), ctx.getResponse(), ctx.getAuthKey());
+		}
+		@Override
+		public boolean isCookieStore() {
+			return true;
+		}
 	},
 	PARAMETER{
 		@Override
@@ -48,10 +64,44 @@ public enum JwtAuthStores {
 		public void saveToken(StoreContext ctx) {
 			ctx.getResponse().addHeader(ctx.getAuthKey(), ctx.getToken().getToken());
 		}
-	};
+		@Override
+		public void removeToken(StoreContext ctx) {
+		}
+		@Override
+		public boolean isCookieStore() {
+			return false;
+		}
+	},
+	COOKIES_HEADER {
+		@Override
+		public String getToken(HttpServletRequest request, String authName) {
+			String token = JwtAuthStores.COOKIES.getToken(request, authName);
+			if (StringUtils.isBlank(token)) {
+				token = JwtAuthStores.HEADER.getToken(request, authName);
+			}
+			return token;
+		}
+		@Override
+		public void saveToken(StoreContext ctx) {
+			JwtAuthStores.COOKIES.saveToken(ctx);
+			JwtAuthStores.HEADER.saveToken(ctx);
+		}
+		@Override
+		public void removeToken(StoreContext ctx) {
+			JwtAuthStores.COOKIES.removeToken(ctx);
+			JwtAuthStores.HEADER.removeToken(ctx);
+		}
+		@Override
+		public boolean isCookieStore() {
+			return true;
+		}
+	},
+	;
 
 	abstract public String getToken(HttpServletRequest request, String authName);
 	abstract public void saveToken(StoreContext ctx);
+	abstract public void removeToken(StoreContext ctx);
+	abstract public boolean isCookieStore();
 	
 	@Data
 	@Builder

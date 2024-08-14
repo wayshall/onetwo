@@ -15,6 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,12 +26,44 @@ import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.func.Closure;
 import org.onetwo.common.utils.map.KVEntry;
 
+import com.google.common.collect.Maps;
+
 /***
  * langutils for java8
  * @author way
  *
  */
 final public class LangOps {
+	
+	/***
+	 * java8以上的版本（不包括java8）
+	 * @author weishao zeng
+	 * @return
+	 */
+	public static boolean isHigherThanJava8() {
+		return getJavaVersion() > 8;
+	}
+	
+	/***
+	 * 
+	 * @author weishao zeng
+	 * @return 8, 9, 10, 11
+	 */
+	public static int getJavaVersion() {
+	    String version = System.getProperty("java.version");
+	    if (StringUtils.isBlank(version)) {
+	    	return -1; // unknow
+	    }
+	    if(version.startsWith("1.")) {
+	        version = version.substring(2, 3);
+	    } else {
+	        int dot = version.indexOf(".");
+	        if(dot != -1) { 
+	        	version = version.substring(0, dot); 
+	        }
+	    }
+	    return Integer.parseInt(version);
+	}
 	
 	/***
 	 * from java8 collectors
@@ -60,6 +93,15 @@ final public class LangOps {
 	public static <K, V> Map<K, V> toMap(List<V> data, Function<V, K> keyExtractor){
 		 return data.stream()
 				 	.collect(Collectors.toMap(item->keyExtractor.apply(item), item->item));
+	}
+	
+	public static <K, V> Map<K, V> toMapWithSilence(List<V> data, Function<V, K> keyExtractor){
+		 Map<K, V> result = Maps.newHashMapWithExpectedSize(data.size());
+		 data.forEach(d -> {
+			 K key = keyExtractor.apply(d);
+			 result.put(key, d);
+		 });
+		 return result;
 	}
 	
 	public static Object[] toArray(Map<?, ?> map){
@@ -161,21 +203,48 @@ final public class LangOps {
 		})
 		.orElse(BigDecimal.valueOf(0.0));
 	}
+	
+	public static <T> Double sumDouble(List<T> datas, Function<T, Double> mapper){
+		if(datas==null)
+			return 0D;
+		return datas.stream().map(mapper).reduce((n1, n2)->{
+			if (n1==null) {
+				n1 = 0.0;
+			}
+			if (n2==null) {
+				n2 = 0.0;
+			}
+			return n1 + n2;
+		})
+		.orElse(0D);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T, K> Map<K, List<T>> groupByProperty(List<T> datas, String propName){
+		if (LangUtils.isEmpty(datas)) {
+			return Collections.emptyMap();
+		}
 		return datas.stream().collect(Collectors.groupingBy(e->(K)ReflectUtils.getPropertyValue(e, propName)));
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static <T, K, V> Map<K, List<V>> groupByProperty(List<T> datas, String keyProperty, String valueProperty){
+		if (LangUtils.isEmpty(datas)) {
+			return Collections.emptyMap();
+		}
 		return groupBy(datas, e->(K)ReflectUtils.getPropertyValue(e, keyProperty), e->(V)ReflectUtils.getPropertyValue(e, valueProperty));
 	}
 	
 	public static <T, K> Map<K, List<T>> groupBy(List<T> datas, Function<? super T, ? extends K> keyer){
+		if (LangUtils.isEmpty(datas)) {
+			return Collections.emptyMap();
+		}
 		return datas.stream().collect(Collectors.groupingBy(keyer));
 	}
 	public static <T, K, V> Map<K, List<V>> groupBy(List<T> datas, Function<? super T, ? extends K> keyer, Function<? super T, ? extends V> valuer){
+		if (LangUtils.isEmpty(datas)) {
+			return Collections.emptyMap();
+		}
 		Map<K, List<V>> groups = datas.stream()
 										.collect(Collectors.groupingBy(
 												keyer, 
@@ -339,6 +408,32 @@ final public class LangOps {
 	public static <T extends Comparable<? super T>> T max(Collection<T> datas, T def) {
 		T max = datas.stream().max(Comparator.naturalOrder()).orElse(def);
 		return max;
+	}
+	
+	public static <T> Predicate<T> or(Collection<? extends Predicate<T>> collection) {
+		Predicate<T> predicate = null;
+		for (Predicate<T> p : collection) {
+			if (predicate==null) {
+				predicate = p;
+			} else {
+				predicate = predicate.or(p);
+			}
+			
+		}
+		return predicate;
+	}
+	
+	public static <T> Predicate<T> and(Collection<? extends Predicate<T>> collection) {
+		Predicate<T> predicate = null;
+		for (Predicate<T> p : collection) {
+			if (predicate==null) {
+				predicate = p;
+			} else {
+				predicate = predicate.and(p);
+			}
+			
+		}
+		return predicate;
 	}
 	
 	private LangOps(){}
