@@ -9,11 +9,11 @@
 ## 环境要求和主要框架依赖版本
 - JDK 8+
 - Spring 4.x+
-- Spring Boot 1.5.16.RELEASE (boot模块要求）
-- Spring Cloud Edgware (cloud模块要求)
+- Spring Boot 2.7.18 (boot模块要求）
+- Spring Cloud 2021.0.9 (cloud模块要求)
 
 ## maven   
-当前snapshot版本：**4.8.0-SNAPSHOT**   
+当前snapshot版本：**5.2.7-SNAPSHOT**   
 
 若使用snapshot版本，请添加snapshotRepository仓储：   
 ```xml   
