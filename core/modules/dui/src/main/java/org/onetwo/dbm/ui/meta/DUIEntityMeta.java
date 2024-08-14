@@ -149,6 +149,11 @@ public class DUIEntityMeta {
 		return field;
 	}
 	
+	public DUIFieldMeta findField(String fieldName) {
+		DUIFieldMeta field =  fieldMap.get(fieldName);
+		return field;
+	}
+	
 	public Collection<DUIFieldMeta> getFields() {
 		return fields;
 	}

@@ -2,16 +2,14 @@ package org.onetwo.ext.rmqwithonsclient.producer;
 
 import java.util.Date;
 
-import org.onetwo.boot.mq.SendMessageFlags;
+import org.apache.rocketmq.client.producer.SendResult;
 import org.onetwo.common.exception.ServiceException;
 import org.onetwo.dbm.id.SnowflakeIdGenerator;
 import org.onetwo.ext.alimq.SimpleMessage;
-import org.onetwo.ext.ons.producer.ProducerService;
+import org.onetwo.ext.ons.producer.RmqProducerService;
 import org.onetwo.ext.rmqwithonsclient.producer.RmqONSProducerTest.OrderTestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.aliyun.openservices.ons.api.SendResult;
 
 /**
  * @author wayshall
@@ -21,7 +19,7 @@ import com.aliyun.openservices.ons.api.SendResult;
 public class BatchDataBaseProducerServiceImpl {
 
 	@Autowired
-	ProducerService onsProducerService;
+	RmqProducerService onsProducerService;
 	private SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(30);
 	public static int batchCount = 10;
 

@@ -1,11 +1,10 @@
 package org.onetwo.common.utils;
 
-
 /**
  * @author wayshall
  * <br/>
  */
-public class PageRequest {
+public class PageRequest implements PageableRequest {
 	protected int page = 1;
 	protected int pageSize = Page.getDefaultPageSize();
 	private boolean pagination = true;
@@ -17,6 +16,15 @@ public class PageRequest {
 		pageObject.setAutoCount(autoCount);
 		return pageObject;
 	}
+	
+    @SuppressWarnings("unchecked")
+	public <T> T fromPageRequest(PageRequest request) {
+    	this.page = request.getPage();
+    	this.pageSize = request.getPageSize();
+    	this.pagination = request.isPagination();
+    	this.autoCount = request.isAutoCount();
+    	return (T) this;
+    }
 	
 	public void noLimited() {
 		this.setAutoCount(false);

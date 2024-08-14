@@ -10,16 +10,44 @@ final public class Types {
 	private static final Convertor instance = new DefaultTypeConvertors();
 	private static final Logger logger = JFishLoggerFactory.getLogger(Types.class);
 
+	/****
+	 * 当目标类型为基本类型时，如果source为null，则返回配置的基本类型的默认值
+	 * 否则，返回null
+	 * @param <T>
+	 * @param source
+	 * @param clazz
+	 * @return
+	 */
 	public static <T> T convertValue(Object source, Class<T> clazz) {
 //		return convertValue(source, clazz, null);
 		return convertor().convert(source, clazz);
 	}
 
+	/****
+	 * 解释source为clazz类型的值，若对应的解释器错误，则返回默认值defValue
+	 * @author weishao zeng
+	 * @param source
+	 * @param clazz
+	 * @param defValue
+	 * @return
+	 */
 	public static <T> T convertValue(Object source, Class<T> clazz, T defValue) {
 		try {
 			if(source==null)
 				return defValue;
 			T val = convertor().convert(source, clazz);
+			return val==null?defValue:val;
+		} catch (Exception e) {
+			logger.error("convert source[{}] to class[{}] error: " + e.getMessage(), source, clazz);
+			return defValue;
+		}
+	}
+	
+	public static Object convertObject(Object source, Class<?> clazz, Object defValue) {
+		try {
+			if(source==null)
+				return defValue;
+			Object val = convertor().convert(source, clazz);
 			return val==null?defValue:val;
 		} catch (Exception e) {
 			logger.error("convert source[{}] to class[{}] error: " + e.getMessage(), source, clazz);
@@ -37,8 +65,18 @@ final public class Types {
 		return convertor().convert(source, Long.class);
 	}
 
+	/****
+	 * 解释source为integer类型的值，若source无法解释，则抛错
+	 * @author weishao zeng
+	 * @param source
+	 * @return
+	 */
 	public static Integer asInteger(Object source) {
 		return convertor().convert(source, Integer.class);
+	}
+	
+	public static Boolean asBoolean(Object source) {
+		return convertor().convert(source, Boolean.class);
 	}
 
 	public static String asString(Object source) {
@@ -50,6 +88,14 @@ final public class Types {
 		return convertor().convert(source, clazz);
 	}
 
+	/***
+	 * 解释source为clazz类型的值，若对应的解释器错误，则返回默认值defValue
+	 * @author weishao zeng
+	 * @param source
+	 * @param clazz
+	 * @param defValue
+	 * @return
+	 */
 	public static <T> T asValue(Object source, Class<T> clazz, T defValue) {
 		return convertValue(source, clazz, defValue);
 	}

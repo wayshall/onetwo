@@ -2,6 +2,7 @@ package org.onetwo.boot.module.security;
 
 import javax.servlet.ServletContext;
 
+import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.common.spring.Springs;
 import org.onetwo.common.utils.StringUtils;
@@ -23,7 +24,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class BootSecurityConfig extends SecurityConfig implements WebContextConfigProvider {
-	public static final String SECURITY_PREFIX = "jfish.security";
+	public static final String SECURITY_PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".security";
 	public static final String EXCEPTION_USER_CHECKER_ENABLE_KEY = SECURITY_PREFIX+".exceptionUserChecker";
 	
 	public static final String METADATA_SOURCE_KEY = "metadataSource";
@@ -32,6 +33,8 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 	
 	@Autowired(required=false)
 	private BootSiteConfig bootSiteConfig;
+	@Autowired(required=false)
+	private BootJFishConfig bootJFishConfig;
 	private String baseURL;
 	
 	ExceptionUserCheckerConfig exceptionUserChecker = new ExceptionUserCheckerConfig();
@@ -42,6 +45,16 @@ public class BootSecurityConfig extends SecurityConfig implements WebContextConf
 		}
 		return this.syncPermissionData;
 	}*/
+	
+	/***
+	 * 是否记录相关的security日志
+	 */
+	public boolean isLogSecurityError() {
+		if (bootJFishConfig!=null && bootJFishConfig.isAlwaysLogErrorDetail()) {
+			return true;
+		}
+		return super.isLogSecurityError();
+	}
 	
 	@Override
 	public String getUserLogoutUrl(){

@@ -13,7 +13,7 @@ import org.onetwo.common.utils.LangUtils;
  *
  */
 @Deprecated
-public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, UserRoot, PermissionDetail, Serializable {
+public class DefaultUserDetail implements UserDetail, RoleDetail, UserRoot, PermissionDetail, Serializable {
 	
 	protected Date lastActivityTime = new Date();
 	private long userId;
@@ -61,7 +61,7 @@ public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, 
 		this.lastSynchronizedTime = lastSynchronizedTime;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
@@ -108,7 +108,7 @@ public class DefaultUserDetail implements SsoTokenable, UserDetail, RoleDetail, 
 	}
 
 	@Override
-	public boolean isSystemRootUser() {
+	public Boolean isSystemRootUser() {
 		return getUserId() == ROOT_USER_ID;
 	}
 

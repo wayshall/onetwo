@@ -11,7 +11,11 @@ private ToLongConvertor longConvertor;
 	
 	@Override
 	public Short doConvert(Object value, Class<?> componentType) {
-		return longConvertor.convert(value, componentType).shortValue();
+		Long val = longConvertor.convert(value, componentType);
+		if (val==null) {
+			return null;
+		}
+		return val.shortValue();
 
 	}
 

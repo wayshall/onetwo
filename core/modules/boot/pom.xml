@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-		<version>4.8.0-SNAPSHOT</version>
+		<version>5.2.7-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -21,7 +21,17 @@
 	</properties>
 
 	<dependencies>
-		
+        <dependency> 
+            <groupId>org.springframework.boot</groupId> 
+            <artifactId>spring-boot-properties-migrator</artifactId> 
+            <scope>runtime</scope>
+        </dependency>
+        
+	     <dependency>
+	       <groupId>org.springframework.boot</groupId>
+	       <artifactId>spring-boot-autoconfigure</artifactId>
+	     </dependency>
+        
 		<dependency>
 		  <groupId>org.onetwo4j</groupId>
 		  <artifactId>onetwo-common</artifactId>
@@ -50,8 +60,26 @@
         </dependency>
         
         <dependency>
+		    <groupId>org.springframework.security.oauth.boot</groupId>
+		    <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+           <optional>true</optional>
+		</dependency>
+		        
+	     <dependency>
+	       <groupId>org.springframework.boot</groupId>
+	       <artifactId>spring-boot-starter-oauth2-client</artifactId>
+           <optional>true</optional>
+	     </dependency>
+        
+        <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-poi</artifactId>
+          <optional>true</optional>
+        </dependency>
+	        
+        <dependency>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
           <optional>true</optional>
         </dependency>
         
@@ -170,11 +198,6 @@
 		</dependency>
 
         <dependency>
-          <groupId>org.springframework.data</groupId>
-          <artifactId>spring-data-commons</artifactId>
-        </dependency>
-		
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>	
@@ -190,6 +213,13 @@
 	        <artifactId>spring-data-elasticsearch</artifactId>
             <optional>true</optional>
 	    </dependency>
+		<dependency>
+		    <groupId>org.elasticsearch</groupId>
+		    <artifactId>elasticsearch</artifactId>
+            <version>2.4.6</version>
+            <optional>true</optional>
+		</dependency>
+			    
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
@@ -249,12 +279,17 @@
               </exclusion>
 		    </exclusions>
 		</dependency>
-        
 	    <dependency>
 	        <groupId>org.springframework.session</groupId>
-	        <artifactId>spring-session</artifactId>
-            <optional>true</optional>
+	        <artifactId>spring-session-core</artifactId>
+	        <optional>true</optional>
 	    </dependency>
+	    <dependency>
+	        <groupId>org.springframework.session</groupId>
+	        <artifactId>spring-session-data-redis</artifactId>
+	        <optional>true</optional>
+	    </dependency>
+      
 	    <dependency> 
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -291,11 +326,6 @@
 	      <artifactId>mybatis</artifactId>
           <optional>true</optional>
 	    </dependency>
-		<dependency>
-		  <groupId>org.mybatis</groupId>
-		  <artifactId>mybatis</artifactId>
-          <optional>true</optional>
-		</dependency>
 			    
 	    <dependency>
 	        <groupId>com.github.pagehelper</groupId>
@@ -319,24 +349,24 @@
           <groupId>io.springfox</groupId>
           <artifactId>springfox-swagger2</artifactId>
           <optional>true</optional>
-          <exclusions>
+          <!-- <exclusions>
             <exclusion>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-models</artifactId>
             </exclusion>
-          </exclusions>
+          </exclusions>-->
         </dependency>
         
         <dependency>
           <groupId>io.springfox</groupId>
           <artifactId>springfox-swagger-ui</artifactId>
           <optional>true</optional>
-          <exclusions>
+          <!-- <exclusions>
             <exclusion>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-models</artifactId>
             </exclusion>
-          </exclusions>
+          </exclusions>-->
         </dependency>
         
 		<dependency>
@@ -414,12 +444,33 @@
             <optional>true</optional>
         </dependency>
         
+        <!-- activemq artemis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-artemis</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>artemis-jms-server</artifactId>
+            <version>2.31.2</version>
+            <optional>true</optional>
+        </dependency>
+        
         <!-- ali qlexpress -->
 	    <dependency>
 	      <groupId>com.alibaba</groupId>
 	      <artifactId>QLExpress</artifactId>
 	      <optional>true</optional>
 	    </dependency>
+	    
+	    <!-- groovy -->
+        <dependency>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-all</artifactId>
+          <optional>true</optional>
+        </dependency>
         
         <!-- activemq mqtt -->
         <dependency>
@@ -427,13 +478,21 @@
 		    <artifactId>spring-integration-mqtt</artifactId>
             <optional>true</optional>
 		</dependency>
-        
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>opencv</artifactId>
-            <version>3.4.3-1.4.3</version>
+		
+		<dependency>
+		    <groupId>org.fusesource.mqtt-client</groupId>
+		    <artifactId>mqtt-client</artifactId>
+		    <version>1.16</version>
             <optional>true</optional>
-        </dependency>
+		</dependency>
+				
+        
+        
+	    <dependency>
+	      <groupId>org.locationtech.spatial4j</groupId>
+	      <artifactId>spatial4j</artifactId>
+          <optional>true</optional>
+	    </dependency>
         
         <!-- rxtx -->
         
@@ -469,21 +528,19 @@
             <optional>true</optional>
 	    </dependency>
         
-        <!-- <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>opencv</artifactId>
-            <version>3.4.3-1.4.3</version>
-            <classifier>linux-x86_64</classifier>
-            <optional>true</optional>
-        </dependency> 
-        
+        <!-- 这个库已包含各平台本地文件，无需本地安装opencv -->
         <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <groupId>org.openpnp</groupId>
             <artifactId>opencv</artifactId>
-            <version>3.4.3-1.4.3</version>
-            <classifier>windows-x86_64</classifier>
             <optional>true</optional>
-        </dependency> -->
+        </dependency>
+        
+        <!-- ffmpeg command line wrapper -->
+        <dependency>
+          <groupId>net.bramp.ffmpeg</groupId>
+          <artifactId>ffmpeg</artifactId>
+          <optional>true</optional>
+        </dependency>
 	    
         <!-- test -->
         <!-- <dependency>

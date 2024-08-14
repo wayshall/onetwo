@@ -56,6 +56,12 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 
 //		storeInCurrentContext(ctx);
 	}
+	
+	public SendMessageEntity persist(SendMessageEntity messageEntity) {
+		messageEntity.setLocker("");
+		baseEntityManager.persist(messageEntity);
+		return messageEntity;
+	}
 
 
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
@@ -150,6 +156,26 @@ public class DbmSendMessageRepository implements SendMessageRepository {
 			return Collections.emptyList();
 		}
 		return msgCtxs.stream().map(ctx->ctx.getMessageEntity().getKey()).collect(Collectors.toList());
+	}
+
+	@Override
+	public int countByMsgKey(String msgKey) {
+		int count = baseEntityManager.from(SendMessageEntity.class)
+						.where()
+							.field("key").is(msgKey)
+						.toQuery()
+						.count().intValue();
+		return count;
+	}
+
+	@Override
+	public SendMessageEntity findByMsgKey(String msgKey) {
+		return baseEntityManager.findById(SendMessageEntity.class, msgKey);
+	}
+
+	@Override
+	public void update(SendMessageEntity messageEntity) {
+		baseEntityManager.update(messageEntity);
 	}
 
 }

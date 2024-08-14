@@ -4,9 +4,6 @@ import java.lang.reflect.Field;
 
 import org.onetwo.common.reflect.ReflectUtils;
 
-
-
-
 public interface PermissionConfig<P extends IPermission> {
 
 	default public String getAppCode(){
@@ -14,7 +11,7 @@ public interface PermissionConfig<P extends IPermission> {
 		Field appCodeField = ReflectUtils.findField(getRootMenuClass(), "appCode");
 		if(appCodeField!=null){
 			appCode = (String)ReflectUtils.getFieldValue(appCodeField, getRootMenuClass(), false);
-		}else{
+		} else {
 			appCode = getRootMenuClass().getSimpleName();
 		}
 		return appCode;

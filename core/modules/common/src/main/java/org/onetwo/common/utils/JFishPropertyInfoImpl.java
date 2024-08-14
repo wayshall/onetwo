@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.onetwo.common.annotation.AnnotationInfo;
+import org.onetwo.common.annotation.AnnotationInfo.AnnotationFinder;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
@@ -33,6 +34,10 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 	}
 
 	public JFishPropertyInfoImpl(Intro<?> beanClassWrapper, PropertyDescriptor property){
+		this(beanClassWrapper, property, AnnotationFinder.DEFAULT);
+	}
+	
+	public JFishPropertyInfoImpl(Intro<?> beanClassWrapper, PropertyDescriptor property, AnnotationFinder annotationFinder){
 		super(property.getName(), beanClassWrapper);
 		Class<?> beanClass = beanClassWrapper.getClazz();
 		this.property = property;
@@ -50,7 +55,7 @@ public class JFishPropertyInfoImpl extends AbstractJFishProperty {
 			writeMethod = property.getWriteMethod();
 		}
 //		Annotation[] annotations = getReadMethod().getAnnotations();
-		annotationInfo = new AnnotationInfo(beanClass, getReadMethod());
+		annotationInfo = new AnnotationInfo(beanClass, getReadMethod(), annotationFinder);
 		this.propertyClassWrapper = Intro.wrap(propertyType);
 	}
 	

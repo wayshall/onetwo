@@ -333,7 +333,7 @@ public class JFishProperties extends Properties implements VariableSupporter {
 			return null;
 		return (T)Enum.valueOf(clazz, enumStr);
 	}
-	public <T extends Enum> Optional<T> getOptionalEnum(String key, Class<T> clazz){
+	public <T extends Enum<T>> Optional<T> getOptionalEnum(String key, Class<T> clazz){
 		String enumStr = getProperty(key);
 		if(StringUtils.isBlank(enumStr))
 			return Optional.empty();

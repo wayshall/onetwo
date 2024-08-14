@@ -53,10 +53,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 	public static final String PATH_IMAGE = "path.image";*/
 
 	public static final String ENABLE_UPLOAD_VIEW = "site.upload.view";
-	public static final String ENABLE_STORETYPE_PROPERTY = "site.upload.storeType";
+	public static final String ENABLE_STORETYPE_PROPERTY = "site.upload.store-type";
 //	public static final String ENABLE_KINDEDITOR_UPLOADSERVICE = "site.kindeditor.uploadService";
-	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compressImage.enable";
-	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.storeFileMetaToDatabase";
+	public static final String ENABLE_COMPRESS_PREFIX = "site.upload.compress-image.enable";
+	public static final String ENABLE_UPLOAD_STOREFILEMETATODATABASE = "site.upload.store-file-meta-to-database";
 	
 	final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -230,11 +230,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		WaterMaskConfig watermask = new WaterMaskConfig();
 		
 		public String getBasePath(){
-			if(StringUtils.isNotBlank(basePath)){
-				return basePath;
+			if(StringUtils.isBlank(basePath)){
+				return "";
 			}
-			String path = getBaseURL();
-			return path;
+			return basePath;
 		}
 		public void setBasePath(String basePath){
 			this.basePath = basePath;
@@ -295,6 +294,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		 * 单个文件最大上传
 		 */
 		String maxFileUploadSize;
+		
+		CleanupProps cleanup = new CleanupProps();
 		
 		/***
 		 * -1为没有配置
@@ -371,5 +372,21 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 			return Stream.of(values()).filter(t->t.name().equalsIgnoreCase(str))
 								.findFirst().orElse(LOCAL);
 		}
+	}
+	
+	@Data
+	public static class CleanupProps {
+		public static final String ENABLED_KEY = PREFIX + ".upload.cleanup.enabled";
+		/****
+		 * 每天零点零5分执行
+		 */
+		public static final String CRON = "${" + PREFIX + ".upload.cleanup.cron:0 5 0 * * *}";
+		/****
+		 * 清理N天之前的文件
+		 * 少于0为不清理
+		 */
+		int expiredInDays = -1;
+		
+		List<String> subdirs;
 	}
 }

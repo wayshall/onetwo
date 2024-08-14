@@ -3,7 +3,6 @@ package org.onetwo.boot.module.sftp;
 import java.util.Properties;
 
 import org.onetwo.boot.core.config.BootJFishConfig;
-import org.onetwo.common.exception.BaseException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
@@ -16,7 +15,7 @@ import lombok.Data;
 @Data
 public class SftpProperties {
 	
-	public static final String PREFIX = BootJFishConfig.PREFIX + ".sftp";
+	public static final String PREFIX = BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".sftp";
 	public static final String ENABLED_KEY = PREFIX + ".username";
 
 	String host;

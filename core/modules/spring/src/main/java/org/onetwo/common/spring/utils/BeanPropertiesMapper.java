@@ -83,10 +83,14 @@ public class BeanPropertiesMapper {
 				setPropertyValue(obj, bw, propertyName, value);
 			}
 		}
+		logger.info("datasource has inited!");
 	}
 	
 	
 	protected void setPropertyValue(Object obj, ConfigurablePropertyAccessor bw, String propertyName, Object value){
+		if (propertyName.indexOf('-')!=-1) {
+			propertyName = StringUtils.toCamel(propertyName, '-', false);
+		}
 		if(!bw.isWritableProperty(propertyName)){
 			if(!ignoreNotFoundProperty){
 				throw new NoSuchElementException("no setter found for property: " + propertyName+", target: " + obj);

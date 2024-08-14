@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JmsMessage<T extends Serializable> implements Serializable {
+	
+	public static final String HEADER_MSG_KEY = "msgKey";
+	
 	/**
 	 * @author wayshall
 	 * 

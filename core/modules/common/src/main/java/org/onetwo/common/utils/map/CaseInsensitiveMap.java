@@ -1,5 +1,7 @@
 package org.onetwo.common.utils.map;
 
+import java.util.Map;
+
 /****
  * key不区分大小写
  * @author way
@@ -18,7 +20,11 @@ public class CaseInsensitiveMap<K, V> extends BaseMap<K, V>{
 	public CaseInsensitiveMap(int initialCapacity) {
 		super(initialCapacity);
 	}
+
 	
+	public CaseInsensitiveMap(Map<K, V> map){
+		super(map);
+	}
 
 	@Override
 	public boolean containsKey(Object key) {

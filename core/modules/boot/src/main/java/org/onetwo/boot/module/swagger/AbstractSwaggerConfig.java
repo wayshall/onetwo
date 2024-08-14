@@ -5,17 +5,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
-import org.onetwo.boot.core.web.api.WebApiRequestMappingCombiner;
+import org.onetwo.boot.core.web.api.WebApi;
+import org.onetwo.boot.module.swagger.annotation.ExportableApi;
+import org.onetwo.common.utils.LangOps;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import com.fasterxml.classmate.TypeResolver;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 
 import springfox.documentation.RequestHandler;
@@ -25,8 +26,8 @@ import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.schema.WildcardType;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.service.Parameter;
-import springfox.documentation.service.ResponseMessage;
+import springfox.documentation.service.RequestParameter;
+import springfox.documentation.service.Response;
 import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -39,31 +40,41 @@ abstract public class AbstractSwaggerConfig {
 	@Autowired
     private TypeResolver typeResolver;
 	
-    protected List<Parameter> createGlobalParameters(){
-		List<Parameter> parameters = Lists.newArrayList();
+    protected List<RequestParameter> createGlobalParameters(){
+		List<RequestParameter> parameters = Lists.newArrayList();
 		return parameters;
     }
-    protected Map<List<RequestMethod>, List<ResponseMessage>> createGlobalResponseMessages(){
+    protected Map<List<HttpMethod>, List<Response>> createGlobalResponseMessages(){
     	return Collections.emptyMap();
     }
+    
+    protected boolean hasWebApiAnnotation(RequestHandler rh) {
+    	return rh.findAnnotation(WebApi.class).isPresent() || rh.findControllerAnnotation(WebApi.class).isPresent();
+    }
+    protected boolean hasExportableApiAnnotation(String appName, RequestHandler rh) {
+    	return rh.findAnnotation(ExportableApi.class).isPresent() || rh.findControllerAnnotation(ExportableApi.class).isPresent();
+    }
 
-	@SuppressWarnings("deprecation")
-	protected Predicate<RequestHandler> webApi(Collection<Predicate<RequestHandler>> packages){
+//	@SuppressWarnings("deprecation")
+	protected Predicate<RequestHandler> webApi(String appName, Collection<Predicate<RequestHandler>> packages){
     	return rh->{
-        	return Predicates.or(packages).apply(rh) && 
-        								WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
-        															rh.declaringClass())
-        															.isPresent();
+//        	return Predicates.or(packages).apply(rh) && 
+//        								WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
+//        															rh.declaringClass())
+//        															.isPresent();
+        	boolean match = LangOps.or(packages).test(rh) && hasWebApiAnnotation(rh) && hasExportableApiAnnotation(appName, rh);
+        	return match;
         };
 	}
 
-	@SuppressWarnings("deprecation")
-	protected Predicate<RequestHandler> notWebApi(Collection<Predicate<RequestHandler>> packages){
+//	@SuppressWarnings("deprecation")
+	protected Predicate<RequestHandler> notWebApi(String appName, Collection<Predicate<RequestHandler>> packages){
     	return rh->{
-        	return Predicates.or(packages).apply(rh) && 
-										!WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
-																	rh.declaringClass())
-																	.isPresent();
+//        	return Predicates.or(packages).apply(rh) && 
+//										!WebApiRequestMappingCombiner.findWebApiAttrs(rh.getHandlerMethod().getMethod(), 
+//																	rh.declaringClass())
+//																	.isPresent();
+        	return LangOps.or(packages).test(rh) && !hasWebApiAnnotation(rh) && hasExportableApiAnnotation(appName, rh);
         };
 	}
 
@@ -79,10 +90,10 @@ abstract public class AbstractSwaggerConfig {
 								)
 						//		.pathProvider(pathProvider)
 						        .select()
-						            .apis(Predicates.or(packages))
+						            .apis(LangOps.or(packages))
 						            .paths(PathSelectors.any())
 						        .build()
-						        .globalOperationParameters(createGlobalParameters())
+						        .globalRequestParameters(createGlobalParameters())
 						        .apiInfo(apiInfo(applicationName));
     	
     	addGlobalResponseMessages(docket);
@@ -90,11 +101,12 @@ abstract public class AbstractSwaggerConfig {
     }
     
     protected Docket addGlobalResponseMessages(Docket docket){
-    	Map<List<RequestMethod>, List<ResponseMessage>> globalResponses = this.createGlobalResponseMessages();
+    	Map<List<HttpMethod>, List<Response>> globalResponses = this.createGlobalResponseMessages();
     	if(LangUtils.isNotEmpty(globalResponses)){
     		globalResponses.forEach((methods, value)->{
     			methods.forEach(method->{
-        			docket.globalResponseMessage(method, value);
+//        			docket.globalResponseMessage(method, value);
+        			docket.globalResponses(method, value);
     			});
     		});
     	}

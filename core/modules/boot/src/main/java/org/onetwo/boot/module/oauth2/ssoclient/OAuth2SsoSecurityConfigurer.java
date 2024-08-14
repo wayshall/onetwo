@@ -2,9 +2,10 @@ package org.onetwo.boot.module.oauth2.ssoclient;
 
 import org.onetwo.boot.module.oauth2.ssoclient.filter.OAuth2ClientFilterSecurityConfigurer;
 import org.onetwo.boot.module.oauth2.ssoclient.rest.SsoClientUserInfoRestTemplateCustomizer;
-import org.onetwo.ext.security.DefaultUrlSecurityConfigurer;
 import org.onetwo.ext.security.ajax.AjaxAuthenticationHandler;
+import org.onetwo.ext.security.url.DefaultUrlSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.AccessDecisionManager;
@@ -20,6 +21,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 ////@ConditionalOnProperty("security.oauth2.sso.loginPath")
 //// 定制oauth错误异常
 //@Import(OAuth2CustomResultConfiguration.class)
+@EnableConfigurationProperties(OAuth2SsoClientProperties.class)
 public class OAuth2SsoSecurityConfigurer extends DefaultUrlSecurityConfigurer {
 	
 	@Autowired
@@ -43,7 +45,7 @@ public class OAuth2SsoSecurityConfigurer extends DefaultUrlSecurityConfigurer {
 
     
     @Bean
-	public SsoClientUserInfoRestTemplateCustomizer tobaccoRestTemplateCustomizer(OAuth2SsoClientProperties properties) {
+	public SsoClientUserInfoRestTemplateCustomizer ssoClientRestTemplateCustomizer(OAuth2SsoClientProperties properties) {
 		return new SsoClientUserInfoRestTemplateCustomizer(properties);
 	}
 	

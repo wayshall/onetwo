@@ -24,7 +24,7 @@ import org.onetwo.common.spring.mvc.utils.MvcUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.map.ParamMap;
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
@@ -202,28 +202,28 @@ public final class BootWebUtils {
 	
 
 	
-	public static <T extends UserDetail> T currentLoginUser(Class<T> clazz){
-		return clazz.cast(session(UserDetail.USER_DETAIL_KEY));
+	public static <T extends GenericUserDetail<?>> T currentLoginUser(Class<T> clazz){
+		return clazz.cast(session(GenericUserDetail.USER_DETAIL_KEY));
 	}
 	
-	public static <T extends UserDetail> T getUserDetail(Class<T> clazz){
-		return clazz.cast(session(UserDetail.USER_DETAIL_KEY));
+	public static <T extends GenericUserDetail<?>> T getUserDetail(Class<T> clazz){
+		return clazz.cast(session(GenericUserDetail.USER_DETAIL_KEY));
 	}
 	
-	public static <T extends UserDetail> T getUserDetail(){
-		return session(UserDetail.USER_DETAIL_KEY);
+	public static <T extends GenericUserDetail<?>> T getUserDetail(){
+		return session(GenericUserDetail.USER_DETAIL_KEY);
 	}
 	
-	public static void setUserDetail(UserDetail userDetail){
-		session(UserDetail.USER_DETAIL_KEY, userDetail);
+	public static void setUserDetail(GenericUserDetail<?> userDetail){
+		session(GenericUserDetail.USER_DETAIL_KEY, userDetail);
 	}
 	
-	public static <T extends UserDetail> T removeUserDetail(){
-		return removeUserDetail(UserDetail.USER_DETAIL_KEY);
+	public static <T extends GenericUserDetail<?>> T removeUserDetail(){
+		return removeUserDetail(GenericUserDetail.USER_DETAIL_KEY);
 	}
 	
-	public static <T extends UserDetail> T removeUserDetail(String key){
-		UserDetail user = session(key);
+	public static <T extends GenericUserDetail<?>> T removeUserDetail(String key){
+		GenericUserDetail<?> user = session(key);
 		removeSession(key);
 		removeAllSessionAttributes();
 		return (T)user;

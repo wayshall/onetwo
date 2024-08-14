@@ -2,7 +2,8 @@ package org.onetwo.common.exception;
 
 
 public class NotLoginException extends AuthenticationException {
-	public static final String DEFAULT_MESSAGE = "[not login yet 没有登录]";
+	public static final String DEFAULT_MESSAGE = "请先登录！";
+	public static final String DEFAULT_CODE = "CM_NOT_LOGIN";
 
 	/**
 	 * 
@@ -10,7 +11,7 @@ public class NotLoginException extends AuthenticationException {
 	private static final long serialVersionUID = 7280411050853219784L;
 
 	public NotLoginException() {
-		super(DEFAULT_MESSAGE);
+		super(DEFAULT_MESSAGE, DEFAULT_CODE);
 	}
 
 	public NotLoginException(String message, String code) {

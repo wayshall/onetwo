@@ -2,11 +2,12 @@ package org.onetwo.common.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipOutputStream;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.file.FileUtils;
 
@@ -100,9 +101,12 @@ public class ZipUtils {
 		FileUtils.makeDirs(zipfile, true);
 		ZipOutputStream zipout = null;
 		try {
-			zipout = new ZipOutputStream(new FileOutputStream(zipfile));
-			zipout.setEncoding(encoding);
+			zipout = new ZipOutputStream(new FileOutputStream(zipfile), Charset.forName(encoding));
+//			zipout.setEncoding(encoding);
 			for(File f : files){
+				if (f.isDirectory()) {
+					continue;
+				}
 				String entryName = f.getName();
 				if (zipEntryName!=null) {
 					entryName = zipEntryName.entryName(f);

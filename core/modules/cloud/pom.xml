@@ -4,7 +4,7 @@
 	<parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>4.8.0-SNAPSHOT</version>
+        <version>5.2.7-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
     <artifactId>onetwo-cloud</artifactId>
@@ -17,15 +17,27 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         
-        <onetwo.version>4.8.0-SNAPSHOT</onetwo.version>
+        <onetwo.version>5.2.7-SNAPSHOT</onetwo.version>
         <!-- for test -->
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
-        <spring-cloud.version>Edgware.SR2</spring-cloud.version>
+        <spring-cloud.version>2021.0.9</spring-cloud.version>
         <brave.version>5.6.1</brave.version>
     </properties>
 
     <dependencies>
+
+      <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-hystrix</artifactId>
+        <version>11.10</version>
+        <exclusions>
+            <exclusion>
+                <groupId>com.netflix.archaius</groupId>
+                <artifactId>archaius-core</artifactId>
+            </exclusion>
+        </exclusions>
+      </dependency>
 	
         <dependency>
           <groupId>org.onetwo4j</groupId>
@@ -38,7 +50,7 @@
           <artifactId>onetwo-dbm</artifactId>
           <optional>true</optional>
         </dependency>
-        
+	   
         <dependency>
           <groupId>org.onetwo4j</groupId>
           <artifactId>onetwo-rocketmq</artifactId>
@@ -54,7 +66,7 @@
         
         <dependency>
           <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-eureka-server</artifactId>
+          <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
           <optional>true</optional>
         </dependency>
 	   
@@ -77,18 +89,18 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
-            <optional>true</optional>
         </dependency>
      
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <optional>true</optional>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-zuul</artifactId>
+            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+            <version>2.2.10.RELEASE</version>
             <optional>true</optional>
         </dependency>
         
@@ -113,24 +125,27 @@
         <dependency>
           <groupId>io.github.openfeign</groupId>
           <artifactId>feign-okhttp</artifactId>
-          <optional>true</optional>
         </dependency>
         
         <!-- feign hystrix -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-hystrix</artifactId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+            <version>2.2.10.RELEASE</version>
             <optional>true</optional>
         </dependency>
-        <dependency>
+        <!-- <dependency>
           <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-ribbon</artifactId>
-          <optional>true</optional>
+          <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+          <version>2.2.10.RELEASE</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-loadbalancer</artifactId>
         </dependency>
         <dependency>
           <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-feign</artifactId>
-          <optional>true</optional>
+          <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
         
         <!-- <dependency>
@@ -168,15 +183,22 @@
         <dependency>
         	<groupId>org.springframework.boot</groupId>
  			<artifactId>spring-boot-starter-actuator</artifactId>
+ 			<scope>provided</scope>
         </dependency>
         
         
         <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-sleuth</artifactId>
+          <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-zipkin</artifactId>
+            <version>2.2.8.RELEASE</version>
             <optional>true</optional>
         </dependency>
-		<dependency>
+		<!-- <dependency>
 		    <groupId>io.zipkin.reporter2</groupId>
 		    <artifactId>zipkin-sender-okhttp3</artifactId>
             <optional>true</optional>
@@ -190,7 +212,7 @@
           <groupId>io.zipkin.brave</groupId>
           <artifactId>brave-instrumentation-mysql</artifactId>
           <optional>true</optional>
-        </dependency>
+        </dependency> -->
         
         <!-- for logback jmx -->
         <dependency>
@@ -198,12 +220,6 @@
            <artifactId>jolokia-core</artifactId>
         </dependency>
         
-        
-        <!-- zipkin -->
-        <dependency>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-sleuth</artifactId>
-        </dependency>
         
         <!-- for test -->
         <dependency>
@@ -232,13 +248,13 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
-	    <dependency>
+	    <!-- <dependency>
 	        <groupId>io.zipkin.brave</groupId>
 	        <artifactId>brave-bom</artifactId>
 	        <version>${brave.version}</version>
 	        <type>pom</type>
 	        <scope>import</scope>
-	    </dependency>
+	    </dependency> -->
       </dependencies>
     </dependencyManagement>
     

@@ -28,6 +28,7 @@ public class MatchAllFilterInvocationSecurityMetadataSource implements FilterInv
 	protected final Logger logger = JFishLoggerFactory.getLogger(getClass());
 
 	private final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap;
+	private boolean ignoreAnyRequestMatcher = false;
 
 	public MatchAllFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap) {
 		this.requestMap = requestMap;
@@ -48,12 +49,16 @@ public class MatchAllFilterInvocationSecurityMetadataSource implements FilterInv
 		final HttpServletRequest request = ((FilterInvocation) object).getRequest();
 		Collection<ConfigAttribute> auths = Sets.newHashSet();
 		for (Map.Entry<RequestMatcher, Collection<ConfigAttribute>> entry : requestMap.entrySet()) {
-			if (entry.getKey().equals(AnyRequestMatcher.INSTANCE)) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("ignore any matcher for: {}", entry.getValue());
+//			if (entry.getValue().toString().toLowerCase().contains("fullyauthenticated")) {
+//				System.out.println("test");
+//			}
+			if (ignoreAnyRequestMatcher && entry.getKey().equals(AnyRequestMatcher.INSTANCE)) {
+				if (logger.isInfoEnabled()) {
+					logger.info("ignore any matcher for: {}", entry.getValue());
 				}
 				continue;
 			}
+			
 //			if (entry.getKey().toString().contains("/productCategory/treeList*")) {
 //				System.out.println("test");
 //			}

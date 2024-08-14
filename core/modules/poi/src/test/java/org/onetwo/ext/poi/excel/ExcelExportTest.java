@@ -71,10 +71,14 @@ public class ExcelExportTest {
 			card.setCardNo("card_no_"+i);
 			card.setCardPwd("password"+i);
 			card.setStartTime(new Date());
+			
+			card.getDynamicProperties().put("dynamic1", "dynamic-value-" + i);
+			card.getDynamicProperties().put("dynamic2", i);
 			return card;
 		});
 		Map<String, Object> context = new HashMap<>();
 		context.put("cardList", cardList);
+		
 		TemplateGenerator g = ExcelGenerators.createExcelGenerator("org/onetwo/common/excel/export_simple.xml", context);
 		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_simple.xls");
 		g.write(path);
@@ -87,6 +91,63 @@ public class ExcelExportTest {
 		g.write(path);
 	}
 
+
+	@Test
+	public void testExportDynamic() {
+		List<CardEntity> cardList = LangOps.generateList(10, i->{
+			CardEntity card = new CardEntity();
+			card.setId(Long.valueOf(i));
+			card.setCardNo("card_no_"+i);
+			card.setCardPwd("password"+i);
+			card.setStartTime(new Date());
+			
+			card.getDynamicProperties().put("dynamic1", "dynamic-value-" + i);
+			card.getDynamicProperties().put("dynamic2", i);
+			return card;
+		});
+		Map<String, Object> context = new HashMap<>();
+		context.put("cardList", cardList);
+		
+		List<DynamicCellModel> cellList = Lists.newArrayList();
+		cellList.add(new DynamicCellModel("dynamic1", "动态属性1"));
+		cellList.add(new DynamicCellModel("dynamic2", "动态属性2"));
+		context.put("dynamicCellHeaderList", cellList);
+		
+		TemplateGenerator g = ExcelGenerators.createExcelGenerator("org/onetwo/common/excel/export_dynamic.xml", context);
+		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_dynamic.xls");
+		g.write(path);
+	}
+	
+	/****
+	 * header和行数据混合配置的方式
+	 * @author weishao zeng
+	 */
+	@Test
+	public void testExportDynamicMixHeaderAndIterator() {
+		List<CardEntity> cardList = LangOps.generateList(10, i->{
+			CardEntity card = new CardEntity();
+			card.setId(Long.valueOf(i));
+			card.setCardNo("card_no_"+i);
+			card.setCardPwd("password"+i);
+			card.setStartTime(new Date());
+			
+			card.getDynamicProperties().put("dynamic1", "dynamic-value-" + i);
+			card.getDynamicProperties().put("dynamic2", i);
+			return card;
+		});
+		Map<String, Object> context = new HashMap<>();
+		context.put("cardList", cardList);
+		
+		List<DynamicCellModel> cellList = Lists.newArrayList();
+		cellList.add(new DynamicCellModel("dynamic1", "动态属性1"));
+		cellList.add(new DynamicCellModel("dynamic2", "动态属性2"));
+		context.put("dynamicCellHeaderList", cellList);
+		
+		TemplateGenerator g = ExcelGenerators.createExcelGenerator("org/onetwo/common/excel/export_dynamic2.xml", context);
+		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_dynamic2.xlsx");
+		g.write(path);
+	}
+	
 	@Test
 	public void testExport2() {
 		ExcelGenerators.devModel();
@@ -94,6 +155,22 @@ public class ExcelExportTest {
 		String path = ExcelUtils.getResourcePath("org/onetwo/common/excel/export_test2.xls");
 		System.out.println("path:"+path);
 		g.write(path);
+	}
+	
+	public static class DynamicCellModel {
+		String id;
+		String name;
+		public DynamicCellModel(String id, String name) {
+			super();
+			this.id = id;
+			this.name = name;
+		}
+		public String getId() {
+			return id;
+		}
+		public String getName() {
+			return name;
+		}
 	}
 
 }

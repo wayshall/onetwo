@@ -4,6 +4,9 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.onetwo.common.exception.BaseException;
@@ -19,8 +22,11 @@ import org.onetwo.ext.permission.api.annotation.MenuMapping;
 import org.onetwo.ext.permission.api.annotation.PermissionMeta;
 import org.onetwo.ext.permission.api.annotation.PermissionMetaData;
 import org.onetwo.ext.permission.api.annotation.ProxyMenu;
+import org.onetwo.ext.permission.api.annotation.ReservePermission;
 import org.onetwo.ext.permission.utils.UrlResourceInfoParser;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 
 public class PermClassParser {
 	public static final String APP_CODE = "appCode";
@@ -56,7 +62,7 @@ public class PermClassParser {
 		super();
 		this.permissionClass = permClass;
 		this.parentPermissionClass = parentPermissionClass;
-
+		
 		permissionMeta = AnnotationUtils.getAnnotation(getActualPermissionClass(), PermissionMeta.class);
 		/*if (permissionMeta!=null) {
 			permissionMetaAttrs = AnnotationUtils.getAnnotationAttributes(getActualPermissionClass(), permissionMeta);
@@ -92,13 +98,39 @@ public class PermClassParser {
 	
 	public String getAppCode(){
 		if (isFullyAuthenticated()) {
-			return FullyAuthenticated.AUTH_CODE;
+			return FullyAuthenticated.APP_CODE;
 		}
 		return getFieldValue(APP_CODE, String.class, getActualPermissionClass().getSimpleName());
 	}
 	
 	public boolean isFullyAuthenticated() {
-		return this.parentPermissionClass == FullyAuthenticated.class;
+//		return this.parentPermissionClass == FullyAuthenticated.class;
+		return this.permissionClass == FullyAuthenticated.class;
+	}
+
+	public boolean isReservePermission() {
+		return ReservePermission.class.isAssignableFrom(parentPermissionClass);
+	}
+	
+	/***
+	 * 当前环境下是否启用
+	 * @author weishao zeng
+	 * @param env
+	 * @return
+	 */
+	public boolean isEnabledOnProfiles(Environment env) {
+		if (permissionMeta==null) {
+			return true;
+		}
+		
+		String[] conditionalOnProfiles = this.permissionMeta.conditionalOnProfiles();
+		Set<String> actualProfiles = Stream.of(conditionalOnProfiles).filter(p -> StringUtils.isNotBlank(p)).collect(Collectors.toSet());
+		if (LangUtils.isEmpty(actualProfiles)) {
+			return true;
+		}
+		
+		Profiles profiles = Profiles.of(actualProfiles.toArray(new String[0]));
+		return env.acceptsProfiles(profiles);
 	}
 	
 	public String generatedSimpleCode(){
@@ -143,7 +175,13 @@ public class PermClassParser {
 	}
 	
 	public Class<?> getParentPermissionClass(){
-		return parentPermissionClass!=null?parentPermissionClass:permissionClass.getDeclaringClass();
+//		return parentPermissionClass!=null?parentPermissionClass:permissionClass.getDeclaringClass();
+		if (parentPermissionClass!=null) {
+			return parentPermissionClass;
+		} else if (permissionClass.getDeclaringClass()!=null && permissionClass.getDeclaringClass().isInterface()) {
+			return permissionClass.getDeclaringClass();
+		}
+		return null;
 	}
 	
 	protected Class<?>[] getChildren(){

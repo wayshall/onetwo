@@ -47,7 +47,7 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 //	@Autowired
 //	private BootJFishConfig bootJFishConfig;
 	
-	@Autowired(required=false)
+//	@Autowired(required=false)
 	private XResponseViewManager xresponseViewManager;
 	@Autowired(required=false)
 	private ObjectMapperProvider objectMapperProvider;
@@ -56,6 +56,10 @@ public class BootJsonView extends MappingJackson2JsonView implements Initializin
 	public BootJsonView(){
 		JsonMapper jsonMapper = JsonMapper.ignoreNull();
 		this.setObjectMapper(jsonMapper.getObjectMapper());
+	}
+
+	public void setXresponseViewManager(XResponseViewManager xresponseViewManager) {
+		this.xresponseViewManager = xresponseViewManager;
 	}
 
 	public void afterPropertiesSet() throws Exception {

@@ -114,4 +114,14 @@ public interface RedisOperationService {
 
 	Long getExpire(String key, TimeUnit timeUnit);
 	
+	Long nextId();
+	
+	/***
+	 * 获取递增id
+	 * @param key
+	 * @param delta
+	 * @return
+	 */
+	Long nextId(String key, long delta);
+	
 }

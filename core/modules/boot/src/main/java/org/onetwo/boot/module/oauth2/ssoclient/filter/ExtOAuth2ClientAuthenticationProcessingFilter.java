@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.module.oauth2.ssoclient.event.AccessTokenObtainedEvent;
 import org.onetwo.common.exception.BaseException;
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -50,7 +50,7 @@ public class ExtOAuth2ClientAuthenticationProcessingFilter extends OAuth2ClientA
 			FilterChain chain, Authentication authResult) throws IOException, ServletException {
 		super.successfulAuthentication(request, response, chain, authResult);
 		OAuth2AccessToken accessToken = restTemplate.getAccessToken();
-		UserDetail userDetail = (UserDetail)authResult.getPrincipal();
+		GenericUserDetail<?> userDetail = (GenericUserDetail<?>)authResult.getPrincipal();
 		AccessTokenObtainedEvent event = new AccessTokenObtainedEvent(this, userDetail, accessToken);
 		this.eventPublisher.publishEvent(event);
 	}

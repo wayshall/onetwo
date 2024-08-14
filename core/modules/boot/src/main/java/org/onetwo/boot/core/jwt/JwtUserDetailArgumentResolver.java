@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
+import org.onetwo.ext.security.jwt.JwtUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -32,7 +33,7 @@ public class JwtUserDetailArgumentResolver implements HandlerMethodArgumentResol
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return UserDetail.class.isAssignableFrom(parameter.getParameterType());
+		return GenericUserDetail.class.isAssignableFrom(parameter.getParameterType());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -41,7 +42,7 @@ public class JwtUserDetailArgumentResolver implements HandlerMethodArgumentResol
 //		JwtUserDetail jwtUserDetail = (JwtUserDetail)webRequest.getNativeRequest(HttpServletRequest.class).getAttribute(JwtUtils.AUTH_ATTR_KEY);
 		Optional<JwtUserDetail> userOpt = JwtUtils.getOrSetJwtUserDetail(webRequest.getNativeRequest(HttpServletRequest.class), jwtTokenService, authHeaderName);
 //		JwtUserDetail jwtUserDetail = userOpt.orElse(null);
-		Class<? extends UserDetail> parameterType = (Class<? extends UserDetail>)parameter.getParameterType();
+		Class<? extends GenericUserDetail<?>> parameterType = (Class<? extends GenericUserDetail<?>>)parameter.getParameterType();
 		if(JwtUserDetail.class.isAssignableFrom(parameterType)){
 			return userOpt.orElse(null);
 		}else if (parameterType.isInterface()){
@@ -50,7 +51,7 @@ public class JwtUserDetailArgumentResolver implements HandlerMethodArgumentResol
 			if(!userOpt.isPresent()){
 				return null;
 			}
-			UserDetail userDetail = JwtUtils.createUserDetail(userOpt.get(), parameterType);
+			GenericUserDetail<?> userDetail = JwtUtils.createUserDetail(userOpt.get(), parameterType);
 			return userDetail;
 		}
 	}

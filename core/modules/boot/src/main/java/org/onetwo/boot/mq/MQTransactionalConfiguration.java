@@ -8,6 +8,7 @@ import org.onetwo.boot.mq.serializer.MessageBodyStoreSerializer;
 import org.onetwo.boot.mq.task.DeleteSentMessageTask;
 import org.onetwo.boot.mq.task.SendMessageTask;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

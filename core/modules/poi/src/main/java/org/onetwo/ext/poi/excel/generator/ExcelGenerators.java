@@ -38,6 +38,14 @@ abstract public class ExcelGenerators {
 		return generator;
 	}
 	
+	/****
+	 * @deprecated {@link #createExcelGenerator(TemplateModel, Map)} 代替
+	 * @author weishao zeng
+	 * @param template
+	 * @param context
+	 * @return
+	 */
+	@Deprecated
 	public static PoiExcelGenerator createWebExcelGenerator(TemplateModel template, Map<String, Object> context){
 //		ExcelValueParser parser = new DefaultExcelValueParser(context);
 		PoiExcelGenerator generator = new POIExcelGeneratorImpl(template);

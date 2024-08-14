@@ -19,15 +19,21 @@ public class SubmitConfiguration {
 	public SubmitTokenService submitTokenService() {
 		return new SubmitTokenService();
 	}
+	
 	@Bean
-	public SubmitTokenInterceptor submitTokenInterceptor() {
-		return new SubmitTokenInterceptor();
+	public FormTicketCheckerInterceptor formTicketCheckerInterceptor() {
+		return new FormTicketCheckerInterceptor();
 	}
 	
 	@Bean
 	@Autowired
 	public RedisRateLimiter simpleRedisRateLimiter(RedisOperationService redisOperationService) {
 		return new SimpleRedisRateLimiter(redisOperationService);
+	}
+	
+	@Bean
+	public UserSubmitCheckerInterceptor userSubmitCheckerInterceptor() {
+		return new UserSubmitCheckerInterceptor();
 	}
 
 }

@@ -41,7 +41,7 @@ public class JsonPahoMessageConverter extends DefaultPahoMessageConverter implem
 	
 
 	@Override
-	protected Object mqttBytesToPayload(MqttMessage mqttMessage) throws Exception {
+	protected Object mqttBytesToPayload(MqttMessage mqttMessage) {
 		try {
 			Object payload = jsonMapper.fromJson(mqttMessage.getPayload());
 			return payload;

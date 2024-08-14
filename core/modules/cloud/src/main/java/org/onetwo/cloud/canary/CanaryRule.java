@@ -32,11 +32,11 @@ public class CanaryRule extends ZoneAvoidanceRule {
     private NoCanaryFilterMetaPredicate noCanaryFilterMetaPredicate;
     
     public CanaryRule(){
-    	CanaryFilterMetaPredicate metaPredicate = new CanaryFilterMetaPredicate();
-    	this.canaryPredicate = CompositePredicate.withPredicates(metaPredicate)
-								                /*.addFallbackPredicate(this.getPredicate())
-								                .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())*/
-								                .build();
+//    	CanaryFilterMetaPredicate metaPredicate = new CanaryFilterMetaPredicate();
+//    	this.canaryPredicate = CompositePredicate.withPredicates(metaPredicate)
+//								                /*.addFallbackPredicate(this.getPredicate())
+//								                .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())*/
+//								                .build();
     	this.noCanaryFilterMetaPredicate = new NoCanaryFilterMetaPredicate();
     }
 	

@@ -44,7 +44,7 @@ public class SupportedMediaTypeExtractor {
 	
 	public List<MediaType> getProduceMediaTypes() {
 		RequestContextData ctx = RestExecuteThreadLocal.get();
-		if (ctx==null) {
+		if (ctx==null || ctx.getInvokeMethod()==null) {
 			return Collections.emptyList();
 		}
 		return ctx.getInvokeMethod().getProduceMediaTypes();
@@ -52,7 +52,7 @@ public class SupportedMediaTypeExtractor {
 	
 	public List<MediaType> getConsumeMediaTypes() {
 		RequestContextData ctx = RestExecuteThreadLocal.get();
-		if (ctx==null) {
+		if (ctx==null || ctx.getInvokeMethod()==null) {
 			return Collections.emptyList();
 		}
 		return ctx.getInvokeMethod().getConsumeMediaTypes();

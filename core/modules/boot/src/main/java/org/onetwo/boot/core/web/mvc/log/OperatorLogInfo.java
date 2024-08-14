@@ -17,7 +17,7 @@ import lombok.Setter;
 @SuppressWarnings("serial")
 public class OperatorLogInfo implements Serializable {
 	
-	private long operatorId;
+	private Serializable operatorId;
 	private String operatorName;
 	private Date operatorTime;
 	private String url;
@@ -47,10 +47,10 @@ public class OperatorLogInfo implements Serializable {
 	}
 	private DataChangedContext datas;
 	
-	public long getOperatorId() {
+	public Serializable getOperatorId() {
 		return operatorId;
 	}
-	public void setOperatorId(long operatorId) {
+	public void setOperatorId(Serializable operatorId) {
 		this.operatorId = operatorId;
 	}
 	public String getOperatorName() {

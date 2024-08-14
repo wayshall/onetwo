@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
 @Data
 @ConfigurationProperties(RedissonProperties.PREFIX)
 public class RedissonProperties {
-	public static final String PREFIX = "jfish.redisson";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".redisson";
 	public static final String ENABLED_KEY = PREFIX + ".enabled";
 	
 	String yamlConfig;

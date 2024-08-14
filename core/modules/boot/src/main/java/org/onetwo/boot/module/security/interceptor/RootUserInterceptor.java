@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorAdapter;
 import org.onetwo.common.exception.NoAuthorizationException;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.common.web.userdetails.SessionUserManager;
-import org.onetwo.common.web.userdetails.UserDetail;
 import org.onetwo.common.web.userdetails.UserRoot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
@@ -18,11 +18,11 @@ import org.springframework.web.method.HandlerMethod;
 public class RootUserInterceptor extends MvcInterceptorAdapter {
 
 	@Autowired
-	private SessionUserManager<UserDetail> sessionUserManager;
+	private SessionUserManager<GenericUserDetail<?>> sessionUserManager;
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
-		UserDetail userDetail = sessionUserManager.getCurrentUser();
+		GenericUserDetail<?> userDetail = sessionUserManager.getCurrentUser();
 		if (logger.isInfoEnabled()) {
 			logger.info("sessionUserManager: {}, userDetail: {}", sessionUserManager, userDetail);
 		}

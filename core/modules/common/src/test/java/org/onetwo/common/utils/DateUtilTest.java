@@ -1,5 +1,7 @@
 package org.onetwo.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -23,6 +25,20 @@ import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.log.JFishLoggerFactory;
 
 public class DateUtilTest {
+	
+	@Test
+	public void testPatterns() {
+		boolean match = DateUtils.PATTERN_YYYYMMDD.matcher("20210305").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210315").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210325").matches();
+		assertThat(match).isTrue();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("2021305").matches();
+		assertThat(match).isFalse();
+		match = DateUtils.PATTERN_YYYYMMDD.matcher("20210343").matches();
+		assertThat(match).isFalse();
+	}
 	
 	@Test
 	public void testSqlTime(){
@@ -175,9 +191,16 @@ public class DateUtilTest {
 		parseDate = DateUtils.parseByPatterns("2020-11-27", "yyyyMMdd");
 		System.out.println("parseDate2:" + parseDate.toLocaleString());
 		
-		LocalDate localDate = Dates.parseLocalDate("2020-11-27", "yyyyMMdd");
+		LocalDate localDate = Dates.parseLocalDate("2020-11-27", "yyyy-MM-dd");
 		parseDate = Dates.toDate(localDate);
 		System.out.println("parseDate3:" + parseDate.toLocaleString());
+
+		
+		parseDate = DateUtils.parseByPatterns("22/11/16,14:46:01", "yy/MM/dd,HH:mm:ss");
+		System.out.println("parseDate:" + parseDate.toLocaleString());
+		assertThat(parseDate).isEqualTo(DateUtils.parse("2022-11-16 14:46:01"));
+		
+		
 
 	}
 	

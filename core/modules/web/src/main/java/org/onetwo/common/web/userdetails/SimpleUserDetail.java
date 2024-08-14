@@ -1,32 +1,41 @@
 package org.onetwo.common.web.userdetails;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 @SuppressWarnings("serial")
 public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
+	public static final List<String> ADMIN_ROLES = Lists.newArrayList("ENT_ADMIN", "ADMIN");
 	
-	private long userId;
+	private Long userId;
 	private String userName;
 	private String nickName;
 //  @ApiModelProperty("头像")
 	private String avatar;
 //	private String token;
+	private UserTypes userType;
+	private Boolean systemRootUser;
+	private Boolean adminRole;
+	private String roles;
 
 	public SimpleUserDetail(){ 
 	}
 	
-	public SimpleUserDetail(long userId, String userName) {
+	public SimpleUserDetail(Long userId, String userName) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
 		this.nickName = userName;
+		this.systemRootUser = userId.equals(ROOT_USER_ID);
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 	public String getUserName() {
@@ -38,8 +47,8 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 	}
 
 	@Override
-	public boolean isSystemRootUser() {
-		return UserRoot.ROOT_USER_ID==getUserId();
+	public Boolean isSystemRootUser() {
+		return systemRootUser;
 	}
 
 	public String getNickName() {
@@ -56,6 +65,30 @@ public class SimpleUserDetail implements UserDetail, UserRoot, Serializable {
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+
+	public UserTypes getMallUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserTypes userType) {
+		this.userType = userType;
+	}
+
+	public Boolean getAdminRole() {
+		return adminRole;
+	}
+
+	public void setAdminRole(Boolean adminRole) {
+		this.adminRole = adminRole;
+	}
+
+	public String getRoles() {
+		return roles;
+	}
+
+	public void setRoles(String roles) {
+		this.roles = roles;
 	}
 
 }

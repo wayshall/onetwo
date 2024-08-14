@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 //@Import(DsRouterRegistrar.class)
 @EnableConfigurationProperties(DatasourceRouterProperties.class)
-@ConditionalOnProperty(prefix="jfish.dsRouter", name="enabled", havingValue="true", matchIfMissing=false)
+@ConditionalOnProperty(prefix=org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".dsRouter", name="enabled", havingValue="true", matchIfMissing=false)
 public class DsRouterConfiguration {
 	
 	@Autowired

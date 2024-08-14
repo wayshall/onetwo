@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.onetwo.common.reflect.ClassIntroManager;
 import org.onetwo.ext.poi.excel.data.ExcelValueParser;
 import org.onetwo.ext.poi.excel.exception.ExcelException;
-import org.onetwo.ext.poi.utils.ClassIntroManager;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.onetwo.ext.poi.utils.TheFunction;
 

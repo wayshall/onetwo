@@ -11,6 +11,18 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+/***
+ * 
+CorsFilter 须在所有filter之前，包括security的filter
+否则会抛 No 'Access-Control-Allow-Origin' header is present on the requested resource
+
+jfish:
+    corsfilter: 
+        enabled: true
+ * @author way
+ * @deprecated 被 CorsFilterConfiguration 取代
+ *
+ */
 public class CorsFilter implements Filter {
 	public static final String CORS_FILTER_NAME = "corsFilter";
 	private Map<String, String> headers;

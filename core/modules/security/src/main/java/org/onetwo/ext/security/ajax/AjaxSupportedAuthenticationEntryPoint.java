@@ -8,14 +8,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onetwo.common.data.DataResult;
 import org.onetwo.common.jackson.JsonMapper;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseUtils;
+import org.onetwo.ext.security.exception.ErrorMessageExtractor;
+import org.onetwo.ext.security.exception.SecurityErrorResult;
+import org.onetwo.ext.security.exception.SecurityErrors;
 import org.onetwo.ext.security.utils.SecurityConfig;
-import org.onetwo.ext.security.utils.SecurityUtils.SecurityErrors;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.PortMapperImpl;
@@ -23,7 +27,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 /****
  * 验证入口点
- * 当然filter检测到没有登录时，调用commence方法
+ * 当ExceptionTranslationFilter检测到登录异常（AuthenticationException）时，调用commence方法，跳转到登录入口
  * @author way
  *
  */
@@ -37,6 +41,10 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 	private boolean forceHttps;
 	private Integer httpsPort;
 	private boolean contextRelative;
+//	@Autowired
+	private ErrorMessageExtractor errorMessageExtractor;
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -52,14 +60,24 @@ public class AjaxSupportedAuthenticationEntryPoint implements AuthenticationEntr
 			PropertyAccessorFactory.forDirectFieldAccess(entryPoint).setPropertyValue("redirectStrategy.contextRelative", contextRelative);
 			this.defaultAuthenticationEntryPoint = entryPoint;
 		}
+		this.errorMessageExtractor =  SpringUtils.getBean(applicationContext, ErrorMessageExtractor.class);
 	}
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 		if(RequestUtils.isAjaxRequest(request)){
-			DataResult<?> rs = DataResults.error(authException.getMessage())
-											.code(SecurityErrors.NOT_TRUSTED_USER)
-											.build();
+			SecurityErrorResult result = errorMessageExtractor.getErrorMessage(authException);
+			DataResult<?> rs = null;
+			if (result.isUnknowError()) {
+				rs = DataResults.error(SecurityErrors.CM_NOT_LOGIN.getErrorMessage())
+												.code(SecurityErrors.CM_NOT_LOGIN)
+												.build();
+			} else {
+				rs = DataResults.error(result.getMessage())
+												.code(result.getCode())
+												.build();
+			}
+			errorMessageExtractor.handleErrorResponse(response, rs);
 			String text = mapper.toJson(rs);
 			ResponseUtils.renderJsonByAgent(request, response, text);
 		}else{

@@ -1,7 +1,7 @@
 package org.onetwo.boot.module.oauth2.resouce;
 
-import static org.onetwo.ext.security.DefaultUrlSecurityConfigurer.configIntercepterUrls;
 import static org.onetwo.ext.security.method.DefaultMethodSecurityConfigurer.defaultAnyRequest;
+import static org.onetwo.ext.security.url.DefaultUrlSecurityConfigurer.configIntercepterUrls;
 
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties.ResourceServerProps;

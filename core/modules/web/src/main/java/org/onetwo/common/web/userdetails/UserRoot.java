@@ -10,7 +10,7 @@ public interface UserRoot {
 	 * 是否root管理员
 	 * @return
 	 */
-	default boolean isSystemRootUser() {
+	default Boolean isSystemRootUser() {
 		return false;
 	}
 }

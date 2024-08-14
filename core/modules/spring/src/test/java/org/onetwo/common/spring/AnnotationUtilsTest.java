@@ -22,30 +22,36 @@ public class AnnotationUtilsTest {
 
 	@Test
 	public void testSemantic() {
+		// 可以查找到 @SemanicRestApiClientMethodTest 上的 @RestApiClientMethodTest 注解，但属性值就只是 @RestApiClientMethodTest 本身但属性值
 		Method m = ReflectUtils.findMethod(SemanticAPITest.class, "test");
 		RestApiClientMethodTest meta = AnnotationUtils.findAnnotation(m, RestApiClientMethodTest.class);
 		assertThat(meta).isNotNull();
 		assertThat(meta.url()).contains("test_url");
+		assertThat(meta.path()).isEqualTo("default_path");
 		assertThat(meta.name()).isEmpty();
 		
-
+		// 可以查找到 @SemanicRestApiClientMethodTest 上的 @RestApiClientMethodTest 注解，且会合并@SemanicRestApiClientMethodTest注解的值
 		meta = AnnotatedElementUtils.findMergedAnnotation(m, RestApiClientMethodTest.class);
 		assertThat(meta.name()).isEqualTo("SemanticAPITestName");
+		assertThat(meta.path()).isEqualTo("default_path");
+		assertThat(meta.url()).isEqualTo("Semantic_url");
 	}
 	
 
 	public static class SemanticAPITest {
-		@SemanicRestApiClientMethodTest(name="SemanticAPITestName")
+		@SemanicRestApiClientMethodTest(name="SemanticAPITestName", url="Semantic_url")
 		public void test() {
 		}
 	}
 	
 	@Target({ElementType.TYPE, ElementType.METHOD})
 	@Retention(RetentionPolicy.RUNTIME)
-	@RestApiClientMethodTest(url="test_url")
+	@RestApiClientMethodTest(url="test_url", path="default_path")
 	public static @interface SemanicRestApiClientMethodTest {
 		@AliasFor(annotation=RestApiClientMethodTest.class)
 		String name();
+		@AliasFor(annotation=RestApiClientMethodTest.class)
+		String url();
 	}
 	
 	@Retention(RetentionPolicy.RUNTIME)

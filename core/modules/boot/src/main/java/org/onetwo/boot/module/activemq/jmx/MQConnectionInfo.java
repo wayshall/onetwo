@@ -1,7 +1,10 @@
 package org.onetwo.boot.module.activemq.jmx;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.apache.activemq.broker.jmx.ConnectionViewMBean;
 import org.onetwo.common.exception.BaseException;
+import org.onetwo.common.log.JFishLoggerFactory;
 
 /**
  * @author weishao zeng
@@ -25,6 +28,31 @@ public class MQConnectionInfo {
 		} catch (Exception e) {
 			throw new BaseException("stop client[" + clientId + "] error : " + e.getMessage(), e);
 		}
+	}
+
+	public boolean isSlow() {
+		return viewMBean.isSlow();
+	}
+
+	public boolean isBlocked() {
+		return viewMBean.isBlocked();
+	}
+
+	public boolean isConnected() {
+		return viewMBean.isConnected();
+	}
+
+	public boolean isActive() {
+		try {
+			return viewMBean.isActive();
+		} catch (UndeclaredThrowableException e) {
+			JFishLoggerFactory.getCommonLogger().error("check connection isActive error: " + e.getMessage(), e);
+		}
+		return false;
+	}
+
+	public String getRemoteAddress() {
+		return viewMBean.getRemoteAddress();
 	}
 
 	public String getName() {

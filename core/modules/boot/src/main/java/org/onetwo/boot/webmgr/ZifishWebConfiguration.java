@@ -32,7 +32,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @JFishWebPlugin(ZifishWebPlugin.class)
 //@ComponentScan(basePackageClasses=ZifishWebPlugin.class)
 @ConditionalOnBean(BootSiteConfig.class)
-// disable on zuul
+// disable on zuul, 网关禁用此插件, see org.springframework.cloud.netflix.zuul.ZuulProxyMarkerConfiguration.Marker
 @ConditionalOnMissingBean(name="zuulProxyMarkerBean")
 public class ZifishWebConfiguration {
 

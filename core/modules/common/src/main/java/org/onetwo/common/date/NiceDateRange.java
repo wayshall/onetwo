@@ -2,7 +2,9 @@ package org.onetwo.common.date;
 
 import java.util.Date;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.StringUtils;
 
 public class NiceDateRange {
 
@@ -27,6 +29,43 @@ public class NiceDateRange {
 	}
 	
 	public static final class QuarterDateRange extends NiceDateRange {
+		
+//		private final static Set<String> TAGS = Sets.newHashSet("Q", "0");
+		
+		public static QuarterDateRange from(String quarter) {
+			return from(quarter, "Q");
+		}
+		
+		public static QuarterDateRange from(String quarter, String tag) {
+			if (StringUtils.isBlank(quarter)) {
+				throw new BaseException("quarter can not be blank!");
+			}
+			String year = StringUtils.substring(quarter, 0, 4);
+			Date date = DateUtils.parseByPatterns(year, DateUtils.YEAR_ONLY);
+			String quarterStr = StringUtils.substringAfter(quarter, year);
+			
+			NiceDate nice = NiceDate.New(date);
+			int q = 0;
+			if (StringUtils.isBlank(quarterStr)) {
+				throw new BaseException("quarter part can not be blank!");
+			} else if (quarterStr.length()==1) {
+				q = Integer.parseInt(quarterStr);
+			} else{
+				String tagStr = "";
+				if (StringUtils.isNotBlank(tag)) {
+					tagStr = quarterStr.substring(0, tag.length());
+					if (!tagStr.equals(tag)) {
+						throw new BaseException("quarter tag not found!");
+					}
+				}
+				String qstr = quarterStr.substring(tagStr.length());
+				q = Integer.parseInt(qstr);
+			}
+			
+			return nice.getQuarter(q-1);
+		}
+		
+		
 		final private int quarterValue;
 
 		public QuarterDateRange(int quarter, NiceDate startDate, NiceDate endDate) {

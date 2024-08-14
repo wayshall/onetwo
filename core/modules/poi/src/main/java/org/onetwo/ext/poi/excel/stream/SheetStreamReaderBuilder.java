@@ -7,13 +7,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.convert.Types;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.date.Dates;
+import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 import org.springframework.util.Assert;
@@ -40,12 +44,21 @@ public class SheetStreamReaderBuilder<T> {
 		return this;
 	}
 	
+	/***
+	 * 
+	 * @param startIndex 包含
+	 * @return
+	 */
 	public SheetStreamReaderBuilder<T> from(int startIndex) {
 		this.fromIndex = startIndex;
 		return this;
 	}
 
-
+	/***
+	 * 
+	 * @param toIndex 包含
+	 * @return
+	 */
 	public SheetStreamReaderBuilder<T> to(int toIndex) {
 		this.toIndex = toIndex;
 		return this;
@@ -214,7 +227,7 @@ public class SheetStreamReaderBuilder<T> {
 		final private Sheet sheet;
 		final private int sheetIndex;
 		private Map<Integer, Map<Integer, PictureData>> pictureDatas;
-		private boolean canConverToStringValue = true;
+		private boolean canConverToStringValue = false;
 		public SheetData(Sheet sheet, int sheetIndex) {
 			super();
 			this.sheet = sheet;
@@ -300,15 +313,64 @@ public class SheetStreamReaderBuilder<T> {
 		 * @return
 		 */
 		public String getString(int cellnum) {
-			Cell cell = getCell(cellnum);
-			return (String)ExcelUtils.getCellValue(cell, sheet.isCanConverToStringValue());
+			return getString(cellnum, sheet.isCanConverToStringValue());
 		}
+		public String getString(int cellnum, boolean convertToString) {
+			Cell cell = getCell(cellnum);
+			Object val = ExcelUtils.getCellValue(cell, convertToString);
+			if (val==null) {
+				return null;
+			}
+			return val.toString();
+		}
+		
+		/***
+		 * 获取并解释第cellnum列的值为Integer类型
+		 * 若该列无法解释为数字，则返回null
+		 * @author weishao zeng
+		 * @param cellnum
+		 * @return
+		 */
 		public Integer getInt(int cellnum) {
 			return getCellValue(cellnum, Integer.class);
 		}
+		
+		/****
+		 * 获取并解释第cellnum列的值为Integer类型.
+		 * 若该列为空则返回默认值，若队列的解释器解释时出错，则抛错
+		 * @author weishao zeng
+		 * @param cellnum
+		 * @param def
+		 * @return
+		 */
+		public int getInt(int cellnum, int def) {
+			Object value = getCellValue(cellnum);
+			if (value==null || StringUtils.isBlank(value.toString())) {
+				return def;
+			}
+			Integer intValue = Types.asInteger(value);
+			if (intValue==null) {
+				return def;
+			}
+			return intValue;
+		}
+		
 		public Long getLong(int cellnum) {
 			return getCellValue(cellnum, Long.class);
 		}
+
+		public long getLong(int cellnum, long def) {
+			Object value = getCellValue(cellnum);
+			if (value==null || StringUtils.isBlank(value.toString())) {
+				return def;
+			}
+			Long longValue = Types.asLong(value);
+			if (longValue==null) {
+				return def;
+			}
+			return longValue;
+		}
+		
 		public Double getDouble(int cellnum) {
 			return getCellValue(cellnum, Double.class);
 		}
@@ -321,9 +383,31 @@ public class SheetStreamReaderBuilder<T> {
 		public <T> T getCellValue(int cellnum, Class<T> clazz) {
 			return getCellValue(cellnum, clazz, null);
 		}
+		
+		/****
+		 * 
+		 * @author weishao zeng
+		 * @param cellnum
+		 * @param pattern 当cell为日期格式时，此参数无效
+		 * @return
+		 */
 		public Date getDate(int cellnum, String pattern) {
-			String value = getString(cellnum);
-			Date date = DateUtils.parseByPatterns(value, pattern);
+			Cell cell = getCell(cellnum);
+			if (cell==null) {
+				return null;
+			}
+			Date date;
+			CellType cellType = cell.getCellType();
+			if (cellType==CellType.NUMERIC) {
+	            boolean isDateCell = DateUtil.isCellDateFormatted(cell);
+	            if (!isDateCell) {
+	            	throw new ServiceException("the cell type is not a numberic(date) type: " + cellnum);
+	            }
+            	date = cell.getDateCellValue();
+			} else {
+				String value = getString(cellnum);
+				date = DateUtils.parseByPatterns(value, pattern);
+            }
 			return date;
 		}
 		
@@ -351,6 +435,15 @@ public class SheetStreamReaderBuilder<T> {
 			T enumValue = Types.convertValue(value, enumClass, def);
 			return enumValue;
 		}
+		
+		/***
+		 * 解释第cellnum列的值为clazz类型的值，若该列为null或者对应的解释器错误，则返回默认值def
+		 * @author weishao zeng
+		 * @param cellnum
+		 * @param clazz
+		 * @param def
+		 * @return
+		 */
 		public <T> T getCellValue(int cellnum, Class<T> clazz, T def) {
 			Object value = getCellValue(cellnum);
 			if (value==null) {

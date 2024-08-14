@@ -28,6 +28,10 @@ import org.springframework.util.Assert;
 
 /**
  * 应该是最后一个调用拦截
+ * 基于本地数据库实现的事务消息：
+ * 1、调用封装后的producer.send发送消息，经过此拦截器时，不调用chain.invoke()进行发送，直接返回MQUtils.DEFAULT_SUSPEND
+ * 2、MQUtils.DEFAULT_SUSPEND此状态用于基于本地数据库实现的事务消息时，调用producer发送消息时，实际不会发送，只存到了数据库
+ * 3、待事务提交成功后，同事务监听器发送或回滚消息
  * @author wayshall
  * <br/>
  */
@@ -62,11 +66,12 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	@Override
 	public Object intercept(org.onetwo.boot.mq.interceptor.SendMessageInterceptorChain chain) {
 		SendMessageContext<?> ctx = chain.getSendMessageContext();
-		//如果是事务producer，则忽略
+		//如果是ons（rocketmq）的事务producer，则忽略后面的逻辑，使用rocketmq本身的事务消息
 		if(ctx.isTransactional()){
 			return chain.invoke();
 		}
 				
+		// 否则，执行自定义的基于本地数据库实现的事务消息
 		boolean debug = ctx.isDebug();
 		if(debug){
 			getLogger().info("start transactional message in thread[{}]...", ctx.getThreadId());
@@ -137,6 +142,10 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 	@Override
 	@TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT)
 	public void afterCommit(SendMessageEvent event){
+		Logger log = getLogger();
+		if (log.isInfoEnabled()) {
+			log.info("will send message after transaction committed, message size: {}", LangUtils.size(event.getSendMessageContexts()));
+		}
 		if (LangUtils.isEmpty(event.getSendMessageContexts())) {
 			return ;
 		}
@@ -156,14 +165,18 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 //		sendMessageRepository.remove(Arrays.asList(event.getSendMessageContext()));
 		getSendMessageRepository().updateToSent(msgContext);
 		Logger log = getLogger();
-		if(msgContext.isDebug()){
-			log.info("committed transactional message in thread[{}]...", Thread.currentThread().getId());
+		if (log.isInfoEnabled()) {
+			log.info("message was sent in thread[{}]...", Thread.currentThread().getId());
 		}
 	}
 	
 	@Override
 	@TransactionalEventListener(phase=TransactionPhase.AFTER_ROLLBACK)
 	public void afterRollback(SendMessageEvent event){
+		Logger log = getLogger();
+		if (log.isInfoEnabled()) {
+			log.info("committed message after transaction rollback, message size: {}", LangUtils.size(event.getSendMessageContexts()));
+		}
 		if (LangUtils.isEmpty(event.getSendMessageContexts())) {
 			return ;
 		}
@@ -179,7 +192,7 @@ public class SimpleDatabaseTransactionMessageInterceptor implements Initializing
 //		getSendMessageRepository().remove(event.getSendMessageContexts());
 		Logger log = getLogger();
 		if(log.isInfoEnabled()){
-			log.info("rollback transactional message in thread[{}]...", Thread.currentThread().getId());
+			log.info("rollback transaction in thread[{}]...", Thread.currentThread().getId());
 		}
 //		sendMessageRepository.clearInCurrentContext();
 	}

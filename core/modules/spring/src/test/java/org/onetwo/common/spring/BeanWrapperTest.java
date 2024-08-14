@@ -3,11 +3,13 @@ package org.onetwo.common.spring;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.spring.entity.RoleEntity;
 import org.onetwo.common.spring.entity.UserEntity;
+import org.onetwo.common.spring.entity.UserEntity.UserGenders;
 import org.onetwo.common.utils.LangUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -24,6 +26,16 @@ public class BeanWrapperTest {
 		
 	}
 	private BeanWrapper bw;
+	
+	@Test
+	public void testEnum() {
+		UserEntity user = new UserEntity();
+		bw = new JFishBeanWrapper(user);
+		bw.setAutoGrowNestedPaths(true);
+		bw.setPropertyValue("gender", "MALE");
+		
+		Assertions.assertThat(user.getGender()).isEqualTo(UserGenders.MALE);
+	}
 
 	@Test
 	public void testMap(){

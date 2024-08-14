@@ -26,6 +26,13 @@ public interface SendMessageRepository {
 	
 	int lockSendMessage(String locker, Date now, SendStates sendState);
 	List<SendMessageEntity> findLockerMessage(String locker, Date now, SendStates sendState, int sendCountPerTask);
+	
+	//--------- for rmq transactional message --------------//
+
+	SendMessageEntity persist(SendMessageEntity messageEntity);
+	SendMessageEntity findByMsgKey(String msgKey);
+	void update(SendMessageEntity messageEntity);
+	int countByMsgKey(String msgKey);
 
 	/***
 	 * 查找当前上下文的所有发送消息

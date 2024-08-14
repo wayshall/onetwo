@@ -31,8 +31,13 @@ salt为8个随机字节。
 
 		MessageDigestHasher sha = Hashs.SHA;
 		encrypt = sha.hash(source);
-		LangUtils.println("after encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		LangUtils.println("after sha encrypt : ${0}, ${1}", encrypt.length(), encrypt);
+		rs = sha.checkHash(source, encrypt);
+		Assert.assertEquals(true, rs);
 		
+		sha = Hashs.MD5;
+		encrypt = sha.hash(source);
+		LangUtils.println("after md5 encrypt : ${0}, ${1}", encrypt.length(), encrypt);
 		rs = sha.checkHash(source, encrypt);
 		Assert.assertEquals(true, rs);
 		

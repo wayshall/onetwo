@@ -11,12 +11,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(AsyncTaskProperties.PREFIX)
 public class AsyncTaskProperties {
-	public static final String PREFIX = "jfish.async";
+	public static final String PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".async";
 	public static final String ENABLE_KEY = PREFIX+".enabled";
 
 //	private int timeout = 60000;
 	private int corePoolSize = 5;
+	/***
+	 * maxPoolSize依赖于queueCapacity，因为ThreadPoolTaskExecutor只会在其队列中的项目数超过queueCapacity时创建一个新线程。
+	 */
 	private int maxPoolSize = 50;
 //	private int keepAliveSeconds = 60;
-	private int queueCapacity = 100000;
+	private int queueCapacity = 10000;
 }

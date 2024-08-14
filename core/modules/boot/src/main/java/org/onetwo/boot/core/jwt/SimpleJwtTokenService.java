@@ -12,8 +12,9 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.reflect.BeanToMapConvertor;
 import org.onetwo.common.reflect.BeanToMapConvertor.BeanToMapBuilder;
 import org.onetwo.common.utils.StringUtils;
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
 import org.onetwo.ext.security.jwt.JwtSecurityUtils;
+import org.onetwo.ext.security.jwt.JwtUserDetail;
 import org.springframework.beans.factory.InitializingBean;
 
 import io.jsonwebtoken.Claims;
@@ -56,11 +57,11 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 	
 
 	@Override
-	public JwtTokenInfo generateToken(UserDetail userDetail){
+	public JwtTokenInfo generateToken(GenericUserDetail<?> userDetail){
 		Map<String, Object> props = beanToMap.toFlatMap(userDetail);
 		Long userId = (Long)props.remove(JwtUtils.CLAIM_USER_ID);
 		String userName = (String)props.remove(JwtUtils.CLAIM_USER_NAME);
-		JwtUserDetail jwtDetail = new JwtUserDetail(userId, userName, null);
+		DefaultJwtUserDetail jwtDetail = new DefaultJwtUserDetail(userId, userName, null);
 		jwtDetail.setProperties(props);
 		return generateToken(jwtDetail);
 	}
@@ -80,6 +81,7 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 //							.setId(jti)
 							.claim(JwtSecurityUtils.CLAIM_USER_ID, userDetail.getUserId())
 //							.claim(JwtUtils.CLAIM_AUTHORITIES, getAuthorities(userDetail))
+							.claim(JwtUtils.CLAIM_ROLES, userDetail.getRoles())
 							.setIssuedAt(Dates.toDate(issuteAt))
 							.setExpiration(expirationDate)
 							.signWith(SignatureAlgorithm.HS512, jwtConfig.getSigningKey());
@@ -110,14 +112,14 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 	}*/
 	
 	@Override
-	public <T extends UserDetail> T createUserDetail(String token, Class<T> parameterType) {
+	public <T extends GenericUserDetail<?>> T createUserDetail(String token, Class<T> parameterType) {
 		JwtUserDetail jwtUserDetail = this.createUserDetail(token);
 		T userDetail = createUserDetail(jwtUserDetail, parameterType);
 		return userDetail;
 	}
 	
 
-	public <T extends UserDetail> T createUserDetail(JwtUserDetail jwtUserDetail, Class<T> parameterType) {
+	public <T extends GenericUserDetail<?>> T createUserDetail(JwtUserDetail jwtUserDetail, Class<T> parameterType) {
 		return JwtUtils.createUserDetail(jwtUserDetail, parameterType);
 	}
 	
@@ -138,12 +140,13 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 												.collect(Collectors.toMap(entry->getProperty(entry.getKey()), entry->entry.getValue()));
 		Long userId = Long.parseLong(claims.get(JwtSecurityUtils.CLAIM_USER_ID).toString());
 		Boolean anonymousLogin = false;
-		if (properties.containsKey(JwtUserDetail.ANONYMOUS_LOGIN_KEY)) {
-			String anonymousLoginStr = properties.get(JwtUserDetail.ANONYMOUS_LOGIN_KEY).toString();
+		if (properties.containsKey(DefaultJwtUserDetail.ANONYMOUS_LOGIN_KEY)) {
+			String anonymousLoginStr = properties.get(DefaultJwtUserDetail.ANONYMOUS_LOGIN_KEY).toString();
 			anonymousLogin = Types.convertValue(anonymousLoginStr, Boolean.class);
 		}
-		JwtUserDetail userDetail = buildJwtUserDetail(anonymousLogin, userId, claims.getSubject(), properties);
-		userDetail.setClaims(claims);
+		DefaultJwtUserDetail userDetail = buildJwtUserDetail(anonymousLogin, userId, claims.getSubject(), properties);
+//		userDetail.setClaims(claims);
+		fillJwtUserDetail(userDetail, claims);
 
 		long remainingSeconds = (claims.getExpiration().getTime() - System.currentTimeMillis())/1000;
 		if (remainingSeconds <= this.jwtConfig.getRefreshTokenIfRemainingSeconds()) {
@@ -156,9 +159,17 @@ public class SimpleJwtTokenService implements JwtTokenService, InitializingBean 
 		
 		return userDetail;
 	}
+	
+	private void fillJwtUserDetail(JwtUserDetail userDetail, Claims claims) {
+		Object roles = claims.get(JwtUtils.CLAIM_ROLES);
+		if (roles!=null) {
+			userDetail.setRoles(roles.toString());
+		}
+		userDetail.setClaims(claims);
+	}
 
-	protected JwtUserDetail buildJwtUserDetail(Boolean anonymousLogin, Long userId, String userName, Map<String, Object> properties){
-		JwtUserDetail userDetail = new JwtUserDetail(userId, userName, anonymousLogin);
+	protected DefaultJwtUserDetail buildJwtUserDetail(Boolean anonymousLogin, Long userId, String userName, Map<String, Object> properties){
+		DefaultJwtUserDetail userDetail = new DefaultJwtUserDetail(userId, userName, anonymousLogin);
 		userDetail.setProperties(properties);
 		return userDetail;
 	}

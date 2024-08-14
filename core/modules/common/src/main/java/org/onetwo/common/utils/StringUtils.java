@@ -184,7 +184,7 @@ public abstract class StringUtils {
 			return str;
 		}
 		if (str.indexOf(op) == -1) {
-			str = str.toLowerCase();
+//			str = str.toLowerCase();
 			if (isFirstUpper && Character.isLowerCase(str.charAt(0))) {
 				return str.substring(0, 1).toUpperCase() + str.substring(1);
 			} else {
@@ -261,6 +261,12 @@ public abstract class StringUtils {
 		return convertWithSeperator(name, "_");
 	}
 
+	/***
+	 * 大小写转换成分隔符op分隔
+	 * @param name
+	 * @param op
+	 * @return
+	 */
 	public static String convertWithSeperator(String name, String op) {
 		if(name==null)
 			return "";

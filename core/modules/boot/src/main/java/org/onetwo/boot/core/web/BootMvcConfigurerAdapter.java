@@ -1,7 +1,10 @@
 package org.onetwo.boot.core.web;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -16,11 +19,12 @@ import org.onetwo.boot.core.web.async.MvcAsyncProperties;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
+import org.onetwo.boot.module.poi.PoiExcelHttpMessageConverter;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
 import org.onetwo.common.spring.converter.IntegerToEnumConverterFactory;
-import org.onetwo.common.spring.converter.StringToJackson2ObjectNodeConverterFactory;
+import org.onetwo.common.spring.converter.StringToJackson2JsonNodeConverterFactory;
 import org.onetwo.common.spring.converter.StringToMapConverterFactory;
 import org.onetwo.common.spring.mvc.annotation.BootMvcArgumentResolver;
 import org.onetwo.common.spring.mvc.args.ListParameterArgumentResolver;
@@ -38,6 +42,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -47,8 +52,9 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentResolverAdapter;
 
 /****
@@ -56,7 +62,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentR
  * @author way
  *
  */
-public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements InitializingBean {
+public class BootMvcConfigurerAdapter implements WebMvcConfigurer, InitializingBean {
 	
 //	@Autowired //注释，由spring自动检测添加
 	private BootWebExceptionResolver bootWebExceptionResolver;
@@ -88,6 +94,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	private List<HandlerInterceptor> interceptorList;
 //	@Autowired
 //	private ApplicationContext applicationContext;
+	@Autowired(required = false)
+	private PoiExcelHttpMessageConverter poiExcelHttpMessageConverter;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
@@ -166,13 +174,25 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	}
 
 	@Override
+	public void configurePathMatch(PathMatchConfigurer configurer) {
+		// RequestMappingHandlerMapping#useSuffixPatternMatch
+		configurer.setUseSuffixPatternMatch(jfishBootConfig.getMvc().isUseSuffixPatternMatch());
+		configurer.setUseTrailingSlashMatch(jfishBootConfig.getMvc().isUseTrailingSlashMatch());
+	}
+
+	@Override
 	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 		Properties mediaTypes = jfishBootConfig.getMvc().getMediaTypes();
 		if (!CollectionUtils.isEmpty(mediaTypes)) {
+			Map<String, MediaType> addMediaTypes = new HashMap<String, MediaType>();
 			for (Entry<Object, Object> entry : mediaTypes.entrySet()) {
 				String extension = ((String)entry.getKey()).toLowerCase(Locale.ENGLISH);
-				configurer.mediaType(extension, MediaType.valueOf((String) entry.getValue()));
+				addMediaTypes.put(extension, MediaType.valueOf((String) entry.getValue()));
 			}
+			configurer.mediaTypes(addMediaTypes);
+			configurer.strategies(Arrays.asList(
+						new PathExtensionContentNegotiationStrategy(addMediaTypes)
+					));
 		}
 	}
 	
@@ -198,7 +218,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 		registry.addConverterFactory(new IntegerToEnumConverterFactory());
 		
 		registry.addConverterFactory(new StringToMapConverterFactory());
-		registry.addConverterFactory(new StringToJackson2ObjectNodeConverterFactory());
+//		registry.addConverterFactory(new StringToJackson2ObjectNodeConverterFactory());
+		registry.addConverterFactory(new StringToJackson2JsonNodeConverterFactory());
 	}
 
 	/***
@@ -212,6 +233,9 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters){
 		if(jackson2HttpMessageConverter!=null){
 			CUtils.replaceOrAdd(converters, MappingJackson2HttpMessageConverter.class, jackson2HttpMessageConverter);
+		}
+		if (poiExcelHttpMessageConverter!=null) {
+			converters.add(poiExcelHttpMessageConverter);
 		}
 	}
 

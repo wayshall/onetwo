@@ -70,6 +70,10 @@ public class ExpressExecutor {
 	}
 
 	public Object execute(String expressString, Map<String,Object> context) {
+		return execute(expressString, context, properties.isShowExpression());
+	}
+	
+	public Object execute(String expressString, Map<String,Object> context, boolean debug) {
 		DefaultContext<String, Object> calcContext = new DefaultContext<String, Object>();
 		calcContext.putAll(context);
 		
@@ -79,14 +83,14 @@ public class ExpressExecutor {
 		
 		
 		Object result = null;
-		if (properties.isShowExpression()) {
-			logger.info("execute expression: {}", expressString);
-		}
 		
 		checkVars(expressString, calcContext);
 		
 		try {
 			result = this.expressRunner.execute(expressString, calcContext, null, properties.isCache(), properties.isTrace());
+			if (debug) {
+				logger.info("execute expression: {}, result: {}", expressString, result);
+			}
 		} catch (Exception e) {
 			throw new ServiceException("execute ql error, expression: " + expressString + ", message: " + e.getMessage(), e);
 		}

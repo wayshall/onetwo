@@ -6,7 +6,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.onetwo.common.exception.BaseException;
+import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.spring.utils.SpringMergedAnnotationFinder;
 import org.onetwo.common.utils.LangUtils;
@@ -36,11 +36,17 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 	@Override
 	public void parse(Map<String, ConsumerMeta> consumers) {
 		for(ListenerType type : ListenerType.values()){
+			// 根据接口类扫描消费者
 			buildConsumerMeta(consumers, type);
 		}
+		// 扫描所有用@ONSConsumer标记了bean，作为消费者
 		buildAnnotationConsumers(consumers);
 	}
 	
+	/****
+	 * 扫描所有用@ONSConsumer标记了bean，作为消费者
+	 * @param consumers
+	 */
 	public void buildAnnotationConsumers(Map<String, ConsumerMeta> consumers) {
 		Map<String, ?> onsListeners = applicationContext.getBeansWithAnnotation(ONSConsumer.class);
 		onsListeners.forEach((name, bean)->{
@@ -53,11 +59,11 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 				try {
 					meta = buildConsumerMeta(subscribe, ListenerType.CUSTOM, delegate, name);
 				} catch (Exception e) {
-					throw new BaseException("build consumer["+name+","+method.getDeclaringClass().getName()+"] error: "+e.getMessage(), e);
+					throw new MQException("build consumer["+name+","+method.getDeclaringClass().getName()+"] error: "+e.getMessage(), e);
 				}
 				
 				if(consumers.containsKey(meta.getConsumerId())){
-					throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
+					throw new MQException("duplicate consumerId: " + meta.getConsumerId())
 																	.put("add listener", name)
 																	.put("exists listener", consumers.get(meta.getConsumerId()).getConsumerBeanName());
 				}
@@ -77,11 +83,11 @@ public class ONSSubscribeProcessor implements ConsumerProcessor {
 			try {
 				meta = buildConsumerMeta(subscribe, listenerType, bean, name);
 			} catch (Exception e) {
-				throw new BaseException("build consumer["+name+","+targetClass.getName()+"] error: "+e.getMessage(), e);
+				throw new MQException("build consumer["+name+","+targetClass.getName()+"] error: "+e.getMessage(), e);
 			}
 			
 			if(consumers.containsKey(meta.getConsumerId())){
-				throw new BaseException("duplicate consumerId: " + meta.getConsumerId())
+				throw new MQException("duplicate consumerId: " + meta.getConsumerId())
 																.put("add listener", name)
 																.put("exists listener", consumers.get(meta.getConsumerId()).getConsumerBeanName());
 			}

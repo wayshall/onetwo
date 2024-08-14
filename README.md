@@ -2,7 +2,7 @@
 ------
 基于spring boot的快速开发框架   
 
-联系邮箱：wayshall@qq.com
+联系邮箱：  wayshall@qq.com
 
 
 
@@ -13,7 +13,7 @@
 - Spring Cloud Edgware (cloud模块要求)
 
 ## maven   
-当前snapshot版本：**4.7.4-SNAPSHOT**   
+当前snapshot版本：**4.8.0-SNAPSHOT**   
 
 若使用snapshot版本，请添加snapshotRepository仓储：   
 ```xml   

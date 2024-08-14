@@ -15,9 +15,9 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
+// import org.hibernate.validator.constraints.SafeHtml;
 
 import org.onetwo.dbm.annotation.SnowflakeId;
 import org.onetwo.dbm.jpa.BaseEntity;
@@ -51,7 +51,7 @@ public class ${entityClassName} extends BaseEntity {
     @org.onetwo.dbm.annotation.DbmJsonField
     <#elseif column.mapping.isStringType()>
     @Length(max=${column.columnSize})
-    @SafeHtml
+    // @SafeHtml
     <#elseif column.isEmailType()>
     @Email
     <#elseif column.isUrlType()>

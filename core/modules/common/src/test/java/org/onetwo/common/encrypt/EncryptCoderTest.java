@@ -1,5 +1,7 @@
 package org.onetwo.common.encrypt;
 
+import javax.crypto.SecretKey;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
@@ -46,6 +48,24 @@ public class EncryptCoderTest {
 		
 		String dencryptContent = LangUtils.newString(dencryptData);
 		Assert.assertEquals(content, dencryptContent);
+	
+	}
+	
+	@Test
+	public void testPkcs7Padding2(){
+		//iv的长度为16个字节
+		String iv = "32位字符串表示的16进制";
+		String keyString = "32位字符串表示的16进制";
+		//使用pkcs7Padding会抛错：Cannot find any provider supporting AES/CBC/PKCS7Padding
+		//java 不支持PKCS7Padding,只支持PKCS5Padding 但是PKCS7Padding 和 PKCS5Padding 没有什么区别要实现在java端用PKCS7Padding填充,需要用到bouncycastle组件来实现 所以需要一个jar 来支持.bcprov-jdk16-146.jar
+		EncryptCoder<SecretKey> aes = EncryptCoderFactory.pkcs5Padding(LangUtils.hex2Bytes(keyString), LangUtils.hex2Bytes(iv));
+		
+//		byte[] encryptData = aes.encrypt(aes.getKey(), LangUtils.getBytes(content));
+		byte[] encryptData = Base64.decodeBase64("base64表示的字符串");
+		byte[] dencryptData = aes.dencrypt(LangUtils.hex2Bytes(keyString), encryptData);
+		
+		String dencryptContent = LangUtils.newString(dencryptData);
+		System.out.println("dencryptContent: " + dencryptContent);
 	
 	}
 	

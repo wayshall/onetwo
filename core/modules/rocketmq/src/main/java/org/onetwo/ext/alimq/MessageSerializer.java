@@ -3,9 +3,9 @@ package org.onetwo.ext.alimq;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.rocketmq.common.message.Message;
 import org.onetwo.ext.ons.ONSUtils;
 
-import com.aliyun.openservices.ons.api.Message;
 
 public interface MessageSerializer {
 	
@@ -22,11 +22,11 @@ public interface MessageSerializer {
 		}
 
 		public void putUserProperties(String key, String value) {
-			message.putUserProperties(key, value);
+			message.putUserProperty(key, value);
 		}
 
 		public String getUserProperties(String key) {
-			return message.getUserProperties(key);
+			return message.getUserProperty(key);
 		}
 		
 		public boolean isDebug() {

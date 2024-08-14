@@ -19,6 +19,7 @@ import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.spring.mvc.utils.DataWrapper;
 import org.onetwo.common.utils.LangUtils;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.WebHolder;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -216,6 +217,9 @@ public class XResponseViewManager implements HandlerMappingListener {
 			return Optional.empty();
 		}
 		String responseView = requestOpt.get().getHeader(X_RESPONSE_VIEW);
+		if (StringUtils.isBlank(responseView)) {
+			responseView = requestOpt.get().getParameter(X_RESPONSE_VIEW);
+		}
 		return Optional.ofNullable(responseView);
 	}
 	

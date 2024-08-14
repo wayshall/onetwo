@@ -21,7 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
  */
 
 public class ExcelStreamReaderBuilder {
+	private final Logger logger = JFishLoggerFactory.getLogger(getClass());
+	
 	private List<SheetStreamReader<?>> sheetReaders = new ArrayList<>();
+	private boolean canConverToStringValue = false;
 	
 	public ExcelStreamReaderBuilder addSheetReader(SheetStreamReader<?> sheetReader) {
 		this.sheetReaders.add(sheetReader);
@@ -63,7 +66,6 @@ public class ExcelStreamReaderBuilder {
 			from(dataFile);
 		}
 		String tempPath = FileUtils.getJavaIoTmpdir(true) + LangUtils.randomUUID() + "." + FileUtils.getExtendName(dataFile.getOriginalFilename());
-		Logger logger = JFishLoggerFactory.getCommonLogger();
 		if (logger.isInfoEnabled()) {
 			logger.info("MultipartFile transfer to dest file: {}", tempPath);
 		}
@@ -81,7 +83,16 @@ public class ExcelStreamReaderBuilder {
 	}
 	
 	protected ExcelStreamReader build(List<SheetStreamReader<?>> sheetReaders) {
-		ExcelStreamReader reader = new PoiExcelStreamReader(sheetReaders);
+		PoiExcelStreamReader reader = new PoiExcelStreamReader(sheetReaders);
+		reader.setCanConverToStringValue(isCanConverToStringValue());
 		return reader;
 	}
+	protected boolean isCanConverToStringValue() {
+		return canConverToStringValue;
+	}
+	public ExcelStreamReaderBuilder canConverToStringValue(boolean canConverToStringValue) {
+		this.canConverToStringValue = canConverToStringValue;
+		return this;
+	}
+	
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -286,6 +287,10 @@ public class JsonMapperTest {
 		List<UserEntity> u2 = JsonMapper.defaultMapper().fromJsonAsList(json);
 		System.out.println(u2);
 		Assert.assertEquals(size, u2.size());
+		
+		String jsonListStr = "[{\"attributeId\":\"718797279100964864\",\"fieldType\":\"MSELECT\",\"selectedValue\":[{\"id\":\"719926646329872384\",\"attributeId\":\"718797279100964864\",\"listOrder\":100,\"value\":\"500克\"},{\"id\":\"719926763585835008\",\"attributeId\":\"718797279100964864\",\"listOrder\":100,\"value\":\"1000克\"},{\"id\":\"719926681687855104\",\"attributeId\":\"718797279100964864\",\"listOrder\":90,\"value\":\"250\"}]},{\"attributeId\":\"722194076098510848\",\"fieldType\":\"MSELECT\",\"selectedValue\":[{\"id\":\"722194294009380864\",\"attributeId\":\"722194076098510848\",\"listOrder\":100,\"value\":\"大果\"}]}]";
+		List<AttributeValueJsonTestVO> jsonList = JsonMapper.ignoreNull().fromJsonAsList(jsonListStr, AttributeValueJsonTestVO.class);
+		System.out.println("jsonList: " + jsonList);
 	}
 	
 	@Test
@@ -499,6 +504,15 @@ public class JsonMapperTest {
 		assertThat(json).isEqualTo("{\"test\":\"d:\\\\test\\\\test.jpg\",\"userName\":\"testUserName\"}");
 	}
 	
+	@Test
+	public void testGenericType() {
+		String json = "[{\"url\": \"https://test.com/test.jpg\", \"name\": \"test.jpg\", \"type\": \"PICTURE\", \"accessableUrl\": \"https://test.com/test.jpg\"}]";
+		List<ResourceInfo> resList = JsonMapper.IGNORE_NULL.fromJsonAsList(json, ResourceInfo.class);
+		System.out.println("Res: " + resList);
+		assertThat(resList).isNotEmpty();
+		assertThat(resList.get(0).getUrl()).isEqualTo("https://test.com/test.jpg");
+	}
+	
 	@JsonIgnoreType
 	static public interface IgnoreIOClassForTestMixin {
 
@@ -511,9 +525,13 @@ public class JsonMapperTest {
 		data.setSlidePictureUrls(new String[] {"test"});
 		data.setErrorWithList(Lists.newArrayList("test list"));
 		JsonMapper json = JsonMapper.ignoreNull();
-		json.getObjectMapper().enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
 		String str = json.toJson(data);
 		System.out.println("str: " + str);
+		
+		json = JsonMapper.ignoreNull();
+		json.getObjectMapper().enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+		str = json.toJson(data);
+		System.out.println("enableDefaultTyping str: " + str);
 	}
 	
 
@@ -541,5 +559,95 @@ public class JsonMapperTest {
 			this.file = file;
 		}
 		
+	}
+	
+	static public class AttributeValueJsonTestVO {
+
+	    private Long attributeId;
+	    private List<AttributeSelectedValueTestVO> selectedValue;
+	    private String textValue;
+	    private ProductAttributeFieldTypeTest fieldType;
+		public Long getAttributeId() {
+			return attributeId;
+		}
+		public void setAttributeId(Long attributeId) {
+			this.attributeId = attributeId;
+		}
+		public List<AttributeSelectedValueTestVO> getSelectedValue() {
+			return selectedValue;
+		}
+		public void setSelectedValue(List<AttributeSelectedValueTestVO> selectedValue) {
+			this.selectedValue = selectedValue;
+		}
+		public String getTextValue() {
+			return textValue;
+		}
+		public void setTextValue(String textValue) {
+			this.textValue = textValue;
+		}
+		public ProductAttributeFieldTypeTest getFieldType() {
+			return fieldType;
+		}
+		public void setFieldType(ProductAttributeFieldTypeTest fieldType) {
+			this.fieldType = fieldType;
+		}
+
+	}
+	
+	static public class AttributeSelectedValueTestVO {
+
+	    private Long id;
+	    private String value;
+		public Long getId() {
+			return id;
+		}
+		public void setId(Long id) {
+			this.id = id;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+	    
+	}
+	
+	public static enum ProductAttributeFieldTypeTest {
+        SELECT("单选下拉框"),
+        MSELECT("多选下拉框"),
+        TEXT("文本框");
+
+        String label;
+
+		private ProductAttributeFieldTypeTest(String label) {
+			this.label = label;
+		}
+    }
+	
+	private static class RouteNodeRecordEntity {
+		List<ResourceInfo> resourceList;
+		public List<ResourceInfo> getResourceList() {
+			return resourceList;
+		}
+		public void setResourceList(List<ResourceInfo> resourceList) {
+			this.resourceList = resourceList;
+		}
+	}
+	private static class ResourceInfo implements Serializable {
+	    private String name;
+	    private String url;
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getUrl() {
+			return url;
+		}
+		public void setUrl(String url) {
+			this.url = url;
+		}
 	}
 }

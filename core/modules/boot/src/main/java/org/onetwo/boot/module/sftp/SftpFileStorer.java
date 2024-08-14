@@ -43,7 +43,8 @@ public class SftpFileStorer /* extends SimpleFileStorer */implements FileStorer 
 		SimpleFileStoredMeta meta = new SimpleFileStoredMeta(context.getFileName(), accessablePath);
 		
 		doStoring(meta, context);
-		
+
+		meta.setFullAccessablePath(sftpProperties.getDownloadUrl(accessablePath));
 		if (StringUtils.isNotBlank(sftpProperties.getPathTag())) {
 			pathTagResolver.checkPathTag(sftpProperties.getPathTag());
 			accessablePath = sftpProperties.getPathTag() + accessablePath;
@@ -52,7 +53,6 @@ public class SftpFileStorer /* extends SimpleFileStorer */implements FileStorer 
 		meta.setBaseUrl(sftpProperties.getEndPoint());
 		meta.setSotredFileName(key);
 		meta.setAccessablePath(accessablePath);
-		meta.setFullAccessablePath(sftpProperties.getDownloadUrl(accessablePath));
 		if(sftpProperties.isAlwaysStoreFullPath()){
 			meta.setAccessablePath(meta.getFullAccessablePath());
 		}

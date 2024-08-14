@@ -18,7 +18,7 @@ public interface RedisRateLimiter {
 
 	/****
 	 * 这个方法是限制前端表单提交的频率
-	 * 直接限制为每三秒只能操作一次
+	 * 直接限制为每5秒只能操作一次
 	 * @author weishao zeng
 	 * @param actionKey
 	 *  这个方法是限制前端表单提交的频率
@@ -27,7 +27,7 @@ public interface RedisRateLimiter {
 		ActionContext actionContext = new ActionContext();
 		actionContext.setActionKey(actionKey);
 		actionContext.setTimesInPeriod(1);
-		actionContext.setPeriod(3);
+		actionContext.setPeriod(5);
 		actionContext.setErrorMessage("请勿频繁提交！");
 		actionContext.setPeriodUnit(TimeUnit.SECONDS);
 		consumeAction(actionContext);

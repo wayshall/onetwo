@@ -3,6 +3,7 @@ package org.onetwo.common.convert;
 import java.util.Date;
 
 import org.onetwo.common.date.DateUtils;
+import org.onetwo.common.utils.StringUtils;
 
 public class ToDateConvertor extends AbstractTypeConvert<Date> {
 	
@@ -19,7 +20,11 @@ public class ToDateConvertor extends AbstractTypeConvert<Date> {
 		if(Date.class.isAssignableFrom(vtype)){
 			date = new Date(((Date)value).getTime());
 		}else if(CharSequence.class.isAssignableFrom(vtype)){
-			date = DateUtils.parse(value.toString());
+	    	String str = value.toString().trim();
+	    	if (StringUtils.isBlank(str)) {
+	    		return null;
+	    	}
+			date = DateUtils.parse(str);
 		}else if(Number.class.isAssignableFrom(vtype)){
 			date = new Date(((Number)value).longValue());
 		}

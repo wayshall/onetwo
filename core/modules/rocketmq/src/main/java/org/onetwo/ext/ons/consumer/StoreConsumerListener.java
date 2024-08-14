@@ -1,16 +1,16 @@
 package org.onetwo.ext.ons.consumer;
 
+import org.apache.rocketmq.common.message.MessageExt;
+import org.onetwo.boot.mq.cosume.ReceiveMessageRepository;
+import org.onetwo.boot.mq.exception.MessageConsumedException;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.alimq.ConsumerListener;
 import org.onetwo.ext.ons.ONSUtils;
-import org.onetwo.ext.ons.exception.MessageConsumedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 
 /**
  * @author weishao zeng
@@ -33,7 +33,8 @@ public class StoreConsumerListener implements ConsumerListener {
 		MessageExt message = context.getMessage();
 		String msgId = ONSUtils.getMessageId(message);
 		try {
-			this.receiveMessageRepository.save(consumerMeta, context);
+//			this.receiveMessageRepository.save(consumerMeta, context);
+			this.receiveMessageRepository.save(context.getMessage().getKeys(), context.getMessageId(), consumerMeta.getConsumerId());
 		} catch (DuplicateKeyException e) {
 			throw new MessageConsumedException("msgId: " + msgId + 
 					", msgkey: " + message.getKeys() + 

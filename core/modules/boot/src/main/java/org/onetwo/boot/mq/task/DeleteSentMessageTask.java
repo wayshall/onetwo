@@ -86,6 +86,7 @@ public class DeleteSentMessageTask implements InitializingBean {
 					.field("state").equalTo(SendStates.SENT.ordinal())
 					.field("deliverAt").lessThan(createAt)
 				.end()
+				.toExecute()
 				.delete();
 		return deleteCount;
 	}

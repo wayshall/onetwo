@@ -22,7 +22,8 @@ import lombok.Data;
 @Data
 public class FeignProperties {
 
-	public static final String PROPERTIES_PREFIX = "jfish.cloud.feign";
+	public static final String PROPERTIES_PREFIX = org.onetwo.boot.core.config.BootJFishConfig.ZIFISH_CONFIG_PREFIX+ ".cloud.feign";
+	
 	/***
 	 * jfish.cloud.feign.base.contextPath
 	 */
@@ -55,6 +56,18 @@ public class FeignProperties {
 	public static class LocalProps {
 		public static final String ENABLE_KEY = PROPERTIES_PREFIX + ".local.enabled";
 		boolean enabled;
+		LocalTransactionModes transactonMode = LocalTransactionModes.NONE;
+	}
+	
+	public static enum LocalTransactionModes {
+		/***
+		 * 无，直接调用
+		 */
+		NONE,
+		/****
+		 * 使用spring的required_new事务模拟
+		 */
+		REQUIRED_NEW
 	}
 
 	

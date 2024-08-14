@@ -68,7 +68,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		RowProcessor rowProcessor;
 		
 		rowProcessor = new DefaultRowProcessor(this);
-		titleProcessor = new DefaultRowProcessor(this, new DefaultCellStyleBuilder(this){
+		FieldProccessor tilteFieldProcessor = new FieldProccessor(this, new DefaultCellStyleBuilder(this){
 
 			@Override
 			public String getFont(FieldModel field) {
@@ -79,22 +79,21 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 			public String getStyle(FieldModel field) {
 				return field.getHeaderStyle();
 			}
-			
-			
-		}){
+		}) {
 			@Override
 			public Object getDefaultFieldValue(FieldModel field) {
 				return field.getLabel();
 			}
 		};
+		titleProcessor = new DefaultRowProcessor(this, tilteFieldProcessor);
 		iteratorProcessor = new SmartIteratorRowProcessor(this, titleProcessor);
 //		iteratorProcessor = new ExtIteratorRowProcessor(this, titleProcessor);
 		
 		rowProcessors = new HashMap<String, RowProcessor>();
-		rowProcessors.put(RowModel.Type.ROW_KEY, rowProcessor);
-		rowProcessors.put(RowModel.Type.HEADER_KEY, titleProcessor);
-		rowProcessors.put(RowModel.Type.TITLE_KEY, titleProcessor);
-		rowProcessors.put(RowModel.Type.ITERATOR_KEY, iteratorProcessor);
+		rowProcessors.put(TemplateRowTypes.ROW.lowerName(), rowProcessor);
+		rowProcessors.put(TemplateRowTypes.HEADER.lowerName(), titleProcessor);
+		rowProcessors.put(TemplateRowTypes.TITLE.lowerName(), titleProcessor);
+		rowProcessors.put(TemplateRowTypes.ITERATOR.lowerName(), iteratorProcessor);
 	}
 
 	public ExcelValueParser getExcelValueParser() {
@@ -298,6 +297,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 //					}
 //				}
 				RowContextData datacontext = createRowDataContext(sheetData, row);
+				datacontext.setRenderingHeader(row.isTitle());
 				this.rowProcessors.get(row.getType()).processRow(datacontext);
 				/*if(printTime){
 					UtilTimerStack.pop(rowname);

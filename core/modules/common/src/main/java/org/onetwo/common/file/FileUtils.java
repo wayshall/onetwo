@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -55,6 +56,8 @@ import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.utils.list.JFishList;
 import org.slf4j.Logger;
 
+import com.google.common.collect.ImmutableList;
+
 @SuppressWarnings("unchecked")
 public class FileUtils {
 
@@ -62,7 +65,7 @@ public class FileUtils {
 
 	public static final String JAVA_IO_TEMDIR = "java.io.tmpdir";
 	public static final String UTF8_BOM = "\uFEFF";
-	public static final String UNICODE_ZERO_WIDTH_SPACE = "\u200b";
+	public static final String UNICODE_ZERO_WIDTH_SPACE = "\u200b"; // 零宽空格是一种不可打印的Unicode字符，用于可能需要换行处。
 	public static final char UNICODE_ZERO_WIDTH_SPACE_CHAR = UNICODE_ZERO_WIDTH_SPACE.charAt(0);
 	
 	public static final String UTF8 = "utf-8";
@@ -79,11 +82,33 @@ public class FileUtils {
 	public static final String SMB_PREFIX = "smb://";
 	public static final String COLON_DB_SLASH_HEAD = "://";
 	public static final String DB_SLASH_HEAD = "//";
+	
+	private static final String WINDOWS_PATH = "^[a-zA-z]:\\\\([\\u4E00-\\u9FA5A-Za-z0-9_\\s\\.]+\\\\{0,1})+$";
+	private static final Pattern WINDOWS_PATH_PATTERN = Pattern.compile(WINDOWS_PATH);
+	
+
+	public static final List<String> IMAGE_POSTFIX = ImmutableList.of("jpg", "jpeg", "gif", "png", "bmp");
 
 	public static ResourceAdapter<?>[] EMPTY_RESOURCES = new ResourceAdapter[0];
 	private static final Expression PLACE_HODER_EXP = ExpressionFacotry.DOLOR;
 
 	private FileUtils() {
+	}
+	
+	public static boolean isWindowsPath(String path) {
+		String newPath = path.replaceAll("/", "\\\\");
+		Matcher matcher = WINDOWS_PATH_PATTERN.matcher(newPath);
+        return matcher.matches();
+        
+	}
+	
+	public static boolean isImageSuffix(String suffix) {
+		return IMAGE_POSTFIX.contains(suffix);
+	}
+	
+	public static boolean isImageFile(String fileName) {
+		String suffix = getExtendName(fileName);
+		return isImageSuffix(suffix);
 	}
 
 	public static boolean delete(File file){
@@ -615,14 +640,23 @@ public class FileUtils {
 		return ClassUtils.getDefaultClassLoader();
 	}
 
+	/****
+	 *	/dir/fileName.ext => fileName
+	 * @param fileName
+	 * @return
+	 */
 	public static String getFileNameWithoutExt(String fileName) {
 		if(fileName.indexOf('\\')!=-1)
 			fileName = fileName.replace('\\', SLASH_CHAR);
-		int start = fileName.lastIndexOf(SLASH_CHAR);
-		int index = fileName.lastIndexOf(DOT_CHAR);
-		if(index==-1)
-			index = fileName.length();
-		return fileName.substring(start+1, index);
+		int slashIndex = fileName.lastIndexOf(SLASH_CHAR);
+		int dotIndex = fileName.lastIndexOf(DOT_CHAR);
+		if(dotIndex==-1) {
+			dotIndex = fileName.length();
+		}
+		if (slashIndex >= dotIndex) {
+			return "";
+		}
+		return fileName.substring(slashIndex+1, dotIndex);
 	}
 
 	public static String getFileName(String fileName) {
@@ -1306,19 +1340,23 @@ public class FileUtils {
 		File outDir = new File(path);
 		if(file)
 			outDir = outDir.getParentFile();
-		
-		if(!outDir.exists())
+
+		while(!outDir.exists()){
 			if(!outDir.mkdirs())
-				throw new RuntimeException("can't create output dir:"+path);
+				throw new RuntimeException("can't create output dir:"+outDir.getPath());
+			outDir = outDir.getParentFile();
+		}
 	}
     
 	public static void makeDirs(File outDir, boolean file){
 		if(file)
 			outDir = outDir.getParentFile();
 		
-		if(!outDir.exists())
+		while(!outDir.exists()){
 			if(!outDir.mkdirs())
 				throw new RuntimeException("can't create output dir:"+outDir.getPath());
+			outDir = outDir.getParentFile();
+		}
 	}
 	
 	

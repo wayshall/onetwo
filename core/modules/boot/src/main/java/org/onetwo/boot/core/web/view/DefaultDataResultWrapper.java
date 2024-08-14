@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.onetwo.common.data.AbstractDataResult.SimpleDataResult;
-import org.onetwo.common.data.DataResult;
 import org.onetwo.common.data.DataResultWrapper;
+import org.onetwo.common.data.Result;
 import org.onetwo.common.spring.mvc.utils.DataResults;
 import org.onetwo.common.spring.mvc.utils.DataResults.MapResultBuilder;
 import org.onetwo.common.spring.mvc.utils.ModelAttr;
@@ -29,9 +29,9 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 		return newData;
 	}
 	
-	protected DataResult<?> wrapAsDataResultIfNeed(Object result){
-		if(DataResult.class.isInstance(result)){
-			return (DataResult<?>)result;
+	protected Result wrapAsDataResultIfNeed(Object result){
+		if(Result.class.isInstance(result)){
+			return (Result)result;
 		}
 		if(Map.class.isInstance(result)){
 			@SuppressWarnings("unchecked")
@@ -53,13 +53,13 @@ public class DefaultDataResultWrapper implements DataResultWrapper {
 					dataResult.error();
 				}
 				
-			}else if(ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
+			}else if(entry.getKey() instanceof String && ModelAttr.MESSAGE.equalsIgnoreCase(entry.getKey())){
 				dataResult.success(entry.getValue().toString());
 				//只返回message，清空data
 				dataResult.data(null);
 				return dataResult;
 				
-			}else if(ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
+			}else if(entry.getKey() instanceof String && ModelAttr.ERROR_MESSAGE.equalsIgnoreCase(entry.getKey())){
 				dataResult.error(entry.getValue().toString());
 				//只返回message，清空data
 				dataResult.data(null);

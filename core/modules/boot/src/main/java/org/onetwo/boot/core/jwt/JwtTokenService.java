@@ -1,6 +1,7 @@
 package org.onetwo.boot.core.jwt;
 
-import org.onetwo.common.web.userdetails.UserDetail;
+import org.onetwo.common.web.userdetails.GenericUserDetail;
+import org.onetwo.ext.security.jwt.JwtUserDetail;
 
 
 /**
@@ -9,10 +10,10 @@ import org.onetwo.common.web.userdetails.UserDetail;
  */
 public interface JwtTokenService {
 
-	JwtTokenInfo generateToken(UserDetail userDetail);
+	JwtTokenInfo generateToken(GenericUserDetail<?> userDetail);
 	JwtTokenInfo generateToken(JwtUserDetail userDetail);
 
-	<T extends UserDetail> T createUserDetail(String token, Class<T> parameterType);
+	<T extends GenericUserDetail<?>> T createUserDetail(String token, Class<T> parameterType);
 	JwtUserDetail createUserDetail(String token);
 
 }

@@ -11,5 +11,6 @@ public class EnumDataVO {
 	
 	String label;
 	Object value;
+	Object rawModel;
 
 }

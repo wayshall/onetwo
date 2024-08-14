@@ -3,17 +3,13 @@ package org.onetwo.ext.ons.consumer;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.onetwo.common.date.DateUtils;
 import org.onetwo.ext.alimq.ConsumContext;
 import org.onetwo.ext.ons.annotation.ONSSubscribe;
 import org.onetwo.ext.ons.annotation.ONSSubscribe.IdempotentType;
 import org.onetwo.ext.ons.producer.ONSProducerTest;
 import org.onetwo.ext.rmqwithonsclient.producer.RmqONSProducerDelayMessageTest;
-
-import com.aliyun.openservices.ons.api.Action;
-import com.aliyun.openservices.ons.api.ConsumeContext;
-import com.aliyun.openservices.ons.api.Message;
-import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 
 
 /**
@@ -27,7 +23,6 @@ import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.consumer.Consum
 			idempotent=IdempotentType.DATABASE)
 public class TestConsumer implements CustomONSConsumer /*MessageListener*/ {
 	int count = 0;
-	
 
 	@Override
 	public void doConsumeBatch(List<ConsumContext> batchContexts) {
@@ -39,16 +34,10 @@ public class TestConsumer implements CustomONSConsumer /*MessageListener*/ {
 			count++;
 			throw new ServiceException("抛错");
 		}*/
-		System.out.println(DateUtils.formatDateTime(new Date()) + ": 收到消息：" + consumContext.getDeserializedBody());
+		System.out.println(this.getClass().getName() +" " + DateUtils.formatDateTime(new Date()) + ": 收到消息：" + consumContext.getDeserializedBody());
 		if (RmqONSProducerDelayMessageTest.messages.remove(consumContext.getDeserializedBody())) {
 			RmqONSProducerDelayMessageTest.delayCountDownLatch.countDown();
 		}
-	}
-
-//	@Override
-	public Action consume(Message message, ConsumeContext context) {
-		System.out.println("收到消息：" + message.getMsgID());
-		return Action.CommitMessage;
 	}
 
 }

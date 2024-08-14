@@ -7,6 +7,7 @@ import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.common.exception.AuthenticationException;
 import org.onetwo.common.exception.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,6 +19,9 @@ public class SecurityWebExceptionResolver extends BootWebExceptionResolver {
 	
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handlerMethod, Exception ex) {
+		if (AccessDeniedException.class.isInstance(ex)) {
+			throw (AccessDeniedException) ex;
+		}
 		Throwable cause = org.springframework.security.core.AuthenticationException.class.isInstance(ex)?ex:ex.getCause();
 		if(org.springframework.security.core.AuthenticationException.class.isInstance(cause)){
 			throw (org.springframework.security.core.AuthenticationException)cause;

@@ -1,7 +1,7 @@
 package org.onetwo.boot.test;
 
 import org.onetwo.boot.module.security.BootSecurityConfig;
-import org.onetwo.ext.security.utils.LoginUserDetails;
+import org.onetwo.ext.security.utils.GenericLoginUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
@@ -10,12 +10,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 public class BootMvcWithSecurityBaseITest extends BootMvcBaseITest {
 
-	static private LoginUserDetails loginUser;
+	static private GenericLoginUserDetails<?> loginUser;
 	@Autowired
 	protected BootSecurityConfig bootSecurityConfig;
 	
 	
-	public static LoginUserDetails currentLoginUser() {
+	public static GenericLoginUserDetails<?> currentLoginUser() {
 		return loginUser;
 	}
 
@@ -26,12 +26,12 @@ public class BootMvcWithSecurityBaseITest extends BootMvcBaseITest {
 				.build();
 	}
 	
-	protected LoginUserDetails mockLogin(String loginUrl, String userName, String password){
+	protected GenericLoginUserDetails<?> mockLogin(String loginUrl, String userName, String password){
 		return SecurityTestUtils.mockLogin(mockMvc(), loginUrl, userName, password);
 	}
 	
 	
-	protected LoginUserDetails login(String userName, String password){
+	protected GenericLoginUserDetails<?> login(String userName, String password){
 		if(loginUser==null){
 			loginUser = mockLogin(bootSecurityConfig.getLoginProcessUrl(), "root", "test");
 		}
