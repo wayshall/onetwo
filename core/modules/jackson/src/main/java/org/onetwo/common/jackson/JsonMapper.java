@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
@@ -348,6 +349,8 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((InputStream)json, (Class<?>)objType);
 			}else if(json instanceof File){
 				obj = this.objectMapper.readValue((File)json, (Class<?>)objType);
+			}else if(json instanceof byte[]){
+				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
 				obj = this.objectMapper.readValue((byte[])json, (Class<?>)objType);
 			}else{
@@ -386,6 +389,8 @@ public class JsonMapper {
 				obj = this.objectMapper.readValue((InputStream)json, valueTypeRef);
 			}else if(json instanceof File){
 				obj = this.objectMapper.readValue((File)json, valueTypeRef);
+			}else if(json instanceof byte[]){
+				obj = this.objectMapper.readValue((byte[])json, valueTypeRef);
 			}else if(json.getClass().isArray() && json.getClass().getComponentType()==byte.class){
 				obj = this.objectMapper.readValue((byte[])json, valueTypeRef);
 			}else{
@@ -464,6 +469,26 @@ public class JsonMapper {
 			return this.objectMapper.readValue(json, typeFactory.constructArrayType(objClass));
 		} catch (Exception e) {
 			throw new JsonException("parse json to " + objClass + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
+		}
+	}
+	
+	public ArrayNode fromJsonAsArrayNode(String json){
+		if(StringUtils.isBlank(json))
+			return null;
+		try {
+			return this.objectMapper.readValue(json, ArrayNode.class);
+		} catch (Exception e) {
+			throw new JsonException("parse json to " + ArrayNode.class.getSimpleName() + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
+		}
+	}
+	
+	public ObjectNode fromJsonAsObjectNode(String json){
+		if(StringUtils.isBlank(json))
+			return null;
+		try {
+			return this.objectMapper.readValue(json, ObjectNode.class);
+		} catch (Exception e) {
+			throw new JsonException("parse json to " + ObjectNode.class.getSimpleName() + " error, reason: " + e.getMessage() + ". [json data]: " + json, e);
 		}
 	}
 	

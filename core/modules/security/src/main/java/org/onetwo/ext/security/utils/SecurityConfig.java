@@ -119,6 +119,20 @@ public class SecurityConfig {
 	 */
 	private SessionConfig session = new SessionConfig();
 	
+	/***
+	 * 当security当Authentication为AnonymousAuthenticationToken时，是否直接拒绝，抛出AccessDeniedCodeException异常
+	 * 默认为false
+	 */
+	boolean denyAnonymousUser;
+	
+	/***
+	 * @see org.onetwo.ext.security.MultiExpressionVoter
+	 * @return
+	 */
+	public boolean isDenyAnonymousUser() {
+		return denyAnonymousUser;
+	}
+	
 	public boolean isDebug(){
 		return debug;
 	}

@@ -92,7 +92,7 @@ public class DefaultDUIMetaManager implements InitializingBean, DUIMetaManager {
 //				Class<?> cls = ReflectUtils.loadClass(metadataReader.getClassMetadata().getClassName(), false);
 				String className = metadataReader.getClassMetadata().getClassName();
 				if (duiEntityClassMap.containsKey(name) && !className.equals(duiEntityClassMap.get(name))) {
-					throw new DbmUIException("duplicate ui name: " + className + ", " + duiEntityClassMap.get(name));
+					throw new DbmUIException("duplicate ui name: " + className + ", exist entity: " + duiEntityClassMap.get(name));
 				}
 				duiEntityClassMap.put(name, className);
 				if (logger.isInfoEnabled()) {

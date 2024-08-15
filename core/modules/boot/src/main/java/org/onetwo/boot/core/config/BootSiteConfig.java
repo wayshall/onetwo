@@ -230,11 +230,10 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		WaterMaskConfig watermask = new WaterMaskConfig();
 		
 		public String getBasePath(){
-			if(StringUtils.isNotBlank(basePath)){
-				return basePath;
+			if(StringUtils.isBlank(basePath)){
+				return "";
 			}
-			String path = getBaseURL();
-			return path;
+			return basePath;
 		}
 		public void setBasePath(String basePath){
 			this.basePath = basePath;
@@ -295,6 +294,8 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 		 * 单个文件最大上传
 		 */
 		String maxFileUploadSize;
+		
+		CleanupProps cleanup = new CleanupProps();
 		
 		/***
 		 * -1为没有配置
@@ -371,5 +372,21 @@ public class BootSiteConfig extends DefaultSiteConfig implements SiteConfigProvi
 			return Stream.of(values()).filter(t->t.name().equalsIgnoreCase(str))
 								.findFirst().orElse(LOCAL);
 		}
+	}
+	
+	@Data
+	public static class CleanupProps {
+		public static final String ENABLED_KEY = PREFIX + ".upload.cleanup.enabled";
+		/****
+		 * 每天零点零5分执行
+		 */
+		public static final String CRON = "${" + PREFIX + ".upload.cleanup.cron:0 5 0 * * *}";
+		/****
+		 * 清理N天之前的文件
+		 * 少于0为不清理
+		 */
+		int expiredInDays = -1;
+		
+		List<String> subdirs;
 	}
 }

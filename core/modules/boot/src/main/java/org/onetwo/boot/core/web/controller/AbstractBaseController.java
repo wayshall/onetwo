@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 
 import org.onetwo.apache.io.IOUtils;
+import org.onetwo.boot.bugfix.FixWebDataBinder;
 import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.core.config.BootSiteConfig;
 import org.onetwo.boot.core.jwt.JwtErrors;
@@ -46,6 +47,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -78,6 +81,13 @@ abstract public class AbstractBaseController {
 
 	protected AbstractBaseController() {
 	}
+	
+	
+	@InitBinder
+    public void fixWebShellVulnerability(WebDataBinder dataBinder) {
+		// 设置不允许绑定以下属性，避免webshell漏洞
+		FixWebDataBinder.fixWebShellVulnerability(dataBinder);
+    }
 
 	public SessionUserManager<GenericUserDetail<?>> getSessionUserManager() {
 		return sessionUserManager;

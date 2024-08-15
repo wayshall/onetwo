@@ -18,6 +18,7 @@ import org.onetwo.common.exception.ServiceException;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.netflix.zuul.filters.route.okhttp.OkHttpRibbonCommand;
@@ -28,6 +29,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.UnknownContentTypeException;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import com.netflix.hystrix.exception.HystrixRuntimeException;
@@ -44,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ExtResponseEntityDecoder implements Decoder {
+	private final Logger logger = JFishLoggerFactory.getLogger(getClass());
+	
 	private ObjectFactory<HttpMessageConverters> messageConverters;
 
 	public ExtResponseEntityDecoder(ObjectFactory<HttpMessageConverters> messageConverter) {
@@ -150,8 +154,13 @@ public class ExtResponseEntityDecoder implements Decoder {
 	protected <T> T decodeByType(FeignResponseAdapter response, Type type) throws IOException, FeignException {
 		HttpMessageConverterExtractor<SimpleDataResult> extractor = new HttpMessageConverterExtractor(
 				type, this.messageConverters.getObject().getConverters());
-		T dr = (T)extractor.extractData(response);
-		return dr;
+		try {
+			T dr = (T)extractor.extractData(response);
+			return dr;
+		} catch (UnknownContentTypeException e) {
+			logger.error("decodeByType error: " + e.getMessage(), e);
+		}
+		return null;
 	}
 
 

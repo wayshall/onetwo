@@ -6,10 +6,9 @@ import org.onetwo.common.date.DateUtils;
 import org.onetwo.common.file.FileUtils;
 
 public class JsonDataBinder<T> {
+	protected JsonMapper jsonMapper =  JsonMapper.defaultMapper().setDateFormat(DateUtils.DATE_TIME);
 	protected Class<T> dataType;
 	protected String dataFilePath;
-
-	protected JsonMapper jsonMapper =  JsonMapper.defaultMapper().setDateFormat(DateUtils.DATE_TIME);
 	
 	public JsonDataBinder(Class<T> dataType) {
 		String path = dataType.getName().replace('.', '/')+".data.json";

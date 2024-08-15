@@ -21,7 +21,7 @@ import org.onetwo.boot.core.web.mvc.interceptor.MvcInterceptorAdapter;
 public @interface InterceptorDisabled {
 
 	public final class DisableMvcInterceptor extends MvcInterceptorAdapter {
-		private DisableMvcInterceptor(){
+		public DisableMvcInterceptor(){
 		}
 	}
 }

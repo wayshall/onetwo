@@ -11,7 +11,7 @@ import org.springframework.cloud.endpoint.RefreshEndpoint;
  * <br/>
  */
 public class RefreshEndpointWebCommand implements WebManagementCommand {
-	@Autowired
+	@Autowired(required = false)
 	private RefreshEndpoint refreshEndpoint;
 
 	

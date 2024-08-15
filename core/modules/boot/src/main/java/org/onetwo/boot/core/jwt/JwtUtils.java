@@ -67,7 +67,9 @@ public abstract class JwtUtils {
 		
 		BeanWrapper bw = SpringUtils.newBeanWrapper(jwtUserDetail);
 		Map<String, Object> userMap = Maps.newHashMap(jwtUserDetail.getProperties());
-        userMap.put(JwtSecurityUtils.CLAIM_TENANT_ID, bw.getPropertyValue(JwtSecurityUtils.CLAIM_TENANT_ID));
+		if (bw.isReadableProperty(JwtSecurityUtils.CLAIM_TENANT_ID)) {
+			userMap.put(JwtSecurityUtils.CLAIM_TENANT_ID, bw.getPropertyValue(JwtSecurityUtils.CLAIM_TENANT_ID));
+		}
         
 //		T userDetail = SpringUtils.map2Bean(userMap, parameterType);
 		T userDetail = null;

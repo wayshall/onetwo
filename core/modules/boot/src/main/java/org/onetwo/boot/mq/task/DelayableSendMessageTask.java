@@ -167,7 +167,7 @@ public class DelayableSendMessageTask implements InitializingBean, DisposableBea
 		
 		//刚插入到db的消息会在事务提交后发送，所以这里扫描的时间要减去一定的时间，避免把刚插入的消息也发送了
 		int ignoreSendCreateAtRecently = this.mqProperties.getTransactional().getSendTask().getIgnoreSendCreateAtRecentlyInSeconds();
-		Date sendableTimeAt = NiceDate.Now().nextMinute(-ignoreSendCreateAtRecently).getTime();
+		Date sendableTimeAt = NiceDate.Now().nextSecond(-ignoreSendCreateAtRecently).getTime();
 		for(SendMessageEntity message : messages){
 			if (message.getDelay()!=null && message.getDelay()) {
 				// handle delay message

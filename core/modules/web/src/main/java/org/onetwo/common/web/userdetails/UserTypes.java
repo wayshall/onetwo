@@ -12,7 +12,7 @@ import lombok.Getter;
  * <br/>
  */
 @AllArgsConstructor
-public enum UserTypes implements EnumerableTextLabel {
+public enum UserTypes implements EnumerableTextLabel, UserType {
 	SYSTEM("系统"),
 	ADMIN_USER("后台用户"),
 	USER("前台用户");

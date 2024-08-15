@@ -3,7 +3,7 @@
 
   	<groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-bom</artifactId>
-	<version>5.0.0</version>
+	<version>5.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-bom</name>
@@ -14,7 +14,7 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<java.version>1.8</java.version>
 	
-	<onetwo.version>5.0.0</onetwo.version>
+	<onetwo.version>5.0.0-SNAPSHOT</onetwo.version>
 	<spring-boot.version>2.3.12.RELEASE</spring-boot.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
@@ -24,7 +24,7 @@
 	<commons-net.version>3.3</commons-net.version>
 	
 	<xstream.version>1.4.19</xstream.version>
-	<guava.version>19.0</guava.version>
+	<guava.version>30.1-jre</guava.version>
 	<ant.version>1.9.3</ant.version>
 	<jcifs.version>1.2.19</jcifs.version>
 	
@@ -66,7 +66,7 @@
     
     <embededTomcat.version>8.0.53</embededTomcat.version>
     <tomat-jdbc.version>8.5.0</tomat-jdbc.version>
-    <rocketmq-client.version>3.5.3</rocketmq-client.version>
+    <rocketmq-client.version>4.2.0</rocketmq-client.version>
     <qlexpress.version>3.2.4</qlexpress.version>
     
     
@@ -80,7 +80,7 @@
        <url>https://github.com/wayshall/onetwo</url>
        <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
        <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-       <tag>5.0.0</tag>
+       <tag>onetwo-modules-5.0.0</tag>
    </scm>
   <licenses>
     <license>
@@ -121,6 +121,12 @@
 	    <version>1.1.1</version>
 	</dependency>
 	<!-- for jdk11 jaxb end -->
+	
+	 <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.1</version>
+    </dependency>
 
   	<dependency>
 	    <groupId>com.google.zxing</groupId>
@@ -313,7 +319,7 @@
     <dependency>
       <groupId>org.onetwo4j</groupId>
       <artifactId>onetwo-wechat</artifactId>
-      <version>5.0.0</version>
+      <version>5.0.0-SNAPSHOT</version>
     </dependency>
     
     
@@ -683,7 +689,7 @@
 	     <version>${druid.version}</version>
 	</dependency>
     <dependency>
-        <groupId>com.alibaba.rocketmq</groupId>
+        <groupId>org.apache.rocketmq</groupId>
         <artifactId>rocketmq-client</artifactId>
         <version>${rocketmq-client.version}</version>
     </dependency>
@@ -703,7 +709,7 @@
     <dependency>
        <groupId>com.aliyun.openservices</groupId>
        <artifactId>ons-client</artifactId>
-       <version>1.7.0.Final</version>
+       <version>1.8.8.8.Final</version>
     </dependency>
         
     <!-- ssh -->
@@ -777,6 +783,12 @@
 	    <artifactId>thumbnailator</artifactId>
 	    <version>0.4.8</version>
 	</dependency>
+	
+    <dependency>
+      <groupId>net.bramp.ffmpeg</groupId>
+      <artifactId>ffmpeg</artifactId>
+      <version>0.7.0</version>
+    </dependency>
 	
     <dependency>
         <groupId>org.jetbrains.kotlin</groupId>
@@ -858,35 +870,44 @@
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>1.5</version>
                     <executions>
-                        <execution>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
+                         <execution>
+                             <id>sign-artifacts</id>
+                             <phase>verify</phase>
+                             <goals>
+                                 <goal>sign</goal>
+                             </goals>
+                            <configuration>
+                                <keyname>${gpg.keyname}</keyname>
+                                <passphraseServerId>ossrh</passphraseServerId>
+                                <gpgArguments>
+                                    <arg>--pinentry-mode</arg>
+                                    <arg>loopback</arg>
+                                </gpgArguments>
+                            </configuration>
+                         </execution>
                     </executions>
                 </plugin>
                 <plugin>
-                   <groupId>org.sonatype.plugins</groupId>
-                   <artifactId>nexus-staging-maven-plugin</artifactId>
-                   <version>1.6.3</version>
-                   <extensions>true</extensions>
-                   <configuration>
-                     <serverId>ossrh</serverId>
-                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                   </configuration>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
                  </plugin>
                </plugins>
            </build>
             <distributionManagement>
                 <snapshotRepository>
                     <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
                 <repository>
                     <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
                 </repository>
             </distributionManagement>
        </profile>

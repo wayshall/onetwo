@@ -1,14 +1,10 @@
 package org.onetwo.ext.security.url;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import org.onetwo.ext.permission.MenuInfoParserFactory;
-import org.onetwo.ext.permission.api.IPermission;
-import org.onetwo.ext.permission.api.PermissionConfig;
+import org.onetwo.ext.security.base.ExtAffirmativeBased;
 import org.onetwo.ext.security.config.SecurityCommonContextConfig;
 import org.onetwo.ext.security.metadata.DatabaseSecurityMetadataSource;
 import org.onetwo.ext.security.metadata.JdbcSecurityMetadataSourceBuilder;
@@ -36,12 +32,12 @@ public class UrlBasedSecurityConfig {
 	
 	@Bean
 	public MultiWebExpressionVoter multiWebExpressionVoter(){
-		return new MultiWebExpressionVoter();
+		return new MultiWebExpressionVoter(securityConfig);
 	}
 	
 	@Bean
 	public AccessDecisionManager accessDecisionManager(){
-		AffirmativeBased affirmative = new AffirmativeBased(Arrays.asList(multiWebExpressionVoter(), new WebExpressionVoter(), new AuthenticatedVoter()));
+		AffirmativeBased affirmative = new ExtAffirmativeBased(Arrays.asList(multiWebExpressionVoter(), new WebExpressionVoter(), new AuthenticatedVoter()));
 		return affirmative;
 	}
 	

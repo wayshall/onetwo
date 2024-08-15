@@ -80,9 +80,7 @@ public class SimpleRedisOperationService implements InitializingBean, RedisOpera
 	}
     
     protected RedisTemplate<Object, Object> createReidsTemplate(RedisConnectionFactory redisConnectionFactory) {
-    	JsonRedisTemplate redisTemplate = new JsonRedisTemplate();
-		redisTemplate.setConnectionFactory(redisConnectionFactory);
-		redisTemplate.afterPropertiesSet();
+    	JsonRedisTemplate redisTemplate = RedisUtils.createJsonRedisTemplate(redisConnectionFactory);
 		return redisTemplate;
     }
 

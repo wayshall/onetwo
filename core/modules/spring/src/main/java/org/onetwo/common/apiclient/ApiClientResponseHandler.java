@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 public interface ApiClientResponseHandler<M extends ApiClientMethod> /*extends ApiErrorHandler*/ {
 	
 	Class<?> getActualResponseType(M invokeMethod);
-	Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Class<?> actualResponseType);
+	
+	Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, RequestContextData context);
+	
+//	Object handleResponse(M invokeMethod, ResponseEntity<?> responseEntity, Class<?> actualResponseType);
 
 }

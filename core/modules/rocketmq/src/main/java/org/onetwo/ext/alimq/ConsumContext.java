@@ -21,7 +21,7 @@ public class ConsumContext {
 	MessageDeserializer messageDeserializer;
 	@Builder.Default
 	Map<String, Object> datas = Maps.newHashMap();
-	
+	String dataId;
 
 	private boolean willSkipConsume;
 	

@@ -16,14 +16,14 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DatasourceFactoryBean implements FactoryBean<TransactionManagerAwareDataSource>, InitializingBean {
+public class DatasourceFactoryBean implements FactoryBean<DataSource>, InitializingBean {
 
 //	private final Logger logger = JFishLoggerFactory.getLogger(this.getClass());
 	
 	private String implementClassName = "org.apache.tomcat.jdbc.pool.DataSource";
 	
 //	private DataSource dataSource;
-	private TransactionManagerAwareDataSource dataSource;
+	private DataSource dataSource;
 	
 	private Class<? extends DataSource> implementClass;
 	private Properties config;
@@ -32,6 +32,8 @@ public class DatasourceFactoryBean implements FactoryBean<TransactionManagerAwar
 	
 	@Autowired(required = false)
 	private JFishPropertyPlaceholder configHolder;
+	
+	private boolean transactionManagerAware = false;
 	
 	
 	@SuppressWarnings("unchecked")
@@ -57,19 +59,27 @@ public class DatasourceFactoryBean implements FactoryBean<TransactionManagerAwar
 		}
 		
 		if (this.configMap!=null) {
+			Boolean transactionManagerAware = (Boolean) this.configMap.remove("transactionManagerAware");
 			for (Entry<String, Object> config : this.configMap.entrySet()) {
 				this.config.setProperty(config.getKey(), config.getValue().toString());
+			}
+			if (transactionManagerAware!=null) {
+				this.transactionManagerAware = transactionManagerAware;
 			}
 		}
 		
 		BeanPropertiesMapper mapper = new BeanPropertiesMapper(config, prefix);
 		mapper.mapToObject(dataSource);
 		
-		this.dataSource = new TransactionManagerAwareDataSource(dataSource);
+		if (transactionManagerAware) {
+			this.dataSource = new TransactionManagerAwareDataSource(dataSource);
+		} else {
+			this.dataSource = dataSource;
+		}
 	}
 
 	@Override
-	public TransactionManagerAwareDataSource getObject() throws Exception {
+	public DataSource getObject() throws Exception {
 		return dataSource;
 	}
 
@@ -101,6 +111,10 @@ public class DatasourceFactoryBean implements FactoryBean<TransactionManagerAwar
 
 	public void setConfigMap(Map<String, Object> configMap) {
 		this.configMap = configMap;
+	}
+
+	public void setTransactionManagerAware(boolean transactionManagerAware) {
+		this.transactionManagerAware = transactionManagerAware;
 	}
 	
 

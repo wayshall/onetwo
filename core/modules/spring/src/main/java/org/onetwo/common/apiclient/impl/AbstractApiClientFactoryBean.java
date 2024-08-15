@@ -231,7 +231,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 					response = customHandler.handleResponse(invokeMethod, responseEntity);
 				}else{
 					ResponseEntity responseEntity = invokeRestExector(context);
-					response = responseHandler.handleResponse(invokeMethod, responseEntity, context.getResponseType());
+					response = responseHandler.handleResponse(invokeMethod, responseEntity, context);
 				}
 				return response;
 			}
@@ -298,6 +298,7 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 				Object requestBody = invokeMethod.getRequestBody(args);
 				context.setRequestBody(requestBody);
 			}
+			context.setApiClientMethodConfig(invokeMethod.getApiClientMethodConfig(args));
 			
 //			String actualUrl = getFullPath(invokeMethod.getPath());
 //			actualUrl = processUrlBeforeRequest(actualUrl, invokeMethod, context);
@@ -328,6 +329,8 @@ abstract public class AbstractApiClientFactoryBean<M extends ApiClientMethod> im
 			invokeMethod.getApiHeaderCallback(args)
 						.ifPresent(c->c.onHeader(headers));
 //			});
+//			invokeMethod.getApiClientMethodConfig(args)
+//						.ifPresent(config -> context.setApiClientMethodConfig(config));
 			// 立即回调一次
 //			context.acceptHeaderCallback();
 			

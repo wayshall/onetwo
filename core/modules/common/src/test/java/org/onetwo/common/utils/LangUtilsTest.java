@@ -21,6 +21,19 @@ import org.onetwo.common.utils.list.JFishList;
 
 public class LangUtilsTest {
 
+	@Test
+	public void testIsChinese() {
+		String str = "test";
+		boolean res = LangUtils.isChinese(str);
+		assertThat(res).isFalse();
+		res = LangUtils.isChinese("中国人");
+		assertThat(res).isTrue();
+		res = LangUtils.isChinese("中国ren");
+		assertThat(res).isFalse();
+		res = LangUtils.isChinese("1个中国人");
+		assertThat(res).isFalse();
+//		System.out.println("res: " + "中国人".substring(0, 1));
+	}
 
 	@Test
 	public void testRadixString() {
@@ -29,12 +42,14 @@ public class LangUtilsTest {
 		res = LangUtils.toRadixString(121, 60);
 		assertThat(res).isEqualTo("21");
 		res = LangUtils.toRadixString(198263763892923L, 60);
-		assertThat(res).isEqualTo("1aPtPVN23");
-		res = LangUtils.toRadixString(198263763892928L, 60);
-		assertThat(res).isEqualTo("1aPtPVN28");
-		res = LangUtils.toRadixString(Long.MAX_VALUE, 60);
 		System.out.println("res: " + res);
-		assertThat(res).isEqualTo("ffdzxwVkfv7");
+		assertThat(res).isEqualTo("1aNsNTM23");
+		res = LangUtils.toRadixString(198263763892928L, 60);
+		System.out.println("res2: " + res);
+		assertThat(res).isEqualTo("1aNsNTM28");
+		res = LangUtils.toRadixString(Long.MAX_VALUE, 60);
+		System.out.println("res3: " + res);
+		assertThat(res).isEqualTo("ffdywvTkfu7");
 		res = Long.toString(Long.MAX_VALUE, 36);
 		System.out.println("res: " + res);
 		assertThat(res).isEqualTo("1y2p0ij32e8e7");

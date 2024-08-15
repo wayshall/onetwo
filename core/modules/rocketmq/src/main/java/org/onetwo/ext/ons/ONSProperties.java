@@ -122,6 +122,9 @@ public class ONSProperties implements InitializingBean {
 	public static enum MessageSerializerType {
 		JDK(MessageSerializer.DEFAULT, MessageDeserializer.DEFAULT),
 		JSON(JsonMessageSerializer.INSTANCE, JsonMessageDeserializer.INSTANCE),
+		/***
+		 * 检查消息是否可以用反射实例化，保证反序列化时不会因为没有默认构造函数而出错
+		 */
 		CHECKED_JSON(JsonMessageSerializer.CHECKED_INSTANCE, JsonMessageDeserializer.INSTANCE),
 		TYPING_JSON(JsonMessageSerializer.TYPING_INSTANCE, JsonMessageDeserializer.TYPING_INSTANCE);
 

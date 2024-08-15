@@ -8,6 +8,8 @@ import org.onetwo.boot.core.config.BootJFishConfig;
 import org.onetwo.boot.module.redis.RedisBaseTest.RedisTtestContextConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
@@ -27,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes=RedisTtestContextConfig.class,
 				properties={
+							"spring.application.name=boot-test",
 							"spring.redis.host=localhost",
 							"spring.redis.port=6379",
 							BootJFishConfig.ZIFISH_CONFIG_PREFIX + ".redis.enabled=true",
@@ -47,7 +50,8 @@ public class RedisBaseTest {
 
 	@Configuration
 	@SpringBootApplication(exclude={DataSourceAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class, 
-			ElasticsearchRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class, SessionAutoConfiguration.class})
+			ElasticsearchRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class, 
+			SessionAutoConfiguration.class, RabbitAutoConfiguration.class})
 	@Import(RedisConfiguration.class)
 	public static class RedisTtestContextConfig {
 		

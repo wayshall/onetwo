@@ -6,6 +6,7 @@ import org.onetwo.boot.module.swagger.json.CustomSwaggerBasePathSerializer;
 import org.onetwo.boot.module.swagger.plugin.ModelFileParameterBuilderPlugin;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfi
 @Configuration
 @ConditionalOnClass(Swagger2DocumentationConfiguration.class)
 @EnableConfigurationProperties(SwaggerProperties.class)
+@ConditionalOnProperty(value = SwaggerProperties.ENABLED_KEY)
 public class SwaggerConfiguration {
 	
 	@Bean

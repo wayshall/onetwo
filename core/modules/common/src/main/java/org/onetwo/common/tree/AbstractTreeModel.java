@@ -44,8 +44,9 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 		this.id = id;
 		this.name = name;
 		this.parentId = parentId;
-		if(id instanceof Comparable)
-			this.sort = (Comparable<Object>) id;
+//		if(id instanceof Comparable)
+//			this.sort = (Comparable<Object>) id;
+		this.sort = 100;
 	}
 
 	public AbstractTreeModel(Object id, String name, Object parentId, Comparable<?> sort) {
@@ -53,7 +54,11 @@ abstract public class AbstractTreeModel<T extends AbstractTreeModel<T>> implemen
 		this.id = id;
 		this.name = name;
 		this.parentId = parentId;
-		this.sort = sort;
+		if (sort==null) {
+			this.sort = 100;
+		} else {
+			this.sort = sort;
+		}
 	}
 
 	public List<T> getChildren() {

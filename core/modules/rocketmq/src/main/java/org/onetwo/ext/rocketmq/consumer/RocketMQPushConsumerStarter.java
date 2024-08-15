@@ -22,13 +22,13 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
-import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
-import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import com.alibaba.rocketmq.client.exception.MQClientException;
-import com.alibaba.rocketmq.common.message.MessageConst;
-import com.alibaba.rocketmq.common.message.MessageExt;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.client.exception.MQClientException;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageConst;
+import com.aliyun.openservices.shade.com.alibaba.rocketmq.common.message.MessageExt;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -142,7 +142,7 @@ public class RocketMQPushConsumerStarter implements InitializingBean, Disposable
 		if(meta.getTags()!=null && !meta.getTags().isEmpty()){
 			defaultMQPushConsumer.subscribe(meta.getTopic(), StringUtils.join(meta.getTags(), " || "));
 		}else{
-			defaultMQPushConsumer.subscribe(meta.getTopic(), null);
+			defaultMQPushConsumer.subscribe(meta.getTopic(), (String)null);
 		}
 		
 		defaultMQPushConsumer.setConsumeFromWhere(meta.getConsumeFromWhere());
