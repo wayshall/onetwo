@@ -6,7 +6,7 @@ spring rocketmq的集成模块
 若使用snapshot版本，请添加snapshotRepository仓储：
 ```xml
 <repository>
-     <id>oss</id>
+     <id>ossrh</id>
      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     <snapshots>
         <enabled>true</enabled>

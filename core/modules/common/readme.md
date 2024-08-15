@@ -11,7 +11,7 @@ JDK 1.8+
 ```xml
 <repositories>
 	<repository>
-	     <id>oss</id>
+	     <id>ossrh</id>
 	     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 	    <snapshots>
 	        <enabled>true</enabled>

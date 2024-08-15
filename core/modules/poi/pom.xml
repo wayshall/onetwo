@@ -4,7 +4,7 @@
    <parent>
        <groupId>org.onetwo4j</groupId>
        <artifactId>onetwo-parent</artifactId>
-       <version>5.0.0-SNAPSHOT</version>
+       <version>5.0.0</version>
        <relativePath>../parent</relativePath>
    </parent>
 
@@ -193,7 +193,7 @@
                    <version>1.6.3</version>
                    <extensions>true</extensions>
                    <configuration>
-                     <serverId>oss</serverId>
+                     <serverId>ossrh</serverId>
                      <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                      <autoReleaseAfterClose>true</autoReleaseAfterClose>
                    </configuration>
@@ -202,11 +202,11 @@
            </build>
             <distributionManagement>
                 <snapshotRepository>
-                    <id>oss</id>
+                    <id>ossrh</id>
                     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
                 </snapshotRepository>
                 <repository>
-                    <id>oss</id>
+                    <id>ossrh</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
                 </repository>
             </distributionManagement>
