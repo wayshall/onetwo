@@ -10,6 +10,8 @@ import org.onetwo.boot.mq.exception.DeserializeMessageException;
 import org.onetwo.boot.mq.exception.ImpossibleConsumeException;
 import org.onetwo.boot.mq.exception.MQException;
 import org.onetwo.common.exception.MessageOnlyServiceException;
+import org.onetwo.common.reflect.ReflectUtils;
+import org.onetwo.common.spring.SpringUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.ext.alimq.BatchConsumContext;
 import org.onetwo.ext.alimq.ConsumContext;
@@ -17,6 +19,7 @@ import org.onetwo.ext.alimq.JsonMessageSerializer;
 import org.onetwo.ext.alimq.MessageDeserializer;
 import org.onetwo.ext.alimq.OnsMessage.TracableMessage;
 import org.onetwo.ext.ons.ONSConsumerListenerComposite;
+import org.onetwo.ext.ons.ONSProperties;
 import org.onetwo.ext.ons.ONSProperties.MessageSerializerType;
 import org.onetwo.ext.ons.ONSUtils;
 import org.slf4j.Logger;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Lists;
@@ -38,6 +42,7 @@ public class DelegateMessageService implements InitializingBean {
 	private ONSConsumerListenerComposite consumerListenerComposite;
 	@Autowired
 	private DelegateMessageService delegateMessageService;
+	private ONSProperties properties;
 	
 	
 	public DelegateMessageService(MessageDeserializer messageDeserializer, ONSConsumerListenerComposite consumerListenerComposite) {
@@ -58,6 +63,15 @@ public class DelegateMessageService implements InitializingBean {
 			messageDeserializer = MessageSerializerType.valueOf(deserializer.toUpperCase()).getDeserializer();
 		}
 		return messageDeserializer;
+	}
+	
+	/***
+	 * 是否检查消费者的参数类型，即被序列化后的数据，是否匹配消费者的消息参数类型，避免不匹配而导致参数类型错误。
+	 * @return
+	 */
+	private boolean isCheckConsumerParameterType() {
+		MessageSerializerType stype = this.properties.getSerializer();
+		return stype.equals(MessageSerializerType.TYPING_JSON);
 	}
 	/***
 	 * 返回最近一次消费上下文
@@ -93,12 +107,16 @@ public class DelegateMessageService implements InitializingBean {
 				// 根据consumer方法（@ONSSubscribe注解的方法）定义的参数，获取需要反序列化的目标类型
 				Class<?> targetBodyClass = consumer.getMessageBodyClass(currentConetxt);
 				if (targetBodyClass!=null) {
-					if (!targetBodyClass.getName().equals(sourceClassName)) {
-						// 消息的原始类型和目标类型不符
-						throw new MQException("The original type(" + sourceClassName + ") of the message "
-								+ "does not match the target type(" + targetBodyClass + "), "
-								+ "consumer group: " + meta.getConsumerId() + ", "
-								+ "consumer bean: " + meta.getConsumerBeanName());
+					if (StringUtils.isNotBlank(sourceClassName) && isCheckConsumerParameterType()) {
+						Class<?> sourceClass = ReflectUtils.loadClass(sourceClassName);
+//					if (!targetBodyClass.getName().equals(sourceClassName)) {
+						if (!targetBodyClass.isAssignableFrom(sourceClass)) {
+							// 消息的原始类型和目标类型不符
+							throw new MQException("The original type(" + sourceClassName + ") of the message "
+									+ "does not match the target type(" + targetBodyClass + "), "
+									+ "consumer group: " + meta.getConsumerId() + ", "
+									+ "consumer bean: " + meta.getConsumerBeanName());
+						}
 					}
 					// 把目标类型设置到property，以供反序列化器使用，注意：如果consumer方法定义的类型和原始类型不兼容，则反序列化的时候会出错
 					message.putUserProperty(JsonMessageSerializer.PROP_BODY_TYPE, targetBodyClass.getName());
@@ -231,6 +249,10 @@ public class DelegateMessageService implements InitializingBean {
 	@Transactional(noRollbackFor = MessageOnlyServiceException.class)
 	public void consumeMessageWithTransactional(CustomONSConsumer consumer, ConsumerMeta meta, ConsumContext currentConetxt) {
 		this.consumeMessage(consumer, meta, currentConetxt);
+	}
+
+	public void setProperties(ONSProperties properties) {
+		this.properties = properties;
 	}
 
 }

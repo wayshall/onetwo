@@ -41,6 +41,7 @@ public class ONSConfiguration {
 	@Bean
 	public DelegateMessageService delegateMessageService(MessageDeserializer messageDeserializer){
 		DelegateMessageService delegateMessageService = new DelegateMessageService(messageDeserializer, onsConsumerListenerComposite());
+		delegateMessageService.setProperties(onsProperties);
 		return delegateMessageService;
 	}
 	
