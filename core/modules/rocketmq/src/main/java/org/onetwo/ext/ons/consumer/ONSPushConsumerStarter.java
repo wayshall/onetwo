@@ -83,9 +83,11 @@ public class ONSPushConsumerStarter implements InitializingBean, DisposableBean 
 			consumers.entrySet().forEach(e->{
 				try {
 					this.initializeConsumers(e.getValue());
-				} catch (MQClientException | InterruptedException ex) {
+				} catch (Exception ex) {
 					logger.error("mq consumer initialize error: " + ex.getMessage(), ex);
-					throw new BaseException("mq consumer initialize error: " + ex.getMessage(), ex);
+					if (this.onsProperties.isThrowOnCusomerInitializeError()) {
+						throw new BaseException("mq consumer initialize error: " + ex.getMessage(), ex);
+					}
 				}
 			});
 		});

@@ -58,6 +58,12 @@ public class ONSProperties implements InitializingBean {
 	
 	DeleteReceiveTask deleteReceiveTask = new DeleteReceiveTask();
 	
+	/****
+	 * 消费者初始化出错的时候是否抛出异常
+	 * 有时候程序简单的测试并不需要连接mq，即使初始化错误也没问题
+	 */
+	boolean throwOnCusomerInitializeError = true;
+	
 //	Map<String, String> jsonDeserializerCompatibilityTypeMappings = Maps.newHashMap();	
 	
 	@Override
