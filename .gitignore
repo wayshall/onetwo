@@ -59,3 +59,5 @@ core/deploy-microcloud.sh
 rebel.xml
 /core/git-scripts
 /core/pom.xml
+/**/.apt_generated/
+/**/.apt_generated_tests/
