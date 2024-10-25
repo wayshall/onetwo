@@ -59,3 +59,4 @@ core/deploy-microcloud.sh
 rebel.xml
 /core/git-scripts
 /core/pom.xml
+core/del-branch.sh
