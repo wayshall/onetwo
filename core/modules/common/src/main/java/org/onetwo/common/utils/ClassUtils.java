@@ -20,6 +20,56 @@ final public class ClassUtils {
 	private ClassUtils(){
 	}
 	
+
+	private static Class<?> forName(String name, ClassLoader classLoader)
+			throws ClassNotFoundException, LinkageError {
+
+		Assert.notNull(name, "Name must not be null");
+
+		ClassLoader clToUse = classLoader;
+		if (clToUse == null) {
+			clToUse = getDefaultClassLoader();
+		}
+		try {
+			return Class.forName(name, false, clToUse);
+		}
+		catch (ClassNotFoundException ex) {
+			int lastDotIndex = name.lastIndexOf(PACKAGE_SEPARATOR);
+			if (lastDotIndex != -1) {
+				String innerClassName =
+						name.substring(0, lastDotIndex) + INNER_CLASS_SEPARATOR + name.substring(lastDotIndex + 1);
+				try {
+					return Class.forName(innerClassName, false, clToUse);
+				}
+				catch (ClassNotFoundException ex2) {
+					// Swallow - let original exception get through
+				}
+			}
+			throw ex;
+		}
+	}
+
+	/***
+	 * 复制自spring ClassUtils，去掉了部分复杂的判断，只是一个简单的判断。复杂场景不建议使用此方法。
+	 * @param className
+	 * @param classLoader
+	 * @return
+	 */
+	public static boolean isPresent(String className, ClassLoader classLoader) {
+		try {
+			forName(className, classLoader);
+			return true;
+		}
+		catch (IllegalAccessError err) {
+			throw new IllegalStateException("Readability mismatch in inheritance hierarchy of class [" +
+					className + "]: " + err.getMessage(), err);
+		}
+		catch (Throwable ex) {
+			// Typically ClassNotFoundException or NoClassDefFoundError...
+			return false;
+		}
+	}
+	
 	public static String getCleanedClassName(String innerClassName) {
 		return innerClassName.replaceAll("\\$", ".");
 	}

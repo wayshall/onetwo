@@ -145,7 +145,7 @@
     </dependency>
 	
 	
-    <!-- swagger -->
+    <!-- swagger 
     <dependency>
       <groupId>io.springfox</groupId>
       <artifactId>springfox-swagger2</artifactId>
@@ -156,6 +156,12 @@
             <artifactId>swagger-models</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>-->
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <optional>true</optional>
     </dependency>
     
     <!-- for jdk11 -->

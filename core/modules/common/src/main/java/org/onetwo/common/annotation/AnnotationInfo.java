@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.utils.Assert;
+import org.onetwo.common.utils.ClassUtils;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.util.ClassUtils;
 
 import com.google.common.collect.ImmutableList;
 
