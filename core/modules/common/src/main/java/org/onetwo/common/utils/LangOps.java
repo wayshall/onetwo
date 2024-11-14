@@ -75,6 +75,9 @@ final public class LangOps {
 	
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> arrayToMap(Object... arrays){
+		if (arrays==null || arrays.length==0) {
+			return Collections.emptyMap();
+		}
 		 return Stream.iterate(0, i->i+2)
 				 .limit(arrays.length/2)
 				 .map(i->new Object[]{arrays[i], arrays[i+1]})
@@ -83,6 +86,9 @@ final public class LangOps {
 	}
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> kvArrayToMap(K[] keys, V[] values){
+		if (keys==null && values==null) {
+			return Collections.emptyMap();
+		}
 		 return Stream.iterate(0, i->i+1)
 				 .limit(keys.length)
 				 .map(i->new Object[]{keys[i], values[i]})
@@ -90,11 +96,17 @@ final public class LangOps {
 	}
 	
 	public static <K, V> Map<K, V> toMap(List<V> data, Function<V, K> keyExtractor){
-		 return data.stream()
+		if (data==null) {
+			return Collections.emptyMap();
+		}
+		return data.stream()
 				 	.collect(Collectors.toMap(item->keyExtractor.apply(item), item->item));
 	}
 	
 	public static <K, V> Map<K, V> toMapWithSilence(List<V> data, Function<V, K> keyExtractor){
+		if (data==null) {
+			return Collections.emptyMap();
+		}
 		 Map<K, V> result = Maps.newHashMapWithExpectedSize(data.size());
 		 data.forEach(d -> {
 			 K key = keyExtractor.apply(d);
@@ -104,6 +116,9 @@ final public class LangOps {
 	}
 	
 	public static Object[] toArray(Map<?, ?> map){
+		if (LangUtils.isEmpty(map)) {
+			return LangUtils.EMPTY_ARRAY;
+		}
 		return map.entrySet().stream().map(e -> Arrays.asList(e.getKey(), e.getValue())).flatMap(list -> list.stream()).toArray();
 	}
 	
@@ -141,6 +156,7 @@ final public class LangOps {
 	public static <T> void splitTaskAndConsume(List<T> taskList, int taskSize, BiConsumer<List<T>, Integer> subTaskDataConsumer) {
 		splitTaskAndConsume(taskList, taskSize, subTaskDataConsumer, false);
 	}
+	
 	public static <T> void splitTaskAndConsume(List<T> taskList, int taskSize, BiConsumer<List<T>, Integer> subTaskDataConsumer, boolean parallel) {
 		long maxSize = taskList.size()%taskSize==0?taskList.size()/taskSize:(taskList.size()/taskSize+1);
 		Stream<Integer> stream = Stream.iterate(0, t -> t+1).limit(maxSize);
