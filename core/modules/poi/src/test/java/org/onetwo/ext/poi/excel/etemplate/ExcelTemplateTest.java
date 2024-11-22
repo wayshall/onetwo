@@ -9,6 +9,7 @@ import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.onetwo.common.date.NiceDate;
 import org.onetwo.ext.poi.excel.reader.BeanRowMapper;
 import org.onetwo.ext.poi.excel.reader.WorkbookReaderFactory;
 import org.onetwo.ext.poi.utils.ExcelUtils;
@@ -66,6 +67,26 @@ public class ExcelTemplateTest {
 			list.add(city);
 		}
 	}
+
+	@Test
+	public void testExcelTemplate(){
+		String templateName = "/Users/way/mydev/java/odysseus-ai/onetwo/core/modules/poi/src/test/resources/org/onetwo/common/excel/excel-template.xlsx";
+//		String templatePath = ExcelUtils.class.getClassLoader().getResource("").getPath()+outputPath+templateName;
+		String generatedPath = "/Users/way/mydev/work-doc/lp/excel-template-generated.xlsx";
+		System.out.println("generatedPath:"+ generatedPath);
+		
+		ExcelTemplateEngineer g = new DefaultExcelTemplateEngineer();
+		g.generate(new File(templateName), generatedPath, new ETemplateContext(){
+			{
+				put("year", TheFunction.getInstance().formatDateByPattern("yyyy", new Date()));
+				put("now", NiceDate.Now());
+				put("datalist", list);
+				put("lineCount", 30);
+				put("busCount", 300);
+				put("totalLabel", "合计");
+			}
+		});
+	}
 	
 	@Test
 	public void testAll(){
@@ -75,7 +96,7 @@ public class ExcelTemplateTest {
 		String generatedPath = ExcelUtils.class.getClassLoader().getResource("").getPath()+outputPath+"excel-template-generated.xlsm";
 		System.out.println("generatedPath:"+ generatedPath);
 		
-		ExcelTemplateEngineer g = new ExcelTemplateEngineer();
+		ExcelTemplateEngineer g = new DefaultExcelTemplateEngineer();
 		g.generate(new File(templatePath), generatedPath, new ETemplateContext(){
 			{
 				put("year", TheFunction.getInstance().formatDateByPattern("yyyy", new Date()));
@@ -107,7 +128,7 @@ public class ExcelTemplateTest {
 		int index = 0;
 		for(HashMap data : datas){
 			System.out.println("生成第"+index+"个");
-			ExcelTemplateEngineer g = new ExcelTemplateEngineer();
+			ExcelTemplateEngineer g = new DefaultExcelTemplateEngineer();
 			g.generate(new File("F:/资料/gf/杂/excel/模板.xls"), "F:/资料/gf/杂/excel/数据-"+index+".xls", new ETemplateContext(){
 				{
 					put("year", TheFunction.getInstance().formatDateByPattern("yyyy", new Date()));

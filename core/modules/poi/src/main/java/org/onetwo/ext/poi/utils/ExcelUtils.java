@@ -272,8 +272,13 @@ abstract public class ExcelUtils {
 	public static Object getCellValue(Cell cell){
 		if(cell==null)
 			return null;
+		
 		CellType type = cell.getCellType();
 		Object value = null;
+		if (cell.getRowIndex()==3 && cell.getColumnIndex()==9) {
+			System.out.println("test");
+		}
+		
 		if(CellType.STRING==type){
 //			value = StringUtils.cleanInvisibleUnicode(cell.getStringCellValue().trim());
 			value = cell.getStringCellValue().trim();
@@ -321,7 +326,11 @@ abstract public class ExcelUtils {
 		for(int i=0; i<cellCount; i++){
 			cell = row.getCell(i);
 			cellValue = ExcelUtils.getCellValue(cell);
-			rowValues.add(cellValue.toString().trim());
+			if (cellValue==null) {
+				rowValues.add(null);
+			} else {
+				rowValues.add(cellValue.toString().trim());
+			}
 		}
 		return rowValues;
 	}
@@ -485,6 +494,7 @@ abstract public class ExcelUtils {
 			String cellText = cellValue.toString();
 			if(provider.isExpresstion(cellText)){
 				Object newCellValue = provider.parseCellValue(cellText);
+//				Object newCellValue = provider.parseValue(cellText);
 				provider.setCellValue(cell, newCellValue);
 			}
 		}

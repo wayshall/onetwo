@@ -5,10 +5,14 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.ext.poi.excel.generator.CellValueConvertor;
 import org.onetwo.ext.poi.utils.ExcelUtils;
+import org.slf4j.Logger;
 
 public abstract class AbstractSSFRowMapperAdapter<T> implements SheetRowMapper<T> {
+	protected final Logger logger = JFishLoggerFactory.getLogger(getClass());
+	
 	private Map<String, CellValueConvertor> convertors;
 	
 	public AbstractSSFRowMapperAdapter(){

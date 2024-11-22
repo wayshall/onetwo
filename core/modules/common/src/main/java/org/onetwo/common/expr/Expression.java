@@ -23,6 +23,14 @@ public interface Expression {
 	 * @return
 	 */
 	boolean isProperty(String text);
+	
+	/****
+	 * 获取property，即去掉了前缀和后缀后的字符串，如：${propertyName} -> propertyName
+	 * @author wayshall
+	 * @param text
+	 * @return
+	 */
+	String getProperty(String text);
 
 //	public boolean isExpresstion();
 

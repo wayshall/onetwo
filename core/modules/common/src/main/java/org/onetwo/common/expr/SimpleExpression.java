@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.propconf.JFishProperties;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.Assert;
@@ -102,6 +103,13 @@ public class SimpleExpression implements Expression {
 	 */
 	public boolean isProperty(String text) {
 		return StringUtils.isNotBlank(text) && text.startsWith(start) && text.endsWith(end);
+	}
+	public String getProperty(String text) {
+		if (!isProperty(text)) {
+			throw new BaseException("It is not a property expression: " + text);
+		}
+		String prop = text.substring(start.length(), text.length()-end.length());
+		return prop;
 	}
 
 	/*public boolean isExpresstion() {

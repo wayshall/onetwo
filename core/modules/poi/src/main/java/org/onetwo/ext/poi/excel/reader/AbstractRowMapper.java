@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.onetwo.common.exception.BaseException;
 import org.onetwo.ext.poi.excel.generator.CellValueConvertor;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 
@@ -23,6 +24,10 @@ public abstract class AbstractRowMapper<T> extends AbstractSSFRowMapperAdapter<T
 	@Override
 	public T mapDataRow(Sheet sheet, List<String> names, int rowIndex){
 		Row row = sheet.getRow(rowIndex);
+		if (row==null) {
+			logger.info("row[{}] is null, ignore...", rowIndex);
+			return null;
+		}
 		return this.mapDataRow(names, row, rowIndex);
 	}
 	
@@ -36,8 +41,12 @@ public abstract class AbstractRowMapper<T> extends AbstractSSFRowMapperAdapter<T
 	
 	@Override
 	public List<String> mapTitleRow(Sheet sheet) {
+		int titleRowIndex = getTitleRowIndex();
+		Row titleRow = sheet.getRow(titleRowIndex);
+		if (titleRow==null) {
+			throw new BaseException("title row can not be null. index: " + titleRowIndex);
+		}
 		try {
-			Row titleRow = sheet.getRow(getTitleRowIndex());
 			return ExcelUtils.getRowValues(titleRow);
 		} catch (Exception e) {
 			throw ExcelUtils.wrapAsUnCheckedException("mapTitleRow error" , e);

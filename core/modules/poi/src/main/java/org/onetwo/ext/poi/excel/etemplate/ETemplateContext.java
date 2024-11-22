@@ -9,8 +9,16 @@ import com.google.common.collect.Maps;
 
 public class ETemplateContext {
 	
+	public static final ETemplateContext newContext() {
+		return new ETemplateContext();
+	}
+	
 	private Map<String, Object> rootObject = Maps.newHashMap();
 	private Map<String, Object> dataContext = Maps.newHashMap();
+	/***
+	 * 是否在输出前执行公式
+	 */
+	private boolean evaluateFormula = true;
 //	private Object rootObject;
 	
 	public ETemplateContext(){
@@ -41,6 +49,22 @@ public class ETemplateContext {
 
 	public Map<String, Object> getDataContext() {
 		return dataContext;
+	}
+	
+	public boolean isEvaluateFormula() {
+		return evaluateFormula;
+	}
+
+	public void setEvaluateFormula(boolean evaluateFormula) {
+		this.evaluateFormula = evaluateFormula;
+	}
+
+	public ETemplateContext clone() {
+		ETemplateContext ctx = new ETemplateContext();
+		ctx.rootObject.putAll(rootObject);
+		ctx.dataContext.putAll(dataContext);
+		ctx.evaluateFormula = evaluateFormula;
+		return ctx;
 	}
 	
 	

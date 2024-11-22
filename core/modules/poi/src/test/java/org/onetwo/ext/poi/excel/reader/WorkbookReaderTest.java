@@ -4,6 +4,7 @@ package org.onetwo.ext.poi.excel.reader;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.onetwo.common.utils.StringUtils;
@@ -12,7 +13,6 @@ import org.onetwo.ext.poi.utils.ExcelUtils;
 
 public class WorkbookReaderTest {
 	
-
 	@Test
 	public void testExcelStreamReaderBuilder(){
 		String path = ExcelUtils.class.getClassLoader().getResource("").getPath()+"/org/onetwo/common/excel/test.xls";
@@ -95,7 +95,20 @@ public class WorkbookReaderTest {
 		assertThat(cardList.size()).isEqualTo(10);
 		assertThat(cardList.get(0).getId()).isEqualTo(1L);
 	}
+	
 
+	@Test
+	public void testReadExcelAsHashMapRow(){
+		String path = ExcelUtils.class.getClassLoader().getResource("").getPath()+"/org/onetwo/common/excel/test.xls";
+		WorkbookReader reader = WorkbookReaderFactory.createWorkbookByMapper(new HashMapRowMapper());
+		List<Map<String, Object>> cards = reader.readFirstSheet(path);
+		System.out.println("cards: " + cards);
+		assertThat(cards).isNotNull();
+		assertThat(cards.size()).isEqualTo(10);
+		assertThat(cards.get(0).get("主键")).isEqualTo("1");
+		
+	}
+	
 	@Test
 	public void testReadUnprintChar(){
 		String path = "G:/temp/test.xls";

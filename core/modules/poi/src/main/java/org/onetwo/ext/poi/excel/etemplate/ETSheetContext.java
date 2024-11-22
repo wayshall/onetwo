@@ -1,5 +1,6 @@
 package org.onetwo.ext.poi.excel.etemplate;
 
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -10,6 +11,7 @@ public class ETSheetContext {
 	final private ExcelTemplateEngineer engineer;
 	final private ExcelTemplateValueProvider valueProvider;
 	final private ETemplateContext templateContext;
+	private FormulaEvaluator formulaEvaluator;
 	
 	
 	public ETSheetContext(ExcelTemplateEngineer engineer,
@@ -38,7 +40,14 @@ public class ETSheetContext {
 	public ETemplateContext getTemplateContext() {
 		return templateContext;
 	}
-	
+	public FormulaEvaluator getFormulaEvaluator() {
+		return formulaEvaluator;
+	}
+	public void setFormulaEvaluator(FormulaEvaluator formulaEvaluator) {
+		this.formulaEvaluator = formulaEvaluator;
+	}
+
+
 	public class ETRowContext {
 		private Row tagRow;
 //		private Row currentRow;

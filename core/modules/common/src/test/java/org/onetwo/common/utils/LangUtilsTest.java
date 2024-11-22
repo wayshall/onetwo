@@ -523,6 +523,8 @@ public class LangUtilsTest {
 		System.out.println("key:" + key);
 		key = RandomStringUtils.randomAlphanumeric(32);
 		System.out.println("key:" + key);
+		key = LangUtils.toHex(LangUtils.getBytes(key));
+		System.out.println("key hex:" + key);
 	}
 	
 	@Test
