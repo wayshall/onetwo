@@ -7,7 +7,7 @@
 <dependency>
     <groupId>org.onetwo4j</groupId>
     <artifactId>onetwo-poi</artifactId>
-    <version>4.8.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
 </dependency>   
 
 ```
@@ -196,13 +196,13 @@ excel文档里需要替换的地方，使用${varName}表达式替换即可。
 某些场景下，需要使用一个数据文件的每一行数据作为模板的内容替换生成一个excel，此时可以使用批量生成
 ```Java
 SimpleBatchExceGenerator g = SimpleBatchExceGenerator.create()
-                                                    .templateFilePath("模板文件")
-                                                    .dataFilePath("数据文件")
-                                                    .dataFileTitleRowIndex(1) // 标题行，标题用于模板替换时作为变量名，默认为0，即第一行
-                                                    .dataFileDataStartRowIndex(3) // 数据开始行，默认为1，即第二行
-                                                    .outDirPath(outDir) // 输出目录
-                                                    .dataFileSheetIndex(5) // 读取excel的文档的第几个sheet作为数据文档，默认为0，即第一个
-                                                    .keyName("槽段编号"); // 主键列，用于判断数据行是否为空行，也可以为空
+                                    .templateFilePath("模板文件")
+                                    .dataFilePath("数据文件")
+                                    .dataFileTitleRowIndex(1) // 标题行，标题用于模板替换时作为变量名，默认为0，即第一行
+                                    .dataFileDataStartRowIndex(3) // 数据开始行，默认为1，即第二行
+                                    .outDirPath(outDir) // 输出目录
+                                    .dataFileSheetIndex(5) // 读取excel的文档的第几个sheet作为数据文档，默认为0，即第一个
+                                    .keyName("槽段编号"); // 主键列，用于判断数据行是否为空行，也可以为空
 g.generate(3);
 ```
 
