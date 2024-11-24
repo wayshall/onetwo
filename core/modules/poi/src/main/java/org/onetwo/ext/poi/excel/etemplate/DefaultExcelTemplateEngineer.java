@@ -63,9 +63,9 @@ public class DefaultExcelTemplateEngineer implements ExcelTemplateEngineer {
 		
 		CellType type = cell.getCellType();
 		Object value = null;
-		if (cell.getRowIndex()==3 && cell.getColumnIndex()==9) {
-			System.out.println("test");
-		}
+//		if (cell.getRowIndex()==3 && cell.getColumnIndex()==9) {
+//			System.out.println("test");
+//		}
 		
 		if(CellType.STRING==type){
 			ExcelTemplateValueProvider provider = sheetContext.getValueProvider();
@@ -244,6 +244,11 @@ public class DefaultExcelTemplateEngineer implements ExcelTemplateEngineer {
 		}
 		Workbook wb = ExcelUtils.createWorkbook(in);
 		return wb;
+	}
+
+	@Override
+	public void generate(String templateFile, String generatedPath, ETemplateContext context) {
+		generate(new File(templateFile), generatedPath, context);
 	}
 
 }

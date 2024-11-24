@@ -10,18 +10,25 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 
 public class HashMapRowMapper extends AbstractRowMapper<Map<String, Object>> {
-	
+	/***
+	 * index from 0...
+	 */
 	private int dataRowStartIndex;
+	private int titleRowIndex;
 
 	public HashMapRowMapper() {
-		this(1);
+		this(0, 1);
 	}
 	
-	public HashMapRowMapper(int dataRowStartIndex) {
+	public HashMapRowMapper(int titleRowIndex, int dataRowStartIndex) {
 		super(WorkbookReaderFactory.convertors);
 		this.dataRowStartIndex = dataRowStartIndex;
+		this.titleRowIndex = titleRowIndex;
 	}
-	
+
+	protected int getTitleRowIndex() {
+		return titleRowIndex;
+	}
 	
 	@Override
 	public List<String> mapTitleRow(Sheet sheet) {

@@ -17,6 +17,7 @@ public interface ExcelTemplateEngineer {
 	 * @param context
 	 */
 	void generate(File templateFile, String generatedPath, ETemplateContext context);
+	void generate(String templateFile, String generatedPath, ETemplateContext context);
 
 	void generate(File templateFile, OutputStream out, ETemplateContext context);
 

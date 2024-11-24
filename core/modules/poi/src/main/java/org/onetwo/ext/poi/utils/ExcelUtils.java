@@ -275,9 +275,9 @@ abstract public class ExcelUtils {
 		
 		CellType type = cell.getCellType();
 		Object value = null;
-		if (cell.getRowIndex()==3 && cell.getColumnIndex()==9) {
-			System.out.println("test");
-		}
+//		if (cell.getRowIndex()==3 && cell.getColumnIndex()==9) {
+//			System.out.println("test");
+//		}
 		
 		if(CellType.STRING==type){
 //			value = StringUtils.cleanInvisibleUnicode(cell.getStringCellValue().trim());

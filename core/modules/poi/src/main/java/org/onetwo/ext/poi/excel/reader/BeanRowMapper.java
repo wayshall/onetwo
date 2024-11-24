@@ -149,8 +149,6 @@ public class BeanRowMapper<T> extends AbstractRowMapper<T> {
 
 	@Override
 	public T mapDataRow(List<String> names, Row row, int rowIndex) {
-		if(isIgnoreRow(row))
-			return null;
 //		int cellCount = row.getPhysicalNumberOfCells();
 		int cellCount = row.getLastCellNum();
 		

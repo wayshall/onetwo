@@ -71,12 +71,10 @@ public class ExcelTemplateTest {
 	@Test
 	public void testExcelTemplate(){
 		String templateName = "/Users/way/mydev/java/odysseus-ai/onetwo/core/modules/poi/src/test/resources/org/onetwo/common/excel/excel-template.xlsx";
-//		String templatePath = ExcelUtils.class.getClassLoader().getResource("").getPath()+outputPath+templateName;
 		String generatedPath = "/Users/way/mydev/work-doc/lp/excel-template-generated.xlsx";
-		System.out.println("generatedPath:"+ generatedPath);
 		
 		ExcelTemplateEngineer g = new DefaultExcelTemplateEngineer();
-		g.generate(new File(templateName), generatedPath, new ETemplateContext(){
+		g.generate(templateName, generatedPath, new ETemplateContext(){
 			{
 				put("year", TheFunction.getInstance().formatDateByPattern("yyyy", new Date()));
 				put("now", NiceDate.Now());

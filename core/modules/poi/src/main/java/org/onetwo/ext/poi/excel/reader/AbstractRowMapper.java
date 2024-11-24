@@ -3,6 +3,9 @@ package org.onetwo.ext.poi.excel.reader;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.TreeBidiMap;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.onetwo.common.exception.BaseException;
@@ -28,10 +31,35 @@ public abstract class AbstractRowMapper<T> extends AbstractSSFRowMapperAdapter<T
 			logger.info("row[{}] is null, ignore...", rowIndex);
 			return null;
 		}
-		return this.mapDataRow(names, row, rowIndex);
+		
+		BidiMap<String, Integer> titleMap = toTitleMap(names);
+		if (isIgnoreRow(titleMap, row)) {
+			return null;
+		}
+		
+		return this.mapDataRow(titleMap, names, row, rowIndex);
+	}
+	
+	final protected BidiMap<String, Integer> toTitleMap(List<String> names) {
+		BidiMap<String, Integer> titleMap = new TreeBidiMap<String, Integer>();
+		int index = 0;
+		for (String name : names) {
+			titleMap.put(name, index);
+			index++;
+		}
+		return titleMap;
+	}
+	
+	protected boolean isIgnoreRow(BidiMap<String, Integer> titleMap, Row row) {
+		Cell cell = row.getCell(0);
+		return cell==null;
 	}
 	
 
+	public T mapDataRow(BidiMap<String, Integer> titleMap, List<String> titleNames, Row row, int rowIndex) {
+		return this.mapDataRow(titleNames, row, rowIndex);
+	}
+	
 	abstract public T mapDataRow(List<String> names, Row row, int rowIndex);
 	
 
@@ -53,6 +81,9 @@ public abstract class AbstractRowMapper<T> extends AbstractSSFRowMapperAdapter<T
 		}
 	}
 
+	/****
+	 * 默认数据行开始行为第二行
+	 */
 	@Override
 	public int getDataRowStartIndex() {
 		return 1;

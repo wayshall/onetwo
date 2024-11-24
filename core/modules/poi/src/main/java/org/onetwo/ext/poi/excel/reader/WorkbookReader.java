@@ -25,6 +25,14 @@ public interface WorkbookReader {
 	public Map<String, List<Object>> readData(File file);
 	public Map<String, List<Object>> readData(InputStream in);
 	
+	/****
+	 * 
+	 * @author wayshall
+	 * @param path
+	 * @param startSheet from 0
+	 * @param readCount
+	 * @return
+	 */
 	public Map<String, List<Object>> readData(String path, int startSheet, int readCount);
 	public Map<String, List<Object>> readData(InputStream in, int startSheet, int readCount);
 	public Map<String, List<Object>> readData(File file, int startSheet, int readCount);
