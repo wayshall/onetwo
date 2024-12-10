@@ -225,6 +225,7 @@ public interface DataSigner {
 			String sourceString = data.getSecretkey() + paramString + data.getTimestamp();
 			if(data.isDebug()){
 				logger.info("param string: {}", paramString);
+				logger.info("timestamp: {}", data.getTimestamp());
 				logger.info("source string: {}", sourceString);
 			}
 			return sourceString;
