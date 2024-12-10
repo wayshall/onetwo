@@ -2,6 +2,7 @@ package org.onetwo.boot.module.oauth2.ssoclient;
 
 import org.onetwo.boot.module.oauth2.JFishOauth2Properties;
 import org.onetwo.common.apiclient.impl.RestExecutorConfig;
+import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
@@ -26,6 +27,7 @@ public class OAuth2SsoClientProperties {
 	public static final String ENABLED_TOKEN_INFO_CUSTOM = CONFIG_PREFIX + ".tokenInfo.enabled";
 	
 	RestExecutorConfig resttemplate = new RestExecutorConfig(60_000, 60_000, 60_000);
+	TokenInfoProps tokenInfo = new TokenInfoProps();
 	
 	/***
 	 * 是否强制检查state参数。
@@ -39,5 +41,10 @@ public class OAuth2SsoClientProperties {
 	boolean stateMandatory = true;
 	
 	String loginPath = "/oauth2Login*";
+	
+	@Data
+	public static class TokenInfoProps {
+		String tokenName;
+	}
 
 }

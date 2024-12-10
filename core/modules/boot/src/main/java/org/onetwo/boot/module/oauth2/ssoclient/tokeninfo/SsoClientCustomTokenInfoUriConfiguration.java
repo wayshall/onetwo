@@ -1,7 +1,9 @@
 package org.onetwo.boot.module.oauth2.ssoclient.tokeninfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.onetwo.boot.module.oauth2.ssoclient.EnableOauth2SsoCondition;
 import org.onetwo.boot.module.oauth2.ssoclient.OAuth2SsoClientProperties;
+import org.onetwo.boot.module.oauth2.ssoclient.OAuth2SsoClientProperties.TokenInfoProps;
 import org.onetwo.common.apiclient.impl.RestExecutorConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,6 +29,8 @@ public class SsoClientCustomTokenInfoUriConfiguration {
 	private final ResourceServerProperties resource;
 	@Autowired
 	private SSoUserDetailsService userDetailsService;
+	@Autowired
+	private OAuth2SsoClientProperties ssoClientProperties;
 
 	protected SsoClientCustomTokenInfoUriConfiguration(ResourceServerProperties resource) {
 		this.resource = resource;
@@ -34,6 +38,8 @@ public class SsoClientCustomTokenInfoUriConfiguration {
 
 	@Bean
 	public RemoteTokenServices remoteTokenServices() {
+		TokenInfoProps tokenInfo = ssoClientProperties.getTokenInfo();
+		
 		DefaultAccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
 		CustomSsoClientUserAuthenticationConverter userTokenConverter = new CustomSsoClientUserAuthenticationConverter();
 		userTokenConverter.setSsoUserDetailService(userDetailsService);
@@ -44,6 +50,9 @@ public class SsoClientCustomTokenInfoUriConfiguration {
 		services.setClientId(this.resource.getClientId());
 		services.setClientSecret(this.resource.getClientSecret());
 		services.setAccessTokenConverter(tokenConverter);
+		if (StringUtils.isBlank(tokenInfo.getTokenName())) {
+			services.setTokenName(tokenInfo.getTokenName());
+		}
 		return services;
 	}
 	
