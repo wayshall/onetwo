@@ -15,8 +15,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
 @Configuration
 @ConditionalOnClass(EnableOAuth2Sso.class)
@@ -37,7 +39,7 @@ public class SsoClientCustomTokenInfoUriConfiguration {
 	}
 
 	@Bean
-	public RemoteTokenServices remoteTokenServices() {
+	public ResourceServerTokenServices remoteTokenServices() {
 		TokenInfoProps tokenInfo = ssoClientProperties.getTokenInfo();
 		
 		DefaultAccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
@@ -45,15 +47,30 @@ public class SsoClientCustomTokenInfoUriConfiguration {
 		userTokenConverter.setSsoUserDetailService(userDetailsService);
 		tokenConverter.setUserTokenConverter(userTokenConverter);
 		
-		RemoteTokenServices services = new RemoteTokenServices();
-		services.setCheckTokenEndpointUrl(this.resource.getTokenInfoUri());
-		services.setClientId(this.resource.getClientId());
-		services.setClientSecret(this.resource.getClientSecret());
-		services.setAccessTokenConverter(tokenConverter);
-		if (StringUtils.isBlank(tokenInfo.getTokenName())) {
-			services.setTokenName(tokenInfo.getTokenName());
+		boolean useCustomerTokenService = tokenInfo.isUseCustomMode();
+		if (useCustomerTokenService) {
+			SSORemoteTokenServices services = new SSORemoteTokenServices();
+			services.setCheckTokenEndpointUrl(this.resource.getTokenInfoUri());
+			services.setClientId(this.resource.getClientId());
+			services.setClientSecret(this.resource.getClientSecret());
+			services.setAccessTokenConverter(tokenConverter);
+			services.setAuthorizationHeader(tokenInfo.isAuthorizationHeader());
+			services.setAuthorizationHeaderScheme(tokenInfo.getAuthorizationHeaderScheme());
+			if (StringUtils.isNotBlank(tokenInfo.getTokenName())) {
+				services.setTokenName(tokenInfo.getTokenName());
+			}
+			if (StringUtils.isNotBlank(tokenInfo.getHttpMethod())) {
+				services.setHttpMethod(HttpMethod.resolve(tokenInfo.getHttpMethod().toUpperCase()));
+			}
+			return services;
+		} else {
+			RemoteTokenServices services = new RemoteTokenServices();
+			services.setCheckTokenEndpointUrl(this.resource.getTokenInfoUri());
+			services.setClientId(this.resource.getClientId());
+			services.setClientSecret(this.resource.getClientSecret());
+			services.setAccessTokenConverter(tokenConverter);
+			return services;
 		}
-		return services;
 	}
 	
 

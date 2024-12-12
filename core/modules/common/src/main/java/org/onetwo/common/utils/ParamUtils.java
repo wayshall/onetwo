@@ -36,7 +36,7 @@ public abstract class ParamUtils {
     	return toParamString(params, null);
     }*/
 
-    public static <T> String toParamString(Map<T, ?> params, Comparator<T> comparator){
+    public static <T> String toParamStringComparator(Map<T, ?> params, Comparator<T> comparator){
     	return toParamString(params, comparator, URL_PARAM_JOINER, null);
     }
     public static <T> String toParamString(Map<T, ?> params, Comparator<T> comparator, String joiner, BiFunction<T, Object, String> toStringFunc){
@@ -52,6 +52,12 @@ public abstract class ParamUtils {
 		return toParamString(map, toStringFunc, joiner);
 	}
 
+	public static String toParamStringWithBrace(Map<String, Object> params){
+		return toParamString(params, (k, value) -> {
+			return k+"={"+k+"}";
+		});
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <K> String toParamString(Map params){
 		return toParamString(params, (BiFunction<K, Object, String>)null);

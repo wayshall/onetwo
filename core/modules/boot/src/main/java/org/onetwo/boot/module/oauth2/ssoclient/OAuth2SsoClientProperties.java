@@ -8,6 +8,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import lombok.Data;
 
 /**
+ * 相关参考类：
+ * org.springframework.security.oauth2.client.resource.BaseOAuth2ProtectedResourceDetails
+ * org.springframework.security.oauth2.provider.token.RemoteTokenServices
+ * 
  * @see OAuth2ClientProperties security.oauth2.client.clientId
  * @author weishao zeng
  * <br/>
@@ -42,9 +46,32 @@ public class OAuth2SsoClientProperties {
 	
 	String loginPath = "/oauth2Login*";
 	
+	/***
+	 * 定制配置 RemoteTokenServices 或自定义的实现 SSORemoteTokenServices
+	 */
 	@Data
 	public static class TokenInfoProps {
-		String tokenName;
+		/***
+		 * 不同的服务端实现，选择的参数未必一致，大概在 token 和  access_token 之间徘徊
+		 */
+		String tokenName = "access_token";
+		String httpMethod = "get";
+		/***
+		 * 是否使用定制类
+		 */
+		boolean useCustomMode;
+		
+		/***
+		 * 是否添加authorizationHeader头
+		 */
+		boolean authorizationHeader = false;
+		/****
+		 * 可选值包括：
+		 * Basic
+		 * Bearer
+		 * 为空，则不添加……
+		 */
+		String authorizationHeaderScheme;
 	}
 
 }

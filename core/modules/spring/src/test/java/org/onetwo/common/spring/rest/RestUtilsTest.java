@@ -3,6 +3,7 @@ package org.onetwo.common.spring.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,9 +15,30 @@ import org.onetwo.common.utils.ParamUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.google.common.collect.Maps;
+
 
 public class RestUtilsTest {
 	BeanToMapConvertor beanToMapConvertor = ApiClientMethod.getBeanToMapConvertor();
+	
+	@Test
+	public void testParam() {
+		UserEntity user = new UserEntity();
+		user.setId(11L);
+		user.setUserName("testUserName");
+		String res = RestUtils.propertiesToParamString(user);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("age={age}&height={height}&id={id}&userName={userName}");
+		
+
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("aa", 222);
+		params.put("bb", Arrays.asList(33, 44));
+		params.put("cc", Arrays.asList(55));
+		res = RestUtils.propertiesToParamString(params);
+		System.out.println("res: " + res);
+		assertThat(res).isEqualTo("aa={aa}&bb[0]={bb[0]}&bb[1]={bb[1]}&cc[0]={cc[0]}");
+	}
 	
 	@Test
 	public void test(){
