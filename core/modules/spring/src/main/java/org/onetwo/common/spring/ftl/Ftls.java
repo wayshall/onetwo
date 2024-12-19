@@ -9,6 +9,14 @@ import org.onetwo.common.spring.ftl.StringFreemarkerTemplateConfigurer.StringTem
  * <br/>
  */
 public abstract class Ftls {
+	private static final StringTemplateConfigurer STRING_PARSER = new StringTemplateConfigurer();
+	static {
+		STRING_PARSER.initialize();
+	}
+	
+	public static String parse(String content, Object context) {
+		return STRING_PARSER.parse(content, context);
+	}
 	
 	static public TemplateParser createParser(Map<String, ? extends StringTemplate> templates) {
 		StringFreemarkerTemplateConfigurer freemarkerTemplateConfigurer = new StringFreemarkerTemplateConfigurer();
