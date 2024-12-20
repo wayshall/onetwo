@@ -98,7 +98,9 @@ public class AjaxSupportedAccessDeniedHandler implements AccessDeniedHandler, In
 			}
 			response.sendRedirect(rurl);
 		} else {
-			defaultHandle(request, response, accessDeniedException);
+//			defaultHandle(request, response, accessDeniedException);
+			String denyUrl = request.getMethod() + "|" + request.getRequestURI();
+			ResponseUtils.renderHtml(response, accessDeniedException.getMessage()+": 无权访问 " + denyUrl);
 		}
 	}
 	
