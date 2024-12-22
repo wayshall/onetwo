@@ -50,6 +50,11 @@ final public class PermissionUtils {
 		return getPermissionType(node)==PermissionType.MENU;
 	}
 	
+	public static boolean isResource(IPermission node){
+		return getPermissionType(node)==PermissionType.RESOURCE;
+	}
+
+	
 	public static PermissionType getPermissionType(IPermission node){
 		/*if(node==null)
 			return PermissionType.RESOURCE;
