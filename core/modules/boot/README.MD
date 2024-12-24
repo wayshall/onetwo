@@ -135,6 +135,33 @@ jfish:
 1、在返回的值类型里使用@ExcelEntity标注
 
 2、在值类型里，把需要导出的字段或属性使用@ExcelExportable标注
+```Java
+
+@ExcelEntity(
+        name = "导出名称",
+        autoSizeColumn = true,
+        rows = {
+                @ExcelRow(
+                        height = 2000, 
+                        fieldStyle="verticalAlignment:VERTICAL_CENTER;wrapText:true",
+                        fieldFont="boldweight:BOLDWEIGHT_BOLD",
+                        fields={
+                        @ExcelField(colspan="10", 
+                                value = "'1.说明xxxxxxxx\n"
+                                + "2.说明xxxxxxxx\n"
+                                + "3.说明xxxxxxxx\n"
+                                + "4.说明xxxxxxxx'")
+                })
+        }
+)
+public class ExportableData {
+    @ExcelExportable(label = "配额", sort = 2)
+    Integer count;
+    
+     @ExcelExportable(label = "部门", sort = 1)
+     String departName;
+}
+```
 
 3、如果是分页，不想只导出默认的一页20条数据，需要在controller里做一点小修改：
 ```Java
@@ -153,6 +180,8 @@ jfish:
 ```
 
 4、使用 .jfxls 后缀即可controller即可
+
+5、如果想在
 
 
 ### 阿里ons配置

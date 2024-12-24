@@ -9,13 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.onetwo.boot.module.poi.annotation.ExcelEntity;
 import org.onetwo.boot.module.poi.annotation.ExcelExportable;
+import org.onetwo.boot.module.poi.annotation.ExcelField;
+import org.onetwo.boot.module.poi.annotation.ExcelRow;
 import org.onetwo.common.date.NiceDate;
 import org.onetwo.common.exception.BaseException;
 import org.onetwo.common.exception.ServiceException;
@@ -44,6 +42,10 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import com.google.common.collect.Maps;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 public class PoiExcelHttpMessageConverter extends AbstractGenericHttpMessageConverter<Object> {
 
 	@Autowired
@@ -63,7 +65,20 @@ public class PoiExcelHttpMessageConverter extends AbstractGenericHttpMessageConv
 	}
 
 	@Override
+	public boolean canWrite(Type type, Class<?> clazz, MediaType mediaType) {
+		boolean res = supports(clazz);
+		if (!res) {
+			// 如果class不行，尝试使用ParameterizedType
+			res = supportsType(type);
+		}
+		return res && canWrite(mediaType);
+	}
+	
+	@Override
 	protected boolean supports(Class<?> clazz) {
+		return supportsType(clazz);
+	}
+	protected boolean supportsType(Type clazz) {
 		HttpServletRequest request = WebHolder.getRequest().orElse(null);
 		if (request!=null) {
 			ResponseType type =RequestUtils.getResponseType(request);
@@ -174,6 +189,31 @@ public class PoiExcelHttpMessageConverter extends AbstractGenericHttpMessageConv
 	private TemplateModel createTemplateModel(ExcelEntity excelData, List<ExcelExportableData> exportableFields) {
 		TemplateModel template = new TemplateModel();
 		template.setName(excelData.name());
+		template.setAutoSizeColumn(excelData.autoSizeColumn());
+		template.setFormat(excelData.format());
+		
+		ExcelRow[] rows = excelData.rows();
+		if (rows.length>0) {
+			for (ExcelRow row : rows) {
+				RowModel rowModel = new RowModel();
+				rowModel.setName(row.name());
+				if (row.height()>0) {
+					rowModel.setHeight(row.height());
+				}
+				rowModel.setFieldFont(row.fieldFont());
+				rowModel.setFieldStyle(row.fieldStyle());
+				ExcelField[] fields = row.fields();
+				for (ExcelField field : fields) {
+					FieldModel fieldModel = new FieldModel();
+					fieldModel.setLabel(field.label());
+					fieldModel.setName(field.name());
+					fieldModel.setValue(field.value());
+					fieldModel.setColspan(field.colspan());
+					rowModel.addField(fieldModel);
+				}
+				template.addRow(rowModel);
+			}
+		}
 		
 		RowModel iteratorRow = new RowModel();
 		iteratorRow.setRowType(TemplateRowTypes.ITERATOR);

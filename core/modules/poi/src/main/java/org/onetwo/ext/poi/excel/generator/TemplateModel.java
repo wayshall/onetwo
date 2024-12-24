@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.onetwo.ext.poi.utils.ExcelUtils;
 
 import com.google.common.collect.Lists;
@@ -40,9 +43,15 @@ public class TemplateModel implements PoiModel{
 	private Map<Short, Boolean> autoSizeColumnMap;
 	
 //	private Map<Integer, Short> columnWidthMap = LangUtils.newHashMap();
+	private String format = PoiModel.FORMAT_XLSX;
 	
 	
 	public TemplateModel(){
+	}
+	
+	public Workbook createWorkbookByFormat() {
+		Workbook workbook = PoiModel.FORMAT_XLSX.equalsIgnoreCase(format)?new XSSFWorkbook():new HSSFWorkbook();
+		return workbook;
 	}
 	
 	public void initModel(){
@@ -50,6 +59,14 @@ public class TemplateModel implements PoiModel{
 			row.setTemplate(this);
 			row.initModel();
 		}
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 	public String getName() {
