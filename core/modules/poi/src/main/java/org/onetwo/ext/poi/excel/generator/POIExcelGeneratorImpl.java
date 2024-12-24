@@ -53,7 +53,7 @@ public class POIExcelGeneratorImpl extends AbstractWorkbookExcelGenerator implem
 		this(template, null);
 	}
 	public POIExcelGeneratorImpl(TemplateModel template, Map<String, Object> context) {
-		this(new WorkbookData(null, new HSSFWorkbook(), new DefaultExcelValueParser(context)), template);
+		this(new WorkbookData(null, template.createWorkbookByFormat(), new DefaultExcelValueParser(context)), template);
 	}
 	public POIExcelGeneratorImpl(WorkbookData workbook, TemplateModel template) {
 		this.workbookData = workbook;

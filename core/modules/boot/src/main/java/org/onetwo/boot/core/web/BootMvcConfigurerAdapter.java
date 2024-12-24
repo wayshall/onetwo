@@ -16,6 +16,7 @@ import org.onetwo.boot.core.web.async.MvcAsyncProperties;
 import org.onetwo.boot.core.web.mvc.exception.BootWebExceptionResolver;
 import org.onetwo.boot.core.web.mvc.interceptor.WebInterceptorAdapter;
 import org.onetwo.boot.core.web.view.ExtJackson2HttpMessageConverter;
+import org.onetwo.boot.module.poi.PoiExcelHttpMessageConverter;
 import org.onetwo.boot.utils.BootUtils;
 import org.onetwo.common.file.FileUtils;
 import org.onetwo.common.spring.converter.IntStringValueToEnumConverterFactory;
@@ -88,6 +89,8 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	private List<HandlerInterceptor> interceptorList;
 //	@Autowired
 //	private ApplicationContext applicationContext;
+	@Autowired(required = false)
+	private PoiExcelHttpMessageConverter poiExcelHttpMessageConverter;
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
@@ -213,6 +216,9 @@ public class BootMvcConfigurerAdapter extends WebMvcConfigurerAdapter implements
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters){
 		if(jackson2HttpMessageConverter!=null){
 			CUtils.replaceOrAdd(converters, MappingJackson2HttpMessageConverter.class, jackson2HttpMessageConverter);
+		}
+		if (poiExcelHttpMessageConverter!=null) {
+			converters.add(poiExcelHttpMessageConverter);
 		}
 	}
 

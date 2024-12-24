@@ -157,6 +157,12 @@ public class Intro<T> {
 		return Collections.unmodifiableMap(maps);
 	}
 	
+	public List<Field> getFieldsByAnnotation(Class<? extends Annotation> annoClass) {
+		List<Field> fields = getAllFields().stream().filter(field -> {
+			return field.getAnnotation(annoClass)!=null;
+		}).collect(Collectors.toList());
+		return fields;
+	}
 	
 	public List<Field> getAllFields() {
 		_loadAllFields();
@@ -252,6 +258,14 @@ public class Intro<T> {
 	public Map<String, Field> getFieldMaps() {
 		_loadFields();
 		return fieldMaps;
+	}
+	
+
+	public List<PropertyDescriptor> getPropertyDescriptorsByAnnotation(Class<? extends Annotation> annoClass) {
+		List<PropertyDescriptor> fields = getPropertyDescriptors().values().stream().filter(field -> {
+			return field.getReadMethod().getAnnotation(annoClass)!=null;
+		}).collect(Collectors.toList());
+		return fields;
 	}
 	
 	public Map<String, PropertyDescriptor> getPropertyDescriptors() {
