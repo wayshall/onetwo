@@ -1,5 +1,7 @@
 package org.onetwo.common.watch;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -7,8 +9,6 @@ import java.util.concurrent.TimeUnit;
 import org.onetwo.common.log.JFishLoggerFactory;
 import org.onetwo.common.propconf.ResourceAdapter;
 import org.onetwo.common.utils.Assert;
-import org.onetwo.common.utils.list.JFishList;
-import org.onetwo.common.utils.list.NoIndexIt;
 import org.slf4j.Logger;
 
 /********
@@ -41,10 +41,16 @@ public class FileWatcher {
 	public void watchFile(FileChangeListener listener, ResourceAdapter<?>...files){
 		watchFile(1, listener, files);
 	}
-	public void watchFile(long periodSecond, FileChangeListener listener, ResourceAdapter<?>...files){
+	public WatchFileTask createTask(long periodSecond, FileChangeListener listener){
+		WatchFileTask task = new WatchFileTask(listener);
+		addFileTask(periodSecond, task);
+		return task;
+	}
+	public WatchFileTask watchFile(long periodSecond, FileChangeListener listener, ResourceAdapter<?>...files){
 		Assert.notEmpty(files);
 		WatchFileTask task = new WatchFileTask(files, listener);
 		addFileTask(periodSecond, task);
+		return task;
 	}
 	
 	public void addFileTask(long periodSecond, WatchFileTask task){
@@ -54,17 +60,25 @@ public class FileWatcher {
 	}
 	
 	public static class WatchFileTask implements Runnable {
-		private final JFishList<FileState> fileStates;
+		private final List<FileState> fileStates;
 		private final FileChangeListener listener;
 		
+		private WatchFileTask(FileChangeListener listener) {
+			fileStates = new CopyOnWriteArrayList<>();
+			this.listener = listener;
+		}
 		private WatchFileTask(ResourceAdapter<?>[] files, FileChangeListener listener) {
 			super();
-			fileStates = JFishList.newList(files.length);
+			fileStates = new CopyOnWriteArrayList<>();
+			addFiles(files);
+			this.listener = listener;
+		}
+		
+		public final void addFiles(ResourceAdapter<?>... files) {
 			for(ResourceAdapter<?> file : files){
 				if(file.isSupportedToFile())
 					fileStates.add(new FileState(file));
 			}
-			this.listener = listener;
 		}
 
 		@Override
@@ -77,13 +91,16 @@ public class FileWatcher {
 		
 		public String listFileString(final String beforeElement){
 			final StringBuilder str = new StringBuilder();
-			fileStates.each(new NoIndexIt<FileWatcher.FileState>() {
-
-				@Override
-				protected void doIt(FileState element) throws Exception {
-					str.append(beforeElement).append(element.file.getFile().getPath());
-				}
-				
+//			fileStates.each(new NoIndexIt<FileWatcher.FileState>() {
+//
+//				@Override
+//				protected void doIt(FileState element) throws Exception {
+//					str.append(beforeElement).append(element.file.getFile().getPath());
+//				}
+//				
+//			});
+			this.fileStates.forEach(element -> {
+				str.append(beforeElement).append(element.file.getFile().getPath());
 			});
 			return str.toString();
 		}
