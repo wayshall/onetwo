@@ -129,7 +129,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	 * @param deletes
 	 * @param updates
 	 */
-	abstract protected void updatePermissions(P rootPermission, Map<String, P> dbPermissionMap, Set<P> adds, Set<P> deletes, Set<P> updates);
+	abstract protected void updatePermissions(P rootPermission, Map<String, P> dbPermissionMap, Set<P> adds, Set<P> deletes, Set<P> updates, boolean syncAll);
 	
 
 	/****
@@ -147,7 +147,12 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 	@Override
 	@Transactional
 	public void syncMenuToDatabase(){
-		parsers.stream().forEach(parser->syncMenuToDatabase(parser));
+		this.syncMenuToDatabase(false);
+	}
+	
+	@Transactional
+	public void syncMenuToDatabase(boolean syncAll){
+		parsers.stream().forEach(parser->syncMenuToDatabase(parser, syncAll));
 
 		Set<String> memoryRootCodes = parsers.stream()
 											.filter(p -> p.getRootMenu().isPresent())
@@ -186,7 +191,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		this.getSecurityMetadataSourceBuilder().buildSecurityMetadataSource();
 	}
 	
-	public void syncMenuToDatabase(MenuInfoParser<P> menuInfoParser){
+	public void syncMenuToDatabase(MenuInfoParser<P> menuInfoParser, boolean syncAll){
 //		Class<?> rootMenuClass = this.menuInfoParser.getMenuInfoable().getRootMenuClass();
 //		Class<?> permClass = this.menuInfoParser.getMenuInfoable().getIPermissionClass();
 		if (logger.isInfoEnabled()) {
@@ -214,7 +219,7 @@ abstract public class AbstractPermissionManager<P extends IPermission> implement
 		
 //		filterReversePermissions(deletes);
 		
-		this.updatePermissions(rootPermission, dbPermissionMap, adds, deletes, intersections);
+		this.updatePermissions(rootPermission, dbPermissionMap, adds, deletes, intersections, syncAll);
 
 		logger.info("menu data has synchronized to database...");
 	}

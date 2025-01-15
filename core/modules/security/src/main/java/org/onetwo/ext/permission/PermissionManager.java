@@ -24,6 +24,7 @@ public interface PermissionManager<P extends IPermission> {
 	 * 同步菜单
 	 */
 	void syncMenuToDatabase();
+	void syncMenuToDatabase(boolean syncAll);
 	
 	/***
 	 * 刷新security的权限数据（内存）

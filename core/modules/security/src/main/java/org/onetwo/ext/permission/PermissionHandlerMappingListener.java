@@ -59,12 +59,16 @@ public class PermissionHandlerMappingListener implements InitializingBean {
 			return ;
 		}
 		
+		this.sync2db(false);
+	}
+	
+	public void sync2db(boolean syncAll) {
 		Map<RequestMappingInfo, HandlerMethod> handlerMethods = this.requestMappingHandlerMapping.getHandlerMethods();
 		
 		this.methodPermissionMapping = ArrayListMultimap.create(handlerMethods.size(), 3); 
 				
 		this.onHandlerMethodsInitialized(handlerMethods);
-		this.permissionManager.syncMenuToDatabase();
+		this.permissionManager.syncMenuToDatabase(syncAll);
 		
 		this.permissionManager.setMethodPermissionMapping(methodPermissionMapping);
 	}
