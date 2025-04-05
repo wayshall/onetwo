@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-        <version>5.2.7-SNAPSHOT</version>
+        <version>5.2.8</version>
         <relativePath>../parent</relativePath>
     </parent>
 	
@@ -148,7 +148,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
     
     <dependency>
@@ -224,6 +224,28 @@
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-source-plugin</artifactId>
 		</plugin>
+        
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+                <compilerVersion>${java.version}</compilerVersion>
+                <showWarnings>true</showWarnings>
+                <encoding>utf-8</encoding>
+                <compilerArgs>
+                    <arg>-parameters</arg>
+                </compilerArgs>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>1.18.10</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
   	</plugins>
   </build>
   

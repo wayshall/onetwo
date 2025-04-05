@@ -3,7 +3,7 @@
 
   	<groupId>org.onetwo4j</groupId>
 	<artifactId>onetwo-bom</artifactId>
-	<version>5.2.7-SNAPSHOT</version>
+	<version>5.2.8</version>
 	<packaging>pom</packaging>
 
 	<name>onetwo-bom</name>
@@ -14,7 +14,7 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<java.version>1.8</java.version>
 	
-	<onetwo.version>5.2.7-SNAPSHOT</onetwo.version>
+	<onetwo.version>5.2.8</onetwo.version>
 	<spring-boot.version>2.7.18</spring-boot.version>
 	
 	<common-lang3.version>3.3.2</common-lang3.version>
@@ -80,7 +80,7 @@
        <url>https://github.com/wayshall/onetwo</url>
        <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
        <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-       <tag>onetwo-modules-5.0.0</tag>
+       <tag>onetwo-modules-5.2.75.2.85.2.8</tag>
    </scm>
   <licenses>
     <license>
@@ -314,7 +314,7 @@
     <dependency>
       <groupId>org.onetwo4j</groupId>
       <artifactId>onetwo-wechat</artifactId>
-      <version>5.2.7-SNAPSHOT</version>
+      <version>5.2.8</version>
     </dependency>
     
     
@@ -869,7 +869,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.5</version>
                     <executions>
                          <execution>
                              <id>sign-artifacts</id>
@@ -879,7 +878,7 @@
                              </goals>
                             <configuration>
                                 <keyname>${gpg.keyname}</keyname>
-                                <passphraseServerId>ossrh</passphraseServerId>
+                                <passphraseServerId>oss</passphraseServerId>
                                 <gpgArguments>
                                     <arg>--pinentry-mode</arg>
                                     <arg>loopback</arg>
@@ -888,29 +887,42 @@
                          </execution>
                     </executions>
                 </plugin>
-                <plugin>
+                <!-- plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.7</version>
+                    <version>1.6.13</version>
                     <extensions>true</extensions>
                     <configuration>
-                        <serverId>ossrh</serverId>
+                        <serverId>oss</serverId>
                         <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                         <autoReleaseAfterClose>true</autoReleaseAfterClose>
                     </configuration>
-                 </plugin>
+                 </plugin -->
+                 
+                 <plugin>
+                  <groupId>org.sonatype.central</groupId>
+                  <artifactId>central-publishing-maven-plugin</artifactId>
+                  <version>0.7.0</version>
+                  <extensions>true</extensions>
+                  <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>false</autoPublish>
+                    <waitUntil>validated</waitUntil>
+                  </configuration>
+                </plugin>
+                 
                </plugins>
            </build>
-            <distributionManagement>
+            <!-- distributionManagement>
                 <snapshotRepository>
-                    <id>ossrh</id>
+                    <id>oss</id>
                     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
                 <repository>
-                    <id>ossrh</id>
+                    <id>oss</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
                 </repository>
-            </distributionManagement>
+            </distributionManagement -->
        </profile>
     </profiles>
 

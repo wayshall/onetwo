@@ -3,7 +3,7 @@
 
   <groupId>org.onetwo4j</groupId>
   <artifactId>onetwo-modules</artifactId>
-  <version>5.2.7-SNAPSHOT</version>
+  <version>5.2.8</version>
   <packaging>pom</packaging>
 
   <name>onetwo-modules</name>
@@ -18,7 +18,7 @@
        <url>https://github.com/wayshall/onetwo</url>
        <connection>scm:git:ssh://git@github.com/wayshall/onetwo.git</connection>
        <developerConnection>scm:git:ssh://git@github.com/wayshall/onetwo.git</developerConnection>
-       <tag>onetwo-modules</tag>
+       <tag>onetwo-modules-5.2.75.2.85.2.8</tag>
    </scm>
   <licenses>
     <license>
@@ -94,7 +94,6 @@
 	  <profile>
     	<id>release</id>
     	<modules>
-                <module>modules/bom</module>
                 
                 <module>modules/parent</module>
                 <module>modules/common</module>
@@ -113,12 +112,6 @@
                 <module>modules/rocketmq</module>
                 <module>modules/tomcat</module>
                 
-                <module>../../zifish-plugins/parent</module>
-                <module>../../zifish-plugins/web-admin</module>
-                <module>../../zifish-plugins/swaggerext</module>
-                
-                <module>../../onetwo-tcc/parent</module>
-                <module>../../onetwo-tcc/core</module>
 	  	</modules>
         <build>
             <plugins>

@@ -17,14 +17,15 @@ public class JFishRefactorTest {
 	public void upgradeVersions(){
 		String baseDir = "/Users/way/mydev/java/odysseus-branch";
 		String dir = baseDir + "/onetwo/core/";
-		String oldVersion = "5.0.0-SNAPSHOT";
-		String newVersion = "5.2.7-SNAPSHOT";
+		String oldVersion = "5.2.7";
+		String newVersion = "5.2.8";
 		
 
 		String dbmPath = baseDir + "/dbm";
 		String wechatPath = baseDir + "/onetwo-wechat";
 		String tccPath = baseDir + "/onetwo-tcc";
 		String pluginPath = baseDir + "/onetwo-tcc";
+		String webadminPath = baseDir + "/zifish-plugins";
 		
 		List<String> dirs = Lists.newArrayList();
 		dirs.add(dir);
@@ -32,6 +33,7 @@ public class JFishRefactorTest {
 		dirs.add(wechatPath);
 		dirs.add(tccPath);
 		dirs.add(pluginPath);
+		dirs.add(webadminPath);
 		
 		dirs.forEach(path -> {
 			replaceVersions(path, oldVersion, newVersion);
@@ -44,6 +46,7 @@ public class JFishRefactorTest {
 					.file(f->FileUtils.getFileName(f.getName()).equals("pom.xml") || FileUtils.getFileName(f.getName()).equalsIgnoreCase("readme.md"))
 					.textReplace("<version>"+oldVersion+"</version>", "<version>"+newVersion+"</version>")
 					.textReplace("<onetwo.version>"+oldVersion+"</onetwo.version>", "<onetwo.version>"+newVersion+"</onetwo.version>")
+					.textReplace("onetwo-modules-" + oldVersion, "onetwo-modules-5.2.7" + newVersion)
 				.end()
 				.execute();
 		

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.onetwo4j</groupId>
         <artifactId>onetwo-parent</artifactId>
-		<version>5.2.7-SNAPSHOT</version>
+		<version>5.2.8</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -75,7 +75,7 @@
         <repository>
             <id>Central</id>
             <name>Central Repository</name>
-            <url>http://central.maven.org/maven2/</url>
+            <url>https://repo.maven.apache.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
