@@ -26,6 +26,7 @@ import org.onetwo.common.reflect.Intro;
 import org.onetwo.common.reflect.ReflectUtils;
 import org.onetwo.common.utils.LangUtils;
 import org.onetwo.common.utils.Page;
+import org.onetwo.common.utils.StringUtils;
 import org.onetwo.common.web.utils.RequestUtils;
 import org.onetwo.common.web.utils.ResponseType;
 import org.onetwo.common.web.utils.ResponseUtils;
@@ -113,6 +114,8 @@ public class PoiExcelHttpMessageConverter extends AbstractGenericHttpMessageConv
 															  fieldData.setName(field.getName());
 															  fieldData.setSort(fieldAnno.sort());
 															  fieldData.setLabel(fieldAnno.label());
+															  fieldData.setValue(fieldAnno.value());
+															  fieldData.setDataFormat(fieldAnno.dataFormat());
 															  return fieldData;
 														  }).collect(Collectors.toList());
 		List<ExcelExportableData> exportableProps = intro.getPropertyDescriptorsByAnnotation(ExcelExportable.class)
@@ -122,6 +125,8 @@ public class PoiExcelHttpMessageConverter extends AbstractGenericHttpMessageConv
 															  fieldData.setName(prop.getName());
 															  fieldData.setSort(fieldAnno.sort());
 															  fieldData.setLabel(fieldAnno.label());
+															  fieldData.setValue(fieldAnno.value());
+															  fieldData.setDataFormat(fieldAnno.dataFormat());
 															  return fieldData;
 														}).collect(Collectors.toList());
 		if (!exportableProps.isEmpty()) {
@@ -228,6 +233,10 @@ public class PoiExcelHttpMessageConverter extends AbstractGenericHttpMessageConv
 			FieldModel itField = new FieldModel();
 			itField.setLabel(field.getLabel());
 			itField.setName(field.getName());
+			itField.setDataFormat(field.getDataFormat());
+			if (StringUtils.isNotBlank(field.getValue())) {
+				itField.setValue(field.getValue());
+			}
 			iteratorRow.addField(itField);
 		});
 		template.addRow(iteratorRow);

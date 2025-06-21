@@ -16,4 +16,6 @@ import java.lang.annotation.Target;
 public @interface ExcelExportable {
 	String label();
 	int sort() default 1;
+	String value() default "";
+	String dataFormat() default "";
 }

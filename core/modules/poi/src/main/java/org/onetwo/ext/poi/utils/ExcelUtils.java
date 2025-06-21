@@ -35,6 +35,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.onetwo.common.utils.Page;
 import org.onetwo.ext.poi.excel.etemplate.ExcelTemplateValueProvider;
 import org.onetwo.ext.poi.excel.exception.ExcelException;
@@ -111,6 +112,12 @@ abstract public class ExcelUtils {
 //		SIMPLE_CLASS = Collections.unmodifiableList(simples);
 	}
 
+
+	
+	public static boolean isXlsx(String format) {
+		return PoiModel.FORMAT_XLSX.equals(format);
+	}
+	
 	public static List<Class<?>> getBaseTypeClass(){
 		return BASE_CLASS;
 	}
@@ -216,6 +223,10 @@ abstract public class ExcelUtils {
 	}
 	
 	public static void setCellValue(Cell cell, Object value){
+		setCellValue(cell, value, false);
+	}
+	
+	public static void setCellValue(Cell cell, Object value, boolean isXlsx){
 		/*if(value==null){
 			cell.setCellValue("");
 			return ;
@@ -251,8 +262,13 @@ abstract public class ExcelUtils {
 //			cell.setCellType(Cell.CELL_TYPE_FORMULA);
 			cell.setCellValue((Calendar)value);
 		}else{
-			HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
-			cell.setCellValue(cellValue);
+			if (isXlsx) {
+				XSSFRichTextString cellValue = new XSSFRichTextString(value.toString());
+				cell.setCellValue(cellValue);
+			} else {
+				HSSFRichTextString cellValue = new HSSFRichTextString(value.toString());
+				cell.setCellValue(cellValue);
+			}
 		}
 		
 	}

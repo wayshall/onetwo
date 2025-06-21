@@ -94,6 +94,7 @@ public class TemplateModel implements PoiModel{
 	public TemplateModel addRow(RowModel row){
 		if(this.rows==null)
 			this.rows = Lists.newArrayList();
+		row.setTemplate(this);
 		this.rows.add(row);
 		return this;
 	}

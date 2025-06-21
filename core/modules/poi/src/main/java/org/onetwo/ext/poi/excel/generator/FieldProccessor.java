@@ -294,9 +294,9 @@ public class FieldProccessor {
 		}*/
 		if (StringUtils.isNotBlank(field.getDataType())) {
 			Object convertedValue = Types.convertValue(value, ReflectUtils.loadClass(field.getDataType()));
-			ExcelUtils.setCellValue(cell, convertedValue);
+			ExcelUtils.setCellValue(cell, convertedValue, ExcelUtils.isXlsx(field.getRow().getTemplate().getFormat()));
 		} else  {
-			ExcelUtils.setCellValue(cell, value);
+			ExcelUtils.setCellValue(cell, value, ExcelUtils.isXlsx(field.getRow().getTemplate().getFormat()));
 		}
 	}
 	

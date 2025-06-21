@@ -8,5 +8,9 @@ public class ExcelExportableData {
 	String name;
 	String label;
 	int sort;
+	
+	String value;
+	
+	String dataFormat;
 
 }

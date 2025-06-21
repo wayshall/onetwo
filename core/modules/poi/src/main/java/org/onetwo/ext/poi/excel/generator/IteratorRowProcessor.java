@@ -136,6 +136,7 @@ public class IteratorRowProcessor extends DefaultRowProcessor {
 //					UtilTimerStack.pop(name);
 				}
 			} catch (Exception e) {
+//				e.printStackTrace();
 				throw new ExcelException("generate field["+iterator.getTemplate().getLabel()+","+iterator.getName()+","+field.getName()+"] error: "+e.getMessage() , e);
 			}finally{
 				rowContext.setCurrentRow(null);
